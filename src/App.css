@@ -74,3 +74,26 @@ input, button, select, textarea, label {
   font-family: inherit;
   font-size: var(--text-sm);   /* 14px */
 }
+
+/* Width and Track */
+::-webkit-scrollbar {
+  width: 8px;                /* Moderately thin */
+  height: 8px;               /* For horizontal scroll */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;       /* Light gray track matching the background */
+  border-radius: 4px;
+}
+
+/* Handle (Thumb) */
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;       /* Medium slate grey */
+  border-radius: 4px;        /* Rounded corners for modern pill look */
+  transition: background 0.2s ease;
+}
+
+/* Handle on Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;       /* Darker slate when hovering */
+}

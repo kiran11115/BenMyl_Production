@@ -68,7 +68,7 @@
 
 /* Active state (blue highlight) */
 .header-nav-link.active {
-  color: #3b82f6; /* Blue-500 */
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -196,4 +196,67 @@
   .header-search-input { display: none; } /* Hide search input on mobile */
   .header-search-icon { position: static; } /* Show icon only */
   .profile-info { display: none; } /* Hide name on mobile */
+}
+
+
+/* --- Menu Toggle Button --- */
+.menu-toggle {
+  display: none; /* Hidden on Desktop */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #ffffff; /* Changed to white to be visible on dark header */
+  margin-right: 12px;
+}
+
+/* --- Responsive & Mobile Drawer Logic --- */
+@media (max-width: 1024px) {
+  /* 1. Show the toggle button */
+  .menu-toggle {
+    display: block;
+  }
+
+  /* 2. The Mobile Drawer Container */
+  .header-nav.mobile-active {
+    display: flex; /* Overrides the 'display: none' */
+    flex-direction: column;
+    position: absolute;
+    top: 70px; /* Matches header height */
+    left: 0;
+    width: 100%;
+    background-color: #1e293b; /* Matches header background */
+    padding: 1.5rem;
+    border-bottom: 1px solid #334155;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    z-index: 49;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  /* 3. Mobile Link Styling */
+  .header-nav.mobile-active .header-nav-link {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Remove the desktop underline effect on mobile */
+  .header-nav.mobile-active .header-nav-link.active::after {
+    display: none;
+  }
+  
+  /* Add a left border indicator instead for mobile */
+  .header-nav.mobile-active .header-nav-link.active {
+    padding-left: 12px;
+    border-left: 3px solid #3b82f6;
+  }
+}
+
+/* Optional: Smooth animation for the menu */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

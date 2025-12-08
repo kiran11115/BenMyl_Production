@@ -1,17 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Search, Bell } from "lucide-react"; // Using lucide-react icons as seen in your previous code
+import { Search, Bell, Menu, X } from "lucide-react"; 
 import "./Header.css";
 
 function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <>
       <header className="header-container">
         {/* Left Section: Brand & Nav */}
         <div className="header-left">
+          
+          {/* Mobile Menu Toggle Button */}
+          <button className="menu-toggle" onClick={toggleMenu}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
           {/* Brand */}
           <a href="/dashboard" className="header-brand">
-            {/* Replace with your 'BS' logo image if you have one, or use text/div fallback */}
             <img
               src="/Images/Benmyl White logo.svg"
               alt="BenchSales Logo"
@@ -19,56 +30,27 @@ function Header() {
             />
           </a>
 
-          {/* Navigation Menu */}
-          <nav className="header-nav">
-            <NavLink
-              to="/user/user-dashboard"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Dashboard
-            </NavLink>
-            <NavLink
-              to="/talent-pool"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Talent Pool
-            </NavLink>
-            <NavLink
-              to="/user/user-projects"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Projects
-            </NavLink>
-            <NavLink
-              to="/analytics"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Analytics
-            </NavLink>
-            <NavLink
-              to="/messages"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Message
-            </NavLink>
-            <NavLink
-              to="/jobs"
-              className={({ isActive }) =>
-                `header-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              Jobs
-            </NavLink>
+          {/* Navigation Menu (Responsive) */}
+          <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
+            {[
+              { path: "/user/user-dashboard", label: "Dashboard" },
+              { path: "/talent-pool", label: "Talent Pool" },
+              { path: "/user/user-projects", label: "Projects" },
+              { path: "/analytics", label: "Analytics" },
+              { path: "/messages", label: "Message" },
+              { path: "/jobs", label: "Jobs" },
+            ].map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsMenuOpen(false)} // Close menu on click
+                className={({ isActive }) =>
+                  `header-nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
           </nav>
         </div>
 
@@ -93,7 +75,7 @@ function Header() {
           {/* User Profile */}
           <div className="header-profile">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
               alt="User Avatar"
               className="profile-avatar"
             />

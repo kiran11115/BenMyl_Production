@@ -1,6 +1,5 @@
 import React from "react";
 import "./Dashboard.css";
-
 import {
   Chart as ChartJS,
   ArcElement,
@@ -12,6 +11,17 @@ import {
   Legend,
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
+import {
+  MoreVertical,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  Briefcase,
+  Users,
+  FileText,
+  Calendar,
+  Search,
+} from "lucide-react";
 
 ChartJS.register(
   ArcElement,
@@ -23,49 +33,35 @@ ChartJS.register(
   Legend
 );
 
-// ---------- DATA (for .map()) ----------
-
+// --- Data ---
 const kpiCards = [
-  { label: "Active Job Posts", value: "24", change: "+8%" },
-  { label: "Total Applications", value: "156", change: "+15%" },
-  { label: "Ongoing Contracts", value: "18", change: "+12%" },
-  { label: "Total Spend", value: "$125K", change: "+18%" },
-];
-
-const quickActions = [
-  { label: "+ Post New Job", primary: true },
-  { label: "Find Vendors" },
-  { label: "Schedule interviews" },
-  { label: "Review Contracts" },
-];
-
-const recentApplications = [
   {
-    initials: "SJ",
-    avatarClass: "avatar-red",
-    name: "Sarah Johnson",
-    company: "Tech Solutions Inc.",
-    position: "Senior Developer",
-    status: "Shortlisted",
-    statusClass: "badge-green",
+    label: "Active Job Posts",
+    value: "24",
+    change: "+8%",
+    icon: Briefcase,
+    colorClass: "blue",
   },
   {
-    initials: "MC",
-    avatarClass: "avatar-blue",
-    name: "Michael Chen",
-    company: "Digital Dynamics",
-    position: "Project Manager",
-    status: "In Review",
-    statusClass: "badge-yellow",
+    label: "Total Applications",
+    value: "156",
+    change: "+15%",
+    icon: Users,
+    colorClass: "indigo",
   },
   {
-    initials: "ED",
-    avatarClass: "avatar-purple",
-    name: "Emily Davis",
-    company: "Cloud Systems LLC",
-    position: "DevOps Engineer",
-    status: "Interviewing",
-    statusClass: "badge-blue",
+    label: "Ongoing Contracts",
+    value: "18",
+    change: "+12%",
+    icon: FileText,
+    colorClass: "amber",
+  },
+  {
+    label: "Total Spend",
+    value: "$125K",
+    change: "+18%",
+    icon: DollarSign,
+    colorClass: "emerald",
   },
 ];
 
@@ -74,17 +70,40 @@ const projects = [
     title: "Cloud Migration Project",
     company: "Tech Solutions Inc.",
     status: "On Track",
-    statusClass: "badge-green",
+    statusClass: "status-completed",
     progress: 75,
     budget: "$45,000",
+    dueDate: "Dec 20, 2023",
   },
   {
     title: "Mobile App Development",
     company: "Digital Dynamics",
     status: "In Progress",
-    statusClass: "badge-yellow",
+    statusClass: "status-review",
     progress: 40,
     budget: "$85,000",
+    dueDate: "Jan 15, 2024",
+  },
+];
+
+const recentApplications = [
+  {
+    name: "Sarah Johnson",
+    role: "Senior Dev",
+    status: "Shortlisted",
+    statusClass: "status-completed",
+  },
+  {
+    name: "Michael Chen",
+    role: "Project Mgr",
+    status: "In Review",
+    statusClass: "status-review",
+  },
+  {
+    name: "Emily Davis",
+    role: "DevOps Eng",
+    status: "Interviewing",
+    statusClass: "status-progress",
   },
 ];
 
@@ -103,14 +122,7 @@ const interviews = [
   },
 ];
 
-const budgetLegend = [
-  { label: "Recruitment", dotClass: "dot-blue" },
-  { label: "Training", dotClass: "dot-green" },
-  { label: "Benefits", dotClass: "dot-yellow" },
-];
-
-// ---------- CHART CONFIG ----------
-
+// --- Chart Config ---
 const pipelineLineData = {
   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   datasets: [
@@ -119,8 +131,8 @@ const pipelineLineData = {
       borderWidth: 2,
       tension: 0.45,
       fill: true,
-      backgroundColor: "rgba(37, 99, 235, 0.08)",
-      borderColor: "#2563eb",
+      backgroundColor: "rgba(59, 130, 246, 0.08)",
+      borderColor: "#3b82f6",
       pointRadius: 0,
     },
   ],
@@ -130,18 +142,15 @@ const pipelineLineOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: { legend: { display: false }, tooltip: { enabled: true } },
-  scales: {
-    x: { grid: { display: false }, ticks: { display: false } },
-    y: { grid: { display: false }, ticks: { display: false } },
-  },
+  scales: { x: { display: false }, y: { display: false } },
 };
 
 const budgetDoughnutData = {
-  labels: budgetLegend.map((b) => b.label),
+  labels: ["Recruitment", "Training", "Benefits"],
   datasets: [
     {
       data: [45, 30, 25],
-      backgroundColor: ["#2563eb", "#16a34a", "#f59e0b"],
+      backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
       borderWidth: 0,
     },
   ],
@@ -150,182 +159,284 @@ const budgetDoughnutData = {
 const budgetDoughnutOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { display: false }, tooltip: { enabled: true } },
-  cutout: "68%",
+  plugins: { legend: { display: false } },
+  cutout: "75%",
 };
-
-// ---------- COMPONENT ----------
 
 const Dashboard = () => {
   return (
-    <div className="dashboard">
-      {/* KPI CARDS */}
-      <div className="dashboard-top-cards">
-        {kpiCards.map((item) => (
-          <div key={item.label} className="kpi-card">
-            <div className="kpi-label">{item.label}</div>
-            <div className="kpi-value-row">
-              <span className="kpi-value">{item.value}</span>
-              <span className="kpi-change kpi-change-up">{item.change}</span>
+    <div className="projects-container">
+      {/* 1. KPI Stats Grid (Matches Projects.css) */}
+      <div className="stats-grid">
+        {kpiCards.map((item, index) => (
+          <div key={index} className="stat-card">
+            <div className="stat-content">
+              <span className="stat-label">{item.label}</span>
+              <div className="stat-value-row">
+                <span className="stat-value">{item.value}</span>
+              </div>
+              <div className="stat-trend trend-up">
+                <TrendingUp size={14} />
+                <span>{item.change}</span>
+              </div>
+            </div>
+            <div className={`stat-icon-box box-${item.colorClass}`}>
+              <item.icon size={24} />
             </div>
           </div>
         ))}
       </div>
 
-      {/* QUICK ACTIONS */}
-      <div className="quick-actions">
-        {quickActions.map((btn) => (
-          <button
-            key={btn.label}
-            className={btn.primary ? "btn-primary" : "btn-ghost"}
-          >
-            {btn.label}
-          </button>
-        ))}
+      {/* 2. Quick Actions */}
+      <div
+        className="projects-header"
+        style={{ justifyContent: "flex-start", gap: "12px" }}
+      >
+        <button className="btn-upload" style={{ maxWidth: "160px" }}>
+          + Post New Job
+        </button>
+        <button
+          className="btn-review"
+          style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
+        >
+          Find Vendors
+        </button>
+        <button
+          className="btn-review"
+          style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
+        >
+          Schedule Interviews
+        </button>
       </div>
 
-      {/* MAIN */}
-      <div className="dashboard-main">
-        {/* LEFT SIDE */}
-        <div className="dashboard-left">
-          {/* Recent Applications */}
-          <div className="card recent-applications">
-            <div className="card-header">
-              <h3>Recent Applications</h3>
-            </div>
+      {/* 3. Main Dashboard Layout */}
+      <div className="dashboard-layout">
+        {/* LEFT COLUMN */}
+        <div className="dashboard-column-main">
+          {/* Ongoing Projects Section */}
+          <h3 className="section-title">Ongoing Projects</h3>
+          <div className="projects-grid">
+            {projects.map((project, index) => (
+              <div key={index} className="project-card">
+                <div className="card-header">
+                  <h3 className="card-title">{project.title}</h3>
+                  <button className="card-options-btn">
+                    <MoreVertical size={16} />
+                  </button>
+                </div>
 
-            <div className="table-header">
-              <span>Candidate</span>
-              <span>Position</span>
-              <span>Status</span>
-              <span>Action</span>
-            </div>
+                <div className="card-author">
+                  <div
+                    className="author-avatar"
+                    style={{ backgroundColor: "#e2e8f0" }}
+                  />
+                  <span className="author-name">{project.company}</span>
+                </div>
 
-            {recentApplications.map((app) => (
-              <div key={app.name} className="table-row">
-                <div className="candidate">
-                  <div className={`avatar ${app.avatarClass}`}>
-                    {app.initials}
+                <div className="progress-section">
+                  <div className="progress-labels">
+                    <span>Progress</span>
+                    <span className="progress-text">{project.progress}%</span>
                   </div>
-                  <div>
-                    <div className="candidate-name">{app.name}</div>
-                    <div className="candidate-sub">{app.company}</div>
+                  <div className="progress-bg">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
                   </div>
                 </div>
-                <div className="position">{app.position}</div>
-                <div className="status">
-                  <span className={`badge ${app.statusClass}`}>
-                    {app.status}
+
+                <div className="card-details">
+                  <div className="detail-item">
+                    <Clock size={14} /> Due {project.dueDate}
+                  </div>
+                  <div className="detail-item">
+                    <DollarSign size={14} /> {project.budget}
+                  </div>
+                </div>
+
+                <div>
+                  <span className={`status-tag ${project.statusClass}`}>
+                    {project.status}
                   </span>
                 </div>
-                <div className="action-dots">⋯</div>
               </div>
             ))}
           </div>
 
-          {/* Ongoing Projects */}
-          <div className="card ongoing-projects">
+          {/* Recent Applications (Table Style adapted to Card) */}
+          <h3 className="section-title" style={{ marginTop: "32px" }}>
+            Recent Applications
+          </h3>
+          <div
+            className="project-card"
+            style={{ padding: "0", overflow: "hidden" }}
+          >
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th>Candidate</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentApplications.map((app, i) => (
+                  <tr key={i}>
+                    <td>
+                      <div className="card-author">
+                        <div
+                          className="author-avatar"
+                          style={{
+                            background: "#3b82f6",
+                            color: "white",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "10px",
+                          }}
+                        >
+                          {app.name.charAt(0)}
+                        </div>
+                        <span
+                          className="author-name"
+                          style={{ color: "#1e293b" }}
+                        >
+                          {app.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ fontSize: "13px", color: "#64748b" }}>
+                      {app.role}
+                    </td>
+                    <td>
+                      <span className={`status-tag ${app.statusClass}`}>
+                        {app.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button className="card-options-btn">
+                        <MoreVertical size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="dashboard-column-side">
+          {/* Analytics Card */}
+          <div className="project-card">
             <div className="card-header">
-              <h3>Ongoing Projects</h3>
-              <button className="link-btn">View All</button>
+              <h3 className="card-title">Hiring Pipeline</h3>
             </div>
+            <div style={{ height: "150px", marginTop: "16px" }}>
+              <Line data={pipelineLineData} options={pipelineLineOptions} />
+            </div>
+          </div>
 
-            <div className="project-grid">
-              {projects.map((project) => (
-                <div key={project.title} className="project-card">
-                  <div className="project-header-row">
-                    <div>
-                      <div className="project-title">{project.title}</div>
-                      <div className="project-sub">{project.company}</div>
+          <div className="project-card">
+            <div className="card-header">
+              <h3 className="card-title">Budget</h3>
+            </div>
+            <div
+              style={{
+                height: "140px",
+                marginTop: "16px",
+                position: "relative",
+              }}
+            >
+              <Doughnut
+                data={budgetDoughnutData}
+                options={budgetDoughnutOptions}
+              />
+              <div className="doughnut-center-text">
+                <span
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#1e293b",
+                  }}
+                >
+                  45%
+                </span>
+              </div>
+            </div>
+            <div className="legend-row">
+              <div className="legend-item">
+                <span className="dot" style={{ background: "#3b82f6" }}></span>
+                Recruit
+              </div>
+              <div className="legend-item">
+                <span className="dot" style={{ background: "#10b981" }}></span>
+                Train
+              </div>
+              <div className="legend-item">
+                <span className="dot" style={{ background: "#f59e0b" }}></span>
+                Ben.
+              </div>
+            </div>
+          </div>
+
+          {/* Interviews */}
+          <div className="project-card">
+            <div className="card-header">
+              <h3 className="card-title">Interviews</h3>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#3b82f6",
+                  cursor: "pointer",
+                }}
+              >
+                View All
+              </span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                marginTop: "16px",
+              }}
+            >
+              {interviews.map((int, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "#eff6ff",
+                      padding: "8px",
+                      borderRadius: "8px",
+                      color: "#3b82f6",
+                    }}
+                  >
+                    <Calendar size={18} />
+                  </div>
+                  <div>
+                    <div className="card-title" style={{ fontSize: "13px" }}>
+                      {int.name}
                     </div>
-                    <span className={`badge ${project.statusClass}`}>
-                      {project.status}
-                    </span>
-                  </div>
-
-                  <div className="project-meta">
-                    <span className="meta-label">Progress</span>
-                    <span className="meta-value">{project.progress}%</span>
-                  </div>
-                  <div className="progress-bar">
-                    <div
-                      className={`progress-fill ${
-                        project.statusClass === "badge-yellow"
-                          ? "progress-fill-yellow"
-                          : "progress-fill-blue"
-                      }`}
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
-
-                  <div className="project-footer">
-                    <span className="meta-label">Budget</span>
-                    <span className="meta-value">{project.budget}</span>
+                    <div style={{ fontSize: "11px", color: "#64748b" }}>
+                      {int.time} • {int.tag}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-        {/* RIGHT SIDE */}
-        <div className="dashboard-right">
-          {/* Upcoming Interviews */}
-          <div className="card upcoming-interviews">
-            <div className="card-header">
-              <h3>Upcoming Interviews</h3>
-            </div>
-
-            {interviews.map((int) => (
-              <div key={int.name} className="interview-row">
-                <div className="interview-icon">📅</div>
-                <div className="interview-info">
-                  <div className="interview-name">{int.name}</div>
-                  <div className="interview-role">{int.role}</div>
-                  <div className="interview-meta">
-                    <span>{int.time}</span>
-                    <span className="interview-tag">{int.tag}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Analytics Summary */}
-          <div className="card analytics-summary">
-            <div className="card-header">
-              <h3>Analytics Summary</h3>
-            </div>
-
-            <div className="analytics-section">
-              <div className="analytics-title">Hiring Pipeline</div>
-              <div className="chart-wrapper chart-wrapper-line">
-                <Line data={pipelineLineData} options={pipelineLineOptions} />
-              </div>
-            </div>
-
-            <div className="analytics-section">
-              <div className="analytics-title">Budget Allocation</div>
-              <div className="analytics-row">
-                <div className="chart-wrapper chart-wrapper-donut">
-                  <Doughnut
-                    data={budgetDoughnutData}
-                    options={budgetDoughnutOptions}
-                  />
-                </div>
-                <div className="legend">
-                  {budgetLegend.map((b) => (
-                    <div key={b.label} className="legend-item">
-                      <span className={`legend-dot ${b.dotClass}`} />
-                      <span>{b.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> 
+      </div>
     </div>
   );
 };
