@@ -11,6 +11,7 @@ import FormWizard from "./Auth/FormWizard/FormWizard";
 import ProtectedRoute from "./ProtectedRoute";
 import Header from "./Header/Header";
 import Projects from "./UserProjects/Projects";
+import Dashboard from "./Dashboard/Dashboard";
 
 
 
@@ -27,6 +28,7 @@ const routes = createBrowserRouter(
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
                     <Route path="user-projects" element={<Projects />} />
+                    <Route path="user-dashboard" element={<Dashboard />} />
                 </Route>
             </Route>
 

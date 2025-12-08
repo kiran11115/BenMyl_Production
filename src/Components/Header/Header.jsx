@@ -22,7 +22,7 @@ function Header() {
           {/* Navigation Menu */}
           <nav className="header-nav">
             <NavLink
-              to="/dashboard"
+              to="/user/user-dashboard"
               className={({ isActive }) =>
                 `header-nav-link ${isActive ? "active" : ""}`
               }
