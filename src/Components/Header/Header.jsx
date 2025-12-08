@@ -1,7 +1,7 @@
-import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { Search, Bell } from 'lucide-react'; // Using lucide-react icons as seen in your previous code
-import './Header.css';
+import React from "react";
+import { NavLink, Outlet } from "react-router-dom";
+import { Search, Bell } from "lucide-react"; // Using lucide-react icons as seen in your previous code
+import "./Header.css";
 
 function Header() {
   return (
@@ -13,48 +13,59 @@ function Header() {
           <a href="/dashboard" className="header-brand">
             {/* Replace with your 'BS' logo image if you have one, or use text/div fallback */}
             <img
-              src="/Images/Loader-copy.gif"
+              src="/Images/Benmyl White logo.svg"
               alt="BenchSales Logo"
               className="header-brand-logo"
             />
-            <span className="header-brand-text">BenchSales</span>
           </a>
 
           {/* Navigation Menu */}
           <nav className="header-nav">
             <NavLink
               to="/dashboard"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Dashboard
             </NavLink>
             <NavLink
               to="/talent-pool"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Talent Pool
             </NavLink>
             <NavLink
               to="/projects"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Projects
             </NavLink>
             <NavLink
               to="/analytics"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Analytics
             </NavLink>
             <NavLink
               to="/messages"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Message
             </NavLink>
             <NavLink
               to="/jobs"
-              className={({ isActive }) => `header-nav-link ${isActive ? 'active' : ''}`}
+              className={({ isActive }) =>
+                `header-nav-link ${isActive ? "active" : ""}`
+              }
             >
               Jobs
             </NavLink>

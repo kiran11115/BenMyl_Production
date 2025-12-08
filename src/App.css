@@ -6,6 +6,8 @@
   --text-xs: 12px;
   --text-sm: 14px;
   --text-base: 16px; /* Max size */
+  height: 100%;
+  width: 100%;
 
   /* Colors */
   --bg-overlay: rgba(15, 23, 42, 0.85); /* Slate-900 with opacity */
@@ -28,13 +30,12 @@ body {
   font-weight: 400;
 
   /* --- Background Setup --- */
-  min-height: 100vh;
-  background-image: url('../public/Images/Background-body.png'); 
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgb(242, 243, 245, 0.9)), 
+              url(../public/Images/bg-background.svg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-
   display: flex;
   flex-direction: column;
 }

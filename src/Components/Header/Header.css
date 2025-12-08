@@ -9,7 +9,7 @@
   padding: 0 1.5rem;
   
   /* Glassmorphism & Sticky Positioning */
-  background: rgba(255, 255, 255, 0.95);
+  background: #1e293b;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
@@ -55,7 +55,7 @@
 .header-nav-link {
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
-  color: #64748b; /* Slate-500 */
+  color: #d2d8e0; /* Slate-500 */
   text-decoration: none;
   transition: color 0.2s;
   padding: 0.5rem 0;
@@ -63,7 +63,7 @@
 }
 
 .header-nav-link:hover {
-  color: #1e293b; /* Slate-800 */
+  color: #ffffff; /* Slate-800 */
 }
 
 /* Active state (blue highlight) */
@@ -179,7 +179,7 @@
 .profile-name {
   font-size: 0.875rem; /* 14px */
   font-weight: 600;
-  color: #1e293b;
+  color: #ffffff;
 }
 
 .profile-role {
