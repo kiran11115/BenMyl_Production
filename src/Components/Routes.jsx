@@ -8,6 +8,9 @@ import Signup from "./Auth/Signup";
 import ForgotPassword from "./Auth/ForgotPassword";
 import OTPVerification from "./Auth/OTPVerification";
 import FormWizard from "./Auth/FormWizard/FormWizard";
+import ProtectedRoute from "./ProtectedRoute";
+import Header from "./Header/Header";
+import Projects from "./UserProjects/Projects";
 
 
 
@@ -21,7 +24,11 @@ const routes = createBrowserRouter(
             <Route path="OTP-Verification" element={<OTPVerification />} />
             <Route path="company-details" element={<FormWizard />} />
 
-
+            <Route element={<ProtectedRoute />}>
+                <Route path="User" element={<Header />}>
+                    <Route path="user-projects" element={<Projects />} />
+                </Route>
+            </Route>
 
         </Route>
     )

@@ -17,7 +17,7 @@ function Signin() {
     }),
     onSubmit: (values) => {
       console.log("Login:", values);
-      navigate("/dashboard");
+      navigate("/user/user-projects");
     },
   });
 
