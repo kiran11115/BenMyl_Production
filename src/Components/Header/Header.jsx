@@ -38,7 +38,7 @@ function Header() {
               Talent Pool
             </NavLink>
             <NavLink
-              to="/projects"
+              to="/user/user-projects"
               className={({ isActive }) =>
                 `header-nav-link ${isActive ? "active" : ""}`
               }
