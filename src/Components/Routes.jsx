@@ -17,7 +17,7 @@ const routes = createBrowserRouter(
             <Route index element={<Signin />} />
             <Route path="sign-in" element={<Signin />} />
             <Route path="sign-up" element={<Signup />} />
-            <Route path="forgot-paasword" element={<ForgotPassword />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="OTP-Verification" element={<OTPVerification />} />
             <Route path="company-details" element={<FormWizard />} />
 
