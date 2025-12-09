@@ -11,13 +11,14 @@ function Signin() {
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
-    validationSchema: Yup.object({
+    // Validation schema commented out as requested
+    /* validationSchema: Yup.object({
       email: Yup.string().email("Invalid email").required("Required"),
       password: Yup.string().required("Required"),
-    }),
+    }), */
     onSubmit: (values) => {
       console.log("Login:", values);
-      navigate("/user/user-projects");
+      navigate("/user/user-dashboard");
     },
   });
 
@@ -61,6 +62,7 @@ function Signin() {
                 className="auth-input"
                 placeholder="name@company.com"
               />
+              {/* Validation error display remains but won't trigger without schema */}
               {formik.touched.email && formik.errors.email && (
                 <div className="auth-error-msg">{formik.errors.email}</div>
               )}

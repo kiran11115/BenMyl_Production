@@ -84,6 +84,24 @@ const projects = [
     budget: "$85,000",
     dueDate: "Jan 15, 2024",
   },
+  {
+  title: "Cloud Infrastructure Migration",
+  company: "Nexus Systems",
+  status: "Review",
+  statusClass: "status-review",
+  progress: 75,
+  budget: "$120,000",
+  dueDate: "Feb 28, 2024",
+},
+{
+  title: "Cybersecurity Audit",
+  company: "SecureNet Solutions",
+  status: "Pending",
+  statusClass: "status-pending",
+  progress: 0,
+  budget: "$45,000",
+  dueDate: "Jan 10, 2024",
+},
 ];
 
 const recentApplications = [
@@ -196,13 +214,13 @@ const Dashboard = () => {
           + Post New Job
         </button>
         <button
-          className="btn-review"
+          className="btn-upload"
           style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
         >
           Find Vendors
         </button>
         <button
-          className="btn-review"
+          className="btn-upload"
           style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
         >
           Schedule Interviews
