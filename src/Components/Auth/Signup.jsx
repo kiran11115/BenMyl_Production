@@ -23,28 +23,25 @@ function SignUp() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-brand-side">
-          <h1 className="auth-brand-title">
-            Start your <br />
-            <span className="auth-brand-highlight">Journey</span>
-          </h1>
-        </div>
-
-        <div className="auth-form-side">
-          {/* LOGO ADDED HERE */}
-          <img
-            src="/Images/Loader-copy.gif"
-            alt="BenMyl Logo"
-            className="auth-logo"
-          />
-
-          <div className="auth-header">
-            <h2 className="auth-title">Create Account</h2>
+           <h2 className="auth-title">Create Account</h2>
             <p className="auth-subtitle">
               Already have an account?{" "}
               <button onClick={() => navigate("/sign-in")} className="auth-link">
                 Sign In
               </button>
             </p>
+        </div>
+
+        <div className="auth-form-side">
+         
+
+          <div className="auth-header">
+            {/* LOGO ADDED HERE */}
+          <img
+            src="/Images/Loader-copy.gif"
+            alt="BenMyl Logo"
+            className="auth-logo"
+          />
           </div>
 
           <form onSubmit={formik.handleSubmit}>

@@ -1,14 +1,50 @@
-import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { Search, Bell, Menu, X } from "lucide-react"; 
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown } from "lucide-react";
 import "./Header.css";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  
+  // Initialize navigation hook
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const toggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
+  };
+
+  // --- Navigation Handlers ---
+  const handleViewProfile = () => {
+    setIsProfileOpen(false); // Close menu
+    navigate("/user/profile"); // Navigate to profile page
+  };
+
+  const handleSignOut = () => {
+    setIsProfileOpen(false); // Close menu
+    // Add your actual sign-out logic here (clearing tokens, context, etc.)
+    console.log("User signed out"); 
+    navigate("/sign-in"); // Redirect to login
+  };
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -38,7 +74,7 @@ function Header() {
               { path: "/user/user-projects", label: "Projects" },
               { path: "/analytics", label: "Analytics" },
               { path: "/messages", label: "Message" },
-              { path: "/jobs", label: "Jobs" },
+              { path: "/user/user-jobs", label: "Jobs" },
             ].map((link) => (
               <NavLink
                 key={link.path}
@@ -72,17 +108,46 @@ function Header() {
             <span className="notification-badge"></span>
           </button>
 
-          {/* User Profile */}
-          <div className="header-profile">
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              alt="User Avatar"
-              className="profile-avatar"
-            />
-            <div className="profile-info">
-              <span className="profile-name">John Smith</span>
-              <span className="profile-role">HR Manager</span>
+          {/* User Profile Dropdown */}
+          <div className="header-profile-wrapper" ref={profileRef}>
+            <div 
+              className="header-profile" 
+              onClick={toggleProfile}
+              role="button"
+              tabIndex={0}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                alt="User Avatar"
+                className="profile-avatar"
+              />
+              <div className="profile-info">
+                <span className="profile-name">John Smith</span>
+                <span className="profile-role">HR Manager</span>
+              </div>
+              <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
             </div>
+
+            {/* Popover Menu */}
+            {isProfileOpen && (
+              <div className="profile-popover">
+                <div className="popover-header">
+                  <p className="popover-name">John Smith</p>
+                  <p className="popover-email">john.smith@benchsales.com</p>
+                </div>
+                <div className="popover-menu">
+                  <button className="popover-item" onClick={handleViewProfile}>
+                    <User size={16} />
+                    View Profile
+                  </button>
+                  <div className="popover-divider"></div>
+                  <button className="popover-item text-red" onClick={handleSignOut}>
+                    <LogOut size={16} />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>

@@ -14,8 +14,9 @@
 
 .auth-card {
   display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 900px;
+  max-width: 500px;
   min-height: 550px; /* Slightly more compact */
   border-radius: 1rem;
   
@@ -30,12 +31,13 @@
 
 /* --- Brand Panel (Left) --- */
 .auth-brand-side {
-  width: 50%;
-  padding: 3rem;
+  width: 100%;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: #0f172a; 
+  align-items: center;
 }
 
 @media (max-width: 768px) {
@@ -46,8 +48,13 @@
 .auth-brand-title {
   color: #ffffff;
   /* Font size inherits h1/h2 scale implicitly or set minimally here if needed */
-  font-size: 2.5rem; 
+  font-size: 18px; 
   font-weight: 700;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .auth-brand-highlight {
@@ -62,8 +69,8 @@
 
 /* --- Form Panel (Right) --- */
 .auth-form-side {
-  width: 50%;
-  padding: 3rem;
+  width: 100%;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -81,7 +88,7 @@
 
 .auth-title {
   /* Inherits body font, just adds weight/color */
-  color: #1e293b;
+  color: #ffffff;
   font-weight: 700;
   margin-bottom: 0.25rem;
   font-size: 1.75rem; /* Exception: Title needs to be bigger than body */
@@ -144,19 +151,28 @@
 
 /* --- Buttons --- */
 .auth-btn-primary {
+ flex: 1;
+  display: flex;
   width: 100%;
-  padding: 0.75rem;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 0.5rem;
+  background-color: #412EFA; 
+  color: #ffffff;
+  border: 1px solid #412EFA;
+  transition: all 0.2s ease;
 }
 
-.auth-btn-primary:hover { background-color: #2563eb; }
+.auth-btn-primary:hover { 
+  background-color: #311bfd; /* Slightly Darker Blue */
+  border-color: #311bfd;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
+ }
 
 /* --- Extras --- */
 .auth-divider {
@@ -230,9 +246,8 @@
 
 .auth-logo {
   display: block;
-  margin: 0 auto 1.5rem auto; /* Centers logo + bottom space */
+  margin: 0 auto; /* Centers logo + bottom space */
   height: clamp(40px, 10vw, 60px);
   width: auto; /* Maintains aspect ratio */
-  
   object-fit: contain;
 }

@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Header from "./Header/Header";
 import Projects from "./UserProjects/Projects";
 import Dashboard from "./Dashboard/Dashboard";
+import Jobs from "./UserJobs/UserJobs";
 
 
 
@@ -29,6 +30,7 @@ const routes = createBrowserRouter(
                 <Route path="User" element={<Header />}>
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
+                    <Route path="user-Jobs" element={<Jobs />} />
                 </Route>
             </Route>
 

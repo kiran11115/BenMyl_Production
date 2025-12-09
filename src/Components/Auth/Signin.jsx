@@ -26,10 +26,19 @@ function Signin() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-brand-side">
-          <h1 className="auth-brand-title">
-            Log in to power your <br />
-            <span className="auth-brand-highlight">bench intelligence</span>
-          </h1>
+          <div className="auth-brand-title">
+            <h2 className="auth-title">Welcome Back</h2>
+            <p className="auth-subtitle">
+              Don't have an account?{" "}
+              <button
+                onClick={() => navigate("/sign-up")}
+                className="auth-link"
+              >
+                Sign Up
+              </button>
+            </p>
+            
+          </div>
         </div>
 
         <div className="auth-form-side">
@@ -41,16 +50,7 @@ function Signin() {
           />
 
           <div className="auth-header">
-            <h2 className="auth-title">Welcome Back</h2>
-            <p className="auth-subtitle">
-              Don't have an account?{" "}
-              <button
-                onClick={() => navigate("/sign-up")}
-                className="auth-link"
-              >
-                Sign Up
-              </button>
-            </p>
+            
           </div>
 
           <form onSubmit={formik.handleSubmit}>
