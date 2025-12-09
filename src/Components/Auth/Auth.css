@@ -96,6 +96,7 @@
 
 .auth-subtitle {
   color: #64748b;
+  margin: 0;
   /* No font-size here - uses global body size (small & readable) */
 }
 
@@ -247,7 +248,7 @@
 .auth-logo {
   display: block;
   margin: 0 auto; /* Centers logo + bottom space */
-  height: clamp(40px, 10vw, 60px);
+  height: clamp(40px, 10vw, 65px);
   width: auto; /* Maintains aspect ratio */
   object-fit: contain;
 }

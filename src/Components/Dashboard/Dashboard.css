@@ -1,4 +1,6 @@
-
+/* =========================================
+   1. Global Layout & Typography
+   ========================================= */
 .projects-container {
   padding: 24px;
   color: #334155;
@@ -29,6 +31,32 @@
   margin-top: 0;
 }
 
+/* Button Styling (Preserved exactly as requested) */
+.btn-upload {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 165px;
+  background-color: #412EFA; 
+  color: #ffffff;
+  border: 1px solid #412EFA;
+  
+  transition: all 0.2s ease;
+}
+
+.btn-upload:hover {
+   background-color: #311bfd; /* Slightly Darker Blue */
+  border-color: #311bfd;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
+}
+
 @media (max-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
@@ -36,7 +64,7 @@
 }
 
 /* =========================================
-   2. KPI Stats Grid
+   2. KPI Stats Grid & Premium Bubbles
    ========================================= */
 .stats-grid {
   display: grid;
@@ -56,11 +84,23 @@
               0 2px 4px -1px rgba(0, 0, 0, 0.03);
   border: 1px solid #e2e8f0;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  /* Required for Bubbles */
+  position: relative;
+  overflow: hidden; 
+  z-index: 1;
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+}
+
+/* Content Layering */
+.stat-content,
+.stat-icon-box {
+  position: relative;
+  z-index: 2; /* Ensures text is crisp above the blur */
 }
 
 .stat-content {
@@ -110,85 +150,68 @@
 .box-amber { background-color: #fffbeb; color: #f59e0b; }
 .box-emerald { background-color: #ecfdf5; color: #10b981; }
 
-/* =========================================
-   3. Header & Filter Bar
-   ========================================= */
-.projects-header {
-  display: flex;
-  justify-content: space-between; /* Spreads Tabs and Sort button apart */
-  align-items: center;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 16px;
+/* --- Premium Floating Orbs/Bubbles --- */
+.bubbles-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%; 
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
-/* Tabs Container */
-.tabs-container {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  /* The "Premium" Factor: High blur + Low opacity = Ambient Glow */
+  filter: blur(24px); 
+  opacity: 0.12; 
+  background-color: currentColor; /* Inherits color from inline style */
+  animation: floatPremium 10s infinite ease-in-out;
 }
 
-/* --- Nav Tab Button Styling --- */
-.tab-btn {
-  background: transparent;
-  border: none;
-  /* Pill Shape: High border-radius ensures perfect rounded ends */
-  border-radius: 9999px; 
-  padding: 8px 16px;
-  
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b; /* Slate 500 */
-  
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+/* Large Main Glow */
+.bubble-1 {
+  width: 120px;
+  height: 120px;
+  top: -40px;
+  right: -30px;
+  animation-delay: 0s;
 }
 
-.tab-btn:hover {
-  background-color: #f1f5f9; /* Light gray on hover for inactive tabs */
-  color: #334155;
+/* Smaller Accent Glow */
+.bubble-2 {
+  width: 80px;
+  height: 80px;
+  bottom: -20px;
+  right: 20%;
+  opacity: 0.08;
+  animation-delay: -5s; /* Starts halfway through animation */
 }
 
-/* Active State (Matches Image: Dark Pill + Shadow) */
-.tab-btn.active {
-  background-color: #1e293b; /* Dark Slate */
-  color: #ffffff;
-  /* Specific shadow for the active button */
-  box-shadow: 0 4px 6px -1px rgba(30, 41, 59, 0.3), 
-              0 2px 4px -1px rgba(30, 41, 59, 0.15);
+/* Subtle Moving Detail */
+.bubble-3 {
+  width: 50px;
+  height: 50px;
+  top: 40%;
+  right: 10%;
+  opacity: 0.1;
+  animation-duration: 15s;
+  animation-delay: -2s;
 }
 
-/* --- Sort Dropdown Styling (Matches Image: White + Border) --- */
-.sort-dropdown {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  /* Rounded Rectangle, not Pill */
-  border-radius: 8px; 
-  padding: 8px 12px;
-  
-  font-size: 13px;
-  font-weight: 500;
-  color: #1e293b;
-  
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-  
-  /* Subtle shadow for depth */
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.sort-dropdown:hover {
-  border-color: #cbd5e1;
-  background-color: #f8fafc;
+/* Sophisticated Multi-Directional Float */
+@keyframes floatPremium {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -15px) scale(1.1); }
+  66% { transform: translate(-10px, 10px) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
 /* =========================================
-   4. Projects Grid & Cards
+   3. Projects Grid
    ========================================= */
 .projects-grid {
   display: grid;
@@ -319,9 +342,10 @@
 .status-progress { background-color: #eff6ff; color: #3b82f6; }
 .status-review { background-color: #fff7ed; color: #f97316; }
 .status-completed { background-color: #f0fdf4; color: #22c55e; }
+.status-pending { background-color: #f1f5f9; color: #64748b; }
 
 /* =========================================
-   5. Tables (Applications)
+   4. Tables (Applications)
    ========================================= */
 .custom-table {
   width: 100%;
@@ -354,7 +378,7 @@
 }
 
 /* =========================================
-   6. Charts & Legends
+   5. Charts & Legends
    ========================================= */
 .doughnut-center-text {
   position: absolute;

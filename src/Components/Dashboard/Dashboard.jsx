@@ -42,6 +42,7 @@ const kpiCards = [
     change: "+8%",
     icon: Briefcase,
     colorClass: "blue",
+    bubbleColor: "#3b82f6", 
   },
   {
     label: "Total Applications",
@@ -49,6 +50,7 @@ const kpiCards = [
     change: "+15%",
     icon: Users,
     colorClass: "indigo",
+    bubbleColor: "#6366f1",
   },
   {
     label: "Ongoing Contracts",
@@ -56,6 +58,7 @@ const kpiCards = [
     change: "+12%",
     icon: FileText,
     colorClass: "amber",
+    bubbleColor: "#f59e0b",
   },
   {
     label: "Total Spend",
@@ -63,6 +66,7 @@ const kpiCards = [
     change: "+18%",
     icon: DollarSign,
     colorClass: "emerald",
+    bubbleColor: "#10b981",
   },
 ];
 
@@ -86,7 +90,7 @@ const projects = [
     dueDate: "Jan 15, 2024",
   },
   {
-    title: "Cloud Infrastructure Migration",
+    title: "Cloud Infrastructure",
     company: "Nexus Systems",
     status: "Review",
     statusClass: "status-review",
@@ -141,8 +145,7 @@ const interviews = [
   },
 ];
 
-// --- Chart Config & Styling ---
-
+// --- Chart Config ---
 const tooltipTheme = {
   backgroundColor: "rgba(255, 255, 255, 0.95)",
   titleColor: "#1e293b",
@@ -155,7 +158,6 @@ const tooltipTheme = {
   boxPadding: 4,
 };
 
-// Pipeline Chart (Line)
 const pipelineLineData = {
   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   datasets: [
@@ -211,17 +213,15 @@ const pipelineLineOptions = {
   },
 };
 
-// Budget Chart (Doughnut) - DETAILED CONFIGURATION
-const totalBudget = 125000; // Matches "Total Spend" KPI
-
+const totalBudget = 125000;
 const budgetDoughnutData = {
   labels: ["Recruitment", "Training", "Benefits"],
   datasets: [
     {
-      data: [45, 30, 25], // Percentages
+      data: [45, 30, 25],
       backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
-      hoverBackgroundColor: ["#2563eb", "#059669", "#d97706"], // Darker on interaction
-      hoverOffset: 8, // More prominent pop-out effect
+      hoverBackgroundColor: ["#2563eb", "#059669", "#d97706"],
+      hoverOffset: 8,
       borderWidth: 2,
       borderColor: "#ffffff",
     },
@@ -236,7 +236,6 @@ const budgetDoughnutOptions = {
     tooltip: {
       ...tooltipTheme,
       callbacks: {
-        // Detailed Tooltip: Shows % AND calculated Dollar Amount
         label: function (context) {
           const percentage = context.raw;
           const value = (totalBudget * percentage) / 100;
@@ -257,10 +256,19 @@ const budgetDoughnutOptions = {
 const Dashboard = () => {
   return (
     <div className="projects-container">
-      {/* 1. KPI Stats Grid */}
+      {/* 1. KPI Stats Grid (Premium Bubbles) */}
       <div className="stats-grid">
         {kpiCards.map((item, index) => (
           <div key={index} className="stat-card">
+            
+            {/* --- Premium Bubbles Container --- */}
+            {/* We apply the color to the container so bubbles inherit it */}
+            <div className="bubbles-container" style={{ color: item.bubbleColor }}>
+              <div className="bubble bubble-1"></div>
+              <div className="bubble bubble-2"></div>
+              <div className="bubble bubble-3"></div>
+            </div>
+
             <div className="stat-content">
               <span className="stat-label">{item.label}</span>
               <div className="stat-value-row">
@@ -278,37 +286,50 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* 2. Quick Actions */}
-      <div
-        className="projects-header"
-        style={{ justifyContent: "flex-start", gap: "12px" }}
-      >
-        <button className="btn-upload" style={{ maxWidth: "160px" }}>
-          + Post New Job
-        </button>
-        <button
-          className="btn-upload"
-          style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
-        >
-          Find Vendors
-        </button>
-        <button
-          className="btn-upload"
-          style={{ flex: "0 0 auto", width: "auto", padding: "8px 16px" }}
-        >
-          Schedule Interviews
-        </button>
-      </div>
-
-      {/* 3. Main Dashboard Layout */}
+      {/* 2. Main Dashboard Layout */}
       <div className="dashboard-layout">
         {/* LEFT COLUMN */}
         <div className="dashboard-column-main">
-          {/* Ongoing Projects Section */}
-          <h3 className="section-title">Ongoing Projects</h3>
+          
+          {/* --- FLEX HEADER: Title Left, Buttons Right --- */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <h3 className="section-title" style={{ margin: 0 }}>
+              Ongoing Projects
+            </h3>
+            
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                className="btn-upload"
+                style={{ fontSize: "13px", padding: "8px 16px" }}
+              >
+                + Post New Job
+              </button>
+              <button
+                className="btn-upload"
+                style={{ fontSize: "13px", padding: "8px 16px" }}
+              >
+                Find Vendors
+              </button>
+              <button
+                className="btn-upload"
+                style={{ fontSize: "13px", padding: "8px 16px" }}
+              >
+                Schedule Interviews
+              </button>
+            </div>
+          </div>
+
           <div className="projects-grid">
             {projects.map((project, index) => (
               <div key={index} className="project-card">
+                
                 <div className="card-header">
                   <h3 className="card-title">{project.title}</h3>
                   <button className="card-options-btn">
@@ -425,12 +446,12 @@ const Dashboard = () => {
             <div className="card-header">
               <h3 className="card-title">Hiring Pipeline</h3>
             </div>
-            <div style={{ height: "180px", marginTop: "16px" }}>
+            <div style={{ height: "180px", marginTop: "16px", position: "relative", zIndex: 2 }}>
               <Line data={pipelineLineData} options={pipelineLineOptions} />
             </div>
           </div>
 
-          {/* Budget Chart - DETAILED */}
+          {/* Budget Chart */}
           <div className="project-card">
             <div className="card-header">
               <h3 className="card-title">Budget Allocation</h3>
@@ -440,13 +461,13 @@ const Dashboard = () => {
                 height: "160px",
                 marginTop: "16px",
                 position: "relative",
+                zIndex: 2,
               }}
             >
               <Doughnut
                 data={budgetDoughnutData}
                 options={budgetDoughnutOptions}
               />
-              {/* Center Text: Total Spend Context */}
               <div className="doughnut-center-text">
                 <div
                   style={{
@@ -478,8 +499,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Detailed Legend with Percentages */}
-            <div className="legend-row">
+            <div className="legend-row" style={{position: 'relative', zIndex: 2}}>
               <div className="legend-item">
                 <span className="dot" style={{ background: "#3b82f6" }}></span>
                 <span style={{ marginRight: "4px" }}>Recruit</span>
@@ -518,6 +538,8 @@ const Dashboard = () => {
                 flexDirection: "column",
                 gap: "16px",
                 marginTop: "16px",
+                position: "relative",
+                zIndex: 2,
               }}
             >
               {interviews.map((int, i) => (
