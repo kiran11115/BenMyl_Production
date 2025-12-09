@@ -1,4 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
+import { 
+  FiSearch, 
+  FiPlus, 
+  FiMoreVertical, 
+  FiSend, 
+  FiFileText, 
+  FiDownload, 
+  FiImage,
+  FiPaperclip // Added import
+} from "react-icons/fi";
 import "./Messages.css";
 
 const conversations = [
@@ -25,7 +35,6 @@ const conversations = [
   },
 ];
 
-// initial messages per conversation
 const initialMessagesByConversation = {
   1: [
     {
@@ -64,7 +73,7 @@ const initialMessagesByConversation = {
       id: 6,
       from: "me",
       time: "10:39 AM",
-      text: "I have 3 years of experience working with React, including Redux for state management and modern tools like Next.js. I've also worked extensively with TypeScript and various CSS frameworks.",
+      text: "I have 3 years of experience working with React, including Redux for state management and modern tools like Next.js.",
     },
   ],
   2: [
@@ -112,7 +121,6 @@ const Messages = () => {
 
   const currentMessages = messagesByConversation[selectedId] || [];
 
-  // scroll to bottom whenever messages or selected chat changes
   useEffect(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
@@ -156,14 +164,18 @@ const Messages = () => {
         <aside className="sidebar">
           <div className="sidebar-header">
             <span className="sidebar-title">Messages</span>
-            <button className="sidebar-add-btn">+</button>
+            <button className="sidebar-add-btn">
+              <FiPlus size={18} />
+            </button>
           </div>
 
           <div className="sidebar-search">
-            <input placeholder="Search messages" />
+            <div className="search-input-wrapper">
+              <FiSearch className="search-icon" size={16} />
+              <input placeholder="Search messages" />
+            </div>
           </div>
 
-          {/* only this list scrolls on left side */}
           <div className="sidebar-list">
             {conversations.map((c) => (
               <button
@@ -195,16 +207,16 @@ const Messages = () => {
 
         {/* RIGHT CHAT AREA */}
         <section className="chat">
-          {/* header */}
           <header className="chat-header">
             <div>
               <div className="chat-name">{currentConversation?.name}</div>
               <div className="chat-sub">{currentConversation?.role}</div>
             </div>
-            <button className="chat-menu-btn">⋮</button>
+            <button className="chat-menu-btn">
+              <FiMoreVertical size={20} />
+            </button>
           </header>
 
-          {/* messages – ONLY this scrolls */}
           <div className="chat-body" ref={chatBodyRef}>
             {currentMessages.map((msg) => {
               const isMe = msg.from === "me";
@@ -216,12 +228,16 @@ const Messages = () => {
                     className={"message-row " + (isMe ? "me" : "them")}
                   >
                     <div className="message-bubble file-bubble">
-                      <div className="file-icon">📄</div>
+                      <div className="file-icon-box">
+                        <FiFileText size={20} />
+                      </div>
                       <div className="file-info">
                         <span className="file-name">{msg.fileName}</span>
                         <span className="file-size">{msg.size}</span>
                       </div>
-                      <button className="file-download">⬇</button>
+                      <button className="file-download">
+                        <FiDownload size={16} />
+                      </button>
                     </div>
                     <span className="message-time">{msg.time}</span>
                   </div>
@@ -235,7 +251,9 @@ const Messages = () => {
                     className={"message-row " + (isMe ? "me" : "them")}
                   >
                     <div className="message-bubble image-bubble">
-                      <div className="image-placeholder" />
+                       <div className="image-placeholder">
+                         <FiImage size={32} className="image-icon-placeholder"/>
+                       </div>
                     </div>
                     <span className="message-time">{msg.time}</span>
                   </div>
@@ -256,7 +274,6 @@ const Messages = () => {
             })}
           </div>
 
-          {/* input bar at bottom */}
           <footer className="chat-input-bar">
             <form className="chat-input-wrapper" onSubmit={handleSend}>
               <input
@@ -265,8 +282,13 @@ const Messages = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
               />
+              {/* Attach Button */}
+              <button type="button" className="chat-attach-btn">
+                <FiPaperclip size={20} />
+              </button>
+              {/* Send Button */}
               <button type="submit" className="chat-send-btn">
-                ➤
+                <FiSend size={18} />
               </button>
             </form>
           </footer>
