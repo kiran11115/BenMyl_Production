@@ -13,6 +13,7 @@ import Header from "./Header/Header";
 import Projects from "./UserProjects/Projects";
 import Dashboard from "./Dashboard/Dashboard";
 import Jobs from "./UserJobs/UserJobs";
+import Messages from "./Messages/Messages";
 
 
 
@@ -31,6 +32,7 @@ const routes = createBrowserRouter(
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
                     <Route path="user-Jobs" element={<Jobs />} />
+                    <Route path="user-messages" element={<Messages />} />
                 </Route>
             </Route>
 
