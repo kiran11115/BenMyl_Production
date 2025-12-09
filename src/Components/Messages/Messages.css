@@ -450,7 +450,7 @@
 
 /* Send Button - Matches .btn-upload from Project CSS */
 .chat-send-btn {
-  background-color: #412EFA;
+  background-color: #6843C7;
   color: #ffffff;
   border: none;
   width: 40px;
@@ -465,7 +465,7 @@
 }
 
 .chat-send-btn:hover {
-  background-color: #311bfd;
+  background-color: #5735ac;
   transform: translateY(-1px);
 }
 

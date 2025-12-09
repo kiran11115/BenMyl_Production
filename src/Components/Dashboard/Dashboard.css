@@ -44,16 +44,16 @@
   font-weight: 500;
   cursor: pointer;
   width: 165px;
-  background-color: #412EFA; 
+  background-color: #6843C7; 
   color: #ffffff;
-  border: 1px solid #412EFA;
+  border: 1px solid #6843C7;
   
   transition: all 0.2s ease;
 }
 
 .btn-upload:hover {
-   background-color: #311bfd; /* Slightly Darker Blue */
-  border-color: #311bfd;
+   background-color: #5735ac; /* Slightly Darker Blue */
+  border-color: #5735ac;
   box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
 }
 
