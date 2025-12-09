@@ -363,7 +363,7 @@ const Dashboard = () => {
                     <Clock size={14} /> Due {project.dueDate}
                   </div>
                   <div className="detail-item">
-                    <DollarSign size={14} /> {project.budget}
+                    <DollarSign size={14} /> Budget: {project.budget}
                   </div>
                 </div>
 
