@@ -21,17 +21,11 @@ export default function FormWizard() {
 
   const [data, setData] = useState({
     userType: "employer",
-    accountType: "company",
+    accountType: "company", // "individual" | "company"
     basicInfo: {},
     documents: {},
-    profile: {
-      availability: [],
-      photoPreview: null,
-      resumeName: "",
-    },
+    profile: {},
   });
-
-  const [showPreview, setShowPreview] = useState(false);
 
   const goNext = () =>
     setActiveStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -42,93 +36,78 @@ export default function FormWizard() {
     setData((prev) => ({ ...prev, ...partial }));
 
   const handleFinalSubmit = () => {
-    // submit to API here
-    console.log("Final payload", data);
+    console.log("Onboarding payload", data);
   };
 
   return (
-    <>
-      <div className="auth-container">
-        <div className="auth-card wizard-auth-card">
-          <div className="auth-form-side wizard-form-side">
-            {/* Header */}
-            <header className="wizard-page-header">
-              <h1 className="wizard-page-title">
-                Create Account
-              </h1>
-            </header>
+    <div className="auth-container">
+      <div className="auth-card wizard-auth-card">
+        <div className="auth-form-side wizard-form-side">
+          {/* Header */}
+          <header className="wizard-page-header">
+            <h1 className="wizard-page-title">Create Account</h1>
+          </header>
 
-            {/* Stepper */}
-            <div className="wizard-header">
-              {STEPS.map((label, index) => {
-                const isActive = index === activeStep;
-                const isCompleted = index < activeStep;
-                return (
-                  <div
-                    key={label}
-                    className={`wizard-step ${
-                      isActive ? "wizard-step--active" : ""
-                    } ${
-                      isCompleted ? "wizard-step--completed" : ""
-                    }`}
-                  >
-                    <div className="wizard-step-pill">
-                      <span className="wizard-step-index">
-                        {index + 1}
-                      </span>
-                      <span className="wizard-step-title">
-                        {label}
-                      </span>
-                    </div>
+          {/* Purple pill stepper */}
+          <div className="wizard-header">
+            {STEPS.map((label, index) => {
+              const isActive = index === activeStep;
+              const isCompleted = index < activeStep;
+              return (
+                <div
+                  key={label}
+                  className={`wizard-step ${
+                    isActive ? "wizard-step--active" : ""
+                  } ${isCompleted ? "wizard-step--completed" : ""}`}
+                >
+                  <div className="wizard-step-pill">
+                    <span className="wizard-step-index">
+                      {index + 1}
+                    </span>
+                    <span className="wizard-step-title">
+                      {label}
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Steps */}
-            {activeStep === 0 && (
-              <StepChooseUserType
-                data={data}
-                patch={patch}
-                onNext={goNext}
-              />
-            )}
-            {activeStep === 1 && (
-              <StepBasicInfo
-                data={data}
-                patch={patch}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {activeStep === 2 && (
-              <StepDocuments
-                data={data}
-                patch={patch}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            )}
-            {activeStep === 3 && (
-              <StepProfileCompletion
-                data={data}
-                patch={patch}
-                onBack={goBack}
-                onSubmit={handleFinalSubmit}
-                onOpenPreview={() => setShowPreview(true)}
-              />
-            )}
+                </div>
+              );
+            })}
           </div>
+
+          {/* Steps */}
+          {activeStep === 0 && (
+            <StepChooseUserType
+              data={data}
+              patch={patch}
+              onNext={goNext}
+            />
+          )}
+          {activeStep === 1 && (
+            <StepBasicInfo
+              data={data}
+              patch={patch}
+              onNext={goNext}
+              onBack={goBack}
+            />
+          )}
+          {activeStep === 2 && (
+            <StepDocuments
+              data={data}
+              patch={patch}
+              onNext={goNext}
+              onBack={goBack}
+            />
+          )}
+          {activeStep === 3 && (
+            <StepProfileCompletion
+              data={data}
+              patch={patch}
+              onBack={goBack}
+              onSubmit={handleFinalSubmit}
+            />
+          )}
         </div>
       </div>
-
-      {showPreview && (
-        <PreviewModal
-          data={data}
-          onClose={() => setShowPreview(false)}
-        />
-      )}
-    </>
+    </div>
   );
 }
 
@@ -286,7 +265,7 @@ function StepChooseUserType({ data, patch, onNext }) {
 }
 
 /* ----------------------------------------------------
-   STEP 2 – Basic Information
+   STEP 2 – Basic Information (individual vs company)
 -----------------------------------------------------*/
 
 function StepBasicInfo({ data, patch, onNext, onBack }) {
@@ -309,6 +288,7 @@ function StepBasicInfo({ data, patch, onNext, onBack }) {
         Tell us how to contact you and where you&apos;re based.
       </p>
 
+      {/* account type toggle */}
       <div className="wizard-user-types wizard-user-types--two">
         <button
           type="button"
@@ -334,6 +314,7 @@ function StepBasicInfo({ data, patch, onNext, onBack }) {
         </button>
       </div>
 
+      {/* same fields for both types for now */}
       <div className="wizard-form-grid">
         <div className="auth-form-group">
           <label className="auth-label">Full Name</label>
@@ -459,7 +440,7 @@ function StepBasicInfo({ data, patch, onNext, onBack }) {
 }
 
 /* ----------------------------------------------------
-   STEP 3 – Document Upload
+   STEP 3 – Document Upload (changes by accountType)
 -----------------------------------------------------*/
 
 function StepDocuments({ data, patch, onNext, onBack }) {
@@ -477,6 +458,7 @@ function StepDocuments({ data, patch, onNext, onBack }) {
     onNext();
   };
 
+  // Labels based on selection
   const firstLabel = isIndividual ? "Government ID" : "CIN No";
   const firstDesc = isIndividual
     ? "Upload a valid government‑issued ID (Passport, Driver’s License)."
@@ -498,6 +480,7 @@ function StepDocuments({ data, patch, onNext, onBack }) {
       </p>
 
       <div className="wizard-upload-grid">
+        {/* First card */}
         <div className="wizard-upload-card">
           <div className="wizard-upload-icon">@</div>
           <h3 className="wizard-upload-title">{firstLabel}</h3>
@@ -523,6 +506,7 @@ function StepDocuments({ data, patch, onNext, onBack }) {
           </button>
         </div>
 
+        {/* Second card */}
         <div className="wizard-upload-card">
           <div className="wizard-upload-icon">📄</div>
           <h3 className="wizard-upload-title">{secondLabel}</h3>
@@ -576,7 +560,7 @@ function StepDocuments({ data, patch, onNext, onBack }) {
 }
 
 /* ----------------------------------------------------
-   STEP 4 – Profile Completion (upload + preview)
+   STEP 4 – Profile Completion (candidate-style)
 -----------------------------------------------------*/
 
 function StepProfileCompletion({
@@ -584,53 +568,13 @@ function StepProfileCompletion({
   patch,
   onBack,
   onSubmit,
-  onOpenPreview,
 }) {
-  const profile = data.profile || { availability: [] };
-  const availability = profile.availability || [];
-
-  const photoInputRef = useRef(null);
-  const resumeInputRef = useRef(null);
+  const profile = data.profile || {};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     patch({ profile: { ...profile, [name]: value } });
   };
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      patch({
-        profile: {
-          ...profile,
-          photoPreview: ev.target?.result || null,
-        },
-      });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleResumeChange = (e) => {
-    const file = e.target.files?.[0];
-    patch({
-      profile: {
-        ...profile,
-        resumeName: file ? file.name : "",
-      },
-    });
-  };
-
-  const toggleAvailability = (key) => {
-    const exists = availability.includes(key);
-    const next = exists
-      ? availability.filter((v) => v !== key)
-      : [...availability, key];
-    patch({ profile: { ...profile, availability: next } });
-  };
-
-  const isSelected = (key) => availability.includes(key);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -645,27 +589,11 @@ function StepProfileCompletion({
       <section className="wizard-section">
         <h3 className="wizard-section-title">Profile Photo</h3>
         <div className="wizard-profile-photo-row">
-          <div className="wizard-profile-photo-circle">
-            {profile.photoPreview && (
-              <img
-                src={profile.photoPreview}
-                alt="Profile"
-                className="wizard-profile-photo-img"
-              />
-            )}
-          </div>
+          <div className="wizard-profile-photo-circle" />
           <div className="wizard-profile-photo-content">
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handlePhotoChange}
-            />
             <button
               type="button"
               className="auth-btn-primary wizard-profile-photo-btn"
-              onClick={() => photoInputRef.current?.click()}
             >
               Upload Photo
             </button>
@@ -690,21 +618,11 @@ function StepProfileCompletion({
           <p className="wizard-upload-meta">
             Supported formats: PDF, JPG, PNG (max 5MB)
           </p>
-
-          <input
-            ref={resumeInputRef}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            style={{ display: "none" }}
-            onChange={handleResumeChange}
-          />
-
           <button
             type="button"
             className="auth-btn-secondary wizard-upload-btn"
-            onClick={() => resumeInputRef.current?.click()}
           >
-            {profile.resumeName || "Choose File"}
+            Choose File
           </button>
         </div>
       </section>
@@ -770,16 +688,13 @@ function StepProfileCompletion({
           </div>
           <div className="auth-form-group wizard-form-grid--full">
             <label className="auth-label">Location</label>
-            <div className="wizard-input-with-icon">
-              <FaMapMarkerAlt className="wizard-input-icon" />
-              <input
-                name="location"
-                className="auth-input"
-                placeholder="San Francisco, CA"
-                value={profile.location || ""}
-                onChange={handleChange}
-              />
-            </div>
+            <input
+              name="location"
+              className="auth-input"
+              placeholder="San Francisco, CA"
+              value={profile.location || ""}
+              onChange={handleChange}
+            />
           </div>
         </div>
       </section>
@@ -914,10 +829,16 @@ function StepProfileCompletion({
           <div className="wizard-portfolio-card" />
         </div>
         <div className="wizard-portfolio-actions">
-          <button type="button" className="auth-link">
+          <button
+            type="button"
+            className="auth-link"
+          >
             Upload Work
           </button>
-          <button type="button" className="auth-link">
+          <button
+            type="button"
+            className="auth-link"
+          >
             Add Link
           </button>
         </div>
@@ -927,28 +848,22 @@ function StepProfileCompletion({
       <section className="wizard-section">
         <h3 className="wizard-section-title">Availability</h3>
         <div className="wizard-availability-list">
-          <AvailabilityOption
-            label="Full-time"
-            value="full_time"
-            selected={isSelected("full_time")}
-            onToggle={toggleAvailability}
-          />
-          <AvailabilityOption
-            label="Part-time"
-            value="part_time"
-            selected={isSelected("part_time")}
-            onToggle={toggleAvailability}
-          />
-          <AvailabilityOption
-            label="Weekends"
-            value="weekends"
-            selected={isSelected("weekends")}
-            onToggle={toggleAvailability}
-          />
+          <div className="wizard-availability-row">
+            <span>Full-time</span>
+            <span className="wizard-toggle-placeholder" />
+          </div>
+          <div className="wizard-availability-row">
+            <span>Part-time</span>
+            <span className="wizard-toggle-placeholder" />
+          </div>
+          <div className="wizard-availability-row">
+            <span>Weekends</span>
+            <span className="wizard-toggle-placeholder" />
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer buttons */}
       <div className="wizard-footer">
         <button
           type="button"
@@ -961,15 +876,14 @@ function StepProfileCompletion({
           <button
             type="button"
             className="auth-btn-secondary"
-            onClick={onOpenPreview}
           >
-            Preview
+            Save as Draft
           </button>
           <button
             type="button"
             className="auth-btn-secondary"
           >
-            Save as Draft
+            Preview
           </button>
           <button type="submit" className="auth-btn-primary">
             Save
@@ -977,172 +891,5 @@ function StepProfileCompletion({
         </div>
       </div>
     </form>
-  );
-}
-
-/* availability pill */
-
-function AvailabilityOption({ label, value, selected, onToggle }) {
-  return (
-    <button
-      type="button"
-      className={`wizard-availability-row ${
-        selected ? "wizard-availability-row--active" : ""
-      }`}
-      onClick={() => onToggle(value)}
-    >
-      <span>{label}</span>
-      <span className="wizard-toggle-placeholder" />
-    </button>
-  );
-}
-
-/* ----------------------------------------------------
-   Preview Modal
------------------------------------------------------*/
-
-function PreviewModal({ data, onClose }) {
-  const { basicInfo, profile, documents } = data;
-  const availLabels = {
-    full_time: "Full-time",
-    part_time: "Part-time",
-    weekends: "Weekends",
-  };
-
-  return (
-    <div className="wizard-modal-backdrop">
-      <div className="wizard-modal">
-        <div className="wizard-modal-header">
-          <h2 className="wizard-modal-title">Preview Profile</h2>
-          <button
-            type="button"
-            className="wizard-modal-close"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="wizard-modal-body">
-          {/* Left: summary card */}
-          <section className="wizard-preview-left">
-            <div className="wizard-preview-photo">
-              <div className="wizard-preview-photo-circle">
-                {profile.photoPreview && (
-                  <img
-                    src={profile.photoPreview}
-                    alt="Profile"
-                  />
-                )}
-              </div>
-              <div className="wizard-preview-name">
-                {profile.firstName || "First"}{" "}
-                {profile.lastName || "Last"}
-              </div>
-              <div className="wizard-preview-title">
-                {profile.title || "Title"}
-              </div>
-              <div className="wizard-preview-location">
-                {profile.location || "Location"}
-              </div>
-            </div>
-
-            <div className="wizard-preview-meta">
-              <div className="wizard-preview-meta-label">
-                Availability
-              </div>
-              <div className="wizard-preview-chips">
-                {(profile.availability || []).length === 0
-                  ? "Not set"
-                  : profile.availability.map((a) => (
-                      <span
-                        key={a}
-                        className="wizard-preview-chip"
-                      >
-                        {availLabels[a] || a}
-                      </span>
-                    ))}
-              </div>
-            </div>
-
-            <div className="wizard-preview-meta">
-              <div className="wizard-preview-meta-label">
-                Resume
-              </div>
-              <div className="wizard-preview-text">
-                {profile.resumeName || "Not uploaded"}
-              </div>
-            </div>
-          </section>
-
-          {/* Right: details */}
-          <section className="wizard-preview-right">
-            <div className="wizard-preview-section">
-              <h3>Contact</h3>
-              <p>
-                {basicInfo.fullName || "Full Name"} ·{" "}
-                {profile.email || basicInfo.email || "Email"} ·{" "}
-                {profile.phone || basicInfo.phone || "Phone"}
-              </p>
-            </div>
-
-            <div className="wizard-preview-section">
-              <h3>About Me</h3>
-              <p>
-                {profile.aboutMe ||
-                  "You have not added an About Me yet."}
-              </p>
-            </div>
-
-            <div className="wizard-preview-section">
-              <h3>Skills</h3>
-              <p>
-                {profile.skills ||
-                  "No skills added yet. Add them to stand out."}
-              </p>
-            </div>
-
-            <div className="wizard-preview-section">
-              <h3>Work Experience</h3>
-              <p>
-                <strong>
-                  {profile.expCompany || "Company name"}
-                </strong>{" "}
-                – {profile.expPosition || "Position"}
-              </p>
-              <p>
-                {profile.expDescription ||
-                  "Describe your role and achievements to give clients context."}
-              </p>
-            </div>
-
-            <div className="wizard-preview-section">
-              <h3>Education</h3>
-              <p>
-                <strong>
-                  {profile.eduInstitution || "Institution"}
-                </strong>{" "}
-                · {profile.eduDegree || "Degree"} ·{" "}
-                {profile.eduField || "Field"} ·{" "}
-                {profile.eduYear || "Year"}
-              </p>
-            </div>
-          </section>
-        </div>
-
-        <div className="wizard-modal-footer">
-          <button
-            type="button"
-            className="auth-btn-secondary"
-            onClick={onClose}
-          >
-            Back to Edit
-          </button>
-          <button type="button" className="auth-btn-primary">
-            Submit Profile
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }
