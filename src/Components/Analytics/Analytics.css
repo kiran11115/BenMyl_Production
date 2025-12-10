@@ -1,0 +1,231 @@
+
+/* Analytics */
+
+.analytics{
+    padding: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.chart-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
+  margin-top: 14px;
+}
+
+.card h4 {
+  font-size: 13px;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* Stat Card */
+
+.stat-card {
+  position: relative;
+  padding: 18px;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-icon {
+  width: 34px;
+  height: 34px;
+  background: #eff6ff; /* soft blue */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+}
+
+.stat-body {
+  margin-top: 10px;
+}
+
+.stat-title {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2px;
+}
+
+.green {
+  font-size: 11px;
+  font-weight: 500;
+  color: #22c55e;
+}
+
+/* Progress circle (Pipeline Progress card only) */
+
+.progress-circle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 4px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+
+/* Department Table */
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.metrics-table th {
+  text-align: left;
+  color: #6b7280;
+  font-weight: 500;
+  padding-bottom: 10px;
+}
+
+.metrics-table td {
+  padding: 10px 0;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chart-box {
+  height: 350px;     /* SAME HEIGHT */
+  position: relative;
+}
+
+
+/* ---------- Department table ---------- */
+
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.metrics-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  color: #6b7280;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.metrics-table tbody td {
+  padding: 10px 12px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.metrics-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-footer {
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+}
+
+.page-btn {
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 4px 10px;
+  margin-left: 6px;
+  font-size: 11px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.page-btn.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-card {
+    padding: 14px 12px;
+  }
+
+  .table-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+
+
+
+

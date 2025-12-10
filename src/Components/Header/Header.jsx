@@ -70,9 +70,9 @@ function Header() {
           <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
             {[
               { path: "/user/user-dashboard", label: "Dashboard" },
-              { path: "/talent-pool", label: "Talent Pool" },
+              { path: "/user/user-talentpool", label: "Talent Pool" },
               { path: "/user/user-projects", label: "Projects" },
-              { path: "/analytics", label: "Analytics" },
+              { path: "/user/user-analytics", label: "Analytics" },
               { path: "/user/user-messages", label: "Message" },
               { path: "/user/user-jobs", label: "Jobs" },
             ].map((link) => (

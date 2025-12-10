@@ -72,6 +72,13 @@ const INITIAL_DATA = [
   },
 ];
 
+// timeline data just for the colored bars
+const TIMELINE_DATA = [
+  { id: 1, name: "Website Redesign", colorClass: "timeline-bar-green", width: "100%" },
+  { id: 2, name: "Mobile App Development", colorClass: "timeline-bar-amber", width: "80%" },
+  { id: 3, name: "Marketing Campaign", colorClass: "timeline-bar-red", width: "60%" },
+];
+
 // Helper to format currency
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-US", {
@@ -90,10 +97,9 @@ const getStatusClass = (status) => {
 
 export default function Projects() {
   const [projects, setProjects] = useState(INITIAL_DATA);
-  const [activeTab, setActiveTab] = useState("All");
-  const [sortNewest, setSortNewest] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("All Projects");
 
-  // --- 1. Dynamic Stats Calculation (Memoized) ---
+  // --- 1. Dynamic Stats Calculation (same as before) ---
   const stats = useMemo(() => {
     const completedProjects = projects.filter((p) => p.status === "Completed");
     const activeProjects = projects.filter((p) => p.status === "In Progress");
@@ -142,39 +148,20 @@ export default function Projects() {
     ];
   }, [projects]);
 
-  // --- 2. Filter & Sort Logic ---
+  // --- filter for dropdown (top-right in Ongoing Projects like design) ---
   const filteredProjects = useMemo(() => {
-    let filtered = projects;
-
-    if (activeTab === "Active")
-      filtered = projects.filter((p) => p.status === "In Progress");
-    if (activeTab === "Review")
-      filtered = projects.filter((p) => p.status === "Awaiting Review");
-    if (activeTab === "Completed")
-      filtered = projects.filter((p) => p.status === "Completed");
-
-    return filtered.sort((a, b) => {
-      const dateA = new Date(a.dueDate);
-      const dateB = new Date(b.dueDate);
-      return sortNewest ? dateB - dateA : dateA - dateB;
-    });
-  }, [projects, activeTab, sortNewest]);
-
-  // --- 3. Dynamic Tab Counts ---
-  const getTabCount = (tabName) => {
-    if (tabName === "All") return projects.length;
-    if (tabName === "Active")
-      return projects.filter((p) => p.status === "In Progress").length;
-    if (tabName === "Review")
-      return projects.filter((p) => p.status === "Awaiting Review").length;
-    if (tabName === "Completed")
-      return projects.filter((p) => p.status === "Completed").length;
-    return 0;
-  };
+    if (activeFilter === "All Projects") return projects;
+    if (activeFilter === "In Progress")
+      return projects.filter((p) => p.status === "In Progress");
+    if (activeFilter === "Awaiting Review")
+      return projects.filter((p) => p.status === "Awaiting Review");
+    if (activeFilter === "Completed")
+      return projects.filter((p) => p.status === "Completed");
+    return projects;
+  }, [projects, activeFilter]);
 
   // --- 4. Event Handlers ---
   const handleUpload = (id) => {
-    // Simulates uploading work -> Moves to Review
     setProjects((prev) =>
       prev.map((p) =>
         p.id === id ? { ...p, status: "Awaiting Review", progress: 95 } : p
@@ -183,7 +170,6 @@ export default function Projects() {
   };
 
   const handleReview = (id) => {
-    // Simulates approving work -> Moves to Completed
     setProjects((prev) =>
       prev.map((p) =>
         p.id === id ? { ...p, status: "Completed", progress: 100 } : p
@@ -192,177 +178,206 @@ export default function Projects() {
   };
 
   return (
-    <div className="projects-container">
-      {/* 1. Stats Row */}
-      <div className="stats-grid">
-        {stats.map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-content">
-              <span className="stat-label">{stat.label}</span>
-              <div className="stat-value-row">
-                <span className="stat-value">{stat.value}</span>
+    <div className="projects-page-wrapper">
+      <div className="projects-container">
+        {/* 1. Stats Row (top cards) */}
+        <div className="stats-grid">
+          {stats.map((stat, index) => (
+            <div key={index} className="stat-card">
+              <div className="stat-content">
+                <span className="stat-label">{stat.label}</span>
+                <div className="stat-value-row">
+                  <span className="stat-value">{stat.value}</span>
+                </div>
+                <div
+                  className={`stat-trend ${
+                    stat.isPositive ? "trend-up" : "trend-down"
+                  }`}
+                >
+                  {stat.isPositive ? (
+                    <TrendingUp size={14} />
+                  ) : (
+                    <TrendingDown size={14} />
+                  )}
+                  <span>{stat.trend}</span>
+                </div>
               </div>
-              <div
-                className={`stat-trend ${
-                  stat.isPositive ? "trend-up" : "trend-down"
-                }`}
-              >
-                {stat.isPositive ? (
-                  <TrendingUp size={14} />
-                ) : (
-                  <TrendingDown size={14} />
-                )}
-                <span>{stat.trend}</span>
+              <div className={`stat-icon-box box-${stat.colorClass}`}>
+                <stat.icon size={24} />
               </div>
             </div>
-            <div className={`stat-icon-box box-${stat.colorClass}`}>
-              <stat.icon size={24} />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* 2. Header & Tabs */}
-      <div className="projects-header">
-        <div className="tabs-container">
-          {["All", "Active", "Review", "Completed"].map((tab) => (
-            <button
-              key={tab}
-              className={`tab-btn ${activeTab === tab ? "active" : ""}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab} ({getTabCount(tab)})
-            </button>
           ))}
         </div>
 
-        <button
-          className="sort-dropdown"
-          onClick={() => setSortNewest(!sortNewest)}
-        >
-          Sort by:{" "}
-          <span style={{ color: "#1e293b", fontWeight: 500 }}>
-            {sortNewest ? "Newest" : "Oldest"}
-          </span>{" "}
-          ▾
-        </button>
-      </div>
+        {/* 2. Projects Timeline section */}
+        <div className="timeline-card">
+          <div className="timeline-header">
+            <h2 className="section-title">Projects Timeline</h2>
+          </div>
 
-      {/* 3. Projects Grid */}
-      <div className="projects-grid">
-        {filteredProjects.map((project) => (
-          <div key={project.id} className="project-card">
-            {/* Header */}
-            <div className="card-header">
-              <h3 className="card-title">{project.title}</h3>
-              <button className="card-options-btn">
-                <MoreVertical size={16} />
-              </button>
+          <div className="timeline-body">
+            {/* Today vertical line */}
+            {/* <div className="timeline-today-line">
+              <span className="timeline-today-label">Today</span>
+            </div> */}
+
+            <div className="timeline-rows">
+              {TIMELINE_DATA.map((item) => (
+                <div key={item.id} className="timeline-row">
+                  <div className="timeline-label">{item.name}</div>
+                  <div className="timeline-bar-track">
+                    <div
+                      className={`timeline-bar ${item.colorClass}`}
+                      style={{ width: item.width }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+        </div>
 
-            {/* Author */}
-            <div className="card-author">
-              <img
-                src={project.avatar}
-                alt={project.author}
-                className="author-avatar"
+        {/* 3. Ongoing Projects header + controls */}
+        <div className="ongoing-header">
+          <div>
+            <h2 className="section-title">Ongoing Projects</h2>
+            <p className="section-subtitle">
+              Keep track of all active client projects and review their progress.
+            </p>
+          </div>
+
+          <div className="ongoing-controls">
+            <select
+              className="projects-filter-select"
+              value={activeFilter}
+              onChange={(e) => setActiveFilter(e.target.value)}
+            >
+              <option>All Projects</option>
+              <option>In Progress</option>
+              <option>Awaiting Review</option>
+              <option>Completed</option>
+            </select>
+
+            <button className="add-project-btn">+ Add Project</button>
+          </div>
+        </div>
+
+        {/* 4. Projects Grid (cards) */}
+        <div className="projects-grid">
+          {filteredProjects.map((project) => (
+            <div key={project.id} className="project-card">
+              {/* Header */}
+              <div className="card-header">
+                <h3 className="card-title">{project.title}</h3>
+                <button className="card-options-btn">
+                  <MoreVertical size={16} />
+                </button>
+              </div>
+
+              {/* Author */}
+              <div className="card-author">
+                <img
+                  src={project.avatar}
+                  alt={project.author}
+                  className="author-avatar"
+                />
+                <span className="author-name">{project.author}</span>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="progress-section">
+                <div className="progress-labels">
+                  <span>Progress</span>
+                  <span className="progress-text">{project.progress}%</span>
+                </div>
+                <div className="progress-bg">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${project.progress}%`,
+                      backgroundColor:
+                        project.status === "Completed" ? "#10B981" : "#3b82f6",
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="card-details">
+                <div className="detail-item">
+                  <Clock size={14} /> Due {project.dueDate}
+                </div>
+                <div className="detail-item">
+                  <DollarSign size={14} /> Budget: ${project.budget}
+                </div>
+              </div>
+
+              {/* Status Tag */}
+              <div>
+                <span className={`status-tag ${getStatusClass(project.status)}`}>
+                  {project.status}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="card-actions">
+                {project.status === "In Progress" && (
+                  <button
+                    className="btn-upload"
+                    onClick={() => handleUpload(project.id)}
+                  >
+                    <UploadCloud size={14} /> Upload Work
+                  </button>
+                )}
+
+                {project.status === "Awaiting Review" && (
+                  <button
+                    className="btn-review"
+                    onClick={() => handleReview(project.id)}
+                    style={{
+                      backgroundColor: "#10B981",
+                      color: "white",
+                      borderColor: "#10B981",
+                    }}
+                  >
+                    <CheckCircle size={14} /> Mark Done
+                  </button>
+                )}
+
+                {project.status === "Completed" && (
+                  <button
+                    className="btn-review"
+                    disabled
+                    style={{ opacity: 0.6 }}
+                  >
+                    <CheckCircle size={14} /> Completed
+                  </button>
+                )}
+
+                <button className="btn-chat">
+                  <MessageSquare size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {filteredProjects.length === 0 && (
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                padding: "40px",
+                color: "#64748b",
+              }}
+            >
+              <AlertCircle
+                size={48}
+                style={{ margin: "0 auto 16px", opacity: 0.5 }}
               />
-              <span className="author-name">{project.author}</span>
+              <p>No projects found in this category.</p>
             </div>
-
-            {/* Progress Bar */}
-            <div className="progress-section">
-              <div className="progress-labels">
-                <span>Progress</span>
-                <span className="progress-text">{project.progress}%</span>
-              </div>
-              <div className="progress-bg">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${project.progress}%`,
-                    backgroundColor:
-                      project.status === "Completed" ? "#10B981" : "#3b82f6",
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="card-details">
-              <div className="detail-item">
-                <Clock size={14} /> Due {project.dueDate}
-              </div>
-              <div className="detail-item">
-                <DollarSign size={14} /> Budget: ${project.budget}
-              </div>
-            </div>
-
-            {/* Status Tag */}
-            <div>
-              <span className={`status-tag ${getStatusClass(project.status)}`}>
-                {project.status}
-              </span>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="card-actions">
-              {project.status === "In Progress" && (
-                <button
-                  className="btn-upload"
-                  onClick={() => handleUpload(project.id)}
-                >
-                  <UploadCloud size={14} /> Upload Work
-                </button>
-              )}
-
-              {project.status === "Awaiting Review" && (
-                <button
-                  className="btn-review"
-                  onClick={() => handleReview(project.id)}
-                  style={{
-                    backgroundColor: "#10B981",
-                    color: "white",
-                    borderColor: "#10B981",
-                  }}
-                >
-                  <CheckCircle size={14} /> Mark Done
-                </button>
-              )}
-
-              {project.status === "Completed" && (
-                <button
-                  className="btn-review"
-                  disabled
-                  style={{ opacity: 0.6 }}
-                >
-                  <CheckCircle size={14} /> Completed
-                </button>
-              )}
-
-              <button className="btn-chat">
-                <MessageSquare size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
-
-        {filteredProjects.length === 0 && (
-          <div
-            style={{
-              gridColumn: "1 / -1",
-              textAlign: "center",
-              padding: "40px",
-              color: "#64748b",
-            }}
-          >
-            <AlertCircle
-              size={48}
-              style={{ margin: "0 auto 16px", opacity: 0.5 }}
-            />
-            <p>No projects found in this category.</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
