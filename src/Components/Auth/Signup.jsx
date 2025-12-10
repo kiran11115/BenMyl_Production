@@ -16,7 +16,7 @@ function SignUp() {
       email: Yup.string().email("Invalid email").required("Required"),
       password: Yup.string().min(8, "Min 8 chars").required("Required"),
     }),
-    onSubmit: (values) => navigate("/otp-verify"),
+    onSubmit: (values) => navigate("/OTP-Verification"),
   });
 
   return (
@@ -93,7 +93,7 @@ function SignUp() {
               )}
             </div>
 
-            <button  onClick={() => navigate("/OTP-Verifications")} type="submit" className="auth-btn-primary">
+            <button  onClick={() => navigate("/OTP-Verification")} type="submit" className="auth-btn-primary">
               Create Account
             </button>
           </form>
