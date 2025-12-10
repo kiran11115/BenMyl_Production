@@ -93,7 +93,7 @@ function SignUp() {
               )}
             </div>
 
-            <button type="submit" className="auth-btn-primary">
+            <button  onClick={() => navigate("/OTP-Verifications")} type="submit" className="auth-btn-primary">
               Create Account
             </button>
           </form>

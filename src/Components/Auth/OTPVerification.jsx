@@ -60,7 +60,7 @@ function OTP() {
           </div>
 
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/User-details")}
             className="auth-btn-primary"
           >
             Verify Code

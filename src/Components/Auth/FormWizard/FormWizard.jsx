@@ -1,580 +1,1148 @@
-// FormWizard.jsx
-import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Check, Plus, X, Send, Upload } from "lucide-react";
-import { useCompanyDetailsMutation } from "../../../State-Management/Api/CompanyApiSlice"; 
-import StepCompanyInfo from "../FormWizard/StepCompanyInfo";
-import StepPlanBilling from "../FormWizard/StepPlanBilling";
-import StepFinalSummary from "../FormWizard/StepFinalSummary";
+import React, { useState, useRef } from "react";
+import {
+  FaBuilding,
+  FaBriefcase,
+  FaUserTie,
+  FaGlobe,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+import "../Auth.css";
+import "./FormWizard.css";
 
-function FormWizard() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isZipLoading, setIsZipLoading] = useState(false);
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [logoFileName, setLogoFileName] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState(null);
+const STEPS = [
+  "Choose User Type",
+  "Basic Information",
+  "Document Upload",
+  "Profile Completion",
+];
 
-  // RTK Query mutation hook
-  const [companyDetailsMutation, { isLoading: isApiLoading, error: apiError }] = useCompanyDetailsMutation();
+export default function FormWizard() {
+  const [activeStep, setActiveStep] = useState(0);
 
-  const navigate = useNavigate();
-  const locationRouter = useLocation();
-  const signupEmail = locationRouter.state?.email;
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const steps = [
-    {
-      number: 1,
-      title: "Company Info",
-      subtitle: "Basic details & verification",
-    },
-    {
-      number: 2,
-      title: "Plan & Billing",
-      subtitle: "Choose plan, billing & invites",
-    },
-    {
-      number: 3,
-      title: "Final Summary",
-      subtitle: "Review and complete",
-    },
-  ];
-
-  const [formData, setFormData] = useState({
-    CompanyName: "",
-    filepath: null,
-    CompanyDescription: "",
-    Industry: "",
-    TotalEmployees: "",
-    Country: "",
-    Integration: "",
-    ZipCode: "",
-    City: "",
-    State: "",
-    Region: "",
-    hasBranches: "No",
-    Numberoflocations: "",
-    Totalemployeesinalllocations: "",
-    branchLocations: [],
-    verificationType: "",
-    verificationId: "",
-    Website: "",
-    Organization: "",
-    ContactPhone: "",
-    ContactEmail: "",
-    Address1: "",
-    Address2: "",
-    plan: "",
-    users: [{ role: "Admin", email: "" }],
-    CardNumber: "",
-    CardHolderName: "",
-    ExpiryDate: "",
-    CVV: "",
-  });
-
-  const fetchCityStateFromZip = async (ZipCode, formik) => {
-    if (ZipCode.length !== 5 && ZipCode.length !== 6) return;
-    setIsZipLoading(true);
-    try {
-      const response = await fetch(`https://api.zippopotam.us/us/${ZipCode}`);
-      if (!response.ok) {
-        formik.setFieldError("ZipCode", "Invalid ZIP code");
-        return;
-      }
-      const data = await response.json();
-      const place = data.places?.[0];
-      if (!place) {
-        formik.setFieldError("ZipCode", "Invalid ZIP code");
-        return;
-      }
-      formik.setFieldValue("City", place["place name"] || "");
-      formik.setFieldValue("State", place["state abbreviation"] || "");
-      formik.setFieldValue("Region", place["state"] || "");
-    } catch (error) {
-      formik.setFieldError("ZipCode", "Could not validate ZIP code");
-    } finally {
-      setIsZipLoading(false);
-    }
-  };
-
-  const sendInvite = (user, values) => {
-    if (user.email && user.role) {
-      console.log(`Sending invite to ${user.email} as ${user.role}`);
-      alert(`Invitation sent to ${user.email} as ${user.role}!`);
-    } else {
-      alert("Please fill in both role and email before sending invite.");
-    }
-  };
-
-  const sendAllInvites = (values) => {
-    const validUsers = values.users.filter((u) => u.email && u.role);
-    if (validUsers.length === 0) {
-      alert(
-        "No valid users to invite. Please add at least one user with email and role."
-      );
-      return;
-    }
-    console.log("Sending all invites", validUsers);
-    alert(`Invitations sent to ${validUsers.length} users!`);
-  };
-
-  const validationSchemas = [
-    Yup.object({
-      CompanyName: Yup.string().required("Company name is required"),
-      CompanyDescription: Yup.string().required(
-        "Company description is required"
-      ),
-      Industry: Yup.string().required("Industry is required"),
-      TotalEmployees: Yup.string().required("Total employees is required"),
-      Country: Yup.string().required("Country is required"),
-      Integration: Yup.string(),
-      ZipCode: Yup.string()
-        .required("ZIP code is required")
-        .matches(/^\d{6}$/, "ZIP code must be 6 digits"),
-      City: Yup.string().required("City is required"),
-      State: Yup.string().required("State is required"),
-      Region: Yup.string(),
-      hasBranches: Yup.string()
-        .oneOf(["Yes", "No"])
-        .required("Please select an option"),
-      Numberoflocations: Yup.string().when("hasBranches", {
-        is: "Yes",
-        then: (schema) => schema.required("Number of branches is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
-      Totalemployeesinalllocations: Yup.string().when("hasBranches", {
-        is: "Yes",
-        then: (schema) =>
-          schema.required("Total number of branch employees is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
-      branchLocations: Yup.array().when("hasBranches", {
-        is: "Yes",
-        then: (schema) =>
-          schema.of(Yup.string().required("Branch location is required")),
-        otherwise: (schema) => schema.notRequired(),
-      }),
-      verificationType: Yup.string().required("Select a verification document"),
-      verificationId: Yup.string().required("Enter the document number"),
-      Website: Yup.string()
-        .url("Enter a valid website URL")
-        .nullable()
-        .transform((v, o) => (o === "" ? null : v)),
-      Organization: Yup.string().required("Organization type is required"),
-      ContactPhone: Yup.string()
-        .required("Contact number is required")
-        .matches(/^[0-9+\-()\s]{7,20}$/, "Enter a valid contact number"),
-      ContactEmail: Yup.string()
-        .email("Invalid email")
-        .required("Contact email is required"),
-      Address1: Yup.string().required("Contact address 1 is required"),
-      Address2: Yup.string(),
-    }),
-    Yup.object({
-      plan: Yup.string().required("Please select a plan"),
-      CardNumber: Yup.string()
-        .required("Card number is required")
-        .matches(/^\d{16}$/, "Invalid card number"),
-      CardHolderName: Yup.string().required("Card holder name is required"),
-      ExpiryDate: Yup.string()
-        .required("Expiry date is required")
-        .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, "Format MM/YY"),
-      CVV: Yup.string()
-        .required("CVV is required")
-        .matches(/^\d{3,4}$/, "Invalid CVV"),
-      users: Yup.array().of(
-        Yup.object({
-          role: Yup.string().nullable(),
-          email: Yup.string().email("Invalid email").nullable(),
-        })
-      ),
-    }),
-    Yup.object({}),
-  ];
-
-  const formik = useFormik({
-    initialValues: formData,
-    validationSchema: validationSchemas[currentStep - 1],
-    validateOnChange: true,
-    validateOnBlur: true,
-    enableReinitialize: true,
-    onSubmit: async (values) => {
-      setFormData(values);
-      if (currentStep === steps.length) {
-        setIsLoading(true);
-        try {
-          // Handle file upload with FormData if companyLogo exists
-          let payload = values;
-          if (values.filepath && values.filepath instanceof File) {
-            const formDataPayload = new FormData();
-            Object.keys(values).forEach((key) => {
-              if (key === "companyLogo" && values[key]) {
-                formDataPayload.append(key, values[key]);
-              } else if (key === "branchLocations" && Array.isArray(values[key])) {
-                values[key].forEach((location, index) => {
-                  formDataPayload.append(`${key}[${index}]`, location);
-                });
-              } else if (key === "users" && Array.isArray(values[key])) {
-                values[key].forEach((user, index) => {
-                  formDataPayload.append(`users[${index}][role]`, user.role || "");
-                  formDataPayload.append(`users[${index}][email]`, user.email || "");
-                });
-              } else {
-                formDataPayload.append(key, values[key] || "");
-              }
-            });
-            payload = formDataPayload;
-          }
-
-          // Make RTK Query API call
-          await companyDetailsMutation(payload).unwrap();
-          
-          // Success - navigate to dashboard
-          setTimeout(() => {
-            setIsLoading(false);
-            navigate("/dashboard");
-          }, 1500);
-        } catch (error) {
-          console.error("Company creation failed:", error);
-          setIsLoading(false);
-          alert(
-            apiError?.data?.message || 
-            error?.data?.message || 
-            "Failed to create company. Please try again."
-          );
-        }
-      } else {
-        setCurrentStep((prev) => prev + 1);
-      }
+  const [data, setData] = useState({
+    userType: "employer",
+    accountType: "company",
+    basicInfo: {},
+    documents: {},
+    profile: {
+      availability: [],
+      photoPreview: null,
+      resumeName: "",
     },
   });
 
-  // Combine local and API loading states
-  const combinedLoading = isLoading || isApiLoading;
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handleBack = () => {
-    if (currentStep === 1) return;
-    setFormData(formik.values);
-    setCurrentStep((prev) => prev - 1);
-  };
+  const goNext = () =>
+    setActiveStep((s) => Math.min(s + 1, STEPS.length - 1));
+  const goBack = () =>
+    setActiveStep((s) => Math.max(s - 1, 0));
 
-  const handleStepClick = (targetStep) => {
-    if (targetStep === currentStep) return;
-    setFormData(formik.values);
-    setCurrentStep(targetStep);
-  };
+  const patch = (partial) =>
+    setData((prev) => ({ ...prev, ...partial }));
 
-  const addUser = () => {
-    formik.setFieldValue("users", [
-      ...formik.values.users,
-      { role: "Admin", email: "" },
-    ]);
-  };
-
-  const removeUser = (index) => {
-    const users = [...formik.values.users];
-    if (users.length === 1) return;
-    users.splice(index, 1);
-    formik.setFieldValue("users", users);
-  };
-
-  const handleVerifyDocument = async () => {
-    setIsVerifying(true);
-    setVerificationStatus(null);
-    try {
-      await new Promise((res) => setTimeout(res, 1000));
-      setVerificationStatus("success");
-      alert("Verification successful.");
-    } catch (e) {
-      setVerificationStatus("error");
-      alert("Verification failed. Please check your details.");
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  // All styles (complete)
-  const containerStyle = {
-    padding: isMobile ? "1rem 1rem 2rem" : "2rem 2rem 2.5rem",
-  };
-  const contentWrapperStyle = {
-    maxWidth: "1200px",
-    margin: "0 auto",
-  };
-  const headerStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    marginBottom: isMobile ? "1.5rem" : "2rem",
-  };
-  const logoStyle = {
-    width: isMobile ? "120px" : "150px",
-  };
-  const headerTitleStyle = {
-    fontSize: isMobile ? "18px" : "24px",
-    fontWeight: 600,
-    color: "#292d34",
-    margin: 0,
-  };
-  const stepperContainerStyle = {
-    backgroundColor: "white",
-    borderRadius: "12px",
-    padding: isMobile ? "1rem 1.25rem" : "1.25rem 2rem",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-    marginBottom: isMobile ? "1.5rem" : "2rem",
-    display: "flex",
-    flexDirection: isMobile ? "column" : "row",
-    alignItems: isMobile ? "flex-start" : "center",
-    gap: isMobile ? "1rem" : "2rem",
-  };
-  const stepItemStyle = (stepNumber) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    position: "relative",
-    cursor: "pointer",
-    flex: 1,
-  });
-  const stepNumberContainerStyle = (stepNumber) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "32px",
-    height: "32px",
-    borderRadius: "50%",
-    backgroundColor:
-      stepNumber < currentStep
-        ? "#2744a0"
-        : stepNumber === currentStep
-        ? "#2744a0"
-        : "#e5e7eb",
-    color: stepNumber <= currentStep ? "#ffffff" : "#9ca3af",
-    fontSize: "14px",
-    fontWeight: 600,
-    flexShrink: 0,
-    position: "relative",
-    zIndex: 2,
-  });
-  const stepConnectorStyle = (index) => ({
-    flex: index === steps.length - 1 ? "0 0 auto" : 1,
-    height: "2px",
-    background:
-      index < currentStep - 1
-        ? "linear-gradient(to right, #2744a0, #1d4ed8)"
-        : "#e5e7eb",
-    marginLeft: "0.75rem",
-    marginRight: index === steps.length - 1 ? 0 : "0.75rem",
-  });
-  const stepContentStyle = {
-    display: "flex",
-    flexDirection: "column",
-  };
-  const stepTitleStyle = (stepNumber) => ({
-    fontSize: isMobile ? "13px" : "14px",
-    fontWeight: stepNumber === currentStep ? 700 : 600,
-    color: stepNumber === currentStep ? "#292d34" : "#6b7280",
-    marginBottom: "0.15rem",
-  });
-  const stepSubtitleStyle = {
-    fontSize: isMobile ? "11px" : "12px",
-    color: "#9ca3af",
-    fontWeight: 400,
-  };
-  const formContainerStyle = {
-    backgroundColor: "white",
-    borderRadius: "12px",
-    padding: isMobile ? "1.5rem" : "2.5rem",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-  };
-  const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "1rem",
-    marginTop: isMobile ? "2rem" : "2.5rem",
-    paddingTop: isMobile ? "1.5rem" : "2rem",
-    borderTop: "1px solid #e5e7eb",
-  };
-  const backButtonStyle = {
-    padding: isMobile ? "0.65rem 1.5rem" : "0.75rem 2rem",
-    backgroundColor: "transparent",
-    color: "#6b7280",
-    border: "1px solid #d1d5db",
-    borderRadius: "8px",
-    fontSize: isMobile ? "13px" : "14px",
-    fontWeight: 600,
-    cursor: currentStep === 1 ? "not-allowed" : "pointer",
-    opacity: currentStep === 1 ? 0.5 : 1,
-    transition: "all 0.2s",
-  };
-  const continueButtonStyle = {
-    padding: isMobile ? "0.65rem 1.5rem" : "0.75rem 2rem",
-    backgroundColor: "#2744a0",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: isMobile ? "13px" : "14px",
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "all 0.2s",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-  };
-  const loaderOverlayStyle = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(255,255,255,0.95)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10000,
-  };
-  const spinnerStyle = {
-    width: isMobile ? "50px" : "60px",
-    height: isMobile ? "50px" : "60px",
-    border: "4px solid #e5e7eb",
-    borderTop: "4px solid #2744a0",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-  };
-  const loaderTextStyle = {
-    marginTop: "1.5rem",
-    fontSize: isMobile ? "14px" : "16px",
-    color: "#6b7280",
-    fontWeight: 600,
-  };
-
-  // Add spinner animation to global styles (add to your CSS or use styled-components)
-  const spinAnimation = `
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  `;
-
-  const renderStep = () => {
-    if (currentStep === 1) {
-      return (
-        <StepCompanyInfo
-          formik={formik}
-          isMobile={isMobile}
-          isZipLoading={isZipLoading}
-          logoPreview={logoPreview}
-          logoFileName={logoFileName}
-          setLogoFileName={setLogoFileName}
-          setLogoPreview={setLogoPreview}
-          fetchCityStateFromZip={fetchCityStateFromZip}
-          buttonContainerStyle={buttonContainerStyle}
-          backButtonStyle={backButtonStyle}
-          continueButtonStyle={continueButtonStyle}
-          Plus={Plus}
-          Upload={Upload}
-          isVerifying={isVerifying}
-          verificationStatus={verificationStatus}
-          handleVerifyDocument={handleVerifyDocument}
-        />
-      );
-    }
-    if (currentStep === 2) {
-      return (
-        <StepPlanBilling
-          formik={formik}
-          isMobile={isMobile}
-          addUser={addUser}
-          removeUser={removeUser}
-          sendInvite={sendInvite}
-          sendAllInvites={sendAllInvites}
-          signupEmail={signupEmail}
-          buttonContainerStyle={buttonContainerStyle}
-          backButtonStyle={backButtonStyle}
-          continueButtonStyle={continueButtonStyle}
-          Plus={Plus}
-          X={X}
-          Send={Send}
-        />
-      );
-    }
-    return (
-      <StepFinalSummary
-        formData={formData}
-        isMobile={isMobile}
-        buttonContainerStyle={buttonContainerStyle}
-        backButtonStyle={backButtonStyle}
-        continueButtonStyle={continueButtonStyle}
-      />
-    );
+  const handleFinalSubmit = () => {
+    // submit to API here
+    console.log("Final payload", data);
   };
 
   return (
     <>
-      <style>{spinAnimation}</style>
-      {combinedLoading ? (
-        <div style={loaderOverlayStyle}>
-          <div style={spinnerStyle} />
-          <p style={loaderTextStyle}>Completing your account setup...</p>
-        </div>
-      ) : (
-        <div style={containerStyle}>
-          <div style={contentWrapperStyle}>
-            <div style={headerStyle}>
-              <img
-                src="/Images/Benmyl-logo.svg"
-                alt="BenMyl Logo"
-                style={logoStyle}
-              />
-              <h1 style={headerTitleStyle}>Complete Your Account Setup</h1>
-            </div>
+      <div className="auth-container">
+        <div className="auth-card wizard-auth-card">
+          <div className="auth-form-side wizard-form-side">
+            {/* Header */}
+            <header className="wizard-page-header">
+              <h1 className="wizard-page-title">
+                Create Account
+              </h1>
+            </header>
 
-            <div style={stepperContainerStyle}>
-              {steps.map((step, index) => (
-                <React.Fragment key={step.number}>
+            {/* Stepper */}
+            <div className="wizard-header">
+              {STEPS.map((label, index) => {
+                const isActive = index === activeStep;
+                const isCompleted = index < activeStep;
+                return (
                   <div
-                    style={stepItemStyle(step.number)}
-                    onClick={() => handleStepClick(step.number)}
+                    key={label}
+                    className={`wizard-step ${
+                      isActive ? "wizard-step--active" : ""
+                    } ${
+                      isCompleted ? "wizard-step--completed" : ""
+                    }`}
                   >
-                    <div style={stepNumberContainerStyle(step.number)}>
-                      {step.number < currentStep ? (
-                        <Check size={16} />
-                      ) : (
-                        step.number
-                      )}
-                    </div>
-                    <div style={stepContentStyle}>
-                      <span style={stepTitleStyle(step.number)}>
-                        {step.title}
+                    <div className="wizard-step-pill">
+                      <span className="wizard-step-index">
+                        {index + 1}
                       </span>
-                      <span style={stepSubtitleStyle}>{step.subtitle}</span>
+                      <span className="wizard-step-title">
+                        {label}
+                      </span>
                     </div>
                   </div>
-                  {index < steps.length - 1 && (
-                    <div style={stepConnectorStyle(index)} />
-                  )}
-                </React.Fragment>
-              ))}
+                );
+              })}
             </div>
 
-            <div style={formContainerStyle}>
-              <form onSubmit={formik.handleSubmit}>{renderStep()}</form>
-            </div>
+            {/* Steps */}
+            {activeStep === 0 && (
+              <StepChooseUserType
+                data={data}
+                patch={patch}
+                onNext={goNext}
+              />
+            )}
+            {activeStep === 1 && (
+              <StepBasicInfo
+                data={data}
+                patch={patch}
+                onNext={goNext}
+                onBack={goBack}
+              />
+            )}
+            {activeStep === 2 && (
+              <StepDocuments
+                data={data}
+                patch={patch}
+                onNext={goNext}
+                onBack={goBack}
+              />
+            )}
+            {activeStep === 3 && (
+              <StepProfileCompletion
+                data={data}
+                patch={patch}
+                onBack={goBack}
+                onSubmit={handleFinalSubmit}
+                onOpenPreview={() => setShowPreview(true)}
+              />
+            )}
           </div>
         </div>
+      </div>
+
+      {showPreview && (
+        <PreviewModal
+          data={data}
+          onClose={() => setShowPreview(false)}
+        />
       )}
     </>
   );
 }
 
-export default FormWizard;
+/* ----------------------------------------------------
+   STEP 1 – Choose User Type
+-----------------------------------------------------*/
+
+function StepChooseUserType({ data, patch, onNext }) {
+  const handleSelect = (userType) => patch({ userType });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onNext();
+  };
+
+  return (
+    <form className="wizard-card" onSubmit={handleSubmit}>
+      <h2 className="wizard-card-title">Choose Your User Type</h2>
+      <p className="wizard-card-subtitle">
+        Select the option that best describes how you will use the
+        platform.
+      </p>
+
+      <div className="wizard-user-types">
+        <button
+          type="button"
+          className={`wizard-user-card ${
+            data.userType === "employer"
+              ? "wizard-user-card--active"
+              : ""
+          }`}
+          onClick={() => handleSelect("employer")}
+        >
+          <div className="wizard-user-icon-box">
+            <FaBuilding className="wizard-user-icon" />
+          </div>
+          <div className="wizard-user-text">
+            <div className="wizard-user-label">Employer</div>
+            <div className="wizard-user-desc">
+              Post jobs and find the right talent for your company.
+            </div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`wizard-user-card ${
+            data.userType === "vendor"
+              ? "wizard-user-card--active"
+              : ""
+          }`}
+          onClick={() => handleSelect("vendor")}
+        >
+          <div className="wizard-user-icon-box">
+            <FaBriefcase className="wizard-user-icon" />
+          </div>
+          <div className="wizard-user-text">
+            <div className="wizard-user-label">Vendor</div>
+            <div className="wizard-user-desc">
+              Offer your services and grow your business.
+            </div>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className={`wizard-user-card ${
+            data.userType === "talent"
+              ? "wizard-user-card--active"
+              : ""
+          }`}
+          onClick={() => handleSelect("talent")}
+        >
+          <div className="wizard-user-icon-box">
+            <FaUserTie className="wizard-user-icon" />
+          </div>
+          <div className="wizard-user-text">
+            <div className="wizard-user-label">
+              Talent / Freelancer
+            </div>
+            <div className="wizard-user-desc">
+              Find opportunities and showcase your skills.
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <section className="wizard-next-steps">
+        <div className="wizard-next-title">
+          Preview of Next Steps
+        </div>
+        <div className="wizard-next-items">
+          <div className="wizard-next-item">
+            <div className="wizard-next-icon" />
+            <div>
+              <div className="wizard-next-label">
+                Basic Information
+              </div>
+              <div className="wizard-next-desc">
+                You&apos;ll need to provide your contact details and
+                basic company information.
+              </div>
+            </div>
+          </div>
+          <div className="wizard-next-item">
+            <div className="wizard-next-icon" />
+            <div>
+              <div className="wizard-next-label">
+                Document Verification
+              </div>
+              <div className="wizard-next-desc">
+                Upload your registration and verification documents.
+              </div>
+            </div>
+          </div>
+          <div className="wizard-next-item">
+            <div className="wizard-next-icon" />
+            <div>
+              <div className="wizard-next-label">
+                Profile Completion
+              </div>
+              <div className="wizard-next-desc">
+                Complete your profile to start using our platform.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="wizard-estimate">
+          Estimated time: 5–10 minutes
+        </div>
+      </section>
+
+      <div className="wizard-footer">
+        <button
+          type="button"
+          className="auth-btn-secondary"
+          disabled
+        >
+          Back
+        </button>
+        <div className="wizard-footer-right">
+          <button
+            type="button"
+            className="auth-btn-secondary"
+          >
+            Save Progress
+          </button>
+          <button type="submit" className="auth-btn-primary">
+            Continue
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/* ----------------------------------------------------
+   STEP 2 – Basic Information
+-----------------------------------------------------*/
+
+function StepBasicInfo({ data, patch, onNext, onBack }) {
+  const info = data.basicInfo || {};
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    patch({ basicInfo: { ...info, [name]: value } });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onNext();
+  };
+
+  return (
+    <form className="wizard-card" onSubmit={handleSubmit}>
+      <h2 className="wizard-card-title">Basic Information</h2>
+      <p className="wizard-card-subtitle">
+        Tell us how to contact you and where you&apos;re based.
+      </p>
+
+      <div className="wizard-user-types wizard-user-types--two">
+        <button
+          type="button"
+          className={`wizard-user-card ${
+            data.accountType === "individual"
+              ? "wizard-user-card--active"
+              : ""
+          }`}
+          onClick={() => patch({ accountType: "individual" })}
+        >
+          <div className="wizard-user-label">Individual</div>
+        </button>
+        <button
+          type="button"
+          className={`wizard-user-card ${
+            data.accountType === "company"
+              ? "wizard-user-card--active"
+              : ""
+          }`}
+          onClick={() => patch({ accountType: "company" })}
+        >
+          <div className="wizard-user-label">Company</div>
+        </button>
+      </div>
+
+      <div className="wizard-form-grid">
+        <div className="auth-form-group">
+          <label className="auth-label">Full Name</label>
+          <input
+            name="fullName"
+            className="auth-input"
+            placeholder="Enter your full name"
+            value={info.fullName || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">Email Address</label>
+          <input
+            type="email"
+            name="email"
+            className="auth-input"
+            placeholder="john.doe@example.com"
+            value={info.email || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">Phone Number</label>
+          <input
+            name="phone"
+            className="auth-input"
+            placeholder="Enter phone number"
+            value={info.phone || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">Country/Region</label>
+          <select
+            name="country"
+            className="auth-input"
+            value={info.country || ""}
+            onChange={handleChange}
+          >
+            <option value="">Select country</option>
+            <option value="india">India</option>
+            <option value="usa">United States</option>
+            <option value="uk">United Kingdom</option>
+          </select>
+        </div>
+        <div className="auth-form-group wizard-form-grid--full">
+          <label className="auth-label">Address Line 1</label>
+          <input
+            name="address1"
+            className="auth-input"
+            placeholder="Enter street address"
+            value={info.address1 || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group wizard-form-grid--full">
+          <label className="auth-label">
+            Address Line 2 (Optional)
+          </label>
+          <input
+            name="address2"
+            className="auth-input"
+            placeholder="Apartment, suite, unit, etc."
+            value={info.address2 || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">City</label>
+          <input
+            name="city"
+            className="auth-input"
+            placeholder="Enter city"
+            value={info.city || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">State/Province</label>
+          <input
+            name="state"
+            className="auth-input"
+            placeholder="Enter state"
+            value={info.state || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="auth-form-group">
+          <label className="auth-label">Postal Code</label>
+          <input
+            name="postal"
+            className="auth-input"
+            placeholder="Enter postal code"
+            value={info.postal || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      <div className="wizard-footer">
+        <button
+          type="button"
+          className="auth-btn-secondary"
+          onClick={onBack}
+        >
+          Back
+        </button>
+        <div className="wizard-footer-right">
+          <button
+            type="button"
+            className="auth-btn-secondary"
+          >
+            Save Progress
+          </button>
+          <button type="submit" className="auth-btn-primary">
+            Continue
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/* ----------------------------------------------------
+   STEP 3 – Document Upload
+-----------------------------------------------------*/
+
+function StepDocuments({ data, patch, onNext, onBack }) {
+  const docs = data.documents || {};
+  const isIndividual = data.accountType === "individual";
+
+  const firstRef = useRef(null);
+  const secondRef = useRef(null);
+
+  const setFile = (key, files) =>
+    patch({ documents: { ...docs, [key]: files?.[0] || null } });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onNext();
+  };
+
+  const firstLabel = isIndividual ? "Government ID" : "CIN No";
+  const firstDesc = isIndividual
+    ? "Upload a valid government‑issued ID (Passport, Driver’s License)."
+    : "Upload a valid government‑issued CIN document.";
+  const firstKey = isIndividual ? "govId" : "cin";
+
+  const secondLabel = isIndividual ? "Address Proof" : "Tax Certificate";
+  const secondDesc = isIndividual
+    ? "Upload a recent utility bill or bank statement that confirms your address."
+    : "Upload your latest tax certificate or registration.";
+  const secondKey = isIndividual ? "addressProof" : "taxCertificate";
+
+  return (
+    <form className="wizard-card" onSubmit={handleSubmit}>
+      <h2 className="wizard-card-title">Document Upload</h2>
+      <p className="wizard-card-subtitle">
+        Upload the required documents to verify your{" "}
+        {isIndividual ? "identity" : "business"}.
+      </p>
+
+      <div className="wizard-upload-grid">
+        <div className="wizard-upload-card">
+          <div className="wizard-upload-icon">@</div>
+          <h3 className="wizard-upload-title">{firstLabel}</h3>
+          <p className="wizard-upload-subtitle">{firstDesc}</p>
+          <p className="wizard-upload-meta">
+            Supported formats: PDF, JPG, PNG (max 5MB)
+          </p>
+
+          <input
+            ref={firstRef}
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            style={{ display: "none" }}
+            onChange={(e) => setFile(firstKey, e.target.files)}
+          />
+
+          <button
+            type="button"
+            className="auth-btn-secondary wizard-upload-btn"
+            onClick={() => firstRef.current?.click()}
+          >
+            {docs[firstKey] ? docs[firstKey].name : "Choose File"}
+          </button>
+        </div>
+
+        <div className="wizard-upload-card">
+          <div className="wizard-upload-icon">📄</div>
+          <h3 className="wizard-upload-title">{secondLabel}</h3>
+          <p className="wizard-upload-subtitle">{secondDesc}</p>
+          <p className="wizard-upload-meta">
+            Supported formats: PDF, JPG, PNG (max 5MB)
+          </p>
+
+          <input
+            ref={secondRef}
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            style={{ display: "none" }}
+            onChange={(e) => setFile(secondKey, e.target.files)}
+          />
+
+          <button
+            type="button"
+            className="auth-btn-secondary wizard-upload-btn"
+            onClick={() => secondRef.current?.click()}
+          >
+            {docs[secondKey]
+              ? docs[secondKey].name
+              : "Choose File"}
+          </button>
+        </div>
+      </div>
+
+      <div className="wizard-footer">
+        <button
+          type="button"
+          className="auth-btn-secondary"
+          onClick={onBack}
+        >
+          Back
+        </button>
+        <div className="wizard-footer-right">
+          <button
+            type="button"
+            className="auth-btn-secondary"
+          >
+            Save Progress
+          </button>
+          <button type="submit" className="auth-btn-primary">
+            Continue
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/* ----------------------------------------------------
+   STEP 4 – Profile Completion (upload + preview)
+-----------------------------------------------------*/
+
+function StepProfileCompletion({
+  data,
+  patch,
+  onBack,
+  onSubmit,
+  onOpenPreview,
+}) {
+  const profile = data.profile || { availability: [] };
+  const availability = profile.availability || [];
+
+  const photoInputRef = useRef(null);
+  const resumeInputRef = useRef(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    patch({ profile: { ...profile, [name]: value } });
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      patch({
+        profile: {
+          ...profile,
+          photoPreview: ev.target?.result || null,
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResumeChange = (e) => {
+    const file = e.target.files?.[0];
+    patch({
+      profile: {
+        ...profile,
+        resumeName: file ? file.name : "",
+      },
+    });
+  };
+
+  const toggleAvailability = (key) => {
+    const exists = availability.includes(key);
+    const next = exists
+      ? availability.filter((v) => v !== key)
+      : [...availability, key];
+    patch({ profile: { ...profile, availability: next } });
+  };
+
+  const isSelected = (key) => availability.includes(key);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit();
+  };
+
+  return (
+    <form className="wizard-card" onSubmit={handleSubmit}>
+      <h2 className="wizard-card-title">Profile Completion</h2>
+
+      {/* Profile photo */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">Profile Photo</h3>
+        <div className="wizard-profile-photo-row">
+          <div className="wizard-profile-photo-circle">
+            {profile.photoPreview && (
+              <img
+                src={profile.photoPreview}
+                alt="Profile"
+                className="wizard-profile-photo-img"
+              />
+            )}
+          </div>
+          <div className="wizard-profile-photo-content">
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handlePhotoChange}
+            />
+            <button
+              type="button"
+              className="auth-btn-primary wizard-profile-photo-btn"
+              onClick={() => photoInputRef.current?.click()}
+            >
+              Upload Photo
+            </button>
+            <p className="wizard-upload-meta">
+              JPG, PNG (max 5MB)
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Resume upload */}
+      <section className="wizard-section">
+        <div className="wizard-resume-card">
+          <div className="wizard-resume-icon" />
+          <h3 className="wizard-resume-title">
+            Skip the hassle. Upload your resume.
+          </h3>
+          <p className="wizard-resume-text">
+            Let us extract your experience, education, and skills
+            automatically. No manual entry needed.
+          </p>
+          <p className="wizard-upload-meta">
+            Supported formats: PDF, JPG, PNG (max 5MB)
+          </p>
+
+          <input
+            ref={resumeInputRef}
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            style={{ display: "none" }}
+            onChange={handleResumeChange}
+          />
+
+          <button
+            type="button"
+            className="auth-btn-secondary wizard-upload-btn"
+            onClick={() => resumeInputRef.current?.click()}
+          >
+            {profile.resumeName || "Choose File"}
+          </button>
+        </div>
+      </section>
+
+      {/* Personal Information */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">
+          Personal Information
+        </h3>
+        <div className="wizard-form-grid">
+          <div className="auth-form-group">
+            <label className="auth-label">First Name</label>
+            <input
+              name="firstName"
+              className="auth-input"
+              placeholder="John"
+              value={profile.firstName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Last Name</label>
+            <input
+              name="lastName"
+              className="auth-input"
+              placeholder="Cooper"
+              value={profile.lastName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group wizard-form-grid--full">
+            <label className="auth-label">
+              Professional Title
+            </label>
+            <input
+              name="title"
+              className="auth-input"
+              placeholder="Senior Web Developer"
+              value={profile.title || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="auth-input"
+              placeholder="john@example.com"
+              value={profile.email || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Phone</label>
+            <input
+              name="phone"
+              className="auth-input"
+              placeholder="+1 (555) 000‑0000"
+              value={profile.phone || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group wizard-form-grid--full">
+            <label className="auth-label">Location</label>
+            <div className="wizard-input-with-icon">
+              <FaMapMarkerAlt className="wizard-input-icon" />
+              <input
+                name="location"
+                className="auth-input"
+                placeholder="San Francisco, CA"
+                value={profile.location || ""}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Me */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">About Me</h3>
+        <div className="auth-form-group">
+          <textarea
+            name="aboutMe"
+            className="auth-input wizard-textarea"
+            placeholder="Tell clients about your expertise, experience, and what makes you unique..."
+            rows={4}
+            value={profile.aboutMe || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </section>
+
+      {/* Skills */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">
+          Skills &amp; Expertise
+        </h3>
+        <div className="auth-form-group">
+          <input
+            name="skills"
+            className="auth-input"
+            placeholder="e.g. React, TypeScript, Node.js"
+            value={profile.skills || ""}
+            onChange={handleChange}
+          />
+          <p className="wizard-upload-meta">
+            Separate skills with commas.
+          </p>
+        </div>
+      </section>
+
+      {/* Work Experience */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">
+          Work Experience
+        </h3>
+        <div className="wizard-form-grid">
+          <div className="auth-form-group">
+            <label className="auth-label">Company</label>
+            <input
+              name="expCompany"
+              className="auth-input"
+              placeholder="Company name"
+              value={profile.expCompany || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Position</label>
+            <input
+              name="expPosition"
+              className="auth-input"
+              placeholder="Job title"
+              value={profile.expPosition || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group wizard-form-grid--full">
+            <label className="auth-label">Description</label>
+            <textarea
+              name="expDescription"
+              className="auth-input wizard-textarea"
+              placeholder="Describe your role and achievements..."
+              rows={3}
+              value={profile.expDescription || ""}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Education */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">Education</h3>
+        <div className="wizard-form-grid">
+          <div className="auth-form-group">
+            <label className="auth-label">Institution</label>
+            <input
+              name="eduInstitution"
+              className="auth-input"
+              placeholder="University name"
+              value={profile.eduInstitution || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Degree</label>
+            <input
+              name="eduDegree"
+              className="auth-input"
+              placeholder="e.g. Bachelor&apos;s"
+              value={profile.eduDegree || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Field of Study</label>
+            <input
+              name="eduField"
+              className="auth-input"
+              placeholder="e.g. Computer Science"
+              value={profile.eduField || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="auth-form-group">
+            <label className="auth-label">Year</label>
+            <input
+              name="eduYear"
+              className="auth-input"
+              placeholder="e.g. 2020"
+              value={profile.eduYear || ""}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">Portfolio</h3>
+        <div className="wizard-portfolio-grid">
+          <div className="wizard-portfolio-card" />
+          <div className="wizard-portfolio-card" />
+          <div className="wizard-portfolio-card" />
+        </div>
+        <div className="wizard-portfolio-actions">
+          <button type="button" className="auth-link">
+            Upload Work
+          </button>
+          <button type="button" className="auth-link">
+            Add Link
+          </button>
+        </div>
+      </section>
+
+      {/* Availability */}
+      <section className="wizard-section">
+        <h3 className="wizard-section-title">Availability</h3>
+        <div className="wizard-availability-list">
+          <AvailabilityOption
+            label="Full-time"
+            value="full_time"
+            selected={isSelected("full_time")}
+            onToggle={toggleAvailability}
+          />
+          <AvailabilityOption
+            label="Part-time"
+            value="part_time"
+            selected={isSelected("part_time")}
+            onToggle={toggleAvailability}
+          />
+          <AvailabilityOption
+            label="Weekends"
+            value="weekends"
+            selected={isSelected("weekends")}
+            onToggle={toggleAvailability}
+          />
+        </div>
+      </section>
+
+      {/* Footer */}
+      <div className="wizard-footer">
+        <button
+          type="button"
+          className="auth-btn-secondary"
+          onClick={onBack}
+        >
+          Cancel
+        </button>
+        <div className="wizard-footer-right">
+          <button
+            type="button"
+            className="auth-btn-secondary"
+            onClick={onOpenPreview}
+          >
+            Preview
+          </button>
+          <button
+            type="button"
+            className="auth-btn-secondary"
+          >
+            Save as Draft
+          </button>
+          <button type="submit" className="auth-btn-primary">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/* availability pill */
+
+function AvailabilityOption({ label, value, selected, onToggle }) {
+  return (
+    <button
+      type="button"
+      className={`wizard-availability-row ${
+        selected ? "wizard-availability-row--active" : ""
+      }`}
+      onClick={() => onToggle(value)}
+    >
+      <span>{label}</span>
+      <span className="wizard-toggle-placeholder" />
+    </button>
+  );
+}
+
+/* ----------------------------------------------------
+   Preview Modal
+-----------------------------------------------------*/
+
+function PreviewModal({ data, onClose }) {
+  const { basicInfo, profile, documents } = data;
+  const availLabels = {
+    full_time: "Full-time",
+    part_time: "Part-time",
+    weekends: "Weekends",
+  };
+
+  return (
+    <div className="wizard-modal-backdrop">
+      <div className="wizard-modal">
+        <div className="wizard-modal-header">
+          <h2 className="wizard-modal-title">Preview Profile</h2>
+          <button
+            type="button"
+            className="wizard-modal-close"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="wizard-modal-body">
+          {/* Left: summary card */}
+          <section className="wizard-preview-left">
+            <div className="wizard-preview-photo">
+              <div className="wizard-preview-photo-circle">
+                {profile.photoPreview && (
+                  <img
+                    src={profile.photoPreview}
+                    alt="Profile"
+                  />
+                )}
+              </div>
+              <div className="wizard-preview-name">
+                {profile.firstName || "First"}{" "}
+                {profile.lastName || "Last"}
+              </div>
+              <div className="wizard-preview-title">
+                {profile.title || "Title"}
+              </div>
+              <div className="wizard-preview-location">
+                {profile.location || "Location"}
+              </div>
+            </div>
+
+            <div className="wizard-preview-meta">
+              <div className="wizard-preview-meta-label">
+                Availability
+              </div>
+              <div className="wizard-preview-chips">
+                {(profile.availability || []).length === 0
+                  ? "Not set"
+                  : profile.availability.map((a) => (
+                      <span
+                        key={a}
+                        className="wizard-preview-chip"
+                      >
+                        {availLabels[a] || a}
+                      </span>
+                    ))}
+              </div>
+            </div>
+
+            <div className="wizard-preview-meta">
+              <div className="wizard-preview-meta-label">
+                Resume
+              </div>
+              <div className="wizard-preview-text">
+                {profile.resumeName || "Not uploaded"}
+              </div>
+            </div>
+          </section>
+
+          {/* Right: details */}
+          <section className="wizard-preview-right">
+            <div className="wizard-preview-section">
+              <h3>Contact</h3>
+              <p>
+                {basicInfo.fullName || "Full Name"} ·{" "}
+                {profile.email || basicInfo.email || "Email"} ·{" "}
+                {profile.phone || basicInfo.phone || "Phone"}
+              </p>
+            </div>
+
+            <div className="wizard-preview-section">
+              <h3>About Me</h3>
+              <p>
+                {profile.aboutMe ||
+                  "You have not added an About Me yet."}
+              </p>
+            </div>
+
+            <div className="wizard-preview-section">
+              <h3>Skills</h3>
+              <p>
+                {profile.skills ||
+                  "No skills added yet. Add them to stand out."}
+              </p>
+            </div>
+
+            <div className="wizard-preview-section">
+              <h3>Work Experience</h3>
+              <p>
+                <strong>
+                  {profile.expCompany || "Company name"}
+                </strong>{" "}
+                – {profile.expPosition || "Position"}
+              </p>
+              <p>
+                {profile.expDescription ||
+                  "Describe your role and achievements to give clients context."}
+              </p>
+            </div>
+
+            <div className="wizard-preview-section">
+              <h3>Education</h3>
+              <p>
+                <strong>
+                  {profile.eduInstitution || "Institution"}
+                </strong>{" "}
+                · {profile.eduDegree || "Degree"} ·{" "}
+                {profile.eduField || "Field"} ·{" "}
+                {profile.eduYear || "Year"}
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div className="wizard-modal-footer">
+          <button
+            type="button"
+            className="auth-btn-secondary"
+            onClick={onClose}
+          >
+            Back to Edit
+          </button>
+          <button type="button" className="auth-btn-primary">
+            Submit Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

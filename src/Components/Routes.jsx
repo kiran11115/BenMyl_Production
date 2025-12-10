@@ -27,7 +27,7 @@ const routes = createBrowserRouter(
             <Route path="sign-up" element={<Signup />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="OTP-Verification" element={<OTPVerification />} />
-            <Route path="company-details" element={<FormWizard />} />
+            <Route path="user-details" element={<FormWizard />} />
 
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
