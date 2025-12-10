@@ -22,7 +22,7 @@ function Header() {
   // --- Navigation Handlers ---
   const handleViewProfile = () => {
     setIsProfileOpen(false); // Close menu
-    navigate("/user/profile"); // Navigate to profile page
+    navigate("/user/profile-page"); // Navigate to profile page
   };
 
   const handleSignOut = () => {

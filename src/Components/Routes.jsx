@@ -16,6 +16,7 @@ import Jobs from "./UserJobs/UserJobs";
 import Messages from "./Messages/Messages";
 import TalentPool from "./TalentPool/TalentPool";
 import Analytics from "./Analytics/Analytics";
+import ProfilePage from "./ProfilePage/ProfilePage";
 
 
 
@@ -37,6 +38,7 @@ const routes = createBrowserRouter(
                     <Route path="user-messages" element={<Messages />} />
                     <Route path="user-talentpool" element={<TalentPool />} />
                     <Route path="user-analytics" element={<Analytics />} />
+                    <Route path="profile-page" element={<ProfilePage />} />
                 </Route>
             </Route>
 
