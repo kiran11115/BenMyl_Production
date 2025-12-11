@@ -1,0 +1,504 @@
+
+/* page padding & breadcrumbs */
+.si-page {
+    padding: 24px 36px
+}
+
+.si-breadcrumbs {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px
+}
+
+.si-breadcrumbs .link {
+    color: var(--primary);
+    text-decoration: none
+}
+
+.si-breadcrumbs .current {
+    color: #111
+}
+
+/* top row: email input + view controls */
+.si-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px
+}
+
+.email-input {
+    flex: 1;
+    max-width: 420px
+}
+
+.email-input label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 6px
+}
+
+.email-input input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff
+}
+
+/* controls */
+.si-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px
+}
+
+.view-toggle {
+    display: flex;
+    gap: 8px
+}
+
+.pill {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    color: var(--muted)
+}
+
+.pill.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary)
+}
+
+.month-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted)
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.month-label {
+    font-weight: 600;
+    color: #111
+}
+
+/* main grid layout */
+.si-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start
+}
+
+/* left profile card */
+.profile-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: var(--shadow)
+}
+
+.profile-top {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.profile-photo {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    object-fit: cover
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column
+}
+
+.p-name {
+    font-weight: 700;
+    font-size: 18px
+}
+
+.p-role {
+    color: var(--primary);
+    margin-top: 4px;
+    font-size: 13px
+}
+
+.p-badge {
+    display: inline-block;
+    margin-top: 8px;
+    background: #eef6ff;
+    color: var(--primary);
+    padding: 6px 10px;
+    border-radius: 14px;
+    font-size: 12px
+}
+
+.profile-contact {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.contact-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 14px
+}
+
+.contact-row .ico {
+    color: var(--muted)
+}
+
+.profile-notes {
+    margin-top: 12px
+}
+
+.notes-title {
+    font-weight: 700;
+    margin-bottom: 8px
+}
+
+.notes-body {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 8px;
+    color: #334155
+}
+
+/* details card */
+.details-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 12px
+}
+
+.details-card h4 {
+    margin: 0 0 12px 0
+}
+
+.details-card label {
+    display: block;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    color: #111
+}
+
+.details-card input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff
+}
+
+.interviewer-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px
+}
+
+.interviewer-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%
+}
+
+.int-name {
+    font-weight: 700
+}
+
+.int-title {
+    color: var(--muted);
+    font-size: 13px
+}
+
+.priority {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f59e0b
+}
+
+.dot.medium {
+    background: #f59e0b
+}
+
+/* right column: calendar card */
+.calendar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 12px;
+    min-height: 360px
+}
+
+.week-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 8px
+}
+
+.wd {
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+    padding: 6px 0
+}
+
+/* calendar grid */
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+.weeks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+.week-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px
+}
+
+.cal-cell {
+    min-height: 84px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    padding: 8px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
+}
+
+.cal-cell.empty {
+    background: transparent;
+    border: 0;
+    cursor: default
+}
+
+.cal-cell .cell-day {
+    font-weight: 700;
+    color: #111
+}
+
+.cal-cell .slots-pill {
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.06));
+    color: var(--primary);
+    padding: 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    text-align: center
+}
+
+/* selected / today states */
+.cal-cell.selected {
+    border: 1px solid var(--primary);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06)
+}
+
+.cal-cell.today {
+    border: 1px dashed rgba(15, 23, 42, 0.06)
+}
+
+/* week view (simple header style) */
+.calendar-week-view {
+    padding: 20px;
+    color: var(--muted)
+}
+
+/* slots section */
+.slots-section {
+    margin-top: 12px
+}
+
+.slots-section h4 {
+    margin: 12px 0
+}
+
+.slots-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap
+}
+
+.slot-card {
+    min-width: 220px;
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left
+}
+
+.slot-card.active {
+    border: 1px solid var(--primary);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.06)
+}
+
+.slot-time {
+    font-weight: 700
+}
+
+.slot-meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px
+}
+
+.no-slots {
+    color: var(--muted);
+    padding: 12px
+}
+
+/* confirm schedule card */
+.confirm-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 14px
+}
+
+.confirm-card h4 {
+    margin: 0 0 12px 0
+}
+
+.confirm-row {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.confirm-row .ico {
+    color: var(--muted)
+}
+
+.confirm-date {
+    font-weight: 700
+}
+
+.confirm-time {
+    color: var(--muted);
+    font-size: 13px
+}
+
+.confirm-checkbox {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--muted)
+}
+
+.confirm-notes {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 12px
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px
+}
+
+.btn.confirm {
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center
+}
+
+/* responsive */
+@media (max-width: 1100px) {
+    .si-grid {
+        grid-template-columns: 320px 1fr;
+        gap: 18px
+    }
+
+    .si-page {
+        padding: 20px
+    }
+}
+
+@media (max-width: 820px) {
+    .si-page {
+        padding: 16px
+    }
+
+    .si-grid {
+        grid-template-columns: 1fr;
+        gap: 16px
+    }
+
+    .calendar-card {
+        min-height: 260px
+    }
+
+    .calendar-grid .cal-cell {
+        min-height: 72px
+    }
+
+    .profile-photo {
+        width: 64px;
+        height: 64px
+    }
+
+    .slot-card {
+        min-width: 160px
+    }
+
+    .confirm-actions {
+        justify-content: center
+    }
+}

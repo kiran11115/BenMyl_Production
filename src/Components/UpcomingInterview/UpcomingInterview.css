@@ -1,0 +1,277 @@
+:root {
+    --bg: #f7fbff;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --primary: #2563eb;
+    --border: #e9eef5;
+    --radius: 12px;
+}
+
+.ui-page {
+    padding: 24px;
+}
+
+/* breadcrumbs */
+.ui-breadcrumbs {
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px
+}
+
+.ui-breadcrumbs .link {
+    color: var(--primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+/* header */
+.ui-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px
+}
+
+.ui-title {
+    margin: 0;
+    font-size: 26px
+}
+
+.ui-sub {
+    margin: 6px 0 0;
+    color: var(--muted)
+}
+
+.ui-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px
+}
+
+.view-toggle1 {
+    display: flex;
+    gap: 8px
+}
+
+.toggle {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--muted)
+}
+
+.toggle.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary)
+}
+
+.month-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-weight: 600
+}
+
+.btn-add {
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+/* grid */
+.ui-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 18px
+}
+
+.ico1 {
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    border-radius: 10px;
+    background: #f0f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563EB;
+    font-size: 14px;
+}
+
+/* card */
+.card1 {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03)
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px
+}
+
+.card-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.card-top .ico {
+    color: var(--muted)
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+    flex: 1
+}
+
+.candidate-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700
+}
+
+.candidate-role {
+    color: var(--muted);
+    font-size: 13px
+}
+
+.tag {
+    display: inline-block;
+    background: #eef6ff;
+    color: var(--primary);
+    padding: 6px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    width: fit-content;
+    margin-top: 6px
+}
+
+/* interviewer row */
+.interviewer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px
+}
+
+.int-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03)
+}
+
+.int-info {
+    display: flex;
+    flex-direction: column
+}
+
+.int-label {
+    font-size: 12px;
+    color: var(--muted)
+}
+
+.int-name {
+    font-size: 14px;
+    font-weight: 600
+}
+
+/* card actions */
+.card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: auto
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer
+}
+
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--muted)
+}
+
+/* responsive */
+@media (max-width: 1100px) {
+    .ui-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .ui-page {
+        padding: 20px
+    }
+}
+
+@media (max-width: 720px) {
+    .ui-grid {
+        grid-template-columns: 1fr
+    }
+
+    .ui-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px
+    }
+
+    .ui-actions {
+        flex-wrap: wrap
+    }
+
+    .btn-add {
+        align-self: flex-end
+    }
+}

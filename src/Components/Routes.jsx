@@ -17,6 +17,13 @@ import Messages from "./Messages/Messages";
 import TalentPool from "./TalentPool/TalentPool";
 import Analytics from "./Analytics/Analytics";
 import ProfilePage from "./ProfilePage/ProfilePage";
+import AccountSettings from "./AccountSettings/AccountSettings";
+import PostNewPositions from "./PostNewPositions/PostNewPositions";
+import FindVendor from "./FindVendor/FindVendor";
+import VendorDetail from "./VendorDetail/VendorDetail";
+import InviteBid from "./InviteBid/InviteBid";
+import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
+import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
 
 
 
@@ -29,6 +36,7 @@ const routes = createBrowserRouter(
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="OTP-Verification" element={<OTPVerification />} />
             <Route path="user-details" element={<FormWizard />} />
+            <Route path="account-settings" element={<AccountSettings />} />
 
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
@@ -38,7 +46,13 @@ const routes = createBrowserRouter(
                     <Route path="user-messages" element={<Messages />} />
                     <Route path="user-talentpool" element={<TalentPool />} />
                     <Route path="user-analytics" element={<Analytics />} />
-                    <Route path="profile-page" element={<ProfilePage />} />
+                    <Route path="user-profile" element={<ProfilePage />} />
+                    <Route path="user-post-new-positions" element={<PostNewPositions />} />
+                    <Route path="user-find-vendor" element={<FindVendor />} />
+                    <Route path="user-vendor-detail" element={<VendorDetail />} />
+                    <Route path="user-invite-bid" element={<InviteBid />} />
+                    <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
+                    <Route path="user-schedule-interview" element={<ScheduleInterview />} />
                 </Route>
             </Route>
 
