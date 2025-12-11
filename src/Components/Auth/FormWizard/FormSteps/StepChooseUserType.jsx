@@ -77,16 +77,15 @@ export default function StepChooseUserType({ data, patch, onNext }) {
         <div className="wizard-next-title">Preview of Next Steps</div>
         <div className="wizard-next-items">
           <div className="wizard-next-item">
-            <div className="wizard-next-icon" />
             <div>
               <div className="wizard-next-label">Basic Information</div>
               <div className="wizard-next-desc">
-                You'll need to provide your contact details and basic company information.
+                You'll need to provide your contact details and basic company
+                information.
               </div>
             </div>
           </div>
           <div className="wizard-next-item">
-            <div className="wizard-next-icon" />
             <div>
               <div className="wizard-next-label">Document Verification</div>
               <div className="wizard-next-desc">
@@ -95,7 +94,6 @@ export default function StepChooseUserType({ data, patch, onNext }) {
             </div>
           </div>
           <div className="wizard-next-item">
-            <div className="wizard-next-icon" />
             <div>
               <div className="wizard-next-label">Profile Completion</div>
               <div className="wizard-next-desc">

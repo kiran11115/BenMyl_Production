@@ -288,7 +288,6 @@
 
 .wizard-next-items {
   display: flex;
-  flex-direction: column;
   gap: 10px;
   margin-bottom: 8px;
 }
@@ -300,13 +299,6 @@
   padding: 10px 14px;
   border-radius: 10px;
   background: #f9fafb;
-}
-
-.wizard-next-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
-  background: #e5e7eb;
 }
 
 .wizard-next-label {
