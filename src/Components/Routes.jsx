@@ -24,6 +24,7 @@ import VendorDetail from "./VendorDetail/VendorDetail";
 import InviteBid from "./InviteBid/InviteBid";
 import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
 import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
+import ContractManagement from "./ContractManagement/ContractManagement";
 
 
 
@@ -53,6 +54,7 @@ const routes = createBrowserRouter(
                     <Route path="user-invite-bid" element={<InviteBid />} />
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
                     <Route path="user-schedule-interview" element={<ScheduleInterview />} />
+                    <Route path="user-contract-management" element={<ContractManagement />} />
                 </Route>
             </Route>
 
