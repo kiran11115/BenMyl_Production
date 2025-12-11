@@ -1,15 +1,12 @@
+// StepBasicInfo.jsx
 import React from "react";
-export default function EmployerBasicInfoStep({
-  state,
-  onChange,
-  onNext,
-  onBack,
-}) {
-  const info = state.basicInfo || {};
+
+export default function StepBasicInfo({ data, patch, onNext, onBack }) {
+  const info = data.basicInfo || {};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    onChange({ basicInfo: { ...info, [name]: value } });
+    patch({ basicInfo: { ...info, [name]: value } });
   };
 
   const handleSubmit = (e) => {
@@ -20,39 +17,32 @@ export default function EmployerBasicInfoStep({
   return (
     <form className="wizard-card" onSubmit={handleSubmit}>
       <h2 className="wizard-card-title">Basic Information</h2>
-
       <p className="wizard-card-subtitle">
-        Tell us a bit about you and your company.
+        Tell us how to contact you and where you're based.
       </p>
 
-      {/* Account type toggle row */}
+      {/* Account Type Toggle */}
       <div className="wizard-user-types wizard-user-types--two">
         <button
           type="button"
           className={`wizard-user-card ${
-            state.accountType === "individual"
-              ? "wizard-user-card--active"
-              : ""
+            data.accountType === "individual" ? "wizard-user-card--active" : ""
           }`}
-          onClick={() => onChange({ accountType: "individual" })}
+          onClick={() => patch({ accountType: "individual" })}
         >
           <div className="wizard-user-label">Individual</div>
         </button>
-
         <button
           type="button"
           className={`wizard-user-card ${
-            state.accountType === "company"
-              ? "wizard-user-card--active"
-              : ""
+            data.accountType === "company" ? "wizard-user-card--active" : ""
           }`}
-          onClick={() => onChange({ accountType: "company" })}
+          onClick={() => patch({ accountType: "company" })}
         >
           <div className="wizard-user-label">Company</div>
         </button>
       </div>
 
-      {/* Form grid */}
       <div className="wizard-form-grid">
         <div className="auth-form-group">
           <label className="auth-label">Full Name</label>
@@ -64,7 +54,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">Email Address</label>
           <input
@@ -76,7 +65,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">Phone Number</label>
           <input
@@ -87,7 +75,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">Country/Region</label>
           <select
@@ -102,7 +89,6 @@ export default function EmployerBasicInfoStep({
             <option value="uk">United Kingdom</option>
           </select>
         </div>
-
         <div className="auth-form-group wizard-form-grid--full">
           <label className="auth-label">Address Line 1</label>
           <input
@@ -113,11 +99,8 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group wizard-form-grid--full">
-          <label className="auth-label">
-            Address Line 2 (Optional)
-          </label>
+          <label className="auth-label">Address Line 2 (Optional)</label>
           <input
             name="address2"
             className="auth-input"
@@ -126,7 +109,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">City</label>
           <input
@@ -137,7 +119,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">State/Province</label>
           <input
@@ -148,7 +129,6 @@ export default function EmployerBasicInfoStep({
             onChange={handleChange}
           />
         </div>
-
         <div className="auth-form-group">
           <label className="auth-label">Postal Code</label>
           <input
@@ -170,11 +150,8 @@ export default function EmployerBasicInfoStep({
           Back
         </button>
         <div className="wizard-footer-right">
-          <button
-            type="button"
-            className="auth-btn-secondary"
-          >
-            Save Progress
+          <button type="button" className="auth-btn-secondary">
+            Save
           </button>
           <button type="submit" className="auth-btn-primary">
             Continue
