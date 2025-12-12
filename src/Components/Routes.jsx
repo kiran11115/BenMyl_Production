@@ -25,6 +25,8 @@ import InviteBid from "./InviteBid/InviteBid";
 import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
 import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
 import ContractManagement from "./ContractManagement/ContractManagement";
+import ContractView from "./ContractView/ContractView";
+import CreateNewContract from "./NewContract/CreateNewContract";
 
 
 
@@ -55,6 +57,8 @@ const routes = createBrowserRouter(
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
                     <Route path="user-schedule-interview" element={<ScheduleInterview />} />
                     <Route path="user-contract-management" element={<ContractManagement />} />
+                    <Route path="user-contract-view" element={<ContractView />} />
+                    <Route path="create-new-contract" element={<CreateNewContract />} />
                 </Route>
             </Route>
 
