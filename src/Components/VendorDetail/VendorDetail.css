@@ -1,11 +1,4 @@
-:root {
-    --bg: #f7fbff;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --primary: #2563eb;
-    --border: #eef2f6;
-    --header-grad: linear-gradient(180deg, rgba(37, 99, 235, 0.06), rgba(255, 255, 255, 0));
-}
+
 
 /* subtle top gradient panel */
 .vp-header-bg {
@@ -108,16 +101,6 @@
 
 .btn-ghost svg {
     color: var(--muted)
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: #fff;
-    border: 0;
-    padding: 10px 18px;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.06)
 }
 
 /* Info card */

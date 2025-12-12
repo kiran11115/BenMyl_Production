@@ -1,13 +1,3 @@
-:root {
-    --bg: #f7fbff;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --primary: #2563eb;
-    /* blue close to screenshot */
-    --accent: #eef6ff;
-    --border: #eef2f6;
-}
-
 .vs-page {
     padding: 24px;
 }
@@ -81,14 +71,6 @@
     color: var(--muted)
 }
 
-.btn-primary {
-    background: var(--primary);
-    color: #fff;
-    border: 0;
-    padding: 10px 16px;
-    border-radius: 10px;
-    cursor: pointer
-}
 
 .vs-content {
     display: grid;

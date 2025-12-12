@@ -1,12 +1,3 @@
-:root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --muted: #64748b;
-    --accent: #2563eb;
-    --radius: 12px;
-    --shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-}
-
 
 .settings-page {
     padding: 24px;
@@ -493,11 +484,6 @@
     gap: 10px
 }
 
-.status-tag {
-    padding: 6px 8px;
-    border-radius: 999px;
-    font-size: 12px
-}
 
 .status-owner {
     background: #eef2ff;
@@ -558,20 +544,6 @@
     font-size: 13px
 }
 
-.btn-primary {
-    background: var(--accent);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 0;
-    cursor: pointer
-}
-
-.btn-primary.small {
-    padding: 8px 10px;
-    font-size: 13px;
-    width: 10rem;
-}
 
 .btn-outline.connected {
     border-color: #dbe8ff;

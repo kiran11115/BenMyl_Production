@@ -86,32 +86,6 @@
   width: 100%;
 }
 
-/* Buttons */
-.btn-primary {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  opacity: 0.95;
-}
-
-.btn-secondary {
-  background: #ffffff;
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  color: #111827;
-  padding: 7px 14px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
 
 .btn-link {
   background: transparent;

@@ -202,15 +202,6 @@
   gap: 6px;
 }
 
-/* Status Tags */
-.status-tag {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-block;
-}
-
 .status-progress {
   background-color: #eff6ff;
   color: #3b82f6;

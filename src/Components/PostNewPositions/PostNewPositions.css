@@ -253,15 +253,6 @@ textarea {
     color: #2563eb;
 }
 
-.btn-primary {
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    padding: 9px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
-}
 
 /* preview aside */
 .job-preview {

@@ -1,12 +1,3 @@
-:root {
-    --bg: #f7fbff;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --primary: #2563eb;
-    --border: #e9eef5;
-    --radius: 12px;
-}
-
 .ui-page {
     padding: 24px;
 }
@@ -219,18 +210,6 @@
     display: flex;
     gap: 12px;
     margin-top: auto
-}
-
-.btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--primary);
-    color: #fff;
-    border: 0;
-    padding: 10px 14px;
-    border-radius: 8px;
-    cursor: pointer
 }
 
 .btn-outline {
