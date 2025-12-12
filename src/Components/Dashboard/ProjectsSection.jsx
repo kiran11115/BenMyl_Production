@@ -1,7 +1,11 @@
 import React from "react";
 import { MoreVertical, Clock, DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ProjectsSection = ({ projects }) => {
+
+const navigate = useNavigate();
+
   return (
     <>
       {/* Header Section */}
@@ -17,18 +21,10 @@ const ProjectsSection = ({ projects }) => {
           Ongoing Projects
         </h3>
 
-        <div style={{ display: "flex", gap: "12px" }}>
-          {["+ Post New Job", "Find Vendors", "Schedule Interviews"].map(
-            (label, i) => (
-              <button
-                key={i}
-                className="btn-upload"
-                style={{ fontSize: "13px", padding: "8px 16px" }}
-              >
-                {label}
-              </button>
-            )
-          )}
+        <div className="d-flex align-items-center gap-2">
+          <button className="btn-upload" onClick={()=>navigate("/user/user-post-new-positions")}>+ Post New Job</button>
+          <button className="btn-upload" onClick={()=>navigate("/user/user-find-vendor")}>Find Vendors</button>
+          <button className="btn-upload" onClick={()=>navigate("/user/user-upcoming-interview")}>Schedule Interviews</button>
         </div>
       </div>
 
