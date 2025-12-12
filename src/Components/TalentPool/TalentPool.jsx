@@ -1,6 +1,15 @@
 import React from "react";
 import "./TalentPool.css";
 
+import {
+  FiSearch,
+  FiHeart,
+  FiMapPin,
+  FiClock,
+} from "react-icons/fi";
+import { AiFillStar } from "react-icons/ai";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+
 const candidates = [
   {
     id: 1,
@@ -32,7 +41,7 @@ const candidates = [
   },
   {
     id: 3,
-    name: "Sarah Thompson",
+    name: "Alex Morgan",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -41,12 +50,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "AM",
     avatarColor: "#22c55e",
   },
   {
     id: 4,
-    name: "Sarah Thompson",
+    name: "Emily Rodriguez",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -55,12 +64,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "ER",
     avatarColor: "#38bdf8",
   },
   {
     id: 5,
-    name: "Sarah Thompson",
+    name: "Priya Kapoor",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -69,12 +78,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "PK",
     avatarColor: "#fb7185",
   },
   {
     id: 6,
-    name: "Sarah Thompson",
+    name: "David Kim",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -83,12 +92,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "DK",
     avatarColor: "#a78bfa",
   },
   {
     id: 7,
-    name: "Sarah Thompson",
+    name: "Lina Gomez",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -97,12 +106,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "LG",
     avatarColor: "#f97316",
   },
   {
     id: 8,
-    name: "Sarah Thompson",
+    name: "Marcus Lee",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -111,12 +120,12 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "ML",
     avatarColor: "#22c55e",
   },
   {
     id: 9,
-    name: "Sarah Thompson",
+    name: "Nina Patel",
     title: "Senior UX Designer",
     experience: "8 years exp.",
     rating: 4.9,
@@ -125,7 +134,7 @@ const candidates = [
     location: "San Francisco, CA",
     availableNow: true,
     remote: true,
-    initials: "ST",
+    initials: "NP",
     avatarColor: "#0ea5e9",
   },
 ];
@@ -177,7 +186,7 @@ const TalentPool = () => {
 
         <h3 className="filters-title">Location</h3>
         <div className="search-location">
-          <span className="search-icon">🔍</span>
+          <FiSearch className="search-icon" />
           <input placeholder="Search location..." />
         </div>
 
@@ -230,16 +239,16 @@ const TalentPool = () => {
                   <div className="card-info-top">
                     <h4>{c.name}</h4>
                     <button className="icon-btn" title="Save">
-                      ☆
+                      <FiHeart />
                     </button>
                   </div>
                   <p className="card-title">{c.title}</p>
                   <div className="card-meta">
                     <span className="meta-item">
-                      ⏱ <span>{c.experience}</span>
+                      <FiClock /> <span>{c.experience}</span>
                     </span>
                     <span className="meta-item">
-                      ⭐ {c.rating} <span className="meta-reviews">({c.reviews})</span>
+                      <AiFillStar color="#facc15" /> {c.rating} <span className="meta-reviews">({c.reviews})</span>
                     </span>
                   </div>
                 </div>
@@ -254,14 +263,12 @@ const TalentPool = () => {
               </div>
 
               <div className="card-location-row">
-                <span className="location-icon">📍</span>
+                <FiMapPin className="location-icon" />
                 <span className="location-text">{c.location}</span>
               </div>
 
               <div className="card-badges">
-                {c.availableNow && (
-                  <span className="badge badge-available">Available Now</span>
-                )}
+                {c.availableNow && <span className="badge badge-available">Available Now</span>}
                 {c.remote && <span className="badge badge-remote">Remote</span>}
               </div>
 
@@ -277,13 +284,13 @@ const TalentPool = () => {
         <footer className="candidates-footer">
           <span>Showing 1–9 of 248 candidates</span>
           <div className="pagination">
-            <button className="page-btn">{"<"}</button>
+            <button className="page-btn"><IoIosArrowBack /></button>
             <button className="page-btn page-active">1</button>
             <button className="page-btn">2</button>
             <button className="page-btn">3</button>
             <span className="page-dots">…</span>
             <button className="page-btn">27</button>
-            <button className="page-btn">{">"}</button>
+            <button className="page-btn"><IoIosArrowForward /></button>
           </div>
         </footer>
       </main>
