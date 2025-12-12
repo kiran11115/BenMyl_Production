@@ -4,7 +4,6 @@
 .projects-container {
   padding: 24px;
   color: #334155;
-  font-family: 'Inter', sans-serif;
 }
 
 .dashboard-layout {
@@ -45,9 +44,9 @@
   font-weight: 500;
   cursor: pointer;
   width: 165px;
-  background-color: #6843C7; 
+  background-color: #6843c7;
   color: #ffffff;
-  border: 1px solid #6843C7;
+  border: 1px solid #6843c7;
   transition: all 0.2s ease;
 }
 
@@ -78,24 +77,24 @@
   border-radius: 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-  overflow: hidden; 
+  overflow: hidden;
   z-index: 1;
   padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   background-color: #ffffff;
-  
+
   /* UNIFORM BORDER: All cards now have the exact same border */
   border: 1px solid #e2e8f0;
-  
+
   box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.05);
 }
 
 .stat-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08),
-              0 10px 10px -5px rgba(15, 23, 42, 0.03);
+    0 10px 10px -5px rgba(15, 23, 42, 0.03);
 }
 
 /* --- Gradient Glow Variants --- */
@@ -103,34 +102,68 @@
 
 /* 1. Cyan Glow */
 .card-cyan {
-  background-image: radial-gradient(circle 350px at 0% 0%, rgba(14, 165, 233, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(
+    circle 350px at 0% 0%,
+    rgba(14, 165, 233, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
-.card-cyan .stat-icon-box { background-color: #0ea5e9; color: #ffffff; }
+.card-cyan .stat-icon-box {
+  background-color: #0ea5e9;
+  color: #ffffff;
+}
 
 /* 2. Purple Glow */
 .card-purple {
-  background-image: radial-gradient(circle 350px at 0% 0%, rgba(168, 85, 247, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(
+    circle 350px at 0% 0%,
+    rgba(168, 85, 247, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
-.card-purple .stat-icon-box { background-color: #a855f7; color: #ffffff; }
+.card-purple .stat-icon-box {
+  background-color: #a855f7;
+  color: #ffffff;
+}
 
 /* 3. Blue Glow */
 .card-blue {
-  background-image: radial-gradient(circle 350px at 0% 0%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(
+    circle 350px at 0% 0%,
+    rgba(59, 130, 246, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
-.card-blue .stat-icon-box { background-color: #3b82f6; color: #ffffff; }
+.card-blue .stat-icon-box {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
 
 /* 4. Green Glow */
 .card-green {
-  background-image: radial-gradient(circle 350px at 0% 0%, rgba(34, 197, 94, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(
+    circle 350px at 0% 0%,
+    rgba(34, 197, 94, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
-.card-green .stat-icon-box { background-color: #22c55e; color: #ffffff; }
+.card-green .stat-icon-box {
+  background-color: #22c55e;
+  color: #ffffff;
+}
 
 /* 5. yellow Glow */
 .card-yellow {
-  background-image: radial-gradient(circle 350px at 0% 0%, rgba(239, 179, 68, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(
+    circle 350px at 0% 0%,
+    rgba(239, 179, 68, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
-.card-yellow .stat-icon-box { background-color: #f59f0a; color: #ffffff; }
-
+.card-yellow .stat-icon-box {
+  background-color: #f59f0a;
+  color: #ffffff;
+}
 
 /* Stat Content Typography */
 .stat-content {
@@ -165,8 +198,12 @@
   margin-top: 8px;
 }
 
-.trend-up { color: #16a34a; }
-.trend-down { color: #dc2626; }
+.trend-up {
+  color: #16a34a;
+}
+.trend-down {
+  color: #dc2626;
+}
 
 /* Icon Box */
 .stat-icon-box {
@@ -178,7 +215,8 @@
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
-  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 2;
 }
@@ -188,7 +226,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 100%; 
+  width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 0;
@@ -198,9 +236,9 @@
 .bubble {
   position: absolute;
   border-radius: 50%;
-  filter: blur(24px); 
-  opacity: 0.12; 
-  background-color: currentColor; 
+  filter: blur(24px);
+  opacity: 0.12;
+  background-color: currentColor;
   animation: floatPremium 10s infinite ease-in-out;
 }
 
@@ -218,7 +256,7 @@
   bottom: -20px;
   right: 20%;
   opacity: 0.08;
-  animation-delay: -5s; 
+  animation-delay: -5s;
 }
 
 .bubble-3 {
@@ -232,10 +270,18 @@
 }
 
 @keyframes floatPremium {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(15px, -15px) scale(1.1); }
-  66% { transform: translate(-10px, 10px) scale(0.95); }
-  100% { transform: translate(0, 0) scale(1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(15px, -15px) scale(1.1);
+  }
+  66% {
+    transform: translate(-10px, 10px) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
 }
 
 /* =========================================
@@ -270,7 +316,7 @@
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
@@ -355,6 +401,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 4px 4px;
+  background-color: #eff6ff;
+  border-radius: 8px;
 }
 
 /* Status Tags */
@@ -368,10 +417,22 @@
   letter-spacing: 0.3px;
 }
 
-.status-progress { background-color: #eff6ff; color: #3b82f6; }
-.status-review { background-color: #fff7ed; color: #f97316; }
-.status-completed { background-color: #f0fdf4; color: #22c55e; }
-.status-pending { background-color: #f1f5f9; color: #64748b; }
+.status-progress {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+.status-review {
+  background-color: #fff7ed;
+  color: #f97316;
+}
+.status-completed {
+  background-color: #f0fdf4;
+  color: #22c55e;
+}
+.status-pending {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
 
 /* =========================================
    4. Tables (Applications)
@@ -379,6 +440,18 @@
 .custom-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.table-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: box-shadow 0.2s ease;
+  position: relative;
 }
 
 .custom-table th {
@@ -439,4 +512,135 @@
   height: 8px;
   border-radius: 50%;
   display: inline-block;
+}
+
+/* =========================================
+   6. Premium Interviews List (Compact & Menu)
+   ========================================= */
+
+/* Header Adjustments */
+.card-header-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px; /* Minimal spacing below header */
+}
+
+/* The 3-Dots Button */
+.options-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8; /* Subtle slate */
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.options-btn:hover {
+  background-color: #f1f5f9; /* Light gray bg on hover */
+  color: #475569; /* Darker icon on hover */
+}
+
+/* List Container */
+.interviews-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Row Item */
+.interview-item-premium {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+}
+
+.interview-item-premium:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+}
+
+/* Icon Box */
+.icon-box-premium {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+}
+
+.interview-item-premium:hover .icon-box-premium {
+  transform: scale(1.05);
+}
+
+/* Content */
+.interview-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.interview-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.interview-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Tags */
+.tag-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  background-color: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.tag-technical {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.1);
+}
+.tag-hr {
+  background: #fdf2f8;
+  color: #db2777;
+  border-color: rgba(219, 39, 119, 0.1);
+}
+.tag-managerial {
+  background: #fff7ed;
+  color: #ea580c;
+  border-color: rgba(234, 88, 12, 0.1);
 }

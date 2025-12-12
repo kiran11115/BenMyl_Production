@@ -80,7 +80,7 @@ const RecentApplications = ({ applications }) => {
         </div>
       </div>
 
-      <div className="project-card" style={{ padding: "0", overflow: "hidden", marginTop: "16px" }}>
+      <div className="table-card" style={{ padding: "0", overflow: "hidden", marginTop: "16px" }}>
         <table className="custom-table">
           <thead>
             <tr>

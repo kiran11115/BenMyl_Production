@@ -92,7 +92,7 @@ const recentApplications = [
   },
   { 
     name: "James Williams", 
-    email: "j.williams@dataminds.com",
+    email: "jwilliams@dataminds.com",
     role: "Data Scientist", 
     status: "In Review", 
     statusClass: "status-review",

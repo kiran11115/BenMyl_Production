@@ -1,43 +1,49 @@
 import React from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Clock, MoreVertical } from "lucide-react";
 
 const InterviewsList = ({ interviews }) => {
+  
+  const getTagClass = (tag) => {
+    const lower = tag.toLowerCase();
+    if (lower.includes("tech")) return "tag-technical";
+    if (lower.includes("hr")) return "tag-hr";
+    if (lower.includes("manager")) return "tag-managerial";
+    return ""; 
+  };
+
   return (
-    <div className="project-card">
-      <div className="card-header">
-        <h3 className="card-title">Interviews</h3>
-        <span style={{ fontSize: "12px", color: "#3b82f6", cursor: "pointer" }}>
-          View All
-        </span>
+    <div className="project-card" style={{ padding: '16px' }}>
+      
+      {/* Header with Title and Options Dots */}
+      <div className="card-header-compact">
+        <h3 className="card-title" style={{ fontSize: '13px', margin: 0 }}>Interviews</h3>
+        <button className="options-btn">
+          <MoreVertical size={16} />
+        </button>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          marginTop: "16px",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
+      
+      {/* List */}
+      <div className="interviews-wrapper">
         {interviews.map((int, i) => (
-          <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-            <div
-              style={{
-                background: "#eff6ff",
-                padding: "8px",
-                borderRadius: "8px",
-                color: "#3b82f6",
-              }}
-            >
-              <Calendar size={18} />
+          <div key={i} className="interview-item-premium">
+            <div className="icon-box-premium">
+              <Calendar size={14} strokeWidth={2.5} />
             </div>
-            <div>
-              <div className="card-title" style={{ fontSize: "13px" }}>
+            
+            <div className="interview-content">
+              <div className="interview-title">
                 {int.name}
               </div>
-              <div style={{ fontSize: "11px", color: "#64748b" }}>
-                {int.time} • {int.tag}
+              <div className="interview-meta-row">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <Clock size={10} />
+                  {int.time}
+                </div>
+                {int.tag && (
+                  <span className={`tag-badge ${getTagClass(int.tag)}`}>
+                    {int.tag}
+                  </span>
+                )}
               </div>
             </div>
           </div>

@@ -230,11 +230,11 @@ const navigate = useNavigate();
         <aside className="profile-sidebar">
           {/* Top buttons (Share + Download) */}
           <div className="sidebar-actions">
-            <button className="sidebar-btn sidebar-btn-primary">
+            <button className="btn-primary">
               <FiShare2 className="sidebar-btn-icon" />
               <span>Share Profile</span>
             </button>
-            <button className="sidebar-btn sidebar-btn-outline">
+            <button className="btn-secondary">
               <FiDownload className="sidebar-btn-icon" />
               <span>Download Resume</span>
             </button>
