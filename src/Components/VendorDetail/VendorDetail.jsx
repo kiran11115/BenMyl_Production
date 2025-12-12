@@ -61,7 +61,7 @@ export default function VendorDetail() {
 
       <div className="vp-top">
         <div className="vp-breadcrumbs">
-          <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
+          <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
           <button className="link-button" onClick={() => navigate("/user/user-find-vendor")}><FiArrowLeft /> Find Vendor</button>
           <span className="crumb">/ View Details</span>
         </div>

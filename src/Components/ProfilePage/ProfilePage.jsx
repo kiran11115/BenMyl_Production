@@ -60,7 +60,7 @@ const navigate = useNavigate();
     <div className="profile-page">
       {/* Top breadcrumb */}
       <div className="top-bar">
-        <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}>&larr; Back to dashboard</button>
+        <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}>&larr; Back to Dashboard</button>
         <span className="top-bar-divider">/</span>
         <span className="top-bar-current">Profile</span>
       </div>

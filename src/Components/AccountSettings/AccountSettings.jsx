@@ -39,7 +39,7 @@ export default function AccountSettings() {
         <div className="settings-page">
             <div className="">
                 <div className="back-row">
-                    <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
+                    <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
                     <span className="crumb">/ Job Posting</span>
                 </div>
 

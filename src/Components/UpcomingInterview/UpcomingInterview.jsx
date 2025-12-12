@@ -54,8 +54,8 @@ export default function UpcomingInterview() {
     return (
         <div className="ui-page">
             <div className="ui-breadcrumbs">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
-                <span className="crumb">/ Upcming Interviews</span>
+                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
+                <span className="crumb">/ Upcoming Interviews</span>
             </div>
 
             <div className="ui-header">

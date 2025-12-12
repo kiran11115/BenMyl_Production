@@ -136,7 +136,7 @@ export default function ScheduleInterview() {
     return (
         <div className="si-page">
             <div className="si-breadcrumbs">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
+                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
                 <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}><FiArrowLeft /> Upcoming Interviews</button>
                 <span className="crumb">/ Schedule Interviews</span>
             </div>

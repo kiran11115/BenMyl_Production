@@ -58,7 +58,7 @@ export default function ContractManagement() {
         <>
             <div style={{ padding: "24px" }}>
                 <div className="back-row">
-                    <a className="back-link">Back to dashboard</a>
+                    <a className="back-link">Back to Dashboard</a>
                     <span className="breadcrumb">/ Contract Management</span>
                 </div>
                 <div className="cm-page">

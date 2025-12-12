@@ -96,7 +96,7 @@ export default function PostNewPositions() {
     return (
         <div className="job-page">
             <div className="top">
-                <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
+                <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
                 <span className="crumb">/ Job Posting</span>
             </div>
 

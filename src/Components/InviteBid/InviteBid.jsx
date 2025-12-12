@@ -36,7 +36,7 @@ export default function InviteBid() {
     return (
         <div className="nb-page">
             <div className="nb-breadcrumbs">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to dashboard</button>
+                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
                 <button className="link-button" onClick={() => navigate("/user/user-find-vendor")}><FiArrowLeft /> Find Vendor</button>
                 <button className="link-button" onClick={() => navigate("/user/user-vendor-detail")}><FiArrowLeft /> Vendor Details</button>
                 <span className="crumb">/ New Bid Invitation</span>
