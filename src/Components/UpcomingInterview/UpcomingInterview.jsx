@@ -74,22 +74,23 @@ export default function UpcomingInterview() {
                         <FiCalendar /> <span>{selectedMonth}</span>
                     </div>
 
-                    <button className="btn-add" onClick={() => navigate("/user/user-schedule-interview")}><FiPlus /> Add New Interview</button>
+                    <button className="add-project-btn" onClick={() => navigate("/user/user-schedule-interview")}><FiPlus /> Add New Interview</button>
                 </div>
             </div>
 
-            <div className="ui-grid">
+            <div className="projects-grid">
                 {MOCK.map((it) => (
-                    <article className="card1" key={it.id}>
+                    <article className="project-card" key={it.id}>
                         <div className="card-top">
                             <div className="card-date"><FiCalendar className="ico1" /> {it.dateLabel}</div>
                             <div className="card-time"><FiClock className="ico1" /> {it.time}</div>
                         </div>
 
                         <div className="card-body">
-                            <h3 className="candidate-name">{it.name}</h3>
+                            <div className="status-tag status-progress d-flex justify-content-center">{it.tag}</div>
+                            <h3 className="candidate-name mt-3">{it.name}</h3>
                             <div className="candidate-role">{it.role}</div>
-                            <div className="tag">{it.tag}</div>
+     
 
                             <div className="interviewer-row">
                                 <img className="int-avatar" src={it.interviewer.avatar} alt={it.interviewer.name} />
@@ -100,8 +101,8 @@ export default function UpcomingInterview() {
                             </div>
 
                             <div className="card-actions">
-                                <button className="btn-primary"><FiVideo /> Join Meeting</button>
-                                <button className="btn-secondary"><FiRepeat /> Reschedule</button>
+                                <button className="btn-primary gap-2"><FiVideo /> Join Meeting</button>
+                                <button className="btn-secondary gap-2"><FiRepeat /> Reschedule</button>
                             </div>
                         </div>
                     </article>
