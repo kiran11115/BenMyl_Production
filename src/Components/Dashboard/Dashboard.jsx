@@ -133,7 +133,7 @@ const recentApplications = [
 ];
 
 const interviews = [
-  { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Technical" },
+  { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Final" },
   { name: "Michael Chen", role: "Project Manager", time: "2:00 PM", tag: "Final" },
   { name: "David Kim", role: "Backend Engineer", time: "11:30 AM", tag: "Coding" },
   { name: "Jessica Wong", role: "Product Designer", time: "1:15 PM", tag: "Portfolio" },

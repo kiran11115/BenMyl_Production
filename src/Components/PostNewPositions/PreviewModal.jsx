@@ -68,8 +68,8 @@ const navigate = useNavigate();
                         </div>
 
                         <h4 className="modal-subtitle">Skills</h4>
-                        <div className="chips">
-                            {skills.length ? skills.map((s) => <span key={s} className="chip">{s}</span>)
+                        <div className="status-tag status-progress">
+                            {skills.length ? skills.map((s) => <span key={s} className="status-tag status-progress">{s}</span>)
                                 : <span className="muted small">No skills provided</span>}
                         </div>
 
@@ -126,9 +126,9 @@ const navigate = useNavigate();
                     </aside>
                 </div>
 
-                <div className="modal-actions-left" style={{ padding: "24PX" }}>
-                    <button className="btn-muted" onClick={onClose}>Back to Edit</button>
-                    <button onClick={()=>navigate("/user/user-find-vendor")} className="border-0" style={{ marginLeft: 12, background: "#2563EB", padding: "8PX 24PX", color: "#FFFFFF", borderRadius: "8px" }}>
+                <div className="modal-actions-left gap-3" style={{ padding: "24PX" }}>
+                    <button className="btn-secondary" onClick={onClose}>Back to Edit</button>
+                    <button onClick={()=>navigate("/user/user-find-vendor")} className="btn-primary" style={{width:"165px"}}>
                         Post Job Now
                     </button>
                 </div>

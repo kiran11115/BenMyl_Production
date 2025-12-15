@@ -210,22 +210,7 @@ input[type="range"]::-moz-range-thumb {
   gap: 8px;
 }
 
-.icon-btn {
-  background: #fff;
-  border: 1px solid var(--muted-border);
-  padding: 6px;
-  color: #6a84fc;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.icon-btn.active {
-  background: linear-gradient(180deg, #f4f8ff, #eef6ff);
-  border: 1px solid #dbeafe;
-}
 
 /* sort control */
 .sort {

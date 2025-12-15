@@ -1,294 +1,361 @@
-import React, { useState } from "react";
-import {
-    FiArrowLeft,
-    FiMapPin,
-    FiClock,
-    FiDollarSign,
-    FiBriefcase,
-    FiLink,
-    FiCopy,
-} from "react-icons/fi";
-import PreviewModal from "./PreviewModal";
-import "./PostNewPositions.css";
+import React, { useState } from 'react';
+import { 
+  Briefcase, MapPin, DollarSign, Monitor, 
+  FileText, X, Building2 
+} from 'lucide-react';
+import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import PreviewModal from './PreviewModal'; // Ensure this path is correct
+import '../Dashboard/Dashboard.css';
+import '../Auth/Auth.css';
+import './PostNewPositions.css'; // This will hold the modal styles
 
-export default function PostNewPositions() {
+const PostNewPositions = () => {
+  const navigate = useNavigate();
+  const [showPreview, setShowPreview] = useState(false);
+  const [skillInput, setSkillInput] = useState('');
+  const [skills, setSkills] = useState(['React', 'TypeScript', 'Node.js']);
 
-    const navigate = useNavigate(); 
+  const [formData, setFormData] = useState({
+    jobTitle: '',
+    companyName: '',
+    location: '',
+    employmentType: '',
+    workModel: '',
+    salaryMin: '',
+    salaryMax: '',
+    salaryCurrency: 'USD',
+    description: '',
+    department: '',
+    experienceLevel: '',
+    educationLevel: '',
+    yearsExperience: '',
+    additionalReqs: '',
+  });
 
-    // Basic Info
-    const [jobTitle, setJobTitle] = useState("");
-    const [companyName, setCompanyName] = useState("");
-    const [location, setLocation] = useState("");
-    const [employmentType, setEmploymentType] = useState("");
-    const [workModel, setWorkModel] = useState("");
-    const [salaryMin, setSalaryMin] = useState("");
-    const [salaryMax, setSalaryMax] = useState("");
-    const [currency, setCurrency] = useState("USD");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    // Job Details
-    const [description, setDescription] = useState("");
-    const [department, setDepartment] = useState("");
-    const [experienceLevel, setExperienceLevel] = useState("");
-
-    // Requirements
-    const [skillInput, setSkillInput] = useState("");
-    const [skills, setSkills] = useState([]);
-    const [educationLevel, setEducationLevel] = useState("");
-    const [yearsExperience, setYearsExperience] = useState("");
-    const [additional, setAdditional] = useState("");
-
-    // modal open
-    const [openPreview, setOpenPreview] = useState(false);
-
-    // Step helpers (determine if each step is "complete")
-    const step1Complete =
-        jobTitle.trim() &&
-        companyName.trim() &&
-        location.trim() &&
-        employmentType.trim();
-
-    const step2Complete = description.trim();
-
-    const step3Complete = skills.length > 0;
-
-    function addSkillFromInput() {
-        const v = skillInput.trim();
-        if (!v) return;
-        if (!skills.includes(v)) setSkills((s) => [...s, v]);
-        setSkillInput("");
+  const handleAddSkill = (e) => {
+    if (e.key === 'Enter' && skillInput.trim()) {
+      e.preventDefault();
+      if (!skills.includes(skillInput.trim())) {
+        setSkills([...skills, skillInput.trim()]);
+      }
+      setSkillInput('');
     }
+  };
 
-    function removeSkill(tag) {
-        setSkills((s) => s.filter((x) => x !== tag));
-    }
+  const removeSkill = (skillToRemove) => {
+    setSkills(skills.filter(skill => skill !== skillToRemove));
+  };
 
-    function onClickPostJob() {
-        // require all steps to be complete to preview
-        if (!step1Complete || !step2Complete || !step3Complete) {
-            // scroll to top and highlight incomplete? simple alert for now
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            alert("Please complete all steps (Basic Info, Job Details, Requirements) before previewing.");
-            return;
-        }
-        setOpenPreview(true);
-    }
+  const handlePostJobClick = () => {
+    setShowPreview(true);
+  };
 
-    function resetForm() {
-        setJobTitle("");
-        setCompanyName("");
-        setLocation("");
-        setEmploymentType("");
-        setWorkModel("");
-        setSalaryMin("");
-        setSalaryMax("");
-        setCurrency("USD");
-        setDescription("");
-        setDepartment("");
-        setExperienceLevel("");
-        setSkillInput("");
-        setSkills([]);
-        setEducationLevel("");
-        setYearsExperience("");
-        setAdditional("");
-    }
+  // Prepare data object for the modal (mapping fields to what Modal expects)
+  const modalData = {
+    ...formData,
+    skills: skills,
+    currency: formData.salaryCurrency,
+    additional: formData.additionalReqs
+  };
 
-    return (
-        <div className="job-page">
-            <div className="top">
-                <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
-                <span className="crumb">/ Job Posting</span>
+  return (
+    <div className="projects-container">
+      {/* Header with Navigation */}
+      <div style={{ marginBottom: '24px' }}>
+        <div className="vs-breadcrumbs mb-3">
+          <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+            <FiArrowLeft /> Back to Dashboard
+          </button>
+          <span className="crumb">/ Job Posting</span>
+        </div>
+
+        <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' }}>
+          Creating New Job Posting
+        </h1>
+        <p style={{ color: '#64748b', margin: 0 }}>
+          Here's what's happening with your projects today
+        </p>
+      </div>
+
+      {/* Stepper */}
+      <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '32px 0 48px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', maxWidth: '600px', width: '100%' }}>
+          {[
+            { num: 1, label: 'Basic Info', active: true },
+            { num: 2, label: 'Details', active: false },
+            { num: 3, label: 'Requirements', active: false },
+            { num: 4, label: 'Review', active: false }
+          ].map((step, idx) => (
+            <React.Fragment key={step.num}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ 
+                  width: '28px', height: '28px', borderRadius: '50%', 
+                  backgroundColor: step.active ? '#1e293b' : '#e2e8f0',
+                  color: step.active ? '#fff' : '#64748b',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '12px', fontWeight: '600'
+                }}>
+                  {step.num}
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: '500', color: step.active ? '#1e293b' : '#64748b' }}>
+                  {step.label}
+                </span>
+              </div>
+              {idx < 3 && <div style={{ flex: 1, height: '1px', backgroundColor: '#e2e8f0' }} />}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      <div className="dashboard-layout">
+        
+        {/* Main Form Area */}
+        <div className="dashboard-column-main">
+          
+          {/* Main Form Container Card */}
+          <div style={{ 
+            backgroundColor: '#ffffff', 
+            borderRadius: '16px', 
+            border: '1px solid #e2e8f0', 
+            padding: '32px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)'
+          }}>
+            
+            {/* Section 1: Basic Information */}
+            <div style={{ marginBottom: '40px' }}>
+              <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
+                Basic Information
+              </h3>
+              
+              <div className="auth-form-group">
+                <label className="auth-label">Job Title</label>
+                <input className="auth-input" name="jobTitle" placeholder="e.g. Senior Frontend Developer" value={formData.jobTitle} onChange={handleInputChange} />
+              </div>
+
+              {/* 3-Column Grid for Basic Info */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '1.25rem' }}>
+                <div>
+                  <label className="auth-label">Company Name</label>
+                  <div className="auth-password-wrapper">
+                    <input className="auth-input" name="companyName" placeholder="Company" style={{ paddingLeft: '2.5rem' }} value={formData.companyName} onChange={handleInputChange} />
+                    <Building2 size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  </div>
+                </div>
+                <div>
+                  <label className="auth-label">Location</label>
+                  <div className="auth-password-wrapper">
+                    <input className="auth-input" name="location" placeholder="City, State" style={{ paddingLeft: '2.5rem' }} value={formData.location} onChange={handleInputChange} />
+                    <MapPin size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  </div>
+                </div>
+                <div>
+                  <label className="auth-label">Employment Type</label>
+                  <select className="auth-input" name="employmentType" value={formData.employmentType} onChange={handleInputChange}>
+                    <option value="">Select type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Freelance">Freelance</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="auth-form-group">
+                <label className="auth-label">Salary Range</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px', gap: '16px' }}>
+                  <div className="auth-password-wrapper">
+                    <input className="auth-input" name="salaryMin" placeholder="Min" style={{ paddingLeft: '2.5rem' }} value={formData.salaryMin} onChange={handleInputChange} />
+                    <DollarSign size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  </div>
+                  <div className="auth-password-wrapper">
+                    <input className="auth-input" name="salaryMax" placeholder="Max" style={{ paddingLeft: '2.5rem' }} value={formData.salaryMax} onChange={handleInputChange} />
+                    <DollarSign size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  </div>
+                  <select className="auth-input" style={{ textAlign: 'center' }} name="salaryCurrency" value={formData.salaryCurrency} onChange={handleInputChange}>
+                    <option>USD</option>
+                    <option>EUR</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <div className="job-container">
-                <h1>Creating New Job Posting</h1>
-                <p className="muted">Here's what's happening with your projects today</p>
+            {/* Section 2: Job Details */}
+            <div style={{ marginBottom: '40px' }}>
+              <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
+                Job Details
+              </h3>
+              <div className="auth-form-group">
+                <label className="auth-label">Job Description</label>
+                <textarea className="auth-input" rows={6} style={{ resize: 'vertical' }} placeholder="Describe the role and responsibilities..." name="description" value={formData.description} onChange={handleInputChange} />
+              </div>
 
-                <div className="steps">
-                    <Step number={1} label="Basic Info" active={true} complete={!!step1Complete} />
-                    <Step number={2} label="Details" active={true} complete={!!step2Complete} />
-                    <Step number={3} label="Requirements" active={true} complete={!!step3Complete} />
-                    <Step number={4} label="Review" active={false} complete={false} />
+              {/* 3-Column Grid for Details */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+                <div>
+                  <label className="auth-label">Work Model</label>
+                  <select className="auth-input" name="workModel" value={formData.workModel} onChange={handleInputChange}>
+                    <option value="">Select model</option>
+                    <option value="Remote">Remote</option>
+                    <option value="On-site">On-site</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
                 </div>
-
-                <div className="job-layout">
-                    <div className="job-main">
-                        <section className="card">
-                            <h3 className="section-title">Basic Information</h3>
-
-                            <div className="form-row">
-                                <div className="field full">
-                                    <label>Job Title <span className="req">*</span></label>
-                                    <input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Senior Frontend Developer" />
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="field">
-                                    <label>Company Name <span className="req">*</span></label>
-                                    <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Your company name" />
-                                </div>
-                                <div className="field">
-                                    <label>Location <span className="req">*</span></label>
-                                    <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. New York, NY" />
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="field">
-                                    <label>Employment Type <span className="req">*</span></label>
-                                    <select value={employmentType} onChange={(e) => setEmploymentType(e.target.value)}>
-                                        <option value="">Select type</option>
-                                        <option>Full-time</option>
-                                        <option>Part-time</option>
-                                        <option>Contract</option>
-                                        <option>Internship</option>
-                                    </select>
-                                </div>
-                                <div className="field">
-                                    <label>Work Model</label>
-                                    <select value={workModel} onChange={(e) => setWorkModel(e.target.value)}>
-                                        <option value="">Select model</option>
-                                        <option>Onsite</option>
-                                        <option>Hybrid</option>
-                                        <option>Remote</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="field salary">
-                                    <label>Salary Range</label>
-                                    <div className="salary-row">
-                                        <input value={salaryMin} onChange={(e) => setSalaryMin(e.target.value)} placeholder="Min" />
-                                        <span className="dash">-</span>
-                                        <input value={salaryMax} onChange={(e) => setSalaryMax(e.target.value)} placeholder="Max" />
-                                        <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                                            <option>USD</option>
-                                            <option>EUR</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section className="card">
-                            <h3 className="section-title">Job Details</h3>
-                            <label>Job Description <span className="req">*</span></label>
-                            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe the role and responsibilities..." />
-                            <div className="form-row">
-                                <div className="field"><label>Department</label>
-                                    <select value={department} onChange={(e) => setDepartment(e.target.value)}><option value="">Select department</option><option>Engineering</option><option>Design</option></select>
-                                </div>
-                                <div className="field"><label>Experience Level</label>
-                                    <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)}><option value="">Select level</option><option>Junior</option><option>Mid</option><option>Senior</option></select>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section className="card">
-                            <h3 className="section-title">Requirements</h3>
-                            <label className="mb-2">Required Skills <span className="req">*</span></label>
-                            <div className="skill-input-row">
-                                <input
-                                    className="form-control"
-                                    value={skillInput}
-                                    onChange={(e) => setSkillInput(e.target.value)}
-                                    placeholder="Add skills (press Enter to add)"
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            e.preventDefault();
-                                            addSkillFromInput();
-                                        }
-                                    }}
-                                />
-                                <button className="btn-add" onClick={addSkillFromInput}>Add</button>
-                            </div>
-
-                            <div className="chips" style={{ marginTop: 8 }}>
-                                {skills.map((s) => (
-                                    <div key={s} className="chip removable">
-                                        {s} <button onClick={() => removeSkill(s)} className="x">×</button>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="form-row" style={{ marginTop: 12 }}>
-                                <div className="field"><label>Education Level</label>
-                                    <select value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}><option value="">Select education</option><option>Bachelor's</option><option>Master's</option></select>
-                                </div>
-                                <div className="field"><label>Years of Experience</label><input value={yearsExperience} onChange={(e) => setYearsExperience(e.target.value)} placeholder="e.g. 3" /></div>
-                            </div>
-
-                            <label style={{ marginTop: 12 }}>Additional Requirements</label>
-                            <textarea value={additional} onChange={(e) => setAdditional(e.target.value)} placeholder="Any other requirements or qualifications..." />
-                        </section>
-
-                        <div className="actions-row">
-                            <button className="btn-muted" onClick={resetForm}>Cancel</button>
-                            <div style={{ flex: 1 }} />
-                            <button className="btn-secondary" onClick={() => alert("Saved as draft (local)")} >Save as Draft</button>
-                            <button className="btn-primary" onClick={onClickPostJob}>Post Job</button>
-                        </div>
-                    </div>
-
-                    <aside className="job-preview">
-                        <div className="card preview-card">
-                            <div className="preview-top">
-                                <div className="preview-icon">📄</div>
-                                <div>
-                                    <h3 className="preview-title">{jobTitle || "Job Title"}</h3>
-                                    <div className="muted small">{companyName || "Company name"}</div>
-                                </div>
-                            </div>
-
-                            <div className="preview-row"><FiMapPin /> {location || "Location"}</div>
-                            <div className="preview-row"><FiClock /> {employmentType || "Employment type"}</div>
-                            <div className="preview-row"><FiDollarSign /> {salaryMin || "-"} - {salaryMax || "-"} {currency}</div>
-                            <div className="preview-row"><FiBriefcase /> {workModel || "Work model"}</div>
-
-                            <div style={{ marginTop: 12 }}><strong>Required Skills</strong></div>
-                            <div className="chips" style={{ marginTop: 8 }}>
-                                {skills.length ? skills.map((s) => <span key={s} className="chip">{s}</span>) : <span className="muted small">No skills yet</span>}
-                            </div>
-
-                            <div className="all-completed"><span>✔</span> Fill all sections to preview complete</div>
-                        </div>
-                    </aside>
+                <div>
+                  <label className="auth-label">Department</label>
+                  <select className="auth-input" name="department" value={formData.department} onChange={handleInputChange}>
+                    <option value="">Select department</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Design">Design</option>
+                    <option value="Product">Product</option>
+                  </select>
                 </div>
+                <div>
+                  <label className="auth-label">Experience Level</label>
+                  <select className="auth-input" name="experienceLevel" value={formData.experienceLevel} onChange={handleInputChange}>
+                    <option value="">Select level</option>
+                    <option value="Junior">Junior</option>
+                    <option value="Mid-Level">Mid-Level</option>
+                    <option value="Senior">Senior</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            {openPreview && (
-                <PreviewModal
-                    onClose={() => setOpenPreview(false)}
-                    data={{
-                        jobTitle,
-                        companyName,
-                        location,
-                        employmentType,
-                        workModel,
-                        salaryMin,
-                        salaryMax,
-                        currency,
-                        description,
-                        department,
-                        experienceLevel,
-                        skills,
-                        educationLevel,
-                        yearsExperience,
-                        additional,
-                    }}
-                />
-            )}
-        </div>
-    );
-}
+            {/* Section 3: Requirements */}
+            <div style={{ marginBottom: '24px' }}>
+              <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
+                Requirements
+              </h3>
+              <div className="auth-form-group">
+                <label className="auth-label">Required Skills</label>
+                <input className="auth-input" placeholder="Add skills (e.g. React, Node.js) and press Enter" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={handleAddSkill} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
+                  {skills.map(skill => (
+                    <span key={skill} className="status-tag status-progress" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', padding: '6px 10px' }}>
+                      {skill}
+                      <X size={12} style={{ cursor: 'pointer' }} onClick={() => removeSkill(skill)} />
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-function Step({ number, label, active, complete }) {
-    return (
-        <div className={`step ${complete ? "step-complete" : ""} ${active ? "active" : ""}`}>
-            <div className="step-circle">{number}</div>
-            <div className="step-label">{label}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '1.25rem' }}>
+                <div>
+                  <label className="auth-label">Education Level</label>
+                  <select className="auth-input" name="educationLevel" value={formData.educationLevel} onChange={handleInputChange}>
+                    <option value="">Select education</option>
+                    <option value="Bachelors">Bachelor's Degree</option>
+                    <option value="Masters">Master's Degree</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="auth-label">Years of Experience</label>
+                  <div className="auth-password-wrapper">
+                    <input className="auth-input" name="yearsExperience" placeholder="e.g. 3" style={{ paddingLeft: '2.5rem' }} value={formData.yearsExperience} onChange={handleInputChange} />
+                    <FileText size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="auth-form-group">
+                <label className="auth-label">Additional Requirements</label>
+                <textarea className="auth-input" rows={4} placeholder="Any other requirements..." name="additionalReqs" value={formData.additionalReqs} onChange={handleInputChange} />
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
+              <button className="btn-secondary" onClick={() => navigate("/user/user-dashboard")}>
+                Cancel
+              </button>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <button className="btn-secondary">
+                  Save as Draft
+                </button>
+                <button className="btn-primary" onClick={handlePostJobClick}>
+                  Post Job
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
-    );
-}
+
+        {/* Preview Sidebar */}
+        <div className="dashboard-column-side">
+          <div style={{ position: 'sticky', top: '24px' }}>
+            <h3 className="section-title">Preview</h3>
+            <div className="project-card" style={{ gap: '20px' }}>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a', margin: '0 0 4px 0' }}>{formData.jobTitle || 'Job Title'}</h4>
+                  <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>{formData.companyName || 'Company Name'}</p>
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
+                  <MapPin size={14} />
+                  <span>{formData.location || 'Location'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
+                  <Briefcase size={14} />
+                  <span>{formData.employmentType || 'Employment Type'}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
+                  <DollarSign size={14} />
+                  <span>
+                    {formData.salaryMin && formData.salaryMax 
+                      ? `${formData.salaryMin} - ${formData.salaryMax} ${formData.salaryCurrency}`
+                      : 'Salary Range'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
+                  <Monitor size={14} />
+                  <span>{formData.workModel || 'Work Model'}</span>
+                </div>
+              </div>
+
+              <div style={{ height: '1px', backgroundColor: '#f1f5f9' }} />
+
+              <div>
+                <p style={{ fontSize: '12px', fontWeight: '600', color: '#1e293b', marginBottom: '12px' }}>Required Skills</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {skills.length > 0 ? skills.map(skill => (
+                    <span key={skill} className="status-tag status-pending" style={{ fontSize: '11px' }}>{skill}</span>
+                  )) : (
+                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>No skills added</span>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ marginTop: '8px', padding: '12px', borderRadius: '8px', backgroundColor: '#f0fdf4', border: '1px solid #dcfce7', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
+                <span style={{ fontSize: '12px', fontWeight: '500', color: '#166534' }}>All fields completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      {/* Modal is rendered conditionally here */}
+      {showPreview && (
+        <PreviewModal 
+          onClose={() => setShowPreview(false)} 
+          data={modalData} 
+        />
+      )}
+    </div>
+  );
+};
+
+export default PostNewPositions;
