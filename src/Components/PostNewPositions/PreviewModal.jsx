@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { FiX, FiCopy, FiShare2, FiMapPin } from "react-icons/fi";
+import { 
+    FiX, FiCopy, FiMapPin, 
+    FiLinkedin, FiFacebook, FiMail, FiChevronDown, FiChevronUp 
+} from "react-icons/fi";
+import { FaPuzzlePiece } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 // Imports
@@ -9,8 +13,9 @@ import "./PostNewPositions.css";
 export default function PreviewModal({ onClose, data }) {
     const navigate = useNavigate();
 
-    // --- State: 'idle' | 'loading' | 'success' | 'error' ---
+    // --- State Management ---
     const [status, setStatus] = useState("idle");
+    const [isVendorOpen, setIsVendorOpen] = useState(true); // Default open based on image
 
     // --- Handlers ---
     const handlePostJob = () => {
@@ -35,6 +40,10 @@ export default function PreviewModal({ onClose, data }) {
 
     const handleRetry = () => {
         setStatus("idle");
+    };
+
+    const toggleVendorSection = () => {
+        setIsVendorOpen(!isVendorOpen);
     };
 
     // --- Render Alerts Conditionally ---
@@ -133,11 +142,71 @@ export default function PreviewModal({ onClose, data }) {
                     <aside className="modal-right">
                         <div className="share-card">
                             <h4 className="share-title">Share This Job</h4>
-                            <div className="share-link">
-                                <input readOnly value="https://example.com/jobs/job-id" />
-                                <button className="icon-btn"><FiCopy /></button>
+                            
+                            <div className="share-input-group">
+                                <label className="input-label">Job Link</label>
+                                <div className="share-link-row">
+                                    <input 
+                                        className="share-input" 
+                                        readOnly 
+                                        value={`https://techstream.jobs/${jobTitle.toLowerCase().replace(/\s+/g, '-')}`} 
+                                    />
+                                    <button className="copy-btn">
+                                        <FiCopy /> Copy
+                                    </button>
+                                </div>
                             </div>
-                            <button className="share-btn"><FiShare2 /> Share on LinkedIn</button>
+
+                            <div className="social-buttons-stack">
+                                <button className="social-btn linkedin">
+                                    <FiLinkedin className="social-icon" /> Share on LinkedIn
+                                </button>
+                                <button className="social-btn facebook">
+                                    <FiFacebook className="social-icon" /> Share on Facebook
+                                </button>
+                                <button className="social-btn email">
+                                    <FiMail className="social-icon" /> Share via Email
+                                </button>
+                            </div>
+
+                            <div className="vendor-section">
+                                <button 
+                                    className="vendor-header" 
+                                    onClick={toggleVendorSection}
+                                >
+                                    <div className="vendor-header-left">
+                                        <FaPuzzlePiece className="puzzle-icon" />
+                                        <span>Share with Vendors</span>
+                                    </div>
+                                    {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
+                                </button>
+                                
+                                {isVendorOpen && (
+                                    <div className="vendor-list">
+                                        <label className="checkbox-row">
+                                            <input type="checkbox" />
+                                            <span>Premier Staffing Agency</span>
+                                        </label>
+                                        <label className="checkbox-row">
+                                            <input type="checkbox" defaultChecked />
+                                            <span>Tech Talent Finders</span>
+                                        </label>
+                                        <label className="checkbox-row">
+                                            <input type="checkbox" defaultChecked />
+                                            <span>DevHunters</span>
+                                        </label>
+                                        <label className="checkbox-row">
+                                            <input type="checkbox" />
+                                            <span>CodeSeeker Recruiting</span>
+                                        </label>
+                                        <label className="checkbox-row">
+                                            <input type="checkbox" defaultChecked />
+                                            <span>Elite Tech Staffing</span>
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     </aside>
                 </div>

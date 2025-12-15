@@ -101,26 +101,15 @@
 
 .project-card {
   background: #ffffff;
-  
-  /* MATCH STAT CARD: 1rem radius */
   border-radius: 1rem; 
-  
   padding: 20px;
-  
-  /* MATCH STAT CARD: Border */
   border: 1px solid #e2e8f0;
-  
-  /* MATCH STAT CARD: Base Shadow */
   box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.05);
-  
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   overflow: hidden;
-  
-  /* --- EXACT STAT CARD PHYSICS --- */
-  /* Fast, snappy, and standard */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   z-index: 1;
 }
