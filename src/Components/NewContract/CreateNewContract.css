@@ -206,7 +206,7 @@
     color: var(--muted);
 }
 
-.cc-btn-outline {
+.cc-btn-secondary {
     background: transparent;
     border: 1px solid #e6eefc;
     color: var(--text);

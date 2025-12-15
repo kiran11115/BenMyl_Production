@@ -146,14 +146,6 @@
     gap: 10px
 }
 
-.btn-outline {
-    background: #fff;
-    border: 1px solid #dbe8ff;
-    color: var(--accent);
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer
-}
 
 .btn-cancel {
     background: transparent;
@@ -537,12 +529,6 @@
     font-size: 13px
 }
 
-
-.btn-outline.connected {
-    border-color: #dbe8ff;
-    color: var(--accent);
-    background: #fff
-}
 
 /* Footer */
 .settings-footer {

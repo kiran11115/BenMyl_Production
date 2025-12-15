@@ -73,7 +73,7 @@ export default function AccountSettings() {
                                 </div>
                             </div>
                             <div className="plan-actions">
-                                <button className="btn-outline">Change Plan</button>
+                                <button className="btn-secondary">Change Plan</button>
                                 <button className="btn-cancel">Cancel</button>
                             </div>
                         </div>
@@ -171,7 +171,7 @@ export default function AccountSettings() {
                                     </div>
                                 </div>
                                 <div className="setting-right">
-                                    <button className="btn-outline small">Change Password</button>
+                                    <button className="btn-secondary small">Change Password</button>
                                 </div>
                             </div>
 
@@ -200,7 +200,7 @@ export default function AccountSettings() {
                                     </div>
                                 </div>
                                 <div className="setting-right">
-                                    <button className="btn-outline small">View Sessions</button>
+                                    <button className="btn-secondary small">View Sessions</button>
                                 </div>
                             </div>
                         </div>
@@ -339,7 +339,7 @@ export default function AccountSettings() {
                                     </div>
                                 </div>
                                 <div className="integration-right">
-                                    <button className={`btn-outline ${it.connected ? "connected" : ""}`}>
+                                    <button className={`btn-secondary ${it.connected ? "connected" : ""}`}>
                                         {it.connected ? "Manage" : "Connect"}
                                     </button>
                                 </div>

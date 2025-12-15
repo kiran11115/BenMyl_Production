@@ -617,7 +617,7 @@
 }
 
 /* Tags */
-.tag-badge {
+.status-tag status-progress{
   padding: 1px 6px;
   border-radius: 4px;
   font-size: 9px;

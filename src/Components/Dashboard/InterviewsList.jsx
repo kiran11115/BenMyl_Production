@@ -40,7 +40,7 @@ const InterviewsList = ({ interviews }) => {
                   {int.time}
                 </div>
                 {int.tag && (
-                  <span className={`tag-badge ${getTagClass(int.tag)}`}>
+                  <span className={`status-tag status-progress${getTagClass(int.tag)}`}>
                     {int.tag}
                   </span>
                 )}

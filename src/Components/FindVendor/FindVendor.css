@@ -239,18 +239,7 @@
     gap: 10px
 }
 
-.btn-outline {
-    background: transparent;
-    border: 1px solid var(--primary);
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer
-}
 
-.btn-primary.small {
-    padding: 8px 12px;
-    border-radius: 10px
-}
 
 .msg-icon {
     color: var(--muted)

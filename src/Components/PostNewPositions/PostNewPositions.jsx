@@ -227,7 +227,7 @@ export default function PostNewPositions() {
                         <div className="actions-row">
                             <button className="btn-muted" onClick={resetForm}>Cancel</button>
                             <div style={{ flex: 1 }} />
-                            <button className="btn-outline" onClick={() => alert("Saved as draft (local)")} >Save as Draft</button>
+                            <button className="btn-secondary" onClick={() => alert("Saved as draft (local)")} >Save as Draft</button>
                             <button className="btn-primary" onClick={onClickPostJob}>Post Job</button>
                         </div>
                     </div>

@@ -155,7 +155,7 @@ export default function VendorSearchPage() {
                             <div className="right">
                                 <div className="budget">{v.budget}</div>
                                 <div className="actions">
-                                    <button className="btn-outline" onClick={() => navigate("/user/user-vendor-detail")}>View Profile</button>
+                                    <button className="btn-secondary" onClick={() => navigate("/user/user-vendor-detail")}>View Profile</button>
                                     <button className="btn-primary small" onClick={() => navigate("/user/user-invite-bid")}>Invite to Bid</button>
                                 </div>
                                 <FiMessageCircle className="msg-icon" />

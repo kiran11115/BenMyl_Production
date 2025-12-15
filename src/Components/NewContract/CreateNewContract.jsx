@@ -325,7 +325,7 @@ export default function CreateNewContract() {
                   Cancel
                 </button>
                 <div style={{ flex: 1 }} />
-                <button className="cc-btn cc-btn-outline" onClick={() => handleSave(true)}>
+                <button className="cc-btn cc-btn-secondary" onClick={() => handleSave(true)}>
                   Save as Draft
                 </button>
                 <button className="cc-btn cc-btn-primary" onClick={() => handleSave(false)}>

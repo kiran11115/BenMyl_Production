@@ -212,17 +212,6 @@
     margin-top: auto
 }
 
-.btn-outline {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #fff;
-    border: 1px solid var(--border);
-    padding: 10px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--muted)
-}
 
 /* responsive */
 @media (max-width: 1100px) {

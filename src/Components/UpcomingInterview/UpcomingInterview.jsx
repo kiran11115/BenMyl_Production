@@ -101,7 +101,7 @@ export default function UpcomingInterview() {
 
                             <div className="card-actions">
                                 <button className="btn-primary"><FiVideo /> Join Meeting</button>
-                                <button className="btn-outline"><FiRepeat /> Reschedule</button>
+                                <button className="btn-secondary"><FiRepeat /> Reschedule</button>
                             </div>
                         </div>
                     </article>
