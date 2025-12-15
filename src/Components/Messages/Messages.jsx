@@ -186,7 +186,7 @@ const Messages = () => {
                 }
                 onClick={() => handleConversationClick(c.id)}
               >
-                <div className="avatar-circle">
+                <div className="avatar-circle-msg">
                   {c.name
                     .split(" ")
                     .map((n) => n[0])
