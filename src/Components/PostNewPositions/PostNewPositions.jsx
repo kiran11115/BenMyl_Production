@@ -65,7 +65,7 @@ const PostNewPositions = () => {
   };
 
   return (
-    <div className="projects-container">
+    <div className="container p-3">
       {/* Header with Navigation */}
       <div style={{ marginBottom: '24px' }}>
         <div className="vs-breadcrumbs mb-3">
@@ -289,7 +289,7 @@ const PostNewPositions = () => {
         {/* Preview Sidebar */}
         <div className="dashboard-column-side">
           <div style={{ position: 'sticky', top: '24px' }}>
-            <h3 className="section-title">Preview</h3>
+            <h3 className="section-title mb-0">Preview</h3>
             <div className="project-card" style={{ gap: '20px' }}>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>

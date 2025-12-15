@@ -1,37 +1,98 @@
-import React from "react";
-import { FiX, FiLink, FiCopy, FiShare2 } from "react-icons/fi";
-import "./PostNewPositions.css"; // same CSS file contains modal styles
+import React, { useState } from "react";
+import { FiX, FiCopy, FiShare2, FiMapPin } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
+// Imports
+import { SubmissionErrorModal, SuccessModal } from "./Alterts";
+import "./PostNewPositions.css";
+
 export default function PreviewModal({ onClose, data }) {
+    const navigate = useNavigate();
 
-const navigate = useNavigate();
+    // --- State: 'idle' | 'loading' | 'success' | 'error' ---
+    const [status, setStatus] = useState("idle");
 
-    // build some nice defaults if blank
+    // --- Handlers ---
+    const handlePostJob = () => {
+        setStatus("loading");
+
+        // Simulate API call with 1 second delay
+        setTimeout(() => {
+            // TOGGLE THIS BOOLEAN to test the error screen
+            const simulateError = false; 
+
+            if (simulateError) {
+                setStatus("error");
+            } else {
+                setStatus("success");
+            }
+        }, 1000);
+    };
+
+    const handleBackToDashboard = () => {
+        navigate("/user/dashboard");
+    };
+
+    const handleRetry = () => {
+        setStatus("idle");
+    };
+
+    // --- Render Alerts Conditionally ---
+    
+    if (status === "success") {
+        return (
+            <SuccessModal 
+                onClose={onClose} 
+                onNavigateBack={handleBackToDashboard} 
+            />
+        );
+    }
+
+    if (status === "error") {
+        return (
+            <SubmissionErrorModal 
+                onClose={onClose} 
+                onRetry={handleRetry} 
+                onContactSupport={() => console.log("Support clicked")} 
+            />
+        );
+    }
+
+    // --- Default Data ---
     const {
         jobTitle = "Senior Frontend Developer",
         companyName = "TechStream Solutions",
         location = "San Francisco, CA",
         employmentType = "Full-time",
         workModel = "Hybrid (3 days onsite)",
-        salaryMin,
-        salaryMax,
-        currency = "USD",
+        salaryMin, salaryMax, currency = "USD",
         description = "",
         department = "Engineering",
         experienceLevel = "4+ years",
         skills = [],
         educationLevel = "Bachelor's degree",
-        yearsExperience,
-        additional,
-    } = data;
+    } = data || {};
 
-    const salaryDisplay = (salaryMin || salaryMax) ? `${salaryMin || "—"} - ${salaryMax || "—"} ${currency}` : "$120,000 - $150,000 /year";
+    const salaryDisplay = (salaryMin || salaryMax) 
+        ? `${salaryMin || "—"} - ${salaryMax || "—"} ${currency}` 
+        : "$120,000 - $150,000 /year";
 
+    // --- Render Form Preview ---
     return (
         <div className="modal-overlay">
-            <div className="modal-window">
-                <button className="modal-close" onClick={onClose}><FiX /></button>
+            <div className="modal-window" style={{ position: "relative" }}>
+                
+                {/* Preloader Overlay */}
+                {status === "loading" && (
+                    <div className="loading-overlay">
+                        <div className="spinner"></div>
+                        <div className="loading-text">Posting Job...</div>
+                    </div>
+                )}
+
+                <button className="modal-close" onClick={onClose} disabled={status === "loading"}>
+                    <FiX />
+                </button>
 
                 <div className="modal-inner">
                     <div className="modal-left">
@@ -41,7 +102,7 @@ const navigate = useNavigate();
                                 <h2 className="modal-job-title">{jobTitle}</h2>
                                 <div className="muted small">{companyName}</div>
                                 <div className="modal-tags-row">
-                                    <span className="tag small"><FiLink /> {location}</span>
+                                    <span className="tag small"><FiMapPin /> {location}</span>
                                     <span className="tag small">{employmentType}</span>
                                     <span className="tag small">{workModel}</span>
                                     <span className="tag small">{salaryDisplay}</span>
@@ -51,23 +112,13 @@ const navigate = useNavigate();
 
                         <hr className="modal-divider" />
 
-                        <h4 className="modal-subtitle">Requirements</h4>
                         <div className="req-grid">
-                            <div>
-                                <div className="req-label">Experience</div>
-                                <div className="req-value">{experienceLevel}</div>
-                            </div>
-                            <div>
-                                <div className="req-label">Department</div>
-                                <div className="req-value">{department}</div>
-                            </div>
-                            <div>
-                                <div className="req-label">Education</div>
-                                <div className="req-value">{educationLevel}</div>
-                            </div>
+                            <div><div className="req-label">Experience</div><div className="req-value">{experienceLevel}</div></div>
+                            <div><div className="req-label">Department</div><div className="req-value">{department}</div></div>
+                            <div><div className="req-label">Education</div><div className="req-value">{educationLevel}</div></div>
                         </div>
 
-                        <h4 className="modal-subtitle">Skills</h4>
+                        <h4 className="modal-subtitle" style={{ marginTop: "16px" }}>Skills</h4>
                         <div className="status-tag status-progress">
                             {skills.length ? skills.map((s) => <span key={s} className="status-tag status-progress">{s}</span>)
                                 : <span className="muted small">No skills provided</span>}
@@ -75,60 +126,32 @@ const navigate = useNavigate();
 
                         <h4 className="modal-subtitle" style={{ marginTop: 18 }}>Job Description</h4>
                         <div className="modal-description">
-                            {description || (
-                                <>
-                                    TechStream Solutions is seeking an experienced Senior Frontend Developer to join our growing team. You will be responsible for building and maintaining high-quality web applications using modern JavaScript frameworks and libraries.
-                                    <ul>
-                                        <li>Develop user-facing features using React.js and related technologies</li>
-                                        <li>Translate designs and wireframes into high-quality code</li>
-                                        <li>Optimize components for maximum performance across web-capable devices and browsers</li>
-                                    </ul>
-                                    <strong>Qualifications:</strong>
-                                    <ul>
-                                        <li>4+ years of experience in frontend development</li>
-                                        <li>Strong proficiency with JavaScript and React</li>
-                                    </ul>
-                                </>
-                            )}
-                        </div>
-
-                        <h4 className="modal-subtitle" style={{ marginTop: 18 }}>Company Overview</h4>
-                        <div className="modal-description small muted">
-                            TechStream Solutions is a leading technology company specializing in building innovative digital products for enterprises and startups alike. With offices in San Francisco, New York, and London, we work with clients across the globe to deliver exceptional software solutions.
+                            {description || "No description provided."}
                         </div>
                     </div>
 
                     <aside className="modal-right">
                         <div className="share-card">
                             <h4 className="share-title">Share This Job</h4>
-
                             <div className="share-link">
-                                <input readOnly value={`https://example.com/jobs/${encodeURI(jobTitle.replace(/\s+/g, "-").toLowerCase())}`} />
+                                <input readOnly value="https://example.com/jobs/job-id" />
                                 <button className="icon-btn"><FiCopy /></button>
                             </div>
-
                             <button className="share-btn"><FiShare2 /> Share on LinkedIn</button>
-                            <button className="share-btn outline"><FiShare2 /> Share on Facebook</button>
-                            <button className="share-btn outline"><FiShare2 /> Share via Email</button>
-
-                            <div style={{ marginTop: 12 }}>
-                                <div className="vendor-dropdown">
-                                    <label className="muted small">Share with Vendors</label>
-                                    <div className="vendor-list">
-                                        <label><input type="checkbox" defaultChecked /> Premier Staffing Agency</label>
-                                        <label><input type="checkbox" defaultChecked /> Tech Talent Finders</label>
-                                        <label><input type="checkbox" defaultChecked /> DevHunters</label>
-                                        <label><input type="checkbox" defaultChecked /> CodeSeeker Recruiting</label>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </aside>
                 </div>
 
-                <div className="modal-actions-left gap-3" style={{ padding: "24PX" }}>
-                    <button className="btn-secondary" onClick={onClose}>Back to Edit</button>
-                    <button onClick={()=>navigate("/user/user-find-vendor")} className="btn-primary" style={{width:"165px"}}>
+                <div className="modal-actions-left gap-3" style={{ padding: "24px" }}>
+                    <button className="btn-secondary" onClick={onClose} disabled={status === "loading"}>
+                        Back to Edit
+                    </button>
+                    <button 
+                        onClick={handlePostJob} 
+                        className="btn-primary" 
+                        style={{ width: "165px" }}
+                        disabled={status === "loading"}
+                    >
                         Post Job Now
                     </button>
                 </div>

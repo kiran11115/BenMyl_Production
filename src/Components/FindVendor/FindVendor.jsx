@@ -64,7 +64,7 @@ export default function VendorSearchPage() {
             <div className="vs-top">
                 <div className="vs-breadcrumbs">
                     <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
-                    <span className="crumb">/ Job Posting</span>
+                    <span className="crumb">/ Find Vendors</span>
                 </div>
 
                 <div className="vs-search">
