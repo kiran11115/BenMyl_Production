@@ -38,10 +38,6 @@
     box-shadow: var(--shadow)
 }
 
-.nb-title {
-    margin: 0;
-    font-size: 26px
-}
 
 .nb-sub {
     color: var(--muted);

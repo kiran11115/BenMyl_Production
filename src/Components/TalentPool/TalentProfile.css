@@ -76,7 +76,7 @@
 .profile-name-row h1 {
   font-size: 24px;
   font-weight: 700;
-  color: #1e293b; /* Matches .section-title color */
+  color: #1e293b;
   margin: 0;
   line-height: 1.2;
 }
@@ -124,7 +124,7 @@
   margin-bottom: 40px;
 }
 
-/* Reusing .section-title from dashboard.css */
+/* Reusing from dashboard.css */
 .summary-text {
   font-size: 14px;
   line-height: 1.6;

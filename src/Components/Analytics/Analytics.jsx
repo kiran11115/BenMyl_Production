@@ -10,12 +10,9 @@ const Analytics = () => {
     return (
         <div className="analytics">
             {/* TOP STATS */}
-            <div className="stats-grid">
-                <StatCard title="Active Candidates" value="2,847" percent="+5%" />
-                <StatCard title="Pipeline Progress" value="156" percent="76%" circle />
-                <StatCard title="Avg. Days to Hire" value="18" percent="+3%" />
-                <StatCard title="Budget Spents" value="$125K" percent="+8%" />
-            </div>
+          
+                <StatCard/>
+           
 
             {/* CHARTS */}
             <div className="card full-width">

@@ -1,38 +1,54 @@
-import React from "react";
-import { FiBriefcase, FiBarChart2, FiClock, FiDollarSign } from "react-icons/fi";
+import React, { memo } from "react";
+import { TrendingUp, Users, DollarSign, Activity } from "lucide-react"; // Or react-icons
 
-const iconsMap = {
-  "Active Candidates": FiBriefcase,
-  "Pipeline Progress": FiBarChart2,
-  "Avg. Days to Hire": FiClock,
-  "Budget Spents": FiDollarSign,
-};
+// 1. OPTIMIZATION: Define static data outside to prevent re-creation on re-renders
+const MOCK_DATA = [
+  { label: "Total Users", value: "1,234", change: "+12%", cardType: "bg-blue-600", icon: Users },
+  { label: "Revenue", value: "$45k", change: "+8%", cardType: "bg-purple-600", icon: DollarSign },
+  { label: "Engagement", value: "85%", change: "+5%", cardType: "bg-orange-500", icon: Activity },
+];
 
-const StatCard = ({ title, value, percent, circle }) => {
-  const Icon = iconsMap[title];
+const StatCard = ({ data }) => {
+  // 2. SAFETY: If data is missing or not an array, strictly fall back to MOCK_DATA
+  const finalData = Array.isArray(data) && data.length > 0 ? data : MOCK_DATA;
 
   return (
-    <div className="card stat-card">
-      <div className="stat-header">
-        <div className="stat-icon">
-          {Icon && <Icon size={16} />}
-        </div>
+    <div className="stats-grid">
+      {finalData.map((item, index) => {
+        // 3. CLEANUP: Handle dynamic icons safely
+        const IconComponent = item.icon || TrendingUp; 
 
-        <span className="green">{percent}</span>
-      </div>
+        return (
+          <div key={index} className={`stat-card ${item.cardType || "bg-gray-700"}`}>
+            {/* Decoration */}
+            <div className="bubbles-container" style={{ color: item.bubbleColor || "rgba(255,255,255,0.1)" }}>
+              <div className="bubble bubble-1" />
+              <div className="bubble bubble-2" />
+              <div className="bubble bubble-3" />
+            </div>
 
-      <div className="stat-body">
-        <span className="stat-title">{title}</span>
-        <div className="stat-value">{value}</div>
-      </div>
+            {/* Content */}
+            <div className="stat-content">
+              <span className="stat-label">{item.label}</span>
+              <div className="stat-value-row">
+                <span className="stat-value">{item.value}</span>
+              </div>
+              <div className="stat-trend trend-up">
+                <TrendingUp size={14} />
+                <span>{item.change}</span>
+              </div>
+            </div>
 
-      {circle && (
-        <div className="progress-circle">
-          <span>76%</span>
-        </div>
-      )}
+            {/* Icon */}
+            <div className="stat-icon-box">
+              <IconComponent size={24} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-export default StatCard;
+// 4. OPTIMIZATION: memo prevents re-renders if props haven't changed
+export default memo(StatCard);

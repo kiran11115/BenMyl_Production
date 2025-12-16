@@ -58,7 +58,7 @@ const RecentApplications = ({ applications }) => {
   };
 
   const SortIcon = ({ columnKey }) => {
-    if (sortConfig.key !== columnKey) return <ArrowUpDown size={14} style={{ marginLeft: "6px", opacity: 0.3 }} />;
+    if (sortConfig.key !== columnKey) return <ArrowUpDown size={14} style={{ marginLeft: "6px", color:"#fefefe" }} />;
     return sortConfig.direction === 'ascending' 
       ? <ArrowUp size={14} style={{ marginLeft: "6px", color: "#3b82f6" }} />
       : <ArrowDown size={14} style={{ marginLeft: "6px", color: "#3b82f6" }} />;

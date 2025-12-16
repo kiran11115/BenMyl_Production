@@ -93,14 +93,14 @@ function Header() {
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
           {/* Search Bar */}
-          <div className="header-search-container">
+          {/* <div className="header-search-container">
             <Search size={16} className="header-search-icon" />
             <input
               type="text"
               placeholder="Search..."
               className="header-search-input"
             />
-          </div>
+          </div> */}
 
           {/* Notification Bell */}
           <button type="button" className="header-action-btn">

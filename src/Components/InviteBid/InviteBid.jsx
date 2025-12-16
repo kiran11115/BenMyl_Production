@@ -44,7 +44,7 @@ export default function InviteBid() {
             <div className="nb-content">
                 {/* LEFT: FORM */}
                 <div className="nb-form">
-                    <h1 className="nb-title">New Bid Invitation</h1>
+                    <h1 className="section-title">New Bid Invitation</h1>
                     <p className="nb-sub">
                         Enter all necessary details to generate a new contract record
                     </p>
