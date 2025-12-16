@@ -1,302 +1,317 @@
-import React from "react";
-import "./TalentPool.css";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import {
+  FiChevronRight,
   FiSearch,
-  FiHeart,
+  FiFilter,
   FiMapPin,
-  FiClock,
+  FiGrid,
+  FiList,
+  FiArrowLeft,
 } from "react-icons/fi";
-import { AiFillStar } from "react-icons/ai";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import "./TalentPool.css";
 
-const candidates = [
+const candidatesMock = [
   {
     id: 1,
     name: "Sarah Anderson",
-    title: "Senior UX Designer",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "SA",
-    avatarColor: "#f97373",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
   },
   {
     id: 2,
     name: "Sarah Thompson",
-    title: "Senior UX Designer",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "ST",
-    avatarColor: "#facc15",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
   },
   {
     id: 3,
-    name: "Alex Morgan",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "AM",
-    avatarColor: "#22c55e",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg",
   },
   {
     id: 4,
-    name: "Emily Rodriguez",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "ER",
-    avatarColor: "#38bdf8",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg",
   },
   {
     id: 5,
-    name: "Priya Kapoor",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "PK",
-    avatarColor: "#fb7185",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg",
   },
   {
     id: 6,
-    name: "David Kim",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "DK",
-    avatarColor: "#a78bfa",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg",
   },
   {
     id: 7,
-    name: "Lina Gomez",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "LG",
-    avatarColor: "#f97316",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
   },
   {
     id: 8,
-    name: "Marcus Lee",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "ML",
-    avatarColor: "#22c55e",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg",
   },
   {
     id: 9,
-    name: "Nina Patel",
-    title: "Senior UX Designer",
+    name: "Sarah Thompson",
+    role: "Senior UX Designer",
     experience: "8 years exp.",
-    rating: 4.9,
-    reviews: 24,
     skills: ["UI/UX", "Figma", "User Research"],
     location: "San Francisco, CA",
-    availableNow: true,
-    remote: true,
-    initials: "NP",
-    avatarColor: "#0ea5e9",
+    availability: ["Available Now", "Remote"],
+    rating: 4.9,
+    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg",
   },
 ];
 
 const TalentPool = () => {
-const navigate = useNavigate();
-
+  const navigate = useNavigate();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const toggleFilters = () => setFiltersOpen((p) => !p);
 
   return (
-    <div className="candidates-page">
-      {/* LEFT SIDEBAR FILTERS */}
-      <aside className="filters-panel">
-        <h3 className="filters-title">Skills</h3>
-        <ul className="filters-list">
-          {["React", "Node.js", "Python", "UI/UX Design", "Project Management"].map(
-            (skill) => (
-              <li key={skill} className="filters-item">
-                <label>
-                  <input type="checkbox" />
-                  <span>{skill}</span>
-                </label>
-              </li>
-            )
-          )}
-        </ul>
+    <div className="vs-page">
 
-        <h3 className="filters-title">Experience Level</h3>
-        <ul className="filters-list">
-          {["Entry Level", "Mid Level", "Senior", "Lead", "Executive"].map(
-            (lvl) => (
-              <li key={lvl} className="filters-item">
-                <label>
-                  <input type="radio" name="experience" />
-                  <span>{lvl}</span>
-                </label>
-              </li>
-            )
-          )}
-        </ul>
+      {/* layout: filters + results */}
+      <div className="vs-content">
+        {/* filters */}
+        <aside className={`vs-filters ${filtersOpen ? "open" : ""}`}>
+          <div className="vs-filters-header">
+            <h3>Filters</h3>
+            <button className="link-button small">Clear All</button>
+          </div>
 
-        <h3 className="filters-title">Availability</h3>
-        <ul className="filters-list">
-          {["Immediately", "Within 1 week", "Within 1 month"].map((opt) => (
-            <li key={opt} className="filters-item">
+          <div className="fg">
+            <div className="fg-title">Skills</div>
+            <div className="fg-body">
               <label>
-                <input type="radio" name="availability" />
-                <span>{opt}</span>
+                <input type="checkbox" /> React
               </label>
-            </li>
-          ))}
-        </ul>
-
-        <h3 className="filters-title">Location</h3>
-        <div className="search-location">
-          <FiSearch className="search-icon" />
-          <input placeholder="Search location..." />
-        </div>
-
-        <h3 className="filters-title">Salary Range</h3>
-        <div className="salary-wrapper">
-          <div className="salary-values">
-            <span>$0</span>
-            <span>$200k+</span>
-          </div>
-          <input type="range" min="0" max="200" className="salary-range" />
-        </div>
-
-        <button className="btn-primary full-width">Apply Filters</button>
-        <button className="btn-link full-width clear-all">Clear All</button>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="candidates-main">
-        {/* HEADER */}
-        <header className="candidates-header">
-          <div className="header-left">
-            <h2>248 Candidates</h2>
-            <span className="filters-applied">3 Filters Applied</span>
-          </div>
-          <div className="header-right">
-            <div className="view-toggle">
-              <button className="view-btn view-btn-active">▥</button>
-              <button className="view-btn">≣</button>
-            </div>
-            <div className="sort-wrapper">
-              <label>Sort by</label>
-              <select>
-                <option>Most Recent</option>
-                <option>Highest Rated</option>
-                <option>Experience</option>
-              </select>
+              <label>
+                <input type="checkbox" /> Node.js
+              </label>
+              <label>
+                <input type="checkbox" /> Python
+              </label>
+              <label>
+                <input type="checkbox" /> UI/UX Design
+              </label>
+              <label>
+                <input type="checkbox" /> Project Management
+              </label>
             </div>
           </div>
-        </header>
 
-        {/* GRID OF CARDS */}
-        <section className="candidates-grid">
-          {candidates.map((c) => (
-            <article className="candidate-card" key={c.id}>
-              <div className="card-header">
-                <div className="card-avatar" style={{ background: c.avatarColor }}>
-                  {c.initials}
-                </div>
-                <div className="card-info">
-                  <div className="card-info-top">
-                    <h4>{c.name}</h4>
-                    <button className="icon-btn" title="Save">
-                      <FiHeart />
-                    </button>
+          <div className="fg">
+            <div className="fg-title">Experience Level</div>
+            <div className="fg-body">
+              <label>
+                <input type="checkbox" /> Entry Level
+              </label>
+              <label>
+                <input type="checkbox" /> Mid Level
+              </label>
+              <label>
+                <input type="checkbox" /> Senior
+              </label>
+              <label>
+                <input type="checkbox" /> Lead
+              </label>
+              <label>
+                <input type="checkbox" /> Executive
+              </label>
+            </div>
+          </div>
+
+          <div className="fg">
+            <div className="fg-title">Availability</div>
+            <div className="fg-body">
+              <label>
+                <input type="checkbox" /> Immediately
+              </label>
+              <label>
+                <input type="checkbox" /> Within 1 week
+              </label>
+              <label>
+                <input type="checkbox" /> Within 1 month
+              </label>
+            </div>
+          </div>
+
+          <div className="fg">
+            <div className="fg-title">Location</div>
+            <div className="loc-input">
+              <FiMapPin />
+              <input type="text" placeholder="Search location…" />
+            </div>
+          </div>
+
+          <div className="fg">
+            <div className="fg-title">Salary Range</div>
+            <input type="range" min="0" max="200" />
+            <div className="budget-row">
+              <span>$0</span>
+              <span>$200k+</span>
+            </div>
+          </div>
+
+          <button className="apply">Apply Filters</button>
+        </aside>
+
+        {/* results */}
+        <section className="vs-results">
+          {/* header */}
+          <div className="vs-results-head">
+            <div className="vs-results-left">
+              <h3>248 Candidates</h3>
+              <button className="filters-applied">
+                <FiFilter className="filters-applied-icon" />
+                Filters Applied (3)
+              </button>
+            </div>
+
+            <div className="vs-results-right">
+              <div className="view-toggle">
+                <button className="view-btn view-btn-active">
+                  <FiGrid />
+                </button>
+                <button className="view-btn">
+                  <FiList />
+                </button>
+              </div>
+
+              <div className="sort-select">
+                <span className="sort-label">Most Recent</span>
+                <FiChevronRight className="sort-caret" />
+              </div>
+            </div>
+          </div>
+
+          {/* grid */}
+          <div className="candidate-grid">
+            {candidatesMock.map((c) => (
+              <div className="candidate-card" key={c.id}>
+                <div className="candidate-head">
+                  <div className="candidate-main">
+                    <img src={c.avatar} alt={c.name} className="v-avatar" />
+                    <div>
+                      <div className="candidate-name-row">
+                        <h4>{c.name}</h4>
+                      </div>
+                      <div className="candidate-sub">
+                        <span>{c.role}</span>
+                        <span className="dot">•</span>
+                        <span>{c.experience}</span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="card-title">{c.title}</p>
-                  <div className="card-meta">
-                    <span className="meta-item">
-                      <FiClock /> <span>{c.experience}</span>
-                    </span>
-                    <span className="meta-item">
-                      <AiFillStar color="#facc15" /> {c.rating} <span className="meta-reviews">({c.reviews})</span>
-                    </span>
+
+                  <div className="candidate-rating">
+                    <FaStar />
+                    <span>{c.rating}</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="card-tags">
-                {c.skills.map((skill) => (
-                  <span key={skill} className="tag">
-                    {skill}
-                  </span>
-                ))}
-              </div>
+                <div className="v-tags">
+                  {c.skills.map((s) => (
+                    <span className="tag" key={s}>
+                      {s}
+                    </span>
+                  ))}
+                </div>
 
-              <div className="card-location-row">
-                <FiMapPin className="location-icon" />
-                <span className="location-text">{c.location}</span>
-              </div>
+                <div className="candidate-meta">
+                  <div className="meta-item">
+                    <FiMapPin />
+                    <span>{c.location}</span>
+                  </div>
+                </div>
 
-              <div className="card-badges">
-                {c.availableNow && <span className="badge badge-available">Available Now</span>}
-                {c.remote && <span className="badge badge-remote">Remote</span>}
-              </div>
+                <div className="candidate-badges">
+                  {c.availability.map((a) => (
+                    <span
+                      key={a}
+                      className={`badge ${a === "Available Now" ? "badge-green" : "badge-blue"
+                        }`}
+                    >
+                      {a}
+                    </span>
+                  ))}
+                </div>
 
-              <div className="card-actions">
-                <button onClick={() => navigate("/user/user-talent-profile")}  className="btn-primary">View Profile</button>
-                <button className="btn-secondary">Shortlist</button>
+                <div className="candidate-actions">
+                  <button className="btn-primary" onClick={()=>navigate("/user/user-talent-profile")}>View Profile</button>
+                  <button className="btn-secondary">Shortlist</button>
+                </div>
               </div>
-            </article>
-          ))}
+            ))}
+          </div>
+
+          {/* pagination */}
+          <div className="pagination-row">
+            <span className="muted small">
+              Showing 1-9 of 248 candidates
+            </span>
+            <div className="pagination">
+              <button className="page-btn active">1</button>
+              <button className="page-btn">2</button>
+              <button className="page-btn">3</button>
+              <button className="page-btn">…</button>
+              <button className="page-btn">27</button>
+            </div>
+          </div>
         </section>
-
-        {/* FOOTER / PAGINATION */}
-        <footer className="candidates-footer">
-          <span>Showing 1–9 of 248 candidates</span>
-          <div className="pagination">
-            <button className="page-btn"><IoIosArrowBack /></button>
-            <button className="page-btn page-active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <span className="page-dots">…</span>
-            <button className="page-btn">27</button>
-            <button className="page-btn"><IoIosArrowForward /></button>
-          </div>
-        </footer>
-      </main>
+      </div>
     </div>
   );
 };

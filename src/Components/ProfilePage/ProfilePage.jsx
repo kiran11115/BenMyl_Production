@@ -10,11 +10,16 @@ import {
   FiLinkedin,
   FiFileText,
   FiEye,
-  FiExternalLink
+  FiExternalLink,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 const TalentProfile = () => {
+
+const navigate = useNavigate();
+
   const profileData = {
     name: "Sarah Anderson",
     role: "Senior UX Designer",
@@ -64,7 +69,7 @@ const TalentProfile = () => {
         desc: "Created user experiences for early-stage startups and conducted user research.",
       },
     ],
-     portfolio: [
+    portfolio: [
       {
         title: "E-commerce Dashboard",
         tags: ["React", "Redux", "TailwindCSS"],
@@ -96,9 +101,8 @@ const TalentProfile = () => {
     <div className="projects-container">
       {/* Breadcrumb - Matches Global Text Styles */}
       <div className="profile-breadcrumb">
-        <span className="breadcrumb-link">Back to dashboard</span>
-        <span className="breadcrumb-separator">/</span>
-        Contract Management
+        <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
+        <span className="crumb">/ Profile Page</span>
       </div>
 
       <div className="dashboard-layout">
@@ -137,68 +141,68 @@ const TalentProfile = () => {
                 </div>
               </div>
             </div>
-              <div className="col-9">
-                {/* Professional Summary */}
-                <div className="project-card">
-                  <h2 className="card-title">Professional Summary</h2>
-                  <p className="summary-text">{profileData.summary}</p>
+            <div className="col-9">
+              {/* Professional Summary */}
+              <div className="project-card">
+                <h2 className="card-title">Professional Summary</h2>
+                <p className="summary-text">{profileData.summary}</p>
 
-                  <div className="summary-stats-grid">
-                    {profileData.stats.map((stat, idx) => (
-                      <div key={idx} className="summary-stat-box">
-                        <div className="summary-stat-value">{stat.value}</div>
-                        <div className="summary-stat-label">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="summary-stats-grid">
+                  {profileData.stats.map((stat, idx) => (
+                    <div key={idx} className="summary-stat-box">
+                      <div className="summary-stat-value">{stat.value}</div>
+                      <div className="summary-stat-label">{stat.label}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
           </div>
 
-<div className="row">
-    <div className="col-8">
-         {/* Work Experience */}
-          <div className="project-card">
-            <h2 className="card-title">Work Experience</h2>
-            <div className="experience-list">
-              {profileData.workExperience.map((job, idx) => (
-                <div key={idx} className="experience-item">
-                  <div className="experience-icon-box">
-                    <FiBriefcase />
-                  </div>
-                  <div className="experience-content">
-                    <h3>{job.role}</h3>
-                    <div className="job-meta">
-                      {job.company} • {job.period}
+          <div className="row">
+            <div className="col-8">
+              {/* Work Experience */}
+              <div className="project-card">
+                <h2 className="card-title">Work Experience</h2>
+                <div className="experience-list">
+                  {profileData.workExperience.map((job, idx) => (
+                    <div key={idx} className="experience-item">
+                      <div className="experience-icon-box">
+                        <FiBriefcase />
+                      </div>
+                      <div className="experience-content">
+                        <h3>{job.role}</h3>
+                        <div className="job-meta">
+                          {job.company} • {job.period}
+                        </div>
+                        <div className="job-location">{job.location}</div>
+                        <p className="job-desc">{job.desc}</p>
+                      </div>
                     </div>
-                    <div className="job-location">{job.location}</div>
-                    <p className="job-desc">{job.desc}</p>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            </div>
+            <div className="col-4">
+              {/* Skills & Expertise */}
+              <div className="project-card">
+                <h2 className="card-title">Skills & Expertise</h2>
+                <div className="skills-container">
+                  {profileData.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="status-tag status-progress"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-    </div>
-    <div className="col-4">
-          {/* Skills & Expertise */}
-          <div className="project-card">
-            <h2 className="card-title">Skills & Expertise</h2>
-            <div className="skills-container">
-              {profileData.skills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="status-tag status-progress"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-    </div>
-</div>
-         
+
           {/* Portfolio */}
-        <div className="portfolio-section">
+          <div className="portfolio-section">
             <div className="portfolio-header">
               <h2 className="card-title">Portfolio</h2>
               <span className="portfolio-count">
