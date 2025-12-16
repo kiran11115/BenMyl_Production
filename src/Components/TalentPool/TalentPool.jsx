@@ -1,6 +1,6 @@
 import React from "react";
 import "./TalentPool.css";
-
+import { useNavigate } from "react-router-dom";
 import {
   FiSearch,
   FiHeart,
@@ -140,6 +140,9 @@ const candidates = [
 ];
 
 const TalentPool = () => {
+const navigate = useNavigate();
+
+
   return (
     <div className="candidates-page">
       {/* LEFT SIDEBAR FILTERS */}
@@ -273,7 +276,7 @@ const TalentPool = () => {
               </div>
 
               <div className="card-actions">
-                <button className="btn-primary">View Profile</button>
+                <button onClick={() => navigate("/user/user-talent-profile")}  className="btn-primary">View Profile</button>
                 <button className="btn-secondary">Shortlist</button>
               </div>
             </article>

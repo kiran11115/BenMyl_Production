@@ -306,22 +306,6 @@
   padding: 16px 0px;
 }
 
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 11px;
-  border-radius: 10px;
-  width: 50%;
-}
-
-.btn-secondary {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 11px;
-  border-radius: 10px;
-  width: 50%;
-}
 
 /* Responsive */
 @media (max-width: 1024px) {

@@ -140,7 +140,7 @@ export default function InviteBid() {
                 {/* RIGHT: VENDOR SUMMARY */}
                 <aside className="nb-summary">
                     <div className="project-card">
-                        <div className="project-header">
+                        <div className="project-header d-flex align-items-center gap-3">
                             <img
                                 src="https://i.pravatar.cc/100?img=12"
                                 alt="vendor"
@@ -164,18 +164,18 @@ export default function InviteBid() {
                             </div>
 
                             <div className="summary-item">
-                                <div className="label">Past Clients</div>
+                                <div className="label mb-3">Past Clients</div>
                                 <div className="past-clients">
                                     <div className="client-badge">IL</div>
-                                    <div className="client-name">Innovation Labs</div>
+                                    <div className="card-title">Innovation Labs</div>
                                 </div>
                                 <div className="past-clients">
                                     <div className="client-badge">GT</div>
-                                    <div className="client-name">Global Tech</div>
+                                    <div className="card-title">Global Tech</div>
                                 </div>
                             </div>
 
-                            <p className="vendor-desc">
+                            <p className="card-title text-muted mt-3">
                                 Specialized in providing high-quality talent acquisition and
                                 onboarding services.
                             </p>
