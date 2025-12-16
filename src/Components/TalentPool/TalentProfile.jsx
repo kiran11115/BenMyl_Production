@@ -9,6 +9,8 @@ import {
   FiPhone,
   FiLinkedin,
   FiFileText,
+  FiEye,
+  FiExternalLink
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
 
@@ -62,26 +64,30 @@ const TalentProfile = () => {
         desc: "Created user experiences for early-stage startups and conducted user research.",
       },
     ],
-    portfolio: [
+     portfolio: [
       {
         title: "E-commerce Dashboard",
         tags: ["React", "Redux", "TailwindCSS"],
-        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+        img:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Travel App UI",
         tags: ["React Native", "Firebase"],
-        img: "https://images.unsplash.com/photo-1555421689-d6847122ad3d?auto=format&fit=crop&q=80&w=500",
+        img:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Financial Analytics Platform",
         tags: ["TypeScript", "D3.js", "Node.js"],
-        img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
+        img:
+          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Health Tracker",
         tags: ["React", "GraphQL", "MongoDB"],
-        img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
+        img:
+          "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
       },
     ],
   };
@@ -109,7 +115,7 @@ const TalentProfile = () => {
                 />
                 <div className="profile-header-content">
                   <div className="d-flex gap-3">
-                    <h1>{profileData.name}</h1>
+                    <h1 className="mb-2">{profileData.name}</h1>
                     <FiFileText className="profile-verified-icon" />
                   </div>
                   <div className="card-title mb-2">{profileData.role}</div>
@@ -134,7 +140,7 @@ const TalentProfile = () => {
               <div className="col-9">
                 {/* Professional Summary */}
                 <div className="project-card">
-                  <h2 className="section-title">Professional Summary</h2>
+                  <h2 className="card-title">Professional Summary</h2>
                   <p className="summary-text">{profileData.summary}</p>
 
                   <div className="summary-stats-grid">
@@ -149,9 +155,11 @@ const TalentProfile = () => {
               </div>
           </div>
 
-          {/* Work Experience */}
-          <div className="profile-section">
-            <h2 className="section-title">Work Experience</h2>
+<div className="row">
+    <div className="col-8">
+         {/* Work Experience */}
+          <div className="project-card">
+            <h2 className="card-title">Work Experience</h2>
             <div className="experience-list">
               {profileData.workExperience.map((job, idx) => (
                 <div key={idx} className="experience-item">
@@ -170,35 +178,56 @@ const TalentProfile = () => {
               ))}
             </div>
           </div>
-
+    </div>
+    <div className="col-4">
           {/* Skills & Expertise */}
-          <div className="profile-section">
-            <h2 className="section-title">Skills & Expertise</h2>
+          <div className="project-card">
+            <h2 className="card-title">Skills & Expertise</h2>
             <div className="skills-container">
               {profileData.skills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="status-tag status-progress skill-tag"
+                  className="status-tag status-progress"
                 >
-                  {skill} <FiFileText size={10} />
+                  {skill}
                 </span>
               ))}
             </div>
           </div>
-
+    </div>
+</div>
+         
           {/* Portfolio */}
-          <div>
-            <h2 className="section-title">Portfolio</h2>
-            <div className="projects-grid">
+        <div className="portfolio-section">
+            <div className="portfolio-header">
+              <h2 className="card-title">Portfolio</h2>
+              <span className="portfolio-count">
+                {profileData.portfolio.length} Projects
+              </span>
+            </div>
+
+            <div className="projects-grid premium-portfolio-grid">
               {profileData.portfolio.map((item, idx) => (
-                <div key={idx} className="table-card portfolio-card">
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="portfolio-img"
-                  />
+                <div key={idx} className="premium-portfolio-card">
+                  <div className="portfolio-img-wrapper">
+                    <img
+                      src={item.img}
+                      alt={item.title}
+                      className="portfolio-img"
+                    />
+
+                    <div className="portfolio-overlay">
+                      <button className="overlay-btn">
+                        <FiEye /> Preview
+                      </button>
+                      <button className="overlay-btn secondary">
+                        <FiExternalLink /> Open
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="portfolio-content">
-                    <h3 className="card-title portfolio-title">{item.title}</h3>
+                    <h3 className="portfolio-title">{item.title}</h3>
                     <div className="portfolio-tags">
                       {item.tags.map((tag, tIdx) => (
                         <span key={tIdx} className="portfolio-tag">
@@ -282,7 +311,7 @@ const TalentProfile = () => {
           <div className="table-card sidebar-card">
             <h3 className="card-title">Education</h3>
             <div className="education-list">
-              <div className="education-item">
+              <div className="interview-item-premium">
                 <div className="edu-icon-box">
                   <FiFileText size={14} />
                 </div>
@@ -293,7 +322,7 @@ const TalentProfile = () => {
                 </div>
               </div>
 
-              <div className="education-item">
+              <div className="interview-item-premium">
                 <div className="edu-icon-box">
                   <FiFileText size={14} />
                 </div>

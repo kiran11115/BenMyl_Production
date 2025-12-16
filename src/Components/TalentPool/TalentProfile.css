@@ -194,8 +194,8 @@
   width: 44px; /* Matching .stat-icon-box */
   height: 44px;
   border-radius: 50%;
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: #1e293b; /* Matches other icon backgrounds */
+  color: #f6faff;
   border: 4px solid #fff;
   display: flex;
   align-items: center;
@@ -210,7 +210,7 @@
 }
 
 .experience-content h3 {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
   color: #1e293b;
   margin: 0 0 4px 0;
@@ -308,32 +308,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* No sticky needed if .dashboard-column-side handles flow, but good for UX */
+  /* Sticky positioning for desktop */
   position: sticky;
   top: 24px;
   z-index: 5;
-}
-
-
-/* Outline Button */
-.btn-outline {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  width: 100%;
-  background-color: #ffffff;
-  color: #3b82f6;
-  border: 1px solid #3b82f6; /* Matches primary border */
-  transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-  background-color: #eff6ff;
 }
 
 .sidebar-links {
@@ -364,7 +342,7 @@
    7. Sidebar Info (Extending .table-card)
    ========================================= */
 .sidebar-card {
-  gap: 20px;
+  gap: 10px;
 }
 
 .quick-info-item {
@@ -454,12 +432,13 @@
 
 /* Tablet (Matches dashboard 1024px break) */
 @media (max-width: 1024px) {
+  /* Ensure profile header has breathing room */
   .profile-header-card {
     padding: 24px !important;
   }
 }
 
-/* Mobile (Matches dashboard behavior) */
+/* Mobile (Matches dashboard layout shift at 768px) */
 @media (max-width: 768px) {
   /* Force vertical layout on header */
   .profile-header-card {
@@ -487,9 +466,10 @@
 
   .profile-meta-row {
     justify-content: center;
+    gap: 0px,
   }
 
-  /* Stack Summary Stats */
+  /* Stack Summary Stats Vertically on Mobile */
   .summary-stats-grid {
     flex-direction: column;
     gap: 12px;
@@ -497,11 +477,161 @@
 
   .summary-stat-box {
     width: 100%;
+    min-width: unset; /* Remove min-width constraint */
   }
 
-  /* Sidebar actions stack naturally due to column layout, but add margin */
+  /* Reset layout for portfolio grid if needed by global css, 
+     though grid-template-columns usually handles it */
+  
+  /* Sidebar actions should not stick on mobile */
   .sidebar-actions {
     position: static;
     margin-bottom: 24px;
   }
+
+  /* Adjust Experience Line position if icon size shifts */
+  .experience-list::before {
+    left: 19px;
+  }
 }
+
+
+/* ================= PORTFOLIO ================= */
+
+.portfolio-section {
+  margin-top: 24px;
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.portfolio-count {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Grid */
+.premium-portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Card */
+.premium-portfolio-card {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.premium-portfolio-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+}
+
+/* Image */
+.portfolio-img-wrapper {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+}
+
+.portfolio-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.premium-portfolio-card:hover .portfolio-img {
+  transform: scale(1.06);
+}
+
+/* Overlay */
+.portfolio-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.15),
+    rgba(15, 23, 42, 0.7)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.premium-portfolio-card:hover .portfolio-overlay {
+  opacity: 1;
+}
+
+.overlay-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.overlay-btn.secondary {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Content */
+.portfolio-content {
+  padding: 14px 16px 16px;
+}
+
+.portfolio-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+/* Tags */
+.portfolio-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.portfolio-tag {
+  font-size: 11px;
+  padding: 4px 8px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1456px) {
+  .premium-portfolio-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .premium-portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

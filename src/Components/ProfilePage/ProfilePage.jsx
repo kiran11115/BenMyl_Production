@@ -1,170 +1,236 @@
 import React from "react";
-import "./ProfilePage.css";
+import "../TalentPool/TalentProfile.css";
 import {
-  FiShare2,
+  FiMapPin,
+  FiBriefcase,
   FiDownload,
+  FiShare2,
   FiMail,
   FiPhone,
   FiLinkedin,
-  FiGlobe,
+  FiFileText,
+  FiEye,
+  FiExternalLink
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { BsDribbble } from "react-icons/bs";
 
-const skills = [
-  "UI/UX Design",
-  "User Research",
-  "Figma",
-  "Adobe XD",
-  "Sketch",
-  "Prototyping",
-  "Design Systems",
-  "Wireframing",
-  "User Testing",
-  "Information Architecture",
-  "Design Thinking",
-  "Team Leadership",
-];
-
-const portfolioItems = [
-  {
-    id: 1,
-    title: "E-commerce Dashboard",
-    tags: ["React", "TailwindCSS"],
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200",
-  },
-  {
-    id: 2,
-    title: "Travel App UI",
-    tags: ["React Native", "Firebase"],
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200",
-  },
-  {
-    id: 3,
-    title: "Financial Analytics Platform",
-    tags: ["TypeScript", "D3.js", "Node.js"],
-    image:
-      "https://images.unsplash.com/photo-1556155092-8707de31f9c4?q=80&w=1200",
-  },
-  {
-    id: 4,
-    title: "Health Tracker",
-    tags: ["React", "GraphQL", "MongoDB"],
-    image:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200",
-  },
-];
-
-const ProfilePage = () => {
-  const navigate = useNavigate();
+const TalentProfile = () => {
+  const profileData = {
+    name: "Sarah Anderson",
+    role: "Senior UX Designer",
+    location: "San Francisco, CA",
+    experience: "8+ years experience",
+    status: "Available for hire",
+    summary:
+      "Experienced UX Designer with 8+ years of creating user-centered digital experiences for various industries. Specialized in product design, user research, and design systems. Currently leading design initiatives at TechCorp, focusing on enterprise software solutions.",
+    stats: [
+      { label: "Projects Completed", value: "150+" },
+      { label: "Client Satisfaction", value: "98%" },
+    ],
+    skills: [
+      "UI/UX Design",
+      "User Research",
+      "Figma",
+      "Adobe XD",
+      "Sketch",
+      "Prototyping",
+      "Design Systems",
+      "Wireframing",
+      "User Testing",
+      "Information Architecture",
+      "Design Thinking",
+      "Team Leadership",
+    ],
+    workExperience: [
+      {
+        role: "Lead UX Designer",
+        company: "TechCorp",
+        period: "2020 - Present",
+        location: "San Francisco, CA",
+        desc: "Leading a team of designers, developing design systems, and managing enterprise projects.",
+      },
+      {
+        role: "Senior UX Designer",
+        company: "Design Studio",
+        period: "2018 - 2020",
+        location: "New York, NY",
+        desc: "Designed user interfaces for various clients in fintech and healthcare sectors.",
+      },
+      {
+        role: "UX Designer",
+        company: "StartupHub",
+        period: "2015 - 2018",
+        location: "Boston, MA",
+        desc: "Created user experiences for early-stage startups and conducted user research.",
+      },
+    ],
+     portfolio: [
+      {
+        title: "E-commerce Dashboard",
+        tags: ["React", "Redux", "TailwindCSS"],
+        img:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+      },
+      {
+        title: "Travel App UI",
+        tags: ["React Native", "Firebase"],
+        img:
+          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+      },
+      {
+        title: "Financial Analytics Platform",
+        tags: ["TypeScript", "D3.js", "Node.js"],
+        img:
+          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
+      },
+      {
+        title: "Health Tracker",
+        tags: ["React", "GraphQL", "MongoDB"],
+        img:
+          "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
+      },
+    ],
+  };
 
   return (
-    <div className="profile-page">
-      {/* Top breadcrumb */}
-      <div className="top-bar">
-        <button
-          className="link-button"
-          onClick={() => navigate("/user/user-dashboard")}
-        >
-          ← Back to Dashboard
-        </button>
-        <span className="top-bar-divider">/</span>
-        <span className="top-bar-current">Profile</span>
+    <div className="projects-container">
+      {/* Breadcrumb - Matches Global Text Styles */}
+      <div className="profile-breadcrumb">
+        <span className="breadcrumb-link">Back to dashboard</span>
+        <span className="breadcrumb-separator">/</span>
+        Contract Management
       </div>
 
-      <div className="profile-layout">
-        {/* LEFT */}
-        <div className="profile-main">
-          {/* Header */}
-          <div className="card profile-header-card">
-            <div className="profile-header-left">
-              <div className="avatar-circle-profile">
-                <span className="avatar-initials">SA</span>
-              </div>
+      <div className="dashboard-layout">
+        {/* === LEFT MAIN COLUMN === */}
+        <div className="dashboard-column-main">
+          <div className="row">
+            <div className="col-3">
+              {/* Profile Header Card */}
+              <div className="project-card">
+                <img
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
+                  alt="Profile"
+                  className="profile-avatar-lg"
+                />
+                <div className="profile-header-content">
+                  <div className="d-flex gap-3">
+                    <h1 className="mb-2">{profileData.name}</h1>
+                    <FiFileText className="profile-verified-icon" />
+                  </div>
+                  <div className="card-title mb-2">{profileData.role}</div>
 
-              <div className="profile-header-info">
-                <div className="name-row">
-                  <h1 className="prof-name">Sarah Anderson</h1>
-                  <span className="profile-badge profile-badge-blue">Pro</span>
+                  <div className="profile-meta-row">
+                    <span className="meta-item">
+                      <FiMapPin /> {profileData.location}
+                    </span>
+                    <span className="meta-item">
+                      <FiBriefcase /> {profileData.experience}
+                    </span>
+                  </div>
+
+                  <div className="profile-status-wrapper">
+                    <span className="status-tag status-completed">
+                      {profileData.status}
+                    </span>
+                  </div>
                 </div>
-                <p className="profile-role">Senior UX Designer</p>
-
-                <div className="profile-meta-row">
-                  <span className="profile-meta-item">
-                    <span className="meta-dot" /> San Francisco, CA
-                  </span>
-                  <span className="meta-separator">•</span>
-                  <span className="profile-meta-item">
-                    <span className="meta-dot" /> 8+ years experience
-                  </span>
-                </div>
-
-                <span className="availability-pill">
-                  Available for hire
-                </span>
               </div>
             </div>
+              <div className="col-9">
+                {/* Professional Summary */}
+                <div className="project-card">
+                  <h2 className="card-title">Professional Summary</h2>
+                  <p className="summary-text">{profileData.summary}</p>
+
+                  <div className="summary-stats-grid">
+                    {profileData.stats.map((stat, idx) => (
+                      <div key={idx} className="summary-stat-box">
+                        <div className="summary-stat-value">{stat.value}</div>
+                        <div className="summary-stat-label">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
           </div>
 
-          {/* About */}
-          <div className="card about-card">
-            <div className="about-text">
-              <h2 className="section-title">About Me</h2>
-              <p className="about-description">
-                Experienced UX Designer with 8+ years of creating user-centered
-                digital experiences for various industries.
-              </p>
-            </div>
-
-            <div className="about-stats">
-              <div className="stat-block">
-                <div className="stat-value">150+</div>
-                <div className="stat-label">Projects Completed</div>
-              </div>
-              <div className="stat-block">
-                <div className="stat-value">98%</div>
-                <div className="stat-label">Client Satisfaction</div>
-              </div>
+<div className="row">
+    <div className="col-8">
+         {/* Work Experience */}
+          <div className="project-card">
+            <h2 className="card-title">Work Experience</h2>
+            <div className="experience-list">
+              {profileData.workExperience.map((job, idx) => (
+                <div key={idx} className="experience-item">
+                  <div className="experience-icon-box">
+                    <FiBriefcase />
+                  </div>
+                  <div className="experience-content">
+                    <h3>{job.role}</h3>
+                    <div className="job-meta">
+                      {job.company} • {job.period}
+                    </div>
+                    <div className="job-location">{job.location}</div>
+                    <p className="job-desc">{job.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* Skills */}
-          <div className="card">
-            <h2 className="section-title">Skills & Expertise</h2>
-            <div className="chip-list">
-              {skills.map((skill) => (
-                <span key={skill} className="chip">
+    </div>
+    <div className="col-4">
+          {/* Skills & Expertise */}
+          <div className="project-card">
+            <h2 className="card-title">Skills & Expertise</h2>
+            <div className="skills-container">
+              {profileData.skills.map((skill, idx) => (
+                <span
+                  key={idx}
+                  className="status-tag status-progress"
+                >
                   {skill}
                 </span>
               ))}
             </div>
           </div>
-
+    </div>
+</div>
+         
           {/* Portfolio */}
-          <div className="card">
+        <div className="portfolio-section">
             <div className="portfolio-header">
-              <h2 className="section-title">Portfolio</h2>
+              <h2 className="card-title">Portfolio</h2>
+              <span className="portfolio-count">
+                {profileData.portfolio.length} Projects
+              </span>
             </div>
 
-            <div className="portfolio-grid">
-              {portfolioItems.map((item) => (
-                <div key={item.id} className="portfolio-card">
-                  <div className="portfolio-image-placeholder">
+            <div className="projects-grid premium-portfolio-grid">
+              {profileData.portfolio.map((item, idx) => (
+                <div key={idx} className="premium-portfolio-card">
+                  <div className="portfolio-img-wrapper">
                     <img
-                      src={item.image}
+                      src={item.img}
                       alt={item.title}
                       className="portfolio-img"
                     />
-                    <span className="portfolio-image-text">
-                      {item.title}
-                    </span>
+
+                    <div className="portfolio-overlay">
+                      <button className="overlay-btn">
+                        <FiEye /> Preview
+                      </button>
+                      <button className="overlay-btn secondary">
+                        <FiExternalLink /> Open
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="portfolio-info">
-                    <div className="chip-list">
-                      {item.tags.map((tag) => (
-                        <span key={tag} className="chip">
+                  <div className="portfolio-content">
+                    <h3 className="portfolio-title">{item.title}</h3>
+                    <div className="portfolio-tags">
+                      {item.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="portfolio-tag">
                           {tag}
                         </span>
                       ))}
@@ -176,76 +242,104 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDEBAR */}
-        <aside className="profile-sidebar">
+        {/* === RIGHT SIDE COLUMN === */}
+        <div className="dashboard-column-side">
+          {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary">
-              <FiShare2 /> Share Profile
-            </button>
-            <button className="btn-secondary">
-              <FiDownload /> Download Resume
-            </button>
+            <button className="btn-primary w-100">Schedule Interview</button>
+            <button className="btn-secondary w-100">Shortlist Candidate</button>
+
+            <div className="sidebar-links">
+              <button className="link-btn">
+                <FiDownload /> Download Resume
+              </button>
+              <button className="link-btn">
+                <FiShare2 /> Share Profile
+              </button>
+            </div>
           </div>
 
-          {/* Availability */}
-          <div className="card sidebar-card">
-            <h2 className="section-title">Availability</h2>
-            <div className="availability-row">
-              <span className="status-dot status-dot-green" />
-              <div>
-                <div className="availability-label">Open to Work</div>
-                <div className="availability-sub">
-                  Available for Full-time opportunities
+          {/* Quick Information */}
+          <div className="table-card sidebar-card">
+            <h3 className="card-title">Quick Information</h3>
+
+            <div className="quick-info-item">
+              <div className="stat-label">Expected Salary</div>
+              <div className="info-value">$120,000 - $150,000 / year</div>
+            </div>
+
+            <div className="quick-info-item">
+              <div className="stat-label">Notice Period</div>
+              <div className="info-value">2 weeks</div>
+            </div>
+
+            <div className="quick-info-item">
+              <div className="stat-label">Work Preference</div>
+              <div className="info-value">Hybrid (2-3 days remote)</div>
+            </div>
+
+            <div className="quick-info-item">
+              <div className="stat-label">Languages</div>
+              <div className="languages-list">
+                <span className="status-tag status-pending">English</span>
+                <span className="status-tag status-pending">Spanish</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="table-card sidebar-card">
+            <h3 className="card-title">Contact Information</h3>
+            <div className="contact-list">
+              <div className="contact-item">
+                <FiMail className="contact-icon" /> sarah.anderson@example.com
+              </div>
+              <div className="contact-item">
+                <FiPhone className="contact-icon" /> +1 (555) 123-4567
+              </div>
+              <div className="contact-item">
+                <FiLinkedin className="contact-icon" />{" "}
+                linkedin.com/in/sarahanderson
+              </div>
+              <div className="contact-item">
+                <BsDribbble className="contact-icon" /> sarahanderson.design
+              </div>
+            </div>
+          </div>
+
+          {/* Education */}
+          <div className="table-card sidebar-card">
+            <h3 className="card-title">Education</h3>
+            <div className="education-list">
+              <div className="interview-item-premium">
+                <div className="edu-icon-box">
+                  <FiFileText size={14} />
+                </div>
+                <div>
+                  <div className="edu-degree">Master in Interaction Design</div>
+                  <div className="edu-school">Carnegie Mellon University</div>
+                  <div className="edu-year">2013 - 2015</div>
+                </div>
+              </div>
+
+              <div className="interview-item-premium">
+                <div className="edu-icon-box">
+                  <FiFileText size={14} />
+                </div>
+                <div>
+                  <div className="edu-degree">BA in Graphic Design</div>
+                  <div className="edu-school">
+                    Rhode Island School of Design
+                  </div>
+                  <div className="edu-year">2009 - 2013</div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Quick Info */}
-          <div className="card sidebar-card">
-            <h2 className="section-title">Quick Information</h2>
-            <div className="quick-info-list">
-              <div className="quick-info-item">
-                <span className="quick-info-label">Expected Salary</span>
-                <span className="quick-info-value">
-                  $120,000 – $150,000 / year
-                </span>
-              </div>
-              <div className="quick-info-item">
-                <span className="quick-info-label">Notice Period</span>
-                <span className="quick-info-value">2 weeks</span>
-              </div>
-              <div className="quick-info-item">
-                <span className="quick-info-label">Work Preference</span>
-                <span className="quick-info-value">
-                  Hybrid (2–3 days remote)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div className="card sidebar-card">
-            <h2 className="section-title">Contact Information</h2>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiMail /> Sarah.anderson@example.com
-              </div>
-              <div className="contact-item">
-                <FiPhone /> +1 (555) 123-4567
-              </div>
-              <div className="contact-item">
-                <FiLinkedin /> linkedin.com/in/sarahanderson
-              </div>
-              <div className="contact-item">
-                <FiGlobe /> sarahanderson.design
-              </div>
-            </div>
-          </div>
-        </aside>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ProfilePage;
+export default TalentProfile;
