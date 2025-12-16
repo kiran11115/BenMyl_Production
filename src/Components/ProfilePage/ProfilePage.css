@@ -66,6 +66,170 @@
   color: #64748b;
 }
 
+.profile-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.profile-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #cbd5f5;
+}
+
+.meta-separator {
+  color: #cbd5f5;
+}
+
+.availability-pill {
+  margin-top: 4px;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ecfdf3;
+  color: #15803d;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+/* About */
+.about-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #0f172a;
+}
+
+.about-description {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475569;
+  margin: 0;
+}
+
+.about-stats {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.stat-block {
+  flex: 1;
+  min-width: 120px;
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.stat-label {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Card vertical spacing on left */
+.card + .card {
+  margin-top: 16px;
+}
+
+/* Experience */
+.experience-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.experience-item {
+  display: flex;
+  gap: 14px;
+}
+
+.experience-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.experience-content {
+  flex: 1;
+}
+
+.experience-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.experience-role {
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.experience-company {
+  color: #64748b;
+}
+
+.experience-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #cbd5f5;
+}
+
+.experience-years {
+  color: #64748b;
+}
+
+.experience-location {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 4px 0;
+}
+
+.experience-description {
+  font-size: 13px;
+  color: #475569;
+  margin: 0;
+}
+
 /* Chips */
 .chip-list {
   display: flex;

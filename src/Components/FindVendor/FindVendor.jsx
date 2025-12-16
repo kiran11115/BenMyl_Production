@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  FiSearch, FiFilter, FiPlus, FiMoreVertical, 
-  FiStar, FiMapPin, FiClock, FiCheckCircle, FiChevronLeft, FiChevronDown
+  FiSearch, FiPlus, FiMoreVertical, 
+  FiStar, FiMapPin, FiClock, FiChevronDown, FiCalendar, FiArrowLeft
 } from 'react-icons/fi';
+import { useNavigate } from "react-router-dom";
 
-// --- (Augmented Mock Data to support all filters) ---
 const MOCK_VENDORS = [
   {
     id: 1,
@@ -83,13 +83,21 @@ const MOCK_VENDORS = [
   }
 ];
 
-const RECENT_INTERVIEWS = [
-  { id: 1, title: 'Contract Negotiation', role: 'TechFlow Sol.', type: 'Legal', tagClass: 'tag-hr' },
-  { id: 2, title: 'Initial Screening', role: 'Creative Pulse', type: 'Technical', tagClass: 'tag-technical' },
-  { id: 3, title: 'Compliance Check', role: 'Global Logistics', type: 'Managerial', tagClass: 'tag-managerial' },
+// --- NEW MOCK DATA FOR RIGHT COLUMN ---
+const TOP_VENDORS_WIDGET = [
+  { id: 1, name: 'HR Solutions Pro', rating: 4.6, avatar: 'https://i.pravatar.cc/150?u=8' },
+  { id: 2, name: 'Talent Bridge', rating: 4.8, avatar: 'https://i.pravatar.cc/150?u=9' },
+  { id: 3, name: 'Hire Right', rating: 4.7, avatar: 'https://i.pravatar.cc/150?u=10' },
+];
+
+const RECENT_INVITES_WIDGET = [
+  { id: 1, name: 'HR Solutions Pro', time: 'Invited 2 days ago' },
+  { id: 2, name: 'Talent Bridge', time: 'Invited 2 days ago' },
+  { id: 3, name: 'Hire Right', time: 'Invited 2 days ago' },
 ];
 
 const SERVICE_TYPES = ['All Services', 'IT Services', 'Marketing', 'Legal', 'Supply Chain', 'Human Resources'];
+
 
 const VendorSearchPage = () => {
   // State for immediate search input
@@ -105,7 +113,6 @@ const VendorSearchPage = () => {
   });
 
   // State for the "Active" filters (applied when button is clicked)
-  // We initialize this with the same values as inputs so the list shows initially
   const [activeFilters, setActiveFilters] = useState({
     serviceType: 'All Services',
     minRating: 0,
@@ -114,42 +121,24 @@ const VendorSearchPage = () => {
     maxBudget: 50000
   });
 
-  // Handler for form changes
   const handleInputChange = (field, value) => {
-    setFilterInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFilterInputs(prev => ({ ...prev, [field]: value }));
   };
 
-  // Handler for "Apply Filters"
   const applyFilters = () => {
     setActiveFilters(filterInputs);
   };
 
+  const navigate = useNavigate();
+
   // --- FILTERING LOGIC ---
   const filteredVendors = MOCK_VENDORS.filter(vendor => {
-    // 1. Search Term (Name)
     const matchesSearch = vendor.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    // 2. Service Type
-    const matchesService = activeFilters.serviceType === 'All Services' || 
-                           vendor.category === activeFilters.serviceType;
-
-    // 3. Minimum Rating
+    const matchesService = activeFilters.serviceType === 'All Services' || vendor.category === activeFilters.serviceType;
     const matchesRating = vendor.rating >= activeFilters.minRating;
-
-    // 4. Location (Partial match)
-    const matchesLocation = activeFilters.location === '' || 
-                            vendor.location.toLowerCase().includes(activeFilters.location.toLowerCase());
-
-    // 5. Availability
-    const matchesAvailability = activeFilters.availability === '' || 
-                                vendor.availability === activeFilters.availability;
-
-    // 6. Budget (Hourly Rate check - assuming budget input implies max hourly cost for this demo context, or project cost)
-    // For demo purposes, we'll map the slider (0-500) to hourly rate roughly
-    const matchesBudget = vendor.hourlyRate <= (activeFilters.maxBudget / 100); // Scaling budget down for hourly comparison logic
+    const matchesLocation = activeFilters.location === '' || vendor.location.toLowerCase().includes(activeFilters.location.toLowerCase());
+    const matchesAvailability = activeFilters.availability === '' || vendor.availability === activeFilters.availability;
+    const matchesBudget = vendor.hourlyRate <= (activeFilters.maxBudget / 100);
 
     return matchesSearch && matchesService && matchesRating && matchesLocation && matchesAvailability && matchesBudget;
   });
@@ -158,13 +147,12 @@ const VendorSearchPage = () => {
     <div className="projects-container">
       
       {/* === BREADCRUMBS === */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: '#64748b' }}>
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}>
-          <FiChevronLeft size={16} /> Back to dashboard
-        </a>
-        <span style={{ color: '#cbd5e1' }}>/</span>
-        <span style={{ color: '#1e293b', fontWeight: 600 }}>Find Vendor</span>
-      </div>
+       <div className="vs-breadcrumbs d-flex mb-3">
+                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+                  <FiArrowLeft /> Back to Dashboard
+                </button>
+                <span className="crumb">/ Find Vendors</span>
+              </div>
 
       {/* --- Top Header / Search --- */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
@@ -187,8 +175,8 @@ const VendorSearchPage = () => {
               }}
             />
           </div>
-          <button className="btn-upload" style={{ width: 'auto', padding: '0 20px' }}>
-            <FiPlus size={16} /> <span>Add Vendor</span>
+          <button className="add-project-btn" style={{ width: 'auto', padding: '0 20px' }}>
+          <span>Find Vendor</span>
           </button>
         </div>
       </div>
@@ -202,7 +190,6 @@ const VendorSearchPage = () => {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>Filters</h3>
-            {/* Clear Filters Link (Optional utility) */}
             <span 
               onClick={() => {
                 const reset = { serviceType: 'All Services', minRating: 0, location: '', availability: '', maxBudget: 50000 };
@@ -215,9 +202,9 @@ const VendorSearchPage = () => {
             </span>
           </div>
 
-          {/* Service Type Dropdown */}
+          {/* Service Type */}
           <div style={{ marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#334155' }}>Service Type</h4>
+            <h4 className='card-title  mb-2'>Service Type</h4>
             <div style={{ position: 'relative' }}>
               <select 
                 value={filterInputs.serviceType}
@@ -235,9 +222,9 @@ const VendorSearchPage = () => {
             </div>
           </div>
 
-          {/* Minimum Rating */}
+          {/* Min Rating */}
           <div style={{ marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#334155' }}>Minimum Rating</h4>
+            <h4 className='card-title  mb-2'>Minimum Rating</h4>
             <div style={{ display: 'flex', gap: '4px' }}>
                {[1, 2, 3, 4, 5].map((star) => (
                  <button 
@@ -258,7 +245,7 @@ const VendorSearchPage = () => {
 
           {/* Location */}
           <div style={{ marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#334155' }}>Location</h4>
+            <h4 className='card-title  mb-2'>Location</h4>
             <div style={{ position: 'relative' }}>
               <FiMapPin style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
               <input 
@@ -276,7 +263,7 @@ const VendorSearchPage = () => {
 
           {/* Availability */}
           <div style={{ marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#334155' }}>Availability</h4>
+            <h4 className='card-title  mb-2'>Availability</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {['Immediate', 'Within 1 Week', 'Custom Range'].map((item) => (
                 <label key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#64748b', cursor: 'pointer' }}>
@@ -293,9 +280,9 @@ const VendorSearchPage = () => {
             </div>
           </div>
 
-          {/* Budget Range */}
+          {/* Budget */}
           <div style={{ marginBottom: '32px' }}>
-             <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: '#334155' }}>Max Hourly Rate</h4>
+             <h4 className='card-title mb-2'>Max Hourly Rate</h4>
              <input 
               type="range" 
               min="0" 
@@ -311,7 +298,6 @@ const VendorSearchPage = () => {
              </div>
           </div>
 
-          {/* Apply Button */}
           <button 
             onClick={applyFilters}
             style={{
@@ -336,12 +322,12 @@ const VendorSearchPage = () => {
           <div className="projects-grid">
             {filteredVendors.length > 0 ? (
               filteredVendors.map((vendor) => (
-                <div key={vendor.id} className="stat-card" style={{ display: 'block', padding: '20px' }}>
-                  <div className="card-header" style={{ marginBottom: '16px' }}>
+                <div key={vendor.id} className="project-card">
+                  <div className="card-header">
                     <div style={{ display: 'flex', gap: '12px' }}>
                       <img src={vendor.avatar} alt={vendor.name} className="author-avatar" style={{ width: '40px', height: '40px' }} />
                       <div>
-                        <h3 className="card-title" style={{ fontSize: '15px', marginBottom: '4px' }}>{vendor.name}</h3>
+                        <h3 className="card-title">{vendor.name}</h3>
                         <span style={{ fontSize: '12px', color: '#64748b' }}>{vendor.category}</span>
                       </div>
                     </div>
@@ -350,7 +336,7 @@ const VendorSearchPage = () => {
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <div className={`status-tag ${vendor.statusClass}`}>
                       {vendor.status}
                     </div>
@@ -361,13 +347,13 @@ const VendorSearchPage = () => {
                     </div>
                   </div>
 
-                  <div className="card-details" style={{ marginBottom: '20px', flexDirection: 'column', gap: '10px' }}>
-                     <div className="detail-item" style={{ background: 'transparent', padding: 0 }}>
-                        <FiMapPin size={14} /> <span>{vendor.location}</span>
-                     </div>
-                     <div className="detail-item" style={{ background: 'transparent', padding: 0 }}>
-                        <FiClock size={14} /> <span>{vendor.availability}</span>
-                     </div>
+                  <div className="card-details" style={{ flexDirection: 'column', gap: '10px' }}>
+                      <div className="detail-item" style={{ background: 'transparent', padding: 0 }}>
+                         <FiMapPin size={14} /> <span>{vendor.location}</span>
+                      </div>
+                      <div className="detail-item" style={{ background: 'transparent', padding: 0 }}>
+                         <FiClock size={14} /> <span>{vendor.availability}</span>
+                      </div>
                   </div>
 
                   <div className="progress-section">
@@ -380,13 +366,13 @@ const VendorSearchPage = () => {
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
-                     <button className="btn-upload" style={{ background: '#fff', color: '#6843c7', fontSize: '11px', height: '32px' }}>
-                       View Profile
-                     </button>
-                     <button className="btn-upload" style={{ fontSize: '11px', height: '32px' }}>
-                       Invite
-                     </button>
+                  <div style={{ marginTop: '10px', display: 'flex', gap: '12px' }}>
+                      <button onClick={() => navigate("/user/user-invite-bid")} className="btn-primary">
+                        Invite
+                      </button>
+                      <button onClick={() => navigate("/user/user-vendor-detail")} className="btn-secondary">
+                        View
+                      </button>
                   </div>
                 </div>
               ))
@@ -403,68 +389,93 @@ const VendorSearchPage = () => {
           </div>
         </div>
 
-        {/* === RIGHT COLUMN: STATS === */}
-        <div className="dashboard-column-side" style={{ width: '280px', flexShrink: 0 }}>
-          {/* Stats Cards remain unchanged */}
-          <div className="stat-card card-cyan">
-            <div className="bubbles-container">
-              <div className="bubble bubble-1"></div>
-              <div className="bubble bubble-2"></div>
-              <div className="bubble bubble-3"></div>
-            </div>
-            <div className="stat-content">
-              <div>
-                <div className="stat-label">Total Active Vendors</div>
-                <div className="stat-value">1,248</div>
-                <div className="stat-trend trend-up">
-                  <span>↑ 12%</span> <span>vs last month</span>
-                </div>
-              </div>
-            </div>
-            <div className="stat-icon-box"><FiCheckCircle /></div>
-          </div>
-
-          <div className="stat-card card-purple">
-             <div className="bubbles-container">
-              <div className="bubble bubble-1"></div>
-              <div className="bubble bubble-3"></div>
-            </div>
-            <div className="stat-content">
-              <div>
-                <div className="stat-label">Pending Reviews</div>
-                <div className="stat-value">24</div>
-                <div className="stat-trend trend-down">
-                  <span>↓ 4%</span> <span>improving</span>
-                </div>
-              </div>
-            </div>
-            <div className="stat-icon-box"><FiClock /></div>
-          </div>
-
-          <div className="table-card" style={{ padding: '24px' }}>
-            <div className="card-header-compact">
-              <h3 className="section-title" style={{ fontSize: '15px', marginBottom: 0 }}>Recent Activity</h3>
-              <button className="options-btn"><FiMoreVertical /></button>
-            </div>
-            <div className="interviews-wrapper">
-              {RECENT_INTERVIEWS.map((item) => (
-                <div key={item.id} className="interview-item-premium">
-                  <div className="icon-box-premium" style={{ 
-                    background: item.type === 'Technical' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : undefined 
-                  }}>
-                    <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{item.role.charAt(0)}</span>
-                  </div>
-                  <div className="interview-content">
-                    <div className="interview-title">{item.role}</div>
-                    <div className="interview-meta-row">
-                      <span>{item.title}</span>
-                      <span className={`status-tag ${item.tagClass}`} style={{ fontSize: '9px', padding: '1px 6px' }}>{item.type}</span>
+        {/* === RIGHT COLUMN: UPDATED TO MATCH IMAGE === */}
+        <div className="dashboard-column-side" style={{ width: '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          
+          {/* 1. Top Vendors Section */}
+          <div className='project-card'>
+            <h3 className='card-title'>Top Vendors</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {TOP_VENDORS_WIDGET.map(vendor => (
+                <div key={vendor.id} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img 
+                    src={vendor.avatar} 
+                    alt={vendor.name} 
+                    style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover' }} 
+                  />
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>{vendor.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#64748b' }}>
+                      <FiStar size={12} color="#fbbf24" fill="#fbbf24" style={{ marginTop: '-1px' }} />
+                      {vendor.rating}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* 2. Average Spend Chart */}
+          <div className='project-card'>
+            <h3 className='card-title'>Average Spend</h3>
+            
+            <div style={{ position: 'relative', height: '140px', display: 'flex', alignItems: 'flex-end', paddingLeft: '35px', paddingBottom: '20px' }}>
+              {/* Y-Axis Labels */}
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '9px', color: '#94a3b8', textAlign: 'right', width: '30px' }}>
+                <span>16000</span>
+                <span>12000</span>
+                <span>8000</span>
+                <span>4000</span>
+                <span>0</span>
+              </div>
+
+              {/* Grid Lines */}
+              <div style={{ position: 'absolute', left: '35px', right: 0, top: '7px', bottom: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 0 }}>
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} style={{ width: '100%', height: '1px', borderTop: '1px dashed #e2e8f0' }}></div>
+                ))}
+              </div>
+
+              {/* Bars (Visual approximation) */}
+              <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', zIndex: 1, paddingRight: '10px' }}>
+                {/* Bar 1 */}
+                <div style={{ width: '40px', height: '100%', display: 'flex', alignItems: 'flex-end', position: 'relative' }}>
+                  {/* Invisible container, drawing line only */}
+                  <div style={{ width: '1px', height: '100%', background: '#cbd5e1', position: 'absolute', left: 0 }}></div>
+                </div>
+                {/* Bar 2 (Just vertical grid line as per image style usually implies bounds) */}
+                <div style={{ width: '1px', height: '100%', background: '#cbd5e1' }}></div>
+              </div>
+
+              {/* X-Axis Labels */}
+              <div style={{ position: 'absolute', left: '35px', right: 0, bottom: 0, display: 'flex', justifyContent: 'space-between', paddingRight: '10px' }}>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Background</span>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>Onboarding</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Recent Invites */}
+          <div className='project-card'>
+            <h3 className='card-title'>Recent Invites</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {RECENT_INVITES_WIDGET.map(invite => (
+                <div className='interview-item-premium' key={invite.id} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ 
+                    width: '36px', height: '36px', borderRadius: '8px', 
+                    background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                  }}>
+                    <FiCalendar size={16} color="#2563eb" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>{invite.name}</div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{invite.time}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
