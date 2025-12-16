@@ -1,0 +1,42 @@
+export const talentsData = [
+  {
+    name: "Sarah Anderson",
+    email: "sarah.anderson@mail.com",
+    role: "Senior UX Designer",
+    status: "Active",
+    statusClass: "active",
+    location: "San Francisco, CA",
+  },
+  {
+    name: "Michael Chen",
+    email: "michael.chen@mail.com",
+    role: "Frontend Developer",
+    status: "Pending",
+    statusClass: "pending",
+    location: "New York, USA",
+  },
+  {
+    name: "Emily Rodriguez",
+    email: "emily.rodriguez@mail.com",
+    role: "Product Manager",
+    status: "Active",
+    statusClass: "active",
+    location: "Remote",
+  },
+  {
+    name: "Daniel Wilson",
+    email: "daniel.wilson@mail.com",
+    role: "Backend Engineer",
+    status: "Rejected",
+    statusClass: "rejected",
+    location: "Austin, TX",
+  },
+  {
+    name: "Olivia Brown",
+    email: "olivia.brown@mail.com",
+    role: "UI Designer",
+    status: "Pending",
+    statusClass: "pending",
+    location: "Los Angeles, CA",
+  },
+];

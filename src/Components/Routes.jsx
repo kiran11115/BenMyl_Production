@@ -28,6 +28,7 @@ import ContractManagement from "./ContractManagement/ContractManagement";
 import ContractView from "./ContractView/ContractView";
 import CreateNewContract from "./NewContract/CreateNewContract";
 import TalentProfile from "./TalentPool/TalentProfile";
+import UploadTalent from "./UploadTalent/UploadTalent";
 
 
 
@@ -46,6 +47,7 @@ const routes = createBrowserRouter(
                 <Route path="User" element={<Header />}>
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
+                    <Route path="user-upload-talent" element={<UploadTalent />} />
                     <Route path="user-Jobs" element={<Jobs />} />
                     <Route path="user-messages" element={<Messages />} />
                     <Route path="user-talentpool" element={<TalentPool />} />

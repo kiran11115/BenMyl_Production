@@ -1,6 +1,7 @@
 import React from "react";
 import { MoreVertical, Clock, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { MdOutlineCloudUpload } from "react-icons/md";
 
 const ProjectsSection = ({ projects }) => {
   const navigate = useNavigate();
@@ -28,6 +29,12 @@ const ProjectsSection = ({ projects }) => {
         </h3>
 
         <div className="d-flex align-items-center gap-2">
+          <button
+            className="btn-upload"
+            onClick={() => navigate("/user/user-upload-talent")}
+          >
+           <MdOutlineCloudUpload size={16} /> Upload Talent
+          </button>
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}
@@ -73,7 +80,7 @@ const ProjectsSection = ({ projects }) => {
                   className="author-avatar"
                   // Add a small error handler to fallback if image fails
                   onError={(e) => {
-                    e.target.onerror = null; 
+                    e.target.onerror = null;
                     e.target.src = `https://ui-avatars.com/api/?name=${talentName}&background=random`;
                   }}
                 />
