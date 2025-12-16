@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
-    FiChevronLeft,
-    FiFileText,
+    FiStar,
     FiDollarSign,
     FiCalendar,
     FiCheckSquare,
@@ -34,7 +33,7 @@ export default function InviteBid() {
     };
 
     return (
-        <div className="nb-page">
+        <div className="container mt-3 mb-3">
             <div className="nb-breadcrumbs">
                 <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
                 <button className="link-button" onClick={() => navigate("/user/user-find-vendor")}><FiArrowLeft /> Find Vendor</button>
@@ -115,7 +114,7 @@ export default function InviteBid() {
                     <div className="nb-actions">
                         <button
                             type="button"
-                            className="btn btn-cancel"
+                            className="btn-secondary"
                             onClick={() => {
                                 setProject("");
                                 setServices({ interview: false, onboarding: false });
@@ -124,14 +123,14 @@ export default function InviteBid() {
                                 setInstructions("");
                             }}
                         >
-                            <FiX /> Cancel
+                         Cancel
                         </button>
 
                         <div className="right-actions">
-                            <button type="button" className="btn btn-draft">
+                            <button type="button" className="btn-secondary gap-2">
                                 <FiSave /> Save as Draft
                             </button>
-                            <button type="button" className="btn btn-primary" onClick={onSend}>
+                            <button type="button" className="btn-primary gap-2" onClick={onSend}>
                                 <FiSend /> Send Invite
                             </button>
                         </div>
@@ -140,8 +139,8 @@ export default function InviteBid() {
 
                 {/* RIGHT: VENDOR SUMMARY */}
                 <aside className="nb-summary">
-                    <div className="vendor-card">
-                        <div className="vendor-header">
+                    <div className="project-card">
+                        <div className="project-header">
                             <img
                                 src="https://i.pravatar.cc/100?img=12"
                                 alt="vendor"
@@ -151,7 +150,7 @@ export default function InviteBid() {
                                 <h3 className="vendor-name">Talent Bridge</h3>
                                 <div className="rating-row">
                                     <span className="stars" aria-hidden>
-                                        <FiFileText />
+                                        <FiStar />
                                     </span>
                                     <span className="rating-num">4.8</span>
                                 </div>
@@ -159,7 +158,7 @@ export default function InviteBid() {
                         </div>
 
                         <div className="vendor-body">
-                            <div className="summary-item">
+                            <div className="summary-item d-flex gap-3">
                                 <div className="label">Average Response:</div>
                                 <div className="value">2 hours</div>
                             </div>

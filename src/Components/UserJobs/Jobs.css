@@ -309,6 +309,7 @@
   border: 1px solid var(--slate-200);
   color: var(--slate-500);
   transition: all 0.2s;
+  width: 165px;
 }
 
 .btn-secondary:hover {
