@@ -30,53 +30,59 @@ const portfolioItems = [
     id: 1,
     title: "E-commerce Dashboard",
     tags: ["React", "TailwindCSS"],
-    imageAlt: "E-commerce dashboard preview",
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200",
   },
   {
     id: 2,
     title: "Travel App UI",
     tags: ["React Native", "Firebase"],
-    imageAlt: "Travel app mobile UI",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200",
   },
   {
     id: 3,
     title: "Financial Analytics Platform",
     tags: ["TypeScript", "D3.js", "Node.js"],
-    imageAlt: "Financial analytics dashboard",
+    image:
+      "https://images.unsplash.com/photo-1556155092-8707de31f9c4?q=80&w=1200",
   },
   {
     id: 4,
     title: "Health Tracker",
     tags: ["React", "GraphQL", "MongoDB"],
-    imageAlt: "Health tracking mobile app screen",
+    image:
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200",
   },
 ];
 
 const ProfilePage = () => {
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="profile-page">
       {/* Top breadcrumb */}
       <div className="top-bar">
-        <button className="link-button" onClick={()=>navigate("/user/user-dashboard")}>&larr; Back to Dashboard</button>
+        <button
+          className="link-button"
+          onClick={() => navigate("/user/user-dashboard")}
+        >
+          ← Back to Dashboard
+        </button>
         <span className="top-bar-divider">/</span>
         <span className="top-bar-current">Profile</span>
       </div>
 
-      {/* Main layout */}
       <div className="profile-layout">
-        {/* LEFT MAIN COLUMN */}
+        {/* LEFT */}
         <div className="profile-main">
-          {/* Header Card */}
+          {/* Header */}
           <div className="card profile-header-card">
             <div className="profile-header-left">
-              <div className="avatar-wrapper">
-                <div className="avatar-circle">
-                  <span className="avatar-initials">SA</span>
-                </div>
+              <div className="avatar-circle-profile">
+                <span className="avatar-initials">SA</span>
               </div>
+
               <div className="profile-header-info">
                 <div className="name-row">
                   <h1 className="prof-name">Sarah Anderson</h1>
@@ -86,33 +92,31 @@ const navigate = useNavigate();
 
                 <div className="profile-meta-row">
                   <span className="profile-meta-item">
-                    <span className="meta-dot" />
-                    San Francisco, CA
+                    <span className="meta-dot" /> San Francisco, CA
                   </span>
                   <span className="meta-separator">•</span>
                   <span className="profile-meta-item">
-                    <span className="meta-dot" />
-                    8+ years experience
+                    <span className="meta-dot" /> 8+ years experience
                   </span>
                 </div>
 
-                <span className="availability-pill">Available for hire</span>
+                <span className="availability-pill">
+                  Available for hire
+                </span>
               </div>
             </div>
           </div>
 
-          {/* About + Stats */}
+          {/* About */}
           <div className="card about-card">
             <div className="about-text">
               <h2 className="section-title">About Me</h2>
               <p className="about-description">
                 Experienced UX Designer with 8+ years of creating user-centered
-                digital experiences for various industries. Specialized in
-                product design, user research, and design systems. Currently
-                leading design initiatives at TechCorp, focusing on enterprise
-                software solutions.
+                digital experiences for various industries.
               </p>
             </div>
+
             <div className="about-stats">
               <div className="stat-block">
                 <div className="stat-value">150+</div>
@@ -125,67 +129,9 @@ const navigate = useNavigate();
             </div>
           </div>
 
-          {/* Work Experience */}
-          <div className="card">
-            <h2 className="section-title">Work Experience</h2>
-
-            <div className="experience-list">
-              <div className="experience-item">
-                <div className="experience-icon">L</div>
-                <div className="experience-content">
-                  <div className="experience-title-row">
-                    <h3 className="experience-role">Lead UX Designer</h3>
-                    <span className="experience-company">TechCorp</span>
-                    <span className="experience-dot" />
-                    <span className="experience-years">2020 – Present</span>
-                  </div>
-                  <p className="experience-location">San Francisco, CA</p>
-                  <p className="experience-description">
-                    Leading a team of designers, developing design systems, and
-                    managing enterprise projects.
-                  </p>
-                </div>
-              </div>
-
-              <div className="experience-item">
-                <div className="experience-icon">S</div>
-                <div className="experience-content">
-                  <div className="experience-title-row">
-                    <h3 className="experience-role">Senior UX Designer</h3>
-                    <span className="experience-company">Design Studio</span>
-                    <span className="experience-dot" />
-                    <span className="experience-years">2018 – 2020</span>
-                  </div>
-                  <p className="experience-location">New York, NY</p>
-                  <p className="experience-description">
-                    Designed user interfaces for various clients in fintech and
-                    healthcare sectors.
-                  </p>
-                </div>
-              </div>
-
-              <div className="experience-item">
-                <div className="experience-icon">U</div>
-                <div className="experience-content">
-                  <div className="experience-title-row">
-                    <h3 className="experience-role">UX Designer</h3>
-                    <span className="experience-company">StartupHub</span>
-                    <span className="experience-dot" />
-                    <span className="experience-years">2015 – 2018</span>
-                  </div>
-                  <p className="experience-location">Boston, MA</p>
-                  <p className="experience-description">
-                    Created user experiences for early-stage startups and
-                    conducted user research.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Skills */}
           <div className="card">
-            <h2 className="section-title">Skills &amp; Expertise</h2>
+            <h2 className="section-title">Skills & Expertise</h2>
             <div className="chip-list">
               {skills.map((skill) => (
                 <span key={skill} className="chip">
@@ -205,13 +151,17 @@ const navigate = useNavigate();
               {portfolioItems.map((item) => (
                 <div key={item.id} className="portfolio-card">
                   <div className="portfolio-image-placeholder">
-                    <img src="" alt="" />
-                    <span className="portfolio-image-text">{item.title}</span>
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="portfolio-img"
+                    />
+                    <span className="portfolio-image-text">
+                      {item.title}
+                    </span>
                   </div>
+
                   <div className="portfolio-info">
-                    <div className="portfolio-title-row">
-                      <h3 className="portfolio-title">{item.title}</h3>
-                    </div>
                     <div className="chip-list">
                       {item.tags.map((tag) => (
                         <span key={tag} className="chip">
@@ -228,15 +178,12 @@ const navigate = useNavigate();
 
         {/* RIGHT SIDEBAR */}
         <aside className="profile-sidebar">
-          {/* Top buttons (Share + Download) */}
           <div className="sidebar-actions">
             <button className="btn-primary">
-              <FiShare2 className="sidebar-btn-icon" />
-              <span>Share Profile</span>
+              <FiShare2 /> Share Profile
             </button>
             <button className="btn-secondary">
-              <FiDownload className="sidebar-btn-icon" />
-              <span>Download Resume</span>
+              <FiDownload /> Download Resume
             </button>
           </div>
 
@@ -254,7 +201,7 @@ const navigate = useNavigate();
             </div>
           </div>
 
-          {/* Quick Information */}
+          {/* Quick Info */}
           <div className="card sidebar-card">
             <h2 className="section-title">Quick Information</h2>
             <div className="quick-info-list">
@@ -274,74 +221,24 @@ const navigate = useNavigate();
                   Hybrid (2–3 days remote)
                 </span>
               </div>
-              <div className="quick-info-item">
-                <span className="quick-info-label">Languages</span>
-                <div className="chip-list">
-                  <span className="chip chip-light">English</span>
-                  <span className="chip chip-light">Spanish</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact */}
           <div className="card sidebar-card">
             <h2 className="section-title">Contact Information</h2>
             <div className="contact-list">
               <div className="contact-item">
-                <div className="contact-icon">
-                  <FiMail />
-                </div>
-                <span>Sarah.anderson@example.com</span>
+                <FiMail /> Sarah.anderson@example.com
               </div>
               <div className="contact-item">
-                <div className="contact-icon">
-                  <FiPhone />
-                </div>
-                <span>+1 (555) 123-4567</span>
+                <FiPhone /> +1 (555) 123-4567
               </div>
               <div className="contact-item">
-                <div className="contact-icon">
-                  <FiLinkedin />
-                </div>
-                <span>linkedin.com/in/sarahanderson</span>
+                <FiLinkedin /> linkedin.com/in/sarahanderson
               </div>
               <div className="contact-item">
-                <div className="contact-icon">
-                  <FiGlobe />
-                </div>
-                <span>sarahanderson.design</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Education */}
-          <div className="card sidebar-card">
-            <h2 className="section-title">Education</h2>
-            <div className="education-list">
-              <div className="education-item">
-                <div className="education-icon">M</div>
-                <div>
-                  <div className="education-degree">
-                    Master in Interaction Design
-                  </div>
-                  <div className="education-school">
-                    Carnegie Mellon University
-                  </div>
-                  <div className="education-years">2013 – 2015</div>
-                </div>
-              </div>
-              <div className="education-item">
-                <div className="education-icon">B</div>
-                <div>
-                  <div className="education-degree">
-                    BA in Graphic Design
-                  </div>
-                  <div className="education-school">
-                    Rhode Island School of Design
-                  </div>
-                  <div className="education-years">2009 – 2013</div>
-                </div>
+                <FiGlobe /> sarahanderson.design
               </div>
             </div>
           </div>
