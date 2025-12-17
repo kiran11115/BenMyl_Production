@@ -3,7 +3,7 @@ import { Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function UploadTalentModal({
-  buttonText = "Add More",
+  buttonText = "Upload Talent",
   buttonStyle = {},
   onSuccess,
   show = false,
@@ -250,9 +250,9 @@ function UploadTalentModal({
           </style>
           <div style={modalOverlayStyle} onClick={handleClose}>
             <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-              <h2 style={modalHeaderStyle}>Import Bench with Resumes</h2>
+              <h2 style={modalHeaderStyle}>Import Talent with Resumes</h2>
               <p style={modalSubtitleStyle}>
-                Upload resumes and let AI extract Bench information
+                Upload resumes and let AI extract talent information
               </p>
 
               <div
