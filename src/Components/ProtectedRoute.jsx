@@ -6,32 +6,32 @@ const isAuthenticated = () => {
 };
 
 const ProtectedRoute = () => {
-  const [showMessage, setShowMessage] = useState(false);
-  const [redirect, setRedirect] = useState(false);
-  const location = useLocation();
+  // const [showMessage, setShowMessage] = useState(false);
+  // const [redirect, setRedirect] = useState(false);
+  // const location = useLocation();
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      setShowMessage(true);
-      const timer = setTimeout(() => {
-        setRedirect(true);
-      }, 2000);
+  // useEffect(() => {
+  //   if (!isAuthenticated()) {
+  //     setShowMessage(true);
+  //     const timer = setTimeout(() => {
+  //       setRedirect(true);
+  //     }, 2000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [location]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [location]);
 
-  if (!isAuthenticated()) {
-    if (redirect) {
-      return <Navigate to="/signin" replace />;
-    }
+  // if (!isAuthenticated()) {
+  //   if (redirect) {
+  //     return <Navigate to="/signin" replace />;
+  //   }
 
-    return (
-      <div style={styles.wrapper}>
-        {showMessage && <div style={styles.alert}>⚠️ Please login</div>}
-      </div>
-    );
-  }
+  //   return (
+  //     <div style={styles.wrapper}>
+  //       {showMessage && <div style={styles.alert}>⚠️ Please login</div>}
+  //     </div>
+  //   );
+  // }
 
   return <Outlet />;
 };
