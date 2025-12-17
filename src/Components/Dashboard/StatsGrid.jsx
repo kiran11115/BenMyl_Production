@@ -23,7 +23,7 @@ const StatsGrid = ({ data }) => {
               <span>{item.change}</span>
             </div>
           </div>
-          
+
           <div className="stat-icon-box">
             <item.icon size={24} />
           </div>

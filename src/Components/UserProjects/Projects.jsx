@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import "./Projects.css";
+import StatsRow from "./StatsRow";
 
 // --- Initial Mock Data ---
 const INITIAL_DATA = [
@@ -99,7 +100,7 @@ export default function Projects() {
   const [projects, setProjects] = useState(INITIAL_DATA);
   const [activeFilter, setActiveFilter] = useState("All Projects");
 
-  // --- 1. Dynamic Stats Calculation (same as before) ---
+  // --- Dynamic Stats Calculation ---
   const stats = useMemo(() => {
     const completedProjects = projects.filter((p) => p.status === "Completed");
     const activeProjects = projects.filter((p) => p.status === "In Progress");
@@ -148,7 +149,7 @@ export default function Projects() {
     ];
   }, [projects]);
 
-  // --- filter for dropdown (top-right in Ongoing Projects like design) ---
+  // --- filter for dropdown ---
   const filteredProjects = useMemo(() => {
     if (activeFilter === "All Projects") return projects;
     if (activeFilter === "In Progress")
@@ -160,7 +161,7 @@ export default function Projects() {
     return projects;
   }, [projects, activeFilter]);
 
-  // --- 4. Event Handlers ---
+  // --- Event Handlers ---
   const handleUpload = (id) => {
     setProjects((prev) =>
       prev.map((p) =>
@@ -181,33 +182,7 @@ export default function Projects() {
     <div className="projects-page-wrapper">
       <div className="projects-container">
         {/* 1. Stats Row (top cards) */}
-        <div className="stats-grid">
-          {stats.map((stat, index) => (
-            <div key={index} className="stat-card">
-              <div className="stat-content">
-                <span className="stat-label">{stat.label}</span>
-                <div className="stat-value-row">
-                  <span className="stat-value">{stat.value}</span>
-                </div>
-                <div
-                  className={`stat-trend ${
-                    stat.isPositive ? "trend-up" : "trend-down"
-                  }`}
-                >
-                  {stat.isPositive ? (
-                    <TrendingUp size={14} />
-                  ) : (
-                    <TrendingDown size={14} />
-                  )}
-                  <span>{stat.trend}</span>
-                </div>
-              </div>
-              <div className={`stat-icon-box box-${stat.colorClass}`}>
-                <stat.icon size={24} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <StatsRow stats={stats} />
 
         {/* 2. Projects Timeline section */}
         <div className="timeline-card">
@@ -216,11 +191,6 @@ export default function Projects() {
           </div>
 
           <div className="timeline-body">
-            {/* Today vertical line */}
-            {/* <div className="timeline-today-line">
-              <span className="timeline-today-label">Today</span>
-            </div> */}
-
             <div className="timeline-rows">
               {TIMELINE_DATA.map((item) => (
                 <div key={item.id} className="timeline-row">

@@ -4,9 +4,16 @@ import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import DocPickerButton from "./DocPickerButton";
+import UploadTalentModal from "./UploadTalentModal";
 
 const UploadTalent = () => {
+    const [showModal, setShowModal] = useState(false);
+
+    // Handler to close the modal
+    const handleCloseModal = () => setShowModal(false);
+
+    // Handler to open the modal
+    const handleShowModal = () => setShowModal(true);
     const [selectedEmails, setSelectedEmails] = useState(new Set());
     const navigate = useNavigate();
 
@@ -18,14 +25,22 @@ const UploadTalent = () => {
 
     return (
         <>
-            <div className="vp-breadcrumbs" style={{padding: "24px 24px 0px 24px"}}>
-                <button
-                    className="link-button"
-                    onClick={() => navigate("/user/user-dashboard")}
-                >
-                    <FiArrowLeft /> Back to Dashboard
-                </button>
-                <span className="crumb">/ Upload Talent</span>
+            <div className="d-flex align-items-center justify-content-between" style={{ padding: "24px 24px 0px 24px" }}>
+                <div className="vp-breadcrumbs" >
+                    <button
+                        className="link-button"
+                        onClick={() => navigate("/user/user-dashboard")}
+                    >
+                        <FiArrowLeft /> Back to Dashboard
+                    </button>
+                    <span className="crumb">/ Upload Talent</span>
+                </div>
+
+                <UploadTalentModal
+                    show={showModal}
+                    onHide={handleCloseModal}
+                    onShow={handleShowModal}
+                />
             </div>
             <div className="upload-talent-layout">
                 {/* LEFT */}
@@ -35,11 +50,6 @@ const UploadTalent = () => {
                         selectedEmails={selectedEmails}
                         onToggleSelect={toggleSelect}
                     />
-                </div>
-
-                {/* RIGHT */}
-                <div className="upload-cards-panel">
-                    <DocPickerButton />
                 </div>
             </div>
         </>
