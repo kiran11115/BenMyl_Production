@@ -58,7 +58,7 @@ function Signin() {
                   lineHeight: 1.5,
                 }}
               >
-                “We love Benchsales; our organizations were using it for their
+                “We love BENMYL; our organizations were using it for their
                 projects, so we already knew what kind of design they want.”
               </p>
 
@@ -82,7 +82,7 @@ function Signin() {
                   {/* Optional avatar image */}
                 </div>
                 <div style={{ color: "#e5e7eb" }}>
-                  <div style={{ fontWeight: 600 }}>Narayan Swaroop</div>
+                  <div style={{ fontWeight: 600 }}>Lyndon Hebert</div>
                   <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
                     CEO &amp; Founder
                   </div>
@@ -101,7 +101,7 @@ function Signin() {
           />
 
           <div className="auth-header">
-            <h2 className="auth-title">Join Benchsales</h2>
+            <h2 className="auth-title">Join BENMYL</h2>
             <p className="auth-subtitle">
               Clarity gives you the blocks &amp; components you need to create a
               truly professional website.

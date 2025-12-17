@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { MoreVertical, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+// Imports matched to TalentTableView
+import { FiMoreVertical, FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { FaSort } from "react-icons/fa";
 
 const RecentApplications = ({ applications }) => {
   // --- State ---
@@ -57,17 +59,28 @@ const RecentApplications = ({ applications }) => {
     setSortConfig({ key, direction });
   };
 
+  // --- Sort Icon Component (Exact Match) ---
   const SortIcon = ({ columnKey }) => {
-    if (sortConfig.key !== columnKey) return <ArrowUpDown size={14} style={{ marginLeft: "6px", color:"#fefefe" }} />;
-    return sortConfig.direction === 'ascending' 
-      ? <ArrowUp size={14} style={{ marginLeft: "6px", color: "#3b82f6" }} />
-      : <ArrowDown size={14} style={{ marginLeft: "6px", color: "#3b82f6" }} />;
+    const isActive = sortConfig.key === columnKey;
+    const direction = sortConfig.direction;
+
+    // Matches the logic in TalentTableView exactly
+    if (!isActive) {
+      return <FaSort style={{color:"#fefefe"}} className="tt-sort-icon" />;
+    }
+    return direction === "ascending" ? (
+      <FiChevronUp className="tt-sort-icon active" />
+    ) : (
+      <FiChevronDown className="tt-sort-icon active" />
+    );
   };
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "32px" }}>
-        <h3 className="section-title" style={{ margin: 0 }}>Recent Applications</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "32px", marginBottom: "16px" }}>
+        <h3 className="section-title" style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#1e293b" }}>
+          Recent Applications
+        </h3>
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
            {selectedEmails.size > 0 && (
             <span style={{ fontSize: "12px", color: "#3b82f6", fontWeight: "600", backgroundColor: "#eff6ff", padding: "4px 8px", borderRadius: "4px" }}>
@@ -80,31 +93,31 @@ const RecentApplications = ({ applications }) => {
         </div>
       </div>
 
-      <div className="table-card" style={{ padding: "0", overflow: "hidden", marginTop: "16px" }}>
-        <table className="custom-table">
+      <div className="tt-wrapper">
+        <table className="tt-table">
           <thead>
-            <tr>
-              <th style={{ paddingLeft: "24px", width: "40px" }}></th>
+            <tr className="tt-thead-tr">
+              <th className="tt-th" style={{ paddingLeft: "24px", width: "40px" }}></th>
               
-              <th onClick={() => requestSort('name')} style={{ cursor: "pointer", userSelect: "none" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
+              <th className="tt-th sortable" onClick={() => requestSort('name')}>
+                <div className="tt-th-content">
                   Candidate <SortIcon columnKey="name" />
                 </div>
               </th>
 
-              <th onClick={() => requestSort('role')} style={{ cursor: "pointer", userSelect: "none" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
+              <th className="tt-th sortable" onClick={() => requestSort('role')}>
+                <div className="tt-th-content">
                   Role <SortIcon columnKey="role" />
                 </div>
               </th>
 
-              <th onClick={() => requestSort('status')} style={{ cursor: "pointer", userSelect: "none" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
+              <th className="tt-th sortable" onClick={() => requestSort('status')}>
+                <div className="tt-th-content">
                   Status <SortIcon columnKey="status" />
                 </div>
               </th>
 
-              <th>Action</th>
+              <th className="tt-th" style={{ textAlign: "right", paddingRight: "24px" }}>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -113,25 +126,22 @@ const RecentApplications = ({ applications }) => {
               return (
                 <tr 
                   key={i} 
-                  // Updated background color here
-                  style={{ backgroundColor: isSelected ? "rgb(241, 241, 241)" : "transparent" }}
+                  className="tt-row"
+                  style={{ 
+                    backgroundColor: isSelected ? "rgb(241, 241, 241)" : undefined 
+                  }}
                 >
-                  <td style={{ paddingLeft: "24px" }}>
+                  <td className="tt-td" style={{ paddingLeft: "24px" }}>
                     <input 
                       type="checkbox" 
+                      className="row-checkbox"
                       checked={isSelected}
                       onChange={() => handleSelectRow(app.email)}
-                      style={{ 
-                        cursor: "pointer", 
-                        width: "14px", 
-                        height: "14px",
-                        accentColor: "#3b82f6"
-                      }}
                     />
                   </td>
 
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <td className="tt-td">
+                    <div className="tt-candidate-flex">
                       <div
                         style={{
                           width: "40px",
@@ -150,25 +160,26 @@ const RecentApplications = ({ applications }) => {
                         {getInitials(app.name)}
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <span className="author-name" style={{ color: "#1e293b", fontWeight: "600", fontSize: "14px", lineHeight: "1.2" }}>
-                          {app.name}
-                        </span>
-                        <span style={{ color: "#64748b", fontSize: "12px", marginTop: "2px" }}>
-                          {app.email}
-                        </span>
+                      <div className="tt-info-col">
+                        <span className="tt-name">{app.name}</span>
+                        <span className="tt-email">{app.email}</span>
                       </div>
                     </div>
                   </td>
-                  <td style={{ fontSize: "13px", color: "#64748b" }}>{app.role}</td>
-                  <td>
+
+                  <td className="tt-td">
+                    <span className="tt-role">{app.role}</span>
+                  </td>
+
+                  <td className="tt-td">
                     <span className={`status-tag ${app.statusClass}`}>
                       {app.status}
                     </span>
                   </td>
-                  <td>
-                    <button className="card-options-btn">
-                      <MoreVertical size={16} />
+
+                  <td className="tt-td action" style={{ paddingRight: "24px" }}>
+                    <button className="tt-action-btn">
+                      <FiMoreVertical size={18} />
                     </button>
                   </td>
                 </tr>

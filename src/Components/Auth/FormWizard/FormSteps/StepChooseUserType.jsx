@@ -21,15 +21,15 @@ export default function StepChooseUserType({ data, patch, onNext }) {
         <button
           type="button"
           className={`wizard-user-card ${
-            data.userType === "employer" ? "wizard-user-card--active" : ""
+            data.userType === "Hiring Manager" ? "wizard-user-card--active" : ""
           }`}
-          onClick={() => handleSelect("employer")}
+          onClick={() => handleSelect("Hiring Manager")}
         >
           <div className="wizard-user-icon-box">
             <FaBuilding className="wizard-user-icon" />
           </div>
           <div className="wizard-user-text">
-            <div className="wizard-user-label">Employer</div>
+            <div className="wizard-user-label">Hiring Manager</div>
             <div className="wizard-user-desc">
               Post jobs and find the right talent for your company.
             </div>
@@ -39,15 +39,15 @@ export default function StepChooseUserType({ data, patch, onNext }) {
         <button
           type="button"
           className={`wizard-user-card ${
-            data.userType === "vendor" ? "wizard-user-card--active" : ""
+            data.userType === "Bench Sales" ? "wizard-user-card--active" : ""
           }`}
-          onClick={() => handleSelect("vendor")}
+          onClick={() => handleSelect("Bench Sales")}
         >
           <div className="wizard-user-icon-box">
             <FaBriefcase className="wizard-user-icon" />
           </div>
           <div className="wizard-user-text">
-            <div className="wizard-user-label">Vendor</div>
+            <div className="wizard-user-label">Bench Sales</div>
             <div className="wizard-user-desc">
               Offer your services and grow your business.
             </div>

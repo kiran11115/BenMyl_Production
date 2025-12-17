@@ -104,31 +104,6 @@
   cursor: pointer;
 }
 
-/* ============================= */
-/* STATUS TAGS */
-/* ============================= */
-
-.status-tag {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-.status-tag.active {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-tag.pending {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status-tag.rejected {
-  background: #fee2e2;
-  color: #991b1b;
-}
 
 /* ============================= */
 /* RIGHT ASIDE CARDS */
