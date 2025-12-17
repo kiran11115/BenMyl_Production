@@ -87,7 +87,7 @@ function OTP() {
                   }}
                 />
                 <div style={{ color: "#e5e7eb" }}>
-                  <div style={{ fontWeight: 600 }}>Narayan Swaroop</div>
+                  <div style={{ fontWeight: 600 }}>Lyndon Hebert</div>
                   <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
                     CEO &amp; Founder
                   </div>

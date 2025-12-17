@@ -363,6 +363,7 @@
   background-color: #eff6ff;
   border-radius: 8px;
   width: fit-content;
+  font-size: 12px;
 }
 
 /* Status Tags */
@@ -406,7 +407,7 @@
 /* 💻 Below 1456px – 2 cards */
 @media (max-width: 1556px) {
   .projects-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .card-details {

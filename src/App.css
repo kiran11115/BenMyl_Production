@@ -104,3 +104,237 @@ input, button, select, textarea, label {
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;       /* Darker slate when hovering */
 }
+
+
+/* Table CSS */
+
+/* TalentTableView.css - Complete Styles */
+
+/* --- Wrapper & Table Structure --- */
+.tt-wrapper {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow-x: auto;
+}
+
+.tt-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+/* --- Header Styles --- */
+.tt-thead-tr {
+  background: #1e293b; /* Dark Slate Background */
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.tt-th {
+  padding: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff; /* Text is white */
+  user-select: none;
+}
+
+.tt-th.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tt-th.sortable:hover {
+  background-color: #334155; /* Slightly lighter on hover */
+}
+
+.tt-th-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff;
+}
+
+/* --- Sort Icons (Strictly White) --- */
+.tt-sort-icon {
+  font-size: 14px;
+  color: #ffffff !important; /* Force White */
+  opacity: 0.3;              /* Dimmed when inactive */
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.tt-sort-icon.active {
+  opacity: 1; /* Bright white when active */
+}
+
+/* Optional: hover effect for inactive icons */
+.tt-th.sortable:hover .tt-sort-icon:not(.active) {
+  opacity: 0.7;
+}
+
+/* --- Row Styles --- */
+.tt-row {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.15s;
+}
+
+.tt-row:hover {
+  background-color: #f9fafb;
+}
+
+/* Selected Row State */
+.tt-row.selected {
+  background-color: #eff6ff !important; /* Light Blue */
+}
+
+/* --- Cell Styles --- */
+.tt-td {
+  padding: 16px;
+  vertical-align: top; /* Align content to top for multi-line cells */
+  color: #374151;      /* Default text color */
+  font-size: 14px;
+}
+
+.tt-td.action {
+  text-align: center;
+}
+
+/* --- Checkbox --- */
+.row-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+/* --- Candidate Column (Image & Info) --- */
+.tt-candidate-flex {
+  display: flex;
+  gap: 12px;
+}
+
+.tt-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Text Initials Avatar (for RecentApplications) */
+.tt-avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.tt-info-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tt-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tt-email {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* --- Role & Experience Column --- */
+.tt-role-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tt-role {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.tt-exp {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Skills Column --- */
+.tt-skills-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 200px;
+}
+
+.tt-skill-tag {
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.tt-skill-more {
+  font-size: 11px;
+  color: #9ca3af;
+  align-self: center;
+}
+
+/* --- Location Column --- */
+.tt-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #4b5563;
+  height: 100%;
+  padding-top: 2px;
+}
+
+/* --- Status/Tags --- */
+.status-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Example Status Colors (can be extended) */
+.status-tag.New { background: #dbeafe; color: #1e40af; }
+.status-tag.Interviewing { background: #ffedd5; color: #9a3412; }
+.status-tag.Rejected { background: #fee2e2; color: #991b1b; }
+.status-tag.Shortlisted { background: #dcfce7; color: #166534; }
+
+/* --- Action Button --- */
+.tt-action-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.tt-action-btn:hover {
+  color: #374151;
+}

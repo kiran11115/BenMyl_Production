@@ -182,7 +182,7 @@ const Jobs = () => {
           <div className="jobs-grid">
             {filteredJobs.length > 0 ? (
               filteredJobs.map((job) => (
-                <div key={job.id} className={`job-card card-base ${selectedJob?.id === job.id ? 'active-card' : ''}`}>
+                <div key={job.id} className={`project-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}>
                   <div className="job-card-top">
                     <div className="company-icon-box">
                       <BsBuilding size={22} />

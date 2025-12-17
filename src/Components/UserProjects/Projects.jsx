@@ -263,7 +263,7 @@ export default function Projects() {
         </div>
 
         {/* 4. Projects Grid (cards) */}
-        <div className="projects-grid">
+        <div className="jobs-grid">
           {filteredProjects.map((project) => (
             <div key={project.id} className="project-card">
               {/* Header */}
@@ -323,7 +323,7 @@ export default function Projects() {
               <div className="card-actions">
                 {project.status === "In Progress" && (
                   <button
-                    className="btn-upload"
+                    className="btn-upload w-100"
                     onClick={() => handleUpload(project.id)}
                   >
                     <UploadCloud size={14} /> Upload Work

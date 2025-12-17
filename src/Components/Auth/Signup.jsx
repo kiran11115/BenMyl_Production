@@ -59,7 +59,7 @@ function SignUp() {
                   lineHeight: 1.5,
                 }}
               >
-                “Benchsales gives our teams ready‑to‑use components, so we ship
+                “BENMYL gives our teams ready‑to‑use components, so we ship
                 faster without sacrificing quality.”
               </p>
 
@@ -81,7 +81,7 @@ function SignUp() {
                   }}
                 />
                 <div style={{ color: "#e5e7eb" }}>
-                  <div style={{ fontWeight: 600 }}>Narayan Swaroop</div>
+                  <div style={{ fontWeight: 600 }}>Lyndon Hebert</div>
                   <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
                     CEO &amp; Founder
                   </div>
@@ -101,7 +101,7 @@ function SignUp() {
             />
             <h2 className="auth-title">Create Account</h2>
             <p className="auth-subtitle">
-              Start building with Benchsales in a few simple steps.
+              Start building with BENMYL in a few simple steps.
             </p>
           </div>
 
