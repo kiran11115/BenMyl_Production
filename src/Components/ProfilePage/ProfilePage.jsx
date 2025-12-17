@@ -1,5 +1,4 @@
 import React from "react";
-import "../TalentPool/TalentProfile.css";
 import {
   FiMapPin,
   FiBriefcase,

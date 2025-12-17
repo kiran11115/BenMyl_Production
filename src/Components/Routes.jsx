@@ -27,7 +27,7 @@ import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
 import ContractManagement from "./ContractManagement/ContractManagement";
 import ContractView from "./ContractView/ContractView";
 import CreateNewContract from "./NewContract/CreateNewContract";
-import TalentProfile from "./TalentPool/TalentProfile";
+import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
 
 

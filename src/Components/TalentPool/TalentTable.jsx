@@ -188,7 +188,7 @@ const TalentTableView = ({ candidates }) => {
               </div>
             </th>
 
-            <th className="tt-th" style={{ textAlign: "right" }}>
+            <th className="tt-th" style={{ textAlign: "center" }}>
               Action
             </th>
           </tr>
