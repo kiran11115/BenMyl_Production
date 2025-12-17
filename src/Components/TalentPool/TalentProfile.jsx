@@ -250,7 +250,7 @@ const TalentProfile = () => {
         <div className="dashboard-column-side">
           {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100">Schedule Interview</button>
+            <button className="btn-primary w-100" onClick={()=>navigate("/user/user-schedule-interview")}>Schedule Interview</button>
             <button className="btn-secondary w-100">Shortlist Candidate</button>
 
             <div className="sidebar-links">
