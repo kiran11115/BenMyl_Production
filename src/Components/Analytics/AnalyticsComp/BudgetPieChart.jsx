@@ -7,13 +7,7 @@ export default function BudgetPieChart() {
   return (
     <Pie
       data={{
-        labels: [
-          "Recruitment Channels",
-          "Job Boards",
-          "Agency Fees",
-          "Assessment Tools",
-          "Other Expenses",
-        ],
+        labels: ["Recruitment", "Job Boards", "Agency", "Tools", "Other"],
         datasets: [
           {
             data: [35, 25, 20, 10, 10],
@@ -29,14 +23,9 @@ export default function BudgetPieChart() {
       }}
       options={{
         responsive: true,
-        maintainAspectRatio: false,   // ✅ must
-        plugins: {
-          legend: {
-            position: "bottom",
-          },
-        },
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
       }}
     />
-
   );
 }

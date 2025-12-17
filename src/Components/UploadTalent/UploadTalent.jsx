@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import UploadTalentTable from "./UploadTalentTable";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
+import { FiArrowLeft } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import DocPickerButton from "./DocPickerButton";
 
 const UploadTalent = () => {
     const [selectedEmails, setSelectedEmails] = useState(new Set());
+    const navigate = useNavigate();
 
     const toggleSelect = (email) => {
         const updated = new Set(selectedEmails);
@@ -12,60 +16,33 @@ const UploadTalent = () => {
         setSelectedEmails(updated);
     };
 
-    const selectedTalents = talentsData.filter((t) =>
-        selectedEmails.has(t.email)
-    );
-
     return (
-        <div className="upload-talent-layout">
-
-            <UploadTalentTable
-                talents={talentsData}
-                selectedEmails={selectedEmails}
-                onToggleSelect={toggleSelect}
-            />
-
-
-            <div className="upload-cards-panel">
-                <h3 className="section-title">Selected Talents</h3>
-
-                {selectedTalents.length === 0 ? (
-                    <div className="empty-state">Select talent from table</div>
-                ) : (
-                    selectedTalents.map((talent, i) => (
-                        <div key={i} className="talent-card">
-                            <div className="card-header">
-                                <div className="avatar large">
-                                    {talent.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                </div>
-                                <div>
-                                    <div className="card-name">{talent.name}</div>
-                                    <div className="card-role">{talent.role}</div>
-                                </div>
-                            </div>
-
-                            <div className="card-info">
-                                <span>📧 {talent.email}</span>
-                                <span>📍 {talent.location}</span>
-                            </div>
-
-                            <div className="card-actions">
-                                <button className="btn primary">View Profile</button>
-                                <button
-                                    className="btn secondary"
-                                    onClick={() => toggleSelect(talent.email)}
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                )}
+        <>
+            <div className="vp-breadcrumbs" style={{padding: "24px 24px 0px 24px"}}>
+                <button
+                    className="link-button"
+                    onClick={() => navigate("/user/user-dashboard")}
+                >
+                    <FiArrowLeft /> Back to Dashboard
+                </button>
+                <span className="crumb">/ Upload Talent</span>
             </div>
-        </div >
+            <div className="upload-talent-layout">
+                {/* LEFT */}
+                <div className="upload-main">
+                    <UploadTalentTable
+                        talents={talentsData}
+                        selectedEmails={selectedEmails}
+                        onToggleSelect={toggleSelect}
+                    />
+                </div>
+
+                {/* RIGHT */}
+                <div className="upload-cards-panel">
+                    <DocPickerButton />
+                </div>
+            </div>
+        </>
     );
 };
 

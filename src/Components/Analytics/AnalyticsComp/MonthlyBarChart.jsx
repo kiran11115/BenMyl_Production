@@ -29,15 +29,10 @@ export default function MonthlyBarChart() {
       }}
       options={{
         responsive: true,
-        maintainAspectRatio: false,   // ✅ must
+        maintainAspectRatio: false,
         indexAxis: "y",
-        plugins: {
-          legend: {
-            position: "bottom",
-          },
-        },
+        plugins: { legend: { position: "bottom" } },
       }}
     />
-
   );
 }

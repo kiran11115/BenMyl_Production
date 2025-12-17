@@ -20,18 +20,14 @@ export default function HiringLineChart() {
             data: [400, 600, 900, 300, 1200, 800],
             borderColor: "#2563eb",
             tension: 0.4,
-            fill: false,
           },
         ],
       }}
       options={{
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: {
-          y: { grid: { color: "#f1f5f9" } },
-          x: { grid: { display: false } },
-        },
       }}
-      height={90}
     />
   );
 }
