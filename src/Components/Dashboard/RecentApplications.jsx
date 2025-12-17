@@ -117,7 +117,7 @@ const RecentApplications = ({ applications }) => {
                 </div>
               </th>
 
-              <th className="tt-th" style={{ textAlign: "center", paddingRight: "24px" }}>Action</th>
+              <th className="tt-th" style={{ textAlign: "right", paddingRight: "24px" }}>Action</th>
             </tr>
           </thead>
           <tbody>

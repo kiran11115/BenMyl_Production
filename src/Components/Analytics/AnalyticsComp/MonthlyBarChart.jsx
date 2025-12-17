@@ -18,12 +18,12 @@ export default function MonthlyBarChart() {
           {
             label: "Budget",
             data: [40000, 30000, 20000, 15000, 18000],
-            backgroundColor: "#3b82f5",
+            backgroundColor: "#c7d2fe",
           },
           {
             label: "Actual",
             data: [45000, 28000, 22000, 12000, 17000],
-            backgroundColor: "#dce8fc",
+            backgroundColor: "#2563eb",
           },
         ],
       }}
