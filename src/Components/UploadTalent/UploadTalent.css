@@ -7,7 +7,6 @@
   gap: 20px;
   padding: 24px;
   width: 100%;
-  min-height: calc(100vh - 64px);
   box-sizing: border-box;
 }
 
@@ -44,7 +43,7 @@
 }
 
 .custom-table thead th {
-  background: #0f172a;
+  background: #1E293B;
   color: #ffffff;
   font-size: 13px;
   padding: 14px 12px;
@@ -121,7 +120,9 @@
 .upload-cloud-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  width: 100%;
   padding: 14px 20px;
   border: 2px dashed #cbd5e1;
   background: #ffffff;

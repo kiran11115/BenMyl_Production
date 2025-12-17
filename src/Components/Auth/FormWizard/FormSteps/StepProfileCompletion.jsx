@@ -8,6 +8,8 @@ import {
   FaGraduationCap,
   FaImage
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 
 export default function StepProfileCompletion({
   data,
@@ -15,6 +17,7 @@ export default function StepProfileCompletion({
   onBack,
   onSubmit,
 }) {
+  const navigate = useNavigate();
   const profile = data.profile || {};
   const availability = profile.availability || []; // Ensure array exists
   
@@ -294,7 +297,7 @@ export default function StepProfileCompletion({
         <div className="d-flex gap-3">
             <button type="button" className="auth-btn-secondary px-4">Preview</button>
           <button type="button" className="auth-btn-secondary px-4">Draft</button>
-          <button type="submit" className="auth-btn-primary px-5">Complete Profile</button>
+          <button type="submit" className="auth-btn-primary px-5" onClick={()=>navigate("")}>Complete Profile</button>
         </div>
       </div>
 

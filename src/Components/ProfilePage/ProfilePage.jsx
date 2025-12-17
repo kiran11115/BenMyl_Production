@@ -249,17 +249,7 @@ const navigate = useNavigate();
         <div className="dashboard-column-side">
           {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100">Schedule Interview</button>
-            <button className="btn-secondary w-100">Shortlist Candidate</button>
-
-            <div className="sidebar-links">
-              <button className="link-btn">
-                <FiDownload /> Download Resume
-              </button>
-              <button className="link-btn">
-                <FiShare2 /> Share Profile
-              </button>
-            </div>
+            <button className="btn-primary w-100">Edit Profile</button>
           </div>
 
           {/* Quick Information */}
