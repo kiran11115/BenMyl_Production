@@ -1,6 +1,7 @@
 import React, { useState, useMemo, memo } from "react";
 import { FiGrid, FiList, FiSearch, FiMapPin } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { GiCheckMark } from "react-icons/gi";
 
 // Import separated views
 import TalentGridView from "./TalentGrid";
@@ -13,6 +14,7 @@ const candidatesMock = [
   {
     id: 101,
     name: "Sarah Johnson",
+    verified: <GiCheckMark size={14} color="#059669" />,
     email: "sarah.j@techsolutions.com",
     role: "Senior Developer",
     experience: "8 years exp",
@@ -27,6 +29,7 @@ const candidatesMock = [
   {
     id: 102,
     name: "Michael Chen",
+    verified: "",
     email: "m.chen@digitaldyn.net",
     role: "Project Manager",
     experience: "12 years exp",
@@ -41,6 +44,7 @@ const candidatesMock = [
   {
     id: 103,
     name: "Emily Davis",
+    verified: <GiCheckMark size={14} color="#059669" />,
     email: "edavis.dev@gmail.com",
     role: "DevOps Engineer",
     experience: "5 years exp",
@@ -55,6 +59,7 @@ const candidatesMock = [
   {
     id: 104,
     name: "David Lee",
+    verified: <GiCheckMark size={14} color="#059669" />,
     email: "david.lee88@outlook.com",
     role: "Backend Developer",
     experience: "6 years exp",
@@ -69,6 +74,7 @@ const candidatesMock = [
   {
     id: 105,
     name: "Maria Garcia",
+    verified: "",
     email: "maria.g.qa@testlab.io",
     role: "QA Engineer",
     experience: "4 years exp",
@@ -83,6 +89,7 @@ const candidatesMock = [
   {
     id: 106,
     name: "James Williams",
+    verified: "",
     email: "jwilliams@dataminds.com",
     role: "Data Scientist",
     experience: "7 years exp",
@@ -97,6 +104,7 @@ const candidatesMock = [
   {
     id: 107,
     name: "Olivia Martinez",
+    verified: <GiCheckMark size={14} color="#059669" />,
     email: "omartinez@product.co",
     role: "Product Owner",
     experience: "9 years exp",
@@ -111,6 +119,7 @@ const candidatesMock = [
   {
     id: 108,
     name: "John Smith",
+    verified: "",
     email: "john.smith.ui@design.net",
     role: "UI/UX Designer",
     experience: "3 years exp",
@@ -125,6 +134,7 @@ const candidatesMock = [
   {
     id: 109,
     name: "William Rodriguez",
+    verified: "",
     email: "will.rod@sysops.org",
     role: "SysAdmin",
     experience: "15 years exp",
@@ -139,6 +149,7 @@ const candidatesMock = [
   {
     id: 110,
     name: "Ava Wilson",
+    verified: <GiCheckMark size={14} color="#059669" />,
     email: "ava.w@frontend.dev",
     role: "Jr. Frontend Dev",
     experience: "1 year exp",
@@ -245,17 +256,15 @@ const TalentPool = () => {
             <div className="vs-results-right">
               <div className="view-toggle1">
                 <button
-                  className={`view-btn ${
-                    viewMode === "grid" ? "toggle active" : ""
-                  }`}
+                  className={`view-btn ${viewMode === "grid" ? "toggle active" : ""
+                    }`}
                   onClick={() => setViewMode("grid")}
                 >
                   <FiGrid />
                 </button>
                 <button
-                  className={`view-btn ${
-                    viewMode === "table" ? "toggle active" : ""
-                  }`}
+                  className={`view-btn ${viewMode === "table" ? "toggle active" : ""
+                    }`}
                   onClick={() => setViewMode("table")}
                 >
                   <FiList />
@@ -266,7 +275,7 @@ const TalentPool = () => {
         </div>
 
         <div className="d-flex gap-3">
-       <aside><TalentFilters/></aside>
+          <aside><TalentFilters /></aside>
 
           <section className="vs-results">
             {viewMode === "grid" ? (

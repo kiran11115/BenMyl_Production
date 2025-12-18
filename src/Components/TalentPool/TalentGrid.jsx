@@ -16,7 +16,10 @@ const CandidateCard = memo(({ candidate, onProfileClick }) => (
         />
         <div>
           <div className="candidate-name-row">
-            <h4 className="card-title">{candidate.name}</h4>
+            <div className="d-flex align-items-center gap-2">
+              <h4 className="card-title">{candidate.name}</h4>
+              <span>{candidate.verified}</span>
+            </div>
           </div>
           <div className="candidate-sub">
             <span>{candidate.role}</span>

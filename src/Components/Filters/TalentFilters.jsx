@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiStar, FiCheck, FiShield, FiX, FiPlus } from 'react-icons/fi';
 import '../Filters/FiltersSidebar.css';
+import { GiCheckMark } from "react-icons/gi";
 
 // --- DATA CONSTANTS ---
 const SERVICE_TYPES = [
@@ -240,7 +241,7 @@ const TalentFilters = ({ onApplyFilters }) => {
             </span>
           </div>
           <span className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <FiShield size={14} color="#6366f1" /> Verified Profiles Only
+            <GiCheckMark size={14} color="#059669" /> Verified Profiles Only
           </span>
         </label>
       </div>
