@@ -17,18 +17,18 @@ const SubmissionErrorModal = ({ onClose, onRetry, onContactSupport }) => {
     <div className="modal-overlay fade-in">
       <div className="alert-card error-theme">
         <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-        
+
         <div className="alert-content">
           <div className="icon-circle error-icon-bg">
             <FiX className="icon-main" />
           </div>
-          
+
           <h3 className="alert-title">Submission Error</h3>
           <p className="alert-message">
-            The interview could not be scheduled at this time. 
+            The interview could not be scheduled at this time.
             Please review the details or try a different time slot.
           </p>
-          
+
           <div className="error-list-container">
             <span className="error-list-label">Common issues:</span>
             <ul className="error-list">
@@ -57,7 +57,7 @@ const SubmissionErrorModal = ({ onClose, onRetry, onContactSupport }) => {
  */
 const SuccessModal = ({ onClose, scheduledDate, scheduledTime }) => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -66,32 +66,25 @@ const SuccessModal = ({ onClose, scheduledDate, scheduledTime }) => {
     <div className="modal-overlay fade-in">
       <div className="alert-card success-theme">
         <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-        
+
         <div className="alert-content left-align">
-          <div className="icon-circle success-icon-bg">
-            <FiCheck className="icon-main" />
+          <div className="d-flex align-items-center gap-3 mb-3">
+            <div className="icon-circle success-icon-bg">
+              <FiCheck className="icon-main" />
+            </div>
+            <h3 className="alert-title m-0">Interview Scheduled!</h3>
           </div>
-          
-          <h3 className="alert-title">Interview Scheduled!</h3>
-          <p className="alert-message">
-            The interview has been confirmed for <strong>{scheduledDate}</strong> at <strong>{scheduledTime}</strong>. 
-            A calendar invitation has been sent to all participants.
+
+          <p className="alert-message mb-2">
+            The interview has been confirmed for <strong>{scheduledDate}</strong> at <strong>{scheduledTime}</strong>.
           </p>
-          
+
           <div className="alert-actions start">
-            <button 
-              className="link-button" 
-              onClick={() => navigate("/user/user-dashboard")}
-              style={{ display: "flex", alignItems: "center", gap: "6px" }}
-            >
-              <FiArrowLeft /> Back to Dashboard
-            </button>
-            <button 
-              className="link-button" 
+            <button
+              className="link-button"
               onClick={() => navigate("/user/user-upcoming-interview")}
-              style={{ display: "flex", alignItems: "center", gap: "6px", marginLeft: '16px' }}
             >
-              View Upcoming Interviews
+              <FiArrowLeft /> Back to Interviews
             </button>
           </div>
         </div>
@@ -119,10 +112,10 @@ const ScheduleInterview = () => {
 
   // State Machine: 'idle' | 'loading' | 'success' | 'error'
   const [status, setStatus] = useState('idle');
-  const [view, setView] = useState('Month'); 
+  const [view, setView] = useState('Month');
 
   // --- Dynamic Calendar Logic ---
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1)); 
+  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1));
 
   // Helper: Generate calendar grid for currentMonth
   const generateCalendar = (baseDate) => {
@@ -143,7 +136,7 @@ const ScheduleInterview = () => {
     for (let i = 1; i <= daysInMonth; i++) {
       const dateObj = new Date(year, month, i);
       const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-      const slotsAvailable = isWeekend ? 0 : Math.floor(Math.random() * 5); 
+      const slotsAvailable = isWeekend ? 0 : Math.floor(Math.random() * 5);
 
       days.push({
         day: i,
@@ -219,7 +212,7 @@ const ScheduleInterview = () => {
     // Simulate API Call
     setTimeout(() => {
       // Toggle this variable to test the Error State
-      const simulateError = false; 
+      const simulateError = false;
 
       if (simulateError) {
         setStatus('error');
@@ -237,7 +230,7 @@ const ScheduleInterview = () => {
   if (status === 'success') {
     const timeLabel = timeSlots.find(t => t.id === formData.timeSlotId)?.time || "Selected Time";
     return (
-      <SuccessModal 
+      <SuccessModal
         onClose={() => setStatus('idle')}
         scheduledDate={formData.selectedDate.toDateString()}
         scheduledTime={timeLabel}
@@ -247,11 +240,11 @@ const ScheduleInterview = () => {
 
   if (status === 'error') {
     return (
-      <SubmissionErrorModal 
+      <SubmissionErrorModal
         onClose={() => setStatus('idle')}
         onRetry={() => {
-            setStatus('idle');
-            // Optional: immediately trigger retry logic here if desired
+          setStatus('idle');
+          // Optional: immediately trigger retry logic here if desired
         }}
         onContactSupport={() => alert("Redirecting to support...")}
       />
@@ -268,12 +261,12 @@ const ScheduleInterview = () => {
       </div>
 
       <div className="dashboard-layout" style={{ gridTemplateColumns: '350px 1fr', position: 'relative' }}>
-        
+
         {/* Loading Overlay within container */}
         {status === 'loading' && (
-           <div className="loading-overlay" style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <div className="spinner"></div>
-           </div>
+          <div className="loading-overlay" style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="spinner"></div>
+          </div>
         )}
 
         {/* LEFT COLUMN: Form Inputs */}

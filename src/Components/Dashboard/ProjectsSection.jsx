@@ -39,7 +39,7 @@ const ProjectsSection = ({ projects }) => {
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}
           >
-            + Post New Job
+            + Create Job
           </button>
           <button
             className="btn-upload"

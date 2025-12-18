@@ -5,27 +5,27 @@ import { useNavigate } from "react-router-dom";
 /**
  * Error Modal - Replicates the red "Submission Error" design
  */
-export const SubmissionErrorModal = ({ 
-    onClose, 
-    onRetry, 
-    onContactSupport 
+export const SubmissionErrorModal = ({
+    onClose,
+    onRetry,
+    onContactSupport
 }) => {
     return (
         <div className="modal-overlay">
             <div className="alert-card error-theme">
                 <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-                
+
                 <div className="alert-content">
                     <div className="icon-circle error-icon-bg">
                         <FiX className="icon-main" />
                     </div>
-                    
+
                     <h3 className="alert-title">Submission Error</h3>
                     <p className="alert-message">
-                        Your application could not be submitted at this time. 
+                        Your application could not be submitted at this time.
                         Please review the form for any errors.
                     </p>
-                    
+
                     <div className="error-list-container">
                         <span className="error-list-label">Common issues to check:</span>
                         <ul className="error-list">
@@ -55,27 +55,29 @@ export const SubmissionErrorModal = ({
 export const SuccessModal = ({ onClose }) => {
     // 1. Initialize the hook
     const navigate = useNavigate();
-     window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
 
     return (
         <div className="modal-overlay">
             <div className="alert-card success-theme">
                 <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-                
+
                 <div className="alert-content left-align">
-                    <div className="icon-circle success-icon-bg">
-                        <FiCheck className="icon-main" />
+                    <div className="d-flex align-items-center gap-2 mb-3">
+                        <div className="icon-circle success-icon-bg">
+                            <FiCheck className="icon-main" />
+                        </div>
+                        <h3 className="alert-title mt-0 mb-0">Success!</h3>
                     </div>
-                    
-                    <h3 className="alert-title">Success!</h3>
-                    <p className="alert-message">
-                        Your proposal has been created and is now being reviewed.
+
+                    <p className="alert-message mb-2">
+                        The Job has been posted sucessfully.
                     </p>
-                    
+
                     <div className="alert-actions start">
                         {/* 2. Apply navigation on button click */}
-                        <button 
-                            className="link-button" 
+                        <button
+                            className="link-button"
                             onClick={() => navigate("/user/user-dashboard")}
                             style={{ display: "flex", alignItems: "center", gap: "6px" }}
                         >

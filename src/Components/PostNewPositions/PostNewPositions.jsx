@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  Briefcase, MapPin, DollarSign, Monitor, 
-  FileText, X, Building2 
+import {
+  Briefcase, MapPin, DollarSign, Monitor,
+  FileText, X, Building2
 } from 'lucide-react';
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -68,7 +68,7 @@ const PostNewPositions = () => {
     <div className="container p-3">
       {/* Header with Navigation */}
       <div style={{ marginBottom: '24px' }}>
-        <div className="vs-breadcrumbs mb-3">
+        <div className="vs-breadcrumbs mb-3 d-flex gap-2">
           <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
             <FiArrowLeft /> Back to Dashboard
           </button>
@@ -94,8 +94,8 @@ const PostNewPositions = () => {
           ].map((step, idx) => (
             <React.Fragment key={step.num}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ 
-                  width: '28px', height: '28px', borderRadius: '50%', 
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: '50%',
                   backgroundColor: step.active ? '#1e293b' : '#e2e8f0',
                   color: step.active ? '#fff' : '#64748b',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -114,25 +114,25 @@ const PostNewPositions = () => {
       </div>
 
       <div className="dashboard-layout">
-        
+
         {/* Main Form Area */}
         <div className="dashboard-column-main">
-          
+
           {/* Main Form Container Card */}
-          <div style={{ 
-            backgroundColor: '#ffffff', 
-            borderRadius: '16px', 
-            border: '1px solid #e2e8f0', 
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e2e8f0',
             padding: '32px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)'
           }}>
-            
+
             {/* Section 1: Basic Information */}
             <div style={{ marginBottom: '40px' }}>
               <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
                 Basic Information
               </h3>
-              
+
               <div className="auth-form-group">
                 <label className="auth-label">Job Title</label>
                 <input className="auth-input" name="jobTitle" placeholder="e.g. Senior Frontend Developer" value={formData.jobTitle} onChange={handleInputChange} />
@@ -190,7 +190,14 @@ const PostNewPositions = () => {
                 Job Details
               </h3>
               <div className="auth-form-group">
-                <label className="auth-label">Job Description</label>
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <label className="auth-label m-0">Job Description</label>
+                  <button
+                    className="btn-upload"
+                  >
+                    Generate with AI
+                  </button>
+                </div>
                 <textarea className="auth-input" rows={6} style={{ resize: 'vertical' }} placeholder="Describe the role and responsibilities..." name="description" value={formData.description} onChange={handleInputChange} />
               </div>
 
@@ -261,9 +268,16 @@ const PostNewPositions = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="auth-form-group">
-                <label className="auth-label">Additional Requirements</label>
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <label className="auth-label m-0">Additional Requirements</label>
+                  <button
+                    className="btn-upload"
+                  >
+                    Generate with AI
+                  </button>
+                </div>
                 <textarea className="auth-input" rows={4} placeholder="Any other requirements..." name="additionalReqs" value={formData.additionalReqs} onChange={handleInputChange} />
               </div>
             </div>
@@ -289,7 +303,7 @@ const PostNewPositions = () => {
         {/* Preview Sidebar */}
         <div className="dashboard-column-side">
           <div style={{ position: 'sticky', top: '24px' }}>
-            <h3 className="section-title mb-0">Preview</h3>
+            <h3 className="section-title mb-3">Preview</h3>
             <div className="project-card" style={{ gap: '20px' }}>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
@@ -300,7 +314,7 @@ const PostNewPositions = () => {
                   <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>{formData.companyName || 'Company Name'}</p>
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
                   <MapPin size={14} />
@@ -313,7 +327,7 @@ const PostNewPositions = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#475569' }}>
                   <DollarSign size={14} />
                   <span>
-                    {formData.salaryMin && formData.salaryMax 
+                    {formData.salaryMin && formData.salaryMax
                       ? `${formData.salaryMin} - ${formData.salaryMax} ${formData.salaryCurrency}`
                       : 'Salary Range'}
                   </span>
@@ -346,12 +360,12 @@ const PostNewPositions = () => {
         </div>
 
       </div>
-      
+
       {/* Modal is rendered conditionally here */}
       {showPreview && (
-        <PreviewModal 
-          onClose={() => setShowPreview(false)} 
-          data={modalData} 
+        <PreviewModal
+          onClose={() => setShowPreview(false)}
+          data={modalData}
         />
       )}
     </div>

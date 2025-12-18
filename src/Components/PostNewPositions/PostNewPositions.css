@@ -446,13 +446,12 @@ p.muted {
 }
 
 .icon-circle {
-  width: 56px;
-  height: 56px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
 }
 
 .icon-main {
@@ -1010,15 +1009,7 @@ p.muted {
   margin: 0;
   line-height: 1.5;
 }
-.icon-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
+
 .icon-main {
   font-size: 24px;
   color: #fff;

@@ -221,7 +221,7 @@ export default function PreviewModal({ onClose, data }) {
                         style={{ width: "165px" }}
                         disabled={status === "loading"}
                     >
-                        Post Job Now
+                        Post Job
                     </button>
                 </div>
             </div>
