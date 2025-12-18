@@ -52,6 +52,14 @@ const EXPERIENCE_LEVELS = [
   'Senior (8+ years)'
 ];
 
+const AVAILABILITY_OPTIONS = [
+  'Any Time',
+  'Immediate',
+  '1-3 Days',
+  '3-7 Days',
+  '1-2 Weeks'
+];
+
 // --- REUSABLE MULTI-SELECT DROPDOWN COMPONENT ---
 const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,6 +118,7 @@ const TalentFilters = ({ onApplyFilters }) => {
     serviceType: 'All Services',
     skills: [],            
     locations: [],         
+    availability: [],      
     locationType: 'Any Type', 
     experience: 'Any Experience',
     minRating: 0,
@@ -146,7 +155,7 @@ const TalentFilters = ({ onApplyFilters }) => {
     }));
   };
 
-  // --- SKILL/LOCATION HELPERS ---
+  // --- MULTI-SELECT HELPERS ---
   const removeTag = (field, value) => {
     setFilterInputs(prev => ({
       ...prev,
@@ -227,7 +236,7 @@ const TalentFilters = ({ onApplyFilters }) => {
               onChange={() => handleToggle('isVerified')}
             />
             <span className="checkmark custom-checkbox">
-               {filterInputs.isVerified && <FiCheck size={12} color="white" />}
+              {filterInputs.isVerified && <FiCheck size={12} color="white" />}
             </span>
           </div>
           <span className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -277,7 +286,31 @@ const TalentFilters = ({ onApplyFilters }) => {
         />
       </div>
 
-      {/* 5. Locations (Tags + Multi-Select) */}
+      {/* 5. Availability (Tags + Multi-Select) */}
+      <div className="filter-section">
+        <h4 className="section-title">Availability</h4>
+        
+        {/* Active Availability Tags */}
+        {filterInputs.availability.length > 0 && (
+          <div className="tags-container">
+            {filterInputs.availability.map(avail => (
+              <span key={avail} className="filter-tag">
+                {avail}
+                <FiX className="tag-close-icon" onClick={() => removeTag('availability', avail)} />
+              </span>
+            ))}
+          </div>
+        )}
+
+        <MultiSelectDropdown 
+          label="Add Availability..."
+          options={AVAILABILITY_OPTIONS}
+          selectedValues={filterInputs.availability}
+          onChange={(newValues) => handleInputChange('availability', newValues)}
+        />
+      </div>
+
+      {/* 6. Locations (Tags + Multi-Select) */}
       <div className="filter-section">
         <h4 className="section-title">Locations</h4>
 
@@ -301,7 +334,7 @@ const TalentFilters = ({ onApplyFilters }) => {
         />
       </div>
 
-      {/* 6. Experience Level (Single) */}
+      {/* 7. Experience Level (Single) */}
       <div className="filter-section">
         <h4 className="section-title">Experience Level</h4>
         <div className="select-wrapper">
@@ -318,46 +351,46 @@ const TalentFilters = ({ onApplyFilters }) => {
         </div>
       </div>
 
-      {/* 7. Minimum Rating */}
+      {/* 8. Minimum Rating */}
       <div className="filter-section">
         <h4 className="section-title">Minimum Rating</h4>
         <div className="rating-container">
-           {[1, 2, 3, 4, 5].map((star) => {
-             const isActive = filterInputs.minRating >= star;
-             return (
-               <button 
-                 key={star} 
-                 onClick={() => handleInputChange('minRating', star)}
-                 type="button"
-                 className={`rating-btn ${isActive ? 'active' : ''}`}
-               >
-                 <FiStar 
-                   size={16} 
-                   fill={isActive ? "#f59f0a" : "none"} 
-                   color={isActive ? "#f59f0a" : "#94a3b8"} 
-                 />
-               </button>
-             );
-           })}
+          {[1, 2, 3, 4, 5].map((star) => {
+            const isActive = filterInputs.minRating >= star;
+            return (
+              <button 
+                key={star} 
+                onClick={() => handleInputChange('minRating', star)}
+                type="button"
+                className={`rating-btn ${isActive ? 'active' : ''}`}
+              >
+                <FiStar 
+                  size={16} 
+                  fill={isActive ? "#f59f0a" : "none"} 
+                  color={isActive ? "#f59f0a" : "#94a3b8"} 
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* 8. Budget */}
+      {/* 9. Budget */}
       <div className="budget-section">
-         <h4 className="section-title">Max Hourly Rate</h4>
-         <input 
-           type="range" 
-           className="budget-slider"
-           min="0" 
-           max="200" 
-           step="5"
-           value={filterInputs.maxBudget} 
-           onChange={(e) => handleInputChange('maxBudget', Number(e.target.value))}
-         />
-         <div className="budget-labels">
-           <span>$0</span>
-           <span>${filterInputs.maxBudget}/hr</span>
-         </div>
+        <h4 className="section-title">Max Hourly Rate</h4>
+        <input 
+          type="range" 
+          className="budget-slider"
+          min="0" 
+          max="200" 
+          step="5"
+          value={filterInputs.maxBudget} 
+          onChange={(e) => handleInputChange('maxBudget', Number(e.target.value))}
+        />
+        <div className="budget-labels">
+          <span>$0</span>
+          <span>${filterInputs.maxBudget}/hr</span>
+        </div>
       </div>
 
       {/* Apply Button */}
@@ -365,7 +398,7 @@ const TalentFilters = ({ onApplyFilters }) => {
         Apply Filters
       </button>
 
-      {/* STYLES */}
+      {/* COMPLETE STYLES */}
       <style jsx>{`
         /* Tag Styles */
         .tags-container {
@@ -398,7 +431,7 @@ const TalentFilters = ({ onApplyFilters }) => {
           text-overflow: ellipsis;
         }
 
-        /* Checkbox Styles (reused) */
+        /* Checkbox Styles */
         .checkbox-row {
           display: flex;
           align-items: center;

@@ -156,27 +156,6 @@ const Jobs = () => {
 
         {/* Main Content */}
         <main className="jobs-main">
-          {/* Top Search Inputs */}
-          <div className="search-header-row">
-            <div className="search-input-wrapper">
-              <span className="search-icon"><FiSearch size={20} /></span>
-              <input 
-                type="text" 
-                placeholder="Job title, keywords, or company" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="search-input-wrapper">
-              <span className="search-icon"><FiMapPin size={18} /></span>
-              <input 
-                type="text" 
-                placeholder="City, state, or zip code" 
-                value={locationQuery}
-                onChange={(e) => setLocationQuery(e.target.value)}
-              />
-            </div>
-          </div>
 
           {/* Jobs Grid */}
           <div className="jobs-grid">
