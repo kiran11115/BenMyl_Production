@@ -14,10 +14,10 @@ import {
   FiArrowLeft,
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
+import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
 import { useNavigate } from "react-router-dom";
 
 const TalentProfile = () => {
-
   const navigate = useNavigate();
 
   const profileData = {
@@ -73,26 +73,22 @@ const TalentProfile = () => {
       {
         title: "E-commerce Dashboard",
         tags: ["React", "Redux", "TailwindCSS"],
-        img:
-          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Travel App UI",
         tags: ["React Native", "Firebase"],
-        img:
-          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Financial Analytics Platform",
         tags: ["TypeScript", "D3.js", "Node.js"],
-        img:
-          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
+        img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
       },
       {
         title: "Health Tracker",
         tags: ["React", "GraphQL", "MongoDB"],
-        img:
-          "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
+        img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
       },
     ],
   };
@@ -101,7 +97,12 @@ const TalentProfile = () => {
     <div className="projects-container">
       {/* Breadcrumb - Matches Global Text Styles */}
       <div className="profile-breadcrumb">
-        <button className="link-button" onClick={() => navigate("/user/user-talentpool")}><FiArrowLeft /> Talent Pool </button>
+        <button
+          className="link-button"
+          onClick={() => navigate("/user/user-talentpool")}
+        >
+          <FiArrowLeft /> Talent Pool{" "}
+        </button>
         <span className="crumb">/ Profile Page</span>
       </div>
 
@@ -250,7 +251,12 @@ const TalentProfile = () => {
         <div className="dashboard-column-side">
           {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100" onClick={()=>navigate("/user/user-schedule-interview")}>Schedule Interview</button>
+            <button
+              className="btn-primary w-100"
+              onClick={() => navigate("/user/user-schedule-interview")}
+            >
+              Schedule Interview
+            </button>
             <button className="btn-secondary w-100">Shortlist Candidate</button>
 
             <div className="sidebar-links">
@@ -291,12 +297,25 @@ const TalentProfile = () => {
             </div>
           </div>
 
-          {/* Contact Information */}
-          <div className="table-card sidebar-card">
+          {/* Contact Information - BLURRED PREMIUM SECTION */}
+          <div
+            className="table-card sidebar-card"
+            style={{ position: "relative", overflow: "hidden" }}
+          >
             <h3 className="card-title">Contact Information</h3>
-            <div className="contact-list">
+
+            {/* Blurred Content Layer */}
+            <div
+              className="contact-list"
+              style={{
+                filter: "blur(6px)",
+                opacity: 0.6,
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
+            >
               <div className="contact-item">
-                <FiMail className="contact-icon" /> sarah.anderson@example.com
+                <FiMail className="contact-icon" /> [sarah.anderson@example.com]
               </div>
               <div className="contact-item">
                 <FiPhone className="contact-icon" /> +1 (555) 123-4567
@@ -308,6 +327,36 @@ const TalentProfile = () => {
               <div className="contact-item">
                 <BsDribbble className="contact-icon" /> sarahanderson.design
               </div>
+            </div>
+
+            {/* Premium Overlay Layer */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(255, 255, 255, 0.4)",
+                zIndex: 10,
+                gap: "12px",
+              }}
+            >
+              <button
+                className="link-btn"
+              >
+                <FaGem /> Unlock Premium
+              </button>
+
+              <button
+                className="btn-primary w-50"
+              >
+                Contact Hiring Manager
+              </button>
             </div>
           </div>
 

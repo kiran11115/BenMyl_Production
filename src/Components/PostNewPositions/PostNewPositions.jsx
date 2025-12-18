@@ -278,7 +278,7 @@ const PostNewPositions = () => {
                   Save as Draft
                 </button>
                 <button className="btn-primary" onClick={handlePostJobClick}>
-                  Post Job
+                  Preview
                 </button>
               </div>
             </div>
