@@ -138,6 +138,7 @@ input, button, select, textarea, label {
   text-transform: uppercase;
   color: #ffffff; /* Text is white */
   user-select: none;
+  text-align: center;
 }
 
 .tt-th.sortable {

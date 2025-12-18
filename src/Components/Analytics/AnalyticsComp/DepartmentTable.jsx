@@ -172,7 +172,7 @@ export default function DepartmentTable() {
                   </td>
 
                   {/* Action */}
-                  <td className="tt-td action" style={{ paddingRight: "24px" }}>
+                  <td className="tt-td action text-center" style={{ paddingRight: "24px" }}>
                     <button className="tt-action-btn">
                       <FiMoreVertical size={18} />
                     </button>

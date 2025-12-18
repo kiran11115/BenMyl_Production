@@ -2,9 +2,105 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiChevronLeft, FiChevronRight, FiMail, FiPhone, FiMapPin, FiArrowLeft,
-  FiCheckSquare, FiSquare, FiCalendar, FiClock, FiChevronDown
+  FiCheckSquare, FiSquare, FiCalendar, FiClock, FiChevronDown,
+  FiX, FiCheck, FiFileText
 } from 'react-icons/fi';
 import './ScheduleInterview.css';
+
+// --- Alert Components (Integrated) ---
+
+/**
+ * Error Modal - Replicates the red "Submission Error" design
+ */
+const SubmissionErrorModal = ({ onClose, onRetry, onContactSupport }) => {
+  return (
+    <div className="modal-overlay fade-in">
+      <div className="alert-card error-theme">
+        <button className="alert-close-icon" onClick={onClose}><FiX /></button>
+        
+        <div className="alert-content">
+          <div className="icon-circle error-icon-bg">
+            <FiX className="icon-main" />
+          </div>
+          
+          <h3 className="alert-title">Submission Error</h3>
+          <p className="alert-message">
+            The interview could not be scheduled at this time. 
+            Please review the details or try a different time slot.
+          </p>
+          
+          <div className="error-list-container">
+            <span className="error-list-label">Common issues:</span>
+            <ul className="error-list">
+              <li><span className="bullet-icon"><FiFileText /></span> Selected slot is no longer available</li>
+              <li><span className="bullet-icon"><FiFileText /></span> Network connection timed out</li>
+              <li><span className="bullet-icon"><FiFileText /></span> Interviewer calendar conflict</li>
+            </ul>
+          </div>
+
+          <div className="link-button">
+            <button className="btn-alert-primary error-btn" onClick={onRetry}>
+              Try Again
+            </button>
+            <button className="btn-alert-text error-text-btn" onClick={onContactSupport}>
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Success Modal - Replicates the green "Success!" design
+ */
+const SuccessModal = ({ onClose, scheduledDate, scheduledTime }) => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="modal-overlay fade-in">
+      <div className="alert-card success-theme">
+        <button className="alert-close-icon" onClick={onClose}><FiX /></button>
+        
+        <div className="alert-content left-align">
+          <div className="icon-circle success-icon-bg">
+            <FiCheck className="icon-main" />
+          </div>
+          
+          <h3 className="alert-title">Interview Scheduled!</h3>
+          <p className="alert-message">
+            The interview has been confirmed for <strong>{scheduledDate}</strong> at <strong>{scheduledTime}</strong>. 
+            A calendar invitation has been sent to all participants.
+          </p>
+          
+          <div className="alert-actions start">
+            <button 
+              className="link-button" 
+              onClick={() => navigate("/user/user-dashboard")}
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              <FiArrowLeft /> Back to Dashboard
+            </button>
+            <button 
+              className="link-button" 
+              onClick={() => navigate("/user/user-upcoming-interview")}
+              style={{ display: "flex", alignItems: "center", gap: "6px", marginLeft: '16px' }}
+            >
+              View Upcoming Interviews
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main Component ---
 
 const ScheduleInterview = () => {
   const navigate = useNavigate();
@@ -21,11 +117,12 @@ const ScheduleInterview = () => {
     sendReminder: true
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [view, setView] = useState('Month'); // 'Month' | 'Week'
+  // State Machine: 'idle' | 'loading' | 'success' | 'error'
+  const [status, setStatus] = useState('idle');
+  const [view, setView] = useState('Month'); 
 
   // --- Dynamic Calendar Logic ---
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1)); // Start at March 2025
+  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1)); 
 
   // Helper: Generate calendar grid for currentMonth
   const generateCalendar = (baseDate) => {
@@ -37,7 +134,7 @@ const ScheduleInterview = () => {
 
     const days = [];
 
-    // Padding days (empty cells before the 1st)
+    // Padding days
     for (let i = 0; i < firstDayOfMonth; i++) {
       days.push({ day: null });
     }
@@ -45,9 +142,8 @@ const ScheduleInterview = () => {
     // Actual days
     for (let i = 1; i <= daysInMonth; i++) {
       const dateObj = new Date(year, month, i);
-      // Mock logic: Weekends unavailable, random slots for demo
       const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-      const slotsAvailable = isWeekend ? 0 : Math.floor(Math.random() * 5); // 0-4 slots
+      const slotsAvailable = isWeekend ? 0 : Math.floor(Math.random() * 5); 
 
       days.push({
         day: i,
@@ -75,7 +171,7 @@ const ScheduleInterview = () => {
       d1.getFullYear() === d2.getFullYear();
   };
 
-  // --- Email & Dropdown Logic (From previous step) ---
+  // --- Email & Dropdown Logic ---
   const [emailInput, setEmailInput] = useState('');
   const [showEmailOptions, setShowEmailOptions] = useState(false);
   const emailWrapperRef = useRef(null);
@@ -104,8 +200,7 @@ const ScheduleInterview = () => {
   ];
   const selectedInterviewer = interviewers.find(i => i.id === formData.interviewerId);
 
-  // --- Time Slots (Mock Dynamic) ---
-  // In a real app, you'd fetch these based on formData.selectedDate
+  // --- Time Slots ---
   const timeSlots = [
     { id: '09:00', time: '9:00 AM - 9:45 AM', label: formData.selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), sub: 'Indian Time (IST)' },
     { id: '10:00', time: '10:00 AM - 10:45 AM', label: formData.selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), sub: 'Indian Time (IST)' },
@@ -117,20 +212,53 @@ const ScheduleInterview = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // --- Submission Handler ---
   const handleConfirm = () => {
-    setIsSubmitting(true);
-    console.log("Submitting Payload:", {
-      ...formData,
-      formattedDate: formData.selectedDate.toISOString()
-    });
+    setStatus('loading');
 
+    // Simulate API Call
     setTimeout(() => {
-      alert(`Success! Scheduled for ${formData.selectedDate.toDateString()} at ${timeSlots.find(t => t.id === formData.timeSlotId)?.time}`);
-      setIsSubmitting(false);
-      navigate('/user/user-upcoming-interview');
-    }, 1000);
+      // Toggle this variable to test the Error State
+      const simulateError = false; 
+
+      if (simulateError) {
+        setStatus('error');
+      } else {
+        console.log("Submitting Payload:", {
+          ...formData,
+          formattedDate: formData.selectedDate.toISOString()
+        });
+        setStatus('success');
+      }
+    }, 1500);
   };
 
+  // --- Render Conditional Modals ---
+  if (status === 'success') {
+    const timeLabel = timeSlots.find(t => t.id === formData.timeSlotId)?.time || "Selected Time";
+    return (
+      <SuccessModal 
+        onClose={() => setStatus('idle')}
+        scheduledDate={formData.selectedDate.toDateString()}
+        scheduledTime={timeLabel}
+      />
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <SubmissionErrorModal 
+        onClose={() => setStatus('idle')}
+        onRetry={() => {
+            setStatus('idle');
+            // Optional: immediately trigger retry logic here if desired
+        }}
+        onContactSupport={() => alert("Redirecting to support...")}
+      />
+    );
+  }
+
+  // --- Main Render ---
   return (
     <div className="projects-container fade-in">
       <div className="breadcrumb-nav">
@@ -139,7 +267,14 @@ const ScheduleInterview = () => {
         <span className="crumb">/ Schedule Interview</span>
       </div>
 
-      <div className="dashboard-layout" style={{ gridTemplateColumns: '350px 1fr' }}>
+      <div className="dashboard-layout" style={{ gridTemplateColumns: '350px 1fr', position: 'relative' }}>
+        
+        {/* Loading Overlay within container */}
+        {status === 'loading' && (
+           <div className="loading-overlay" style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+               <div className="spinner"></div>
+           </div>
+        )}
 
         {/* LEFT COLUMN: Form Inputs */}
         <aside className="dashboard-column-side">
@@ -315,8 +450,8 @@ const ScheduleInterview = () => {
                 </div>
               </div>
 
-              <button className="btn-primary" onClick={handleConfirm} disabled={isSubmitting}>
-                {isSubmitting ? 'Scheduling...' : 'Confirm Schedule'}
+              <button className="btn-primary" onClick={handleConfirm} disabled={status === 'loading'}>
+                {status === 'loading' ? 'Scheduling...' : 'Confirm Schedule'}
               </button>
             </div>
           </div>

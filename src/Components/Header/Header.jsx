@@ -24,6 +24,7 @@ function Header() {
     setIsProfileOpen(false); // Close menu
     navigate("/user/user-profile"); // Navigate to profile page
   };
+  
 
   const handleSignOut = () => {
     setIsProfileOpen(false); // Close menu
@@ -139,6 +140,10 @@ function Header() {
                   <button className="popover-item" onClick={handleViewProfile}>
                     <User size={16} />
                     View Profile
+                  </button>
+                   <button className="popover-item" onClick={() => navigate("/user/user-upload-talent")}>
+                    <User size={16} />
+                    Upload Talent
                   </button>
                   <div className="popover-divider"></div>
                   <button className="popover-item text-red" onClick={handleSignOut}>

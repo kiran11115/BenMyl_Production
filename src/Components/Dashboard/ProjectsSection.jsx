@@ -29,12 +29,12 @@ const ProjectsSection = ({ projects }) => {
         </h3>
 
         <div className="d-flex align-items-center gap-2">
-          <button
+          {/* <button
             className="btn-upload"
             onClick={() => navigate("/user/user-upload-talent")}
           >
            <MdOutlineCloudUpload size={16} /> Upload Talent
-          </button>
+          </button> */}
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}
