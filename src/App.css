@@ -146,9 +146,6 @@ input, button, select, textarea, label {
   transition: background-color 0.2s;
 }
 
-.tt-th.sortable:hover {
-  background-color: #334155; /* Slightly lighter on hover */
-}
 
 .tt-th-content {
   display: flex;
