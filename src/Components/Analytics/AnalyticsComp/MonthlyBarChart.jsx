@@ -23,7 +23,7 @@ export default function MonthlyBarChart() {
           {
             label: "Actual",
             data: [45000, 28000, 22000, 12000, 17000],
-            backgroundColor: "#2563eb",
+            backgroundColor: "#3b82f5",
           },
         ],
       }}

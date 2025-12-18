@@ -12,9 +12,9 @@ export default function BudgetPieChart() {
           {
             data: [35, 25, 20, 10, 10],
             backgroundColor: [
-              "#2563eb",
-              "#60a5fa",
-              "#818cf8",
+              "#f59f0a",
+              "#11ba82",
+              "#3b82f5",
               "#93c5fd",
               "#e5e7eb",
             ],
