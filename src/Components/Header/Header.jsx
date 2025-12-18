@@ -145,6 +145,10 @@ function Header() {
                     <User size={16} />
                     Upload Talent
                   </button>
+                  <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
+                    <User size={16} />
+                    Account Settings
+                  </button>
                   <div className="popover-divider"></div>
                   <button className="popover-item text-red" onClick={handleSignOut}>
                     <LogOut size={16} />

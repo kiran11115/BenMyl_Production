@@ -41,10 +41,11 @@ const routes = createBrowserRouter(
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="OTP-Verification" element={<OTPVerification />} />
             <Route path="user-details" element={<FormWizard />} />
-            <Route path="account-settings" element={<AccountSettings />} />
+          
 
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
+                    <Route path="account-settings" element={<AccountSettings />} />
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
                     <Route path="user-upload-talent" element={<UploadTalent />} />
