@@ -4,6 +4,7 @@ import {
   FiStar, FiMapPin, FiClock, FiChevronDown, FiCalendar, FiArrowLeft
 } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
+import FilterSidebar from '../Filters/FilterSidebar';
 
 const MOCK_VENDORS = [
   {
@@ -184,133 +185,7 @@ const VendorSearchPage = () => {
       <div className="dashboard-layout" style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
         
         {/* === LEFT COLUMN: FILTERS === */}
-        <div className="filter-sidebar" style={{ 
-          width: '260px', flexShrink: 0, background: '#fff', borderRadius: '12px', 
-          padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: 0 }}>Filters</h3>
-            <span 
-              onClick={() => {
-                const reset = { serviceType: 'All Services', minRating: 0, location: '', availability: '', maxBudget: 50000 };
-                setFilterInputs(reset);
-                setActiveFilters(reset);
-              }}
-              style={{ fontSize: '12px', color: '#3b82f6', cursor: 'pointer', fontWeight: 500 }}
-            >
-              Reset
-            </span>
-          </div>
-
-          {/* Service Type */}
-          <div style={{ marginBottom: '24px' }}>
-            <h4 className='card-title  mb-2'>Service Type</h4>
-            <div style={{ position: 'relative' }}>
-              <select 
-                value={filterInputs.serviceType}
-                onChange={(e) => handleInputChange('serviceType', e.target.value)}
-                style={{
-                  width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0',
-                  fontSize: '13px', color: '#334155', appearance: 'none', background: '#fff', cursor: 'pointer'
-                }}
-              >
-                {SERVICE_TYPES.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-              <FiChevronDown style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
-            </div>
-          </div>
-
-          {/* Min Rating */}
-          <div style={{ marginBottom: '24px' }}>
-            <h4 className='card-title  mb-2'>Minimum Rating</h4>
-            <div style={{ display: 'flex', gap: '4px' }}>
-               {[1, 2, 3, 4, 5].map((star) => (
-                 <button 
-                   key={star} 
-                   onClick={() => handleInputChange('minRating', star)}
-                   style={{ 
-                     background: filterInputs.minRating >= star ? '#fef3c7' : '#f1f5f9', 
-                     border: filterInputs.minRating >= star ? '1px solid #fbbf24' : '1px solid #e2e8f0',
-                     borderRadius: '4px', padding: '6px', cursor: 'pointer', display: 'flex', 
-                     flex: 1, alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
-                   }}
-                 >
-                   <FiStar size={16} fill={filterInputs.minRating >= star ? "#f59f0a" : "none"} color={filterInputs.minRating >= star ? "#f59f0a" : "#94a3b8"} />
-                 </button>
-               ))}
-            </div>
-          </div>
-
-          {/* Location */}
-          <div style={{ marginBottom: '24px' }}>
-            <h4 className='card-title  mb-2'>Location</h4>
-            <div style={{ position: 'relative' }}>
-              <FiMapPin style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={16} />
-              <input 
-                type="text" 
-                placeholder="e.g. New York" 
-                value={filterInputs.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                style={{
-                  width: '100%', padding: '10px 10px 10px 36px', borderRadius: '8px',
-                  border: '1px solid #e2e8f0', fontSize: '13px', outline: 'none'
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Availability */}
-          <div style={{ marginBottom: '24px' }}>
-            <h4 className='card-title  mb-2'>Availability</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {['Immediate', 'Within 1 Week', 'Custom Range'].map((item) => (
-                <label key={item} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#64748b', cursor: 'pointer' }}>
-                  <input 
-                    type="radio" 
-                    name="availability"
-                    checked={filterInputs.availability === item}
-                    onChange={() => handleInputChange('availability', item)}
-                    style={{ accentColor: '#3b82f6', width: '16px', height: '16px' }} 
-                  />
-                  {item}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Budget */}
-          <div style={{ marginBottom: '32px' }}>
-             <h4 className='card-title mb-2'>Max Hourly Rate</h4>
-             <input 
-              type="range" 
-              min="0" 
-              max="25000" 
-              step="1000"
-              value={filterInputs.maxBudget} 
-              onChange={(e) => handleInputChange('maxBudget', Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#3b82f6', cursor: 'pointer' }} 
-             />
-             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#64748b', marginTop: '8px' }}>
-               <span>$0</span>
-               <span>${(filterInputs.maxBudget / 100).toFixed(0)}/hr</span>
-             </div>
-          </div>
-
-          <button 
-            onClick={applyFilters}
-            style={{
-              width: '100%', background: '#3b82f6', color: '#fff', border: 'none',
-              padding: '12px', borderRadius: '8px', fontWeight: 600, fontSize: '14px',
-              cursor: 'pointer', transition: 'background 0.2s'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
-            onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
-          >
-            Apply Filters
-          </button>
-        </div>
+        <FilterSidebar/>
 
         {/* === CENTER: Results === */}
         <div className="dashboard-column-main" style={{ flex: 1, minWidth: 0 }}>

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { FiSearch, FiMapPin, FiClock, FiDollarSign, FiUser } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
-import JobFilters from './JobFilters';
+import JobFilters from '../Filters/JobFilters';
 import JobModal from './JobModal';
 import './Jobs.css';
 

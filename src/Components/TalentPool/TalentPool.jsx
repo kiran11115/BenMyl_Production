@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import TalentGridView from "./TalentGrid";
 import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
+import TalentFilters from "../Filters/TalentFilters";
 
 // --- DATA SOURCE ---
 const candidatesMock = [
@@ -265,55 +266,7 @@ const TalentPool = () => {
         </div>
 
         <div className="d-flex gap-3">
-          <aside className={`vs-filters ${filtersOpen ? "open" : ""}`}>
-            <div className="vs-filters-header d-flex justify-content-between">
-              <h3 className="">Filters</h3>
-              <button className="link-button small mb-2">Clear All</button>
-            </div>
-            <FilterGroup title="Skills">
-              {[
-                "React",
-                "Node.js",
-                "Python",
-                "UI/UX Design",
-                "Project Management",
-              ].map((s) => (
-                <FilterCheckbox key={s} label={s} />
-              ))}
-            </FilterGroup>
-            <FilterGroup title="Experience Level">
-              {["Entry Level", "Mid Level", "Senior", "Lead", "Executive"].map(
-                (level) => (
-                  <FilterCheckbox key={level} label={level} />
-                )
-              )}
-            </FilterGroup>
-            <FilterGroup title="Availability">
-              {["Immediately", "Within 1 week", "Within 1 month"].map(
-                (time) => (
-                  <FilterCheckbox key={time} label={time} />
-                )
-              )}
-            </FilterGroup>
-            <div className="fg">
-              <div className="fg-title">Location</div>
-              <div className="loc-input">
-                <FiMapPin />
-                <input type="text" placeholder="Search location…" />
-              </div>
-            </div>
-            <div className="fg">
-              <div className="fg-title">Salary Range</div>
-              <input type="range" min="0" max="200" defaultValue="100" />
-              <div className="budget-row">
-                <span>$0</span>
-                <span>$200k+</span>
-              </div>
-            </div>
-            <button className="apply" onClick={() => setFiltersOpen(false)}>
-              Apply Filters
-            </button>
-          </aside>
+       <aside><TalentFilters/></aside>
 
           <section className="vs-results">
             {viewMode === "grid" ? (
