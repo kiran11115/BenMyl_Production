@@ -3,6 +3,7 @@ import {
   Briefcase, MapPin, DollarSign, Monitor,
   FileText, X, Building2
 } from 'lucide-react';
+import { BsLightningChargeFill } from "react-icons/bs";
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import PreviewModal from './PreviewModal'; // Ensure this path is correct
@@ -192,10 +193,15 @@ const PostNewPositions = () => {
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description</label>
-                  <button
-                    className="btn-upload"
+                  {/* <button
+                    className="btn-ai"
                   >
-                    Generate with AI
+                    <BsLightningChargeFill />
+                  </button> */}
+
+                  <button className="ai-pill-btn">
+                    <span className="ai-pill-icon">✦</span>
+                    <span className="ai-pill-text">AI</span>
                   </button>
                 </div>
                 <textarea className="auth-input" rows={6} style={{ resize: 'vertical' }} placeholder="Describe the role and responsibilities..." name="description" value={formData.description} onChange={handleInputChange} />
@@ -272,11 +278,16 @@ const PostNewPositions = () => {
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Additional Requirements</label>
-                  <button
-                    className="btn-upload"
+                  {/* <button
+                    className="btn-ai"
                   >
-                    Generate with AI
+                    <BsLightningChargeFill />
+                  </button> */}
+                  <button className="ai-pill-btn">
+                    <span className="ai-pill-icon">✦</span>
+                    <span className="ai-pill-text">AI</span>
                   </button>
+
                 </div>
                 <textarea className="auth-input" rows={4} placeholder="Any other requirements..." name="additionalReqs" value={formData.additionalReqs} onChange={handleInputChange} />
               </div>
