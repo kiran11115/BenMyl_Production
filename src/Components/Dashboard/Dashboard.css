@@ -407,7 +407,7 @@
 /* 💻 Below 1456px – 2 cards */
 @media (max-width: 1556px) {
   .projects-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .card-details {
@@ -418,7 +418,7 @@
 /* 📱 Mobile – 1 card */
 @media (max-width: 768px) {
   .projects-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 2fr;
   }
 }
 

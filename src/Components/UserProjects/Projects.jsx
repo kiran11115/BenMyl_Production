@@ -111,22 +111,22 @@ const TIMELINE_DATA = [
     review: 15,
     done: 15,
   },
-  {
-    id: 5,
-    title: "SEO Optimization",
-    totalHours: "36h",
-    active: 55,
-    review: 25,
-    done: 20,
-  },
-  {
-    id: 6,
-    title: "Landing Page A/B Test",
-    totalHours: "24h",
-    active: 40,
-    review: 35,
-    done: 25,
-  },
+  // {
+  //   id: 5,
+  //   title: "SEO Optimization",
+  //   totalHours: "36h",
+  //   active: 55,
+  //   review: 25,
+  //   done: 20,
+  // },
+  // {
+  //   id: 6,
+  //   title: "Landing Page A/B Test",
+  //   totalHours: "24h",
+  //   active: 40,
+  //   review: 35,
+  //   done: 25,
+  // },
 ];
 
 
