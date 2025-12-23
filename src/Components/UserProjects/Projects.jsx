@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import "./Projects.css";
 import StatsRow from "./StatsRow";
+import ProjectsTimeline from "./ProjectsTimeline";
+import ProjectsHeader from "./ProjectsHeader";
+import ProjectsGrid from "./ProjectsGrid";
 
 // --- Initial Mock Data ---
 const INITIAL_DATA = [
@@ -74,27 +77,58 @@ const INITIAL_DATA = [
 ];
 
 // timeline data just for the colored bars
+// timeline data for status bars per project
 const TIMELINE_DATA = [
-  { id: 1, name: "Website Redesign", colorClass: "timeline-bar-green", width: "100%" },
-  { id: 2, name: "Mobile App Development", colorClass: "timeline-bar-amber", width: "80%" },
-  { id: 3, name: "Marketing Campaign", colorClass: "timeline-bar-red", width: "60%" },
+  {
+    id: 1,
+    title: "E-commerce Website Redesign",
+    totalHours: "68h",
+    active: 65,
+    review: 20,
+    done: 15,
+  },
+  {
+    id: 2,
+    title: "Mobile App Development",
+    totalHours: "54h",
+    active: 50,
+    review: 30,
+    done: 20,
+  },
+  {
+    id: 3,
+    title: "Brand Identity Design",
+    totalHours: "40h",
+    active: 30,
+    review: 10,
+    done: 60,
+  },
+  {
+    id: 4,
+    title: "Marketing Campaign",
+    totalHours: "72h",
+    active: 70,
+    review: 15,
+    done: 15,
+  },
+  {
+    id: 5,
+    title: "SEO Optimization",
+    totalHours: "36h",
+    active: 55,
+    review: 25,
+    done: 20,
+  },
+  {
+    id: 6,
+    title: "Landing Page A/B Test",
+    totalHours: "24h",
+    active: 40,
+    review: 35,
+    done: 25,
+  },
 ];
 
-// Helper to format currency
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumSignificantDigits: 3,
-  }).format(amount);
-};
-
-// Helper to get status class
-const getStatusClass = (status) => {
-  if (status === "Completed") return "status-completed";
-  if (status === "Awaiting Review") return "status-review";
-  return "status-progress";
-};
 
 export default function Projects() {
   const [projects, setProjects] = useState(INITIAL_DATA);
@@ -116,7 +150,7 @@ export default function Projects() {
     return [
       {
         label: "Total Earnings",
-        value: formatCurrency(totalEarnings),
+        value: `$ ${totalEarnings.toLocaleString()}`,
         trend: "+12.5%",
         isPositive: true,
         icon: DollarSign,
@@ -181,173 +215,17 @@ export default function Projects() {
   return (
     <div className="projects-page-wrapper">
       <div className="projects-container">
-        {/* 1. Stats Row (top cards) */}
         <StatsRow stats={stats} />
-
-        {/* 2. Projects Timeline section */}
-        <div className="timeline-card">
-          <div className="timeline-header">
-            <h2 className="section-title">Projects Timeline</h2>
-          </div>
-
-          <div className="timeline-body">
-            <div className="timeline-rows">
-              {TIMELINE_DATA.map((item) => (
-                <div key={item.id} className="timeline-row">
-                  <div className="timeline-label">{item.name}</div>
-                  <div className="timeline-bar-track">
-                    <div
-                      className={`timeline-bar ${item.colorClass}`}
-                      style={{ width: item.width }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 3. Ongoing Projects header + controls */}
-        <div className="ongoing-header">
-          <div>
-            <h2 className="section-title">Ongoing Projects</h2>
-            <p className="section-subtitle">
-              Keep track of all active client projects and review their progress.
-            </p>
-          </div>
-
-          <div className="ongoing-controls">
-            <select
-              className="projects-filter-select"
-              value={activeFilter}
-              onChange={(e) => setActiveFilter(e.target.value)}
-            >
-              <option>All Projects</option>
-              <option>In Progress</option>
-              <option>Awaiting Review</option>
-              <option>Completed</option>
-            </select>
-
-            <button className="add-project-btn">+ Add Project</button>
-          </div>
-        </div>
-
-        {/* 4. Projects Grid (cards) */}
-        <div className="jobs-grid">
-          {filteredProjects.map((project) => (
-            <div key={project.id} className="project-card">
-              {/* Header */}
-              <div className="card-header">
-                <h3 className="card-title">{project.title}</h3>
-                <button className="card-options-btn">
-                  <MoreVertical size={16} />
-                </button>
-              </div>
-
-              {/* Author */}
-              <div className="card-author">
-                <img
-                  src={project.avatar}
-                  alt={project.author}
-                  className="author-avatar"
-                />
-                <span className="author-name">{project.author}</span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="progress-section">
-                <div className="progress-labels">
-                  <span>Progress</span>
-                  <span className="progress-text">{project.progress}%</span>
-                </div>
-                <div className="progress-bg">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${project.progress}%`,
-                      backgroundColor:
-                        project.status === "Completed" ? "#10B981" : "#3b82f6",
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className="card-details">
-                <div className="detail-item">
-                  <Clock size={14} /> Due {project.dueDate}
-                </div>
-                <div className="detail-item">
-                  <DollarSign size={14} /> Budget: ${project.budget}
-                </div>
-              </div>
-
-              {/* Status Tag */}
-              <div>
-                <span className={`status-tag ${getStatusClass(project.status)}`}>
-                  {project.status}
-                </span>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="card-actions">
-                {project.status === "In Progress" && (
-                  <button
-                    className="btn-upload w-100"
-                    onClick={() => handleUpload(project.id)}
-                  >
-                    <UploadCloud size={14} /> Upload Work
-                  </button>
-                )}
-
-                {project.status === "Awaiting Review" && (
-                  <button
-                    className="btn-review"
-                    onClick={() => handleReview(project.id)}
-                    style={{
-                      backgroundColor: "#10B981",
-                      color: "white",
-                      borderColor: "#10B981",
-                    }}
-                  >
-                    <CheckCircle size={14} /> Mark Done
-                  </button>
-                )}
-
-                {project.status === "Completed" && (
-                  <button
-                    className="btn-review"
-                    disabled
-                    style={{ opacity: 0.6 }}
-                  >
-                    <CheckCircle size={14} /> Completed
-                  </button>
-                )}
-
-                <button className="btn-chat">
-                  <MessageSquare size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {filteredProjects.length === 0 && (
-            <div
-              style={{
-                gridColumn: "1 / -1",
-                textAlign: "center",
-                padding: "40px",
-                color: "#64748b",
-              }}
-            >
-              <AlertCircle
-                size={48}
-                style={{ margin: "0 auto 16px", opacity: 0.5 }}
-              />
-              <p>No projects found in this category.</p>
-            </div>
-          )}
-        </div>
+        <ProjectsTimeline data={TIMELINE_DATA} />
+        <ProjectsHeader 
+          activeFilter={activeFilter} 
+          onFilterChange={setActiveFilter}
+        />
+        <ProjectsGrid 
+          projects={filteredProjects}
+          onUpload={handleUpload}
+          onReview={handleReview}
+        />
       </div>
     </div>
   );

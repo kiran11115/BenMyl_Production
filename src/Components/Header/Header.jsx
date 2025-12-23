@@ -102,7 +102,10 @@ function Header() {
               className="header-search-input"
             />
           </div> */}
-
+                <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
+                    <span className="ai-pill-icon">✦</span>
+                    <span className="ai-pill-text">AI</span>
+                  </button>
           {/* Notification Bell */}
           <button type="button" className="header-action-btn">
             <Bell size={20} />

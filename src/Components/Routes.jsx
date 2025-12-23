@@ -29,6 +29,7 @@ import ContractView from "./ContractView/ContractView";
 import CreateNewContract from "./NewContract/CreateNewContract";
 import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
+import AIScreen from "./Header/AI Screen/AIScreen";
 
 
 
@@ -45,6 +46,7 @@ const routes = createBrowserRouter(
 
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
+                 <Route path="AI-screen" element={<AIScreen />} />
                     <Route path="account-settings" element={<AccountSettings />} />
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />

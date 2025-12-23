@@ -307,17 +307,6 @@
   color: #64748b;
 }
 
-.timeline-card {
-  margin-top: 24px;
-  margin-bottom: 24px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px 24px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  position: relative;
-}
-
 .timeline-header {
   margin-bottom: 16px;
 }
