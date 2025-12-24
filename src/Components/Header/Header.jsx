@@ -145,10 +145,6 @@ function Header() {
                     <User size={16} />
                     View Profile
                   </button>
-                   <button className="popover-item" onClick={() => navigate("/user/user-upload-talent")}>
-                    <User size={16} />
-                    Upload Talent
-                  </button>
                   <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
                     <User size={16} />
                     Account Settings

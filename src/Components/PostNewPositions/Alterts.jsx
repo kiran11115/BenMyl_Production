@@ -77,11 +77,10 @@ export const SuccessModal = ({ onClose }) => {
                     <div className="alert-actions start">
                         {/* 2. Apply navigation on button click */}
                         <button
-                            className="link-button"
-                            onClick={() => navigate("/user/user-dashboard")}
-                            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                            className="btn-primary w-100"
+                            onClick={() => navigate("/user/user-talentpool")}
                         >
-                            <FiArrowLeft /> Back to Dashboard
+                            Find Talent
                         </button>
                     </div>
                 </div>

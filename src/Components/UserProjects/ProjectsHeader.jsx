@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectsHeader({ activeFilter, onFilterChange }) {
+  
+  const navigate = useNavigate();
   return (
     <div className="ongoing-header">
       <div>
@@ -22,7 +25,7 @@ export default function ProjectsHeader({ activeFilter, onFilterChange }) {
           <option>Completed</option>
         </select>
 
-        <button className="add-project-btn">+ Add Project</button>
+        <button onClick={() => navigate("/user/user-post-new-positions")} className="add-project-btn">+ Add Project</button>
       </div>
     </div>
   );

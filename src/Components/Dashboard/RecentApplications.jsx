@@ -78,7 +78,7 @@ const RecentApplications = ({ applications }) => {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "32px", marginBottom: "16px" }}>
-        <h3 className="section-title" style={{ margin: 0, fontSize: "18px", fontWeight: "600", color: "#1e293b" }}>
+        <h3 className="section-title">
           Recent Applications
         </h3>
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>

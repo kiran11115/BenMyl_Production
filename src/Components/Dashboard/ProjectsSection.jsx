@@ -2,6 +2,7 @@ import React from "react";
 import { MoreVertical, Clock, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineCloudUpload } from "react-icons/md";
+import UploadTalentModal from "../UploadTalent/UploadTalentModal";
 
 const ProjectsSection = ({ projects }) => {
   const navigate = useNavigate();
@@ -31,24 +32,13 @@ const ProjectsSection = ({ projects }) => {
         </div>
 
         <div className="d-flex align-items-center gap-2">
-          {/* <button
-            className="btn-upload"
-            onClick={() => navigate("/user/user-upload-talent")}
-          >
-           <MdOutlineCloudUpload size={16} /> Upload Talent
-          </button> */}
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}
           >
             + Create Job
           </button>
-          <button
-            className="btn-upload"
-            onClick={() => navigate("/user/user-upload-talent")}
-          >
-            + Upload Talent
-          </button>
+          <UploadTalentModal/>
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-upcoming-interview")}

@@ -803,15 +803,6 @@
   transform: translateY(-1px);
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .section-subtitle {
   font-size: 12px;
   font-weight: 600;

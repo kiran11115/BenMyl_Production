@@ -8,7 +8,7 @@ function UploadTalentModal({
   onSuccess,
   show = false,
   onHide,
-  onShow
+  onShow,
 }) {
   const [showModal, setShowModal] = useState(show);
   const [dragActive, setDragActive] = useState(false);
@@ -72,7 +72,15 @@ function UploadTalentModal({
         if (onSuccess) {
           onSuccess(`Processing ${uploadedFiles.length} resume(s) with AI...`);
         }
+        
         handleClose();
+        
+        // --- NAVIGATION ADDED HERE ---
+        // Pass state if you need to access the files on the next page
+        navigate("/user/user-upload-talent", { 
+            state: { files: uploadedFiles } 
+        });
+
       } catch (error) {
         console.error("Failed to process files", error);
         if (onSuccess) {
