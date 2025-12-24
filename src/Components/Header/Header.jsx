@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
 import "./Header.css";
 
 function Header() {
@@ -73,8 +73,6 @@ function Header() {
               { path: "/user/user-dashboard", label: "Dashboard" },
               { path: "/user/user-talentpool", label: "Talent Pool" },
               { path: "/user/user-projects", label: "Projects" },
-              { path: "/user/user-analytics", label: "Analytics" },
-              { path: "/user/user-messages", label: "Message" },
               { path: "/user/user-jobs", label: "Jobs" },
                { path: "/user/user-upload-talent", label: "Talent Management" },
             ].map((link) => (
@@ -107,6 +105,12 @@ function Header() {
                     <span className="ai-pill-icon">✦</span>
                     <span className="ai-pill-text">AI</span>
                   </button>
+                  
+          {/* Messages Icon */}
+          <button onClick={() => navigate("/user/user-messages")} type="button" className="header-action-btn">
+            <MessageCircleIcon size={20} />
+          </button>
+
           {/* Notification Bell */}
           <button type="button" className="header-action-btn">
             <Bell size={20} />
@@ -145,8 +149,12 @@ function Header() {
                     <User size={16} />
                     View Profile
                   </button>
+                  <button className="popover-item" onClick={() => navigate("/user/user-analytics")}>
+                    <File size={16} />
+                    Analytics
+                  </button>
                   <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
-                    <User size={16} />
+                    <Settings size={16} />
                     Account Settings
                   </button>
                   <div className="popover-divider"></div>

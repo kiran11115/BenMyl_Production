@@ -351,7 +351,7 @@ const FormWizard = () => {
                       <div className="billing-layout">
                         <div className="billing-form-fields">
                           <div className="auth-group">
-                            <label className="auth-label">Card Number</label>
+                            <label className="auth-label mb-0">Card Number</label>
                             <input
                               type="text"
                               name="cardNumber"
@@ -363,7 +363,7 @@ const FormWizard = () => {
                             />
                           </div>
                           <div className="auth-group">
-                            <label className="auth-label">Name on Card</label>
+                            <label className="auth-label mt-3 mb-0">Name on Card</label>
                             <input
                               type="text"
                               name="cardName"
@@ -375,7 +375,7 @@ const FormWizard = () => {
                           </div>
                           <div className="auth-grid-2">
                             <div className="auth-group">
-                              <label className="auth-label">Expiry Date</label>
+                              <label className="auth-label mt-3 mb-0">Expiry Date</label>
                               <input
                                 type="text"
                                 name="cardExpiry"
@@ -387,7 +387,7 @@ const FormWizard = () => {
                               />
                             </div>
                             <div className="auth-group">
-                              <label className="auth-label">CVV / CVC</label>
+                              <label className="auth-label mt-3 mb-0">CVV / CVC</label>
                               <input
                                 type="password"
                                 name="cardCvv"
