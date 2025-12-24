@@ -3,13 +3,13 @@
 /* --- Containers --- */
 .auth-container {
   width: 100%;
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   position: relative;
   z-index: 1;
+  height: 100vh;
 }
 
 .auth-card {
@@ -19,11 +19,11 @@
   max-width: 960px;
   min-height: 560px;
   border-radius: 1rem;
+  border: 1px solid #e2e8f0;
 
   /* Glassmorphism card */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.25),
     0 10px 10px -5px rgba(15, 23, 42, 0.05);
 

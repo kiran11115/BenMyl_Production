@@ -76,6 +76,7 @@ function Header() {
               { path: "/user/user-analytics", label: "Analytics" },
               { path: "/user/user-messages", label: "Message" },
               { path: "/user/user-jobs", label: "Jobs" },
+               { path: "/user/user-upload-talent", label: "Talent Management" },
             ].map((link) => (
               <NavLink
                 key={link.path}

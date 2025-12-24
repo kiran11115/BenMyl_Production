@@ -355,14 +355,6 @@
   opacity: 0.5;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: var(--secondary);
-}
-
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
 
 .btn-secondary {
   background: var(--surface);

@@ -45,9 +45,9 @@ const ProjectsSection = ({ projects }) => {
           </button>
           <button
             className="btn-upload"
-            onClick={() => navigate("/user/user-find-vendor")}
+            onClick={() => navigate("/user/user-upload-talent")}
           >
-            Find Vendors
+            + Upload Talent
           </button>
           <button
             className="btn-upload"
