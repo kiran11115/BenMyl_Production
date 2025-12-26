@@ -95,12 +95,12 @@ const UploadTalentProfile = () => {
     return (
         <div className="projects-container">
             {/* Breadcrumb - Matches Global Text Styles */}
-            <div className="profile-breadcrumb">
+            <div className="profile-breadcrumb d-flex gap-1">
                 <button
                     className="link-button"
-                    onClick={() => navigate("/user/user-talentpool")}
+                    onClick={() => navigate("/user/user-upload-talent")}
                 >
-                    <FiArrowLeft /> Talent Pool{" "}
+                    <FiArrowLeft /> Talent Profile
                 </button>
                 <span className="crumb">/ Profile Page</span>
             </div>

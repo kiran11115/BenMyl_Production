@@ -29,6 +29,7 @@ import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
+import ReviewTalent from "./UploadTalent/ReviewTalent";
 
 
 
@@ -41,11 +42,11 @@ const routes = createBrowserRouter(
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="OTP-Verification" element={<OTPVerification />} />
             <Route path="user-details" element={<FormWizard />} />
-          
+
 
             <Route element={<ProtectedRoute />}>
                 <Route path="User" element={<Header />}>
-                 <Route path="AI-screen" element={<AIScreen />} />
+                    <Route path="AI-screen" element={<AIScreen />} />
                     <Route path="account-settings" element={<AccountSettings />} />
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
@@ -64,6 +65,7 @@ const routes = createBrowserRouter(
                     <Route path="user-contract-management" element={<ContractManagement />} />
                     <Route path="user-contract-view" element={<ContractView />} />
                     <Route path="create-new-contract" element={<CreateNewContract />} />
+                    <Route path="review-talent" element={<ReviewTalent />} />
                 </Route>
             </Route>
 

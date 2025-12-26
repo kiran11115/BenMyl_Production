@@ -86,7 +86,7 @@ const UserTalentTable = ({ candidates }) => {
   // Universal Sorting Logic
   const sortedCandidates = useMemo(() => {
     let sortableItems = [...candidates];
-    
+
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
         // Use optional chaining to safely access properties
@@ -97,7 +97,7 @@ const UserTalentTable = ({ candidates }) => {
         if (Array.isArray(aValue)) {
           aValue = aValue.join(", ").toLowerCase();
           bValue = bValue.join(", ").toLowerCase();
-        } 
+        }
         // 2. Handle Strings
         else if (typeof aValue === "string") {
           aValue = aValue.toLowerCase();
