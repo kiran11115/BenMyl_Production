@@ -30,6 +30,7 @@ import CreateNewContract from "./NewContract/CreateNewContract";
 import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
+import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 
 
 
@@ -55,6 +56,7 @@ const routes = createBrowserRouter(
                     <Route path="user-messages" element={<Messages />} />
                     <Route path="user-talentpool" element={<TalentPool />} />
                     <Route path="user-talent-profile" element={<TalentProfile />} />
+                    <Route path="talent-profile" element={<UploadTalentProfile />} />
                     <Route path="user-analytics" element={<Analytics />} />
                     <Route path="user-profile" element={<ProfilePage />} />
                     <Route path="user-post-new-positions" element={<PostNewPositions />} />

@@ -213,7 +213,7 @@ const TalentForm = React.memo(({
   const handleRoleBlur = () => {
     const trimmedInput = talentRoleInputDisplay.trim();
     const isValidRole = ALL_IT_ROLES.some(r => r.toLowerCase().includes(trimmedInput.toLowerCase()));
-    
+
     if (!isValidRole && trimmedInput.length > 0) {
       setTalentRoleInputDisplay(talentForm.role);
     } else if (isValidRole) {
@@ -945,7 +945,7 @@ function AIScreen() {
               </button>
             )}
           </div>
-          
+
           {searchLoading ? (
             <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: COLORS.textSecondary }}>
               <div className="loading-dots">

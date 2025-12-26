@@ -5,9 +5,11 @@ import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import UploadTalentModal from "./UploadTalentModal";
+import UserTalentProfiles from "./UserTalentProfiles";
 
 const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
+    const [view, setView] = useState("Talent");
 
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
@@ -36,20 +38,53 @@ const UploadTalent = () => {
                     <span className="crumb">/ Upload Talent</span>
                 </div>
 
-                <UploadTalentModal
-                    show={showModal}
-                    onHide={handleCloseModal}
-                    onShow={handleShowModal}
-                />
             </div>
             <div className="upload-talent-layout">
-                {/* LEFT */}
-                <div className="upload-main">
-                    <UploadTalentTable
-                        talents={talentsData}
-                        selectedEmails={selectedEmails}
-                        onToggleSelect={toggleSelect}
+                <div className="d-flex align-items-center gap-2 justify-content-between">
+                    {/* TOGGLE BUTTONS */}
+                    <div className="view-toggle1">
+                        <button
+                            className={`toggle ${view === "Talent" ? "active" : ""}`}
+                            onClick={() => setView("Talent")}
+                        >
+                            Talent Profiles
+                        </button>
+
+                        <button
+                            className={`toggle ${view === "Review" ? "active" : ""}`}
+                            onClick={() => setView("Review")}
+                        >
+                            Review Profiles
+                        </button>
+                    </div>
+
+                    <UploadTalentModal
+                        show={showModal}
+                        onHide={handleCloseModal}
+                        onShow={handleShowModal}
                     />
+                </div>
+
+                {/* CONTENT */}
+                <div className="view-content">
+                    {view === "Talent" &&
+                        <>
+                            <div className="upload-main mt-3">
+                                <UserTalentProfiles />
+                            </div>
+                        </>
+                    }
+                    {view === "Review" &&
+                        <>
+                            <div className="upload-main mt-3">
+                                <UploadTalentTable
+                                    talents={talentsData}
+                                    selectedEmails={selectedEmails}
+                                    onToggleSelect={toggleSelect}
+                                />
+                            </div >
+                        </>
+                    }
                 </div>
             </div>
         </>
