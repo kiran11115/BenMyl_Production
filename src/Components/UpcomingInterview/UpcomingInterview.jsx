@@ -78,7 +78,7 @@ export default function UpcomingInterview() {
                 </div>
             </div>
 
-            <div className="projects-grid">
+            <div className="jobs-grid">
                 {MOCK.map((it) => (
                     <article className="project-card" key={it.id}>
                         <div className="card-top">
