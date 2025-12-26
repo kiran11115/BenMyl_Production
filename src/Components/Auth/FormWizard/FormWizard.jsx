@@ -3,15 +3,19 @@ import "./FormWizard.css";
 import { useNavigate } from "react-router-dom";
 import { FiCheck, FiX } from "react-icons/fi";
 
+// Import your sub-components here
+import StepAccount from "./FormSteps/StepAccount";
+import StepVerify from "./FormSteps/StepVerify";
+import StepBilling from "./FormSteps/StepBilling";
+
 const FormWizard = () => {
   // --- State Management ---
   const [currentStep, setCurrentStep] = useState(1);
   const [cardType, setCardType] = useState("credit");
   const [fileName, setFileName] = useState("");
 
-  // New States for Loaders and Modal
-  const [isVerifying, setIsVerifying] = useState(false); // Loader for Step 2
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loader for Step 3
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const navigate = useNavigate();
@@ -70,13 +74,11 @@ const FormWizard = () => {
       return;
     }
 
-    // Auto-format Card Number
     if (name === "cardNumber") {
       const raw = value.replace(/\D/g, "").substring(0, 16);
       value = raw.replace(/(\d{4})(?=\d)/g, "$1 ");
     }
 
-    // Auto-format Expiry
     if (name === "cardExpiry") {
       const raw = value.replace(/\D/g, "").substring(0, 4);
       if (raw.length >= 2) {
@@ -113,21 +115,16 @@ const FormWizard = () => {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   // --- Action Handlers ---
-
-  // 1. Step 2 Action: Verify Business (Simulated)
   const handleBusinessVerification = () => {
     setIsVerifying(true);
-    // Simulate verification delay
     setTimeout(() => {
       setIsVerifying(false);
-      nextStep(); // Move to Billing Step
+      nextStep();
     }, 1500);
   };
 
-  // 2. Step 3 Action: Final Account Creation
   const handleAccountCreation = () => {
     setIsSubmitting(true);
-    // Simulate Server Request (2 Seconds)
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccessModal(true);
@@ -172,9 +169,8 @@ const FormWizard = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-container">
-        <div className="auth-card ">
+        <div className="auth-card">
           <div className="auth-form-section">
-            {/* Header */}
             <div className="auth-form-header">
               <h1 className="auth-page-title">Complete Registration</h1>
               <p className="auth-page-subtitle">
@@ -182,7 +178,6 @@ const FormWizard = () => {
               </p>
             </div>
 
-            {/* Stepper (Reordered: Account -> Verify -> Billing) */}
             <div className="auth-stepper">
               <div
                 className={`auth-step ${
@@ -227,365 +222,36 @@ const FormWizard = () => {
             </div>
 
             <form className="auth-form-card" onSubmit={(e) => e.preventDefault()}>
-              {/* ---------------- STEP 1: ACCOUNT ---------------- */}
               {currentStep === 1 && (
-                <div className="animate-fade-in">
-                  <section className="auth-section">
-                    <h3 className="auth-section-title">Primary Contact</h3>
-                    <div className="auth-grid-3">
-                      <div className="auth-group">
-                        <label className="auth-label">Full Name</label>
-                        <input
-                          type="text"
-                          name="fullName"
-                          className="auth-input"
-                          placeholder="John Doe"
-                          value={formData.fullName}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="auth-group">
-                        <label className="auth-label">Business Phone</label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          className="auth-input"
-                          placeholder={
-                            formData.country === "India"
-                              ? "+91 94413 88886"
-                              : "+1 (555) 123-4567"
-                          }
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="auth-group">
-                        <label className="auth-label">Email Address</label>
-                        <input
-                          type="email"
-                          name="email"
-                          className="auth-input"
-                          placeholder="john@company.com"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  </section>
-
-                  <div className="auth-toggle-wrapper">
-                    <label className="auth-toggle-label">
-                      <div className="auth-toggle-input-wrapper">
-                        <input
-                          type="checkbox"
-                          name="notifications"
-                          className="auth-toggle-checkbox"
-                          checked={formData.notifications}
-                          onChange={handleInputChange}
-                        />
-                        <span className="auth-toggle-slider"></span>
-                      </div>
-                      <div className="auth-toggle-text">
-                        <span className="auth-toggle-title">
-                          Enable Priority Notifications
-                        </span>
-                        <span className="auth-toggle-desc">
-                          Receive critical updates via SMS & WhatsApp
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                </div>
+                <StepAccount
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                />
               )}
 
-              {/* ---------------- STEP 2: VERIFY (Moved from Step 3) ---------------- */}
               {currentStep === 2 && (
-                <div className="animate-fade-in">
-                  <section className="auth-section">
-                    <h3 className="auth-section-title">Business Verification</h3>
-                    <div className="auth-grid-3">
-                      <div className="auth-group">
-                        <label className="auth-label">
-                          Country of Registration
-                        </label>
-                        <div className="auth-select-wrapper">
-                          <select
-                            name="country"
-                            className="auth-input auth-select"
-                            value={formData.country}
-                            onChange={handleCountryChange}
-                          >
-                            <option value="India">India</option>
-                            <option value="USA">United States</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="UAE">UAE</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="auth-group">
-                        <label className="auth-label">{getLicenseLabel()}</label>
-                        <input
-                          type="text"
-                          className="auth-input"
-                          placeholder={getLicensePlaceholder()}
-                        />
-                      </div>
-
-                      <div className="auth-group auth-action-group">
-                        {formData.country === "USA" ? (
-                          <div className="auth-upload-wrapper">
-                            <input
-                              type="file"
-                              id="file-upload"
-                              className="auth-file-input-hidden"
-                              accept=".pdf,.jpg,.png"
-                              onChange={handleFileUpload}
-                            />
-                            <label
-                              htmlFor="file-upload"
-                              className="btn-secondary"
-                            >
-                              Upload Doc
-                            </label>
-                            {fileName && (
-                              <span className="auth-file-name">{fileName}</span>
-                            )}
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            className="auth-btn-secondary auth-btn-sm"
-                          >
-                            Validate Now
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="auth-license-grid">
-                      {currentLicenseOptions.map((option) => (
-                        <label
-                          key={option.value}
-                          className={`auth-license-card ${
-                            formData.licenseType === option.value
-                              ? "auth-license-card-active"
-                              : ""
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="licenseType"
-                            className="auth-hidden-radio"
-                            value={option.value}
-                            checked={formData.licenseType === option.value}
-                            onChange={handleInputChange}
-                          />
-                          <div className="auth-license-content">
-                            <span className="auth-license-value">
-                              {option.value}
-                            </span>
-                            <span className="auth-license-label">
-                              {option.label}
-                            </span>
-                          </div>
-                          {formData.licenseType === option.value && (
-                            <div className="auth-check-icon">✓</div>
-                          )}
-                        </label>
-                      ))}
-                    </div>
-                  </section>
-
-                  <section className="auth-section">
-                    <h3 className="auth-section-title">Registered Address</h3>
-                    <div className="projects-grid">
-                      <div className="auth-group auth-span-2">
-                        <label className="auth-label">Street Address</label>
-                        <input
-                          type="text"
-                          name="street"
-                          className="auth-input"
-                          placeholder="123 Business Street"
-                          value={formData.street}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className="auth-group">
-                        <label className="auth-label">City</label>
-                        <input
-                          type="text"
-                          name="city"
-                          className="auth-input"
-                          placeholder={
-                            formData.country === "India"
-                              ? "Bengaluru"
-                              : "New York"
-                          }
-                          value={formData.city}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      {formData.country === "USA" && (
-                        <div className="auth-group">
-                          <label className="auth-label">State</label>
-                          <div className="auth-select-wrapper">
-                            <select
-                              name="state"
-                              className="auth-input auth-select"
-                              value={formData.state}
-                              onChange={handleInputChange}
-                            >
-                              <option value="">Select State</option>
-                              <option value="CA">California</option>
-                              <option value="NY">New York</option>
-                              <option value="TX">Texas</option>
-                              <option value="FL">Florida</option>
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      <div className="auth-group">
-                        <label className="auth-label">
-                          {formData.country === "USA"
-                            ? "Zip Code"
-                            : "Postal Code"}
-                        </label>
-                        <input
-                          type="text"
-                          name="zipCode"
-                          className="auth-input"
-                          placeholder={
-                            formData.country === "USA" ? "10001" : "560001"
-                          }
-                          value={formData.zipCode}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                  </section>
-                </div>
+                <StepVerify
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                  handleCountryChange={handleCountryChange}
+                  handleFileUpload={handleFileUpload}
+                  fileName={fileName}
+                  currentLicenseOptions={currentLicenseOptions}
+                  getLicenseLabel={getLicenseLabel}
+                  getLicensePlaceholder={getLicensePlaceholder}
+                />
               )}
 
-              {/* ---------------- STEP 3: BILLING (Moved from Step 2, Now Final) ---------------- */}
               {currentStep === 3 && (
-                <div className="animate-fade-in">
-                  <div className="row">
-                    <div className="col-6">
-                      <div className="payment-type-toggle">
-                        <button
-                          type="button"
-                          className={`payment-toggle-btn ${
-                            cardType === "credit" ? "active" : ""
-                          }`}
-                          onClick={() => setCardType("credit")}
-                        >
-                          Credit Card
-                        </button>
-                        <button
-                          type="button"
-                          className={`payment-toggle-btn ${
-                            cardType === "debit" ? "active" : ""
-                          }`}
-                          onClick={() => setCardType("debit")}
-                        >
-                          Debit Card
-                        </button>
-                      </div>
-
-                      <div className={`credit-card-preview ${cardType}`}>
-                        <div className="card-glass-effect"></div>
-                        <div className="card-content">
-                          <div className="card-top">
-                            <span className="card-chip"></span>
-                            <span className="card-brand">{getCardBrand()}</span>
-                          </div>
-                          <div className="card-middle">
-                            <div className="card-number-display">
-                              {formData.cardNumber || "•••• •••• •••• ••••"}
-                            </div>
-                          </div>
-                          <div className="card-bottom">
-                            <div className="card-info-group">
-                              <label>Card Holder</label>
-                              <span>{formData.cardName || "YOUR NAME"}</span>
-                            </div>
-                            <div className="card-info-group right">
-                              <label>Expires</label>
-                              <span>{formData.cardExpiry || "MM/YY"}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="billing-layout">
-                        <div className="billing-form-fields">
-                          <div className="auth-group">
-                            <label className="auth-label mb-0">
-                              Card Number
-                            </label>
-                            <input
-                              type="text"
-                              name="cardNumber"
-                              className="auth-input"
-                              placeholder="0000 0000 0000 0000"
-                              value={formData.cardNumber}
-                              onChange={handleInputChange}
-                              maxLength={19}
-                            />
-                          </div>
-                          <div className="auth-group">
-                            <label className="auth-label mt-3 mb-0">
-                              Name on Card
-                            </label>
-                            <input
-                              type="text"
-                              name="cardName"
-                              className="auth-input"
-                              placeholder="As written on card"
-                              value={formData.cardName}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="auth-grid-2">
-                            <div className="auth-group">
-                              <label className="auth-label mt-3 mb-0">
-                                Expiry Date
-                              </label>
-                              <input
-                                type="text"
-                                name="cardExpiry"
-                                className="auth-input"
-                                placeholder="MM/YY"
-                                value={formData.cardExpiry}
-                                onChange={handleInputChange}
-                                maxLength={5}
-                              />
-                            </div>
-                            <div className="auth-group">
-                              <label className="auth-label mt-3 mb-0">
-                                CVV / CVC
-                              </label>
-                              <input
-                                type="password"
-                                name="cardCvv"
-                                className="auth-input"
-                                placeholder="123"
-                                value={formData.cardCvv}
-                                onChange={handleInputChange}
-                                maxLength={4}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <StepBilling
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                  cardType={cardType}
+                  setCardType={setCardType}
+                  getCardBrand={getCardBrand}
+                />
               )}
 
-              {/* Footer Navigation */}
               <footer className="auth-footer">
                 <button
                   type="button"
@@ -600,7 +266,6 @@ const FormWizard = () => {
                   Back
                 </button>
 
-                {/* --- Step 1 Button: Simple Next --- */}
                 {currentStep === 1 && (
                   <button
                     type="button"
@@ -611,7 +276,6 @@ const FormWizard = () => {
                   </button>
                 )}
 
-                {/* --- Step 2 Button: Verify & Continue (With Loader) --- */}
                 {currentStep === 2 && (
                   <button
                     type="button"
@@ -630,7 +294,6 @@ const FormWizard = () => {
                   </button>
                 )}
 
-                {/* --- Step 3 Button: Create Account (Final Submit) --- */}
                 {currentStep === 3 && (
                   <button
                     type="button"
@@ -659,7 +322,6 @@ const FormWizard = () => {
         </div>
       </div>
 
-      {/* --- Success Reward Modal (Appears after Billing) --- */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="alert-card success-theme">
