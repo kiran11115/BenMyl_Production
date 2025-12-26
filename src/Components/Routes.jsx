@@ -19,8 +19,6 @@ import Analytics from "./Analytics/Analytics";
 import ProfilePage from "./ProfilePage/ProfilePage";
 import AccountSettings from "./AccountSettings/AccountSettings";
 import PostNewPositions from "./PostNewPositions/PostNewPositions";
-import FindVendor from "./FindVendor/FindVendor";
-import VendorDetail from "./VendorDetail/VendorDetail";
 import InviteBid from "./InviteBid/InviteBid";
 import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
 import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
@@ -60,8 +58,6 @@ const routes = createBrowserRouter(
                     <Route path="user-analytics" element={<Analytics />} />
                     <Route path="user-profile" element={<ProfilePage />} />
                     <Route path="user-post-new-positions" element={<PostNewPositions />} />
-                    <Route path="user-find-vendor" element={<FindVendor />} />
-                    <Route path="user-vendor-detail" element={<VendorDetail />} />
                     <Route path="user-invite-bid" element={<InviteBid />} />
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
                     <Route path="user-schedule-interview" element={<ScheduleInterview />} />
