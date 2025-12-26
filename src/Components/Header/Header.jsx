@@ -59,7 +59,7 @@ function Header() {
           </button>
 
           {/* Brand */}
-          <a href="/dashboard" className="header-brand">
+          <a className="header-brand">
             <img
               src="/Images/Benmyl White logo.svg"
               alt="BenchSales Logo"

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import "./FormWizard.css";
 import { useNavigate } from "react-router-dom";
-import { 
-  FiCheck,
-    FiX
-} from "react-icons/fi";
+import { FiCheck, FiX } from "react-icons/fi";
 
 const FormWizard = () => {
   // --- State Management ---
@@ -12,8 +9,9 @@ const FormWizard = () => {
   const [cardType, setCardType] = useState("credit");
   const [fileName, setFileName] = useState("");
 
-  // New States for Loader and Modal
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // New States for Loaders and Modal
+  const [isVerifying, setIsVerifying] = useState(false); // Loader for Step 2
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loader for Step 3
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const navigate = useNavigate();
@@ -115,30 +113,34 @@ const FormWizard = () => {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   // --- Action Handlers ---
-  
-  // 1. Triggered on Button Click
-  const handleAccountCreation = () => {
-    // Start Loader
-    setIsSubmitting(true);
 
+  // 1. Step 2 Action: Verify Business (Simulated)
+  const handleBusinessVerification = () => {
+    setIsVerifying(true);
+    // Simulate verification delay
+    setTimeout(() => {
+      setIsVerifying(false);
+      nextStep(); // Move to Billing Step
+    }, 1500);
+  };
+
+  // 2. Step 3 Action: Final Account Creation
+  const handleAccountCreation = () => {
+    setIsSubmitting(true);
     // Simulate Server Request (2 Seconds)
     setTimeout(() => {
-      // Stop Loader
       setIsSubmitting(false);
-      // Show Success Modal
       setShowSuccessModal(true);
     }, 2000);
   };
 
-  // 2. Triggered on Claim Button Click
   const handleClaimReward = () => {
     navigate("/user/account-settings");
   };
 
-    const handleCloseModal = () => {
+  const handleCloseModal = () => {
     setShowSuccessModal(false);
   };
-
 
   // --- Helpers ---
   const getCardBrand = () => {
@@ -180,7 +182,7 @@ const FormWizard = () => {
               </p>
             </div>
 
-            {/* Stepper */}
+            {/* Stepper (Reordered: Account -> Verify -> Billing) */}
             <div className="auth-stepper">
               <div
                 className={`auth-step ${
@@ -206,7 +208,7 @@ const FormWizard = () => {
                 <div className="auth-step-circle">
                   {currentStep > 2 ? "✓" : "2"}
                 </div>
-                <span className="auth-step-text">Billing</span>
+                <span className="auth-step-text">Verify</span>
               </div>
               <div
                 className={`auth-step-line ${
@@ -220,7 +222,7 @@ const FormWizard = () => {
                 }`}
               >
                 <div className="auth-step-circle">3</div>
-                <span className="auth-step-text">Verify</span>
+                <span className="auth-step-text">Billing</span>
               </div>
             </div>
 
@@ -296,123 +298,11 @@ const FormWizard = () => {
                 </div>
               )}
 
-              {/* ---------------- STEP 2: BILLING ---------------- */}
+              {/* ---------------- STEP 2: VERIFY (Moved from Step 3) ---------------- */}
               {currentStep === 2 && (
                 <div className="animate-fade-in">
-                  <div className="row">
-                    <div className="col-6">
-                      <div className="payment-type-toggle">
-                        <button
-                          type="button"
-                          className={`payment-toggle-btn ${
-                            cardType === "credit" ? "active" : ""
-                          }`}
-                          onClick={() => setCardType("credit")}
-                        >
-                          Credit Card
-                        </button>
-                        <button
-                          type="button"
-                          className={`payment-toggle-btn ${
-                            cardType === "debit" ? "active" : ""
-                          }`}
-                          onClick={() => setCardType("debit")}
-                        >
-                          Debit Card
-                        </button>
-                      </div>
-
-                      <div className={`credit-card-preview ${cardType}`}>
-                        <div className="card-glass-effect"></div>
-                        <div className="card-content">
-                          <div className="card-top">
-                            <span className="card-chip"></span>
-                            <span className="card-brand">{getCardBrand()}</span>
-                          </div>
-                          <div className="card-middle">
-                            <div className="card-number-display">
-                              {formData.cardNumber || "•••• •••• •••• ••••"}
-                            </div>
-                          </div>
-                          <div className="card-bottom">
-                            <div className="card-info-group">
-                              <label>Card Holder</label>
-                              <span>{formData.cardName || "YOUR NAME"}</span>
-                            </div>
-                            <div className="card-info-group right">
-                              <label>Expires</label>
-                              <span>{formData.cardExpiry || "MM/YY"}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-6">
-                      <div className="billing-layout">
-                        <div className="billing-form-fields">
-                          <div className="auth-group">
-                            <label className="auth-label mb-0">Card Number</label>
-                            <input
-                              type="text"
-                              name="cardNumber"
-                              className="auth-input"
-                              placeholder="0000 0000 0000 0000"
-                              value={formData.cardNumber}
-                              onChange={handleInputChange}
-                              maxLength={19}
-                            />
-                          </div>
-                          <div className="auth-group">
-                            <label className="auth-label mt-3 mb-0">Name on Card</label>
-                            <input
-                              type="text"
-                              name="cardName"
-                              className="auth-input"
-                              placeholder="As written on card"
-                              value={formData.cardName}
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          <div className="auth-grid-2">
-                            <div className="auth-group">
-                              <label className="auth-label mt-3 mb-0">Expiry Date</label>
-                              <input
-                                type="text"
-                                name="cardExpiry"
-                                className="auth-input"
-                                placeholder="MM/YY"
-                                value={formData.cardExpiry}
-                                onChange={handleInputChange}
-                                maxLength={5}
-                              />
-                            </div>
-                            <div className="auth-group">
-                              <label className="auth-label mt-3 mb-0">CVV / CVC</label>
-                              <input
-                                type="password"
-                                name="cardCvv"
-                                className="auth-input"
-                                placeholder="123"
-                                value={formData.cardCvv}
-                                onChange={handleInputChange}
-                                maxLength={4}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ---------------- STEP 3: VERIFY ---------------- */}
-              {currentStep === 3 && (
-                <div className="animate-fade-in">
                   <section className="auth-section">
-                    <h3 className="auth-section-title">
-                      Business Verification
-                    </h3>
+                    <h3 className="auth-section-title">Business Verification</h3>
                     <div className="auth-grid-3">
                       <div className="auth-group">
                         <label className="auth-label">
@@ -434,9 +324,7 @@ const FormWizard = () => {
                       </div>
 
                       <div className="auth-group">
-                        <label className="auth-label">
-                          {getLicenseLabel()}
-                        </label>
+                        <label className="auth-label">{getLicenseLabel()}</label>
                         <input
                           type="text"
                           className="auth-input"
@@ -579,13 +467,131 @@ const FormWizard = () => {
                 </div>
               )}
 
+              {/* ---------------- STEP 3: BILLING (Moved from Step 2, Now Final) ---------------- */}
+              {currentStep === 3 && (
+                <div className="animate-fade-in">
+                  <div className="row">
+                    <div className="col-6">
+                      <div className="payment-type-toggle">
+                        <button
+                          type="button"
+                          className={`payment-toggle-btn ${
+                            cardType === "credit" ? "active" : ""
+                          }`}
+                          onClick={() => setCardType("credit")}
+                        >
+                          Credit Card
+                        </button>
+                        <button
+                          type="button"
+                          className={`payment-toggle-btn ${
+                            cardType === "debit" ? "active" : ""
+                          }`}
+                          onClick={() => setCardType("debit")}
+                        >
+                          Debit Card
+                        </button>
+                      </div>
+
+                      <div className={`credit-card-preview ${cardType}`}>
+                        <div className="card-glass-effect"></div>
+                        <div className="card-content">
+                          <div className="card-top">
+                            <span className="card-chip"></span>
+                            <span className="card-brand">{getCardBrand()}</span>
+                          </div>
+                          <div className="card-middle">
+                            <div className="card-number-display">
+                              {formData.cardNumber || "•••• •••• •••• ••••"}
+                            </div>
+                          </div>
+                          <div className="card-bottom">
+                            <div className="card-info-group">
+                              <label>Card Holder</label>
+                              <span>{formData.cardName || "YOUR NAME"}</span>
+                            </div>
+                            <div className="card-info-group right">
+                              <label>Expires</label>
+                              <span>{formData.cardExpiry || "MM/YY"}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div className="billing-layout">
+                        <div className="billing-form-fields">
+                          <div className="auth-group">
+                            <label className="auth-label mb-0">
+                              Card Number
+                            </label>
+                            <input
+                              type="text"
+                              name="cardNumber"
+                              className="auth-input"
+                              placeholder="0000 0000 0000 0000"
+                              value={formData.cardNumber}
+                              onChange={handleInputChange}
+                              maxLength={19}
+                            />
+                          </div>
+                          <div className="auth-group">
+                            <label className="auth-label mt-3 mb-0">
+                              Name on Card
+                            </label>
+                            <input
+                              type="text"
+                              name="cardName"
+                              className="auth-input"
+                              placeholder="As written on card"
+                              value={formData.cardName}
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <div className="auth-grid-2">
+                            <div className="auth-group">
+                              <label className="auth-label mt-3 mb-0">
+                                Expiry Date
+                              </label>
+                              <input
+                                type="text"
+                                name="cardExpiry"
+                                className="auth-input"
+                                placeholder="MM/YY"
+                                value={formData.cardExpiry}
+                                onChange={handleInputChange}
+                                maxLength={5}
+                              />
+                            </div>
+                            <div className="auth-group">
+                              <label className="auth-label mt-3 mb-0">
+                                CVV / CVC
+                              </label>
+                              <input
+                                type="password"
+                                name="cardCvv"
+                                className="auth-input"
+                                placeholder="123"
+                                value={formData.cardCvv}
+                                onChange={handleInputChange}
+                                maxLength={4}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Footer Navigation */}
               <footer className="auth-footer">
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={prevStep}
-                  disabled={currentStep === 1 || isSubmitting}
+                  disabled={currentStep === 1 || isSubmitting || isVerifying}
                   style={{
                     opacity: currentStep === 1 ? 0 : 1,
                     pointerEvents: currentStep === 1 ? "none" : "auto",
@@ -594,7 +600,8 @@ const FormWizard = () => {
                   Back
                 </button>
 
-                {currentStep < 3 ? (
+                {/* --- Step 1 Button: Simple Next --- */}
+                {currentStep === 1 && (
                   <button
                     type="button"
                     className="btn-primary"
@@ -602,22 +609,42 @@ const FormWizard = () => {
                   >
                     Next Step
                   </button>
-                ) : (
+                )}
+
+                {/* --- Step 2 Button: Verify & Continue (With Loader) --- */}
+                {currentStep === 2 && (
                   <button
-                    // Changed type to "button" so it doesn't trigger form submit
-                    type="button" 
+                    type="button"
+                    className="btn-primary"
+                    onClick={handleBusinessVerification}
+                    disabled={isVerifying}
+                  >
+                    {isVerifying ? (
+                      <span className="flex-center-gap">
+                        <span className="loader-spinner"></span>
+                        Verifying...
+                      </span>
+                    ) : (
+                      "Verify & Continue"
+                    )}
+                  </button>
+                )}
+
+                {/* --- Step 3 Button: Create Account (Final Submit) --- */}
+                {currentStep === 3 && (
+                  <button
+                    type="button"
                     className="btn-primary w-25"
-                    // Added onClick explicitly
                     onClick={handleAccountCreation}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       <span className="flex-center-gap">
                         <span className="loader-spinner"></span>
-                        Verifying...
+                        Creating Account...
                       </span>
                     ) : (
-                      "Verify & Create Account"
+                      "Create Account"
                     )}
                   </button>
                 )}
@@ -632,41 +659,41 @@ const FormWizard = () => {
         </div>
       </div>
 
-      {/* --- Success Reward Modal --- */}
+      {/* --- Success Reward Modal (Appears after Billing) --- */}
       {showSuccessModal && (
-                <div className="modal-overlay">
-                    <div className="alert-card success-theme">
-                        <button className="alert-close-icon" onClick={handleCloseModal} ><FiX /></button>
-        
-                        <div className="alert-content left-align">
-                            <div className="d-flex align-items-center gap-2 mb-3">
-                                <div className="icon-circle success-icon-bg">
-                                    <FiCheck className="icon-main" />
-                                </div>
-                                <h3 className="alert-title mt-0 mb-0">Account Created!</h3>
-                            </div>
-        
-                            <p className="alert-message mb-2">
-                                 You've successfully verified your identity. As a welcome bonus,
-                  we've added credits to your wallet.
-                            </p>
-        <div className="alert-reward-box text-warning fs-2 text-center fw-bolder mb-2">
-                  <span className="reward-amount me-2">300</span>
-                  <span className="reward-label">Credits</span>
+        <div className="modal-overlay">
+          <div className="alert-card success-theme">
+            <button className="alert-close-icon" onClick={handleCloseModal}>
+              <FiX />
+            </button>
+
+            <div className="alert-content left-align">
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div className="icon-circle success-icon-bg">
+                  <FiCheck className="icon-main" />
                 </div>
-                            <div className="alert-actions start">
-                                {/* 2. Apply navigation on button click */}
-                                <button
-                                    className="btn-primary w-100"
-                                     onClick={handleClaimReward}
-                                >
-                                    Claim Rewards & Continue
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h3 className="alert-title mt-0 mb-0">Account Created!</h3>
+              </div>
+
+              <p className="alert-message mb-2">
+                You've successfully verified your identity and set up billing.
+                As a welcome bonus, we've added credits to your wallet.
+              </p>
+              <div className="alert-reward-box text-warning fs-2 text-center fw-bolder mb-2">
+                <span className="reward-amount me-2">300</span>
+                <span className="reward-label">Credits</span>
+              </div>
+              <div className="alert-actions start">
+                <button
+                  className="btn-primary w-100"
+                  onClick={handleClaimReward}
+                >
+                  Claim Rewards & Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
