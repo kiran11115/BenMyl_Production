@@ -27,8 +27,8 @@ const UploadTalent = () => {
 
     return (
         <>
-            <div className="d-flex align-items-center justify-content-between" style={{ padding: "24px 24px 0px 24px" }}>
-                <div className="vp-breadcrumbs" >
+            {/* <div className="d-flex align-items-center justify-content-between" style={{ padding: "24px 24px 0px 24px" }}>
+                <div className="vp-breadcrumbs d-flex gap-1" >
                     <button
                         className="link-button"
                         onClick={() => navigate("/user/user-dashboard")}
@@ -38,7 +38,7 @@ const UploadTalent = () => {
                     <span className="crumb">/ Upload Talent</span>
                 </div>
 
-            </div>
+            </div> */}
             <div className="upload-talent-layout">
                 <div className="d-flex align-items-center gap-2 justify-content-between">
                     {/* TOGGLE BUTTONS */}

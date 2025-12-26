@@ -1,5 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { MoreVertical, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { FiMoreVertical, FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { FaSort } from "react-icons/fa";
+import { IoEyeOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const initialTalents = [
   {
@@ -201,6 +205,7 @@ const initialTalents = [
 
 
 const UploadTalentTable = () => {
+  const navigate = useNavigate();
   const [talents] = useState(initialTalents);
   const [selectedEmails, setSelectedEmails] = useState(new Set());
   const [sortConfig, setSortConfig] = useState({
@@ -254,11 +259,11 @@ const UploadTalentTable = () => {
 
   const SortIcon = ({ columnKey }) => {
     if (sortConfig.key !== columnKey)
-      return <ArrowUpDown size={14} className="sort-icon" />;
+      return <FaSort style={{ color: "#fefefe" }} className="tt-sort-icon" />;
     return sortConfig.direction === "ascending" ? (
-      <ArrowUp size={14} className="sort-active" />
+      <FiChevronUp className="tt-sort-icon active" />
     ) : (
-      <ArrowDown size={14} className="sort-active" />
+      <FiChevronDown className="tt-sort-icon active" />
     );
   };
 
@@ -372,8 +377,9 @@ const UploadTalentTable = () => {
                     <button
                       className="border-0 w-50"
                       style={{ background: "none" }}
+                      onClick={() => navigate("/user/review-talent")}
                     >
-                      <MoreVertical size={16} />
+                      <IoEyeOutline size={16} />
                     </button>
                   </td>
                 </tr>

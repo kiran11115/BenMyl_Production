@@ -408,6 +408,12 @@
   }
 }
 
+@media (max-width: 1199px){
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* 📱 Mobile – 1 card */
 @media (max-width: 768px) {
   .projects-grid {
