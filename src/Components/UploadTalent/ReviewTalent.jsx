@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 
 // PDF Preview Component
-// Uses auth-card for the paper look and auth-title/subtitle for typography
 const PDFResumePreview = () => {
     return (
         <div className="auth-card" style={{ flexDirection: 'column', minHeight: '800px', padding: '40px', maxWidth: '100%' }}>
@@ -109,7 +108,7 @@ const EditableField = ({ label, value, fieldName, isEditing, onEdit, onSave, onC
                     </button>
                 )}
             </div>
-            
+
             {isEditing ? (
                 <div>
                     {multiline ? (
@@ -186,7 +185,7 @@ const EditableTags = ({ label, tags, fieldName, isEditing, onEdit, onSave, onCan
                         autoFocus
                     />
                     <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary"  onClick={handleSaveClick}>
+                        <button className="btn-primary" onClick={handleSaveClick}>
                             Save
                         </button>
                         <button className="btn-secondary" onClick={onCancel}>
@@ -198,11 +197,11 @@ const EditableTags = ({ label, tags, fieldName, isEditing, onEdit, onSave, onCan
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                     {tags && tags.length > 0 ? (
                         tags.map((tag, idx) => (
-                            <span 
-                                key={idx} 
+                            <span
+                                key={idx}
                                 className="status-tag status-progress"
-                                style={{ 
-                                    width: 'auto', 
+                                style={{
+                                    width: 'auto',
                                     padding: '6px 12px',
                                     borderRadius: '20px',
                                     fontSize: '13px'
@@ -269,191 +268,205 @@ const ReviewTalent = () => {
                 <span className="auth-subtitle" style={{ fontSize: '14px' }}>/ Review Talent</span>
             </div>
 
-            {/* Grid Layout - Using flex to mimic grid without external CSS */}
-            <div style={{ display: "flex", flexDirection: "row", gap: "24px", alignItems: "flex-start", flexWrap: 'wrap' }}>
-                
+            {/* Main Container - Equal Height Cards */}
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",    // Two equal-width columns
+                gap: "24px",
+                minHeight: "80vh",                 // Minimum height
+                gridTemplateRows: "1fr"            // Single row full height
+            }}>
+
                 {/* LEFT COLUMN: Edit Form */}
-                <div className="auth-form-side" style={{ 
-                    flex: '1', 
+                <div className="auth-form-side" style={{
+                    flex: '1',
                     minWidth: '350px',
-                    borderRadius: '1rem', 
-                    border: '1px solid #e2e8f0', 
-                    padding: '24px', 
-                    background: 'white' 
+                    borderRadius: '1rem',
+                    border: '1px solid #e2e8f0',
+                    padding: '24px',
+                    background: 'white',
+                    height: '100%',  // Key: stretches to match sibling
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}>
                     <div className="auth-header">
                         <h4 className="auth-title" style={{ fontSize: '18px' }}>2. Edit Information</h4>
                     </div>
 
-                    <EditableField
-                        label="Full Name"
-                        value={formData.fullName}
-                        fieldName="fullName"
-                        isEditing={editingField === "fullName"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableField
-                        label="Email"
-                        value={formData.email}
-                        fieldName="email"
-                        isEditing={editingField === "email"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableField
-                        label="Phone"
-                        value={formData.phone}
-                        fieldName="phone"
-                        isEditing={editingField === "phone"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableField
-                        label="Address"
-                        value={formData.address}
-                        fieldName="address"
-                        isEditing={editingField === "address"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableField
-                        label="Professional Summary"
-                        value={formData.professionalSummary}
-                        fieldName="professionalSummary"
-                        isEditing={editingField === "professionalSummary"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                        multiline
-                    />
-
-                    <div className="auth-divider">
-                        <div className="auth-divider-line"></div>
-                    </div>
-
-                    <EditableTags
-                        label="Professional Experience"
-                        tags={formData.professionalExperience}
-                        fieldName="professionalExperience"
-                        isEditing={editingField === "professionalExperience"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableField
-                        label="Years of Experience"
-                        value={formData.yearsOfExperience}
-                        fieldName="yearsOfExperience"
-                        isEditing={editingField === "yearsOfExperience"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableTags
-                        label="Education"
-                        tags={formData.education}
-                        fieldName="education"
-                        isEditing={editingField === "education"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableTags
-                        label="Certifications"
-                        tags={formData.certifications}
-                        fieldName="certifications"
-                        isEditing={editingField === "certifications"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <EditableTags
-                        label="Skills"
-                        tags={formData.skills}
-                        fieldName="skills"
-                        isEditing={editingField === "skills"}
-                        onEdit={handleEdit}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-
-                    <div className="auth-alert auth-alert-success" style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input
-                            type="checkbox"
-                            checked={isReviewed}
-                            onChange={e => setIsReviewed(e.target.checked)}
-                            style={{ width: '18px', height: '18px' }}
+                    <div style={{ flex: 1, overflowY: 'auto' }}>
+                        <EditableField
+                            label="Full Name"
+                            value={formData.fullName}
+                            fieldName="fullName"
+                            isEditing={editingField === "fullName"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
                         />
-                        <span style={{ fontSize: '14px', fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
+
+                        <EditableField
+                            label="Email"
+                            value={formData.email}
+                            fieldName="email"
+                            isEditing={editingField === "email"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableField
+                            label="Phone"
+                            value={formData.phone}
+                            fieldName="phone"
+                            isEditing={editingField === "phone"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableField
+                            label="Address"
+                            value={formData.address}
+                            fieldName="address"
+                            isEditing={editingField === "address"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableField
+                            label="Professional Summary"
+                            value={formData.professionalSummary}
+                            fieldName="professionalSummary"
+                            isEditing={editingField === "professionalSummary"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                            multiline
+                        />
+
+                        <div className="auth-divider">
+                            <div className="auth-divider-line"></div>
+                        </div>
+
+                        <EditableTags
+                            label="Professional Experience"
+                            tags={formData.professionalExperience}
+                            fieldName="professionalExperience"
+                            isEditing={editingField === "professionalExperience"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableField
+                            label="Years of Experience"
+                            value={formData.yearsOfExperience}
+                            fieldName="yearsOfExperience"
+                            isEditing={editingField === "yearsOfExperience"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableTags
+                            label="Education"
+                            tags={formData.education}
+                            fieldName="education"
+                            isEditing={editingField === "education"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableTags
+                            label="Certifications"
+                            tags={formData.certifications}
+                            fieldName="certifications"
+                            isEditing={editingField === "certifications"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
+
+                        <EditableTags
+                            label="Skills"
+                            tags={formData.skills}
+                            fieldName="skills"
+                            isEditing={editingField === "skills"}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                        />
                     </div>
 
-                    <div className="d-flex gap-3 mt-3 justify-content-end">
-                        <button className="btn-secondary">
-                            Save as Draft
-                        </button>
-                        <button
-                            className="btn-primary"
-                            style={{ width: 'auto', padding: '0 24px' }}
-                            disabled={!isReviewed}
-                        >
-                            Save to Bench
-                        </button>
+                    <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+                        <div className="auth-alert auth-alert-success" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <input
+                                type="checkbox"
+                                checked={isReviewed}
+                                onChange={e => setIsReviewed(e.target.checked)}
+                                style={{ width: '18px', height: '18px' }}
+                            />
+                            <span style={{ fontSize: '14px', fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
+                        </div>
+
+                        <div className="d-flex gap-3 justify-content-end">
+                            <button className="btn-secondary">
+                                Save as Draft
+                            </button>
+                            <button
+                                className="btn-primary"
+                                style={{ width: 'auto', padding: '0 24px' }}
+                                disabled={!isReviewed}
+                            >
+                                Save to Bench
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* RIGHT COLUMN: Resume Preview */}
-                <div style={{ 
-                    flex: '1', 
+                <div style={{
+                    flex: '1',
                     minWidth: '350px',
-                    position: 'sticky',
-                    top: '20px',
-                    height: 'calc(100vh - 40px)',
-                    overflow: 'hidden',
+                    height: '100%',  // Key: stretches to match sibling
                     display: 'flex',
                     flexDirection: 'column'
                 }}>
-                     <div className="auth-form-side" style={{ 
-                        borderRadius: '1rem', 
-                        border: '1px solid #e2e8f0', 
-                        padding: '16px', 
+                    <div className="auth-form-side" style={{
+                        borderRadius: '1rem',
+                        border: '1px solid #e2e8f0',
+                        padding: '16px',
                         background: 'white',
-                        height: '100%',
+                        height: '100%',  // Full height of parent
                         display: 'flex',
                         flexDirection: 'column'
                     }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                             <h4 className="auth-title" style={{ fontSize: '16px', margin: 0 }}>Preview Resume</h4>
-                            <button
+                            {/* <button
                                 type="button"
                                 className="btn-secondary"
                                 style={{ width: 'auto', padding: '6px 12px', fontSize: '12px', height: 'auto' }}
                                 onClick={() => setShowPreview(prev => !prev)}
                             >
                                 {showPreview ? "Hide Preview" : "Show Preview"}
-                            </button>
+                            </button> */}
                         </div>
 
                         {showPreview && (
-                            <div style={{ flex: 1, overflowY: 'auto', padding: '4px' }}>
+                            <div style={{
+                                flex: 1,
+                                overflowY: 'auto',
+                                padding: '4px',
+                                display: 'flex'  // Ensures PDFPreview fills available space
+                            }}>
                                 <PDFResumePreview />
                             </div>
                         )}
                     </div>
                 </div>
-
             </div>
         </div>
     );
