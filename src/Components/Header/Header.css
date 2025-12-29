@@ -14,7 +14,7 @@
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
-  z-index: 50; /* Ensures it stays above content */
+  z-index: 1000; /* Ensures it stays above content */
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
