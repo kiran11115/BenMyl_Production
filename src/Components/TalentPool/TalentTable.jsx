@@ -24,7 +24,7 @@ const SortIcon = ({ active, direction }) => {
 const CandidateRow = memo(({ candidate, onShortlist, isShortlisted, activeJobId, activeJobColor }) => (
   <tr className="tt-row">
     <td className="tt-td">
-      <input type="checkbox" className="row-checkbox" />
+      <input type="checkbox" />
     </td>
     <td className="tt-td">
       <div className="tt-candidate-flex">
@@ -144,7 +144,7 @@ const TalentTableView = ({ candidates, onShortlist, activeJobId, activeJobColor,
             <th className="tt-th sortable" onClick={() => requestSort("availability")}>
               <div className="tt-th-content">Availability <SortIcon active={sortConfig.key === "availability"} direction={sortConfig.direction} /></div>
             </th>
-            <th className="tt-th" style={{ textAlign: "right" }}>Action</th>
+            <th className="tt-th">Action</th>
           </tr>
         </thead>
         <tbody>
