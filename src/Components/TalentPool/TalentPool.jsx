@@ -1,17 +1,15 @@
 import React, { useState, useMemo, memo } from "react";
-import { FiGrid, FiList, FiSearch, FiMapPin, FiBriefcase, FiX, FiTrash2, FiLoader, FiCheck } from "react-icons/fi";
+import { FiGrid, FiList, FiSearch, FiMapPin, FiBriefcase, FiX, FiTrash2, FiLoader, FiCheck, FiChevronDown } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
-
 // Import your views
-import TalentGridView from "./TalentGrid"; // See component below
-import TalentTableView from "./TalentTable"; // See component below
-import "./TalentPool.css"; // Assuming this exists
+import TalentGridView from "./TalentGrid"; 
+import TalentTableView from "./TalentTable"; 
+import "./TalentPool.css"; 
 import TalentFilters, { USER_CREATED_JOBS } from "../Filters/TalentFilters";
 
-
-// --- DATA SOURCE ---
+// --- DATA SOURCE (With Hourly Rates for Sorting) ---
 const candidatesMock = [
   {
     id: 101,
@@ -24,8 +22,8 @@ const candidatesMock = [
     availability: ["Available Now", "Remote"],
     status: "SHORTLISTED",
     rating: 4.9,
-    avatar:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 85,
+    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 102,
@@ -38,8 +36,8 @@ const candidatesMock = [
     availability: ["2 Weeks Notice"],
     status: "IN REVIEW",
     rating: 4.7,
-    avatar:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 95,
+    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 103,
@@ -52,8 +50,8 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "INTERVIEWING",
     rating: 4.8,
-    avatar:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 70,
+    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 104,
@@ -66,8 +64,8 @@ const candidatesMock = [
     availability: ["1 Month Notice", "Remote"],
     status: "INTERVIEWING",
     rating: 4.6,
-    avatar:
-      "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 65,
+    avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 105,
@@ -80,8 +78,8 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "SHORTLISTED",
     rating: 4.9,
-    avatar:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 50,
+    avatar: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 106,
@@ -94,8 +92,8 @@ const candidatesMock = [
     availability: ["Remote Only"],
     status: "IN REVIEW",
     rating: 5.0,
-    avatar:
-      "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 110,
+    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 107,
@@ -108,8 +106,8 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "OFFER EXTENDED",
     rating: 4.8,
-    avatar:
-      "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 90,
+    avatar: "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 108,
@@ -122,8 +120,8 @@ const candidatesMock = [
     availability: ["Part-time"],
     status: "NEW",
     rating: 4.5,
-    avatar:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 45,
+    avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 109,
@@ -136,8 +134,8 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "REJECTED",
     rating: 4.4,
-    avatar:
-      "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 80,
+    avatar: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 110,
@@ -150,22 +148,23 @@ const candidatesMock = [
     availability: ["Entry Level"],
     status: "NEW",
     rating: 4.7,
-    avatar:
-      "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
+    hourlyRate: 30,
+    avatar: "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
 ];
 
+// --- UTILS ---
+const parseExperience = (expStr) => {
+  const match = expStr.match(/\d+/);
+  return match ? parseInt(match[0], 10) : 0;
+};
 
-// --- SHORTLIST DRAWER (OFF-CANVAS) ---
+// --- SHORTLIST DRAWER (SAME AS BEFORE) ---
 const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
-  // State to track offer status for each job ID: { jobId: 'idle' | 'loading' | 'sent' }
   const [offerStatus, setOfferStatus] = useState({});
 
   const handleSendOffer = (jobId) => {
-    // 1. Set Loading
     setOfferStatus(prev => ({ ...prev, [jobId]: 'loading' }));
-
-    // 2. Wait 1 second then set Sent
     setTimeout(() => {
       setOfferStatus(prev => ({ ...prev, [jobId]: 'sent' }));
     }, 1000);
@@ -204,7 +203,6 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
                         <div className="mini-name">{cand.name}</div>
                         <div className="mini-role">{cand.role}</div>
                       </div>
-                      {/* Disable remove if offer is sending/sent to prevent data inconsistency during action */}
                       <button 
                         className="remove-btn" 
                         disabled={currentStatus !== 'idle'}
@@ -215,10 +213,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
                     </div>
                   ))}
 
-                  {/* Send Offer Button */}
                   <div className="job-footer">
                     <button 
-                      className={`btn-primary w-100 ${currentStatus === 'sent' ? 'sent' : ''}`}
+                      className={`btn-primary ${currentStatus === 'sent' ? 'sent' : ''}`}
                       onClick={() => handleSendOffer(jobId)}
                       disabled={currentStatus !== 'idle'}
                     >
@@ -236,16 +233,14 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
       <style jsx>{`
         .drawer-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:998; opacity:0; pointer-events:none; transition:opacity 0.3s; }
         .drawer-overlay.open { opacity:1; pointer-events:auto; }
-        .drawer-panel { position: fixed; top:0; right:0; width:350px; height:100%; background:white; z-index:999; transform:translateX(100%); transition:transform 0.3s; box-shadow: -2px 0 10px rgba(0,0,0,0.1); display:flex; flex-direction:column; }
+        .drawer-panel { position: fixed; top:75px; right:5px; width:350px; height:90vh; border-radius:12px; background:white; z-index:999; transform:translateX(100%); transition:transform 0.3s; box-shadow: -2px 0 10px rgba(0,0,0,0.1); display:flex; flex-direction:column; }
         .drawer-panel.open { transform:translateX(0); }
         .drawer-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
         .drawer-header h3 { margin:0; font-size:18px; }
         .close-btn { background:none; border:none; cursor:pointer; }
         .drawer-content { padding: 20px; flex:1; overflow-y:auto; }
-        
         .job-group { margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; }
         .job-header { background: #f8fafc; padding: 8px 12px; margin-bottom: 10px; font-weight: 600; font-size: 14px; display:flex; justify-content:space-between; align-items:center;}
-        
         .mini-card { display:flex; align-items:center; gap:10px; padding: 8px 0; border-bottom:1px solid #f1f5f9; }
         .mini-avatar { width:32px; height:32px; border-radius:50%; object-fit:cover; }
         .mini-info { flex:1; }
@@ -254,16 +249,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
         .remove-btn { background:none; border:none; color:#ef4444; cursor:pointer; opacity: 0.6; transition: opacity 0.2s; }
         .remove-btn:hover:not(:disabled) { opacity: 1; }
         .remove-btn:disabled { opacity: 0.2; cursor: not-allowed; }
-        
-        .empty-state { color: #94a3b8; text-align: center; margin-top: 40px; font-size: 18px; }
-
-        /* Button Styles */
-        .job-footer { margin-top: 12px; display: flex; justify-content: flex-end; 
-        
-        /* Success State */
+        .empty-state { color: #94a3b8; text-align: center; margin-top: 40px; font-size: 14px; }
+        .job-footer { margin-top: 12px; display: flex; justify-content: flex-end; }
         .btn-primary.sent { background-color: #10b981; }
-
-        /* Loader Animation */
         .spin-icon { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
       `}</style>
@@ -275,14 +263,16 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
 // --- MAIN COMPONENT ---
 const TalentPool = () => {
   const navigate = useNavigate();
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const candidates = useMemo(() => candidatesMock, []);
 
-  // New State for functionality
+  // State
   const [activeFilters, setActiveFilters] = useState(null);
-  const [shortlistedMap, setShortlistedMap] = useState({}); // { jobId: [candidates] }
+  const [shortlistedMap, setShortlistedMap] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // NEW: Sort State
+  const [sortBy, setSortBy] = useState('recommended');
 
   const handleApplyFilters = (newFilters) => {
     setActiveFilters(newFilters);
@@ -292,11 +282,10 @@ const TalentPool = () => {
     navigate("/user/user-talent-profile");
   };
 
-  // Logic to determine current active job color
   const activeJobId = activeFilters?.selectedJobs?.[0];
   const activeJobColor = activeJobId 
     ? USER_CREATED_JOBS.find(j => j.id === activeJobId)?.color 
-    : '#4f46e5'; // Default indigo
+    : '#4f46e5';
 
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
@@ -309,17 +298,9 @@ const TalentPool = () => {
         const exists = currentList.find(c => c.id === candidate.id);
         
         if (exists) {
-            // Remove if already exists (toggle)
-            return {
-                ...prev,
-                [activeJobId]: currentList.filter(c => c.id !== candidate.id)
-            };
+            return { ...prev, [activeJobId]: currentList.filter(c => c.id !== candidate.id) };
         } else {
-            // Add
-            return {
-                ...prev,
-                [activeJobId]: [...currentList, candidate]
-            };
+            return { ...prev, [activeJobId]: [...currentList, candidate] };
         }
     });
   };
@@ -330,6 +311,19 @@ const TalentPool = () => {
           [jobId]: prev[jobId].filter(c => c.id !== candId)
       }));
   };
+
+  // --- SORTING LOGIC ---
+  const sortedCandidates = useMemo(() => {
+    let sortable = [...candidates];
+    switch (sortBy) {
+      case 'rating_high': return sortable.sort((a, b) => b.rating - a.rating);
+      case 'exp_high': return sortable.sort((a, b) => parseExperience(b.experience) - parseExperience(a.experience));
+      case 'exp_low': return sortable.sort((a, b) => parseExperience(a.experience) - parseExperience(b.experience));
+      case 'rate_low': return sortable.sort((a, b) => (a.hourlyRate || 0) - (b.hourlyRate || 0));
+      case 'name_asc': return sortable.sort((a, b) => a.name.localeCompare(b.name));
+      default: return sortable;
+    }
+  }, [candidates, sortBy]);
 
   return (
     <div className="vs-page">
@@ -346,10 +340,7 @@ const TalentPool = () => {
           }}
         >
           <div>
-            <h1
-              className="section-title"
-              style={{ fontSize: "24px", marginBottom: "8px" }}
-            >
+            <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
               Find Talent
             </h1>
             <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
@@ -362,10 +353,28 @@ const TalentPool = () => {
               display: "flex",
               gap: "12px",
               flex: 1,
-              maxWidth: "600px",
+              maxWidth: "700px", // Increased width to fit sort dropdown
               justifyContent: "flex-end",
+              alignItems: "center"
             }}
           >
+            {/* NEW: Sort Dropdown */}
+            <div className="sort-wrapper">
+              <select 
+                className="sort-select"
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="recommended">Sort by: Recommended</option>
+                <option value="rating_high">Rating: High to Low</option>
+                <option value="exp_high">Experience: High to Low</option>
+                <option value="exp_low">Experience: Low to High</option>
+                <option value="rate_low">Hourly Rate: Low to High</option>
+                <option value="name_asc">Name: A - Z</option>
+              </select>
+              <FiChevronDown className="sort-icon" />
+            </div>
+
             <button
               className="add-project-btn"
               onClick={() => setIsDrawerOpen(true)}
@@ -374,18 +383,17 @@ const TalentPool = () => {
               <FiBriefcase />
               <span>View Shortlisted</span>
             </button>
+            
             <div className="vs-results-right">
               <div className="view-toggle1">
                 <button
-                  className={`view-btn ${viewMode === "grid" ? "toggle active" : ""
-                    }`}
+                  className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}
                   onClick={() => setViewMode("grid")}
                 >
                   <FiGrid />
                 </button>
                 <button
-                  className={`view-btn ${viewMode === "table" ? "toggle active" : ""
-                    }`}
+                  className={`view-btn ${viewMode === "table" ? "toggle active" : ""}`}
                   onClick={() => setViewMode("table")}
                 >
                   <FiList />
@@ -403,7 +411,7 @@ const TalentPool = () => {
           <section className="vs-results">
             {viewMode === "grid" ? (
               <TalentGridView
-                candidates={candidates}
+                candidates={sortedCandidates} // Use sorted list
                 onProfileClick={handleProfileClick}
                 onShortlist={handleShortlist}
                 activeJobId={activeJobId}
@@ -412,7 +420,7 @@ const TalentPool = () => {
               />
             ) : (
               <TalentTableView 
-                candidates={candidates} 
+                candidates={sortedCandidates} // Use sorted list
                 onShortlist={handleShortlist}
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}
@@ -440,6 +448,38 @@ const TalentPool = () => {
         shortlistedMap={shortlistedMap}
         onRemove={handleRemoveFromDrawer}
       />
+      
+      <style jsx>{`
+        /* Sort Dropdown Styles */
+        .sort-wrapper {
+          position: relative;
+          margin-right: 8px;
+        }
+        .sort-select {
+          appearance: none;
+          background-color: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 8px 32px 8px 12px;
+          font-size: 13px;
+          color: #334155;
+          font-weight: 500;
+          cursor: pointer;
+          outline: none;
+          min-width: 180px;
+        }
+        .sort-select:hover {
+          border-color: #cbd5e1;
+        }
+        .sort-icon {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #64748b;
+          pointer-events: none;
+        }
+      `}</style>
     </div>
   );
 };

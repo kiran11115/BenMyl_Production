@@ -191,7 +191,6 @@ input, button, select, textarea, label {
 /* --- Cell Styles --- */
 .tt-td {
   padding: 16px;
-  vertical-align: top; /* Align content to top for multi-line cells */
   color: #374151;      /* Default text color */
   font-size: 14px;
 }
