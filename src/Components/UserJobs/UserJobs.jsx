@@ -86,7 +86,7 @@ const JOBS_DATA = [
 
 const Jobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
-  
+
   // -- Filter States --
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
@@ -107,36 +107,36 @@ const Jobs = () => {
   const filteredJobs = useMemo(() => {
     return JOBS_DATA.filter(job => {
       // 1. Top Bar Search (Title/Company)
-      const matchesTopSearch = 
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesTopSearch =
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.company.toLowerCase().includes(searchQuery.toLowerCase());
 
       // 2. Top Bar Location
-      const matchesLocationSearch = 
+      const matchesLocationSearch =
         job.location.toLowerCase().includes(locationQuery.toLowerCase());
 
       // 3. Sidebar: Keywords (matches title or skills)
-      const matchesSidebarKeyword = 
-        !filters.keyword || 
+      const matchesSidebarKeyword =
+        !filters.keyword ||
         job.title.toLowerCase().includes(filters.keyword.toLowerCase()) ||
         job.skills.some(skill => skill.toLowerCase().includes(filters.keyword.toLowerCase()));
 
       // 4. Sidebar: Job Type
-      const matchesType = 
-        filters.jobType === "All Types" || 
+      const matchesType =
+        filters.jobType === "All Types" ||
         job.location === filters.jobType; // Assuming 'Remote'/'Hybrid' maps to location field in this data
 
       // 5. Sidebar: Rate (Job min rate >= Filter min rate)
       const matchesRate = job.minRate >= filters.minRate;
 
       // 6. Sidebar: Experience Level (If any selected, job must match one)
-      const matchesExperience = 
-        filters.experienceLevels.length === 0 || 
+      const matchesExperience =
+        filters.experienceLevels.length === 0 ||
         filters.experienceLevels.includes(job.experienceLevel);
 
       // 7. Sidebar: Skill Tags (Job must have at least one matching tag if tags exist)
       // Note: This is an "OR" logic. Change to "AND" if job must have ALL tags.
-      const matchesSkillTags = 
+      const matchesSkillTags =
         filters.skillTags.length === 0 ||
         job.skills.some(jobSkill => filters.skillTags.includes(jobSkill));
 
@@ -145,81 +145,142 @@ const Jobs = () => {
   }, [searchQuery, locationQuery, filters]);
 
   return (
-    <div className="jobs-container">
-      <div className="jobs-layout">
-        
-        {/* Component 1: Filters */}
-        <JobFilters 
-          currentFilters={filters} 
-          onFilterChange={updateFilters} 
-        />
+    <>
+      {/* Heading Section */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "16px",
+          padding: "24px 24px 0px 24px"
+        }
+        }
+      >
+        <div>
+          <h1
+            className="section-title"
+            style={{ fontSize: "24px", marginBottom: "8px" }}
+          >
+            Find Jobs
+          </h1>
+          <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
+            Search and manage your Jobs network.
+          </p>
+        </div>
 
-        {/* Main Content */}
-        <main className="jobs-main">
-
-          {/* Jobs Grid */}
-          <div className="jobs-grid">
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <div key={job.id} className={`project-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}>
-                  <div className="job-card-top">
-                    <div className="company-icon-box">
-                      <BsBuilding size={22} />
-                    </div>
-                    <div className="job-header-info">
-                      <h3 className="job-title">{job.title}</h3>
-                      <p className="company-name">{job.company}</p>
-                    </div>
-                    <span className="contract-badge">{job.type}</span>
-                  </div>
-
-                  <div className="job-meta-grid">
-                    <div className="meta-item">
-                      <FiMapPin size={14} /> {job.location}
-                    </div>
-                    <div className="meta-item">
-                      <FiDollarSign size={14} /> {job.rateText}
-                    </div>
-                    <div className="meta-item">
-                      <FiUser size={14} /> {job.experienceText}
-                    </div>
-                    <div className="meta-item text-orange">
-                      <FiClock size={14} /> {job.timeLeft}
-                    </div>
-                  </div>
-
-                  <div className="card-actions">
-                    <button 
-                      className="btn-primary"
-                      onClick={() => setSelectedJob(job)}
-                    >
-                      Quick Bid
-                    </button>
-                    <button 
-                      className="btn-secondary"
-                      onClick={() => setSelectedJob(job)}
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <h3>No jobs found matching your filters</h3>
-                <p>Try adjusting your search criteria or filters.</p>
-              </div>
-            )}
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            flex: 1,
+            maxWidth: "600px",
+            justifyContent: "flex-end",
+          }}
+        >
+          <div style={{ position: "relative", flex: 1 }}>
+            <FiSearch
+              style={{
+                position: "absolute",
+                left: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#94a3b8",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Search by Job Name..."
+              style={{
+                width: "100%",
+                padding: "10px 10px 10px 40px",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                outline: "none",
+                fontSize: "14px",
+                color: "#334155",
+              }}
+            />
           </div>
-        </main>
-      </div>
+        </div>
+      </div >
+      <div className="jobs-container">
+        <div className="jobs-layout">
 
-      {/* Component 2: Modal */}
-      <JobModal 
-        job={selectedJob} 
-        onClose={() => setSelectedJob(null)} 
-      />
-    </div>
+          {/* Component 1: Filters */}
+          <JobFilters
+            currentFilters={filters}
+            onFilterChange={updateFilters}
+          />
+
+          {/* Main Content */}
+          <main className="jobs-main">
+
+            {/* Jobs Grid */}
+            <div className="jobs-grid">
+              {filteredJobs.length > 0 ? (
+                filteredJobs.map((job) => (
+                  <div key={job.id} className={`project-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}>
+                    <div className="job-card-top">
+                      <div className="company-icon-box">
+                        <BsBuilding size={22} />
+                      </div>
+                      <div className="job-header-info">
+                        <h3 className="job-title">{job.title}</h3>
+                        <p className="company-name">{job.company}</p>
+                      </div>
+                      <span className="contract-badge">{job.type}</span>
+                    </div>
+
+                    <div className="job-meta-grid">
+                      <div className="meta-item">
+                        <FiMapPin size={14} /> {job.location}
+                      </div>
+                      <div className="meta-item">
+                        <FiDollarSign size={14} /> {job.rateText}
+                      </div>
+                      <div className="meta-item">
+                        <FiUser size={14} /> {job.experienceText}
+                      </div>
+                      <div className="meta-item text-orange">
+                        <FiClock size={14} /> {job.timeLeft}
+                      </div>
+                    </div>
+
+                    <div className="card-actions">
+                      <button
+                        className="btn-primary"
+                        onClick={() => setSelectedJob(job)}
+                      >
+                        Quick Bid
+                      </button>
+                      <button
+                        className="btn-secondary"
+                        onClick={() => setSelectedJob(job)}
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="no-results">
+                  <h3>No jobs found matching your filters</h3>
+                  <p>Try adjusting your search criteria or filters.</p>
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+
+        {/* Component 2: Modal */}
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+        />
+      </div>
+    </>
   );
 };
 

@@ -154,7 +154,7 @@ const JobFilters = ({ onApplyFilters }) => {
       </div>
 
       {/* 1. Service Type (Single Selection) */}
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <h4 className="section-title">Service Type</h4>
         <div className="select-wrapper">
           <select 
@@ -168,7 +168,7 @@ const JobFilters = ({ onApplyFilters }) => {
           </select>
           <FiChevronDown className="select-icon" />
         </div>
-      </div>
+      </div> */}
 
       {/* 2. Locations (Tags + Multi-Select) */}
       <div className="filter-section">
