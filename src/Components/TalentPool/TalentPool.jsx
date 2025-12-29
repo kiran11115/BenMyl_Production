@@ -258,25 +258,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
         .empty-state { color: #94a3b8; text-align: center; margin-top: 40px; font-size: 18px; }
 
         /* Button Styles */
-        .job-footer { margin-top: 12px; display: flex; justify-content: flex-end; }
-        .btn-primary {
-          background-color: #4f46e5;
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.2s ease;
-          min-width: 100px;
-          justify-content: center;
-        }
-        .btn-primary:hover:not(:disabled) { background-color: #4338ca; }
-        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .job-footer { margin-top: 12px; display: flex; justify-content: flex-end; 
         
         /* Success State */
         .btn-primary.sent { background-color: #10b981; }
