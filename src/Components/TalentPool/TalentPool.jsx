@@ -1,13 +1,15 @@
 import React, { useState, useMemo, memo } from "react";
-import { FiGrid, FiList, FiSearch, FiMapPin } from "react-icons/fi";
+import { FiGrid, FiList, FiSearch, FiMapPin, FiBriefcase, FiX, FiTrash2, FiLoader, FiCheck } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
-// Import separated views
-import TalentGridView from "./TalentGrid";
-import TalentTableView from "./TalentTable";
-import "./TalentPool.css";
-import TalentFilters from "../Filters/TalentFilters";
+
+// Import your views
+import TalentGridView from "./TalentGrid"; // See component below
+import TalentTableView from "./TalentTable"; // See component below
+import "./TalentPool.css"; // Assuming this exists
+import TalentFilters, { USER_CREATED_JOBS } from "../Filters/TalentFilters";
+
 
 // --- DATA SOURCE ---
 const candidatesMock = [
@@ -15,7 +17,6 @@ const candidatesMock = [
     id: 101,
     name: "Sarah Johnson",
     verified: <GiCheckMark size={14} color="#059669" />,
-    email: "sarah.j@techsolutions.com",
     role: "Senior Developer",
     experience: "8 years exp",
     skills: ["React", "Node.js", "AWS"],
@@ -30,7 +31,6 @@ const candidatesMock = [
     id: 102,
     name: "Michael Chen",
     verified: "",
-    email: "m.chen@digitaldyn.net",
     role: "Project Manager",
     experience: "12 years exp",
     skills: ["Agile", "Jira", "Scrum"],
@@ -45,7 +45,6 @@ const candidatesMock = [
     id: 103,
     name: "Emily Davis",
     verified: <GiCheckMark size={14} color="#059669" />,
-    email: "edavis.dev@gmail.com",
     role: "DevOps Engineer",
     experience: "5 years exp",
     skills: ["Docker", "K8s", "CI/CD"],
@@ -60,7 +59,6 @@ const candidatesMock = [
     id: 104,
     name: "David Lee",
     verified: <GiCheckMark size={14} color="#059669" />,
-    email: "david.lee88@outlook.com",
     role: "Backend Developer",
     experience: "6 years exp",
     skills: ["Python", "Django", "SQL"],
@@ -75,7 +73,6 @@ const candidatesMock = [
     id: 105,
     name: "Maria Garcia",
     verified: "",
-    email: "maria.g.qa@testlab.io",
     role: "QA Engineer",
     experience: "4 years exp",
     skills: ["Selenium", "Cypress"],
@@ -90,7 +87,6 @@ const candidatesMock = [
     id: 106,
     name: "James Williams",
     verified: "",
-    email: "jwilliams@dataminds.com",
     role: "Data Scientist",
     experience: "7 years exp",
     skills: ["Python", "TF", "SQL"],
@@ -105,7 +101,6 @@ const candidatesMock = [
     id: 107,
     name: "Olivia Martinez",
     verified: <GiCheckMark size={14} color="#059669" />,
-    email: "omartinez@product.co",
     role: "Product Owner",
     experience: "9 years exp",
     skills: ["Strategy", "Agile"],
@@ -120,7 +115,6 @@ const candidatesMock = [
     id: 108,
     name: "John Smith",
     verified: "",
-    email: "john.smith.ui@design.net",
     role: "UI/UX Designer",
     experience: "3 years exp",
     skills: ["Figma", "Sketch"],
@@ -135,7 +129,6 @@ const candidatesMock = [
     id: 109,
     name: "William Rodriguez",
     verified: "",
-    email: "will.rod@sysops.org",
     role: "SysAdmin",
     experience: "15 years exp",
     skills: ["Linux", "Bash", "Net"],
@@ -150,7 +143,6 @@ const candidatesMock = [
     id: 110,
     name: "Ava Wilson",
     verified: <GiCheckMark size={14} color="#059669" />,
-    email: "ava.w@frontend.dev",
     role: "Jr. Frontend Dev",
     experience: "1 year exp",
     skills: ["HTML", "CSS", "JS"],
@@ -163,19 +155,140 @@ const candidatesMock = [
   },
 ];
 
-// --- LOCAL FILTER COMPONENTS ---
-const FilterCheckbox = memo(({ label }) => (
-  <label>
-    <input type="checkbox" /> {label}
-  </label>
-));
 
-const FilterGroup = memo(({ title, children }) => (
-  <div className="fg">
-    <div className="fg-title">{title}</div>
-    <div className="fg-body">{children}</div>
-  </div>
-));
+// --- SHORTLIST DRAWER (OFF-CANVAS) ---
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
+  // State to track offer status for each job ID: { jobId: 'idle' | 'loading' | 'sent' }
+  const [offerStatus, setOfferStatus] = useState({});
+
+  const handleSendOffer = (jobId) => {
+    // 1. Set Loading
+    setOfferStatus(prev => ({ ...prev, [jobId]: 'loading' }));
+
+    // 2. Wait 1 second then set Sent
+    setTimeout(() => {
+      setOfferStatus(prev => ({ ...prev, [jobId]: 'sent' }));
+    }, 1000);
+  };
+
+  return (
+    <>
+      <div className={`drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose} />
+      <div className={`drawer-panel ${isOpen ? 'open' : ''}`}>
+        <div className="drawer-header">
+          <h3>Shortlisted Candidates</h3>
+          <button className="close-btn" onClick={onClose}><FiX size={20} /></button>
+        </div>
+        <div className="drawer-content">
+          {Object.keys(shortlistedMap).length === 0 ? (
+            <div className="empty-state">No candidates shortlisted yet.</div>
+          ) : (
+            Object.keys(shortlistedMap).map(jobId => {
+              const job = USER_CREATED_JOBS.find(j => j.id === jobId);
+              const candidates = shortlistedMap[jobId];
+              if(candidates.length === 0) return null;
+              
+              const currentStatus = offerStatus[jobId] || 'idle';
+
+              return (
+                <div key={jobId} className="job-group">
+                  <div className="job-header" style={{ borderLeft: `4px solid ${job?.color}` }}>
+                    <span className="job-title">{job?.title}</span>
+                    <span className="badge">{candidates.length}</span>
+                  </div>
+                  
+                  {candidates.map(cand => (
+                    <div key={cand.id} className="mini-card">
+                      <img src={cand.avatar} className="mini-avatar" alt=""/>
+                      <div className="mini-info">
+                        <div className="mini-name">{cand.name}</div>
+                        <div className="mini-role">{cand.role}</div>
+                      </div>
+                      {/* Disable remove if offer is sending/sent to prevent data inconsistency during action */}
+                      <button 
+                        className="remove-btn" 
+                        disabled={currentStatus !== 'idle'}
+                        onClick={() => onRemove(jobId, cand.id)}
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Send Offer Button */}
+                  <div className="job-footer">
+                    <button 
+                      className={`btn-primary w-100 ${currentStatus === 'sent' ? 'sent' : ''}`}
+                      onClick={() => handleSendOffer(jobId)}
+                      disabled={currentStatus !== 'idle'}
+                    >
+                      {currentStatus === 'loading' && <><FiLoader className="spin-icon" /> Sending...</>}
+                      {currentStatus === 'sent' && <><FiCheck /> Offers Sent</>}
+                      {currentStatus === 'idle' && 'Send Offer'}
+                    </button>
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </div>
+      <style jsx>{`
+        .drawer-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:998; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+        .drawer-overlay.open { opacity:1; pointer-events:auto; }
+        .drawer-panel { position: fixed; top:0; right:0; width:350px; height:100%; background:white; z-index:999; transform:translateX(100%); transition:transform 0.3s; box-shadow: -2px 0 10px rgba(0,0,0,0.1); display:flex; flex-direction:column; }
+        .drawer-panel.open { transform:translateX(0); }
+        .drawer-header { padding: 20px; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
+        .drawer-header h3 { margin:0; font-size:18px; }
+        .close-btn { background:none; border:none; cursor:pointer; }
+        .drawer-content { padding: 20px; flex:1; overflow-y:auto; }
+        
+        .job-group { margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; }
+        .job-header { background: #f8fafc; padding: 8px 12px; margin-bottom: 10px; font-weight: 600; font-size: 14px; display:flex; justify-content:space-between; align-items:center;}
+        
+        .mini-card { display:flex; align-items:center; gap:10px; padding: 8px 0; border-bottom:1px solid #f1f5f9; }
+        .mini-avatar { width:32px; height:32px; border-radius:50%; object-fit:cover; }
+        .mini-info { flex:1; }
+        .mini-name { font-size:13px; font-weight:600; }
+        .mini-role { font-size:12px; color:#64748b; }
+        .remove-btn { background:none; border:none; color:#ef4444; cursor:pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .remove-btn:hover:not(:disabled) { opacity: 1; }
+        .remove-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        
+        .empty-state { color: #94a3b8; text-align: center; margin-top: 40px; font-size: 18px; }
+
+        /* Button Styles */
+        .job-footer { margin-top: 12px; display: flex; justify-content: flex-end; }
+        .btn-primary {
+          background-color: #4f46e5;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          transition: all 0.2s ease;
+          min-width: 100px;
+          justify-content: center;
+        }
+        .btn-primary:hover:not(:disabled) { background-color: #4338ca; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        /* Success State */
+        .btn-primary.sent { background-color: #10b981; }
+
+        /* Loader Animation */
+        .spin-icon { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      `}</style>
+    </>
+  );
+};
+
 
 // --- MAIN COMPONENT ---
 const TalentPool = () => {
@@ -184,8 +297,56 @@ const TalentPool = () => {
   const [viewMode, setViewMode] = useState("grid");
   const candidates = useMemo(() => candidatesMock, []);
 
+  // New State for functionality
+  const [activeFilters, setActiveFilters] = useState(null);
+  const [shortlistedMap, setShortlistedMap] = useState({}); // { jobId: [candidates] }
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleApplyFilters = (newFilters) => {
+    setActiveFilters(newFilters);
+  };
+
   const handleProfileClick = () => {
     navigate("/user/user-talent-profile");
+  };
+
+  // Logic to determine current active job color
+  const activeJobId = activeFilters?.selectedJobs?.[0];
+  const activeJobColor = activeJobId 
+    ? USER_CREATED_JOBS.find(j => j.id === activeJobId)?.color 
+    : '#4f46e5'; // Default indigo
+
+  const handleShortlist = (candidate) => {
+    if (!activeJobId) {
+        alert("Please select a Job from the filters first to shortlist.");
+        return;
+    }
+
+    setShortlistedMap(prev => {
+        const currentList = prev[activeJobId] || [];
+        const exists = currentList.find(c => c.id === candidate.id);
+        
+        if (exists) {
+            // Remove if already exists (toggle)
+            return {
+                ...prev,
+                [activeJobId]: currentList.filter(c => c.id !== candidate.id)
+            };
+        } else {
+            // Add
+            return {
+                ...prev,
+                [activeJobId]: [...currentList, candidate]
+            };
+        }
+    });
+  };
+
+  const handleRemoveFromDrawer = (jobId, candId) => {
+      setShortlistedMap(prev => ({
+          ...prev,
+          [jobId]: prev[jobId].filter(c => c.id !== candId)
+      }));
   };
 
   return (
@@ -223,35 +384,13 @@ const TalentPool = () => {
               justifyContent: "flex-end",
             }}
           >
-            <div style={{ position: "relative", flex: 1 }}>
-              <FiSearch
-                style={{
-                  position: "absolute",
-                  left: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#94a3b8",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search by Talent Name..."
-                style={{
-                  width: "100%",
-                  padding: "10px 10px 10px 40px",
-                  borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
-                  outline: "none",
-                  fontSize: "14px",
-                  color: "#334155",
-                }}
-              />
-            </div>
             <button
               className="add-project-btn"
-              style={{ width: "auto", padding: "0 20px" }}
+              onClick={() => setIsDrawerOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <span>Find Talent</span>
+              <FiBriefcase />
+              <span>View Shortlisted</span>
             </button>
             <div className="vs-results-right">
               <div className="view-toggle1">
@@ -275,16 +414,28 @@ const TalentPool = () => {
         </div>
 
         <div className="d-flex gap-3">
-          <aside><TalentFilters /></aside>
+          <aside>
+            <TalentFilters onApplyFilters={handleApplyFilters} />
+          </aside>
 
           <section className="vs-results">
             {viewMode === "grid" ? (
               <TalentGridView
                 candidates={candidates}
                 onProfileClick={handleProfileClick}
+                onShortlist={handleShortlist}
+                activeJobId={activeJobId}
+                activeJobColor={activeJobColor}
+                shortlistedMap={shortlistedMap}
               />
             ) : (
-              <TalentTableView candidates={candidates} />
+              <TalentTableView 
+                candidates={candidates} 
+                onShortlist={handleShortlist}
+                activeJobId={activeJobId}
+                activeJobColor={activeJobColor}
+                shortlistedMap={shortlistedMap}
+              />
             )}
 
             <div className="pagination-row">
@@ -300,6 +451,13 @@ const TalentPool = () => {
           </section>
         </div>
       </div>
+
+      <ShortlistDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+        shortlistedMap={shortlistedMap}
+        onRemove={handleRemoveFromDrawer}
+      />
     </div>
   );
 };
