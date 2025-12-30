@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
 import "./Header.css";
+import Notifications from "./Notifications";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  
+
   // Initialize navigation hook
   const navigate = useNavigate();
 
@@ -24,12 +25,12 @@ function Header() {
     setIsProfileOpen(false); // Close menu
     navigate("/user/user-profile"); // Navigate to profile page
   };
-  
+
 
   const handleSignOut = () => {
     setIsProfileOpen(false); // Close menu
     // Add your actual sign-out logic here (clearing tokens, context, etc.)
-    console.log("User signed out"); 
+    console.log("User signed out");
     navigate("/sign-in"); // Redirect to login
   };
 
@@ -52,7 +53,7 @@ function Header() {
       <header className="header-container">
         {/* Left Section: Brand & Nav */}
         <div className="header-left">
-          
+
           {/* Mobile Menu Toggle Button */}
           <button className="menu-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -74,7 +75,7 @@ function Header() {
               { path: "/user/user-talentpool", label: "Talent Pool" },
               { path: "/user/user-projects", label: "Projects" },
               { path: "/user/user-jobs", label: "Find Jobs" },
-               { path: "/user/user-upload-talent", label: "Talent Management" },
+              { path: "/user/user-upload-talent", label: "Talent Management" },
             ].map((link) => (
               <NavLink
                 key={link.path}
@@ -101,26 +102,23 @@ function Header() {
               className="header-search-input"
             />
           </div> */}
-                <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
-                    <span className="ai-pill-icon">✦</span>
-                    <span className="ai-pill-text">AI</span>
-                  </button>
-                  
+          <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
+            <span className="ai-pill-icon">✦</span>
+            <span className="ai-pill-text">AI</span>
+          </button>
+
           {/* Messages Icon */}
           <button onClick={() => navigate("/user/user-messages")} type="button" className="header-action-btn">
             <MessageCircleIcon size={20} />
           </button>
 
           {/* Notification Bell */}
-          <button type="button" className="header-action-btn">
-            <Bell size={20} />
-            <span className="notification-badge"></span>
-          </button>
+          <Notifications />
 
           {/* User Profile Dropdown */}
           <div className="header-profile-wrapper" ref={profileRef}>
-            <div 
-              className="header-profile" 
+            <div
+              className="header-profile"
               onClick={toggleProfile}
               role="button"
               tabIndex={0}
