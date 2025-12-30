@@ -257,7 +257,7 @@
    ========================================= */
 .projects-grid {
   display: grid;
-  gap: 24px;
+  gap: 20px;
 }
 
 .card-header {
@@ -362,9 +362,9 @@
 
 /* Status Tags */
 .status-tag {
-  padding: 4px 10px;
+  padding: 4px 8px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   display: inline-block;
   text-transform: uppercase;
@@ -409,7 +409,7 @@
   } */
 }
 
-@media (max-width: 1199px){
+@media (max-width: 1256px) {
   .projects-grid {
     grid-template-columns: repeat(2, 1fr);
   }

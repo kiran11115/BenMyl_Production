@@ -97,7 +97,7 @@
 .project-card {
   background: #ffffff;
   border-radius: 1rem; 
-  padding: 20px;
+  padding: 16px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.05);
   display: flex;
