@@ -24,8 +24,8 @@ const StepVerify = ({
                 value={formData.country}
                 onChange={handleCountryChange}
               >
-                <option value="India">India</option>
                 <option value="USA">United States</option>
+                <option value="India">India</option>
                 <option value="UK">United Kingdom</option>
                 <option value="UAE">UAE</option>
               </select>
@@ -68,11 +68,10 @@ const StepVerify = ({
           {currentLicenseOptions.map((option) => (
             <label
               key={option.value}
-              className={`auth-license-card ${
-                formData.licenseType === option.value
+              className={`auth-license-card ${formData.licenseType === option.value
                   ? "auth-license-card-active"
                   : ""
-              }`}
+                }`}
             >
               <input
                 type="radio"

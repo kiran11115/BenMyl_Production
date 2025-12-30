@@ -34,8 +34,8 @@ const FormWizard = () => {
     city: "",
     state: "",
     zipCode: "",
-    country: "India",
-    licenseType: "GSTIN",
+    country: "USA",
+    licenseType: "EIN",
   });
 
   // --- Configuration Data ---
@@ -49,7 +49,6 @@ const FormWizard = () => {
     USA: [
       { value: "EIN", label: "EIN (Employer ID Number)" },
       { value: "SS4", label: "Form SS-4 (EIN App)" },
-      { value: "DBA", label: "DBA Certificate" },
       { value: "INC", label: "Incorporation Certificate" },
     ],
     UK: [
@@ -180,9 +179,8 @@ const FormWizard = () => {
 
             <div className="auth-stepper">
               <div
-                className={`auth-step ${
-                  currentStep >= 1 ? "auth-step-active" : ""
-                } ${currentStep > 1 ? "auth-step-completed" : ""}`}
+                className={`auth-step ${currentStep >= 1 ? "auth-step-active" : ""
+                  } ${currentStep > 1 ? "auth-step-completed" : ""}`}
               >
                 <div className="auth-step-circle">
                   {currentStep > 1 ? "✓" : "1"}
@@ -190,15 +188,13 @@ const FormWizard = () => {
                 <span className="auth-step-text">Account</span>
               </div>
               <div
-                className={`auth-step-line ${
-                  currentStep > 1 ? "auth-step-line-active" : ""
-                }`}
+                className={`auth-step-line ${currentStep > 1 ? "auth-step-line-active" : ""
+                  }`}
               ></div>
 
               <div
-                className={`auth-step ${
-                  currentStep >= 2 ? "auth-step-active" : ""
-                } ${currentStep > 2 ? "auth-step-completed" : ""}`}
+                className={`auth-step ${currentStep >= 2 ? "auth-step-active" : ""
+                  } ${currentStep > 2 ? "auth-step-completed" : ""}`}
               >
                 <div className="auth-step-circle">
                   {currentStep > 2 ? "✓" : "2"}
@@ -206,15 +202,13 @@ const FormWizard = () => {
                 <span className="auth-step-text">Verify</span>
               </div>
               <div
-                className={`auth-step-line ${
-                  currentStep > 2 ? "auth-step-line-active" : ""
-                }`}
+                className={`auth-step-line ${currentStep > 2 ? "auth-step-line-active" : ""
+                  }`}
               ></div>
 
               <div
-                className={`auth-step ${
-                  currentStep >= 3 ? "auth-step-active" : ""
-                }`}
+                className={`auth-step ${currentStep >= 3 ? "auth-step-active" : ""
+                  }`}
               >
                 <div className="auth-step-circle">3</div>
                 <span className="auth-step-text">Billing</span>
