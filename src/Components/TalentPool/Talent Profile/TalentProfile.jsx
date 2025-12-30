@@ -96,7 +96,7 @@ const TalentProfile = () => {
   return (
     <div className="projects-container">
       {/* Breadcrumb - Matches Global Text Styles */}
-      <div className="profile-breadcrumb">
+      <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
           onClick={() => navigate("/user/user-talentpool")}
