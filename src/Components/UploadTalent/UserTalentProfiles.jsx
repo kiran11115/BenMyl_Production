@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 import UserTalentGrid from "./UserTalentGrid";
 import UserTalentTable from "./UserTalentTable";
-
-// Import separated views
-
+import { FiChevronDown } from "react-icons/fi";
 
 // --- DATA SOURCE ---
 const candidatesMock = [
@@ -162,6 +160,48 @@ const candidatesMock = [
   },
 ];
 
+// --- SORTING FUNCTION ---
+const sortCandidates = (candidates, sortBy) => {
+  return [...candidates].sort((a, b) => {
+    switch (sortBy) {
+      case 'recommended':
+        // Priority: SHORTLISTED > OFFER EXTENDED > INTERVIEWING > IN REVIEW > NEW > REJECTED
+        const statusPriority = {
+          'SHORTLISTED': 5,
+          'OFFER EXTENDED': 4,
+          'INTERVIEWING': 3,
+          'IN REVIEW': 2,
+          'NEW': 1,
+          'REJECTED': 0
+        };
+        return statusPriority[b.status] - statusPriority[a.status] || b.rating - a.rating;
+
+      case 'rating_high':
+        return b.rating - a.rating;
+
+      case 'exp_high':
+        const expA = parseInt(a.experience.match(/\d+/)?.[0] || 0);
+        const expB = parseInt(b.experience.match(/\d+/)?.[0] || 0);
+        return expB - expA;
+
+      case 'exp_low':
+        const expALow = parseInt(a.experience.match(/\d+/)?.[0] || 0);
+        const expBLow = parseInt(b.experience.match(/\d+/)?.[0] || 0);
+        return expALow - expBLow;
+
+      case 'rate_low':
+        // Mock hourly rate sorting (assuming lower numbers first)
+        return Math.random() - 0.5; // Placeholder - add real rate field
+
+      case 'name_asc':
+        return a.name.localeCompare(b.name);
+
+      default:
+        return 0;
+    }
+  });
+};
+
 // --- LOCAL FILTER COMPONENTS ---
 const FilterCheckbox = memo(({ label }) => (
   <label>
@@ -180,124 +220,186 @@ const FilterGroup = memo(({ title, children }) => (
 const UserTalentProfiles = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState("grid");
-  const candidates = useMemo(() => candidatesMock, []);
+  const [sortBy, setSortBy] = useState('recommended');
+
+  // Memoized sorted candidates
+  const sortedCandidates = useMemo(() => {
+    return sortCandidates(candidatesMock, sortBy);
+  }, [sortBy]);
 
   const handleProfileClick = () => {
     navigate("/user/talent-profile");
   };
 
+  const styleUserTP = `
+  
+ 
+
+  `;
+
   return (
-    <div className="vs-page">
-      <div className="projects-container d-flex flex-column gap-3 p-0">
-        {/* Heading Section */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-
-            flexWrap: "wrap",
-            gap: "16px",
-          }}
-        >
-          <div>
-            <h1
-              className="section-title"
-              style={{ fontSize: "24px", marginBottom: "8px" }}
-            >
-              Talent Profiles
-            </h1>
-            <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
-              Search and manage your Talent network.
-            </p>
-          </div>
-
+    <>
+      <style>{styleUserTP}</style>
+      <div className="vs-page">
+        <div className="projects-container d-flex flex-column gap-3 p-0">
+          {/* Heading Section */}
           <div
             style={{
               display: "flex",
-              gap: "12px",
-              flex: 1,
-              maxWidth: "600px",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "16px",
             }}
           >
-            <div style={{ position: "relative", flex: 1 }}>
-              <FiSearch
-                style={{
-                  position: "absolute",
-                  left: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#94a3b8",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search by Talent Name..."
-                style={{
-                  width: "100%",
-                  padding: "10px 10px 10px 40px",
-                  borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
-                  outline: "none",
-                  fontSize: "14px",
-                  color: "#334155",
-                }}
-              />
+            <div>
+              <h1
+                className="section-title"
+                style={{ fontSize: "24px", marginBottom: "8px" }}
+              >
+                Talent Profiles
+              </h1>
+              <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
+                Search and manage your Talent network.
+              </p>
             </div>
-            <button
-              className="add-project-btn"
-              style={{ width: "auto", padding: "0 20px" }}
+
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                flex: 1,
+                maxWidth: "680px",
+                justifyContent: "flex-end",
+              }}
             >
-              <span>Find Talent</span>
-            </button>
-            <div className="vs-results-right">
-              <div className="view-toggle1">
-                <button
-                  className={`view-btn ${viewMode === "grid" ? "toggle active" : ""
-                    }`}
-                  onClick={() => setViewMode("grid")}
+              <div style={{ position: "relative", flex: 1 }}>
+                <FiSearch
+                  style={{
+                    position: "absolute",
+                    left: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    color: "#94a3b8",
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Search by Talent Name..."
+                  style={{
+                    width: "100%",
+                    padding: "7px 10px 7px 40px",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                    outline: "none",
+                    fontSize: "14px",
+                    color: "#334155",
+                  }}
+                />
+              </div>
+
+              {/* FUNCTIONAL SORT DROPDOWN */}
+              <div className="sort-wrapper">
+                <select
+                  className="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <FiGrid />
-                </button>
-                <button
-                  className={`view-btn ${viewMode === "table" ? "toggle active" : ""
-                    }`}
-                  onClick={() => setViewMode("table")}
-                >
-                  <FiList />
-                </button>
+                  <option value="recommended">Sort by: Recommended</option>
+                  <option value="rating_high">Rating: High to Low</option>
+                  <option value="exp_high">Experience: High to Low</option>
+                  <option value="exp_low">Experience: Low to High</option>
+                  <option value="rate_low">Hourly Rate: Low to High</option>
+                  <option value="name_asc">Name: A - Z</option>
+                </select>
+                <FiChevronDown className="sort-icon" />
+              </div>
+
+              <button
+                className="add-project-btn"
+                style={{ width: "auto", padding: "6px 20px" }}
+              >
+                <span>Find Talent</span>
+              </button>
+              <div className="vs-results-right">
+                <div className="view-toggle1">
+                  <button
+                    className={`view-btn ${viewMode === "grid" ? "toggle active" : ""
+                      }`}
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <FiGrid />
+                  </button>
+                  <button
+                    className={`view-btn ${viewMode === "table" ? "toggle active" : ""
+                      }`}
+                    onClick={() => setViewMode("table")}
+                  >
+                    <FiList />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="d-flex gap-3">
+          <div className="d-flex gap-3">
+            <section className="vs-results">
+              {viewMode === "grid" ? (
+                <UserTalentGrid
+                  candidates={sortedCandidates}
+                  onProfileClick={handleProfileClick}
+                />
+              ) : (
+                <UserTalentTable candidates={sortedCandidates} />
+              )}
 
-          <section className="vs-results">
-            {viewMode === "grid" ? (
-              <UserTalentGrid
-                candidates={candidates}
-                onProfileClick={handleProfileClick}
-              />
-            ) : (
-              <UserTalentTable candidates={candidates} />
-            )}
-
-            <div className="pagination-row">
-              <span className="muted small">
-                Showing 1-{candidates.length} of 248 candidates
-              </span>
-              <div className="pagination">
-                <button className="page-btn active">1</button>
-                <button className="page-btn">2</button>
-                <button className="page-btn">Next</button>
+              <div className="pagination-row">
+                <span className="muted small">
+                  Showing 1-{sortedCandidates.length} of 248 candidates
+                </span>
+                <div className="pagination">
+                  <button className="page-btn active">1</button>
+                  <button className="page-btn">2</button>
+                  <button className="page-btn">Next</button>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
+
+        <style jsx>{`
+        /* Sort Dropdown Styles */
+        .sort-wrapper {
+          position: relative;
+          margin-right: 8px;
+        }
+        .sort-select {
+          appearance: none;
+          background-color: white;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 8px 32px 8px 12px;
+          font-size: 13px;
+          color: #334155;
+          font-weight: 500;
+          cursor: pointer;
+          outline: none;
+          min-width: 180px;
+        }
+        .sort-select:hover {
+          border-color: #cbd5e1;
+        }
+        .sort-icon {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #64748b;
+          pointer-events: none;
+        }
+      `}</style>
       </div>
-    </div>
+    </>
   );
 };
 
