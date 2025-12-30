@@ -139,7 +139,7 @@ function Header() {
             {isProfileOpen && (
               <div className="profile-popover">
                 <div className="popover-header">
-                  <p className="popover-name">John Smith</p>
+                  {/* <p className="popover-name">John Smith</p> */}
                   <p className="popover-email">john.smith@benchsales.com</p>
                 </div>
                 <div className="popover-menu">
