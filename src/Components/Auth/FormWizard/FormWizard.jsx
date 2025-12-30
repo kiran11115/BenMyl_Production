@@ -3,7 +3,6 @@ import "./FormWizard.css";
 import { useNavigate } from "react-router-dom";
 import { FiCheck, FiX } from "react-icons/fi";
 
-// Import your sub-components here
 import StepAccount from "./FormSteps/StepAccount";
 import StepVerify from "./FormSteps/StepVerify";
 import StepBilling from "./FormSteps/StepBilling";
@@ -113,7 +112,10 @@ const FormWizard = () => {
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
-  // --- Action Handlers ---
+  const handleBackToSignIn = () => {
+    navigate("/sign-in");
+  };
+
   const handleBusinessVerification = () => {
     setIsVerifying(true);
     setTimeout(() => {
@@ -138,7 +140,6 @@ const FormWizard = () => {
     setShowSuccessModal(false);
   };
 
-  // --- Helpers ---
   const getCardBrand = () => {
     const num = formData.cardNumber.replace(/\s/g, "");
     if (num.startsWith("4")) return "VISA";
@@ -247,63 +248,78 @@ const FormWizard = () => {
               )}
 
               <footer className="auth-footer">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={prevStep}
-                  disabled={currentStep === 1 || isSubmitting || isVerifying}
-                  style={{
-                    opacity: currentStep === 1 ? 0 : 1,
-                    pointerEvents: currentStep === 1 ? "none" : "auto",
-                  }}
-                >
-                  Back
-                </button>
-
+                {/* STEP 1 ONLY: Full Left/Right buttons - NO hidden Back button interference */}
                 {currentStep === 1 && (
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    onClick={nextStep}
-                  >
-                    Next Step
-                  </button>
+                  <div className="step1-buttons-fullwidth">
+                    <div className="step1-left-section">
+                      <button
+                        type="button"
+                        className="btn-signin-left-full"
+                        onClick={handleBackToSignIn}
+                      >
+                        ← Back to Sign in
+                      </button>
+                    </div>
+                    <div className="step1-right-section">
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={nextStep}
+                      >
+                        Next Step
+                      </button>
+                    </div>
+                  </div>
                 )}
 
-                {currentStep === 2 && (
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleBusinessVerification}
-                    disabled={isVerifying}
-                  >
-                    {isVerifying ? (
-                      <span className="flex-center-gap">
-                        <span className="loader-spinner"></span>
-                        Verifying...
-                      </span>
-                    ) : (
-                      "Verify & Continue"
-                    )}
-                  </button>
-                )}
+                {/* STEPS 2 & 3: Regular Back + Primary button */}
+                {currentStep !== 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={prevStep}
+                      disabled={isSubmitting || isVerifying}
+                    >
+                      Back
+                    </button>
 
-                {currentStep === 3 && (
-                  <button
-                    type="button"
-                    className="btn-primary w-25"
-                    onClick={handleAccountCreation}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <span className="flex-center-gap">
-                        <span className="loader-spinner"></span>
-                        Creating Account...
-                      </span>
-                    ) : (
-                      "Create Account"
+                    {currentStep === 2 && (
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={handleBusinessVerification}
+                        disabled={isVerifying}
+                      >
+                        {isVerifying ? (
+                          <span className="flex-center-gap">
+                            <span className="loader-spinner"></span>
+                            Verifying...
+                          </span>
+                        ) : (
+                          "Verify & Continue"
+                        )}
+                      </button>
                     )}
-                  </button>
+
+                    {currentStep === 3 && (
+                      <button
+                        type="button"
+                        className="btn-primary w-25"
+                        onClick={handleAccountCreation}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <span className="flex-center-gap">
+                            <span className="loader-spinner"></span>
+                            Creating Account...
+                          </span>
+                        ) : (
+                          "Create Account"
+                        )}
+                      </button>
+                    )}
+                  </>
                 )}
               </footer>
             </form>

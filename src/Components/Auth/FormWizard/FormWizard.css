@@ -337,6 +337,55 @@
   color: #64748b;
 }
 
+/* -----------------------
+   back to signin button
+--------------------------*/
+
+.step1-buttons-fullwidth {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 1.5rem 0 0 0 !important;
+}
+
+.step1-left-section {
+  flex: 1 !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.step1-right-section {
+  display: flex !important;
+  justify-content: flex-end !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.btn-signin-left-full {
+  background: transparent !important;
+  border: 1px solid #e1e5e9 !important;
+  color: #6c757d !important;
+  font-weight: 500 !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin: 0 !important;
+  min-width: 140px !important;
+}
+
+.btn-signin-left-full:hover {
+  background: #f8f9fa !important;
+  border-color: #6c5ce7 !important;
+  color: #6c5ce7 !important;
+}
+
+
 /* ---------------------------------
    License Cards
 ---------------------------------- */
