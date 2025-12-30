@@ -346,6 +346,7 @@
   font-size: 12px;
   color: #64748b;
   justify-content: space-between;
+  flex-direction: column;
 }
 
 .detail-item {
@@ -403,9 +404,9 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .card-details {
+  /* .card-details {
     flex-direction: column;
-  }
+  } */
 }
 
 @media (max-width: 1199px){

@@ -25,7 +25,7 @@ const TalentGridView = ({ candidates, onShortlist, activeJobId, activeJobColor, 
                   <h4 className="name">{candidate.name} {candidate.verified}</h4>
                   <div className="rating">
                     <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
-                    <span>{candidate.rating}</span>
+                    <span style={{ color:"#f59e0b" }}>{candidate.rating}</span>
                   </div>
                 </div>
                 <div className="role">{candidate.role}</div>

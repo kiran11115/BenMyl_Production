@@ -92,9 +92,10 @@ const ProjectsSection = ({ projects }) => {
                 </div>
               </div>
 
+      <div className="d-flex justify-content-between">
               <div className="card-details">
                 <div className="detail-item">
-                  <Clock size={14} /> Due {project.dueDate}
+                  <Clock size={14} /> Due: {project.dueDate}
                 </div>
                 <div className="detail-item">
                   <DollarSign size={14} /> Budget: {project.budget}
@@ -106,6 +107,7 @@ const ProjectsSection = ({ projects }) => {
                   {project.status}
                 </span>
               </div>
+            </div>
             </div>
           );
         })}

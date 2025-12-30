@@ -61,6 +61,7 @@ export default function ProjectCard({ project, onUpload, onReview }) {
         </div>
       </div>
 
+    <div className="d-flex justify-content-between">
       {/* Details */}
       <div className="card-details">
         <div className="detail-item">
@@ -76,6 +77,7 @@ export default function ProjectCard({ project, onUpload, onReview }) {
         <span className={`status-tag ${getStatusClass(project.status)}`}>
           {project.status}
         </span>
+      </div>
       </div>
 
       {/* Action Buttons */}
