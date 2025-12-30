@@ -167,9 +167,12 @@ function Header() {
         </div>
       </header>
 
-      <main className="cust-main h-[95%] overflow-y-auto">
-        <Outlet />
-      </main>
+      <div class="app-zoom">
+         <main className="cust-main">
+          <Outlet />
+         </main>
+       </div>
+     
     </>
   );
 }

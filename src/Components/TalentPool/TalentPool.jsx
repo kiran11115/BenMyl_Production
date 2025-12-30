@@ -577,12 +577,14 @@ const TalentPool = () => {
         </div>
       </div>
 
-      <ShortlistDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        shortlistedMap={shortlistedMap}
-        onRemove={handleRemoveFromDrawer}
-      />
+     {isDrawerOpen ? (
+  <ShortlistDrawer
+    isOpen={isDrawerOpen}
+    onClose={() => setIsDrawerOpen(false)}
+    shortlistedMap={shortlistedMap}
+    onRemove={handleRemoveFromDrawer}
+  />
+) : null}
 
       <style jsx>{`
         .sort-wrapper {

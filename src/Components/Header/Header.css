@@ -451,7 +451,7 @@
 
 .notification-popover {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 0px);
   right: 0;
   width: 460px;
   max-width: 90vw;
@@ -495,19 +495,21 @@
 
 /* Notifications */
 
-/* Full page backdrop */
-.notification-backdrop {
+/* Backdrop always full viewport */
+.notification-backdrop{
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0,0,0,.4);
   z-index: 9998;
-  animation: backdropFadeIn 0.25s ease-out;
 }
+
+.notification-panel{
+  transform: scale(0.9);
+  transform-origin: top right; /* adjust to your placement */
+}
+
 
 @keyframes backdropFadeIn {
   from {
