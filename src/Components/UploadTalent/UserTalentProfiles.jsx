@@ -273,6 +273,25 @@ const UserTalentProfiles = () => {
                 justifyContent: "flex-end",
               }}
             >
+
+              {/* FUNCTIONAL SORT DROPDOWN */}
+              <div className="sort-wrapper">
+                <select
+                  className="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="recommended">Sort by: Recommended</option>
+                  <option value="rating_high">Rating: High to Low</option>
+                  <option value="exp_high">Experience: High to Low</option>
+                  <option value="exp_low">Experience: Low to High</option>
+                  <option value="rate_low">Hourly Rate: Low to High</option>
+                  <option value="name_asc">Name: A - Z</option>
+                </select>
+                <FiChevronDown className="sort-icon" />
+              </div>
+
+
               <div style={{ position: "relative", flex: 1 }}>
                 <FiSearch
                   style={{
@@ -296,23 +315,6 @@ const UserTalentProfiles = () => {
                     color: "#334155",
                   }}
                 />
-              </div>
-
-              {/* FUNCTIONAL SORT DROPDOWN */}
-              <div className="sort-wrapper">
-                <select
-                  className="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="recommended">Sort by: Recommended</option>
-                  <option value="rating_high">Rating: High to Low</option>
-                  <option value="exp_high">Experience: High to Low</option>
-                  <option value="exp_low">Experience: Low to High</option>
-                  <option value="rate_low">Hourly Rate: Low to High</option>
-                  <option value="name_asc">Name: A - Z</option>
-                </select>
-                <FiChevronDown className="sort-icon" />
               </div>
 
               <button
@@ -353,7 +355,7 @@ const UserTalentProfiles = () => {
                 <UserTalentTable candidates={sortedCandidates} />
               )}
 
-              <div className="pagination-row">
+              {/* <div className="pagination-row">
                 <span className="muted small">
                   Showing 1-{sortedCandidates.length} of 248 candidates
                 </span>
@@ -362,7 +364,7 @@ const UserTalentProfiles = () => {
                   <button className="page-btn">2</button>
                   <button className="page-btn">Next</button>
                 </div>
-              </div>
+              </div> */}
             </section>
           </div>
         </div>

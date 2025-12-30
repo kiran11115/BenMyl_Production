@@ -36,6 +36,11 @@ body {
   line-height: 1.5;
   font-weight: 400;
   cursor: default;
+  transform: scale(0.9);
+  transform-origin: 0 0;
+  width: 111.1111%; /* 100 / 0.9 */
+
+
 
   /* --- Background Setup --- */
   background: linear-gradient(rgba(255, 255, 255, 0.9), rgb(242, 243, 245, 0.9)), 
