@@ -112,9 +112,9 @@ const Jobs = () => {
 
   return (
     <div className="jobs-container">
-      
+
       {/* 1. Header Section */}
-      <div className="search-header-row">
+      <div className="search-header-row d-flex justify-content-between">
         <div className="header-text">
           <h1 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 4px 0', color: 'var(--slate-800)' }}>
             Find Jobs
@@ -124,14 +124,28 @@ const Jobs = () => {
           </p>
         </div>
 
-
-        <div className="search-input-wrapper" style={{ maxWidth: '400px' }}>
-          <FiSearch className="search-icon" size={18} />
+        <div style={{ position: "relative", flex: 1, maxWidth: "400px" }}>
+          <FiSearch
+            style={{
+              position: "absolute",
+              left: "12px",
+              top: "35%",
+              transform: "translateY(-50%)",
+              color: "#94a3b8",
+            }}
+          />
           <input
             type="text"
-            placeholder="Search by Job Name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Talent Name..."
+            style={{
+              width: "100%",
+              padding: "7px 10px 7px 40px",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
+              outline: "none",
+              fontSize: "14px",
+              color: "#334155",
+            }}
           />
         </div>
       </div>
@@ -139,10 +153,10 @@ const Jobs = () => {
 
       {/* 2. Layout (Sidebar + Grid) */}
       <div className="jobs-layout">
-        
+
         {/* Sidebar */}
         <aside>
-          <JobFilters 
+          <JobFilters
             currentFilters={filters}
             onFilterChange={updateFilters}
           />
@@ -153,9 +167,9 @@ const Jobs = () => {
         <main className="jobs-grid">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => (
-              <div 
-                key={job.id} 
-                className={`card-base job-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}
+              <div
+                key={job.id}
+                className={`project-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}
                 style={{ gap: '0' }}
               >
                 {/* A. Header: Title & Company Info */}
@@ -165,13 +179,13 @@ const Jobs = () => {
                   </div>
                   <div className="job-header-info">
                     <h3 className="job-title" style={{ fontSize: '18px', marginBottom: '6px' }}>{job.title}</h3>
-                    
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                       <p className="company-name" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)' }}>
                         {job.company}
                       </p>
                       <div style={{ fontSize: '13px', color: 'var(--slate-500)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                         <FiMapPin size={12} /> {job.location}
+                        <FiMapPin size={12} /> {job.location}
                       </div>
                     </div>
                   </div>
@@ -208,7 +222,7 @@ const Jobs = () => {
 
                 {/* D. Skills Cloud */}
                 <div style={{ marginBottom: '24px' }}>
-                   <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)', margin: '0 0 8px 0' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)', margin: '0 0 8px 0' }}>
                     Required Skills
                   </h4>
                   <div className="skills-cloud">

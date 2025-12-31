@@ -627,11 +627,12 @@
   border-bottom: 1px solid #f8fafc;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
-.notification-item:hover {
+/* .notification-item:hover {
   background: #fdf2f8;
-}
+} */
 
 .notification-avatar {
   flex-shrink: 0;

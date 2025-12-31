@@ -189,7 +189,7 @@ const JobFilters = ({ onApplyFilters }) => {
           </div>
         )}
          <MultiSelectDropdown 
-          label="Find by Talent"
+          label="Find by Roles"
           options={ROLE_TYPES}
           selectedValues={filterInputs.roles}
           onChange={(newValues) => handleInputChange('roles', newValues)}

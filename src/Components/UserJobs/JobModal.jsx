@@ -29,24 +29,38 @@ const JobModal = ({ job, onClose }) => {
   };
 
   return (
-    <div className="drawer-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="drawer-overlay" style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      right: 0, 
+      bottom: 0, 
+      background: 'rgba(0,0,0,0.5)', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      padding: '20px',
+      zIndex: 10000 
+    }}>
       
-      {/* Modal Container - Static Large Size */}
+      {/* Modal Container - Fully Responsive */}
       <div className="card-base" style={{ 
-        width: '1000px', 
-        height: '800px', 
+        width: 'clamp(350px, 95vw, 1000px)', 
+        height: 'clamp(500px, 90vh, 800px)', 
         maxHeight: '90vh', 
         maxWidth: '95vw', 
         padding: '0', 
         display: 'flex', 
         flexDirection: 'column', 
-        overflow: 'hidden' 
+        overflow: 'hidden',
+        borderRadius: '12px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
       }}>
         
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '18px', color: '#1e293b', fontWeight: 700 }}>Talent Allocation</h3>
+            <h3 style={{ margin: 0, fontSize: 'clamp(16px, 2vw, 18px)', color: '#1e293b', fontWeight: 700 }}>Talent Allocation</h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>Assign talents to <strong>{job.company}</strong></p>
           </div>
           <button className="close-btn" onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b' }}>
@@ -54,9 +68,15 @@ const JobModal = ({ job, onClose }) => {
           </button>
         </div>
 
-        {/* Scrollable Body - Grid Layout */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', height: '100%' }}>
+        {/* Scrollable Body - Responsive Grid */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', minHeight: 0 }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr', // Single column on mobile
+            gap: '24px', 
+            height: '100%',
+            '@media (min-width: 768px)': { gridTemplateColumns: '1fr 1fr' } // Two columns on desktop
+          }}>
             
             {/* LEFT COLUMN: Project Overview + Notes */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -70,10 +90,8 @@ const JobModal = ({ job, onClose }) => {
                 
                 <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
                   <div style={{ marginBottom: '16px' }}>
-                     <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>{job.title}</h2>
-                     <span className='status-tag status-progress'>
-                       {job.type}
-                     </span>
+                     <h2 style={{ fontSize: 'clamp(18px, 3vw, 20px)', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>{job.title}</h2>
+                     <span className='status-tag status-progress'>{job.type}</span>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
@@ -95,9 +113,7 @@ const JobModal = ({ job, onClose }) => {
                   <h5 style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>Required Skills</h5>
                   <div className="skills-cloud" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {job.skills?.map(skill => (
-                      <span key={skill} className='status-tag status-progress'>
-                        {skill}
-                      </span>
+                      <span key={skill} className='status-tag status-progress'>{skill}</span>
                     ))}
                   </div>
                 </div>
@@ -128,9 +144,7 @@ const JobModal = ({ job, onClose }) => {
                     }}
                  />
               </div>
-
             </div>
-
 
             {/* RIGHT COLUMN: Talent Selection (Multi-Select) */}
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -144,7 +158,7 @@ const JobModal = ({ job, onClose }) => {
                 </span>
               </div>
 
-              <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#fff' }}>
+              <div style={{ flex: 1, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#fff', minHeight: 0 }}>
                 {TALENT_PROFILES.map((profile) => {
                   const isSelected = selectedTalents.includes(profile.id);
                   return (
@@ -188,43 +202,23 @@ const JobModal = ({ job, onClose }) => {
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {/* View Profile Button */}
-                          <button 
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                alert(`Viewing profile: ${profile.name}`);
-                            }}
-                          className='btn-primary w-100'
-                          >
-                            View Profile
-                          </button>
-
-                          {/* Delete Button (Contextual) */}
-                          {/* <button 
-                              onClick={(e) => {
-                                  e.stopPropagation(); 
-                                  alert(`Removed ${profile.name}`);
-                              }}
-                              style={{ 
-                              border: 'none', 
-                              background: 'transparent', 
-                              padding: '8px',
-                              borderRadius: '6px', 
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                              cursor: 'pointer',
-                              color: '#94a3b8'
-                              }}
-                              title="Remove Candidate"
-                          >
-                              <FiTrash2 size={16} />
-                          </button> */}
+                        {/* View Profile Button */}
+                        <button 
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              alert(`Viewing profile: ${profile.name}`);
+                          }}
+                          className='btn-primary'
+                          style={{ padding: '6px 12px', fontSize: '12px' }} // Smaller on mobile
+                        >
+                          View Profile
+                        </button>
                       </div>
                     </div>
                   );
                 })}
               </div>
             </div>
-
           </div>
         </div>
 
@@ -258,20 +252,26 @@ const JobModal = ({ job, onClose }) => {
             Place Bid
           </button>
         </div>
-
       </div>
 
-      {/* Styles for scrollbar */}
+      {/* Enhanced Scrollbar + Responsive Styles */}
       <style>{`
         /* Custom scrollbar for modal content */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; borderRadius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         textarea:focus {
           border-color: #3b82f6 !important;
           box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Mobile Grid Responsiveness */
+        @media (min-width: 768px) {
+          .card-base > div > div {
+            grid-template-columns: 1fr 1fr !important;
+          }
         }
       `}</style>
     </div>
