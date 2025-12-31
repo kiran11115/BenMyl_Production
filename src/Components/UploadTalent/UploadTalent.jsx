@@ -9,7 +9,7 @@ import UserTalentProfiles from "./UserTalentProfiles";
 
 const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
-    const [view, setView] = useState("Review");
+    const [view, setView] = useState("Talent");
 
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
@@ -43,19 +43,19 @@ const UploadTalent = () => {
                 <div className="d-flex align-items-center gap-2 justify-content-between">
                     {/* TOGGLE BUTTONS */}
                     <div className="view-toggle1">
+                         <button
+                            className={`toggle ${view === "Talent" ? "active" : ""}`}
+                            onClick={() => setView("Talent")}
+                        >
+                            Talent Profiles
+                        </button>
                         <button
                             className={`toggle ${view === "Review" ? "active" : ""}`}
                             onClick={() => setView("Review")}
                         >
                             Review Profiles
                         </button>
-
-                        <button
-                            className={`toggle ${view === "Talent" ? "active" : ""}`}
-                            onClick={() => setView("Talent")}
-                        >
-                            Talent Profiles
-                        </button>
+                       
                     </div>
 
                     <UploadTalentModal
