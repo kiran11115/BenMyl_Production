@@ -349,11 +349,11 @@ const FormWizard = () => {
 
               <p className="alert-message mb-2">
                 You've successfully verified your identity and set up billing.
-                As a welcome bonus, we've added credits to your wallet.
+                As a welcome bonus, we've added Tokens to your wallet.
               </p>
               <div className="alert-reward-box text-warning fs-2 text-center fw-bolder mb-2">
                 <span className="reward-amount me-2">300</span>
-                <span className="reward-label">Credits</span>
+                <span className="reward-label">Tokens</span>
               </div>
               <div className="alert-actions start">
                 <button
