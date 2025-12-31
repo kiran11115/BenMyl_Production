@@ -630,9 +630,9 @@
   cursor: pointer;
 }
 
-/* .notification-item:hover {
-  background: #fdf2f8;
-} */
+.notification-item:hover {
+  background: #f2f2f2;
+}
 
 .notification-avatar {
   flex-shrink: 0;

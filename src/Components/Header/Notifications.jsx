@@ -31,14 +31,6 @@ const Notifications = () => {
             hasActions: true
         },
         {
-            id: 4,
-            avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face",
-            name: "Vedha",
-            message: "uploaded candidate resumes for",
-            time: "1 hr ago",
-            file: "Q4_React_Developer_Resumes.zip"
-        },
-        {
             id: 5,
             avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face",
             name: "Micheal",
@@ -121,11 +113,11 @@ const Notifications = () => {
                                         </div>
 
                                         {notif.hasActions && (
-                                            <div className="notification-actions">
-                                                <button className="action-btn accept" aria-label="Accept" type="button">
+                                            <div className="notification-actions gap-3">
+                                                <button className="btn-primary" aria-label="Accept" type="button">
                                                     Accept
                                                 </button>
-                                                <button className="action-btn decline" aria-label="Decline" type="button">
+                                                <button className="btn-secondary" aria-label="Decline" type="button">
                                                     Decline
                                                 </button>
                                             </div>

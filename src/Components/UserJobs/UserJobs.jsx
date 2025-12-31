@@ -136,7 +136,7 @@ const Jobs = () => {
           />
           <input
             type="text"
-            placeholder="Search by Talent Name..."
+            placeholder="Search by Talent Role..."
             style={{
               width: "100%",
               padding: "7px 10px 7px 40px",
