@@ -200,12 +200,6 @@ const EditableTags = ({ label, tags, fieldName, isEditing, onEdit, onSave, onCan
                             <span
                                 key={idx}
                                 className="status-tag status-progress"
-                                style={{
-                                    width: 'auto',
-                                    padding: '6px 12px',
-                                    borderRadius: '20px',
-                                    fontSize: '13px'
-                                }}
                             >
                                 {tag}
                             </span>
@@ -419,8 +413,9 @@ const ReviewTalent = () => {
                                 className="btn-primary"
                                 style={{ width: 'auto', padding: '0 24px' }}
                                 disabled={!isReviewed}
+                                onClick={()=>navigate("/user/user-upload-talent")}
                             >
-                                Save to Bench
+                                Save Talent
                             </button>
                         </div>
                     </div>
