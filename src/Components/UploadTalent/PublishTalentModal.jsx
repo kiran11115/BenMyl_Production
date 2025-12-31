@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { 
     FiX, FiCopy, FiMapPin, 
     FiLinkedin, FiFacebook, FiMail, 
-    FiChevronDown, FiChevronUp, FiTrash2 
+    FiChevronDown, FiChevronUp, FiTrash2, FiEye 
 } from "react-icons/fi";
 import { FaPuzzlePiece } from "react-icons/fa";
 import { GiCheckMark } from "react-icons/gi";
@@ -81,8 +81,10 @@ export default function PublishTalentModal({
                                 <div className="talent-list">
                                     {selectedTalents.map((talent) => (
                                         <div key={talent.id} className="talent-card-row">
+                                            {/* Avatar Section */}
                                             <img src={talent.avatar} alt={talent.name} className="t-avatar" />
                                             
+                                            {/* Info Section */}
                                             <div className="t-info">
                                                 <div className="t-header">
                                                     <span className="t-name">{talent.name}</span>
@@ -95,25 +97,32 @@ export default function PublishTalentModal({
                                                 <div className="t-role">{talent.role}</div>
                                                 <div className="t-meta">
                                                     <span><FiMapPin size={10}/> {talent.location}</span>
-                                                    <span>• {talent.experience}</span>
+                                                    <span className="bullet">•</span>
+                                                    <span>{talent.experience}</span>
                                                 </div>
                                             </div>
 
-                                            <button 
-                                                className="t-remove-btn" 
-                                                onClick={() => onRemove(talent.id)}
-                                                disabled={status === "loading"}
-                                                title="Remove from batch"
-                                            >
-                                                <FiTrash2 />
-                                            </button>
+                                            {/* Actions Section (New Design) */}
+                                            <div className="t-actions">
+                                                <button className="btn-primary w-75" title="View Full Profile">
+                                                    View Profile
+                                                </button>
+                                                <button 
+                                                    className="t-remove-btn" 
+                                                    onClick={() => onRemove(talent.id)}
+                                                    disabled={status === "loading"}
+                                                    title="Remove from batch"
+                                                >
+                                                    <FiTrash2 />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        {/* --- RIGHT SIDE: SHARE & VENDOR (Same as provided) --- */}
+                        {/* --- RIGHT SIDE: SHARE & VENDOR (Unchanged) --- */}
                         <aside className="modal-right">
                             <div className="share-card">
                                 <h4 className="share-title">Share Profile Batch</h4>
@@ -151,7 +160,7 @@ export default function PublishTalentModal({
                                     >
                                         <div className="vendor-header-left">
                                             <FaPuzzlePiece className="puzzle-icon" />
-                                            <span>Share with Vendors</span>
+                                            <span>Share with</span>
                                         </div>
                                         {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                                     </button>
@@ -204,7 +213,6 @@ export default function PublishTalentModal({
             </div>
 
             {/* --- INLINE STYLES FOR NEW ELEMENTS --- */}
-            {/* These handle the talent list layout without touching your main CSS file */}
             <style>{`
                 .loading-overlay {
                     position: absolute; inset: 0; background: rgba(255,255,255,0.9);
@@ -219,29 +227,73 @@ export default function PublishTalentModal({
                 @keyframes spin { to { transform: rotate(360deg); } }
                 .loading-text { margin-top: 16px; color: #64748b; font-weight: 500; font-size: 14px; }
 
-                .talent-list { display: flex; flex-direction: column; gap: 10px; }
+                .talent-list { display: flex; flex-direction: column; gap: 12px; }
                 
+                /* Updated Card Design */
                 .talent-card-row {
-                    display: flex; align-items: flex-start; gap: 12px;
-                    padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;
-                    background: #f8fafc; transition: all 0.2s ease;
+                    display: grid; 
+                    grid-template-columns: auto 1fr auto; /* Avatar | Info | Actions */
+                    align-items: center; 
+                    gap: 16px;
+                    padding: 16px; 
+                    border: 1px solid #e2e8f0; 
+                    border-radius: 10px;
+                    background: white; 
+                    transition: all 0.2s ease;
                 }
-                .talent-card-row:hover { background: white; border-color: #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+                .talent-card-row:hover { 
+                    border-color: #cbd5e1; 
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+                }
                 
-                .t-avatar { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
+                .t-avatar { 
+                    width: 48px; height: 48px; 
+                    border-radius: 50%; /* Circular avatar looks more modern */
+                    object-fit: cover; 
+                    border: 2px solid #f1f5f9;
+                }
                 
-                .t-info { flex: 1; min-width: 0; }
-                .t-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-                .t-name { font-weight: 600; color: #0f172a; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                .t-verified { color: #059669; display: flex; align-items: center; font-size: 12px; }
-                .t-role { color: #475569; font-size: 13px; margin-bottom: 4px; }
-                .t-meta { display: flex; align-items: center; gap: 6px; color: #64748b; font-size: 11px; }
+                .t-info { display: flex; flex-direction: column; gap: 2px; }
+                .t-header { display: flex; align-items: center; gap: 6px; }
+                .t-name { font-weight: 700; color: #1e293b; font-size: 15px; }
+                .t-verified { color: #059669; display: flex; align-items: center; font-size: 14px; }
+                
+                .t-role { 
+                    color: #3b82f6; /* Blue for role */
+                    font-weight: 500; 
+                    font-size: 13px; 
+                }
+                
+                .t-meta { 
+                    display: flex; align-items: center; gap: 6px; 
+                    color: #64748b; font-size: 12px; margin-top: 2px;
+                }
+                .bullet { color: #cbd5e1; }
+
+                /* Action Buttons */
+                .t-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
 
                 .t-remove-btn {
-                    background: transparent; border: none; color: #94a3b8;
-                    cursor: pointer; padding: 6px; border-radius: 4px; transition: all 0.2s;
+                    background: transparent; 
+                    border: 1px solid transparent; 
+                    color: #94a3b8;
+                    cursor: pointer; 
+                    padding: 6px; 
+                    border-radius: 6px; 
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
-                .t-remove-btn:hover { background: #fee2e2; color: #ef4444; }
+                .t-remove-btn:hover { 
+                    background: #fee2e2; 
+                    color: #ef4444; 
+                    border-color: #fecaca;
+                }
                 
                 .empty-state {
                     padding: 32px; text-align: center; color: #94a3b8; font-size: 14px;

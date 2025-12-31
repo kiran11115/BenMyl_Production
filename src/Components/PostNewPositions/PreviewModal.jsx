@@ -176,7 +176,7 @@ export default function PreviewModal({ onClose, data }) {
                                 >
                                     <div className="vendor-header-left">
                                         <FaPuzzlePiece className="puzzle-icon" />
-                                        <span>Share with Vendors</span>
+                                        <span>Share with</span>
                                     </div>
                                     {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                                 </button>
