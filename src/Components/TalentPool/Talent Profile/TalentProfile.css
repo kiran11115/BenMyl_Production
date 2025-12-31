@@ -308,7 +308,7 @@
   flex-direction: column;
   gap: 16px;
   /* Sticky positioning for desktop */
-  position: sticky;
+  /* position: sticky; */
   top: 24px;
   z-index: 5;
 }
