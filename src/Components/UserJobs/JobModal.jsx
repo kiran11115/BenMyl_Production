@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiX, FiTrash2, FiUser, FiCheck, FiEye } from 'react-icons/fi';
+import { FiX, FiCheck, FiEye, FiLoader } from 'react-icons/fi';
 
 // Mock Data for Talent Profiles inside Modal
 const TALENT_PROFILES = [
@@ -13,18 +13,27 @@ const TALENT_PROFILES = [
 const JobModal = ({ job, onClose }) => {
   const [selectedTalents, setSelectedTalents] = useState([]);
   const [customNote, setCustomNote] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loader state
 
   // Toggle selection logic for multi-select
   const handleToggleTalent = (id) => {
+    if (isSubmitting) return; // Disable during submit
     setSelectedTalents(prev =>
       prev.includes(id)
-        ? prev.filter(tId => tId !== id) // Remove if exists
-        : [...prev, id] // Add if new
+        ? prev.filter(tId => tId !== id)
+        : [...prev, id]
     );
   };
 
-  const handleDone = () => {
-    // Simply close without loading state
+  const handleDone = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    // 1 second simulated API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -43,7 +52,7 @@ const JobModal = ({ job, onClose }) => {
       zIndex: 10000 
     }}>
       
-      {/* Modal Container - Fully Responsive */}
+      {/* Modal Container */}
       <div className="card-base" style={{ 
         width: 'clamp(350px, 95vw, 1000px)', 
         height: 'clamp(500px, 90vh, 800px)', 
@@ -63,38 +72,44 @@ const JobModal = ({ job, onClose }) => {
             <h3 style={{ margin: 0, fontSize: 'clamp(16px, 2vw, 18px)', color: '#1e293b', fontWeight: 700 }}>Talent Allocation</h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>Assign talents to <strong>{job.company}</strong></p>
           </div>
-          <button className="close-btn" onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b' }}>
+          <button 
+            className="close-btn" 
+            onClick={onClose} 
+            disabled={isSubmitting}
+            style={{ 
+              border: 'none', 
+              background: 'transparent', 
+              cursor: isSubmitting ? 'not-allowed' : 'pointer', 
+              color: isSubmitting ? '#94a3b8' : '#64748b' 
+            }}
+          >
             <FiX size={22} />
           </button>
         </div>
 
-        {/* Scrollable Body - Responsive Grid */}
+        {/* Scrollable Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px', minHeight: 0 }}>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: '1fr', // Single column on mobile
+            gridTemplateColumns: '1fr',
             gap: '24px', 
-            height: '100%',
-            '@media (min-width: 768px)': { gridTemplateColumns: '1fr 1fr' } // Two columns on desktop
+            height: '100%'
           }}>
             
-            {/* LEFT COLUMN: Project Overview + Notes */}
+            {/* LEFT: Project Overview + Notes */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
-              {/* Project Details Box */}
+              {/* Project Details */}
               <div>
                 <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '4px', height: '16px', background: '#3b82f6', borderRadius: '2px', display: 'block' }}></span>
+                  <span style={{ width: '4px', height: '16px', background: '#3b82f6', borderRadius: '2px' }}></span>
                   Project Overview
                 </h4>
-                
                 <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
                   <div style={{ marginBottom: '16px' }}>
-                     <h2 style={{ fontSize: 'clamp(18px, 3vw, 20px)', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>{job.title}</h2>
-                     <span className='status-tag status-progress'>{job.type}</span>
+                    <h2 style={{ fontSize: 'clamp(18px, 3vw, 20px)', fontWeight: 700, color: '#1e293b', margin: '0 0 8px 0' }}>{job.title}</h2>
+                    <span className='status-tag status-progress'>{job.type}</span>
                   </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', marginBottom: '20px' }}>
                     <div style={{ background: '#fff', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                       <span style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Budget Rate</span>
                       <span style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{job.rateText}</span>
@@ -104,12 +119,8 @@ const JobModal = ({ job, onClose }) => {
                       <span style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{job.experienceText}</span>
                     </div>
                   </div>
-
                   <h5 style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>Description</h5>
-                  <p style={{ fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 0 20px 0' }}>
-                    {job.description}
-                  </p>
-
+                  <p style={{ fontSize: '14px', color: '#64748b', lineHeight: '1.6', margin: '0 0 20px 0' }}>{job.description}</p>
                   <h5 style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>Required Skills</h5>
                   <div className="skills-cloud" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {job.skills?.map(skill => (
@@ -119,38 +130,39 @@ const JobModal = ({ job, onClose }) => {
                 </div>
               </div>
 
-              {/* Custom Note TextArea */}
+              {/* Notes TextArea */}
               <div>
-                 <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '4px', height: '16px', background: '#8b5cf6', borderRadius: '2px', display: 'block' }}></span>
-                    Notes
-                 </h4>
-                 <textarea
-                    placeholder="Add specific requirements or notes for this allocation..."
-                    value={customNote}
-                    onChange={(e) => setCustomNote(e.target.value)}
-                    style={{
-                      width: '100%',
-                      minHeight: '120px',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '14px',
-                      fontFamily: 'inherit',
-                      resize: 'vertical',
-                      outline: 'none',
-                      color: '#334155',
-                      background: '#fff'
-                    }}
-                 />
+                <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '4px', height: '16px', background: '#8b5cf6', borderRadius: '2px' }}></span>
+                  Notes
+                </h4>
+                <textarea
+                  placeholder="Add specific requirements or notes for this allocation..."
+                  value={customNote}
+                  onChange={(e) => setCustomNote(e.target.value)}
+                  disabled={isSubmitting}
+                  style={{
+                    width: '100%',
+                    minHeight: '120px',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                    outline: 'none',
+                    color: isSubmitting ? '#94a3b8' : '#334155',
+                    background: isSubmitting ? '#f8fafc' : '#fff'
+                  }}
+                />
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Talent Selection (Multi-Select) */}
+            {/* RIGHT: Talent Selection */}
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '15px', fontWeight: 600, color: '#334155', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                  <span style={{ width: '4px', height: '16px', background: '#10b981', borderRadius: '2px', display: 'block' }}></span>
+                  <span style={{ width: '4px', height: '16px', background: '#10b981', borderRadius: '2px' }}></span>
                   Select Talent
                 </h4>
                 <span style={{ fontSize: '12px', color: '#64748b', background: '#f1f5f9', padding: '2px 8px', borderRadius: '12px' }}>
@@ -171,14 +183,14 @@ const JobModal = ({ job, onClose }) => {
                         justifyContent: 'space-between',
                         padding: '16px',
                         borderBottom: '1px solid #f1f5f9',
-                        cursor: 'pointer',
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
                         background: isSelected ? '#f0f9ff' : 'transparent',
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease',
+                        opacity: isSubmitting ? 0.6 : 1
                       }}
                       className="talent-row"
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {/* Checkbox Visual */}
                         <div style={{ 
                           width: '20px', height: '20px', 
                           borderRadius: '4px', 
@@ -189,7 +201,6 @@ const JobModal = ({ job, onClose }) => {
                         }}>
                           {isSelected && <FiCheck size={14} color="#fff" />}
                         </div>
-
                         <img 
                           src={profile.avatar} 
                           alt={profile.name} 
@@ -200,20 +211,22 @@ const JobModal = ({ job, onClose }) => {
                           <div style={{ fontSize: '12px', color: '#64748b' }}>{profile.role}</div>
                         </div>
                       </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {/* View Profile Button */}
-                        <button 
-                          onClick={(e) => {
-                              e.stopPropagation();
-                              alert(`Viewing profile: ${profile.name}`);
-                          }}
-                          className='btn-primary'
-                          style={{ padding: '6px 12px', fontSize: '12px' }} // Smaller on mobile
-                        >
-                          View Profile
-                        </button>
-                      </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isSubmitting) alert(`Viewing profile: ${profile.name}`);
+                        }}
+                        className='btn-primary'
+                        disabled={isSubmitting}
+                        style={{ 
+                          padding: '6px 12px', 
+                          fontSize: '12px',
+                          opacity: isSubmitting ? 0.6 : 1,
+                          width: "8rem"
+                        }}
+                      >
+                        View Profile
+                      </button>
                     </div>
                   );
                 })}
@@ -222,10 +235,11 @@ const JobModal = ({ job, onClose }) => {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer with Loader */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', background: '#fff', gap: '12px' }}>
           <button 
             onClick={onClose}
+            disabled={isSubmitting}
             style={{ 
               padding: '10px 24px', 
               background: '#fff', 
@@ -233,7 +247,8 @@ const JobModal = ({ job, onClose }) => {
               borderRadius: '6px', 
               color: '#475569', 
               fontWeight: 600, 
-              cursor: 'pointer' 
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              opacity: isSubmitting ? 0.6 : 1
             }}
           >
             Cancel
@@ -242,32 +257,41 @@ const JobModal = ({ job, onClose }) => {
           <button 
             className="btn-primary" 
             onClick={handleDone}
+            disabled={isSubmitting}
             style={{ 
               padding: '10px 32px', 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '8px'
+              gap: '8px',
+              width: "12rem",
+              opacity: isSubmitting ? 0.7 : 1
             }}
           >
-            Place Bid
+            {isSubmitting ? (
+              <>
+                <FiLoader className="spin" style={{ animation: 'spin 1s linear infinite' }} size={16} />
+                Placing Bid...
+              </>
+            ) : (
+              'Place Bid'
+            )}
           </button>
         </div>
       </div>
 
-      {/* Enhanced Scrollbar + Responsive Styles */}
+      {/* Styles */}
       <style>{`
-        /* Custom scrollbar for modal content */
+        @keyframes spin {
+          100% { transform: rotate(360deg); }
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
         textarea:focus {
           border-color: #3b82f6 !important;
           box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
-
-        /* Mobile Grid Responsiveness */
         @media (min-width: 768px) {
           .card-base > div > div {
             grid-template-columns: 1fr 1fr !important;
