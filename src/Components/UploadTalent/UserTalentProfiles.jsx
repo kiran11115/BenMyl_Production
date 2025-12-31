@@ -1,17 +1,19 @@
-import React, { useState, useMemo, memo } from "react";
-import { FiGrid, FiList, FiSearch, FiMapPin } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo } from "react";
+import { FiGrid, FiList, FiSearch, FiChevronDown } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
+
+// --- Sub-Components ---
 import UserTalentGrid from "./UserTalentGrid";
 import UserTalentTable from "./UserTalentTable";
-import { FiChevronDown } from "react-icons/fi";
+import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
 
 // --- DATA SOURCE ---
 const candidatesMock = [
   {
     id: 101,
     name: "Sarah Johnson",
-    verified: <GiCheckMark size={14} color="#059669" />,
+    verified: true,
     email: "sarah.j@techsolutions.com",
     role: "Senior Developer",
     experience: "8 years exp",
@@ -20,13 +22,12 @@ const candidatesMock = [
     availability: ["Available Now", "Remote"],
     status: "SHORTLISTED",
     rating: 4.9,
-    avatar:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 102,
     name: "Michael Chen",
-    verified: "",
+    verified: false,
     email: "m.chen@digitaldyn.net",
     role: "Project Manager",
     experience: "12 years exp",
@@ -35,13 +36,12 @@ const candidatesMock = [
     availability: ["2 Weeks Notice"],
     status: "IN REVIEW",
     rating: 4.7,
-    avatar:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 103,
     name: "Emily Davis",
-    verified: <GiCheckMark size={14} color="#059669" />,
+    verified: true,
     email: "edavis.dev@gmail.com",
     role: "DevOps Engineer",
     experience: "5 years exp",
@@ -50,13 +50,12 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "INTERVIEWING",
     rating: 4.8,
-    avatar:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 104,
     name: "David Lee",
-    verified: <GiCheckMark size={14} color="#059669" />,
+    verified: true,
     email: "david.lee88@outlook.com",
     role: "Backend Developer",
     experience: "6 years exp",
@@ -65,13 +64,12 @@ const candidatesMock = [
     availability: ["1 Month Notice", "Remote"],
     status: "INTERVIEWING",
     rating: 4.6,
-    avatar:
-      "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 105,
     name: "Maria Garcia",
-    verified: "",
+    verified: false,
     email: "maria.g.qa@testlab.io",
     role: "QA Engineer",
     experience: "4 years exp",
@@ -80,13 +78,12 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "SHORTLISTED",
     rating: 4.9,
-    avatar:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 106,
     name: "James Williams",
-    verified: "",
+    verified: false,
     email: "jwilliams@dataminds.com",
     role: "Data Scientist",
     experience: "7 years exp",
@@ -95,13 +92,12 @@ const candidatesMock = [
     availability: ["Remote Only"],
     status: "IN REVIEW",
     rating: 5.0,
-    avatar:
-      "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 107,
     name: "Olivia Martinez",
-    verified: <GiCheckMark size={14} color="#059669" />,
+    verified: true,
     email: "omartinez@product.co",
     role: "Product Owner",
     experience: "9 years exp",
@@ -110,13 +106,12 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "OFFER EXTENDED",
     rating: 4.8,
-    avatar:
-      "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 108,
     name: "John Smith",
-    verified: "",
+    verified: false,
     email: "john.smith.ui@design.net",
     role: "UI/UX Designer",
     experience: "3 years exp",
@@ -125,13 +120,12 @@ const candidatesMock = [
     availability: ["Part-time"],
     status: "NEW",
     rating: 4.5,
-    avatar:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 109,
     name: "William Rodriguez",
-    verified: "",
+    verified: false,
     email: "will.rod@sysops.org",
     role: "SysAdmin",
     experience: "15 years exp",
@@ -140,13 +134,12 @@ const candidatesMock = [
     availability: ["Available Now"],
     status: "REJECTED",
     rating: 4.4,
-    avatar:
-      "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
   {
     id: 110,
     name: "Ava Wilson",
-    verified: <GiCheckMark size={14} color="#059669" />,
+    verified: true,
     email: "ava.w@frontend.dev",
     role: "Jr. Frontend Dev",
     experience: "1 year exp",
@@ -155,8 +148,7 @@ const candidatesMock = [
     availability: ["Entry Level"],
     status: "NEW",
     rating: 4.7,
-    avatar:
-      "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
+    avatar: "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
   },
 ];
 
@@ -164,36 +156,34 @@ const candidatesMock = [
 const sortCandidates = (candidates, sortBy) => {
   return [...candidates].sort((a, b) => {
     switch (sortBy) {
-      case 'recommended':
-        // Priority: SHORTLISTED > OFFER EXTENDED > INTERVIEWING > IN REVIEW > NEW > REJECTED
+      case "recommended":
         const statusPriority = {
-          'SHORTLISTED': 5,
-          'OFFER EXTENDED': 4,
-          'INTERVIEWING': 3,
-          'IN REVIEW': 2,
-          'NEW': 1,
-          'REJECTED': 0
+          SHORTLISTED: 5,
+          "OFFER EXTENDED": 4,
+          INTERVIEWING: 3,
+          "IN REVIEW": 2,
+          NEW: 1,
+          REJECTED: 0,
         };
         return statusPriority[b.status] - statusPriority[a.status] || b.rating - a.rating;
 
-      case 'rating_high':
+      case "rating_high":
         return b.rating - a.rating;
 
-      case 'exp_high':
+      case "exp_high":
         const expA = parseInt(a.experience.match(/\d+/)?.[0] || 0);
         const expB = parseInt(b.experience.match(/\d+/)?.[0] || 0);
         return expB - expA;
 
-      case 'exp_low':
+      case "exp_low":
         const expALow = parseInt(a.experience.match(/\d+/)?.[0] || 0);
         const expBLow = parseInt(b.experience.match(/\d+/)?.[0] || 0);
         return expALow - expBLow;
 
-      case 'rate_low':
-        // Mock hourly rate sorting (assuming lower numbers first)
-        return Math.random() - 0.5; // Placeholder - add real rate field
+      case "rate_low":
+        return Math.random() - 0.5;
 
-      case 'name_asc':
+      case "name_asc":
         return a.name.localeCompare(b.name);
 
       default:
@@ -202,46 +192,59 @@ const sortCandidates = (candidates, sortBy) => {
   });
 };
 
-// --- LOCAL FILTER COMPONENTS ---
-const FilterCheckbox = memo(({ label }) => (
-  <label>
-    <input type="checkbox" /> {label}
-  </label>
-));
-
-const FilterGroup = memo(({ title, children }) => (
-  <div className="fg">
-    <div className="fg-title">{title}</div>
-    <div className="fg-body">{children}</div>
-  </div>
-));
-
 // --- MAIN COMPONENT ---
 const UserTalentProfiles = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState('recommended');
+  const [sortBy, setSortBy] = useState("recommended");
+  
+  // New State for Selection & Modal
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
   // Memoized sorted candidates
   const sortedCandidates = useMemo(() => {
     return sortCandidates(candidatesMock, sortBy);
   }, [sortBy]);
 
+  // Derive selected objects for the modal
+  const selectedCandidates = useMemo(() => {
+    return candidatesMock.filter(c => selectedIds.has(c.id));
+  }, [selectedIds]);
+
   const handleProfileClick = () => {
     navigate("/user/talent-profile");
   };
 
-  const styleUserTP = `
-  
- 
+  // --- Selection Handlers ---
+  const toggleSelection = (id) => {
+    const newSelection = new Set(selectedIds);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedIds(newSelection);
+  };
 
-  `;
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
 
   return (
     <>
-      <style>{styleUserTP}</style>
+      {/* --- THE MODAL --- */}
+      <PublishTalentModal 
+        open={isPublishModalOpen}
+        onClose={() => setIsPublishModalOpen(false)}
+        selectedTalents={selectedCandidates}
+        onRemove={toggleSelection}
+        onPublish={clearSelection}
+      />
+
       <div className="vs-page">
         <div className="projects-container d-flex flex-column gap-3 p-0">
+          
           {/* Heading Section */}
           <div
             style={{
@@ -253,10 +256,7 @@ const UserTalentProfiles = () => {
             }}
           >
             <div>
-              <h1
-                className="section-title"
-                style={{ fontSize: "24px", marginBottom: "8px" }}
-              >
+              <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
                 Talent Profiles
               </h1>
               <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
@@ -273,8 +273,7 @@ const UserTalentProfiles = () => {
                 justifyContent: "flex-end",
               }}
             >
-
-              {/* FUNCTIONAL SORT DROPDOWN */}
+              {/* SORT DROPDOWN */}
               <div className="sort-wrapper">
                 <select
                   className="sort-select"
@@ -291,7 +290,7 @@ const UserTalentProfiles = () => {
                 <FiChevronDown className="sort-icon" />
               </div>
 
-
+              {/* SEARCH */}
               <div style={{ position: "relative", flex: 1 }}>
                 <FiSearch
                   style={{
@@ -317,24 +316,27 @@ const UserTalentProfiles = () => {
                 />
               </div>
 
+              {/* PUBLISH BUTTON */}
               <button
                 className="add-project-btn"
                 style={{ width: "auto", padding: "6px 20px" }}
+                onClick={() => setIsPublishModalOpen(true)}
+                disabled={selectedIds.size === 0}
               >
-                <span>Find Talent</span>
+                <span>Publish {selectedIds.size > 0 ? `(${selectedIds.size})` : "Talent"}</span>
               </button>
+
+              {/* VIEW TOGGLE */}
               <div className="vs-results-right">
                 <div className="view-toggle1">
                   <button
-                    className={`view-btn ${viewMode === "grid" ? "toggle active" : ""
-                      }`}
+                    className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}
                     onClick={() => setViewMode("grid")}
                   >
                     <FiGrid />
                   </button>
                   <button
-                    className={`view-btn ${viewMode === "table" ? "toggle active" : ""
-                      }`}
+                    className={`view-btn ${viewMode === "table" ? "toggle active" : ""}`}
                     onClick={() => setViewMode("table")}
                   >
                     <FiList />
@@ -350,56 +352,57 @@ const UserTalentProfiles = () => {
                 <UserTalentGrid
                   candidates={sortedCandidates}
                   onProfileClick={handleProfileClick}
+                  selectedIds={selectedIds}
+                  onToggleSelect={toggleSelection}
                 />
               ) : (
-                <UserTalentTable candidates={sortedCandidates} />
+                <UserTalentTable 
+                  candidates={sortedCandidates} 
+                  selectedIds={selectedIds}
+                  onToggleSelect={toggleSelection}
+                />
               )}
-
-              {/* <div className="pagination-row">
-                <span className="muted small">
-                  Showing 1-{sortedCandidates.length} of 248 candidates
-                </span>
-                <div className="pagination">
-                  <button className="page-btn active">1</button>
-                  <button className="page-btn">2</button>
-                  <button className="page-btn">Next</button>
-                </div>
-              </div> */}
             </section>
           </div>
         </div>
 
         <style jsx>{`
-        /* Sort Dropdown Styles */
-        .sort-wrapper {
-          position: relative;
-          margin-right: 8px;
-        }
-        .sort-select {
-          appearance: none;
-          background-color: white;
-          border: 1px solid #e2e8f0;
-          border-radius: 6px;
-          padding: 8px 32px 8px 12px;
-          font-size: 13px;
-          color: #334155;
-          font-weight: 500;
-          cursor: pointer;
-          outline: none;
-          min-width: 180px;
-        }
-        .sort-select:hover {
-          border-color: #cbd5e1;
-        }
-        .sort-icon {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #64748b;
-          pointer-events: none;
-        }
-      `}</style>
+          /* Sort Dropdown Styles */
+          .sort-wrapper {
+            position: relative;
+            margin-right: 8px;
+          }
+          .sort-select {
+            appearance: none;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 32px 8px 12px;
+            font-size: 13px;
+            color: #334155;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            min-width: 180px;
+          }
+          .sort-select:hover {
+            border-color: #cbd5e1;
+          }
+          .sort-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            pointer-events: none;
+          }
+          /* Ensure button looks disabled when inactive */
+          .add-project-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #94a3b8;
+          }
+        `}</style>
       </div>
     </>
   );

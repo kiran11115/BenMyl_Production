@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { MoreVertical, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { FiMoreVertical, FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -203,7 +202,6 @@ const initialTalents = [
   },
 ];
 
-
 const UploadTalentTable = () => {
   const navigate = useNavigate();
   const [talents] = useState(initialTalents);
@@ -388,6 +386,18 @@ const UploadTalentTable = () => {
           </tbody>
         </table>
       </div>
+
+      <style jsx>{`
+        /* --- Selected Row Style (Green background) --- */
+        /* Note: 'tr.row-selected td' ensures it overrides standard stripe styles */
+        .custom-table tbody tr.row-selected td {
+            background-color: #dcfce7 !important; /* Tailwind green-100 */
+        }
+        
+        .custom-table tbody tr.row-selected:hover td {
+             background-color: #bbf7d0 !important; /* Tailwind green-200 */
+        }
+      `}</style>
     </div>
   );
 };
