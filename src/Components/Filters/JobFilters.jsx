@@ -2,15 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from 'react-icons/fi';
 import '../Filters/FiltersSidebar.css';
 
+
 // --- DATA CONSTANTS ---
-const SERVICE_TYPES = [
-  'All Services',
-  'House Cleaning',
-  'Plumbing', 
-  'Electrical', 
-  'Gardening', 
-  'Moving'
+const ROLE_TYPES = [
+  'Frontend Developer',
+  'Full Stack Engineer',
+  'UI/UX Designer', 
+  'React Native Developer', 
 ];
+
 
 const POPULAR_LOCATIONS = [
   'San Francisco, CA',
@@ -21,6 +21,7 @@ const POPULAR_LOCATIONS = [
   'Remote'
 ];
 
+
 const LOCATION_TYPES = [
   'Any Type',
   'Remote',
@@ -28,12 +29,14 @@ const LOCATION_TYPES = [
   'Hybrid'
 ];
 
+
 const EXPERIENCE_LEVELS = [
   'Any Experience',
   'Junior (0-3 years)',
   'Mid-Level (3-7 years)',
   'Senior (8+ years)'
 ];
+
 
 const AVAILABILITY_OPTIONS = [
   'Any Time',
@@ -43,10 +46,12 @@ const AVAILABILITY_OPTIONS = [
   '1-2 Weeks'
 ];
 
+
 // --- REUSABLE MULTI-SELECT DROPDOWN COMPONENT ---
 const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -58,12 +63,14 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
   const toggleOption = (option) => {
     const newValues = selectedValues.includes(option)
       ? selectedValues.filter(item => item !== option)
       : [...selectedValues, option];
     onChange(newValues);
   };
+
 
   return (
     <div className="select-wrapper" ref={dropdownRef} style={{ position: 'relative' }}>
@@ -91,6 +98,7 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
         )}
       </div>
 
+
       {isOpen && (
         <div className="custom-dropdown-menu">
           {options.map(option => (
@@ -111,11 +119,12 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
   );
 };
 
+
 // --- MAIN COMPONENT ---
 const JobFilters = ({ onApplyFilters }) => {
   const initialFilters = {
-    serviceType: 'All Services',
-    locations: [],         
+    roles: [],          // Fixed key name from 'Role' to 'roles'
+    locations: [],        
     locationType: 'Any Type', 
     experience: 'Any Experience',
     availability: [],
@@ -123,11 +132,14 @@ const JobFilters = ({ onApplyFilters }) => {
     maxBudget: 200,
   };
 
+
   const [filterInputs, setFilterInputs] = useState(initialFilters);
+
 
   const handleInputChange = (field, value) => {
     setFilterInputs(prev => ({ ...prev, [field]: value }));
   };
+
 
   // --- TAG REMOVAL HELPERS ---
   const removeTag = (field, value) => {
@@ -137,13 +149,16 @@ const JobFilters = ({ onApplyFilters }) => {
     }));
   };
 
+
   const applyFilters = () => {
     if (onApplyFilters) onApplyFilters(filterInputs);
   };
 
+
   const resetFilters = () => {
     setFilterInputs(initialFilters);
   };
+
 
   return (
     <div className="filter-sidebar">
@@ -153,26 +168,41 @@ const JobFilters = ({ onApplyFilters }) => {
         <span onClick={resetFilters} className="filter-reset">Reset</span>
       </div>
 
-      {/* 1. Service Type (Single Selection) */}
-      {/* <div className="filter-section">
-        <h4 className="section-title">Service Type</h4>
-        <div className="select-wrapper">
-          <select 
-            className="filter-select"
-            value={filterInputs.serviceType}
-            onChange={(e) => handleInputChange('serviceType', e.target.value)}
-          >
-            {SERVICE_TYPES.map(type => (
-              <option key={type} value={type}>{type}</option>
+
+      {/* 1. Roles */}
+      <div className="filter-section">
+        <h4 className="section-title">Find by Roles</h4>
+
+
+        {/* Active Role Tags */}
+        {filterInputs.roles.length > 0 && (
+          <div className="tags-container">
+            {filterInputs.roles.map(role => (
+              <span key={role} className="filter-tag">
+                {role}
+                <FiX 
+                  className="tag-close-icon" 
+                  onClick={() => removeTag('roles', role)} 
+                />
+              </span>
             ))}
-          </select>
-          <FiChevronDown className="select-icon" />
-        </div>
-      </div> */}
+          </div>
+        )}
+         <MultiSelectDropdown 
+          label="Find by Talent"
+          options={ROLE_TYPES}
+          selectedValues={filterInputs.roles}
+          onChange={(newValues) => handleInputChange('roles', newValues)}
+        />
+      </div>
+
+
+
 
       {/* 2. Locations (Tags + Multi-Select) */}
       <div className="filter-section">
         <h4 className="section-title">Locations</h4>
+
 
         {/* Active Location Tags */}
         {filterInputs.locations.length > 0 && (
@@ -188,7 +218,6 @@ const JobFilters = ({ onApplyFilters }) => {
             ))}
           </div>
         )}
-
         <MultiSelectDropdown 
           label="Add Locations..."
           options={POPULAR_LOCATIONS}
@@ -196,6 +225,7 @@ const JobFilters = ({ onApplyFilters }) => {
           onChange={(newValues) => handleInputChange('locations', newValues)}
         />
       </div>
+
 
       {/* 3. Location Type (Single Selection) */}
       <div className="filter-section">
@@ -214,9 +244,11 @@ const JobFilters = ({ onApplyFilters }) => {
         </div>
       </div>
 
+
       {/* 4. Availability (Multi-Select) */}
       <div className="filter-section">
         <h4 className="section-title">Availability</h4>
+
 
         {/* Active Availability Tags */}
         {filterInputs.availability.length > 0 && (
@@ -233,6 +265,7 @@ const JobFilters = ({ onApplyFilters }) => {
           </div>
         )}
 
+
         <MultiSelectDropdown 
           label="Select Availability..."
           options={AVAILABILITY_OPTIONS}
@@ -240,6 +273,7 @@ const JobFilters = ({ onApplyFilters }) => {
           onChange={(newValues) => handleInputChange('availability', newValues)}
         />
       </div>
+
 
       {/* 5. Experience Level (Single) */}
       <div className="filter-section">
@@ -257,6 +291,7 @@ const JobFilters = ({ onApplyFilters }) => {
           <FiChevronDown className="select-icon" />
         </div>
       </div>
+
 
       {/* 6. Minimum Rating */}
       <div className="filter-section">
@@ -282,6 +317,7 @@ const JobFilters = ({ onApplyFilters }) => {
         </div>
       </div>
 
+
       {/* 7. Budget */}
       <div className="budget-section">
         <h4 className="section-title">Max Hourly Rate</h4>
@@ -300,10 +336,12 @@ const JobFilters = ({ onApplyFilters }) => {
         </div>
       </div>
 
+
       {/* Apply Button */}
       <button onClick={applyFilters} className="apply-btn">
         Apply Filters
       </button>
+
 
       {/* INLINE STYLES */}
       <style jsx>{`
@@ -312,40 +350,67 @@ const JobFilters = ({ onApplyFilters }) => {
           display: flex;
           flex-wrap: wrap;
           gap: 6px;
-          margin-bottom: 12px;
-          padding: 4px 0;
+          margin-bottom: 8px;
         }
         .filter-tag {
           background: #e0e7ff;
           color: #4338ca;
-          padding: 6px 10px;
-          border-radius: 20px;
-          font-size: 13px;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
           font-weight: 500;
           display: flex;
           align-items: center;
           gap: 6px;
-          max-width: 200px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
         .tag-close-icon {
           cursor: pointer;
           opacity: 0.7;
-          font-size: 14px;
-          width: 16px;
-          height: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
         }
         .tag-close-icon:hover {
           opacity: 1;
-          color: #ef4444;
         }
-
-        /* Custom Dropdown Styles */
+        .checkbox-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          font-size: 14px;
+          color: #334155;
+        }
+        .checkbox-container {
+          position: relative;
+          width: 18px;
+          height: 18px;
+        }
+        .checkbox-container input {
+          opacity: 0;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+        }
+        .checkmark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 18px;
+          width: 18px;
+          background-color: #fff;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+        .checkbox-row:hover .checkmark {
+          border-color: #6366f1;
+        }
+        .checkbox-container input:checked ~ .checkmark {
+          background-color: #6366f1;
+          border-color: #6366f1;
+        }
         .custom-dropdown-menu {
           position: absolute;
           top: 100%;
@@ -353,21 +418,21 @@ const JobFilters = ({ onApplyFilters }) => {
           right: 0;
           background: white;
           border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          margin-top: 8px;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-          z-index: 1000;
-          max-height: 240px;
+          border-radius: 8px;
+          margin-top: 4px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          z-index: 50;
+          max-height: 200px;
           overflow-y: auto;
-          padding: 8px 0;
+          padding: 4px 0;
         }
         .custom-option {
-          padding: 12px 16px;
+          padding: 8px 12px;
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: background 0.2s;
           font-size: 14px;
           color: #334155;
         }
@@ -375,36 +440,24 @@ const JobFilters = ({ onApplyFilters }) => {
           background-color: #f8fafc;
         }
         .custom-checkbox {
-          width: 18px;
-          height: 18px;
-          border: 2px solid #cbd5e1;
-          border-radius: 6px;
+          width: 16px;
+          height: 16px;
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: white;
           flex-shrink: 0;
-          transition: all 0.2s ease;
         }
         .custom-checkbox.checked {
           background-color: #6366f1;
           border-color: #6366f1;
         }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-          .filter-tag {
-            font-size: 12px;
-            padding: 4px 8px;
-            max-width: 140px;
-          }
-          .custom-dropdown-menu {
-            max-height: 200px;
-          }
-        }
       `}</style>
     </div>
   );
 };
+
 
 export default JobFilters;
