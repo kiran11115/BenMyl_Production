@@ -43,7 +43,7 @@ const UploadTalent = () => {
                 <div className="d-flex align-items-center gap-2 justify-content-between">
                     {/* TOGGLE BUTTONS */}
                     <div className="view-toggle1">
-                         <button
+                        <button
                             className={`toggle ${view === "Talent" ? "active" : ""}`}
                             onClick={() => setView("Talent")}
                         >
@@ -55,7 +55,7 @@ const UploadTalent = () => {
                         >
                             Review Profiles
                         </button>
-                       
+
                     </div>
 
                     <UploadTalentModal

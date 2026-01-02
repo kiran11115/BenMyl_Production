@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import "./AccountSettings.css";
 import { useNavigate } from "react-router-dom";
+import BillingHistoryTable from "./BillingHistoryTable";
 
 // Import your existing FormWizard component
 // Make sure FormWizard is in the same directory or adjust the path
@@ -31,7 +32,7 @@ const BillingRow = ({ date, desc, amount, status }) => (
 
 export default function AccountSettings() {
   const navigate = useNavigate();
-  
+
   // State to control active tab
   const [activeTab, setActiveTab] = useState("billing");
 
@@ -53,9 +54,9 @@ export default function AccountSettings() {
   return (
     <div className="settings-page">
       <div className="">
-        
+
         {/* Header Section */}
-        <div className="back-row">
+        <div className="back-row d-flex gap-1">
           <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
             <FiArrowLeft /> Back to Dashboard
           </button>
@@ -68,27 +69,27 @@ export default function AccountSettings() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="tabs">
-          <button 
-            className={`tab ${activeTab === "billing" ? "active" : ""}`} 
+        <div className="view-toggle1 mt-3 mb-3">
+          <button
+            className={`toggle ${activeTab === "billing" ? "active" : ""}`}
             onClick={() => setActiveTab("billing")}
           >
             Billing
           </button>
-          <button 
-            className={`tab ${activeTab === "security" ? "active" : ""}`} 
+          <button
+            className={`toggle ${activeTab === "security" ? "active" : ""}`}
             onClick={() => setActiveTab("security")}
           >
             Security & Notif.
           </button>
-          <button 
-            className={`tab ${activeTab === "team" ? "active" : ""}`} 
+          <button
+            className={`toggle ${activeTab === "team" ? "active" : ""}`}
             onClick={() => setActiveTab("team")}
           >
             Team
           </button>
-          <button 
-            className={`tab ${activeTab === "integrations" ? "active" : ""}`} 
+          <button
+            className={`toggle ${activeTab === "integrations" ? "active" : ""}`}
             onClick={() => setActiveTab("integrations")}
           >
             Integrations
@@ -99,7 +100,7 @@ export default function AccountSettings() {
         {activeTab === "billing" && (
           <div className="animate-fade-in">
             <section className="card large">
-              <div className="card-header">
+              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
                 <h2>Billing Information</h2>
                 <a className="view-history fw-semibold" href="#history">View History</a>
               </div>
@@ -145,24 +146,7 @@ export default function AccountSettings() {
 
                 <div className="billing-history mt-3">
                   <h3>Billing History</h3>
-                  <div className="table-wrap">
-                    <table className="history-table">
-                      <thead>
-                        <tr>
-                          <th>DATE</th>
-                          <th>DESCRIPTION</th>
-                          <th>AMOUNT</th>
-                          <th>STATUS</th>
-                          <th>INVOICE</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <BillingRow date="Sep 12, 2023" desc="Professional Plan (Annual)" amount="$2,388.00" status="Paid" />
-                        <BillingRow date="Aug 12, 2023" desc="Professional Plan (Annual)" amount="$2,388.00" status="Paid" />
-                        <BillingRow date="Jul 12, 2023" desc="Professional Plan (Annual)" amount="$2,388.00" status="Paid" />
-                      </tbody>
-                    </table>
-                  </div>
+                  <BillingHistoryTable />
                 </div>
               </div>
             </section>
@@ -173,7 +157,7 @@ export default function AccountSettings() {
         {activeTab === "security" && (
           <div className="grid-2 animate-fade-in">
             <section className="card">
-              <div className="card-header">
+              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
                 <h2>Security</h2>
                 <a className="manage-link" href="#manage">Manage</a>
               </div>
@@ -209,32 +193,32 @@ export default function AccountSettings() {
             </section>
 
             <section className="card">
-              <div className="card-header">
+              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
                 <h2>Notification Preferences</h2>
                 <a className="manage-link" href="#edit">Edit All</a>
               </div>
               <div className="settings-list">
-                 <div className="setting-item">
-                    <div className="setting-left">
-                       <div className="ico"><FiBell /></div>
-                       <div>
-                          <div className="setting-title">Email Notifications</div>
-                          <div className="setting-sub">Receive emails about activity</div>
-                       </div>
+                <div className="setting-item">
+                  <div className="setting-left">
+                    <div className="ico"><FiBell /></div>
+                    <div>
+                      <div className="setting-title">Email Notifications</div>
+                      <div className="setting-sub">Receive emails about activity</div>
                     </div>
-                    <div className="setting-right">
-                       <label className="switch">
-                          <input type="checkbox" defaultChecked />
-                          <span className="slider" />
-                       </label>
-                    </div>
-                 </div>
-                 {/* Notification Types checkboxes */}
-                 <div className="notification-types" style={{padding: '1rem 0'}}>
-                    <div className="notif-title">Notification Types</div>
-                    <label className="chk"><input type="checkbox" defaultChecked /> New application received</label>
-                    <label className="chk"><input type="checkbox" defaultChecked /> Interview scheduled</label>
-                 </div>
+                  </div>
+                  <div className="setting-right">
+                    <label className="switch">
+                      <input type="checkbox" defaultChecked />
+                      <span className="slider" />
+                    </label>
+                  </div>
+                </div>
+                {/* Notification Types checkboxes */}
+                <div className="notification-types">
+                  <div className="notif-title">Notification Types</div>
+                  <label className="chk"><input type="checkbox" defaultChecked /> New application received</label>
+                  <label className="chk"><input type="checkbox" defaultChecked /> Interview scheduled</label>
+                </div>
               </div>
             </section>
           </div>
@@ -244,9 +228,9 @@ export default function AccountSettings() {
         {activeTab === "team" && (
           <div className="animate-fade-in">
             <section className="card">
-              <div className="card-header">
+              <div className="card-header d-flex align-items-center mb-3">
                 <h2>Team Management</h2>
-                <button className="btn-primary-custom">Invite Team Member</button>
+                <button className="btn-primary">Invite Team Member</button>
               </div>
               <div className="team-list">
                 {teamMembers.map((m) => (
@@ -259,7 +243,7 @@ export default function AccountSettings() {
                       </div>
                     </div>
                     <div className="team-right">
-                      <select value={m.role} onChange={() => { }} className="role-select">
+                      <select value={m.role} onChange={() => { }} className="role-select btn-secondary">
                         <option>{m.role}</option>
                       </select>
                       <span className={`status-tag status-${m.tag.toLowerCase()}`}>{m.tag}</span>
@@ -275,7 +259,7 @@ export default function AccountSettings() {
         {activeTab === "integrations" && (
           <div className="animate-fade-in">
             <section className="card">
-              <div className="card-header">
+              <div className="card-header" style={{padding: "16px 12px"}}>
                 <h2>Integrations</h2>
                 <a className="manage-link fw-semibold" href="#browse">Browse More</a>
               </div>

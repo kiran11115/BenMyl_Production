@@ -197,7 +197,7 @@ const UserTalentProfiles = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("recommended");
-  
+
   // New State for Selection & Modal
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -234,7 +234,7 @@ const UserTalentProfiles = () => {
   return (
     <>
       {/* --- THE MODAL --- */}
-      <PublishTalentModal 
+      <PublishTalentModal
         open={isPublishModalOpen}
         onClose={() => setIsPublishModalOpen(false)}
         selectedTalents={selectedCandidates}
@@ -244,7 +244,7 @@ const UserTalentProfiles = () => {
 
       <div className="vs-page">
         <div className="projects-container d-flex flex-column gap-3 p-0">
-          
+
           {/* Heading Section */}
           <div
             style={{
@@ -356,8 +356,8 @@ const UserTalentProfiles = () => {
                   onToggleSelect={toggleSelection}
                 />
               ) : (
-                <UserTalentTable 
-                  candidates={sortedCandidates} 
+                <UserTalentTable
+                  candidates={sortedCandidates}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
                 />
