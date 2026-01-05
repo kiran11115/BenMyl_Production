@@ -268,13 +268,33 @@ const S = {
     textAlign: "left",
   },
 
+  // overlay already has padding so modal doesn't stick to edges
   modalOverlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "grid", placeItems: "center", padding: 18, zIndex: 60 },
-  modal: { width: "min(880px, 96vw)", borderRadius: 18, border: `1px solid ${UI.border}`, background: "rgba(10, 14, 28, 0.92)", boxShadow: UI.shadow2, backdropFilter: "blur(12px)", overflow: "hidden" },
+
+  // UPDATED: responsive modal box
+  modal: {
+    width: "96vw",
+    maxWidth: 880,
+    maxHeight: "75vh",
+    borderRadius: 18,
+    border: `1px solid ${UI.border}`,
+    background: "rgba(10, 14, 28, 0.92)",
+    boxShadow: UI.shadow2,
+    backdropFilter: "blur(12px)",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+
   modalHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${UI.border}` },
   modalTitle: { margin: 0, fontSize: 14, fontWeight: 950, color: UI.text },
-  modalBody: { padding: 16 },
 
+  // UPDATED: allow scroll inside body
+  modalBody: { padding: 16, overflowY: "auto" },
+
+  // base grid (2 columns on desktop) – mobile handled by class + media query
   formGrid: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 },
+
   field: { display: "flex", flexDirection: "column", gap: 6 },
   label: { fontSize: 12, fontWeight: 950, color: UI.muted },
   control: { borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", color: UI.text, padding: "10px 12px", outline: "none", fontSize: 13 },
@@ -291,7 +311,7 @@ const S = {
 };
 
 /** -----------------------------
- * Button (premium hover via state)
+ * Button
  * ---------------------------- */
 const Button = React.memo(function Button({ onClick, disabled, children, variant = "primary", style = {}, type = "button" }) {
   const [hover, setHover] = useState(false);
@@ -335,7 +355,7 @@ const Button = React.memo(function Button({ onClick, disabled, children, variant
 });
 
 /** -----------------------------
- * Modal (inline)
+ * Modal (inline, responsive)
  * ---------------------------- */
 const Modal = React.memo(function Modal({ title, children, isOpen, onClose }) {
   const [closeHover, setCloseHover] = useState(false);
@@ -368,8 +388,7 @@ const Modal = React.memo(function Modal({ title, children, isOpen, onClose }) {
 });
 
 /** -----------------------------
- * SearchBar (MUST be a component)
- * Fixes rules-of-hooks issue.
+ * SearchBar
  * ---------------------------- */
 function SearchBar({
   inputValue,
@@ -520,7 +539,7 @@ function SearchBar({
 }
 
 /** -----------------------------
- * TalentForm (inline premium)
+ * TalentForm (with responsive grid class)
  * ---------------------------- */
 const TalentForm = React.memo(function TalentForm({
   talentForm,
@@ -574,7 +593,8 @@ const TalentForm = React.memo(function TalentForm({
     <form onSubmit={onSubmit}>
       <div style={{ fontWeight: 950, margin: "0 0 10px", color: UI.text }}>Search Filters</div>
 
-      <div style={S.formGrid}>
+      {/* className enables media-query single-column on small screens */}
+      <div style={S.formGrid} className="modal-form-grid">
         <div style={S.field}>
           <span style={S.label}>Role</span>
           <div style={{ position: "relative" }}>
@@ -1193,7 +1213,6 @@ function AIScreen() {
           {showSavedPrompts ? (
             <>
               <h3 style={{ margin: "0 0 14px", fontSize: 18, fontWeight: 950, color: UI.text }}>Saved Prompts</h3>
-
               {savedPrompts.length === 0 ? (
                 <p style={{ margin: 0, color: UI.muted }}>No saved prompts yet.</p>
               ) : (
