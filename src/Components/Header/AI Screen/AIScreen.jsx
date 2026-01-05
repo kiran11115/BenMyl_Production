@@ -1,14 +1,56 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback, useReducer } from 'react';
-import { FiSend, FiX, FiPaperclip, FiSearch, FiClock, FiSave, FiEdit, FiHome } from 'react-icons/fi';
-import "./AIScreen.css"
+import React, { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
+import { FiSend, FiX, FiPaperclip, FiSearch, FiClock, FiSave, FiEdit, FiHome } from "react-icons/fi";
 
+/** -----------------------------
+ * Data
+ * ---------------------------- */
 const FULL_IT_ROLES_SKILLS = {
-  "Software Developer": ["Programming (Java,C#,Python)", "Data Structures & Algorithms", "Object-Oriented Design", "Git Version Control", "Unit Testing", "REST APIs", "Relational Databases (SQL)"],
+  "Software Developer": [
+    "Programming (Java,C#,Python)",
+    "Data Structures & Algorithms",
+    "Object-Oriented Design",
+    "Git Version Control",
+    "Unit Testing",
+    "REST APIs",
+    "Relational Databases (SQL)",
+  ],
   "Frontend Developer": ["HTML", "CSS", "JavaScript", "React/Angular/Vue", "Responsive Design", "Browser DevTools", "REST APIs"],
-  "Backend Developer": ["Java/.NET/Node.js/Python", "RESTful API Design", "SQL/NoSQL Databases", "Authentication & Authorization", "Microservices", "Docker", "Unit/Integration Testing"],
-  "Full Stack Developer": ["React/Angular/Vue", "Node.js/Java/.NET", "HTML/CSS/JavaScript", "SQL/NoSQL Databases", "REST APIs", "Git & CI/CD", "Cloud Basics (AWS/Azure/GCP)"],
-  "Data Scientist": ["Python/R", "Pandas/NumPy", "Statistics & Probability", "Machine Learning", "SQL", "Data Visualization (Tableau/Power BI)", "Jupyter Notebook"],
-  "Data Analyst": ["SQL", "Excel/Spreadsheets", "Data Cleaning", "Dashboards (Tableau/Power BI)", "Basic Statistics", "Reporting", "Stakeholder Communication"],
+  "Backend Developer": [
+    "Java/.NET/Node.js/Python",
+    "RESTful API Design",
+    "SQL/NoSQL Databases",
+    "Authentication & Authorization",
+    "Microservices",
+    "Docker",
+    "Unit/Integration Testing",
+  ],
+  "Full Stack Developer": [
+    "React/Angular/Vue",
+    "Node.js/Java/.NET",
+    "HTML/CSS/JavaScript",
+    "SQL/NoSQL Databases",
+    "REST APIs",
+    "Git & CI/CD",
+    "Cloud Basics (AWS/Azure/GCP)",
+  ],
+  "Data Scientist": [
+    "Python/R",
+    "Pandas/NumPy",
+    "Statistics & Probability",
+    "Machine Learning",
+    "SQL",
+    "Data Visualization (Tableau/Power BI)",
+    "Jupyter Notebook",
+  ],
+  "Data Analyst": [
+    "SQL",
+    "Excel/Spreadsheets",
+    "Data Cleaning",
+    "Dashboards (Tableau/Power BI)",
+    "Basic Statistics",
+    "Reporting",
+    "Stakeholder Communication",
+  ],
   "DevOps Engineer": ["Linux", "Shell Scripting", "CI/CD (Jenkins/GitHub Actions)", "Docker", "Kubernetes", "Terraform (IaC)", "Cloud (AWS/Azure/GCP)"],
   "Cloud Engineer": ["AWS/Azure/GCP", "Virtual Networks", "Storage & Databases in Cloud", "IAM & Security", "Monitoring & Logging", "Scripting (Python/Bash)", "Containers"],
   "Cybersecurity Engineer": ["Network Security", "Firewalls/IDS/IPS", "Vulnerability Assessment", "Penetration Testing", "SIEM Tools", "Secure Coding", "Incident Response"],
@@ -17,7 +59,7 @@ const FULL_IT_ROLES_SKILLS = {
   "Network Engineer": ["Routing & Switching", "TCP/IP", "Firewalls", "VPN", "Network Monitoring", "Cisco/Juniper Devices", "Network Security"],
   "Product Manager": ["Product Strategy", "Roadmapping", "User Research", "Requirements Gathering", "Agile/Scrum", "Stakeholder Management", "Data-Driven Decision Making"],
   "Business Analyst": ["Requirements Analysis", "Process Modelling", "SQL Data Querying", "Documentation (BRD/FRD)", "Stakeholder Workshops", "UML/BPMN", "Reporting & Dashboards"],
-  "QA Engineer": ["Test Case Design", "Manual Testing", "Test Automation (Selenium/Cypress)", "API Testing (Postman)", "Regression Testing", "Defect Tracking Tools", "Basic SQL"]
+  "QA Engineer": ["Test Case Design", "Manual Testing", "Test Automation (Selenium/Cypress)", "API Testing (Postman)", "Regression Testing", "Defect Tracking Tools", "Basic SQL"],
 };
 
 const ALL_IT_ROLES = Object.keys(FULL_IT_ROLES_SKILLS);
@@ -34,8 +76,8 @@ const SUGGESTED_PROMPTS = [
       experience: "2-4 years",
       location: "Bangalore",
       salary: "8 LPA",
-      workType: "Hybrid"
-    }
+      workType: "Hybrid",
+    },
   },
   {
     id: "fullstack-node",
@@ -48,8 +90,8 @@ const SUGGESTED_PROMPTS = [
       experience: "3-5 years",
       location: "Hyderabad",
       salary: "12 LPA",
-      workType: "Remote"
-    }
+      workType: "Remote",
+    },
   },
   {
     id: "devops-aws",
@@ -62,8 +104,8 @@ const SUGGESTED_PROMPTS = [
       experience: "3-5 years",
       location: "Remote",
       salary: "15 LPA",
-      workType: "Remote"
-    }
+      workType: "Remote",
+    },
   },
   {
     id: "data-scientist",
@@ -76,114 +118,411 @@ const SUGGESTED_PROMPTS = [
       experience: "2-4 years",
       location: "Bangalore",
       salary: "10 LPA",
-      workType: "Hybrid"
-    }
-  }
+      workType: "Hybrid",
+    },
+  },
 ];
 
-const COLORS = {
-  primary: "#2744a0",
-  primaryHover: "#1e3285",
-  secondary: "#ffffff",
-  background: "#fafafa",
-  surface: "#ffffff",
-  border: "#e5e7eb",
-  borderLight: "#f3f4f6",
-  text: "#111827",
-  textSecondary: "#6b7280",
-  textLight: "#9ca3af",
-  danger: "#ef4444",
-  shadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-  shadowLg: "0 10px 25px rgba(15, 23, 42, 0.15)"
-};
-
+/** -----------------------------
+ * Reducer
+ * ---------------------------- */
 const formReducer = (state, action) => {
   switch (action.type) {
-    case 'SETROLE':
+    case "SETROLE":
       return { ...state, role: action.payload, skills: [] };
-    case 'TOGGLESKILL':
+    case "TOGGLESKILL": {
       const exists = state.skills.includes(action.payload);
-      return {
-        ...state,
-        skills: exists
-          ? state.skills.filter(s => s !== action.payload)
-          : [...state.skills, action.payload]
-      };
-    case 'REMOVESKILL':
-      return {
-        ...state,
-        skills: state.skills.filter(s => s !== action.payload)
-      };
-    case 'SETFIELD':
+      return { ...state, skills: exists ? state.skills.filter((s) => s !== action.payload) : [...state.skills, action.payload] };
+    }
+    case "REMOVESKILL":
+      return { ...state, skills: state.skills.filter((s) => s !== action.payload) };
+    case "SETFIELD":
       return { ...state, [action.field]: action.payload };
-    case 'RESET':
+    case "RESET":
       return action.payload;
     default:
       return state;
   }
 };
 
-const Button = React.memo(({ onClick, disabled, children, variant = "primary", style = {}, type = "button" }) => {
-  const baseStyle = {
-    display: "flex",
+/** -----------------------------
+ * Theme + styles (inline only)
+ * ---------------------------- */
+const UI = {
+  bg: "#0b1020",
+  panelA: "rgba(255,255,255,0.06)",
+  panelB: "rgba(255,255,255,0.04)",
+  border: "rgba(255,255,255,0.10)",
+  border2: "rgba(255,255,255,0.14)",
+  text: "rgba(255,255,255,0.92)",
+  muted: "rgba(255,255,255,0.62)",
+  muted2: "rgba(255,255,255,0.48)",
+  primary: "#7c5cff",
+  primary2: "#9b7bff",
+  danger: "#ff4d4f",
+  shadow: "0 8px 30px rgba(0,0,0,0.35)",
+  shadow2: "0 16px 50px rgba(0,0,0,0.45)",
+  radiusLg: 18,
+  radiusMd: 14,
+};
+
+const S = {
+  page: {
+    minHeight: "92vh",
+    padding: 22,
+    background:
+      "radial-gradient(900px 500px at 20% 0%, rgba(124, 92, 255, 0.22), transparent 60%), radial-gradient(700px 450px at 80% 10%, rgba(0, 209, 255, 0.18), transparent 55%), radial-gradient(900px 600px at 60% 120%, rgba(255, 0, 128, 0.10), transparent 55%), " +
+      UI.bg,
+    color: UI.text,
+  },
+  container: { maxWidth: 1180, margin: "0 auto" },
+
+  header: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 16 },
+  title: { margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: 0.2, color: UI.text },
+
+  panel: {
+    background: `linear-gradient(180deg, ${UI.panelA}, ${UI.panelB})`,
+    border: `1px solid ${UI.border}`,
+    borderRadius: UI.radiusLg,
+    boxShadow: UI.shadow,
+    padding: 18,
+    backdropFilter: "blur(10px)",
+  },
+
+  row: { display: "flex", alignItems: "center" },
+  rowGap8: { display: "flex", alignItems: "center", gap: 8 },
+  rowGap12: { display: "flex", alignItems: "center", gap: 12 },
+  rowBetween: { display: "flex", alignItems: "center", justifyContent: "space-between" },
+
+  btnBase: {
+    display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "6px",
-    padding: "10px 20px",
-    borderRadius: "999px",
-    fontSize: "13px",
-    fontWeight: "600",
-    border: "none",
-    cursor: disabled ? "not-allowed" : "pointer",
-    transition: "all 0.15s ease",
-    opacity: disabled ? 0.5 : 1
-  };
+    gap: 8,
+    height: 40,
+    padding: "0 14px",
+    borderRadius: 999,
+    border: "1px solid transparent",
+    cursor: "pointer",
+    userSelect: "none",
+    transition: "transform 140ms ease, box-shadow 140ms ease, background 140ms ease, border-color 140ms ease, opacity 140ms ease",
+    fontSize: 13,
+    fontWeight: 900,
+    letterSpacing: 0.2,
+    color: UI.text,
+    background: "transparent",
+  },
+  btnPrimary: { background: `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})`, boxShadow: "0 10px 28px rgba(124, 92, 255, 0.25)" },
+  btnSecondary: { background: "rgba(255,255,255,0.06)", border: `1px solid ${UI.border}` },
+  btnDisabled: { opacity: 0.55, cursor: "not-allowed" },
 
-  const variantStyle = variant === "primary" ? {
-    background: "#6843C7",
-    color: COLORS.secondary
-  } : {
-    background: COLORS.surface,
-    border: `1px solid ${COLORS.border}`,
-    color: COLORS.textSecondary
-  };
+  iconBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    border: `1px solid ${UI.border}`,
+    background: "rgba(255,255,255,0.06)",
+    color: UI.text,
+    cursor: "pointer",
+    transition: "background 140ms ease, transform 140ms ease, border-color 140ms ease",
+    display: "grid",
+    placeItems: "center",
+  },
+
+  inputWrap: { display: "flex", alignItems: "flex-end", gap: 10, padding: 12, borderRadius: UI.radiusLg, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)" },
+  textarea: { flex: 1, minHeight: 40, resize: "none", border: "none", outline: "none", background: "transparent", color: UI.text, fontSize: 14, lineHeight: 1.35, padding: "8px 8px" },
+
+  dropdown: {
+    position: "absolute",
+    top: "calc(100% + 10px)",
+    left: 0,
+    right: 0,
+    zIndex: 30,
+    background: "rgba(10, 14, 28, 0.92)",
+    border: `1px solid ${UI.border}`,
+    borderRadius: UI.radiusLg,
+    boxShadow: UI.shadow2,
+    overflow: "hidden",
+    backdropFilter: "blur(10px)",
+  },
+  dropdownHeader: { padding: "12px 14px", borderBottom: `1px solid ${UI.border}` },
+  dropdownTitle: { display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 900, fontSize: 13, color: UI.text },
+  listRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
+
+  chip: { display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 999, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", color: UI.text, fontSize: 12 },
+
+  messageRow: { display: "flex", gap: 12 },
+  avatar: { width: 36, height: 36, borderRadius: 12, display: "grid", placeItems: "center", fontWeight: 950, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", flexShrink: 0 },
+  bubble: { background: "rgba(255,255,255,0.05)", border: `1px solid ${UI.border}`, borderRadius: 16, padding: "12px 14px", color: UI.text, fontSize: 13, lineHeight: 1.55 },
+
+  grid4: { display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 },
+  grid2: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 },
+
+  card: {
+    borderRadius: 16,
+    border: `1px solid ${UI.border}`,
+    background: "rgba(255,255,255,0.05)",
+    padding: 12,
+    cursor: "pointer",
+    transition: "transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease",
+    textAlign: "left",
+  },
+
+  modalOverlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "grid", placeItems: "center", padding: 18, zIndex: 60 },
+  modal: { width: "min(880px, 96vw)", borderRadius: 18, border: `1px solid ${UI.border}`, background: "rgba(10, 14, 28, 0.92)", boxShadow: UI.shadow2, backdropFilter: "blur(12px)", overflow: "hidden" },
+  modalHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${UI.border}` },
+  modalTitle: { margin: 0, fontSize: 14, fontWeight: 950, color: UI.text },
+  modalBody: { padding: 16 },
+
+  formGrid: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 },
+  field: { display: "flex", flexDirection: "column", gap: 6 },
+  label: { fontSize: 12, fontWeight: 950, color: UI.muted },
+  control: { borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", color: UI.text, padding: "10px 12px", outline: "none", fontSize: 13 },
+
+  multiselectTrigger: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: "10px 12px", cursor: "pointer" },
+  dropdownPanel: { position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, zIndex: 40, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(10, 14, 28, 0.96)", boxShadow: UI.shadow, maxHeight: 220, overflow: "auto" },
+  optionRow: { display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
+
+  pillRow: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 10 },
+  pill: { display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, border: "1px solid rgba(124,92,255,0.35)", background: "rgba(124,92,255,0.12)", padding: "8px 10px", fontSize: 12 },
+  pillX: { border: "none", background: "transparent", color: UI.text, cursor: "pointer", opacity: 0.8 },
+
+  benchCard: { borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14, transition: "transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease" },
+};
+
+/** -----------------------------
+ * Button (premium hover via state)
+ * ---------------------------- */
+const Button = React.memo(function Button({ onClick, disabled, children, variant = "primary", style = {}, type = "button" }) {
+  const [hover, setHover] = useState(false);
+  const [active, setActive] = useState(false);
+
+  const variantStyle = variant === "primary" ? S.btnPrimary : S.btnSecondary;
+
+  const hoverStyle =
+    !disabled && hover
+      ? variant === "primary"
+        ? { transform: "translateY(-1px)", boxShadow: "0 14px 36px rgba(124, 92, 255, 0.32)" }
+        : { transform: "translateY(-1px)", background: "rgba(255,255,255,0.085)", borderColor: UI.border2 }
+      : null;
+
+  const activeStyle = !disabled && active ? { transform: "translateY(1px)" } : null;
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn ${variant}`}
-      style={{ ...baseStyle, ...variantStyle, ...style }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => {
+        setHover(false);
+        setActive(false);
+      }}
+      onMouseDown={() => setActive(true)}
+      onMouseUp={() => setActive(false)}
+      style={{
+        ...S.btnBase,
+        ...variantStyle,
+        ...(disabled ? S.btnDisabled : null),
+        ...(hoverStyle || null),
+        ...(activeStyle || null),
+        ...style,
+      }}
     >
       {children}
     </button>
   );
 });
-Button.displayName = 'Button';
 
-const Modal = React.memo(({ title, children, isOpen, onClose }) => {
+/** -----------------------------
+ * Modal (inline)
+ * ---------------------------- */
+const Modal = React.memo(function Modal({ title, children, isOpen, onClose }) {
+  const [closeHover, setCloseHover] = useState(false);
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" role="presentation">
-      <div className="modal-content" role="dialog" aria-modal="true">
-        <div className="modal-header">
-          <h3 className="modal-title">{title}</h3>
-          <button onClick={onClose} aria-label="Close dialog" className="modal-close">
-            <FiX size={24} />
+    <div style={S.modalOverlay} role="presentation" onMouseDown={onClose}>
+      <div style={S.modal} role="dialog" aria-modal="true" onMouseDown={(e) => e.stopPropagation()}>
+        <div style={S.modalHeader}>
+          <h3 style={S.modalTitle}>{title}</h3>
+          <button
+            onClick={onClose}
+            aria-label="Close dialog"
+            onMouseEnter={() => setCloseHover(true)}
+            onMouseLeave={() => setCloseHover(false)}
+            style={{
+              ...S.iconBtn,
+              borderRadius: 14,
+              background: closeHover ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.06)",
+              borderColor: closeHover ? UI.border2 : UI.border,
+            }}
+          >
+            <FiX size={20} />
           </button>
         </div>
-        <div className="modal-body">
-          {children}
-        </div>
+        <div style={S.modalBody}>{children}</div>
       </div>
     </div>
   );
 });
-Modal.displayName = 'Modal';
 
-const TalentForm = React.memo(({
+/** -----------------------------
+ * SearchBar (MUST be a component)
+ * Fixes rules-of-hooks issue.
+ * ---------------------------- */
+function SearchBar({
+  inputValue,
+  setInputValue,
+  attachedFiles,
+  isLoading,
+  tokenCount,
+  showDropdown,
+  setShowDropdown,
+  searchLoading,
+  filteredSearches,
+  handleKeyDown,
+  handleSubmit,
+  handleSearchSelect,
+  deleteRecentSearch,
+  clearAllRecentSearches,
+  fileInputRef,
+  searchContainerRef,
+}) {
+  const [toggleHover, setToggleHover] = useState(false);
+  const [attachHover, setAttachHover] = useState(false);
+  const [sendHover, setSendHover] = useState(false);
+
+  const iconStyle = (hover) => ({
+    ...S.iconBtn,
+    background: hover ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.06)",
+    borderColor: hover ? UI.border2 : UI.border,
+    transform: hover ? "translateY(-1px)" : "translateY(0px)",
+  });
+
+  return (
+    <div ref={searchContainerRef} style={{ position: "relative" }}>
+      <div style={S.inputWrap}>
+        <textarea
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setShowDropdown(true)}
+          placeholder="Ask anything..."
+          rows={1}
+          style={S.textarea}
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowDropdown((prev) => !prev)}
+          onMouseEnter={() => setToggleHover(true)}
+          onMouseLeave={() => setToggleHover(false)}
+          style={iconStyle(toggleHover)}
+        >
+          <FiClock size={14} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          onMouseEnter={() => setAttachHover(true)}
+          onMouseLeave={() => setAttachHover(false)}
+          style={iconStyle(attachHover)}
+        >
+          <FiPaperclip size={18} />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!inputValue.trim() && attachedFiles.length === 0 && isLoading && tokenCount === 0}
+          onMouseEnter={() => setSendHover(true)}
+          onMouseLeave={() => setSendHover(false)}
+          style={iconStyle(sendHover)}
+        >
+          <FiSend size={16} />
+        </button>
+      </div>
+
+      {showDropdown && (
+        <div style={S.dropdown}>
+          <div style={{ ...S.dropdownHeader, ...S.rowBetween }}>
+            <div style={S.dropdownTitle}>
+              <FiClock size={14} />
+              <span>Recent Searches</span>
+            </div>
+
+            {!searchLoading && filteredSearches.length > 0 && (
+              <button
+                onClick={clearAllRecentSearches}
+                style={{
+                  height: 30,
+                  padding: "0 10px",
+                  borderRadius: 999,
+                  border: `1px solid ${UI.border}`,
+                  background: "transparent",
+                  color: UI.muted,
+                  cursor: "pointer",
+                  fontSize: 12,
+                  fontWeight: 900,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = UI.border2;
+                  e.currentTarget.style.color = UI.text;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = UI.border;
+                  e.currentTarget.style.color = UI.muted;
+                }}
+              >
+                Clear All
+              </button>
+            )}
+          </div>
+
+          {searchLoading ? (
+            <div style={{ padding: "12px 16px", fontSize: 13, color: UI.muted }}>Loading options...</div>
+          ) : filteredSearches.length === 0 ? (
+            <div style={{ padding: "12px 16px", fontSize: 13, color: UI.muted }}>No recent searches found</div>
+          ) : (
+            filteredSearches.map((search, index) => (
+              <div
+                key={`${search.text}-${index}`}
+                onClick={() => handleSearchSelect(search)}
+                style={S.listRow}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                  <FiSearch size={16} style={{ color: UI.muted, flexShrink: 0 }} />
+                  <span style={{ color: UI.text, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{search.text}</span>
+                </div>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteRecentSearch(search);
+                  }}
+                  style={{ border: "none", background: "transparent", color: UI.muted, cursor: "pointer" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = UI.danger)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = UI.muted)}
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** -----------------------------
+ * TalentForm (inline premium)
+ * ---------------------------- */
+const TalentForm = React.memo(function TalentForm({
   talentForm,
   talentRoleInputDisplay,
   setTalentRoleInputDisplay,
@@ -201,8 +540,10 @@ const TalentForm = React.memo(({
   setTalentPromptDirty,
   skillsDropdownRef,
   onSavePrompt,
-  onSubmit
-}) => {
+  onSubmit,
+}) {
+  const [editHover, setEditHover] = useState(false);
+
   const handleRoleChange = (e) => {
     const value = e.target.value;
     setTalentRoleInputDisplay(value);
@@ -212,12 +553,11 @@ const TalentForm = React.memo(({
 
   const handleRoleBlur = () => {
     const trimmedInput = talentRoleInputDisplay.trim();
-    const isValidRole = ALL_IT_ROLES.some(r => r.toLowerCase().includes(trimmedInput.toLowerCase()));
-
+    const isValidRole = ALL_IT_ROLES.some((r) => r.toLowerCase().includes(trimmedInput.toLowerCase()));
     if (!isValidRole && trimmedInput.length > 0) {
       setTalentRoleInputDisplay(talentForm.role);
     } else if (isValidRole) {
-      dispatch({ type: 'SETROLE', payload: talentRoleInputDisplay });
+      dispatch({ type: "SETROLE", payload: talentRoleInputDisplay });
       setRoleSuggestionsOpen(false);
     }
   };
@@ -225,34 +565,38 @@ const TalentForm = React.memo(({
   const handleRoleSelect = (role) => (e) => {
     e.preventDefault();
     setTalentRoleInputDisplay(role);
-    dispatch({ type: 'SETROLE', payload: role });
+    dispatch({ type: "SETROLE", payload: role });
     setRoleSuggestionsOpen(false);
     setTalentPromptDirty(false);
   };
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="section-title">Search Filters</div>
-      <div className="search-form">
-        <div className="form-field">
-          <span className="form-label">Role</span>
-          <div style={{ position: 'relative' }}>
+      <div style={{ fontWeight: 950, margin: "0 0 10px", color: UI.text }}>Search Filters</div>
+
+      <div style={S.formGrid}>
+        <div style={S.field}>
+          <span style={S.label}>Role</span>
+          <div style={{ position: "relative" }}>
             <input
               autoFocus
               type="text"
-              className="form-input"
               placeholder="E.g., Frontend Developer"
               value={talentRoleInputDisplay}
               onChange={handleRoleChange}
               onBlur={handleRoleBlur}
+              style={S.control}
             />
+
             {roleSuggestionsOpen && filteredRoleSuggestions.length > 0 && (
-              <div className="role-suggestions">
-                {filteredRoleSuggestions.map(role => (
+              <div style={S.dropdownPanel}>
+                {filteredRoleSuggestions.map((role) => (
                   <div
                     key={role}
-                    className="role-suggestion-item"
+                    style={S.optionRow}
                     onMouseDown={handleRoleSelect(role)}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
                     {role}
                   </div>
@@ -262,43 +606,61 @@ const TalentForm = React.memo(({
           </div>
         </div>
 
-        <div className="form-field" ref={skillsDropdownRef}>
-          <span className="form-label">Skills</span>
-          <div className="form-multiselect-wrapper">
+        <div style={S.field} ref={skillsDropdownRef}>
+          <span style={S.label}>Skills</span>
+
+          <div style={{ position: "relative" }}>
             <div
-              className="form-multiselect-trigger"
-              onClick={() => setSkillsDropdownOpen(prev => !prev)}
+              style={S.multiselectTrigger}
+              onClick={() => setSkillsDropdownOpen((prev) => !prev)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = UI.border2;
+                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = UI.border;
+                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+              }}
             >
-              <span>
-                {talentForm.skills.length === 0
-                  ? "Select skills"
-                  : `${talentForm.skills.length} selected`
-                }
+              <span style={{ color: talentForm.skills.length === 0 ? UI.muted2 : UI.text }}>
+                {talentForm.skills.length === 0 ? "Select skills" : `${talentForm.skills.length} selected`}
               </span>
-              <span className="form-multiselect-arrow">
-                {skillsDropdownOpen ? '▲' : '▼'}
-              </span>
+              <span style={{ color: UI.muted }}>{skillsDropdownOpen ? "▲" : "▼"}</span>
             </div>
+
             {skillsDropdownOpen && (
-              <div className="form-multiselect-dropdown">
+              <div style={S.dropdownPanel}>
                 {computedSkillOptions.length === 0 ? (
-                  <div style={{ padding: '6px 10px', fontSize: 12, color: '#6b7280' }}>
-                    Select a valid role to see skills
-                  </div>
+                  <div style={{ padding: "10px 12px", fontSize: 12, color: UI.muted }}>Select a valid role to see skills</div>
                 ) : (
-                  computedSkillOptions.map(skill => {
+                  computedSkillOptions.map((skill) => {
                     const checked = talentForm.skills.includes(skill);
                     return (
                       <div
                         key={skill}
-                        className="form-multiselect-option"
+                        style={S.optionRow}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                         onClick={() => {
-                          dispatch({ type: 'TOGGLESKILL', payload: skill });
+                          dispatch({ type: "TOGGLESKILL", payload: skill });
                           setTalentPromptDirty(false);
                         }}
                       >
-                        <span className={`form-multiselect-checkbox ${checked ? 'checked' : ''}`}>
-                          {checked ? '✓' : ''}
+                        <span
+                          style={{
+                            width: 18,
+                            height: 18,
+                            borderRadius: 6,
+                            border: `1px solid ${UI.border2}`,
+                            display: "grid",
+                            placeItems: "center",
+                            background: checked ? `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})` : "transparent",
+                            color: UI.text,
+                            fontSize: 12,
+                            fontWeight: 950,
+                          }}
+                        >
+                          {checked ? "✓" : ""}
                         </span>
                         <span>{skill}</span>
                       </div>
@@ -308,16 +670,19 @@ const TalentForm = React.memo(({
               </div>
             )}
           </div>
+
           {talentForm.skills.length > 0 && (
-            <div className="skills-selected">
-              {talentForm.skills.map(skill => (
-                <span key={skill} className="multi-pill">
+            <div style={S.pillRow}>
+              {talentForm.skills.map((skill) => (
+                <span key={skill} style={S.pill}>
                   {skill}
                   <button
                     type="button"
-                    className="multi-pill-remove"
+                    style={S.pillX}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = 0.8)}
                     onClick={() => {
-                      dispatch({ type: 'REMOVESKILL', payload: skill });
+                      dispatch({ type: "REMOVESKILL", payload: skill });
                       setTalentPromptDirty(false);
                     }}
                   >
@@ -329,201 +694,154 @@ const TalentForm = React.memo(({
           )}
         </div>
 
-        <div className="form-field">
-          <span className="form-label">Qualification</span>
+        <div style={S.field}>
+          <span style={S.label}>Qualification</span>
           <input
             type="text"
-            className="form-input"
             placeholder="E.g., B.Tech, MCA"
             value={talentForm.qualifications}
-            onChange={e => {
-              dispatch({ type: 'SETFIELD', field: 'qualifications', payload: e.target.value });
+            onChange={(e) => {
+              dispatch({ type: "SETFIELD", field: "qualifications", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
+            style={S.control}
           />
         </div>
 
-        <div className="form-field" style={{ position: 'relative' }}>
-          <span className="form-label">Experience</span>
-          <div style={{ position: 'relative' }}>
-            <select
-              className="form-select"
-              value={talentForm.experience}
-              onChange={e => {
-                dispatch({ type: 'SETFIELD', field: 'experience', payload: e.target.value });
-                setTalentPromptDirty(false);
-              }}
-              style={{ appearance: 'none', WebkitAppearance: 'none' }}
-            >
-              <option value="">Select experience</option>
-              <option value="0-2 years">0-2 years</option>
-              <option value="2-4 years">2-4 years</option>
-              <option value="3-5 years">3-5 years</option>
-              <option value="5+ years">5+ years</option>
-              <option value="10+ years">10+ years</option>
-            </select>
-            <span style={{
-              position: 'absolute',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '12px',
-              color: '#9ca3af',
-              pointerEvents: 'none'
-            }}>
-              ▼
-            </span>
-          </div>
-        </div>
-
-        <div className="form-field" style={{ position: 'relative' }}>
-          <span className="form-label">Salary Range</span>
-          <div style={{ position: 'relative' }}>
-            <select
-              className="form-select"
-              value={talentForm.salary}
-              onChange={e => {
-                dispatch({ type: 'SETFIELD', field: 'salary', payload: e.target.value });
-                setTalentPromptDirty(false);
-              }}
-              style={{ appearance: 'none', WebkitAppearance: 'none' }}
-            >
-              <option value="">Select range</option>
-              <option value="6 LPA">6 LPA</option>
-              <option value="8 LPA">8 LPA</option>
-              <option value="10 LPA">10 LPA</option>
-              <option value="12 LPA">12 LPA</option>
-              <option value="15 LPA">15 LPA</option>
-              <option value="80k">$80k</option>
-              <option value="100k">$100k</option>
-            </select>
-            <span style={{
-              position: 'absolute',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '12px',
-              color: '#9ca3af',
-              pointerEvents: 'none'
-            }}>
-              ▼
-            </span>
-          </div>
-        </div>
-
-        <div className="form-field" style={{ position: 'relative' }}>
-          <span className="form-label">Work Type</span>
-          <div style={{ position: 'relative' }}>
-            <select
-              className="form-select"
-              value={talentForm.workType}
-              onChange={e => {
-                dispatch({ type: 'SETFIELD', field: 'workType', payload: e.target.value });
-                setTalentPromptDirty(false);
-              }}
-              style={{ appearance: 'none', WebkitAppearance: 'none' }}
-            >
-              <option value="">Select work type</option>
-              <option value="Remote">Remote</option>
-              <option value="Hybrid">Hybrid</option>
-              <option value="Onsite">Onsite</option>
-            </select>
-            <span style={{
-              position: 'absolute',
-              right: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              fontSize: '12px',
-              color: '#9ca3af',
-              pointerEvents: 'none'
-            }}>
-              ▼
-            </span>
-          </div>
-        </div>
-
-        <div className="form-field">
-          <span className="form-label">Location</span>
-          <input
-            type="text"
-            className="form-input"
-            placeholder="E.g., Bangalore, Hyderabad"
-            value={talentForm.location}
-            onChange={e => {
-              dispatch({ type: 'SETFIELD', field: 'location', payload: e.target.value });
+        <div style={S.field}>
+          <span style={S.label}>Experience</span>
+          <select
+            value={talentForm.experience}
+            onChange={(e) => {
+              dispatch({ type: "SETFIELD", field: "experience", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+          >
+            <option value="">Select experience</option>
+            <option value="0-2 years">0-2 years</option>
+            <option value="2-4 years">2-4 years</option>
+            <option value="3-5 years">3-5 years</option>
+            <option value="5+ years">5+ years</option>
+            <option value="10+ years">10+ years</option>
+          </select>
+        </div>
+
+        <div style={S.field}>
+          <span style={S.label}>Salary Range</span>
+          <select
+            value={talentForm.salary}
+            onChange={(e) => {
+              dispatch({ type: "SETFIELD", field: "salary", payload: e.target.value });
+              setTalentPromptDirty(false);
+            }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+          >
+            <option value="">Select range</option>
+            <option value="6 LPA">6 LPA</option>
+            <option value="8 LPA">8 LPA</option>
+            <option value="10 LPA">10 LPA</option>
+            <option value="12 LPA">12 LPA</option>
+            <option value="15 LPA">15 LPA</option>
+            <option value="80k">$80k</option>
+            <option value="100k">$100k</option>
+          </select>
+        </div>
+
+        <div style={S.field}>
+          <span style={S.label}>Work Type</span>
+          <select
+            value={talentForm.workType}
+            onChange={(e) => {
+              dispatch({ type: "SETFIELD", field: "workType", payload: e.target.value });
+              setTalentPromptDirty(false);
+            }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+          >
+            <option value="">Select work type</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Onsite">Onsite</option>
+          </select>
+        </div>
+
+        <div style={S.field}>
+          <span style={S.label}>Location</span>
+          <input
+            type="text"
+            placeholder="E.g., Bangalore, Hyderabad"
+            value={talentForm.location}
+            onChange={(e) => {
+              dispatch({ type: "SETFIELD", field: "location", payload: e.target.value });
+              setTalentPromptDirty(false);
+            }}
+            style={S.control}
           />
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <h4 className="section-title">Generated Prompt</h4>
+      <div style={{ ...S.rowBetween, margin: "16px 0 10px" }}>
+        <h4 style={{ margin: 0, fontSize: 13, fontWeight: 950, color: UI.text }}>Generated Prompt</h4>
         <button
           type="button"
-          onClick={() => setIsEditingTalentPrompt(prev => !prev)}
+          onClick={() => setIsEditingTalentPrompt((prev) => !prev)}
+          onMouseEnter={() => setEditHover(true)}
+          onMouseLeave={() => setEditHover(false)}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            backgroundColor: 'transparent',
-            border: `1px solid ${COLORS.border}`,
-            borderRadius: '6px',
-            padding: '4px 8px',
-            cursor: 'pointer',
-            color: COLORS.textSecondary,
-            fontSize: '12px',
-            transition: 'all 0.2s ease'
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            borderRadius: 999,
+            padding: "8px 10px",
+            cursor: "pointer",
+            background: editHover ? "rgba(255,255,255,0.085)" : "rgba(255,255,255,0.05)",
+            border: `1px solid ${editHover ? UI.border2 : UI.border}`,
+            color: UI.text,
+            fontSize: 12,
+            fontWeight: 900,
+            transition: "all 140ms ease",
           }}
         >
-          <FiEdit size={12} />
-          {isEditingTalentPrompt ? 'Done' : 'Edit'}
+          <FiEdit size={14} />
+          {isEditingTalentPrompt ? "Done" : "Edit"}
         </button>
       </div>
 
       {isEditingTalentPrompt ? (
         <textarea
           value={talentPrompt}
-          onChange={e => {
+          onChange={(e) => {
             setTalentPrompt(e.target.value);
             setTalentPromptDirty(true);
           }}
-          className="prompt-textarea"
-          style={{ marginBottom: '20px', height: '200px' }}
+          style={{ ...S.control, minHeight: 200, width: "100%", marginBottom: 14, resize: "vertical", lineHeight: 1.55 }}
         />
       ) : (
-        <div style={{
-          padding: '16px',
-          backgroundColor: COLORS.borderLight,
-          borderRadius: '12px',
-          border: `1px solid ${COLORS.border}`,
-          minHeight: '200px',
-          fontSize: '14px',
-          color: COLORS.text,
-          lineHeight: '1.6',
-          marginBottom: '20px',
-          wordBreak: 'break-word'
-        }}>
+        <div
+          style={{
+            padding: 14,
+            borderRadius: 16,
+            border: `1px solid ${UI.border}`,
+            background: "rgba(255,255,255,0.05)",
+            minHeight: 200,
+            fontSize: 13,
+            color: UI.text,
+            lineHeight: 1.6,
+            marginBottom: 14,
+            wordBreak: "break-word",
+          }}
+        >
           {talentPrompt || "Prompt will be generated based on your selections..."}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <Button
-          onClick={() => onSavePrompt('talent')}
-          disabled={!talentPrompt?.trim()}
-          variant="secondary"
-          style={{ flex: 1 }}
-          type="button"
-        >
-          <FiSave size={14} />
+      <div style={S.rowGap12}>
+        <Button onClick={() => onSavePrompt("talent")} disabled={!talentPrompt?.trim()} variant="secondary" style={{ flex: 1 }} type="button">
+          <FiSave size={16} />
           <span>Save Prompt</span>
         </Button>
-        <Button
-          type="submit"
-          disabled={!talentPrompt?.trim()}
-          style={{ flex: 1 }}
-        >
+
+        <Button type="submit" disabled={!talentPrompt?.trim()} style={{ flex: 1 }}>
           <FiSearch size={16} />
           <span>Search Talents</span>
         </Button>
@@ -531,87 +849,90 @@ const TalentForm = React.memo(({
     </form>
   );
 });
-TalentForm.displayName = 'TalentForm';
 
-const SuggestedBenchCard = React.memo(({ bench }) => (
-  <div
-    className="bench-card"
-    onMouseEnter={e => {
-      e.currentTarget.style.boxShadow = COLORS.shadowLg;
-      e.currentTarget.style.transform = 'translateY(-2px)';
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.boxShadow = COLORS.shadow;
-      e.currentTarget.style.transform = 'translateY(0)';
-    }}
-  >
-    <div className="bench-name">{bench.name}</div>
-    <div className="bench-role">{bench.role} • {bench.experience}</div>
-    <div className="bench-skills">{bench.skills.join(', ')}</div>
-    <div className="bench-location">{bench.location}</div>
-  </div>
-));
-SuggestedBenchCard.displayName = 'SuggestedBenchCard';
+/** -----------------------------
+ * SuggestedBenchCard
+ * ---------------------------- */
+const SuggestedBenchCard = React.memo(function SuggestedBenchCard({ bench }) {
+  const [hover, setHover] = useState(false);
 
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        ...S.benchCard,
+        borderColor: hover ? "rgba(124,92,255,0.40)" : UI.border,
+        background: hover ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
+        transform: hover ? "translateY(-2px)" : "translateY(0)",
+        boxShadow: hover ? UI.shadow2 : "none",
+      }}
+    >
+      <div style={{ fontWeight: 950, marginBottom: 4 }}>{bench.name}</div>
+      <div style={{ color: UI.muted, fontSize: 12, marginBottom: 6 }}>
+        {bench.role} • {bench.experience}
+      </div>
+      <div style={{ color: UI.text, fontSize: 12, marginBottom: 8 }}>{bench.skills.join(", ")}</div>
+      <div style={{ color: UI.muted2, fontSize: 12 }}>{bench.location}</div>
+    </div>
+  );
+});
+
+/** -----------------------------
+ * AIScreen
+ * ---------------------------- */
 function AIScreen() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tokenCount, setTokenCount] = useState(45);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const [isTalentModalOpen, setIsTalentModalOpen] = useState(false);
-  const [isProjectsModalOpen, setIsProjectsModalOpen] = useState(false);
+  const [isProjectsModalOpen, setIsProjectsModalOpen] = useState(false); // reserved
   const [showSavedPrompts, setShowSavedPrompts] = useState(false);
+
   const [recentSearches, setRecentSearches] = useState([
-    { text: 'Find React Developers', type: 'job' },
-    { text: 'E-commerce Platform Project', type: 'project' },
-    { text: 'UI/UX Design Position', type: 'job' }
+    { text: "Find React Developers", type: "job" },
+    { text: "E-commerce Platform Project", type: "project" },
+    { text: "UI/UX Design Position", type: "job" },
   ]);
   const [filteredSearches, setFilteredSearches] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  const initialTalentForm = {
-    role: '',
-    skills: [],
-    qualifications: '',
-    experience: '',
-    location: '',
-    salary: '',
-    workType: ''
-  };
-
-  const initialProjectForm = {
-    projectType: '',
-    skills: [],
-    duration: '',
-    budget: '',
-    workType: '',
-    location: ''
-  };
+  const initialTalentForm = { role: "", skills: [], qualifications: "", experience: "", location: "", salary: "", workType: "" };
+  const initialProjectForm = { projectType: "", skills: [], duration: "", budget: "", workType: "", location: "" };
 
   const [talentForm, talentDispatch] = useReducer(formReducer, initialTalentForm);
-  const [projectsForm, projectsDispatch] = useReducer(formReducer, initialProjectForm);
-  const [talentPrompt, setTalentPrompt] = useState('');
-  const [projectsPrompt, setProjectsPrompt] = useState('');
+  const [projectsForm, projectsDispatch] = useReducer(formReducer, initialProjectForm); // reserved
+
+  const [talentPrompt, setTalentPrompt] = useState("");
+  const [projectsPrompt, setProjectsPrompt] = useState(""); // reserved
+
   const [isEditingTalentPrompt, setIsEditingTalentPrompt] = useState(false);
-  const [isEditingProjectsPrompt, setIsEditingProjectsPrompt] = useState(false);
+  const [isEditingProjectsPrompt, setIsEditingProjectsPrompt] = useState(false); // reserved
+
   const [talentPromptDirty, setTalentPromptDirty] = useState(false);
-  const [projectsPromptDirty, setProjectsPromptDirty] = useState(false);
-  const [talentRoleInputDisplay, setTalentRoleInputDisplay] = useState('');
+  const [projectsPromptDirty, setProjectsPromptDirty] = useState(false); // reserved
+
+  const [talentRoleInputDisplay, setTalentRoleInputDisplay] = useState("");
+
   const [savedPrompts, setSavedPrompts] = useState([
     {
       id: 1,
-      type: 'talent',
-      name: 'Senior Frontend Dev',
-      prompt: 'Find Frontend Developer with skills in React/Angular/Vue, 5+ years experience, Remote work type, salary expectation 15 LPA.',
-      createdAt: new Date(Date.now() - 86400000)
-    }
+      type: "talent",
+      name: "Senior Frontend Dev",
+      prompt: "Find Frontend Developer with skills in React/Angular/Vue, 5+ years experience, Remote work type, salary expectation 15 LPA.",
+      createdAt: new Date(Date.now() - 86400000),
+    },
   ]);
+
   const [editPromptModalOpen, setEditPromptModalOpen] = useState(false);
   const [editingSavedPromptId, setEditingSavedPromptId] = useState(null);
-  const [editingSavedPromptName, setEditingSavedPromptName] = useState('');
-  const [editingSavedPromptText, setEditingSavedPromptText] = useState('');
+  const [editingSavedPromptName, setEditingSavedPromptName] = useState("");
+  const [editingSavedPromptText, setEditingSavedPromptText] = useState("");
+
   const [skillsDropdownOpen, setSkillsDropdownOpen] = useState(false);
   const [roleSuggestionsOpen, setRoleSuggestionsOpen] = useState(false);
 
@@ -623,181 +944,136 @@ function AIScreen() {
   const computedSkillOptions = useMemo(() => {
     const roleText = talentForm.role.trim().toLowerCase();
     if (!roleText) return [];
-
-    const exactKey = Object.keys(FULL_IT_ROLES_SKILLS).find(r =>
-      r.toLowerCase() === roleText
-    );
+    const exactKey = Object.keys(FULL_IT_ROLES_SKILLS).find((r) => r.toLowerCase() === roleText);
     return exactKey ? FULL_IT_ROLES_SKILLS[exactKey] : [];
   }, [talentForm.role]);
 
   const filteredRoleSuggestions = useMemo(() => {
     const text = talentRoleInputDisplay.trim().toLowerCase();
     if (!text) return ALL_IT_ROLES;
-    return ALL_IT_ROLES.filter(r => r.toLowerCase().includes(text));
+    return ALL_IT_ROLES.filter((r) => r.toLowerCase().includes(text));
   }, [talentRoleInputDisplay]);
 
-  const suggestedBench = useMemo(() => [
-    {
-      name: 'Alice Johnson',
-      role: 'UI/UX Designer',
-      experience: '5 years',
-      skills: ['Figma', 'Sketch', 'Adobe XD'],
-      location: 'Bangalore'
-    },
-    {
-      name: 'Rahul Mehta',
-      role: 'Frontend Developer',
-      experience: '4 years',
-      skills: ['React', 'TypeScript', 'Tailwind CSS'],
-      location: 'Hyderabad'
-    },
-    {
-      name: 'Priya Sharma',
-      role: 'Backend Developer',
-      experience: '6 years',
-      skills: ['Node.js', 'MongoDB', 'AWS'],
-      location: 'Bangalore'
-    },
-    {
-      name: 'Aditya Patel',
-      role: 'DevOps Engineer',
-      experience: '3 years',
-      skills: ['Docker', 'Kubernetes', 'CI/CD'],
-      location: 'Remote'
-    }
-  ], []);
+  const suggestedBench = useMemo(
+    () => [
+      { name: "Alice Johnson", role: "UI/UX Designer", experience: "5 years", skills: ["Figma", "Sketch", "Adobe XD"], location: "Bangalore" },
+      { name: "Rahul Mehta", role: "Frontend Developer", experience: "4 years", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Hyderabad" },
+      { name: "Priya Sharma", role: "Backend Developer", experience: "6 years", skills: ["Node.js", "MongoDB", "AWS"], location: "Bangalore" },
+      { name: "Aditya Patel", role: "DevOps Engineer", experience: "3 years", skills: ["Docker", "Kubernetes", "CI/CD"], location: "Remote" },
+    ],
+    []
+  );
 
   const generateTalentPrompt = useCallback((form) => {
-    if (!form.role) return '';
+    if (!form.role) return "";
     let prompt = `Find ${form.role}`;
-    if (form.skills?.length) prompt += ` with skills in ${form.skills.join(', ')}`;
+    if (form.skills?.length) prompt += ` with skills in ${form.skills.join(", ")}`;
     if (form.qualifications) prompt += ` with qualifications in ${form.qualifications}`;
     if (form.experience) prompt += `, ${form.experience} experience`;
     if (form.workType) prompt += `, ${form.workType} work type`;
     if (form.location) prompt += `, based in ${form.location}`;
     if (form.salary) prompt += `, salary expectation ${form.salary}`;
-    return prompt + '.';
+    return prompt + ".";
   }, []);
 
-  const handleSubmit = useCallback((searchText = null) => {
-    const textToSubmit = searchText || inputValue;
-    if (!textToSubmit.trim() && attachedFiles.length === 0 && tokenCount === 0) return;
+  const handleSubmit = useCallback(
+    (searchText = null) => {
+      const textToSubmit = searchText || inputValue;
+      if (!textToSubmit.trim() && attachedFiles.length === 0 && tokenCount === 0) return;
 
-    if (textToSubmit.trim()) {
-      const lower = textToSubmit.toLowerCase();
-      const isJobSearch = /developer|engineer|talent|position|hiring/.test(lower);
-      const newSearch = {
-        text: textToSubmit.trim(),
-        type: isJobSearch ? 'job' : 'project'
-      };
-      setRecentSearches(prev => {
-        const exists = prev.some(s => s.text === newSearch.text);
-        return exists ? prev : [newSearch, ...prev.slice(0, 9)];
-      });
-    }
+      if (textToSubmit.trim()) {
+        const lower = textToSubmit.toLowerCase();
+        const isJobSearch = /developer|engineer|talent|position|hiring/.test(lower);
+        const newSearch = { text: textToSubmit.trim(), type: isJobSearch ? "job" : "project" };
+        setRecentSearches((prev) => {
+          const exists = prev.some((s) => s.text === newSearch.text);
+          return exists ? prev : [newSearch, ...prev.slice(0, 9)];
+        });
+      }
 
-    const userMessage = {
-      id: `msg-${messages.length + 1}`,
-      type: 'user',
-      content: textToSubmit,
-      files: attachedFiles,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setAttachedFiles([]);
-    setShowDropdown(false);
-    setTokenCount(prev => Math.max(0, prev - 1));
-    setIsLoading(true);
+      const userMessage = { id: `msg-${messages.length + 1}`, type: "user", content: textToSubmit, files: attachedFiles, timestamp: new Date() };
+      setMessages((prev) => [...prev, userMessage]);
 
-    setTimeout(() => {
-      const aiMessage = {
-        id: `msg-${messages.length + 2}`,
-        type: 'ai',
-        content: 'Here are some suggested Bench based on your query.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1200);
-  }, [inputValue, attachedFiles, tokenCount, messages.length]);
+      setInputValue("");
+      setAttachedFiles([]);
+      setShowDropdown(false);
+      setTokenCount((prev) => Math.max(0, prev - 1));
+      setIsLoading(true);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [handleSubmit]);
+      setTimeout(() => {
+        const aiMessage = { id: `msg-${messages.length + 2}`, type: "ai", content: "Here are some suggested Bench based on your query.", timestamp: new Date() };
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsLoading(false);
+      }, 1200);
+    },
+    [inputValue, attachedFiles, tokenCount, messages.length]
+  );
 
-  const handleFileAttach = useCallback(e => {
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    },
+    [handleSubmit]
+  );
+
+  const handleFileAttach = useCallback((e) => {
     const files = e.target.files;
     if (files) {
-      const newFiles = Array.from(files).map(file => ({
-        id: Math.random(),
-        name: file.name,
-        size: (file.size / 1024).toFixed(2)
-      }));
-      setAttachedFiles(prev => [...prev, ...newFiles]);
+      const newFiles = Array.from(files).map((file) => ({ id: Math.random(), name: file.name, size: (file.size / 1024).toFixed(2) }));
+      setAttachedFiles((prev) => [...prev, ...newFiles]);
     }
   }, []);
 
-  const removeFile = useCallback((fileId) => {
-    setAttachedFiles(prev => prev.filter(file => file.id !== fileId));
-  }, []);
+  const removeFile = useCallback((fileId) => setAttachedFiles((prev) => prev.filter((file) => file.id !== fileId)), []);
 
-  const handleSavePrompt = useCallback(type => {
-    const promptText = type === 'talent' ? talentPrompt : projectsPrompt;
-    if (!promptText?.trim()) return;
+  const handleSavePrompt = useCallback(
+    (type) => {
+      const promptText = type === "talent" ? talentPrompt : projectsPrompt;
+      if (!promptText?.trim()) return;
 
-    const promptName = window.prompt('Enter a name for this prompt');
-    if (!promptName) return;
+      const promptName = window.prompt("Enter a name for this prompt");
+      if (!promptName) return;
 
-    setSavedPrompts(prev => [{
-      id: Date.now(),
-      type,
-      name: promptName,
-      prompt: promptText,
-      createdAt: new Date()
-    }, ...prev]);
-    if (type === 'talent') setTalentPrompt('');
-    if (type === 'projects') setProjectsPrompt('');
-  }, [talentPrompt, projectsPrompt]);
+      setSavedPrompts((prev) => [{ id: Date.now(), type, name: promptName, prompt: promptText, createdAt: new Date() }, ...prev]);
 
-  const handleLoadSavedPrompt = useCallback(savedPrompt => {
-    handleSubmit(savedPrompt.prompt);
-    setShowSavedPrompts(false);
-  }, [handleSubmit]);
+      if (type === "talent") setTalentPrompt("");
+      if (type === "projects") setProjectsPrompt("");
+    },
+    [talentPrompt, projectsPrompt]
+  );
 
-  const handleDeleteSavedPrompt = useCallback(id => {
-    setSavedPrompts(prev => prev.filter(p => p.id !== id));
-  }, []);
+  const handleLoadSavedPrompt = useCallback(
+    (savedPrompt) => {
+      handleSubmit(savedPrompt.prompt);
+      setShowSavedPrompts(false);
+    },
+    [handleSubmit]
+  );
+
+  const handleDeleteSavedPrompt = useCallback((id) => setSavedPrompts((prev) => prev.filter((p) => p.id !== id)), []);
 
   const goHome = useCallback(() => {
     setMessages([]);
     setShowSavedPrompts(false);
   }, []);
 
-  // Auto-generate talent prompt
   useEffect(() => {
-    if (!talentPromptDirty) {
-      setTalentPrompt(generateTalentPrompt(talentForm));
-    }
+    if (!talentPromptDirty) setTalentPrompt(generateTalentPrompt(talentForm));
   }, [talentForm, talentPromptDirty, generateTalentPrompt]);
 
-  // Scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Search filtering
   useEffect(() => {
     let timeoutId;
     if (inputValue.trim()) {
       setSearchLoading(true);
       timeoutId = setTimeout(() => {
-        const filtered = recentSearches.filter(search =>
-          search.text.toLowerCase().includes(inputValue.toLowerCase())
-        );
+        const filtered = recentSearches.filter((search) => search.text.toLowerCase().includes(inputValue.toLowerCase()));
         setFilteredSearches(filtered);
         setSearchLoading(false);
       }, 200);
@@ -805,29 +1081,21 @@ function AIScreen() {
       setSearchLoading(false);
       setFilteredSearches(recentSearches);
     }
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
+    return () => timeoutId && clearTimeout(timeoutId);
   }, [inputValue, recentSearches]);
 
-  // Click outside handlers
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-      if (skillsDropdownRef.current && !skillsDropdownRef.current.contains(event.target)) {
-        setSkillsDropdownOpen(false);
-      }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) setShowDropdown(false);
+      if (skillsDropdownRef.current && !skillsDropdownRef.current.contains(event.target)) setSkillsDropdownOpen(false);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Escape key handler
   useEffect(() => {
-    const onKeyDown = e => {
-      if (e.key === 'Escape') {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
         setIsTalentModalOpen(false);
         setIsProjectsModalOpen(false);
         setEditPromptModalOpen(false);
@@ -836,40 +1104,36 @@ function AIScreen() {
         setSkillsDropdownOpen(false);
       }
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const handleTalentSubmit = useCallback((e) => {
-    e.preventDefault();
-    if (!talentPrompt.trim()) return;
-    handleSubmit(talentPrompt);
-    setIsTalentModalOpen(false);
-  }, [talentPrompt, handleSubmit]);
+  const handleTalentSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!talentPrompt.trim()) return;
+      handleSubmit(talentPrompt);
+      setIsTalentModalOpen(false);
+    },
+    [talentPrompt, handleSubmit]
+  );
 
-  const deleteRecentSearch = useCallback(searchToDelete => {
-    setRecentSearches(prev => prev.filter(search => search.text !== searchToDelete.text));
-  }, []);
-
+  const deleteRecentSearch = useCallback((searchToDelete) => setRecentSearches((prev) => prev.filter((search) => search.text !== searchToDelete.text)), []);
   const clearAllRecentSearches = useCallback(() => {
     setRecentSearches([]);
     setShowDropdown(false);
   }, []);
+  const handleSearchSelect = useCallback((searchItem) => handleSubmit(searchItem.text), [handleSubmit]);
 
-  const handleSearchSelect = useCallback(searchItem => {
-    handleSubmit(searchItem.text);
-  }, [handleSubmit]);
-
-  const handleSuggestedPromptClick = useCallback(prompt => {
-    talentDispatch({ type: 'RESET', payload: prompt.data });
+  const handleSuggestedPromptClick = useCallback((prompt) => {
+    talentDispatch({ type: "RESET", payload: prompt.data });
     setTalentRoleInputDisplay(prompt.data.role);
     setRoleSuggestionsOpen(false);
     setTalentPromptDirty(false);
     setIsTalentModalOpen(true);
   }, []);
 
-  // Edit prompt modal handlers
-  const openEditPromptModal = useCallback(p => {
+  const openEditPromptModal = useCallback((p) => {
     setEditingSavedPromptId(p.id);
     setEditingSavedPromptName(p.name);
     setEditingSavedPromptText(p.prompt);
@@ -879,140 +1143,27 @@ function AIScreen() {
   const closeEditPromptModal = useCallback(() => {
     setEditPromptModalOpen(false);
     setEditingSavedPromptId(null);
-    setEditingSavedPromptName('');
-    setEditingSavedPromptText('');
+    setEditingSavedPromptName("");
+    setEditingSavedPromptText("");
   }, []);
 
   const saveEditedSavedPrompt = useCallback(() => {
     if (!editingSavedPromptId) return;
-    setSavedPrompts(prev =>
-      prev.map(p =>
-        p.id === editingSavedPromptId
-          ? { ...p, name: editingSavedPromptName, prompt: editingSavedPromptText }
-          : p
-      )
-    );
+    setSavedPrompts((prev) => prev.map((p) => (p.id === editingSavedPromptId ? { ...p, name: editingSavedPromptName, prompt: editingSavedPromptText } : p)));
     closeEditPromptModal();
   }, [editingSavedPromptId, editingSavedPromptName, editingSavedPromptText, closeEditPromptModal]);
 
-  const renderSearchBar = useCallback(() => (
-    <div ref={searchContainerRef} className="search-container">
-      <div className="search-input-wrapper">
-        <textarea
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setShowDropdown(true)}
-          placeholder="Ask anything..."
-          className="search-textarea"
-          rows={1}
-        />
-        <button
-          type="button"
-          onClick={() => setShowDropdown(prev => !prev)}
-          className="search-dropdown-toggle"
-        >
-          <FiClock size={14} />
-        </button>
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="search-attach-btn"
-        >
-          <FiPaperclip size={18} />
-        </button>
-        <button
-          onClick={() => handleSubmit()}
-          disabled={!inputValue.trim() && attachedFiles.length === 0 && isLoading && tokenCount === 0}
-          className="search-send-btn"
-        >
-          <FiSend size={16} />
-        </button>
-      </div>
-
-      {showDropdown && (
-        <div className="search-dropdown">
-          <div className="dropdown-header">
-            <div className="dropdown-title">
-              <FiClock size={14} />
-              <span>Recent Searches</span>
-            </div>
-            {!searchLoading && filteredSearches.length > 0 && (
-              <button
-                onClick={clearAllRecentSearches}
-                className="dropdown-clear-all"
-              >
-                Clear All
-              </button>
-            )}
-          </div>
-
-          {searchLoading ? (
-            <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: COLORS.textSecondary }}>
-              <div className="loading-dots">
-                <div className="dot-pulse"></div>
-                <div className="dot-pulse"></div>
-                <div className="dot-pulse"></div>
-              </div>
-              <span>Loading options...</span>
-            </div>
-          ) : filteredSearches.length === 0 ? (
-            <div style={{ padding: '12px 16px', fontSize: '13px', color: COLORS.textSecondary }}>
-              No recent searches found
-            </div>
-          ) : (
-            filteredSearches.map((search, index) => (
-              <div
-                key={`${search.text}-${index}`}
-                onClick={() => handleSearchSelect(search)}
-                className="search-item"
-              >
-                <div className="search-item-content">
-                  <FiSearch size={16} style={{ color: COLORS.textSecondary, flexShrink: 0 }} />
-                  <span className="search-item-text">{search.text}</span>
-                </div>
-                <button
-                  onClick={e => {
-                    e.stopPropagation();
-                    deleteRecentSearch(search);
-                  }}
-                  className="search-item-delete"
-                >
-                  <FiX size={16} />
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-    </div>
-  ), [
-    inputValue,
-    attachedFiles,
-    tokenCount,
-    isLoading,
-    showDropdown,
-    filteredSearches,
-    searchLoading,
-    handleKeyDown,
-    handleSubmit,
-    handleSearchSelect,
-    deleteRecentSearch,
-    clearAllRecentSearches
-  ]);
-
   return (
-    <div className="app-container">
-      <div className="main-content">
-        <div className="header">
-          <h1 className="header-title">AI</h1>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Button
-              onClick={() => setShowSavedPrompts(prev => !prev)}
-              variant="secondary"
-              type="button"
-            >
+    <div style={S.page}>
+      <div style={S.container}>
+        <div style={S.header}>
+          <h1 style={S.title}>AI</h1>
+
+          <div style={S.rowGap8}>
+            <Button onClick={() => setShowSavedPrompts((prev) => !prev)} variant="secondary" type="button">
               Saved Prompts ({savedPrompts.length})
             </Button>
+
             <Button
               onClick={() => {
                 setTalentPromptDirty(false);
@@ -1024,6 +1175,7 @@ function AIScreen() {
             >
               Find Talent
             </Button>
+
             <Button
               onClick={() => {
                 setProjectsPromptDirty(false);
@@ -1037,42 +1189,28 @@ function AIScreen() {
           </div>
         </div>
 
-        <div className="content-area">
+        <div style={S.panel}>
           {showSavedPrompts ? (
             <>
-              <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: COLORS.text }}>
-                Saved Prompts
-              </h3>
+              <h3 style={{ margin: "0 0 14px", fontSize: 18, fontWeight: 950, color: UI.text }}>Saved Prompts</h3>
+
               {savedPrompts.length === 0 ? (
-                <p style={{ color: COLORS.textSecondary }}>No saved prompts yet.</p>
+                <p style={{ margin: 0, color: UI.muted }}>No saved prompts yet.</p>
               ) : (
-                <div className="saved-prompts-grid">
-                  {savedPrompts.map(savedPrompt => (
-                    <div key={savedPrompt.id} className="saved-prompt-card">
-                      <h4 className="saved-prompt-name">{savedPrompt.name}</h4>
-                      <p className="saved-prompt-text">{savedPrompt.prompt}</p>
-                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
-                        <Button
-                          onClick={() => handleLoadSavedPrompt(savedPrompt)}
-                          style={{ flex: 1, padding: '6px 10px', fontSize: '11px' }}
-                          type="button"
-                        >
+                <div style={S.grid2}>
+                  {savedPrompts.map((savedPrompt) => (
+                    <div key={savedPrompt.id} style={{ borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14 }}>
+                      <div style={{ fontWeight: 950, marginBottom: 6 }}>{savedPrompt.name}</div>
+                      <div style={{ color: UI.muted, fontSize: 12, lineHeight: 1.55 }}>{savedPrompt.prompt}</div>
+
+                      <div style={{ ...S.rowGap8, marginTop: 10 }}>
+                        <Button onClick={() => handleLoadSavedPrompt(savedPrompt)} style={{ flex: 1, height: 34, fontSize: 12 }} type="button">
                           Use
                         </Button>
-                        <Button
-                          onClick={() => openEditPromptModal(savedPrompt)}
-                          variant="secondary"
-                          style={{ padding: '6px 10px', fontSize: '11px' }}
-                          type="button"
-                        >
+                        <Button onClick={() => openEditPromptModal(savedPrompt)} variant="secondary" style={{ height: 34, fontSize: 12 }} type="button">
                           Edit
                         </Button>
-                        <Button
-                          onClick={() => handleDeleteSavedPrompt(savedPrompt.id)}
-                          variant="secondary"
-                          style={{ padding: '6px 10px', fontSize: '11px' }}
-                          type="button"
-                        >
+                        <Button onClick={() => handleDeleteSavedPrompt(savedPrompt.id)} variant="secondary" style={{ height: 34, fontSize: 12 }} type="button">
                           Delete
                         </Button>
                       </div>
@@ -1083,78 +1221,130 @@ function AIScreen() {
             </>
           ) : messages.length === 0 ? (
             <>
-              <h3 className="empty-state">Looking for suggestions...</h3>
-              <p className="empty-state-subtitle">
+              <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 950 }}>Looking for suggestions...</h3>
+              <p style={{ margin: "0 0 14px", color: UI.muted, fontSize: 13 }}>
                 Start by asking for talent or projects, or use a quick template to generate a search prompt.
               </p>
-              <div className="suggested-prompt-grid">
-                {SUGGESTED_PROMPTS.map(prompt => (
+
+              <div style={S.grid4}>
+                {SUGGESTED_PROMPTS.map((prompt) => (
                   <button
                     key={prompt.id}
                     onClick={() => handleSuggestedPromptClick(prompt)}
-                    className="prompt-card"
+                    style={S.card}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = UI.shadow2;
+                      e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
+                      e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.borderColor = UI.border;
+                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                    }}
                   >
-                    <div style={{ fontWeight: '700', fontSize: '14px', color: COLORS.primary, marginBottom: '2px' }}>
-                      {prompt.name}
-                    </div>
-                    <div style={{ fontSize: '10px', color: COLORS.textSecondary, fontWeight: '600' }}>
-                      {prompt.role}
-                    </div>
-                    <div style={{ fontSize: '11px', color: COLORS.textSecondary, marginTop: '6px' }}>
+                    <div style={{ fontWeight: 950, fontSize: 14, color: UI.primary, marginBottom: 2 }}>{prompt.name}</div>
+                    <div style={{ fontSize: 11, color: UI.muted, fontWeight: 900 }}>{prompt.role}</div>
+                    <div style={{ fontSize: 12, color: UI.muted2, marginTop: 8 }}>
                       {prompt.data.salary} • {prompt.data.experience}
                     </div>
                   </button>
                 ))}
+
                 <button
-                  onClick={() => alert('More templates coming soon!')}
-                  className="view-more-template"
+                  onClick={() => alert("More templates coming soon!")}
+                  style={{
+                    ...S.card,
+                    border: `1px dashed ${UI.border2}`,
+                    background: "transparent",
+                    color: UI.muted,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                    fontWeight: 950,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = UI.text;
+                    e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = UI.muted;
+                    e.currentTarget.style.borderColor = UI.border2;
+                  }}
                 >
-                  <span style={{ fontSize: '18px' }}>⟋</span>
                   <span>View More Templates</span>
                 </button>
               </div>
+
               {recentSearches.length > 0 && (
-                <>
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 className="section-subtitle">Recent Searches</h4>
-                    <div className="recent-searches-chips">
-                      {recentSearches.slice(0, 6).map((search, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleSearchSelect(search)}
-                          className={`recent-search-chip ${search.type}`}
-                        >
-                          {search.text}
-                        </button>
-                      ))}
-                    </div>
+                <div style={{ marginTop: 16 }}>
+                  <h4 style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 950, color: UI.text }}>Recent Searches</h4>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                    {recentSearches.slice(0, 6).map((search, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSearchSelect(search)}
+                        style={{
+                          borderRadius: 999,
+                          border: `1px solid ${UI.border}`,
+                          background: "rgba(255,255,255,0.05)",
+                          color: UI.text,
+                          padding: "8px 12px",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          fontWeight: 900,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = UI.border2;
+                          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = UI.border;
+                          e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                        }}
+                      >
+                        {search.text}
+                      </button>
+                    ))}
                   </div>
-                </>
+                </div>
               )}
             </>
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, marginBottom: '20px' }}>
-                {messages.map(message => (
-                  <div key={message.id} className="message-bubble">
-                    <div className={`message-avatar ${message.type}`}>
-                      {message.type === 'user' ? 'U' : 'AI'}
+              <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 16 }}>
+                {messages.map((message) => (
+                  <div key={message.id} style={S.messageRow}>
+                    <div
+                      style={{
+                        ...S.avatar,
+                        background: message.type === "user" ? "rgba(124, 92, 255, 0.18)" : "rgba(0, 209, 255, 0.12)",
+                        borderColor: message.type === "user" ? "rgba(124, 92, 255, 0.35)" : "rgba(0, 209, 255, 0.25)",
+                      }}
+                    >
+                      {message.type === "user" ? "U" : "AI"}
                     </div>
-                    <div className="message-content">
-                      <div className="message-text">{message.content}</div>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={S.bubble}>{message.content}</div>
+
                       {message.files && message.files.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-                          {message.files.map(file => (
-                            <div key={file.id} className="file-chip">
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                          {message.files.map((file) => (
+                            <div key={file.id} style={S.chip}>
                               <FiPaperclip size={12} />
                               <span>{file.name}</span>
                             </div>
                           ))}
                         </div>
                       )}
-                      {message.type === 'ai' && (
-                        <div className="bench-grid">
-                          {suggestedBench.map(bench => (
+
+                      {message.type === "ai" && (
+                        <div style={{ ...S.grid4, marginTop: 12 }}>
+                          {suggestedBench.map((bench) => (
                             <SuggestedBenchCard key={bench.name} bench={bench} />
                           ))}
                         </div>
@@ -1164,31 +1354,29 @@ function AIScreen() {
                 ))}
 
                 {isLoading && (
-                  <div style={{ display: 'flex', gap: '16px' }}>
-                    <div className="message-avatar ai">AI</div>
-                    <div style={{ paddingTop: '8px', display: 'flex', gap: '6px' }}>
-                      <div className="loading-dots">
-                        <div className="dot-pulse"></div>
-                        <div className="dot-pulse"></div>
-                        <div className="dot-pulse"></div>
-                      </div>
-                    </div>
+                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <div style={{ ...S.avatar, background: "rgba(0, 209, 255, 0.12)", borderColor: "rgba(0, 209, 255, 0.25)" }}>AI</div>
+                    <div style={{ color: UI.muted, fontSize: 13 }}>Thinking…</div>
                   </div>
                 )}
+
                 <div ref={messagesEndRef} />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
                 <div style={{ flex: 1 }}>
                   {attachedFiles.length > 0 && (
-                    <div style={{ marginBottom: '10px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {attachedFiles.map(file => (
-                        <div key={file.id} className="file-chip">
+                    <div style={{ marginBottom: 10, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {attachedFiles.map((file) => (
+                        <div key={file.id} style={S.chip}>
                           <FiPaperclip size={14} />
                           <span>{file.name}</span>
                           <button
+                            type="button"
                             onClick={() => removeFile(file.id)}
-                            className="file-chip-remove"
+                            style={{ border: "none", background: "transparent", color: UI.muted, cursor: "pointer" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = UI.danger)}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = UI.muted)}
                           >
                             <FiX />
                           </button>
@@ -1196,14 +1384,28 @@ function AIScreen() {
                       ))}
                     </div>
                   )}
-                  {renderSearchBar()}
+
+                  <SearchBar
+                    inputValue={inputValue}
+                    setInputValue={setInputValue}
+                    attachedFiles={attachedFiles}
+                    isLoading={isLoading}
+                    tokenCount={tokenCount}
+                    showDropdown={showDropdown}
+                    setShowDropdown={setShowDropdown}
+                    searchLoading={searchLoading}
+                    filteredSearches={filteredSearches}
+                    handleKeyDown={handleKeyDown}
+                    handleSubmit={() => handleSubmit()}
+                    handleSearchSelect={handleSearchSelect}
+                    deleteRecentSearch={deleteRecentSearch}
+                    clearAllRecentSearches={clearAllRecentSearches}
+                    fileInputRef={fileInputRef}
+                    searchContainerRef={searchContainerRef}
+                  />
                 </div>
-                <Button
-                  onClick={goHome}
-                  variant="secondary"
-                  style={{ padding: '10px 16px', borderRadius: '8px', height: '56px' }}
-                  type="button"
-                >
+
+                <Button onClick={goHome} variant="secondary" style={{ height: 56, borderRadius: 14, padding: "0 16px" }} type="button">
                   <FiHome size={18} />
                 </Button>
               </div>
@@ -1212,20 +1414,9 @@ function AIScreen() {
         </div>
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        onChange={handleFileAttach}
-        style={{ display: 'none' }}
-        aria-label="File upload"
-      />
+      <input ref={fileInputRef} type="file" multiple onChange={handleFileAttach} style={{ display: "none" }} aria-label="File upload" />
 
-      <Modal
-        title="Find Talent"
-        isOpen={isTalentModalOpen}
-        onClose={() => setIsTalentModalOpen(false)}
-      >
+      <Modal title="Find Talent" isOpen={isTalentModalOpen} onClose={() => setIsTalentModalOpen(false)}>
         <TalentForm
           talentForm={talentForm}
           talentRoleInputDisplay={talentRoleInputDisplay}
@@ -1248,45 +1439,31 @@ function AIScreen() {
         />
       </Modal>
 
-      {/* Edit Prompt Modal */}
-      <Modal
-        title="Edit Saved Prompt"
-        isOpen={editPromptModalOpen}
-        onClose={closeEditPromptModal}
-      >
-        <div className="form-field">
-          <span className="form-label">Name</span>
-          <input
-            type="text"
-            className="form-input"
-            value={editingSavedPromptName}
-            onChange={e => setEditingSavedPromptName(e.target.value)}
-            placeholder="Name"
-          />
+      <Modal title="Edit Saved Prompt" isOpen={editPromptModalOpen} onClose={closeEditPromptModal}>
+        <div style={S.field}>
+          <span style={S.label}>Name</span>
+          <input type="text" value={editingSavedPromptName} onChange={(e) => setEditingSavedPromptName(e.target.value)} placeholder="Name" style={S.control} />
         </div>
-        <div className="form-field">
-          <span className="form-label">Prompt</span>
+
+        <div style={{ height: 10 }} />
+
+        <div style={S.field}>
+          <span style={S.label}>Prompt</span>
           <textarea
-            className="prompt-textarea"
-            style={{ minHeight: '160px' }}
             value={editingSavedPromptText}
-            onChange={e => setEditingSavedPromptText(e.target.value)}
+            onChange={(e) => setEditingSavedPromptText(e.target.value)}
             placeholder="Edit your saved prompt..."
+            style={{ ...S.control, minHeight: 160, width: "100%", resize: "vertical", lineHeight: 1.55 }}
           />
         </div>
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          <Button
-            onClick={saveEditedSavedPrompt}
-            disabled={!editingSavedPromptText.trim()}
-            type="button"
-          >
+
+        <div style={{ height: 12 }} />
+
+        <div style={S.rowGap12}>
+          <Button onClick={saveEditedSavedPrompt} disabled={!editingSavedPromptText.trim()} type="button">
             Save
           </Button>
-          <Button
-            onClick={closeEditPromptModal}
-            variant="secondary"
-            type="button"
-          >
+          <Button onClick={closeEditPromptModal} variant="secondary" type="button">
             Cancel
           </Button>
         </div>
