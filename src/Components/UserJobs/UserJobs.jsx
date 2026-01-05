@@ -181,7 +181,7 @@ const Jobs = () => {
                     <h3 className="job-title" style={{ fontSize: '18px', marginBottom: '6px' }}>{job.title}</h3>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <p className="company-name" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)' }}>
+                      <p className="company-name" style={{ fontSize: '14px', fontWeight: 600, color: '#6366f1' }}>
                         {job.company}
                       </p>
                       <div style={{ fontSize: '13px', color: 'var(--slate-500)', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -210,14 +210,14 @@ const Jobs = () => {
 
 
                 {/* C. Description */}
-                <div style={{ marginBottom: '20px' }}>
+                {/* <div style={{ marginBottom: '20px' }}>
                   <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)', margin: '0 0 8px 0' }}>
                     Job Description
                   </h4>
                   <p style={{ fontSize: '13px', color: 'var(--slate-500)', lineHeight: '1.6', margin: 0 }}>
                     {job.description}
                   </p>
-                </div>
+                </div> */}
 
 
                 {/* D. Skills Cloud */}
