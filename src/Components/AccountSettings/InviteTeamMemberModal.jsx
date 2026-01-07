@@ -30,10 +30,9 @@ export default function InviteTeamMemberModal({ show, onHide }) {
 
           <Form.Group className="mb-0 w-100" controlId="inviteRole">
             <Form.Label className="section-title">Role</Form.Label>
-            <Form.Select className="btn-secondary">
+            <Form.Select className="auth-input w-100" style={{cursor: "pointer"}}>
               <option>Admin</option>
               <option>Recruiter</option>
-              <option>Viewer</option>
             </Form.Select>
           </Form.Group>
         </Form>
