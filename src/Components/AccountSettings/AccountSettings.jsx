@@ -11,6 +11,7 @@ import {
 import "./AccountSettings.css";
 import { useNavigate } from "react-router-dom";
 import BillingHistoryTable from "./BillingHistoryTable";
+import InviteTeamMemberModal from "./InviteTeamMemberModal";
 
 // Import your existing FormWizard component
 // Make sure FormWizard is in the same directory or adjust the path
@@ -32,6 +33,7 @@ const BillingRow = ({ date, desc, amount, status }) => (
 
 export default function AccountSettings() {
   const navigate = useNavigate();
+  const [show, setShow] = useState(false);
 
   // State to control active tab
   const [activeTab, setActiveTab] = useState("billing");
@@ -100,7 +102,7 @@ export default function AccountSettings() {
         {activeTab === "billing" && (
           <div className="animate-fade-in">
             <section className="card large">
-              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
+              <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
                 <h2>Billing Information</h2>
                 <a className="view-history fw-semibold" href="#history">View History</a>
               </div>
@@ -157,7 +159,7 @@ export default function AccountSettings() {
         {activeTab === "security" && (
           <div className="grid-2 animate-fade-in">
             <section className="card">
-              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
+              <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
                 <h2>Security</h2>
                 <a className="manage-link" href="#manage">Manage</a>
               </div>
@@ -193,7 +195,7 @@ export default function AccountSettings() {
             </section>
 
             <section className="card">
-              <div className="card-header mb-3" style={{padding: "16px 12px"}}>
+              <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
                 <h2>Notification Preferences</h2>
                 <a className="manage-link" href="#edit">Edit All</a>
               </div>
@@ -230,7 +232,17 @@ export default function AccountSettings() {
             <section className="card">
               <div className="card-header d-flex align-items-center mb-3">
                 <h2>Team Management</h2>
-                <button className="btn-primary">Invite Team Member</button>
+                <>
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    onClick={() => setShow(true)}
+                  >
+                    Invite Team Member
+                  </button>
+
+                  <InviteTeamMemberModal show={show} onHide={() => setShow(false)} />
+                </>
               </div>
               <div className="team-list">
                 {teamMembers.map((m) => (
@@ -259,7 +271,7 @@ export default function AccountSettings() {
         {activeTab === "integrations" && (
           <div className="animate-fade-in">
             <section className="card">
-              <div className="card-header" style={{padding: "16px 12px"}}>
+              <div className="card-header" style={{ padding: "16px 12px" }}>
                 <h2>Integrations</h2>
                 <a className="manage-link fw-semibold" href="#browse">Browse More</a>
               </div>
