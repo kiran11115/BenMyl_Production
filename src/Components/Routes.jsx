@@ -31,6 +31,8 @@ import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
 import ProfileEdit from "./ProfilePage/ProfileEdit";
+import AdminHeader from "./Admin/AdminHeader/AdminHeader";
+import AdminProfile from "./Admin/AdminProfile/AdminProfile";
 
 
 
@@ -46,6 +48,11 @@ const routes = createBrowserRouter(
 
 
             <Route element={<ProtectedRoute />}>
+
+                <Route path="Admin" element={<AdminHeader />}>
+                    <Route path="admin-profile" element={<AdminProfile />} />
+                </Route>
+
                 <Route path="User" element={<Header />}>
                     <Route path="AI-screen" element={<AIScreen />} />
                     <Route path="account-settings" element={<AccountSettings />} />
