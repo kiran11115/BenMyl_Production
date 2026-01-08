@@ -84,7 +84,7 @@ const CompanyProfile = () => {
   };
 
   const onAccountSettings = () => {
-    navigate("/account-settings"); // Navigate by passing a path string. [web:62]
+    navigate("/user/account-settings"); // Navigate by passing a path string. [web:62]
   };
 
   return (
