@@ -2,330 +2,300 @@ import React from "react";
 import {
   FiMapPin,
   FiBriefcase,
-  FiDownload,
-  FiShare2,
   FiMail,
   FiPhone,
   FiLinkedin,
   FiFileText,
-  FiEye,
-  FiExternalLink,
   FiArrowLeft,
+  FiExternalLink,
+  FiUsers,
+  FiCalendar,
+  FiGlobe,
 } from "react-icons/fi";
-import { BsDribbble } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
-const TalentProfile = () => {
+const CompanyProfile = () => {
+  const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
 
-const navigate = useNavigate();
+  // NOTE: Existing data is unchanged; only plan + teamMembers are added.
+  const companyData = {
+    id: "cmp_10231",
+    slug: "nimbus-labs",
+    name: "Nimbus Labs",
+    tagline: "Design-led product studio for B2B teams",
+    status: "Operating",
+    companyType: "Privately Held",
+    industry: "Software Development",
+    size: "51–200 employees",
+    foundedYear: "2016",
+    websiteUrl: "https://nimbuslabs.com",
+    domain: "nimbuslabs.com",
 
-  const profileData = {
-    name: "Sarah Anderson",
-    role: "Senior UX Designer",
-    location: "San Francisco, CA",
-    experience: "8+ years experience",
-    status: "Available for hire",
-    summary:
-      "Experienced UX Designer with 8+ years of creating user-centered digital experiences for various industries. Specialized in product design, user research, and design systems. Currently leading design initiatives at TechCorp, focusing on enterprise software solutions.",
-    stats: [
-      { label: "Projects Completed", value: "150+" },
-      { label: "Client Satisfaction", value: "98%" },
+    headquarters: {
+      city: "San Francisco",
+      state: "CA",
+      country: "US",
+      postalCode: "94105",
+      street1: "123 Market St",
+      street2: "Suite 500",
+    },
+
+    description:
+      "Nimbus Labs builds and improves B2B digital products with a focus on UX quality, speed-to-market, and maintainable UI systems.",
+
+    contact: {
+      email: "hello@nimbuslabs.com",
+      phone: "+1 (555) 123-4567",
+      linkedinUrl: "https://linkedin.com/company/nimbuslabs",
+    },
+
+    // Added: subscription plan
+    plan: {
+      name: "Business",
+      status: "Active",
+      billingCycle: "Monthly",
+      renewsOn: "2026-02-01",
+      seats: 10,
+      seatsUsed: 6,
+    },
+
+    // Added: team members
+    teamMembers: [
+      { username: "nimbus.owner", email: "owner@nimbuslabs.com", role: "Owner" },
+      { username: "sarah.admin", email: "sarah@nimbuslabs.com", role: "Admin" },
+      { username: "arun.member", email: "arun@nimbuslabs.com", role: "Member" },
     ],
-    skills: [
-      "UI/UX Design",
-      "User Research",
-      "Figma",
-      "Adobe XD",
-      "Sketch",
-      "Prototyping",
-      "Design Systems",
-      "Wireframing",
-      "User Testing",
-      "Information Architecture",
-      "Design Thinking",
-      "Team Leadership",
-    ],
-    workExperience: [
-      {
-        role: "Lead UX Designer",
-        company: "TechCorp",
-        period: "2020 - Present",
-        location: "San Francisco, CA",
-        desc: "Leading a team of designers, developing design systems, and managing enterprise projects.",
-      },
-      {
-        role: "Senior UX Designer",
-        company: "Design Studio",
-        period: "2018 - 2020",
-        location: "New York, NY",
-        desc: "Designed user interfaces for various clients in fintech and healthcare sectors.",
-      },
-      {
-        role: "UX Designer",
-        company: "StartupHub",
-        period: "2015 - 2018",
-        location: "Boston, MA",
-        desc: "Created user experiences for early-stage startups and conducted user research.",
-      },
-    ],
-    portfolio: [
-      {
-        title: "E-commerce Dashboard",
-        tags: ["React", "Redux", "TailwindCSS"],
-        img:
-          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Travel App UI",
-        tags: ["React Native", "Firebase"],
-        img:
-          "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Financial Analytics Platform",
-        tags: ["TypeScript", "D3.js", "Node.js"],
-        img:
-          "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Health Tracker",
-        tags: ["React", "GraphQL", "MongoDB"],
-        img:
-          "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
-      },
-    ],
+  };
+
+  const fullAddress = [
+    companyData.headquarters?.street1,
+    companyData.headquarters?.street2,
+    [companyData.headquarters?.city, companyData.headquarters?.state]
+      .filter(Boolean)
+      .join(", "),
+    companyData.headquarters?.postalCode,
+    companyData.headquarters?.country,
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  const onEdit = () => {
+    navigate(`/user/company/${companyData.slug}/edit`);
+  };
+
+  const onAccountSettings = () => {
+    navigate("/account-settings"); // Navigate by passing a path string. [web:62]
   };
 
   return (
     <div className="projects-container">
-      {/* Breadcrumb - Matches Global Text Styles */}
+      {/* Breadcrumb */}
       <div className="profile-breadcrumb">
-        <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
-        <span className="crumb">/ Profile Page</span>
+        <button
+          className="link-button"
+          onClick={() => navigate("/user/user-dashboard")}
+        >
+          <FiArrowLeft /> Back to Dashboard
+        </button>
+        <span className="crumb">/ Company Profile</span>
       </div>
 
       <div className="dashboard-layout">
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-3">
-              {/* Profile Header Card */}
+            <div className="col-12">
+              {/* Company Header Card */}
               <div className="project-card">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                  alt="Profile"
-                  className="profile-avatar-lg"
-                />
-                <div className="profile-header-content">
-                  <div className="d-flex gap-3">
-                    <h1 className="mb-2">{profileData.name}</h1>
-                    <FiFileText className="profile-verified-icon" />
-                  </div>
-                  <div className="card-title mb-2">{profileData.role}</div>
+                <div className="d-flex gap-3 align-items-start">
+                  <img
+                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
+                    alt="Company Logo"
+                    className="profile-avatar-lg"
+                  />
 
-                  <div className="profile-meta-row">
-                    <span className="meta-item">
-                      <FiMapPin /> {profileData.location}
-                    </span>
-                    <span className="meta-item">
-                      <FiBriefcase /> {profileData.experience}
-                    </span>
-                  </div>
-
-                  <div className="profile-status-wrapper">
-                    <span className="status-tag status-completed">
-                      {profileData.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-9">
-              {/* Professional Summary */}
-              <div className="project-card">
-                <h2 className="card-title">Professional Summary</h2>
-                <p className="summary-text">{profileData.summary}</p>
-
-                <div className="summary-stats-grid">
-                  {profileData.stats.map((stat, idx) => (
-                    <div key={idx} className="summary-stat-box">
-                      <div className="summary-stat-value">{stat.value}</div>
-                      <div className="summary-stat-label">{stat.label}</div>
+                  <div className="profile-header-content w-100">
+                    <div className="d-flex align-items-center gap-3">
+                      <h1 className="mb-1">{companyData.name}</h1>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="row">
-            <div className="col-8">
-              {/* Work Experience */}
-              <div className="project-card">
-                <h2 className="card-title">Work Experience</h2>
-                <div className="experience-list">
-                  {profileData.workExperience.map((job, idx) => (
-                    <div key={idx} className="experience-item">
-                      <div className="experience-icon-box">
-                        <FiBriefcase />
-                      </div>
-                      <div className="experience-content">
-                        <h3>{job.role}</h3>
-                        <div className="job-meta">
-                          {job.company} • {job.period}
-                        </div>
-                        <div className="job-location">{job.location}</div>
-                        <p className="job-desc">{job.desc}</p>
+                    <div className="card-title mb-2">{companyData.tagline}</div>
+
+                    {/* Meta row */}
+                    <div className="profile-meta-row">
+                      <span className="meta-item">
+                        <FiBriefcase /> {companyData.industry}
+                      </span>
+                      <span className="meta-item">
+                        <FiMapPin /> {companyData.headquarters.city},{" "}
+                        {companyData.headquarters.state}
+                      </span>
+                      <span className="meta-item">
+                        <FiUsers /> {companyData.size}
+                      </span>
+                      <span className="meta-item">
+                        <FiCalendar /> Founded {companyData.foundedYear}
+                      </span>
+                    </div>
+
+                    {/* Status */}
+                    <div className="profile-status-wrapper">
+                      <span className="status-tag status-completed">
+                        {companyData.status}
+                      </span>
+                      <span className="status-tag status-inprogress">
+                        {companyData.companyType}
+                      </span>
+                    </div>
+
+                    {/* About */}
+                    <div className="mt-3">
+                      <h3 className="card-title">About</h3>
+                      <div className="small text-muted">
+                        {companyData.description}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="col-4">
-              {/* Skills & Expertise */}
-              <div className="project-card">
-                <h2 className="card-title">Skills & Expertise</h2>
-                <div className="skills-container">
-                  {profileData.skills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="status-tag status-progress"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Portfolio */}
-          <div className="portfolio-section">
-            <div className="portfolio-header">
-              <h2 className="card-title">Portfolio</h2>
-              <span className="portfolio-count">
-                {profileData.portfolio.length} Projects
-              </span>
-            </div>
-
-            <div className="projects-grid premium-portfolio-grid">
-              {profileData.portfolio.map((item, idx) => (
-                <div key={idx} className="premium-portfolio-card">
-                  <div className="portfolio-img-wrapper">
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="portfolio-img"
-                    />
-
-                    <div className="portfolio-overlay">
-                      <button className="overlay-btn">
-                        <FiEye /> Preview
-                      </button>
-                      <button className="overlay-btn secondary">
-                        <FiExternalLink /> Open
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="portfolio-content">
-                    <h3 className="portfolio-title">{item.title}</h3>
-                    <div className="portfolio-tags">
-                      {item.tags.map((tag, tIdx) => (
-                        <span key={tIdx} className="portfolio-tag">
-                          {tag}
-                        </span>
-                      ))}
+                    {/* Headquarters */}
+                    <div className="mt-3">
+                      <h3 className="card-title">Headquarters</h3>
+                      <div className="small text-muted">{fullAddress}</div>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+            </div>
+
+            {/* Added: Team members table */}
+            <div className="col-12 mt-3">
+              <div className="table-card">
+                <h3 className="card-title">Team members</h3>
+
+                <div className="table-responsive mt-3">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {companyData.teamMembers?.length ? (
+                        companyData.teamMembers.map((m) => (
+                          <tr key={m.email}>
+                            <td>{m.username}</td>
+                            <td>
+                              <a href={`mailto:${m.email}`}>{m.email}</a>
+                            </td>
+                            <td>{m.role}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="text-muted">
+                            No team members added.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* === RIGHT SIDE COLUMN === */}
         <div className="dashboard-column-side">
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100">Edit Profile</button>
+            <button className="btn-primary w-100" onClick={onEdit}>
+              Edit Company
+            </button>
+
+            <button
+              className="btn-secondary w-100"
+              onClick={onAccountSettings}
+            >
+              Account Settings
+            </button>
           </div>
 
-          {/* Quick Information */}
+          {/* Added: Plan card */}
           <div className="table-card sidebar-card">
-            <h3 className="card-title">Quick Information</h3>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Expected Salary</div>
-              <div className="info-value">$120,000 - $150,000 / year</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Notice Period</div>
-              <div className="info-value">2 weeks</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Work Preference</div>
-              <div className="info-value">Hybrid (2-3 days remote)</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Languages</div>
-              <div className="languages-list">
-                <span className="status-tag status-pending">English</span>
-                <span className="status-tag status-pending">Spanish</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Contact Information</h3>
+            <h3 className="card-title">Plan</h3>
             <div className="contact-list">
               <div className="contact-item">
-                <FiMail className="contact-icon" /> sarah.anderson@example.com
+                <FiFileText className="contact-icon" /> {companyData.plan.name} (
+                {companyData.plan.status})
               </div>
               <div className="contact-item">
-                <FiPhone className="contact-icon" /> +1 (555) 123-4567
+                <FiCalendar className="contact-icon" /> Billing:{" "}
+                {companyData.plan.billingCycle}
+              </div>
+              <div className="contact-item">
+                <FiCalendar className="contact-icon" /> Renews on:{" "}
+                {companyData.plan.renewsOn}
+              </div>
+              <div className="contact-item">
+                <FiUsers className="contact-icon" /> Seats:{" "}
+                {companyData.plan.seatsUsed}/{companyData.plan.seats}
+              </div>
+            </div>
+          </div>
+
+          {/* Company Information */}
+          <div className="table-card sidebar-card">
+            <h3 className="card-title">Company information</h3>
+            <div className="contact-list">
+              <div className="contact-item">
+                <FiGlobe className="contact-icon" />{" "}
+                <a href={companyData.websiteUrl} target="_blank" rel="noreferrer">
+                  {companyData.domain}
+                </a>
+              </div>
+              <div className="contact-item">
+                <FiBriefcase className="contact-icon" /> Industry:{" "}
+                {companyData.industry}
+              </div>
+              <div className="contact-item">
+                <FiUsers className="contact-icon" /> Size: {companyData.size}
+              </div>
+              <div className="contact-item">
+                <FiCalendar className="contact-icon" /> Founded:{" "}
+                {companyData.foundedYear}
+              </div>
+              <div className="contact-item">
+                <FiMapPin className="contact-icon" /> HQ:{" "}
+                {companyData.headquarters.city}, {companyData.headquarters.state}
+              </div>
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div className="table-card sidebar-card">
+            <h3 className="card-title">Contact</h3>
+            <div className="contact-list">
+              <div className="contact-item">
+                <FiMail className="contact-icon" />{" "}
+                <a href={`mailto:${companyData.contact.email}`}>
+                  {companyData.contact.email}
+                </a>
+              </div>
+              <div className="contact-item">
+                <FiPhone className="contact-icon" /> {companyData.contact.phone}
               </div>
               <div className="contact-item">
                 <FiLinkedin className="contact-icon" />{" "}
-                linkedin.com/in/sarahanderson
-              </div>
-              <div className="contact-item">
-                <BsDribbble className="contact-icon" /> sarahanderson.design
-              </div>
-            </div>
-          </div>
-
-          {/* Education */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Education</h3>
-            <div className="education-list">
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">Master in Interaction Design</div>
-                  <div className="edu-school">Carnegie Mellon University</div>
-                  <div className="edu-year">2013 - 2015</div>
-                </div>
-              </div>
-
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">BA in Graphic Design</div>
-                  <div className="edu-school">
-                    Rhode Island School of Design
-                  </div>
-                  <div className="edu-year">2009 - 2013</div>
-                </div>
+                <a
+                  href={companyData.contact.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn
+                </a>
               </div>
             </div>
           </div>
@@ -335,4 +305,4 @@ const navigate = useNavigate();
   );
 };
 
-export default TalentProfile;
+export default CompanyProfile;

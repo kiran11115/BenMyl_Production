@@ -40,10 +40,10 @@ const FormWizard = () => {
   // --- Configuration Data ---
   const licenseOptions = {
     India: [
-      { value: "GSTIN", label: "GSTIN (Goods & Services Tax)" },
-      { value: "PAN", label: "Company PAN Card" },
-      { value: "UDYAM", label: "Udyam/MSME Registration" },
-      { value: "FSSAI", label: "FSSAI License (Food)" },
+      { value: "GSTIN", label: "coming soon..." },
+      // { value: "PAN", label: "Company PAN Card" },
+      // { value: "UDYAM", label: "Udyam/MSME Registration" },
+      // { value: "FSSAI", label: "FSSAI License (Food)" },
     ],
     USA: [
       { value: "EIN", label: "EIN (Employer ID Number)" },
@@ -51,12 +51,12 @@ const FormWizard = () => {
       { value: "INC", label: "Incorporation Certificate" },
     ],
     UK: [
-      { value: "CRN", label: "Company Registration Number" },
-      { value: "VAT", label: "VAT Registration" },
+      { value: "CRN", label: "coming soon..." },
+      // { value: "VAT", label: "VAT Registration" },
     ],
     UAE: [
-      { value: "TL", label: "Trade License" },
-      { value: "VAT", label: "TRN Number" },
+      { value: "TL", label: "coming soon..." },
+      // { value: "VAT", label: "TRN Number" },
     ],
   };
 
