@@ -5,14 +5,25 @@ const StepAccount = ({ formData, handleInputChange }) => {
     <div className="animate-fade-in">
       <section className="auth-section">
         <h3 className="auth-section-title">Primary Contact</h3>
-        <div className="auth-grid-3">
+        <div className="auth-grid-4">
           <div className="auth-group">
             <label className="auth-label">Full Name</label>
             <input
               type="text"
-              name="fullName"
+              name="companyName"
               className="auth-input"
-              placeholder="John Doe"
+              placeholder="Your Company Name"
+              value={formData.fullName}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="auth-group">
+            <label className="auth-label">Company Name</label>
+            <input
+              type="text"
+              name="companyName"
+              className="auth-input"
+              placeholder="Your Company Name"
               value={formData.fullName}
               onChange={handleInputChange}
             />

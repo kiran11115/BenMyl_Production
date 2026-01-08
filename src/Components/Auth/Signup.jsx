@@ -7,13 +7,16 @@ import "./Auth.css";
 
 function SignUp() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
       fullName: "",
+      companyName: "",
       email: "",
       password: "",
+      confirmPassword: "",
       acceptTerms: false,
     },
     // no validationSchema
@@ -52,6 +55,7 @@ function SignUp() {
               <p style={{ color: "#facc15", marginBottom: "0.75rem" }}>
                 ★★★★★
               </p>
+
               <p
                 style={{
                   color: "#e5e7eb",
@@ -106,13 +110,24 @@ function SignUp() {
           </div>
 
           <form onSubmit={formik.handleSubmit}>
+            {/* Full Name */}
             <div className="auth-form-group">
               <label className="auth-label">Full Name</label>
               <input
                 type="text"
                 {...formik.getFieldProps("fullName")}
                 className="auth-input"
-                placeholder="User Name"
+                placeholder="Your Full Name"
+              />
+            </div>
+
+            <div className="auth-form-group">
+              <label className="auth-label">Company Name</label>
+              <input
+                type="text"
+                {...formik.getFieldProps("companyName")}
+                className="auth-input"
+                placeholder="Your Company Name"
               />
             </div>
 
@@ -126,6 +141,7 @@ function SignUp() {
               />
             </div>
 
+            {/* Password */}
             <div className="auth-form-group">
               <label className="auth-label">Password</label>
               <div className="auth-password-wrapper">
@@ -141,6 +157,26 @@ function SignUp() {
                   onClick={() => setIsVisible(!isVisible)}
                 >
                   {isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="auth-form-group">
+              <label className="auth-label">Confirm Password</label>
+              <div className="auth-password-wrapper">
+                <input
+                  type={isConfirmVisible ? "text" : "password"}
+                  {...formik.getFieldProps("confirmPassword")}
+                  className="auth-input"
+                  placeholder="Re-enter password"
+                />
+                <button
+                  type="button"
+                  className="auth-eye-btn"
+                  onClick={() => setIsConfirmVisible(!isConfirmVisible)}
+                >
+                  {isConfirmVisible ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
               </div>
             </div>
