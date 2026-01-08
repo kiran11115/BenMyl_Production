@@ -42,7 +42,7 @@ const CompanyProfile = () => {
     },
 
     description:
-      "Nimbus Labs builds and improves B2B digital products with a focus on UX quality, speed-to-market, and maintainable UI systems.",
+      "Nimbus Labs builds and improves B2B digital products with UX-first design, fast iteration, and maintainable UI systems. We turn complex workflows into clear, reliable experiences—shipping production-ready interfaces, reducing friction for users, and helping teams scale confidently as requirements evolve, features grow, and timelines stay tight.",
 
     contact: {
       email: "hello@nimbuslabs.com",
@@ -105,7 +105,7 @@ const CompanyProfile = () => {
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-12">
+            <div className="col-8">
               {/* Company Header Card */}
               <div className="project-card">
                 <div className="d-flex gap-3 align-items-start">
@@ -151,8 +151,8 @@ const CompanyProfile = () => {
 
                     {/* About */}
                     <div className="mt-3">
-                      <h3 className="card-title">About</h3>
-                      <div className="small text-muted">
+                      <h3 className="card-title mb-2">About</h3>
+                      <div className="small text-muted" style={{height:"40px", overflowY:"scroll"}}>
                         {companyData.description}
                       </div>
                     </div>
@@ -165,6 +165,29 @@ const CompanyProfile = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="col-4">
+            <div className="table-card sidebar-card" style={{height:"220px"}}>
+            <h3 className="card-title">Subscription Plan</h3>
+            <div className="contact-list">
+              <div className="contact-item">
+                <FiFileText className="contact-icon" /> {companyData.plan.name} (
+                {companyData.plan.status})
+              </div>
+              <div className="contact-item">
+                <FiCalendar className="contact-icon" /> Billing:{" "}
+                {companyData.plan.billingCycle}
+              </div>
+              <div className="contact-item">
+                <FiCalendar className="contact-icon" /> Renews on:{" "}
+                {companyData.plan.renewsOn}
+              </div>
+              <div className="contact-item">
+                <FiUsers className="contact-icon" /> Seats:{" "}
+                {companyData.plan.seatsUsed}/{companyData.plan.seats}
+              </div>
+            </div>
+          </div>
             </div>
 
             {/* Added: Team members table */}
@@ -190,29 +213,6 @@ const CompanyProfile = () => {
             >
               Account Settings
             </button>
-          </div>
-
-          {/* Added: Plan card */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Plan</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiFileText className="contact-icon" /> {companyData.plan.name} (
-                {companyData.plan.status})
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Billing:{" "}
-                {companyData.plan.billingCycle}
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Renews on:{" "}
-                {companyData.plan.renewsOn}
-              </div>
-              <div className="contact-item">
-                <FiUsers className="contact-icon" /> Seats:{" "}
-                {companyData.plan.seatsUsed}/{companyData.plan.seats}
-              </div>
-            </div>
           </div>
 
           {/* Company Information */}
