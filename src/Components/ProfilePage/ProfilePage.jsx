@@ -3,6 +3,8 @@ import {
   FiMapPin,
   FiBriefcase,
   FiMail,
+  FiEdit,
+  FiSettings,
   FiPhone,
   FiLinkedin,
   FiFileText,
@@ -81,7 +83,7 @@ const CompanyProfile = () => {
     .join(" • ");
 
   const onEdit = () => {
-    navigate(`/user/company/${companyData.slug}/edit`);
+    navigate("/user/edit-profile");
   };
 
   const onAccountSettings = () => {
@@ -203,15 +205,15 @@ const CompanyProfile = () => {
         <div className="dashboard-column-side">
           {/* Actions */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100" onClick={onEdit}>
-              Edit Company
+            <button className="btn-primary w-100 gap-2" onClick={onEdit}>
+             <FiEdit/> Edit
             </button>
 
             <button
-              className="btn-secondary w-100"
+              className="btn-secondary w-100 gap-2"
               onClick={onAccountSettings}
             >
-              Account Settings
+             <FiSettings/>  Account Settings
             </button>
           </div>
 

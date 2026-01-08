@@ -30,6 +30,7 @@ import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
+import ProfileEdit from "./ProfilePage/ProfileEdit";
 
 
 
@@ -58,6 +59,7 @@ const routes = createBrowserRouter(
                     <Route path="talent-profile" element={<UploadTalentProfile />} />
                     <Route path="user-analytics" element={<Analytics />} />
                     <Route path="user-profile" element={<ProfilePage />} />
+                    <Route path="edit-profile" element={<ProfileEdit />} />
                     <Route path="user-post-new-positions" element={<PostNewPositions />} />
                     <Route path="user-invite-bid" element={<InviteBid />} />
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
