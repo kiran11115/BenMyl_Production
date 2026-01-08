@@ -13,6 +13,7 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import TeamMembersTable from "./TeamMembersTable";
 
 const CompanyProfile = () => {
   const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
@@ -22,7 +23,7 @@ const CompanyProfile = () => {
     id: "cmp_10231",
     slug: "nimbus-labs",
     name: "Nimbus Labs",
-    tagline: "Design-led product studio for B2B teams",
+    tagline: "Design-led product studio",
     status: "Operating",
     companyType: "Privately Held",
     industry: "Software Development",
@@ -133,9 +134,9 @@ const CompanyProfile = () => {
                       <span className="meta-item">
                         <FiUsers /> {companyData.size}
                       </span>
-                      <span className="meta-item">
+                      {/* <span className="meta-item">
                         <FiCalendar /> Founded {companyData.foundedYear}
-                      </span>
+                      </span> */}
                     </div>
 
                     {/* Status */}
@@ -157,10 +158,10 @@ const CompanyProfile = () => {
                     </div>
 
                     {/* Headquarters */}
-                    <div className="mt-3">
+                    {/* <div className="mt-3">
                       <h3 className="card-title">Headquarters</h3>
                       <div className="small text-muted">{fullAddress}</div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -169,39 +170,7 @@ const CompanyProfile = () => {
             {/* Added: Team members table */}
             <div className="col-12 mt-3">
               <div className="table-card">
-                <h3 className="card-title">Team members</h3>
-
-                <div className="table-responsive mt-3">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {companyData.teamMembers?.length ? (
-                        companyData.teamMembers.map((m) => (
-                          <tr key={m.email}>
-                            <td>{m.username}</td>
-                            <td>
-                              <a href={`mailto:${m.email}`}>{m.email}</a>
-                            </td>
-                            <td>{m.role}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={3} className="text-muted">
-                            No team members added.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                <TeamMembersTable />
               </div>
             </div>
           </div>
