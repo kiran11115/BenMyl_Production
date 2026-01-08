@@ -59,7 +59,7 @@ export default function AccountSettings() {
 
         {/* Header Section */}
         <div className="back-row d-flex gap-1">
-          <button className="link-button" onClick={() => navigate("/user/user-profile")}>
+          <button className="link-button" onClick={() => navigate("/admin/admin-profile")}>
             <FiArrowLeft /> Back to Profile
           </button>
           <span className="crumb">/ Account Settings</span>

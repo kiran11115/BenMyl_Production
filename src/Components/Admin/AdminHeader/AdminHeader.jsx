@@ -24,7 +24,7 @@ function AdminHeader() {
     // --- Navigation Handlers ---
     const handleViewProfile = () => {
         setIsProfileOpen(false); // Close menu
-        navigate("/user/user-profile"); // Navigate to profile page
+        navigate("/admin/admin-profile"); // Navigate to profile page
     };
 
 
@@ -125,13 +125,13 @@ function AdminHeader() {
                             tabIndex={0}
                         >
                             <img
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
                                 alt="User Avatar"
                                 className="profile-avatar"
                             />
                             <div className="profile-info">
-                                <span className="profile-name">John Smith</span>
-                                <span className="profile-role">HR Manager</span>
+                                <span className="profile-name">Nimbus Labs</span>
+                                <span className="profile-role">Admin</span>
                             </div>
                             <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
                         </div>
@@ -141,7 +141,7 @@ function AdminHeader() {
                             <div className="profile-popover">
                                 <div className="popover-header">
                                     {/* <p className="popover-name">John Smith</p> */}
-                                    <p className="popover-email">john.smith@benchsales.com</p>
+                                    <p className="popover-email">nimbuslabs@company.com</p>
                                 </div>
                                 <div className="popover-menu">
                                     <button className="popover-item" onClick={handleViewProfile}>

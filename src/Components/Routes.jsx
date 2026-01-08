@@ -17,7 +17,7 @@ import Messages from "./Messages/Messages";
 import TalentPool from "./TalentPool/TalentPool";
 import Analytics from "./Analytics/Analytics";
 import ProfilePage from "./ProfilePage/ProfilePage";
-import AccountSettings from "./AccountSettings/AccountSettings";
+import AccountSettings from "./Admin/AccountSettings/AccountSettings";
 import PostNewPositions from "./PostNewPositions/PostNewPositions";
 import InviteBid from "./InviteBid/InviteBid";
 import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
@@ -30,7 +30,7 @@ import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
-import ProfileEdit from "./ProfilePage/ProfileEdit";
+import ProfileEdit from "./Admin/AdminProfile/ProfileEdit";
 import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
 
@@ -51,11 +51,12 @@ const routes = createBrowserRouter(
 
                 <Route path="Admin" element={<AdminHeader />}>
                     <Route path="admin-profile" element={<AdminProfile />} />
+                    <Route path="account-settings" element={<AccountSettings />} />
+                    <Route path="edit-profile" element={<ProfileEdit />} />
                 </Route>
 
                 <Route path="User" element={<Header />}>
                     <Route path="AI-screen" element={<AIScreen />} />
-                    <Route path="account-settings" element={<AccountSettings />} />
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
                     <Route path="user-upload-talent" element={<UploadTalent />} />
@@ -66,7 +67,6 @@ const routes = createBrowserRouter(
                     <Route path="talent-profile" element={<UploadTalentProfile />} />
                     <Route path="user-analytics" element={<Analytics />} />
                     <Route path="user-profile" element={<ProfilePage />} />
-                    <Route path="edit-profile" element={<ProfileEdit />} />
                     <Route path="user-post-new-positions" element={<PostNewPositions />} />
                     <Route path="user-invite-bid" element={<InviteBid />} />
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />

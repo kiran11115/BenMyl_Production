@@ -15,7 +15,7 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import TeamMembersTable from "./TeamMembersTable";
+import TeamMembersTable from "../Admin/AdminProfile/TeamMembersTable";
 
 const CompanyProfile = () => {
   const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
@@ -146,7 +146,7 @@ const CompanyProfile = () => {
                       <span className="status-tag status-completed">
                         {companyData.status}
                       </span>
-                      <span className="status-tag status-inprogress">
+                      <span className="status-tag status-progress">
                         {companyData.companyType}
                       </span>
                     </div>
