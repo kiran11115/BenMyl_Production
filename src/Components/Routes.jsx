@@ -30,9 +30,10 @@ import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
-import ProfileEdit from "./Admin/AdminProfile/ProfileEdit";
 import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
+import EditProfile from "./ProfilePage/EditProfile";
+import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
 
 
 
@@ -52,7 +53,7 @@ const routes = createBrowserRouter(
                 <Route path="Admin" element={<AdminHeader />}>
                     <Route path="admin-profile" element={<AdminProfile />} />
                     <Route path="account-settings" element={<AccountSettings />} />
-                    <Route path="edit-profile" element={<ProfileEdit />} />
+                    <Route path="edit-profile" element={<AdminProfileEdit />} />
                 </Route>
 
                 <Route path="User" element={<Header />}>
@@ -67,6 +68,7 @@ const routes = createBrowserRouter(
                     <Route path="talent-profile" element={<UploadTalentProfile />} />
                     <Route path="user-analytics" element={<Analytics />} />
                     <Route path="user-profile" element={<ProfilePage />} />
+                    <Route path="edit-profile" element={<EditProfile />} />
                     <Route path="user-post-new-positions" element={<PostNewPositions />} />
                     <Route path="user-invite-bid" element={<InviteBid />} />
                     <Route path="user-upcoming-interview" element={<UpcomingInterview />} />

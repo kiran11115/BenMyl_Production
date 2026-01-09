@@ -15,58 +15,46 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import TeamMembersTable from "../Admin/AdminProfile/TeamMembersTable";
+import TeamMembersTable from "./TeamMemberTable";
 
-const CompanyProfile = () => {
-  const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
+const ProfilePage = () => {
+  const navigate = useNavigate();
 
-  // NOTE: Existing data is unchanged; only plan + teamMembers are added.
   const companyData = {
-    id: "cmp_10231",
-    slug: "nimbus-labs",
-    name: "Nimbus Labs",
-    tagline: "Design-led product studio",
-    status: "Operating",
-    companyType: "Privately Held",
-    industry: "Software Development",
-    size: "51–200 employees",
-    foundedYear: "2016",
-    websiteUrl: "https://nimbuslabs.com",
-    domain: "nimbuslabs.com",
+    id: "cmp_24781",
+    slug: "talentbridge-hr",
+    name: "John Smith",
+    companyname: "Nimbus Labs",
+    status: "Active",
+    industry: "Staffing & Recruiting",
+    foundedYear: "2018",
+    websiteUrl: "https://talentbridge.com",
+    domain: "talentbridge.com",
 
     headquarters: {
-      city: "San Francisco",
+      city: "San francisco",
       state: "CA",
-      country: "US",
-      postalCode: "94105",
-      street1: "123 Market St",
-      street2: "Suite 500",
+      country: "USA",
+      postalCode: "572734",
+      street1: "27-1-72/4, hms  knska",
+      street2: "3rd Floor, Tech Tower",
     },
 
     description:
-      "Nimbus Labs builds and improves B2B digital products with UX-first design, fast iteration, and maintainable UI systems. We turn complex workflows into clear, reliable experiences—shipping production-ready interfaces, reducing friction for users, and helping teams scale confidently as requirements evolve, features grow, and timelines stay tight.",
+      "TalentBridge Solutions is a leading staffing and recruitment firm specializing in healthcare, IT, and engineering talent acquisition. We partner with enterprises to build high-performing teams through strategic hiring, talent pipelining, and workforce management solutions. Our HR technology platform streamlines recruitment workflows, candidate tracking, and employee onboarding for scalable growth.",
 
     contact: {
-      email: "hello@nimbuslabs.com",
-      phone: "+1 (555) 123-4567",
-      linkedinUrl: "https://linkedin.com/company/nimbuslabs",
+      email: "hr@talentbridge.com",
+      phone: "+91 891 234 5678",
+      linkedinUrl: "https://linkedin.com/company/talentbridge-solutions",
     },
 
-    // Added: subscription plan
-    plan: {
-      name: "Business",
-      status: "Active",
-      billingCycle: "Monthly",
-      renewsOn: "2026-02-01",
-      seats: 10,
-      seatsUsed: 6,
-    },
 
-    // Added: team members
     teamMembers: [
-      { username: "nimbus.owner", email: "owner@nimbuslabs.com", role: "Owner" },
-      { username: "sarah.admin", email: "sarah@nimbuslabs.com", role: "Admin" },
-      { username: "arun.member", email: "arun@nimbuslabs.com", role: "Member" },
+      { username: "hr-manager", email: "hr-manager@talentbridge.com", role: "HR Manager" },
+      { username: "recruiter-lead", email: "lead-recruiter@talentbridge.com", role: "Recruitment Lead" },
+      { username: "talent-admin", email: "admin@talentbridge.com", role: "Talent Admin" },
+      { username: "onboarding-specialist", email: "onboarding@talentbridge.com", role: "Onboarding Specialist" },
     ],
   };
 
@@ -87,42 +75,48 @@ const CompanyProfile = () => {
   };
 
   const onAccountSettings = () => {
-    navigate("/user/account-settings"); // Navigate by passing a path string. [web:62]
+    navigate("/admin/account-settings");
   };
 
   return (
     <div className="projects-container">
       {/* Breadcrumb */}
-      <div className="profile-breadcrumb">
+      <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
           onClick={() => navigate("/user/user-dashboard")}
         >
           <FiArrowLeft /> Back to Dashboard
         </button>
-        <span className="crumb">/ Company Profile</span>
+        <span className="crumb">/ Profile</span>
       </div>
 
       <div className="dashboard-layout">
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-8">
+            <div className="col-12">
               {/* Company Header Card */}
               <div className="project-card">
                 <div className="d-flex gap-3 align-items-start">
                   <img
-                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
-                    alt="Company Logo"
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt="TalentBridge Logo"
                     className="profile-avatar-lg"
                   />
 
                   <div className="profile-header-content w-100">
-                    <div className="d-flex align-items-center gap-3">
+                    <div className="d-flex align-items-center justify-content-between gap-3">
                       <h1 className="mb-1">{companyData.name}</h1>
+                      {/* Status */}
+                      <div className="profile-status-wrapper">
+                        <span className="status-tag status-completed">
+                          {companyData.status}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="card-title mb-2">{companyData.tagline}</div>
+                    <div className="card-title mb-2">{companyData.companyname}</div>
 
                     {/* Meta row */}
                     <div className="profile-meta-row">
@@ -133,70 +127,25 @@ const CompanyProfile = () => {
                         <FiMapPin /> {companyData.headquarters.city},{" "}
                         {companyData.headquarters.state}
                       </span>
-                      <span className="meta-item">
-                        <FiUsers /> {companyData.size}
-                      </span>
-                      {/* <span className="meta-item">
-                        <FiCalendar /> Founded {companyData.foundedYear}
-                      </span> */}
-                    </div>
-
-                    {/* Status */}
-                    <div className="profile-status-wrapper">
-                      <span className="status-tag status-completed">
-                        {companyData.status}
-                      </span>
-                      <span className="status-tag status-progress">
-                        {companyData.companyType}
-                      </span>
                     </div>
 
                     {/* About */}
                     <div className="mt-3">
                       <h3 className="card-title mb-2">About</h3>
-                      <div className="small text-muted" style={{height:"40px", overflowY:"scroll"}}>
+                      <div className="small text-muted">
                         {companyData.description}
                       </div>
                     </div>
-
-                    {/* Headquarters */}
-                    {/* <div className="mt-3">
-                      <h3 className="card-title">Headquarters</h3>
-                      <div className="small text-muted">{fullAddress}</div>
-                    </div> */}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="col-4">
-            <div className="table-card sidebar-card" style={{height:"220px"}}>
-            <h3 className="card-title">Subscription Plan</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiFileText className="contact-icon" /> {companyData.plan.name} (
-                {companyData.plan.status})
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Billing:{" "}
-                {companyData.plan.billingCycle}
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Renews on:{" "}
-                {companyData.plan.renewsOn}
-              </div>
-              <div className="contact-item">
-                <FiUsers className="contact-icon" /> Seats:{" "}
-                {companyData.plan.seatsUsed}/{companyData.plan.seats}
-              </div>
-            </div>
-          </div>
-            </div>
 
-            {/* Added: Team members table */}
+            {/* Team members table */}
             <div className="col-12 mt-3">
-              <div className="table-card">
+              {/* <div className="table-card">
                 <TeamMembersTable />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -206,14 +155,14 @@ const CompanyProfile = () => {
           {/* Actions */}
           <div className="sidebar-actions">
             <button className="btn-primary w-100 gap-2" onClick={onEdit}>
-             <FiEdit/> Edit
+              <FiEdit /> Edit
             </button>
 
             <button
               className="btn-secondary w-100 gap-2"
               onClick={onAccountSettings}
             >
-             <FiSettings/>  Account Settings
+              <FiSettings /> Account Settings
             </button>
           </div>
 
@@ -276,4 +225,4 @@ const CompanyProfile = () => {
   );
 };
 
-export default CompanyProfile;
+export default ProfilePage;

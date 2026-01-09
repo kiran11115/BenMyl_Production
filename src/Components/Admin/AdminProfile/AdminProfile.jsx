@@ -93,7 +93,7 @@ const AdminProfile = () => {
   return (
     <div className="projects-container">
       {/* Breadcrumb */}
-      <div className="profile-breadcrumb">
+      <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
           onClick={() => navigate("/admin/admin-dashboard")}

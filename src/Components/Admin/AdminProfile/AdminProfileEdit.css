@@ -1,0 +1,188 @@
+/* ---------------------------------
+   CLEAN FORM LAYOUT
+---------------------------------- */
+
+
+.profile-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.profile-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Grid Layouts */
+.input-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.input-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* upload logo */
+
+.logo-upload-container {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logo-upload-container:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.logo-upload-label {
+  display: contents; /* Makes label cover entire container */
+  cursor: pointer;
+}
+
+.logo-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #e2e8f0;
+  pointer-events: none;
+}
+
+.logo-placeholder {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  gap: 0.5rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.logo-placeholder-icon {
+  font-size: 2rem;
+  color: #94a3b8;
+}
+
+.logo-remove-btn {
+  background: #ef4444;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logo-remove-btn:hover {
+  background: #dc2626;
+}
+
+.logo-input {
+  display: none; /* Hidden file input */
+}
+
+.logo-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+
+/* ---------------------------------
+   INPUTS ONLY
+---------------------------------- */
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .input-grid-3, .input-grid-2, .input-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-edit-container {
+    padding: 1rem;
+  }
+  
+  .profile-form {
+    padding: 2rem 1.5rem;
+  }
+}
