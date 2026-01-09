@@ -25,6 +25,7 @@ const ProfilePage = () => {
     slug: "talentbridge-hr",
     name: "John Smith",
     companyname: "Nimbus Labs",
+    size: "100-200",
     status: "Active",
     industry: "Staffing & Recruiting",
     foundedYear: "2018",
@@ -95,7 +96,7 @@ const ProfilePage = () => {
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-12">
+            <div className="col-12 col-md-12 col-lg-8 mb-4">
               {/* Company Header Card */}
               <div className="project-card">
                 <div className="d-flex gap-3 align-items-start">
@@ -139,6 +140,22 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="col-12 col-md-12 col-lg-4 mb-4">
+              <div className="project-card"></div>
+            </div>
+
+             <div className="col-12 col-md-12 col-lg-4 mb-4">
+              <div className="project-card"></div>
+            </div>
+
+             <div className="col-12 col-md-12 col-lg-4 mb-4">
+              <div className="project-card"></div>
+            </div>
+
+             <div className="col-12 col-md-12 col-lg-4 mb-4">
+              <div className="project-card"></div>
             </div>
 
             {/* Team members table */}
