@@ -45,10 +45,10 @@ function Signin() {
 
         // SUCCESS CHECK (backend format)
         if (response?.isvalid === true) {
-          const role = response?.roleID?.toLowerCase();
+          const role = response?.roleID;
 
-          if (role === "admin") {
-            navigate("/user/account-settings");
+          if (role === "Admin") {
+            navigate("/Admin/account-settings");
             return;
           }
 
@@ -56,10 +56,7 @@ function Signin() {
             navigate("/user/user-dashboard");
             return;
           }
-
-          // fallback for other roles
-          navigate("/user/account-settings");
-          return;
+    
         }
 
         // ERROR IF isvalid is false

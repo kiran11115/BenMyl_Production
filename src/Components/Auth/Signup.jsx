@@ -67,7 +67,7 @@ function SignUp() {
           fullName: values.fullName,
           emailID: values.email,
           password: values.password,
-          role: "admin",
+          role: "Admin",
         };
 
         await register(payload).unwrap();
