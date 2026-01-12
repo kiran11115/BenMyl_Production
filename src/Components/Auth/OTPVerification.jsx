@@ -53,7 +53,7 @@ function OTPVerification() {
         const response = await otpVerify({
           emailID,
           vcode: Number(otpValue),
-          role: "admin",
+          role: "Admin",
         }).unwrap();
 
         if (response?.result_Code !== 200) {
