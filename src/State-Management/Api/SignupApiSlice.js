@@ -17,7 +17,22 @@ const SignupApiSlice = apiSlice.injectEndpoints({
         body: verificationData,
       }),
     }),
+
+    resendOtp: builder.mutation({
+      query: (emailID) => ({
+        url: "/api/Account/resend-otp",
+        method: "POST",
+        body: `"${emailID}"`, // RAW STRING body
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
-export const { useRegisterMutation, useOtpVerifyMutation } = SignupApiSlice;
+export const {
+  useRegisterMutation,
+  useOtpVerifyMutation,
+  useResendOtpMutation,
+} = SignupApiSlice;

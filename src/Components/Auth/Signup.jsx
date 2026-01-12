@@ -1,101 +1,155 @@
 // SignUp.jsx
 import React, { useState } from "react";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
+import { useRegisterMutation } from "../../State-Management/Api/SignupApiSlice";
+
+/* =========================
+   Validation Schema
+========================= */
+const signUpValidationSchema = Yup.object({
+  companyName: Yup.string()
+    .trim()
+    .min(2, "Company name must be at least 2 characters")
+    .required("Company name is required"),
+
+  fullName: Yup.string()
+    .trim()
+    .min(3, "Full name must be at least 3 characters")
+    .required("Full name is required"),
+
+  email: Yup.string()
+    .email("Enter a valid email address")
+    .required("Email is required"),
+
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Must contain at least one number")
+    .matches(/[@$!%*?&#]/, "Must contain one special character")
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
+
+  acceptTerms: Yup.boolean().oneOf(
+    [true],
+    "You must accept Terms & Conditions"
+  ),
+});
 
 function SignUp() {
   const [isVisible, setIsVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const navigate = useNavigate();
+  const [register, { isLoading }] = useRegisterMutation();
 
   const formik = useFormik({
     initialValues: {
-      fullName: "",
       companyName: "",
+      fullName: "",
       email: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
     },
-    // no validationSchema
-    validate: () => ({}),
-    onSubmit: (values) => {
-      console.log("Sign up:", values);
-      navigate("/OTP-Verification");
+    validationSchema: signUpValidationSchema,
+
+    onSubmit: async (values) => {
+      try {
+        const payload = {
+          companyName: values.companyName,
+          fullName: values.fullName,
+          emailID: values.email,
+          password: values.password,
+          role: "admin",
+        };
+
+        await register(payload).unwrap();
+
+        navigate("/otp-verification", {
+          state: {
+            emailID: values.email,
+            fullName: values.fullName,
+            companyName: values.companyName,
+          },
+        });
+      } catch (err) {
+        console.error("Signup failed:", err);
+      }
     },
   });
 
   return (
-    <div className="auth-container">
+    <div className="auth-container-signup">
       <div className="auth-card">
-        {/* LEFT: testimonial card only */}
+        {/* LEFT SIDE unchanged */}
         <div className="auth-brand-side">
           <span className="auth-brand-accent-circle" />
-
           <div className="auth-brand-title">
             <h2 className="auth-title">Create your account</h2>
             <p className="auth-subtitle">
-              Join our communities and use the blocks &amp; components you need
-              to build a truly professional experience.
+              Join our communities and use the blocks & components you need to
+              build a truly professional experience.
+            </p>
+          </div>
+
+          <div
+            style={{
+              marginTop: "2.25rem",
+              padding: "1.25rem 1.5rem",
+              borderRadius: "0.75rem",
+              background:
+                "linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.6))",
+              border: "1px solid rgba(148,163,184,0.35)",
+              maxWidth: "360px",
+            }}
+          >
+            <p style={{ color: "#facc15", marginBottom: "0.75rem" }}>★★★★★</p>
+            <p
+              style={{
+                color: "#e5e7eb",
+                fontStyle: "italic",
+                lineHeight: 1.5,
+              }}
+            >
+              “BENMYL gives our teams ready-to-use components, so we ship faster
+              without sacrificing quality.”
             </p>
 
             <div
               style={{
-                marginTop: "2.25rem",
-                padding: "1.25rem 1.5rem",
-                borderRadius: "0.75rem",
-                background:
-                  "linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.6))",
-                border: "1px solid rgba(148,163,184,0.35)",
-                maxWidth: "360px",
+                display: "flex",
+                alignItems: "center",
+                marginTop: "1.25rem",
+                gap: "0.75rem",
               }}
             >
-              <p style={{ color: "#facc15", marginBottom: "0.75rem" }}>
-                ★★★★★
-              </p>
-
-              <p
-                style={{
-                  color: "#e5e7eb",
-                  fontStyle: "italic",
-                  lineHeight: 1.5,
-                }}
-              >
-                “BENMYL gives our teams ready‑to‑use components, so we ship
-                faster without sacrificing quality.”
-              </p>
-
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginTop: "1.25rem",
-                  gap: "0.75rem",
+                  width: 40,
+                  height: 40,
+                  borderRadius: "999px",
+                  overflow: "hidden",
+                  backgroundColor: "#1f2937",
                 }}
-              >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: "999px",
-                    overflow: "hidden",
-                    backgroundColor: "#1f2937",
-                  }}
-                />
-                <div style={{ color: "#e5e7eb" }}>
-                  <div style={{ fontWeight: 600 }}>Lyndon Hebert</div>
-                  <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
-                    CEO &amp; Founder
-                  </div>
+              />
+              <div style={{ color: "#e5e7eb" }}>
+                <div style={{ fontWeight: 600 }}>Lyndon Hebert</div>
+                <div style={{ fontSize: "0.85rem", color: "#9ca3af" }}>
+                  CEO & Founder
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: Sign‑up form (no validation) */}
+        {/* RIGHT SIDE */}
         <div className="auth-form-side">
           <div className="auth-header">
             <img
@@ -117,28 +171,39 @@ function SignUp() {
                 type="text"
                 {...formik.getFieldProps("fullName")}
                 className="auth-input"
-                placeholder="Your Full Name"
+                placeholder="User Name"
               />
+              {formik.touched.fullName && formik.errors.fullName && (
+                <p className="auth-error-msg">{formik.errors.fullName}</p>
+              )}
             </div>
 
+            {/* Company Name */}
             <div className="auth-form-group">
               <label className="auth-label">Company Name</label>
               <input
                 type="text"
                 {...formik.getFieldProps("companyName")}
                 className="auth-input"
-                placeholder="Your Company Name"
+                placeholder="Company Name"
               />
+              {formik.touched.companyName && formik.errors.companyName && (
+                <p className="auth-error-msg">{formik.errors.companyName}</p>
+              )}
             </div>
 
+            {/* Email */}
             <div className="auth-form-group">
               <label className="auth-label">Email</label>
               <input
                 type="email"
                 {...formik.getFieldProps("email")}
                 className="auth-input"
-                placeholder="name@company.com"
+                placeholder="Enter email"
               />
+              {formik.touched.email && formik.errors.email && (
+                <p className="auth-error-msg">{formik.errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -169,7 +234,7 @@ function SignUp() {
                   type={isConfirmVisible ? "text" : "password"}
                   {...formik.getFieldProps("confirmPassword")}
                   className="auth-input"
-                  placeholder="Re-enter password"
+                  placeholder="Confirm password"
                 />
                 <button
                   type="button"
@@ -181,7 +246,7 @@ function SignUp() {
               </div>
             </div>
 
-            {/* Terms + cookies checkbox still present but not validated */}
+            {/* Terms */}
             <div className="auth-form-group">
               <label className="auth-remember">
                 <input
@@ -191,29 +256,17 @@ function SignUp() {
                   onChange={formik.handleChange}
                 />
                 <span>
-                  I agree to the{" "}
-                  <button
-                    type="button"
-                    className="auth-link"
-                    onClick={() => navigate("/terms")}
-                  >
-                    Terms &amp; Conditions
-                  </button>{" "}
-                  and{" "}
-                  <button
-                    type="button"
-                    className="auth-link"
-                    onClick={() => navigate("/cookies")}
-                  >
-                    Cookie Policy
-                  </button>
-                  .
+                  I agree to the Terms & Conditions and Cookie Policy.
                 </span>
               </label>
             </div>
 
-            <button type="submit" className="auth-btn-primary">
-              Create Account
+            <button
+              type="submit"
+              className="auth-btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
