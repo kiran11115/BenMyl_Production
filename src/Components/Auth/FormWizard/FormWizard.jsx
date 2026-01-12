@@ -133,7 +133,7 @@ const FormWizard = () => {
   };
 
   const handleClaimReward = () => {
-    navigate("/user/account-settings");
+    navigate("/admin/edit-profile");
   };
 
   const handleCloseModal = () => {

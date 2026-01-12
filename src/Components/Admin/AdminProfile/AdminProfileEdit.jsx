@@ -564,50 +564,6 @@ const AdminProfileEdit = () => {
             </div>
           </div>
 
-          {/* Subscription Plan */}
-          <div className="form-section">
-            <h3 className="section-title">Subscription Plan</h3>
-            <div className="input-grid-3">
-              <div className="auth-group">
-                <label className="auth-label">Plan Name</label>
-                <input
-                  type="text"
-                  name="plan.name"
-                  value={formData.plan.name}
-                  onChange={handleChange}
-                  className="auth-input"
-                  placeholder="Enterprise"
-                />
-              </div>
-              <div className="auth-group">
-                <label className="auth-label">Billing Cycle</label>
-                <select
-                  name="plan.billingCycle"
-                  value={formData.plan.billingCycle}
-                  onChange={handleChange}
-                  className="auth-input"
-                >
-                  <option value="">Select cycle</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Quarterly">Quarterly</option>
-                  <option value="Annual">Annual</option>
-                </select>
-              </div>
-              <div className="auth-group">
-                <label className="auth-label">Total Seats</label>
-                <input
-                  type="number"
-                  name="plan.seats"
-                  value={formData.plan.seats}
-                  onChange={handleChange}
-                  className="auth-input"
-                  placeholder="25"
-                  min="1"
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Action Buttons */}
           <div className="form-actions">
             <button
@@ -617,7 +573,7 @@ const AdminProfileEdit = () => {
             >
               <FiX /> Cancel
             </button>
-            <button type="submit" className="btn-primary gap-2">
+            <button type="submit" onClick={handleSubmit} className="btn-primary gap-2">
               <FiSave /> Save Changes
             </button>
           </div>
