@@ -45,6 +45,10 @@ function Signin() {
 
         // SUCCESS CHECK (backend format)
         if (response?.isvalid === true) {
+          localStorage.setItem("CompanyId", response?.userid);
+          localStorage.setItem("Email", response?.emailID);
+          localStorage.setItem("CompanyName", response?.companyName);
+          localStorage.setItem("UserName", response?.userName);
           const role = response?.roleID;
 
           if (role === "Admin") {

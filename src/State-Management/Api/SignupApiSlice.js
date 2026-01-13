@@ -28,6 +28,14 @@ const SignupApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+
+    inviteUser: builder.mutation({
+  query: (formData) => ({
+    url: "/api/Account/uatinviteUsers",
+    method: "POST",
+    body: formData, // ✅ FormData
+  }),
+}),
   }),
 });
 
@@ -35,4 +43,5 @@ export const {
   useRegisterMutation,
   useOtpVerifyMutation,
   useResendOtpMutation,
+  useInviteUserMutation
 } = SignupApiSlice;

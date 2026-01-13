@@ -44,20 +44,43 @@ const signUpValidationSchema = Yup.object({
 });
 
 function SignUp() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
 
+  const [isVisible, setIsVisible] = useState(false);
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
+  /* =========================
+     READ URL QUERY PARAMS
+  ========================= */
+  const params = new URLSearchParams(window.location.search);
+
+  const invitedCompanyName = params.get("CompanyName");
+  const invitedEmail = params.get("EmailID");
+  const invitedFullName = params.get("FullName");
+
+  console.log("Company:", invitedCompanyName);
+  console.log("Email:", invitedEmail);
+  console.log("FullName:", invitedFullName);
+
+
+  const isInviteSignup = !!invitedEmail;
+
+  /* =========================
+     FORMIK
+  ========================= */
   const formik = useFormik({
+    enableReinitialize: true, // 🔑 REQUIRED
+
     initialValues: {
-      companyName: "",
-      fullName: "",
-      email: "",
+      companyName: invitedCompanyName || "",
+      fullName: invitedFullName || "",
+      email: invitedEmail || "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
     },
+
     validationSchema: signUpValidationSchema,
 
     onSubmit: async (values) => {
