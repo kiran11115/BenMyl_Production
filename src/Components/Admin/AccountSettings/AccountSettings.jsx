@@ -12,6 +12,7 @@ import "./AccountSettings.css";
 import { useNavigate } from "react-router-dom";
 import BillingHistoryTable from "./BillingHistoryTable";
 import InviteTeamMemberModal from "./InviteTeamMemberModal";
+import { useGetTeamMembersQuery } from "../../../State-Management/Api/AdminDetailsApiSlice";
 
 // Import your existing FormWizard component
 // Make sure FormWizard is in the same directory or adjust the path
@@ -34,17 +35,26 @@ const BillingRow = ({ date, desc, amount, status }) => (
 export default function AccountSettings() {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+  const emailID = localStorage.getItem("Email");
+  const {
+  data: teamMembers = [],
+  isLoading,
+  isError,
+} = useGetTeamMembersQuery(emailID, {
+  skip: !emailID,
+});
+
 
   // State to control active tab
   const [activeTab, setActiveTab] = useState("billing");
 
   // Mock Data (moved out of render for cleaner code)
-  const teamMembers = [
-    { name: "John Smith", email: "john.smith@company.com", role: "Admin", tag: "Owner" },
-    { name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "HR Manager", tag: "Active" },
-    { name: "Michael Chen", email: "michael.chen@company.com", role: "Recruiter", tag: "Active" },
-    { name: "Emily Davis", email: "emily.davis@company.com", role: "Hiring Manager", tag: "Pending" },
-  ];
+  // const teamMembers = [
+  //   { name: "John Smith", email: "john.smith@company.com", role: "Admin", tag: "Owner" },
+  //   { name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "HR Manager", tag: "Active" },
+  //   { name: "Michael Chen", email: "michael.chen@company.com", role: "Recruiter", tag: "Active" },
+  //   { name: "Emily Davis", email: "emily.davis@company.com", role: "Hiring Manager", tag: "Pending" },
+  // ];
 
   const integrations = [
     { name: "Google Workspace", desc: "Connect your Google account to import contacts and schedule interviews", connected: true },
@@ -228,44 +238,72 @@ export default function AccountSettings() {
 
         {/* --- TAB CONTENT: TEAM --- */}
         {activeTab === "team" && (
-          <div className="animate-fade-in">
-            <section className="card">
-              <div className="card-header d-flex align-items-center mb-3">
-                <h2>Team Management</h2>
-                <>
-                  <button
-                    className="btn-primary"
-                    type="button"
-                    onClick={() => setShow(true)}
-                  >
-                    Invite Team Member
-                  </button>
+  <div className="animate-fade-in">
+    <section className="card">
+      <div className="card-header d-flex align-items-center mb-3">
+        <h2>Team Management</h2>
 
-                  <InviteTeamMemberModal show={show} onHide={() => setShow(false)} />
-                </>
+        <button
+          className="btn-primary"
+          type="button"
+          onClick={() => setShow(true)}
+        >
+          Invite Team Member
+        </button>
+
+        <InviteTeamMemberModal show={show} onHide={() => setShow(false)} />
+      </div>
+
+      {/* Loading */}
+      {isLoading && <p className="muted">Loading team members...</p>}
+
+      {/* Error */}
+      {isError && <p className="error-text">Failed to load team members</p>}
+
+      {/* Team List */}
+      {!isLoading && teamMembers.length === 0 && (
+        <p className="muted">No team members found</p>
+      )}
+
+      <div className="team-list">
+        {teamMembers.map((m) => (
+          <div key={m.emailID} className="team-item">
+            <div className="team-left">
+              <div className="avatar-sm">
+                {(m.name || m.emailID)[0].toUpperCase()}
               </div>
-              <div className="team-list">
-                {teamMembers.map((m) => (
-                  <div key={m.email} className="team-item">
-                    <div className="team-left">
-                      <div className="avatar-sm">{m.name.split(" ").map(n => n[0]).join("")}</div>
-                      <div>
-                        <div className="team-name">{m.name}</div>
-                        <div className="team-email">{m.email}</div>
-                      </div>
-                    </div>
-                    <div className="team-right">
-                      <select value={m.role} onChange={() => { }} className="role-select btn-secondary">
-                        <option>{m.role}</option>
-                      </select>
-                      <span className={`status-tag status-${m.tag.toLowerCase()}`}>{m.tag}</span>
-                    </div>
-                  </div>
-                ))}
+
+              <div>
+                <div className="team-name">
+                  {m.name || "Invited User"}
+                </div>
+                <div className="team-email">{m.emailID}</div>
               </div>
-            </section>
+            </div>
+
+            <div className="team-right">
+              <select
+                value={m.role}
+                disabled
+                className="role-select btn-secondary"
+              >
+                <option>{m.role}</option>
+              </select>
+
+              <span
+                className={`status-tag ${
+                  m.accepted ? "status-active" : "status-pending"
+                }`}
+              >
+                {m.accepted ? "Active" : "Pending"}
+              </span>
+            </div>
           </div>
-        )}
+        ))}
+      </div>
+    </section>
+  </div>
+)}
 
         {/* --- TAB CONTENT: INTEGRATIONS --- */}
         {activeTab === "integrations" && (

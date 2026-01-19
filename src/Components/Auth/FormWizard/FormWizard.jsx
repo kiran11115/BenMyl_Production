@@ -31,9 +31,9 @@ const FormWizard = () => {
   const [admindetails] = useAdmindetailsMutation();
 
   /* ================= GET ADMIN DETAILS ================= */
-  const { data: adminData } = useGetAdminDetailsQuery(emailID, {
-    skip: !emailID,
-  });
+  // const { data: adminData } = useGetAdminDetailsQuery(emailID, {
+  //   skip: !emailID,
+  // });
 
   /* ================= LICENSE OPTIONS ================= */
   const licenseOptions = useMemo(
@@ -125,13 +125,13 @@ const FormWizard = () => {
   });
 
   /* ================= BACKEND PREFILL ================= */
-  useEffect(() => {
-    if (adminData) {
-      formik.setFieldValue("companyName", adminData.companyName || formik.values.companyName);
-      formik.setFieldValue("fullName", adminData.fullName || formik.values.fullName);
-      formik.setFieldValue("email", adminData.emailID || formik.values.email);
-    }
-  }, [adminData]);
+  // useEffect(() => {
+  //   if (adminData) {
+  //     formik.setFieldValue("companyName", adminData.companyName || formik.values.companyName);
+  //     formik.setFieldValue("fullName", adminData.fullName || formik.values.fullName);
+  //     formik.setFieldValue("email", adminData.emailID || formik.values.email);
+  //   }
+  // }, [adminData]);
 
   const formData = formik.values;
   const currentLicenseOptions =
@@ -273,7 +273,7 @@ const FormWizard = () => {
     setIsSubmitting(true);
     try {
       await admindetails(buildPayload(formik.values)).unwrap();
-      navigate("/Admin/edit-profile");
+      navigate("/sign-in");
     } catch (err) {
       console.error(err);
       alert(err?.data?.message || "Backend validation failed");
