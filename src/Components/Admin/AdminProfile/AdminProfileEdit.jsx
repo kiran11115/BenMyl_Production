@@ -1,169 +1,122 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiX, FiSave, FiImage } from "react-icons/fi";
+import { FiX, FiSave, FiImage } from "react-icons/fi";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import "./AdminProfileEdit.css";
+
+// CHANGE THIS TO YOUR API IMPORT
+import { useUpdateCompanyProfileMutation } from "../../../State-Management/Api/CompanyProfileApiSlice";
 
 const AdminProfileEdit = () => {
   const navigate = useNavigate();
+  const [updateCompanyProfile, { isLoading }] = useUpdateCompanyProfileMutation();
+  const companyid = localStorage.getItem("logincompanyid");
 
-  // Empty initial state as requested
-  const [formData, setFormData] = useState({
-    name: "",
-    tagline: "",
-    industry: "",
-    size: "",
-    foundedYear: "",
-    websiteUrl: "",
-    domain: "",
-    description: "",
-    headquarters: {
-      street1: "",
-      street2: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "",
-    },
-    contact: {
-      email: "",
-      phone: "",
-      linkedinUrl: "",
-    },
-    plan: {
-      name: "",
-      billingCycle: "",
-      seats: "",
-    },
-  });
-
-  // Logo upload state - starts empty
+  // Logo preview
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
 
-  // Fixed handleChange for nested objects (immutable updates)
-  const handleChange = useCallback((e) => {
-    const { name, value, type, checked } = e.target;
-    const path = name.split('.');
+  // Formik initial values using Swagger names
+  const formik = useFormik({
+    initialValues: {
+      companyname: "",
+      companyid:companyid,
+      Tagline: "",
+      Industry: "",
+      CompanySize: "",
+      FoundedYear: "",
+      Description: "",
+      WebsiteURL: "",
+      Domain: "",
+      StreetAddress1: "",
+      StreetAddress2: "",
+      City: "",
+      State: "",
+      PostalCode: "",
+      Country: "",
+      Emailid: "",
+      Phone: "",
+      LinkedInURL: "",
+    },
 
-    setFormData((prev) => {
-      if (path.length === 1) {
-        return { ...prev, [name]: value };
+    validationSchema: Yup.object({
+      companyname: Yup.string().required("Company Name is required"),
+      Industry: Yup.string().required("Industry is required"),
+      Emailid: Yup.string().email("Invalid email").required("Email is required"),
+      FoundedYear: Yup.number()
+        .min(1900, "Invalid year")
+        .max(new Date().getFullYear(), "Invalid year")
+        .nullable(),
+    }),
+
+    onSubmit: async (values) => {
+      try {
+        const formData = new FormData();
+
+           // IMPORTANT: overwrite companyid to ensure correct storage
+    formData.append("companyid", companyid);
+
+        // Append text fields
+        Object.keys(values).forEach((key) => {
+          formData.append(key, values[key] || "");
+        });
+
+        // Swagger rules: companylogo null, companyimages = uploaded
+        formData.append("companylogo", null);
+        formData.append("companyimages", logoFile || null);
+
+        await updateCompanyProfile(formData).unwrap();
+
+        navigate("/admin/admin-profile");
+      } catch (err) {
+        console.error("Update failed", err);
       }
+    },
+  });
 
-      // Immutable nested update
-      const newData = { ...prev };
-      let current = newData;
-
-      for (let i = 0; i < path.length - 1; i++) {
-        current[path[i]] = { ...current[path[i]] };
-        current = current[path[i]];
-      }
-      current[path[path.length - 1]] = value;
-      return newData;
-    });
-  }, []);
-
-  // Logo upload handler
-  const handleLogoUpload = useCallback((e) => {
+  // Logo handler
+  const handleLogoUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file (PNG, JPG, GIF)');
-        e.target.value = ''; // Reset input
-        return;
-      }
+    if (!file) return;
 
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        e.target.value = ''; // Reset input
-        return;
-      }
-
-      setLogoFile(file);
-
-      // Create preview URL
-      const previewUrl = URL.createObjectURL(file);
-
-      // Clear previous preview if exists
-      if (logoPreview && logoPreview.startsWith('blob:')) {
-        URL.revokeObjectURL(logoPreview);
-      }
-
-      setLogoPreview(previewUrl);
+    if (!file.type.startsWith("image/")) {
+      alert("Invalid file type");
+      return;
     }
-  }, [logoPreview]);
 
-  // Cleanup preview URL on unmount
-  React.useEffect(() => {
-    return () => {
-      if (logoPreview && logoPreview.startsWith('blob:')) {
-        URL.revokeObjectURL(logoPreview);
-      }
-    };
-  }, [logoPreview]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const submitData = { ...formData, logoFile };
-    console.log("Admin Profile Updated:", submitData);
-    // TODO: API call to save data
-    navigate("/admin/admin-profile");
-  };
-
-  const handleCancel = () => {
-    // Reset logo preview and file
-    if (logoPreview && logoPreview.startsWith('blob:')) {
-      URL.revokeObjectURL(logoPreview);
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Max size 5MB");
+      return;
     }
-    setLogoPreview(null);
-    setLogoFile(null);
-    // Reset form to empty
-    setFormData({
-      name: "",
-      tagline: "",
-      industry: "",
-      size: "",
-      foundedYear: "",
-      websiteUrl: "",
-      domain: "",
-      description: "",
-      headquarters: {
-        street1: "",
-        street2: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: "",
-      },
-      contact: {
-        email: "",
-        phone: "",
-        linkedinUrl: "",
-      },
-      plan: {
-        name: "",
-        billingCycle: "",
-        seats: "",
-      },
-    });
-    navigate("/admin/admin-profile");
+
+    setLogoFile(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    if (logoPreview) URL.revokeObjectURL(logoPreview);
+    setLogoPreview(previewUrl);
   };
 
   const removeLogo = () => {
-    if (logoFile) {
-      setLogoFile(null);
-    }
-    if (logoPreview && logoPreview.startsWith('blob:')) {
-      URL.revokeObjectURL(logoPreview);
-    }
+    setLogoFile(null);
+    if (logoPreview) URL.revokeObjectURL(logoPreview);
     setLogoPreview(null);
   };
 
+  const handleCancel = () => {
+    removeLogo();
+    formik.resetForm();
+    navigate("/admin/admin-profile");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (logoPreview) URL.revokeObjectURL(logoPreview);
+    };
+  }, [logoPreview]);
+
   const styleProf = `
-  
-  .logo-upload-container {
+.logo-upload-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -172,89 +125,45 @@ const AdminProfileEdit = () => {
   border-radius: 12px;
   border: 2px dashed #e2e8f0;
 }
-
 .logo-preview-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
-
 .logo-preview {
   width: 120px;
   height: 120px;
   object-fit: cover;
   border-radius: 12px;
   border: 3px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
 .logo-placeholder {
   width: 120px;
   height: 120px;
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  gap: 0.5rem;
+  flex-direction: column;
 }
-
-.logo-placeholder-icon {
-  font-size: 2rem;
-  color: #94a3b8;
-}
-
-.logo-upload-btn, .logo-remove-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.logo-upload-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: white;
-}
-
-.logo-upload-btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  transform: translateY(-1px);
-}
-
-.logo-remove-btn {
-  background: #ef4444;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 13px;
-}
-
-.logo-remove-btn:hover {
-  background: #dc2626;
-}
-
 .logo-input {
   display: none;
 }
-
-.logo-info {
-  text-align: center;
+.logo-remove-btn {
+  background: #ef4444;
+  color: #fff;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
 }
-
-  
-  `;
+`;
 
   return (
     <>
       <style>{styleProf}</style>
+
       <div className="container" style={{ padding: "2rem 0px" }}>
         <div className="profile-header">
           <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
@@ -265,63 +174,35 @@ const AdminProfileEdit = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="profile-form shadow-sm">
-          {/* Logo Upload Section */}
+        <form onSubmit={formik.handleSubmit} className="profile-form shadow-sm">
+          {/* Logo Upload */}
           <div className="form-section">
             <h3 className="section-title">Company Logo</h3>
+
             <div className="logo-upload-container">
               <label className="logo-upload-label">
                 <div className="logo-preview-wrapper">
                   {logoPreview ? (
                     <>
-                      <img
-                        src={logoPreview}
-                        alt="Company Logo Preview"
-                        className="logo-preview"
-                      />
-                      <button
-                        type="button"
-                        className="logo-remove-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          removeLogo();
-                        }}
-                      >
+                      <img src={logoPreview} className="logo-preview" alt="" />
+                      <button type="button" className="logo-remove-btn" onClick={removeLogo}>
                         Remove Logo
                       </button>
                     </>
                   ) : (
                     <div className="logo-placeholder">
-                      <FiImage className="logo-placeholder-icon" />
+                      <FiImage style={{ fontSize: "2rem", color: "#94a3b8" }} />
                       <p>Click anywhere to upload</p>
                     </div>
                   )}
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="logo-input"
-                />
-                <div className="logo-info">
-                  <small style={{ color: "#64748b" }}>
-                    PNG, JPG, GIF up to 5MB. Recommended size: 400x400px
-                  </small>
-                  {logoFile && (
-                    <div style={{ marginTop: "0.5rem" }}>
-                      <small style={{ color: "#10b981", fontWeight: "500" }}>
-                        ✓ {logoFile.name} ({(logoFile.size / 1024 / 1024).toFixed(1)} MB)
-                      </small>
-                    </div>
-                  )}
-                </div>
+
+                <input type="file" accept="image/*" onChange={handleLogoUpload} className="logo-input" />
               </label>
             </div>
-
           </div>
 
-          {/* Company Information */}
+          {/* Company Info */}
           <div className="form-section">
             <h3 className="section-title">Company Information</h3>
             <div className="input-grid-3">
@@ -329,42 +210,48 @@ const AdminProfileEdit = () => {
                 <label className="auth-label">Company Name *</label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  name="companyname"
+                  value={formik.values.companyname}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="Enter company name"
-                  required
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Tagline</label>
                 <input
                   type="text"
-                  name="tagline"
-                  value={formData.tagline}
-                  onChange={handleChange}
+                  name="Tagline"
+                  value={formik.values.Tagline}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="Short description"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Industry *</label>
                 <input
                   type="text"
-                  name="industry"
-                  value={formData.industry}
-                  onChange={handleChange}
+                  name="Industry"
+                  value={formik.values.Industry}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="e.g., Staffing & Recruiting"
-                  required
                 />
               </div>
             </div>
+
             <div className="input-grid-2">
               <div className="auth-group">
                 <label className="auth-label">Company Size</label>
-                <select name="size" value={formData.size} onChange={handleChange} className="auth-input">
+                <select
+                  name="CompanySize"
+                  value={formik.values.CompanySize}
+                  onChange={formik.handleChange}
+                  className="auth-input"
+                >
                   <option value="">Select size</option>
                   <option value="1-10 employees">1-10 employees</option>
                   <option value="11-50 employees">11-50 employees</option>
@@ -373,17 +260,16 @@ const AdminProfileEdit = () => {
                   <option value="500+ employees">500+ employees</option>
                 </select>
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Founded Year</label>
                 <input
                   type="number"
-                  name="foundedYear"
-                  value={formData.foundedYear}
-                  onChange={handleChange}
+                  name="FoundedYear"
+                  value={formik.values.FoundedYear}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="2020"
-                  min="1900"
-                  max="2026"
                 />
               </div>
             </div>
@@ -392,26 +278,16 @@ const AdminProfileEdit = () => {
           {/* Description */}
           <div className="form-section">
             <div className="auth-group">
-              <div className="d-flex align-items-center justify-content-between">
-                <label className="auth-label">Description</label>
-
-                <button className="ai-pill-btn">
-                  <span className="ai-pill-icon">✦</span>
-                  <span className="ai-pill-text">AI</span>
-                </button>
-              </div>
+              <label className="auth-label">Description</label>
               <textarea
-                name="description"
+                name="Description"
                 rows="4"
-                value={formData.description}
-                onChange={handleChange}
+                value={formik.values.Description}
+                onChange={formik.handleChange}
                 className="auth-input resize-vertical"
                 placeholder="Describe your company..."
                 maxLength={500}
               />
-              <small style={{ color: "#64748b", float: "right" }}>
-                {formData.description.length}/500
-              </small>
             </div>
           </div>
 
@@ -423,20 +299,21 @@ const AdminProfileEdit = () => {
                 <label className="auth-label">Website URL</label>
                 <input
                   type="url"
-                  name="websiteUrl"
-                  value={formData.websiteUrl}
-                  onChange={handleChange}
+                  name="WebsiteURL"
+                  value={formik.values.WebsiteURL}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="https://company.com"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Domain</label>
                 <input
                   type="text"
-                  name="domain"
-                  value={formData.domain}
-                  onChange={handleChange}
+                  name="Domain"
+                  value={formik.values.Domain}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="company.com"
                 />
@@ -447,70 +324,76 @@ const AdminProfileEdit = () => {
           {/* Headquarters */}
           <div className="form-section">
             <h3 className="section-title">Headquarters</h3>
+
             <div className="input-grid-2">
               <div className="auth-group">
                 <label className="auth-label">Street Address 1</label>
                 <input
                   type="text"
-                  name="headquarters.street1"
-                  value={formData.headquarters.street1}
-                  onChange={handleChange}
+                  name="StreetAddress1"
+                  value={formik.values.StreetAddress1}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="123 Main St"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Street Address 2</label>
                 <input
                   type="text"
-                  name="headquarters.street2"
-                  value={formData.headquarters.street2}
-                  onChange={handleChange}
+                  name="StreetAddress2"
+                  value={formik.values.StreetAddress2}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="Suite 500"
                 />
               </div>
             </div>
+
             <div className="input-grid-4">
               <div className="auth-group">
                 <label className="auth-label">City</label>
                 <input
                   type="text"
-                  name="headquarters.city"
-                  value={formData.headquarters.city}
-                  onChange={handleChange}
+                  name="City"
+                  value={formik.values.City}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="Visakhapatnam"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">State</label>
                 <input
                   type="text"
-                  name="headquarters.state"
-                  value={formData.headquarters.state}
-                  onChange={handleChange}
+                  name="State"
+                  value={formik.values.State}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="Andhra Pradesh"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Postal Code</label>
                 <input
                   type="text"
-                  name="headquarters.postalCode"
-                  value={formData.headquarters.postalCode}
-                  onChange={handleChange}
+                  name="PostalCode"
+                  value={formik.values.PostalCode}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="530016"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Country</label>
                 <select
-                  name="headquarters.country"
-                  value={formData.headquarters.country}
-                  onChange={handleChange}
+                  name="Country"
+                  value={formik.values.Country}
+                  onChange={formik.handleChange}
                   className="auth-input"
                 >
                   <option value="">Select country</option>
@@ -523,40 +406,42 @@ const AdminProfileEdit = () => {
             </div>
           </div>
 
-          {/* Contact Information */}
+          {/* Contact */}
           <div className="form-section">
             <h3 className="section-title">Contact Information</h3>
+
             <div className="input-grid-3">
               <div className="auth-group">
                 <label className="auth-label">Email *</label>
                 <input
                   type="email"
-                  name="contact.email"
-                  value={formData.contact.email}
-                  onChange={handleChange}
+                  name="Emailid"
+                  value={formik.values.Emailid}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="hello@company.com"
-                  required
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">Phone</label>
                 <input
                   type="tel"
-                  name="contact.phone"
-                  value={formData.contact.phone}
-                  onChange={handleChange}
+                  name="Phone"
+                  value={formik.values.Phone}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="+91 891 234 5678"
                 />
               </div>
+
               <div className="auth-group">
                 <label className="auth-label">LinkedIn URL</label>
                 <input
                   type="url"
-                  name="contact.linkedinUrl"
-                  value={formData.contact.linkedinUrl}
-                  onChange={handleChange}
+                  name="LinkedInURL"
+                  value={formik.values.LinkedInURL}
+                  onChange={formik.handleChange}
                   className="auth-input"
                   placeholder="https://linkedin.com/company/..."
                 />
@@ -564,17 +449,14 @@ const AdminProfileEdit = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className="form-actions">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="btn-secondary"
-            >
+            <button type="button" onClick={handleCancel} className="btn-secondary">
               <FiX /> Cancel
             </button>
-            <button type="submit" onClick={handleSubmit} className="btn-primary gap-2">
-              <FiSave /> Save Changes
+
+            <button type="submit" disabled={isLoading} className="btn-primary gap-2">
+              <FiSave /> {isLoading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>

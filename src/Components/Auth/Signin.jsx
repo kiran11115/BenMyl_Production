@@ -45,10 +45,12 @@ function Signin() {
 
         // SUCCESS CHECK (backend format)
         if (response?.isvalid === true) {
+          localStorage.setItem("token", response?.token?.result);
           localStorage.setItem("CompanyId", response?.userid);
           localStorage.setItem("Email", response?.emailID);
           localStorage.setItem("CompanyName", response?.companyName);
           localStorage.setItem("UserName", response?.userName);
+          localStorage.setItem("logincompanyid", response?.compabnyId);
           const role = response?.roleID;
 
           if (role === "Admin") {
@@ -60,7 +62,7 @@ function Signin() {
             navigate("/user/user-dashboard");
             return;
           }
-    
+
         }
 
         // ERROR IF isvalid is false

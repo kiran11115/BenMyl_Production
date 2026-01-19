@@ -14,8 +14,8 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
     // UPDATE Company Profile (Multipart/FormData)
     updateCompanyProfile: builder.mutation({
       query: (formData) => ({
-        url: `/api/uatcompany/update`,
-        method: "PUT",
+        url: `/api/uatcompany/updatecompanyprofile`,
+        method: "POST",
         body: formData, // FormData here
       }),
       invalidatesTags: ["CompanyProfile"],
