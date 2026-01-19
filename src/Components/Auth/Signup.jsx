@@ -58,6 +58,7 @@ function SignUp() {
   const invitedCompanyName = params.get("CompanyName");
   const invitedEmail = params.get("EmailID");
   const invitedFullName = params.get("FullName");
+  const invitedRole = params.get("Role");
 
   console.log("Company:", invitedCompanyName);
   console.log("Email:", invitedEmail);
@@ -90,7 +91,7 @@ function SignUp() {
           fullName: values.fullName,
           emailID: values.email,
           password: values.password,
-          role: "Admin",
+          role: invitedRole || "Admin",
         };
 
         await register(payload).unwrap();

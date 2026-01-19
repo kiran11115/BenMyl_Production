@@ -16,8 +16,15 @@ const AdminDetailsApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getTeamMembers: builder.query({
+      query: (emailID) => ({
+        url: `/api/Account/uatinviteuser?Emailid=${emailID}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useAdmindetailsMutation, useGetAdminDetailsQuery } =
+export const { useAdmindetailsMutation, useGetAdminDetailsQuery,useGetTeamMembersQuery  } =
   AdminDetailsApiSlice;
