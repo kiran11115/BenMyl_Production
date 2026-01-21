@@ -34,6 +34,7 @@ const UploadTalentTable = ({refreshKey}) => {
         if (!isMounted) return;
 
         const mapped = res.map((item) => ({
+          employeeID:item.employeeID,
           fileName: item.resumeFileName,
           batchFormat: item.resumeFileName?.split(".").pop(),
           extractStatus: item.status,
@@ -281,7 +282,11 @@ const UploadTalentTable = ({refreshKey}) => {
                     <button
                       className="border-0 w-50"
                       style={{ background: "none" }}
-                      onClick={() => navigate("/user/review-talent")}
+                      onClick={() =>
+      navigate("/user/review-talent", {
+        state: { employeeID: talent.employeeID },
+      })
+    }
                     >
                       <IoEyeOutline size={16} />
                     </button>

@@ -1,84 +1,96 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit2, Plus, ChevronDown, ChevronUp } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
-const PDFResumePreview = () => {
-    return (
-        <div className="auth-card" style={{ flexDirection: 'column', minHeight: '800px', padding: '40px', maxWidth: '100%' }}>
-            <div className="auth-subtitle" style={{ textAlign: "center", marginBottom: '20px' }}>
-                Basic Resume Template Preview
-            </div>
+import { useApprovedEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
+const PDFResumePreview = ({ data }) => {
+  if (!data) return null;
 
-            {/* Header Section */}
-            <div style={{ textAlign: "center", borderBottom: "1px solid #e2e8f0", paddingBottom: '20px', marginBottom: '20px' }}>
-                <h1 className="auth-title" style={{ fontSize: '24px', marginBottom: '8px' }}>
-                    First Last Name
-                </h1>
-                <div className="auth-subtitle" style={{ fontSize: '14px' }}>
-                    14pt-16pt font • Professional Email Address • Phone Number<br />
-                    Portfolio, Website or LinkedIn Address (Optional)
-                </div>
-            </div>
-
-            {/* Education Section */}
-            <div className="auth-form-group">
-                <h3 className="auth-label" style={{ fontSize: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>EDUCATION</h3>
-                <div className="auth-label" style={{ color: '#0f172a', fontSize: '14px' }}>
-                    Southeastern Louisiana University • City, State
-                </div>
-                <div className="auth-subtitle" style={{ marginBottom: '4px' }}>
-                    Bachelor of Science Arts in Name of Major
-                </div>
-                <div className="auth-subtitle" style={{ fontSize: '13px' }}>
-                    Month and Year Received/Expected • Concentration, Second Major, Minor, Emphasis
-                </div>
-            </div>
-
-            {/* Experience Sections */}
-            <div className="auth-form-group">
-                <h3 className="auth-label" style={{ fontSize: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>RELEVANT EXPERIENCE</h3>
-                <div className="auth-label" style={{ color: '#0f172a', fontSize: '14px' }}>
-                    Name of Company • City, State
-                </div>
-                <div className="auth-subtitle" style={{ fontSize: '13px', marginBottom: '8px' }}>
-                    Job Title • Month Year - Month Year
-                </div>
-                <ul className="auth-subtitle" style={{ fontSize: '13px', paddingLeft: '20px', lineHeight: '1.6' }}>
-                    <li>Include 3-5 bullet points demonstrating skills gained through this position</li>
-                    <li>Emphasize accomplishments over day-to-day tasks</li>
-                    <li>Place action verb at beginning of bullet point</li>
-                </ul>
-            </div>
-
-            <div className="auth-form-group">
-                <h3 className="auth-label" style={{ fontSize: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>ADDITIONAL EXPERIENCE</h3>
-                <div className="auth-label" style={{ color: '#0f172a', fontSize: '14px' }}>
-                    Name of Company • City, State
-                </div>
-                <div className="auth-subtitle" style={{ fontSize: '13px', marginBottom: '8px' }}>
-                    Job Title • Month Year - Month Year
-                </div>
-                <ul className="auth-subtitle" style={{ fontSize: '13px', paddingLeft: '20px', lineHeight: '1.6' }}>
-                    <li>Emphasize key skills employers want to see</li>
-                    <li>Highlight results and impact</li>
-                    <li>Use past tense verbs</li>
-                </ul>
-            </div>
-
-            {/* Skills Section */}
-            <div className="auth-form-group">
-                <h3 className="auth-label" style={{ fontSize: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '4px' }}>SKILLS</h3>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
-                    {["JavaScript", "React", "TypeScript", "Node.js", "SQL", "Leadership"].map((skill, i) => (
-                        <span key={i} className="status-tag status-progress" style={{ fontSize: '13px' }}>
-                            {skill}
-                        </span>
-                    ))}
-                </div>
-            </div>
+  return (
+    <div className="auth-card" style={{ flexDirection: "column", minHeight: "800px", padding: "40px", maxWidth: "100%" }}>
+      <div style={{ textAlign: "center", borderBottom: "1px solid #e2e8f0", paddingBottom: 20, marginBottom: 20 }}>
+        <h1 className="auth-title">
+          {data.firstName} {data.lastName}
+        </h1>
+        <div className="auth-subtitle">
+          {data.emailAddress} • {data.phoneNo}
+          <br />
+          {data.city}, {data.state}, {data.country}
         </div>
-    );
+      </div>
+
+      {data.bio && (
+    <div className="auth-form-group">
+      <h3 className="auth-label">PROFESSIONAL SUMMARY</h3>
+      <div className="auth-subtitle" style={{ lineHeight: 1.6 }}>
+        {data.bio}
+      </div>
+    </div>
+  )}
+
+      {/* EDUCATION */}
+      <div className="auth-form-group">
+        <h3 className="auth-label">EDUCATION</h3>
+        {data.employee_Heighers?.map((e, i) => (
+          <div key={i} style={{ marginBottom: 10 }}>
+            <div className="auth-label">{e.university}</div>
+            <div className="auth-subtitle">
+              {e.fieldofstudy} • {e.percentage}
+            </div>
+            <div className="auth-subtitle">
+              {e.startDate?.slice(0, 4)} - {e.endDate?.slice(0, 4)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* EXPERIENCE */}
+      <div className="auth-form-group">
+        <h3 className="auth-label">EXPERIENCE</h3>
+        {data.workexperiences?.map((e, i) => (
+          <div key={i} style={{ marginBottom: 14 }}>
+            <div className="auth-label">{e.companyName}</div>
+            <div className="auth-subtitle">
+              {e.position} • {e.startDate?.slice(0, 7)} - {e.endDate ? e.endDate.slice(0, 7) : "Present"}
+            </div>
+            <ul className="auth-subtitle" style={{ paddingLeft: 20 }}>
+              {e.description?.split(".").map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      {/* PROJECTS */}
+      <div className="auth-form-group">
+        <h3 className="auth-label">PROJECTS</h3>
+        {data.employeeprojects?.map((p, i) => (
+          <div key={i} style={{ marginBottom: 14 }}>
+            <div className="auth-label">{p.projectName}</div>
+            <div className="auth-subtitle">
+              {p.startDate?.slice(0, 7)} - {p.endDate ? p.endDate.slice(0, 7) : "Present"}
+            </div>
+            <div className="auth-subtitle">{p.description}</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
+              {p.skills?.split(",").map((s, idx) => (
+                <span key={idx} className="status-tag status-progress">{s}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* SKILLS */}
+      <div className="auth-form-group">
+        <h3 className="auth-label">SKILLS</h3>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {data.skills?.split(",").map((s, i) => (
+            <span key={i} className="status-tag status-progress">{s}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
@@ -155,6 +167,12 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel }) => {
 
 const ReviewTalent = () => {
     const navigate = useNavigate();
+    const { state } = useLocation();
+  const employeeID = state?.employeeID;
+
+  const { data, isLoading } = useGetEmployeeResumeQuery(employeeID);
+  const [approveEmployee, { isLoading: isSaving }] =
+  useApprovedEmployeeMutation();
     const [isReviewed, setIsReviewed] = useState(false);
 
     // SINGLE OPEN ACCORDION
@@ -166,13 +184,179 @@ const ReviewTalent = () => {
     const beginEdit = (s, i = null) => { setEditingSection(s); setEditingIndex(i); };
     const cancelEdit = () => { setEditingSection(null); setEditingIndex(null); };
 
-    const [talent, setTalent] = useState({
-        basicInfo: { firstName: "Subramanya", lastName: "Gopaluni", position: "Software Engineer", phone: "+1 980-345-0039", email: "sgopaluni@charlotte.edu", skills: ["Java", "Python", "Spring Boot"] },
-        personalInfo: { dob: "", gender: "", emergency: "", country: "USA", state: "", city: "Dallas", address: "Dallas, TX", bio: "" },
-        education: [{ university: "UNC Charlotte", qualification: "", startDate: "01-Jan-2025", endDate: "30-Jul-2025", field: "Computer Science", percentage: "", certifications: [] }],
-        experience: [{ company: "Upright", position: "Software Engineer", startDate: "01-Jan-2025", endDate: "01-Jun-2025", skills: ["Java", "AWS"], description: "" }],
-        projects: [{ name: "High Performance Data Service", role: "", startDate: "01-Jan-2025", endDate: "30-Jul-2025", skills: ["Kafka", "Java"], description: "" }]
+    const [talent, setTalent] = useState(null);
+
+    const handleSaveTalent = async () => {
+  if (!isReviewed) return;
+
+  const formData = new FormData();
+
+/* ===== BASIC INFO ===== */
+formData.append("EmployeeID", data.employeeID);
+formData.append("CompanyID", data.companyID);
+formData.append("BranchID", data.branchID ?? 0);
+
+formData.append("FirstName", talent.basicInfo.firstName);
+formData.append("LastName", talent.basicInfo.lastName);
+formData.append("Title", talent.basicInfo.position);
+formData.append("PhoneNo", talent.basicInfo.phone);
+formData.append("EmailAddress", talent.basicInfo.email);
+
+formData.append("ProfilePicture", ""); // null not allowed in FormData
+formData.append("ResumeFilePath", data.resumeFilePath ?? "");
+
+/* ===== PERSONAL INFO ===== */
+formData.append("DOB", talent.personalInfo.dob ?? "");
+formData.append("Gender", talent.personalInfo.gender ?? "");
+formData.append("EmergencyContactNumber", talent.personalInfo.emergency ?? "");
+
+formData.append("Country", talent.personalInfo.country ?? "");
+formData.append("State", talent.personalInfo.state ?? "");
+formData.append("City", talent.personalInfo.city ?? "");
+formData.append("Address", talent.personalInfo.address ?? "");
+formData.append("Bio", talent.personalInfo.bio ?? "");
+
+/* ===== SKILLS ===== */
+formData.append("Skills", talent.basicInfo.skills.join(","));
+
+/* ===== META ===== */
+formData.append("InsertBy", data.uploadedBy ?? "");
+formData.append("NoofExperience", data.noofExperience ?? 0);
+formData.append("EmpDetailID", 0);
+formData.append("EmpID", 0);
+formData.append("EmployeeCode", data.employeeCode ?? "");
+formData.append("department", data.department ?? "");
+formData.append("Manager", data.manager ?? "");
+formData.append("Supervisor", "");
+formData.append("startdate", data.startDate ?? "");
+formData.append("lastdate", data.endDate ?? "");
+formData.append("Status", "Approved");
+
+/* ===== SALARY ===== */
+formData.append("Salary", data.salary ?? "");
+formData.append("PayFrequency", data.salaryFrequency ?? "");
+
+/* ===== PREFERENCES ===== */
+formData.append("PreferedLanguage", data.prefLanguage ?? "");
+formData.append("Prefereddistancefromhome", data.prefDistHome ?? "");
+formData.append("OtherPreferedLocations", data.otherPerfLocation ?? "");
+formData.append("PreferedWorkTimings", data.perfWorkTime ?? "");
+
+/* ===== WORK EXPERIENCES (STRING) ===== */
+formData.append(
+  "workexperiences",
+  JSON.stringify([
+    {
+      ExperienceID: 0,
+      EmployeeID: 0,
+      CompanyName: "mylas tech",
+      Position: "developer",
+      StartDate: "1-12-2024",
+      EndDate: "1-12-2024",
+      Skills: ["sdds"],
+      Description: "dasdasd1",
+    },
+  ])
+);
+
+
+/* ===== PROJECTS (STRING — CRITICAL) ===== */
+formData.append(
+  "project",
+  JSON.stringify([
+    {
+      ExperienceID: 0,
+      EmployeeID: 0,
+      projectName: "mylas tech",
+      Role: "developer",
+      StartDate: "1-12-2024",
+      EndDate: "1-12-2024",
+      Skills: ["sdd"],
+      Description: "Description1",
+    },
+  ])
+);
+
+/* ===== EDUCATION (STRING) ===== */
+formData.append(
+  "employee_Heighers",
+  JSON.stringify([
+    {
+      _EductionhigherId: 0,
+      EmployeeID: 0,
+      HighestQualification: "B.Tech",
+      University: "JNTU Hyderabad",
+      Fieldofstudy: "Computer Science",
+      Certifications: "Azure Fundamentals",
+      Percentage: "75",
+      StartDate: "2016-06-01",
+      EndDate: "2020-05-30",
+    },
+  ])
+);
+
+  try {
+    await approveEmployee(formData).unwrap();
+    navigate("/user/user-upload-talent");
+  } catch (err) {
+    console.error("Approve failed", err);
+    alert("Failed to save talent");
+  }
+};
+
+
+  /* ===== MAP API → LOCAL STATE (NO DESIGN CHANGE) ===== */
+  useEffect(() => {
+    if (!data) return;
+
+    setTalent({
+      basicInfo: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        position: data.title,
+        phone: data.phoneNo,
+        email: data.emailAddress,
+        skills: data.skills?.split(",") || []
+      },
+      personalInfo: {
+        dob: data.dob || "",
+        gender: data.gender || "",
+        emergency: data.emergencyContactNumber || "",
+        country: data.country,
+        state: data.state,
+        city: data.city,
+        address: data.address,
+        bio: data.bio
+      },
+      education: data.employee_Heighers?.map(e => ({
+        university: e.university,
+        qualification: e.highestQualification || "",
+        startDate: e.startDate?.slice(0, 10),
+        endDate: e.endDate?.slice(0, 10),
+        field: e.fieldofstudy || "",
+        percentage: e.percentage,
+        certifications: e.certifications ? e.certifications.split(",") : []
+      })) || [],
+      experience: data.workexperiences?.map(e => ({
+        company: e.companyName,
+        position: e.position,
+        startDate: e.startDate?.slice(0, 10),
+        endDate: e.endDate?.slice(0, 10),
+        skills: e.skills?.split(",") || [],
+        description: e.description
+      })) || [],
+      projects: data.employeeprojects?.map(p => ({
+        name: p.projectName,
+        role: p.role || "",
+        startDate: p.startDate?.slice(0, 10),
+        endDate: p.endDate?.slice(0, 10),
+        skills: p.skills?.split(",") || [],
+        description: p.description
+      })) || []
     });
+  }, [data]);
+
+  if (isLoading || !talent) return <div style={{ padding: 40 }}>Loading profile…</div>;
 
     const addEducation = () => setTalent(p => ({ ...p, education: [...p.education, { university: "", qualification: "", startDate: "", endDate: "", field: "", percentage: "", certifications: [] }] }));
     const addExperience = () => setTalent(p => ({ ...p, experience: [...p.experience, { company: "", position: "", startDate: "", endDate: "", skills: [], description: "" }] }));
@@ -457,7 +641,7 @@ const ReviewTalent = () => {
                         </div>
                         <div className="d-flex gap-3 justify-content-end">
                             <button className="btn-secondary">Save as Draft</button>
-                            <button className="btn-primary" disabled={!isReviewed} onClick={() => navigate("/user/user-upload-talent")}>Save Talent</button>
+                            <button className="btn-primary" disabled={!isReviewed} onClick={handleSaveTalent}>Save Talent</button>
                         </div>
                     </div>
                 </div>
@@ -466,7 +650,7 @@ const ReviewTalent = () => {
                 <div style={{ borderRadius: '1rem', border: '1px solid #e2e8f0', background: 'white' }}>
                     <h4 className="auth-title" style={{ padding: 16 }}>Preview Resume</h4>
                     <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}>
-                        <PDFResumePreview />
+                        <PDFResumePreview data={data} />
                     </div>
                 </div>
             </div>

@@ -28,6 +28,7 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["CompanyProfile"],
     }),
+    
   }),
 });
 

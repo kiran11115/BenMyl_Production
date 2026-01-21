@@ -18,7 +18,23 @@ const UploadResumeApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getEmployeeResume: builder.query({
+      query: (employeeID) => ({
+        url: `/api/Employee/Get_employeeprofile_id?employeeID=${employeeID}`,
+        method: "GET",
+      }),
+      
+    }),
+
+    approvedEmployee: builder.mutation({
+  query: (formData) => ({
+    url: "/api/uatcompany/approvedEmployee",
+    method: "POST",
+    body: formData,
+  }),
+}),
+
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation } = UploadResumeApiSlice;
