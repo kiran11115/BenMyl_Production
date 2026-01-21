@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiX, FiSave, FiImage } from "react-icons/fi";
 
@@ -8,32 +8,109 @@ function EditProfile() {
 
   // Complete empty state matching ALL ProfilePage fields
   const [formData, setFormData] = useState({
-    id: "",
-    slug: "",
-    name: "", // "John Smith"
-    companyname: "", // "Nimbus Labs"
-    size: "", // "100-200"
-    status: "", // "Active"
-    industry: "",
-    foundedYear: "",
-    websiteUrl: "",
-    domain: "",
-    description: "",
-    headquarters: {
-      street1: "", // "27-1-72/4, hms knska"
-      street2: "", // "3rd Floor, Tech Tower"
-      city: "", // "San francisco"
-      state: "", // "CA"
-      postalCode: "", // "572734"
-      country: "", // "USA"
+  id: "",
+  slug: "",
+  name: "",
+  companyname: "",
+  websiteUrl: "",
+  domain: "",
+  description: "",
+  headquarters: {
+    street1: "",
+    street2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+  },
+  contact: {
+    email: "",
+    phone: "",
+    linkedinUrl: "",
+  },
+
+  // ✅ NEW: Work Experience
+  workExperience: [
+    {
+      role: "",
+      company: "",
+      startYear: "",
+      endYear: "",
+      isCurrent: false,
     },
-    contact: {
-      email: "",
-      phone: "",
-      linkedinUrl: "",
-    },
-    teamMembers: [], // Array for team members
+  ],
+   additionalInfo: {
+    jobTitle: "",
+    experience: "",
+    education: "",
+    languages: [], // ["English", "Spanish"]
+    referredBy: "",
+  },
+});
+
+const toggleLanguage = (lang) => {
+  setFormData((prev) => {
+    const exists = prev.additionalInfo.languages.includes(lang);
+    return {
+      ...prev,
+      additionalInfo: {
+        ...prev.additionalInfo,
+        languages: exists
+          ? prev.additionalInfo.languages.filter((l) => l !== lang)
+          : [...prev.additionalInfo.languages, lang],
+      },
+    };
   });
+};
+
+
+const handleExperienceChange = (index, field, value) => {
+  setFormData((prev) => {
+    const updated = [...prev.workExperience];
+    updated[index] = { ...updated[index], [field]: value };
+    return { ...prev, workExperience: updated };
+  });
+};
+
+const addExperience = () => {
+  setFormData((prev) => ({
+    ...prev,
+    workExperience: [
+      ...prev.workExperience,
+      {
+        role: "",
+        company: "",
+        startYear: "",
+        endYear: "",
+        isCurrent: false,
+      },
+    ],
+  }));
+};
+
+const removeExperience = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    workExperience: prev.workExperience.filter((_, i) => i !== index),
+  }));
+};
+
+const totalExperience = useMemo(() => {
+  let total = 0;
+
+  formData.workExperience.forEach((exp) => {
+    if (exp.startYear) {
+      const start = Number(exp.startYear);
+      const end = exp.isCurrent
+        ? new Date().getFullYear()
+        : Number(exp.endYear || start);
+      total += Math.max(end - start, 0);
+    }
+  });
+
+  return total;
+}, [formData.workExperience]);
+
 
   // Logo upload state
   const [logoPreview, setLogoPreview] = useState(null);
@@ -97,7 +174,7 @@ function EditProfile() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Updated Profile:", { ...formData, logoFile });
-    navigate("/user/profile");
+    navigate("/user/user-profile");
   };
 
   const handleCancel = () => navigate("/user/profile");
@@ -178,61 +255,118 @@ function EditProfile() {
         </div>
 
         {/* Company Details */}
-        <div className="form-section">
-          <h3 className="section-title">Company Details</h3>
-          <div className="input-grid-3">
-            <div className="auth-group">
-              <label className="auth-label">Industry</label>
-              <input
-                type="text"
-                name="industry"
-                value={formData.industry}
-                onChange={handleChange}
-                className="auth-input"
-                placeholder="Staffing & Recruiting"
-              />
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">Company Size</label>
-              <select name="size" value={formData.size} onChange={handleChange} className="auth-input">
-                <option value="">Select size</option>
-                <option value="1-10">1-10</option>
-                <option value="10-50">10-50</option>
-                <option value="50-100">50-100</option>
-                <option value="100-200">100-200</option>
-                <option value="200+">200+</option>
-              </select>
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">Founded Year</label>
-              <input
-                type="number"
-                name="foundedYear"
-                value={formData.foundedYear}
-                onChange={handleChange}
-                className="auth-input"
-                min="1900"
-                max="2026"
-                placeholder="2018"
-              />
-            </div>
-          </div>
-          <div className="input-grid-2 mt-3">
-            <div className="auth-group">
-              <label className="auth-label">Status</label>
-              <select name="status" value={formData.status} onChange={handleChange} className="auth-input">
-                <option value="">Select status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Pending">Pending</option>
-              </select>
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">Company ID</label>
-              <input type="text" name="id" value={formData.id} onChange={handleChange} className="auth-input" placeholder="cmp_24781" />
-            </div>
-          </div>
+        {/* Work Experience */}
+<div className="form-section">
+  <h3 className="section-title">Work Experience</h3>
+
+  {formData.workExperience.map((exp, index) => (
+    <div
+      key={index}
+      style={{
+        border: "1px solid #e5e7eb",
+        borderRadius: "10px",
+        padding: "16px",
+        marginBottom: "12px",
+      }}
+    >
+      <div className="input-grid-2">
+        <div className="auth-group">
+          <label className="auth-label">Role</label>
+          <input
+            type="text"
+            value={exp.role}
+            onChange={(e) =>
+              handleExperienceChange(index, "role", e.target.value)
+            }
+            className="auth-input"
+            placeholder="Recruiter"
+          />
         </div>
+
+        <div className="auth-group">
+          <label className="auth-label">Company</label>
+          <input
+            type="text"
+            value={exp.company}
+            onChange={(e) =>
+              handleExperienceChange(index, "company", e.target.value)
+            }
+            className="auth-input"
+            placeholder="Nimbus Labs"
+          />
+        </div>
+      </div>
+
+      <div className="input-grid-3 mt-2">
+        <div className="auth-group">
+          <label className="auth-label">Start Year</label>
+          <input
+            type="number"
+            value={exp.startYear}
+            onChange={(e) =>
+              handleExperienceChange(index, "startYear", e.target.value)
+            }
+            className="auth-input"
+            placeholder="2019"
+          />
+        </div>
+
+        <div className="auth-group">
+          <label className="auth-label">End Year</label>
+          <input
+            type="number"
+            value={exp.endYear}
+            onChange={(e) =>
+              handleExperienceChange(index, "endYear", e.target.value)
+            }
+            className="auth-input"
+            disabled={exp.isCurrent}
+            placeholder="2023"
+          />
+        </div>
+
+        <div className="auth-group" style={{ alignSelf: "end" }}>
+          <label className="auth-label">
+            <input
+              type="checkbox"
+              checked={exp.isCurrent}
+              onChange={(e) =>
+                handleExperienceChange(index, "isCurrent", e.target.checked)
+              }
+            />{" "}
+            Present
+          </label>
+        </div>
+      </div>
+
+      {formData.workExperience.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeExperience(index)}
+          className="btn-secondary mt-2"
+        >
+          Remove
+        </button>
+      )}
+    </div>
+  ))}
+
+  <button type="button" onClick={addExperience} className="btn-secondary">
+    + Add Experience
+  </button>
+
+  <div
+    style={{
+      marginTop: "16px",
+      display: "flex",
+      justifyContent: "space-between",
+      fontWeight: 600,
+    }}
+  >
+    <span style={{ color: "#64748b" }}>Total Experience:</span>
+    <span>{totalExperience} Years</span>
+  </div>
+</div>
 
         {/* Description */}
         <div className="form-section">
@@ -251,38 +385,9 @@ function EditProfile() {
           </div>
         </div>
 
-        {/* Online Presence */}
-        <div className="form-section">
-          <h3 className="section-title">Online Presence</h3>
-          <div className="input-grid-2">
-            <div className="auth-group">
-              <label className="auth-label">Website URL</label>
-              <input
-                type="url"
-                name="websiteUrl"
-                value={formData.websiteUrl}
-                onChange={handleChange}
-                className="auth-input"
-                placeholder="https://talentbridge.com"
-              />
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">Domain</label>
-              <input
-                type="text"
-                name="domain"
-                value={formData.domain}
-                onChange={handleChange}
-                className="auth-input"
-                placeholder="talentbridge.com"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Headquarters */}
         <div className="form-section">
-          <h3 className="section-title">Headquarters Address</h3>
+          <h3 className="section-title">Address</h3>
           <div className="input-grid-2">
             <div className="auth-group">
               <label className="auth-label">Street Address 1</label>
@@ -394,23 +499,123 @@ function EditProfile() {
           </div>
         </div>
 
-        {/* Additional Fields */}
-        <div className="form-section">
-          <h3 className="section-title">Additional Information</h3>
-          <div className="input-grid-2">
-            <div className="auth-group">
-              <label className="auth-label">Company Slug</label>
-              <input
-                type="text"
-                name="slug"
-                value={formData.slug}
-                onChange={handleChange}
-                className="auth-input"
-                placeholder="talentbridge-hr"
-              />
-            </div>
-          </div>
-        </div>
+       {/* Additional Information */}
+<div className="form-section">
+  <h3 className="section-title">Additional Information</h3>
+
+  <div className="input-grid-2">
+    <div className="auth-group">
+      <label className="auth-label">Job Title</label>
+      <input
+        type="text"
+        value={formData.additionalInfo.jobTitle}
+        onChange={(e) =>
+          setFormData((prev) => ({
+            ...prev,
+            additionalInfo: {
+              ...prev.additionalInfo,
+              jobTitle: e.target.value,
+            },
+          }))
+        }
+        className="auth-input"
+        placeholder="Recruiter"
+      />
+    </div>
+
+    <div className="auth-group">
+      <label className="auth-label">Experience (Years)</label>
+      <input
+        type="number"
+        min="0"
+        value={formData.additionalInfo.experience}
+        onChange={(e) =>
+          setFormData((prev) => ({
+            ...prev,
+            additionalInfo: {
+              ...prev.additionalInfo,
+              experience: e.target.value,
+            },
+          }))
+        }
+        className="auth-input"
+        placeholder="5"
+      />
+    </div>
+  </div>
+
+  <div className="input-grid-2 mt-3">
+    <div className="auth-group">
+      <label className="auth-label">Education</label>
+      <select
+        value={formData.additionalInfo.education}
+        onChange={(e) =>
+          setFormData((prev) => ({
+            ...prev,
+            additionalInfo: {
+              ...prev.additionalInfo,
+              education: e.target.value,
+            },
+          }))
+        }
+        className="auth-input"
+      >
+        <option value="">Select education</option>
+        <option value="High School">High School</option>
+        <option value="Bachelor's Degree">Bachelor's Degree</option>
+        <option value="Master's Degree">Master's Degree</option>
+        <option value="PhD">PhD</option>
+      </select>
+    </div>
+
+    <div className="auth-group">
+      <label className="auth-label">Referred By</label>
+      <input
+        type="email"
+        value={formData.additionalInfo.referredBy}
+        onChange={(e) =>
+          setFormData((prev) => ({
+            ...prev,
+            additionalInfo: {
+              ...prev.additionalInfo,
+              referredBy: e.target.value,
+            },
+          }))
+        }
+        className="auth-input"
+        placeholder="gsrinivas@mylastech.com"
+      />
+    </div>
+  </div>
+
+  {/* Languages */}
+  <div className="auth-group mt-3">
+    <label className="auth-label">Languages Spoken</label>
+
+    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+      {["English", "Spanish", "Hindi", "French"].map((lang) => (
+        <button
+          type="button"
+          key={lang}
+          onClick={() => toggleLanguage(lang)}
+          style={{
+            padding: "6px 12px",
+            borderRadius: "999px",
+            border: "1px solid #e5e7eb",
+            background: formData.additionalInfo.languages.includes(lang)
+              ? "#e0f2fe"
+              : "#fff",
+            color: "#0284c7",
+            fontSize: "12px",
+            cursor: "pointer",
+          }}
+        >
+          {lang.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
 
         {/* Action Buttons */}
         <div className="form-actions">
