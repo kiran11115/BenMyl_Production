@@ -220,6 +220,7 @@ const FormWizard = () => {
     fd.append("companyid", 0);
     fd.append("FullName", v.fullName);
     fd.append("EmailID", v.email);
+    fd.append("companyname", v.companyName);
     fd.append("BusinessPhone", v.phone);
     fd.append("Notification", v.notifications);
 
