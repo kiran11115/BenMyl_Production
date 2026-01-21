@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Edit2 } from "lucide-react";
+import { Edit2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
-
-// PDF Preview Component
+import "./UploadTalent.css";
 const PDFResumePreview = () => {
     return (
         <div className="auth-card" style={{ flexDirection: 'column', minHeight: '800px', padding: '40px', maxWidth: '100%' }}>
@@ -82,131 +81,72 @@ const PDFResumePreview = () => {
     );
 };
 
-// EditableField Component 
-const EditableField = ({ label, value, fieldName, isEditing, onEdit, onSave, onCancel, multiline = false }) => {
-    const [tempValue, setTempValue] = useState(value);
-
-    React.useEffect(() => {
-        setTempValue(value);
-    }, [value, isEditing]);
-
-    const handleSaveClick = () => {
-        onSave(fieldName, tempValue);
-    };
-
+const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
+    const [temp, setTemp] = useState(value || "");
     return (
         <div className="auth-form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <label className="auth-label">{label}</label>
-                {!isEditing && (
-                    <button
-                        onClick={() => onEdit(fieldName)}
-                        className="auth-link"
-                        style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    >
-                        <Edit2 size={12} /> Edit
-                    </button>
-                )}
+                {!editing && <button className="auth-link" onClick={onEdit}><Edit2 size={12} /> Edit</button>}
             </div>
-
-            {isEditing ? (
-                <div>
-                    {multiline ? (
-                        <textarea
-                            className="auth-input"
-                            value={tempValue}
-                            onChange={(e) => setTempValue(e.target.value)}
-                            style={{ minHeight: '100px', fontFamily: 'inherit' }}
-                            autoFocus
-                        />
-                    ) : (
-                        <input
-                            type="text"
-                            className="auth-input"
-                            value={tempValue}
-                            onChange={(e) => setTempValue(e.target.value)}
-                            autoFocus
-                        />
-                    )}
-                    <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={handleSaveClick}>
-                            Save
-                        </button>
-                        <button className="btn-secondary" onClick={onCancel}>
-                            Cancel
-                        </button>
+            {editing ? (
+                <>
+                    <input className="auth-input" value={temp} onChange={e => setTemp(e.target.value)} autoFocus />
+                    <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                        <button className="btn-primary" onClick={() => onSave(temp)}>Save</button>
+                        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
                     </div>
-                </div>
+                </>
             ) : (
-                <div className="auth-input" style={{ border: 'none', padding: '4px 0', background: 'transparent', fontWeight: 600 }}>
-                    {value}
-                </div>
+                <div className="auth-input" style={{ border: 'none', padding: '4px 0', fontWeight: 600 }}>{value || "—"}</div>
             )}
         </div>
     );
 };
 
-// EditableTags Component
-const EditableTags = ({ label, tags, fieldName, isEditing, onEdit, onSave, onCancel }) => {
-    const [tempTags, setTempTags] = useState(tags.join(", "));
-
-    React.useEffect(() => {
-        setTempTags(tags.join(", "));
-    }, [tags, isEditing]);
-
-    const handleSaveClick = () => {
-        const newTags = tempTags.split(",").map(tag => tag.trim()).filter(tag => tag !== "");
-        onSave(fieldName, newTags);
-    };
-
+const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) => {
+    const [temp, setTemp] = useState(value || "");
     return (
         <div className="auth-form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <label className="auth-label">{label}</label>
-                {!isEditing && (
-                    <button
-                        onClick={() => onEdit(fieldName)}
-                        className="auth-link"
-                        style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    >
-                        <Edit2 size={12} /> Edit
-                    </button>
-                )}
+                {!editing && <button className="auth-link" onClick={onEdit}><Edit2 size={12} /> Edit</button>}
             </div>
-
-            {isEditing ? (
-                <div>
-                    <textarea
-                        className="auth-input"
-                        value={tempTags}
-                        onChange={(e) => setTempTags(e.target.value)}
-                        placeholder="Separate items with commas"
-                        style={{ minHeight: '80px', fontFamily: 'inherit' }}
-                        autoFocus
-                    />
-                    <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={handleSaveClick}>
-                            Save
-                        </button>
-                        <button className="btn-secondary" onClick={onCancel}>
-                            Cancel
-                        </button>
+            {editing ? (
+                <>
+                    <textarea className="auth-input" style={{ minHeight: 120 }} value={temp} onChange={e => setTemp(e.target.value)} />
+                    <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                        <button className="btn-primary" onClick={() => onSave(temp)}>Save</button>
+                        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
                     </div>
-                </div>
+                </>
             ) : (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
-                    {tags && tags.length > 0 ? (
-                        tags.map((tag, idx) => (
-                            <span
-                                key={idx}
-                                className="status-tag status-progress"
-                            >
-                                {tag}
-                            </span>
-                        ))
-                    ) : (
-                        <span className="auth-subtitle">Add information</span>
-                    )}
+                <div className="auth-input" style={{ border: 'none', padding: '4px 0' }}>{value || "—"}</div>
+            )}
+        </div>
+    );
+};
+
+const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel }) => {
+    const [temp, setTemp] = useState(values.join(", "));
+    return (
+        <div className="auth-form-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <label className="auth-label">{label}</label>
+                {!editing && <button className="auth-link" onClick={onEdit}><Edit2 size={12} /> Edit</button>}
+            </div>
+            {editing ? (
+                <>
+                    <textarea className="auth-input" style={{ minHeight: 70 }} value={temp} onChange={e => setTemp(e.target.value)} />
+                    <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                        <button className="btn-primary" onClick={() => onSave(temp.split(",").map(t => t.trim()).filter(Boolean))}>Save</button>
+                        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
+                    </div>
+                </>
+            ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                    {values.length === 0 ? <span className="auth-subtitle">No items</span> :
+                        values.map((v, i) => <span key={i} className="status-tag status-progress">{v}</span>)}
                 </div>
             )}
         </div>
@@ -214,252 +154,319 @@ const EditableTags = ({ label, tags, fieldName, isEditing, onEdit, onSave, onCan
 };
 
 const ReviewTalent = () => {
-    const [showPreview, setShowPreview] = useState(true);
-    const [isReviewed, setIsReviewed] = useState(false);
-    const [editingField, setEditingField] = useState(null);
     const navigate = useNavigate();
+    const [isReviewed, setIsReviewed] = useState(false);
 
-    // Form state
-    const [formData, setFormData] = useState({
-        fullName: "John Doe",
-        email: "john.doe@example.com",
-        phone: "+1234567890",
-        address: "1234 Elm Street, Springfield",
-        professionalSummary: "Experienced software developer with expertise in full-stack development.",
-        professionalExperience: ["Software Engineer", "Full Stack Developer"],
-        yearsOfExperience: "7",
-        education: ["Bachelor of Science in Computer Science, XYZ University", "Master of Science in Software Engineering, ABC University"],
-        certifications: ["Certified React Developer", "AWS Solutions Architect – Associate"],
-        skills: ["JavaScript", "React", "TypeScript", "Node.js", "SQL", "Leadership"]
+    // SINGLE OPEN ACCORDION
+    const [openAccordion, setOpenAccordion] = useState("basicInfo");
+    const toggleAccordion = (key) => setOpenAccordion(prev => prev === key ? null : key);
+
+    const [editingSection, setEditingSection] = useState(null);
+    const [editingIndex, setEditingIndex] = useState(null);
+    const beginEdit = (s, i = null) => { setEditingSection(s); setEditingIndex(i); };
+    const cancelEdit = () => { setEditingSection(null); setEditingIndex(null); };
+
+    const [talent, setTalent] = useState({
+        basicInfo: { firstName: "Subramanya", lastName: "Gopaluni", position: "Software Engineer", phone: "+1 980-345-0039", email: "sgopaluni@charlotte.edu", skills: ["Java", "Python", "Spring Boot"] },
+        personalInfo: { dob: "", gender: "", emergency: "", country: "USA", state: "", city: "Dallas", address: "Dallas, TX", bio: "" },
+        education: [{ university: "UNC Charlotte", qualification: "", startDate: "01-Jan-2025", endDate: "30-Jul-2025", field: "Computer Science", percentage: "", certifications: [] }],
+        experience: [{ company: "Upright", position: "Software Engineer", startDate: "01-Jan-2025", endDate: "01-Jun-2025", skills: ["Java", "AWS"], description: "" }],
+        projects: [{ name: "High Performance Data Service", role: "", startDate: "01-Jan-2025", endDate: "30-Jul-2025", skills: ["Kafka", "Java"], description: "" }]
     });
 
-    const handleEdit = (fieldName) => {
-        setEditingField(fieldName);
-    };
+    const addEducation = () => setTalent(p => ({ ...p, education: [...p.education, { university: "", qualification: "", startDate: "", endDate: "", field: "", percentage: "", certifications: [] }] }));
+    const addExperience = () => setTalent(p => ({ ...p, experience: [...p.experience, { company: "", position: "", startDate: "", endDate: "", skills: [], description: "" }] }));
+    const addProjects = () => setTalent(p => ({ ...p, projects: [...p.projects, { name: "", role: "", startDate: "", endDate: "", skills: [], description: "" }] }));
 
-    const handleSave = (fieldName, newValue) => {
-        setFormData(prev => ({
-            ...prev,
-            [fieldName]: newValue
-        }));
-        setEditingField(null);
-    };
+   const smoothStyle = (open) => ({
+  maxHeight: open ? 1000 : 0,
+  overflow: 'auto',
+  transition: 'max-height .3s ease',
 
-    const handleCancel = () => {
-        setEditingField(null);
-    };
+  /* Hide scrollbar — Chrome/Safari/Edge */
+  '::-webkit-scrollbar': {
+    display: 'none'
+  },
+
+  /* Firefox */
+  scrollbarWidth: 'none',
+
+  /* IE/old Edge */
+  msOverflowStyle: 'none'
+});
+
 
     return (
-        <div style={{ padding: "24px" }}>
-            <div className="d-flex gap-2 mb-3 align-items-center" style={{ marginBottom: '1.5rem' }}>
-                <button
-                    className="auth-link"
-                    style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    onClick={() => navigate("/user/user-upload-talent")}
-                >
-                    <FiArrowLeft /> Talent Management
-                </button>
-                <span className="auth-subtitle" style={{ fontSize: '14px' }}>/ Review Talent</span>
+        <div style={{ padding: 24 }}>
+            <div className="d-flex gap-2 mb-3 align-items-center">
+                <button className="auth-link" onClick={() => navigate("/user/user-upload-talent")}><FiArrowLeft /> Talent Management</button>
+                <span className="auth-subtitle">/ Review Talent</span>
             </div>
 
-            {/* Main Container - Equal Height Cards */}
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",    // Two equal-width columns
-                gap: "24px",
-                minHeight: "80vh",                 // Minimum height
-                gridTemplateRows: "1fr"            // Single row full height
-            }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
 
-                {/* LEFT COLUMN: Edit Form */}
-                <div className="auth-form-side" style={{
-                    flex: '1',
-                    minWidth: '350px',
-                    borderRadius: '1rem',
-                    border: '1px solid #e2e8f0',
-                    padding: '24px',
-                    background: 'white',
-                    height: '100%',  // Key: stretches to match sibling
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
-                    <div className="auth-header">
-                        <h4 className="auth-title" style={{ fontSize: '18px' }}>2. Edit Information</h4>
-                    </div>
+                {/* LEFT */}
+                <div className="auth-form-side" style={{ border: '1px solid #e2e8f0', borderRadius: '1rem', padding: 24, background: 'white', display: 'flex', flexDirection: 'column' }}>
+                    <h4 className="auth-title mb-4">2. Edit Information</h4>
 
                     <div style={{ flex: 1, overflowY: 'auto' }}>
-                        <EditableField
-                            label="Full Name"
-                            value={formData.fullName}
-                            fieldName="fullName"
-                            isEditing={editingField === "fullName"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
 
-                        <EditableField
-                            label="Email"
-                            value={formData.email}
-                            fieldName="email"
-                            isEditing={editingField === "email"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
-
-                        <EditableField
-                            label="Phone"
-                            value={formData.phone}
-                            fieldName="phone"
-                            isEditing={editingField === "phone"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
-
-                        <EditableField
-                            label="Address"
-                            value={formData.address}
-                            fieldName="address"
-                            isEditing={editingField === "address"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
-
-                        <EditableField
-                            label="Professional Summary"
-                            value={formData.professionalSummary}
-                            fieldName="professionalSummary"
-                            isEditing={editingField === "professionalSummary"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                            multiline
-                        />
-
-                        <div className="auth-divider">
-                            <div className="auth-divider-line"></div>
+                        {/* ===== BASIC ===== */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div className="" style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "6px",
+                                padding: "10px 10px 0px 10px"
+                            }}>
+                                <div onClick={() => toggleAccordion("basicInfo")}
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <h5 className="auth-label">Basic Information</h5>
+                                    {openAccordion === "basicInfo" ? <ChevronUp /> : <ChevronDown />}
+                                </div>
+                                <div style={smoothStyle(openAccordion === "basicInfo")} className="mt-2 scrollable" >
+                                    {["firstName", "lastName", "position", "phone", "email"].map(f => (
+                                        <EditableField key={f} label={f} value={talent.basicInfo[f]}
+                                            editing={editingSection === "basicInfo" && editingIndex === f}
+                                            onEdit={() => beginEdit("basicInfo", f)}
+                                            onSave={val => { setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, [f]: val } })); cancelEdit(); }}
+                                            onCancel={cancelEdit}
+                                        />
+                                    ))}
+                                    <EditableTags
+                                        label="Skills"
+                                        values={talent.basicInfo.skills}
+                                        editing={editingSection === "basicInfo" && editingIndex === "skills"}
+                                        onEdit={() => beginEdit("basicInfo", "skills")}
+                                        onSave={val => { setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, skills: val } })); cancelEdit(); }}
+                                        onCancel={cancelEdit}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        <EditableTags
-                            label="Professional Experience"
-                            tags={formData.professionalExperience}
-                            fieldName="professionalExperience"
-                            isEditing={editingField === "professionalExperience"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
+                        {/* ===== PERSONAL ===== */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div className="" style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "6px",
+                                padding: "10px 10px 0px 10px"
+                            }}>
+                                <div onClick={() => toggleAccordion("personalInfo")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
+                                    <h5 className="auth-label">Personal Information</h5>
+                                    {openAccordion === "personalInfo" ? <ChevronUp /> : <ChevronDown />}
+                                </div>
+                                <div style={smoothStyle(openAccordion === "personalInfo")} className="mt-2">
+                                    {Object.keys(talent.personalInfo).map(field => {
+                                        const isTxt = field === "bio";
+                                        return isTxt ? (
+                                            <EditableTextarea key={field} label={field} value={talent.personalInfo[field]}
+                                                editing={editingSection === "personalInfo" && editingIndex === field}
+                                                onEdit={() => beginEdit("personalInfo", field)}
+                                                onSave={val => { setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } })); cancelEdit(); }}
+                                                onCancel={cancelEdit}
+                                            />
+                                        ) : (
+                                            <EditableField key={field} label={field} value={talent.personalInfo[field]}
+                                                editing={editingSection === "personalInfo" && editingIndex === field}
+                                                onEdit={() => beginEdit("personalInfo", field)}
+                                                onSave={val => { setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } })); cancelEdit(); }}
+                                                onCancel={cancelEdit}
+                                            />
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
 
-                        <EditableField
-                            label="Years of Experience"
-                            value={formData.yearsOfExperience}
-                            fieldName="yearsOfExperience"
-                            isEditing={editingField === "yearsOfExperience"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
+                        {/* ===== EDUCATION ===== */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div className="" style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "6px",
+                                padding: "10px 10px 0px 10px"
+                            }}>
+                                <div onClick={() => toggleAccordion("education")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
+                                    <h5 className="auth-label">Education</h5>
+                                    {openAccordion === "education" ? <ChevronUp /> : <ChevronDown />}
+                                </div>
+                                <div style={smoothStyle(openAccordion === "education")} className="mt-2">
+                                   
+                                    {talent.education.map((ed, i) => (
+                                        <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
+                                            {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
+                                                <EditableField
+                                                    key={field}
+                                                    label={field}
+                                                    value={ed[field]}
+                                                    editing={editingSection === "education" && editingIndex === `${i}-${field}`}
+                                                    onEdit={() => beginEdit("education", `${i}-${field}`)}
+                                                    onSave={val => {
+                                                        const arr = [...talent.education]; arr[i][field] = val;
+                                                        setTalent(p => ({ ...p, education: arr })); cancelEdit();
+                                                    }}
+                                                    onCancel={cancelEdit}
+                                                />
+                                            ))}
+                                            <EditableTags
+                                                label="Certifications"
+                                                values={ed.certifications}
+                                                editing={editingSection === "education" && editingIndex === `${i}-certifications`}
+                                                onEdit={() => beginEdit("education", `${i}-certifications`)}
+                                                onSave={val => {
+                                                    const arr = [...talent.education]; arr[i].certifications = val;
+                                                    setTalent(p => ({ ...p, education: arr })); cancelEdit();
+                                                }}
+                                                onCancel={cancelEdit}
+                                            />
+                                        </div>
+                                    ))}
 
-                        <EditableTags
-                            label="Education"
-                            tags={formData.education}
-                            fieldName="education"
-                            isEditing={editingField === "education"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
+                                     <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button className="btn-secondary" onClick={addEducation}><Plus size={12} /> Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <EditableTags
-                            label="Certifications"
-                            tags={formData.certifications}
-                            fieldName="certifications"
-                            isEditing={editingField === "certifications"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
+                        {/* ===== EXPERIENCE ===== */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div className="" style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "6px",
+                                padding: "10px 10px 0px 10px"
+                            }}>
+                                <div onClick={() => toggleAccordion("experience")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
+                                    <h5 className="auth-label">Experience</h5>
+                                    {openAccordion === "experience" ? <ChevronUp /> : <ChevronDown />}
+                                </div>
+                                <div style={smoothStyle(openAccordion === "experience")} className="mt-2">
+                                    
+                                    {talent.experience.map((ex, i) => (
+                                        <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
+                                            {["company", "position", "startDate", "endDate"].map(field => (
+                                                <EditableField key={field} label={field} value={ex[field]}
+                                                    editing={editingSection === "experience" && editingIndex === `${i}-${field}`}
+                                                    onEdit={() => beginEdit("experience", `${i}-${field}`)}
+                                                    onSave={val => {
+                                                        const arr = [...talent.experience]; arr[i][field] = val;
+                                                        setTalent(p => ({ ...p, experience: arr })); cancelEdit();
+                                                    }}
+                                                    onCancel={cancelEdit}
+                                                />
+                                            ))}
+                                            <EditableTags
+                                                label="Skills"
+                                                values={ex.skills}
+                                                editing={editingSection === "experience" && editingIndex === `${i}-skills`}
+                                                onEdit={() => beginEdit("experience", `${i}-skills`)}
+                                                onSave={val => {
+                                                    const arr = [...talent.experience]; arr[i].skills = val;
+                                                    setTalent(p => ({ ...p, experience: arr })); cancelEdit();
+                                                }}
+                                                onCancel={cancelEdit}
+                                            />
+                                            <EditableTextarea
+                                                label="Description"
+                                                value={ex.description}
+                                                editing={editingSection === "experience" && editingIndex === `${i}-description`}
+                                                onEdit={() => beginEdit("experience", `${i}-description`)}
+                                                onSave={val => {
+                                                    const arr = [...talent.experience]; arr[i].description = val;
+                                                    setTalent(p => ({ ...p, experience: arr })); cancelEdit();
+                                                }}
+                                                onCancel={cancelEdit}
+                                            />
+                                        </div>
+                                    ))}
 
-                        <EditableTags
-                            label="Skills"
-                            tags={formData.skills}
-                            fieldName="skills"
-                            isEditing={editingField === "skills"}
-                            onEdit={handleEdit}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                        />
+                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button className="btn-secondary" onClick={addExperience}><Plus size={12} /> Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ===== PROJECTS ===== */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div className="" style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: "6px",
+                                padding: "10px 10px 0px 10px"
+                            }}>
+                                <div onClick={() => toggleAccordion("projects")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
+                                    <h5 className="auth-label">Projects</h5>
+                                    {openAccordion === "projects" ? <ChevronUp /> : <ChevronDown />}
+                                </div>
+                                <div style={smoothStyle(openAccordion === "projects")} className="mt-2">
+        
+                                    {talent.projects.map((pr, i) => (
+                                        <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
+                                            {["name", "role", "startDate", "endDate"].map(field => (
+                                                <EditableField key={field} label={field} value={pr[field]}
+                                                    editing={editingSection === "projects" && editingIndex === `${i}-${field}`}
+                                                    onEdit={() => beginEdit("projects", `${i}-${field}`)}
+                                                    onSave={val => {
+                                                        const arr = [...talent.projects]; arr[i][field] = val;
+                                                        setTalent(p => ({ ...p, projects: arr })); cancelEdit();
+                                                    }}
+                                                    onCancel={cancelEdit}
+                                                />
+                                            ))}
+                                            <EditableTags
+                                                label="Skills"
+                                                values={pr.skills}
+                                                editing={editingSection === "projects" && editingIndex === `${i}-skills`}
+                                                onEdit={() => beginEdit("projects", `${i}-skills`)}
+                                                onSave={val => {
+                                                    const arr = [...talent.projects]; arr[i].skills = val;
+                                                    setTalent(p => ({ ...p, projects: arr })); cancelEdit();
+                                                }}
+                                                onCancel={cancelEdit}
+                                            />
+                                            <EditableTextarea
+                                                label="Description"
+                                                value={pr.description}
+                                                editing={editingSection === "projects" && editingIndex === `${i}-description`}
+                                                onEdit={() => beginEdit("projects", `${i}-description`)}
+                                                onSave={val => {
+                                                    const arr = [...talent.projects]; arr[i].description = val;
+                                                    setTalent(p => ({ ...p, projects: arr })); cancelEdit();
+                                                }}
+                                                onCancel={cancelEdit}
+                                            />
+                                        </div>
+                                    ))}
+
+                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button className="btn-secondary" onClick={addProjects}><Plus size={12} /> Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
-                        <div className="auth-alert auth-alert-success" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <input
-                                type="checkbox"
-                                checked={isReviewed}
-                                onChange={e => setIsReviewed(e.target.checked)}
-                                style={{ width: '18px', height: '18px' }}
-                            />
-                            <span style={{ fontSize: '14px', fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
+                    <div style={{ marginTop: 'auto', paddingTop: 24 }}>
+                        <div className="auth-alert auth-alert-success" style={{ marginBottom: 24, display: 'flex', gap: 10 }}>
+                            <input type="checkbox" checked={isReviewed} onChange={e => setIsReviewed(e.target.checked)} style={{ width: 18, height: 18 }} />
+                            <span style={{ fontSize: 14, fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
                         </div>
-
                         <div className="d-flex gap-3 justify-content-end">
-                            <button className="btn-secondary">
-                                Save as Draft
-                            </button>
-                            <button
-                                className="btn-primary"
-                                style={{ width: 'auto', padding: '0 24px' }}
-                                disabled={!isReviewed}
-                                onClick={()=>navigate("/user/user-upload-talent")}
-                            >
-                                Save Talent
-                            </button>
+                            <button className="btn-secondary">Save as Draft</button>
+                            <button className="btn-primary" disabled={!isReviewed} onClick={() => navigate("/user/user-upload-talent")}>Save Talent</button>
                         </div>
                     </div>
                 </div>
 
-                {/* RIGHT COLUMN: Resume Preview */}
-                <div style={{
-                    flex: '1',
-                    minWidth: '350px',
-                    height: '100%',  // Key: stretches to match sibling
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
-                    <div className="auth-form-side" style={{
-                        borderRadius: '1rem',
-                        border: '1px solid #e2e8f0',
-                        padding: '16px',
-                        background: 'white',
-                        height: '100%',  // Full height of parent
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                            <h4 className="auth-title" style={{ fontSize: '16px', margin: 0 }}>Preview Resume</h4>
-                            {/* <button
-                                type="button"
-                                className="btn-secondary"
-                                style={{ width: 'auto', padding: '6px 12px', fontSize: '12px', height: 'auto' }}
-                                onClick={() => setShowPreview(prev => !prev)}
-                            >
-                                {showPreview ? "Hide Preview" : "Show Preview"}
-                            </button> */}
-                        </div>
-
-                        {showPreview && (
-                            <div style={{
-                                flex: 1,
-                                overflowY: 'auto',
-                                padding: '4px',
-                                display: 'flex'  // Ensures PDFPreview fills available space
-                            }}>
-                                <PDFResumePreview />
-                            </div>
-                        )}
+                {/* RIGHT */}
+                <div style={{ borderRadius: '1rem', border: '1px solid #e2e8f0', background: 'white' }}>
+                    <h4 className="auth-title" style={{ padding: 16 }}>Preview Resume</h4>
+                    <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}>
+                        <PDFResumePreview />
                     </div>
                 </div>
             </div>
