@@ -12,17 +12,14 @@ const UploadTalent = () => {
     const [view, setView] = useState("Talent");
     const [refreshKey, setRefreshKey] = useState(0);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setRefreshKey((prev) => prev + 1);
-  }, 10000); // ⏱ every 10 seconds
-
-  return () => clearInterval(interval); // cleanup
-}, []);
-
 const handleUploadSuccess = () => {
-  // 🔁 Immediate refresh on upload success
+  // 🔁 Immediate refresh (optional)
   setRefreshKey((prev) => prev + 1);
+ 
+  // ⏱ Auto refresh after 20 seconds
+  setTimeout(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, 20000);
 };
 
     // Handler to close the modal

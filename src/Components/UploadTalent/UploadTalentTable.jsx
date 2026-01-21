@@ -194,6 +194,24 @@ const UploadTalentTable = ({refreshKey}) => {
           </thead>
 
           <tbody>
+            {isLoading && (
+    <tr>
+      <td colSpan={9} style={{ textAlign: "center", padding: "40px" }}>
+        <span style={{ color: "#64748b", fontSize: "14px" }}>
+          Loading resumes...
+        </span>
+      </td>
+    </tr>
+  )}
+            {!isLoading && sortedTalents.length === 0 && (
+    <tr>
+      <td colSpan={9} style={{ textAlign: "center", padding: "40px" }}>
+        <span style={{ color: "#64748b", fontSize: "14px" }}>
+          No resumes uploaded
+        </span>
+      </td>
+    </tr>
+  )}
             {sortedTalents.map((talent, i) => {
               const isSelected = selectedEmails.has(talent.email);
               return (
