@@ -319,6 +319,16 @@ input, button, select, textarea, label {
   white-space: nowrap;
 }
 
+.status-yellow {
+  background-color: #fef3c7; /* amber-100 */
+  color: #92400e;           /* amber-800 */
+}
+
+.status-green {
+  background-color: #dcfce7; /* green-100 */
+  color: #166534;            /* green-800 */
+}
+
 /* Example Status Colors (can be extended) */
 .status-tag.New { background: #dbeafe; color: #1e40af; }
 .status-tag.Interviewing { background: #ffedd5; color: #9a3412; }

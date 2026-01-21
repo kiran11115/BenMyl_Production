@@ -20,8 +20,16 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["CompanyProfile"],
     }),
+
+    getCompanyProfileEdit: builder.query({
+      query: (emailId) => ({
+        url: `/api/uatcompany/companyprofile?Emailid=${emailId}`,
+        method: "GET",
+      }),
+      providesTags: ["CompanyProfile"],
+    }),
   }),
 });
 
-export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation } =
+export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation,useGetCompanyProfileEditQuery } =
   CompanyProfileApiSlice;

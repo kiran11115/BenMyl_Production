@@ -58,7 +58,7 @@ function Signin() {
             return;
           }
 
-          if (role === "recruiter") {
+          if (role === "Recruiter") {
             navigate("/user/user-dashboard");
             return;
           }

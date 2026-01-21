@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUploadProfilesMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 function UploadTalentModal({
   buttonText = "Upload Talent",
@@ -61,36 +62,49 @@ function UploadTalentModal({
     setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
   };
 
-  const handleAIProcess = async () => {
-    if (uploadedFiles.length > 0) {
-      setIsProcessing(true);
+  const [uploadProfiles] = useUploadProfilesMutation();
 
-      try {
-        // Simulate upload/processing (replace with your actual API call)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+const handleAIProcess = async () => {
+  if (uploadedFiles.length === 0) return;
 
-        if (onSuccess) {
-          onSuccess(`Processing ${uploadedFiles.length} resume(s) with AI...`);
-        }
-        
-        handleClose();
-        
-        // --- NAVIGATION ADDED HERE ---
-        // Pass state if you need to access the files on the next page
-        navigate("/user/user-upload-talent", { 
-            state: { files: uploadedFiles } 
-        });
+  setIsProcessing(true);
 
-      } catch (error) {
-        console.error("Failed to process files", error);
-        if (onSuccess) {
-          onSuccess("Failed to process files");
-        }
-      } finally {
-        setIsProcessing(false);
-      }
+  try {
+    const formData = new FormData();
+
+    // ✅ multiple files (same key: "file")
+    uploadedFiles.forEach((item) => {
+      formData.append("file", item.file);
+    });
+
+    // ✅ required metadata
+    formData.append("companyid", 0);
+    formData.append("branchid", 0);
+    formData.append("userid", 0);
+    formData.append("sessionid", "hii");
+
+    await uploadProfiles(formData).unwrap();
+    onSuccess?.();
+    if (onSuccess) {
+      onSuccess(`Successfully uploaded ${uploadedFiles.length} resume(s)`);
     }
-  };
+
+    handleClose();
+
+    navigate("/user/user-upload-talent", {
+      state: { files: uploadedFiles },
+    });
+
+  } catch (error) {
+    console.error("Upload failed", error);
+    if (onSuccess) {
+      onSuccess("Failed to upload resumes");
+    }
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
 
   const handleClose = () => {
     setUploadedFiles([]);

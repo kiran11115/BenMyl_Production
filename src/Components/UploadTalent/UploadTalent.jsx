@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UploadTalentTable from "./UploadTalentTable";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
@@ -10,6 +10,20 @@ import UserTalentProfiles from "./UserTalentProfiles";
 const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
     const [view, setView] = useState("Talent");
+    const [refreshKey, setRefreshKey] = useState(0);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, 10000); // ⏱ every 10 seconds
+
+  return () => clearInterval(interval); // cleanup
+}, []);
+
+const handleUploadSuccess = () => {
+  // 🔁 Immediate refresh on upload success
+  setRefreshKey((prev) => prev + 1);
+};
 
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
@@ -62,6 +76,7 @@ const UploadTalent = () => {
                         show={showModal}
                         onHide={handleCloseModal}
                         onShow={handleShowModal}
+                        onSuccess={handleUploadSuccess}
                     />
                 </div>
 
@@ -81,6 +96,7 @@ const UploadTalent = () => {
                                     talents={talentsData}
                                     selectedEmails={selectedEmails}
                                     onToggleSelect={toggleSelect}
+                                    refreshKey={refreshKey}
                                 />
                             </div >
                         </>

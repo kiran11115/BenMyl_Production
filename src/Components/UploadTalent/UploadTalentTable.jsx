@@ -1,210 +1,98 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
-const initialTalents = [
-  {
-    fileName: "Johndoe-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "70%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "15-NOV-2025",
-    confidence: "60%",
-    confidenceClass: "status-yellow",
-    email: "john.doe@example.com",
-  },
-  {
-    fileName: "JaneSmith-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "85%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Michael Brown",
-    uploadDate: "14-NOV-2025",
-    confidence: "75%",
-    confidenceClass: "status-blue",
-    email: "jane.smith@example.com",
-  },
-  {
-    fileName: "MichaelJohnson-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "92%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Emily Davis",
-    uploadDate: "16-NOV-2025",
-    confidence: "88%",
-    confidenceClass: "status-teal",
-    email: "michael.johnson@example.com",
-  },
-  {
-    fileName: "AditiSharma-resumes.pdf",
-    batchFormat: "Resumefiles-1/10.zip",
-    extractStatus: "65%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Tobias Whetton",
-    uploadDate: "13-NOV-2025",
-    confidence: "55%",
-    confidenceClass: "status-orange",
-    email: "aditi.sharma@example.com",
-  },
-  {
-    fileName: "RohanMehta-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "78%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "17-NOV-2025",
-    confidence: "70%",
-    confidenceClass: "status-blue",
-    email: "rohan.mehta@example.com",
-  },
-  {
-    fileName: "CarlosDiaz-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "81%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Laura Kim",
-    uploadDate: "12-NOV-2025",
-    confidence: "73%",
-    confidenceClass: "status-blue",
-    email: "carlos.diaz@example.com",
-  },
-  {
-    fileName: "EmilyClark-resume.docx",
-    batchFormat: ".docx",
-    extractStatus: "58%",
-    statusClass: "status-orange",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Mark Allen",
-    uploadDate: "11-NOV-2025",
-    confidence: "48%",
-    confidenceClass: "status-orange",
-    email: "emily.clark@example.com",
-  },
-  {
-    fileName: "SanjayPatel-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "89%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Priya Desai",
-    uploadDate: "10-NOV-2025",
-    confidence: "91%",
-    confidenceClass: "status-teal",
-    email: "sanjay.patel@example.com",
-  },
-  {
-    fileName: "LindaNguyen-resume.zip",
-    batchFormat: "Resumefiles-2/20.zip",
-    extractStatus: "62%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Kevin Wright",
-    uploadDate: "09-NOV-2025",
-    confidence: "57%",
-    confidenceClass: "status-orange",
-    email: "linda.nguyen@example.com",
-  },
-  {
-    fileName: "DavidWilson-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "76%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Emily Davis",
-    uploadDate: "08-NOV-2025",
-    confidence: "69%",
-    confidenceClass: "status-blue",
-    email: "david.wilson@example.com",
-  },
-  {
-    fileName: "FatimaAli-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "94%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "07-NOV-2025",
-    confidence: "96%",
-    confidenceClass: "status-teal",
-    email: "fatima.ali@example.com",
-  },
-  {
-    fileName: "GeorgeMiller-resume.docx",
-    batchFormat: ".docx",
-    extractStatus: "55%",
-    statusClass: "status-orange",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Michael Brown",
-    uploadDate: "06-NOV-2025",
-    confidence: "50%",
-    confidenceClass: "status-orange",
-    email: "george.miller@example.com",
-  },
-  {
-    fileName: "HiroTanaka-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "83%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Naomi Lee",
-    uploadDate: "05-NOV-2025",
-    confidence: "79%",
-    confidenceClass: "status-blue",
-    email: "hiro.tanaka@example.com",
-  },
-  {
-    fileName: "IsabellaRossi-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "88%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Tobias Whetton",
-    uploadDate: "04-NOV-2025",
-    confidence: "82%",
-    confidenceClass: "status-teal",
-    email: "isabella.rossi@example.com",
-  },
-  {
-    fileName: "LiamOBrien-resume.zip",
-    batchFormat: "Resumefiles-3/15.zip",
-    extractStatus: "67%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Mark Allen",
-    uploadDate: "03-NOV-2025",
-    confidence: "59%",
-    confidenceClass: "status-orange",
-    email: "liam.obrien@example.com",
-  },
-];
+const PAGE_SIZE = 10;
+const UploadTalentTable = ({refreshKey}) => {
+ const navigate = useNavigate();
 
-const UploadTalentTable = () => {
-  const navigate = useNavigate();
-  const [talents] = useState(initialTalents);
+  const [talents, setTalents] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const [getQueueManagement, { isLoading }] =
+    useGetQueueManagementMutation();
+
+  /* ================= FETCH ================= */
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchQueue = async () => {
+      try {
+        const payload = {
+          companyid: Number(localStorage.getItem("logincompanyid")),
+          pageNumber,
+          pageSize: PAGE_SIZE,
+          filters: [],
+        };
+
+        const res = await getQueueManagement(payload).unwrap();
+
+        if (!isMounted) return;
+
+        const mapped = res.map((item) => ({
+          fileName: item.resumeFileName,
+          batchFormat: item.resumeFileName?.split(".").pop(),
+          extractStatus: item.status,
+          statusClass:
+            item.status === "Pending For Review"
+              ? "status-yellow"
+              : "status-green",
+          created: item.status === "Completed" ? "Yes" : "No",
+          createdClass:
+            item.status === "Completed"
+              ? "status-green"
+              : "status-red",
+          uploadedBy: item.uploadedByName,
+          uploadDate: item.insertDate?.split(" ")[0] ?? "-",
+          confidence: "N/A",
+          confidenceClass: "status-blue",
+          email: `${item.firstName} ${item.lastName}`,
+        }));
+
+        // ✅ Page 1 replaces, Page 2+ appends
+        setTalents((prev) =>
+          pageNumber === 1 ? mapped : [...prev, ...mapped]
+        );
+
+        if (mapped.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+      } catch (err) {
+        console.error("Queue fetch failed", err);
+      }
+    };
+
+    fetchQueue();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pageNumber, getQueueManagement,refreshKey]);
+
+  useEffect(() => {
+  setPageNumber(1);
+  setHasMore(true);
+}, [refreshKey]);
+
+  /* ================= SCROLL ================= */
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+    if (
+      scrollHeight - scrollTop <= clientHeight + 50 &&
+      hasMore &&
+      !isLoading
+    ) {
+      setPageNumber((prev) => prev + 1);
+    }
+  };
+
+
+
   const [selectedEmails, setSelectedEmails] = useState(new Set());
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -214,7 +102,7 @@ const UploadTalentTable = () => {
   const getInitials = (name = "") =>
     name
       .split(" ")
-      .slice(0, 2)
+      .slice(0, 1)
       .map((n) => n[0])
       .join("")
       .toUpperCase();
@@ -267,7 +155,7 @@ const UploadTalentTable = () => {
 
   return (
     <div className="upload-table-panel">
-      <div className="table-scroll">
+      <div className="table-scroll" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 600 }}>
         <table className="custom-table">
           <thead>
             <tr>

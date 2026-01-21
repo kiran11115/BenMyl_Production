@@ -6,12 +6,17 @@ import * as Yup from "yup";
 import "./AdminProfileEdit.css";
 
 // CHANGE THIS TO YOUR API IMPORT
-import { useUpdateCompanyProfileMutation } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import { useGetCompanyProfileEditQuery, useUpdateCompanyProfileMutation } from "../../../State-Management/Api/CompanyProfileApiSlice";
 
 const AdminProfileEdit = () => {
   const navigate = useNavigate();
   const [updateCompanyProfile, { isLoading }] = useUpdateCompanyProfileMutation();
   const companyid = localStorage.getItem("logincompanyid");
+  const emailId = localStorage.getItem("Email");
+  const { data: companyData, isLoading: isFetching } =
+  useGetCompanyProfileEditQuery(emailId, {
+    skip: !emailId,
+  });
 
   // Logo preview
   const [logoPreview, setLogoPreview] = useState(null);
@@ -63,8 +68,9 @@ const AdminProfileEdit = () => {
         });
 
         // Swagger rules: companylogo null, companyimages = uploaded
-        formData.append("companylogo", null);
-        formData.append("companyimages", logoFile || null);
+        if (logoFile instanceof File) {
+      formData.append("companyimages", logoFile);
+    }
 
         await updateCompanyProfile(formData).unwrap();
 
@@ -74,6 +80,41 @@ const AdminProfileEdit = () => {
       }
     },
   });
+
+  useEffect(() => {
+  if (!companyData) return;
+
+  formik.setValues({
+    companyname: companyData.companyname || "",
+    companyid: companyData.companyid || companyid,
+
+    Tagline: companyData.tagline || "",
+    Industry: companyData.industry || "",
+    CompanySize: companyData.companySize || "",
+    FoundedYear: companyData.foundedYear || "",
+    Description: companyData.description || "",
+
+    WebsiteURL: companyData.websiteURL || "",
+    Domain: companyData.domain || "",
+
+    StreetAddress1: companyData.streetAddress1 || "",
+    StreetAddress2: companyData.streetAddress2 || "",
+    City: companyData.city || "",
+    State: companyData.state || "",
+    PostalCode: companyData.postalCode || "",
+    Country: companyData.country || "",
+
+    Emailid: companyData.emailid || "",
+    Phone: companyData.phone || "",
+    LinkedInURL: companyData.linkedinURL || "",
+  });
+
+  // ✅ Logo preview from backend
+  if (companyData.companylogo) {
+    setLogoPreview(companyData.companylogo);
+  }
+}, [companyData]);
+
 
   // Logo handler
   const handleLogoUpload = (e) => {
