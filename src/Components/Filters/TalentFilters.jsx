@@ -129,8 +129,8 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
           {isOpen
             ? "Close List"
             : selectedValues.length > 0
-            ? "Add / Remove..."
-            : label}
+              ? "Add / Remove..."
+              : label}
         </span>
         {isOpen ? <FiChevronDown style={{ transform: "rotate(180deg)" }} /> : <FiPlus />}
       </div>
@@ -143,9 +143,8 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
               onClick={() => toggleOption(option)}
             >
               <div
-                className={`custom-checkbox ${
-                  selectedValues.includes(option) ? "checked" : ""
-                }`}
+                className={`custom-checkbox ${selectedValues.includes(option) ? "checked" : ""
+                  }`}
               >
                 {selectedValues.includes(option) && (
                   <FiCheck size={10} color="white" />
@@ -184,13 +183,15 @@ const TalentFilters = ({ onApplyFilters }) => {
 
   const toggleJobSelection = (jobId) => {
     setFilterInputs((prev) => {
-      const current = prev.selectedJobs;
-      const newJobs = current.includes(jobId)
-        ? current.filter((id) => id !== jobId)
-        : [...current, jobId];
-      return { ...prev, selectedJobs: newJobs };
+      const current = prev.selectedJobs[0];
+
+      return {
+        ...prev,
+        selectedJobs: current === jobId ? [] : [jobId],
+      };
     });
   };
+
 
   const removeArrayItem = (field, value) => {
     setFilterInputs((prev) => ({
@@ -272,17 +273,16 @@ const TalentFilters = ({ onApplyFilters }) => {
                   onClick={() => toggleJobSelection(job.id)}
                 >
                   <div
-                    className={`custom-checkbox ${
-                      filterInputs.selectedJobs.includes(job.id)
+                    className={`custom-checkbox ${filterInputs.selectedJobs.includes(job.id)
                         ? "checked"
                         : ""
-                    }`}
+                      }`}
                     style={
                       filterInputs.selectedJobs.includes(job.id)
                         ? {
-                            borderColor: job.color,
-                            backgroundColor: job.color,
-                          }
+                          borderColor: job.color,
+                          backgroundColor: job.color,
+                        }
                         : {}
                     }
                   >
@@ -446,9 +446,8 @@ const TalentFilters = ({ onApplyFilters }) => {
               key={star}
               onClick={() => handleInputChange("minRating", star)}
               type="button"
-              className={`rating-btn ${
-                filterInputs.minRating >= star ? "active" : ""
-              }`}
+              className={`rating-btn ${filterInputs.minRating >= star ? "active" : ""
+                }`}
             >
               <FiStar
                 size={16}
