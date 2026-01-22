@@ -8,75 +8,29 @@ function EditProfile() {
 
   // Complete empty state matching ALL ProfilePage fields
   const [formData, setFormData] = useState({
-  id: "",
-  slug: "",
-  name: "",
-  companyname: "",
-  websiteUrl: "",
-  domain: "",
-  description: "",
-  headquarters: {
-    street1: "",
-    street2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
-  },
-  contact: {
-    email: "",
-    phone: "",
-    linkedinUrl: "",
-  },
-
-  // ✅ NEW: Work Experience
-  workExperience: [
-    {
-      role: "",
-      company: "",
-      startYear: "",
-      endYear: "",
-      isCurrent: false,
+    id: "",
+    slug: "",
+    name: "",
+    companyname: "",
+    websiteUrl: "",
+    domain: "",
+    description: "",
+    headquarters: {
+      street1: "",
+      street2: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
     },
-  ],
-   additionalInfo: {
-    jobTitle: "",
-    experience: "",
-    education: "",
-    languages: [], // ["English", "Spanish"]
-    referredBy: "",
-  },
-});
+    contact: {
+      email: "",
+      phone: "",
+      linkedinUrl: "",
+    },
 
-const toggleLanguage = (lang) => {
-  setFormData((prev) => {
-    const exists = prev.additionalInfo.languages.includes(lang);
-    return {
-      ...prev,
-      additionalInfo: {
-        ...prev.additionalInfo,
-        languages: exists
-          ? prev.additionalInfo.languages.filter((l) => l !== lang)
-          : [...prev.additionalInfo.languages, lang],
-      },
-    };
-  });
-};
-
-
-const handleExperienceChange = (index, field, value) => {
-  setFormData((prev) => {
-    const updated = [...prev.workExperience];
-    updated[index] = { ...updated[index], [field]: value };
-    return { ...prev, workExperience: updated };
-  });
-};
-
-const addExperience = () => {
-  setFormData((prev) => ({
-    ...prev,
+    // ✅ NEW: Work Experience
     workExperience: [
-      ...prev.workExperience,
       {
         role: "",
         company: "",
@@ -85,31 +39,77 @@ const addExperience = () => {
         isCurrent: false,
       },
     ],
-  }));
-};
-
-const removeExperience = (index) => {
-  setFormData((prev) => ({
-    ...prev,
-    workExperience: prev.workExperience.filter((_, i) => i !== index),
-  }));
-};
-
-const totalExperience = useMemo(() => {
-  let total = 0;
-
-  formData.workExperience.forEach((exp) => {
-    if (exp.startYear) {
-      const start = Number(exp.startYear);
-      const end = exp.isCurrent
-        ? new Date().getFullYear()
-        : Number(exp.endYear || start);
-      total += Math.max(end - start, 0);
-    }
+    additionalInfo: {
+      jobTitle: "",
+      experience: "",
+      education: "",
+      languages: [], // ["English", "Spanish"]
+      referredBy: "",
+    },
   });
 
-  return total;
-}, [formData.workExperience]);
+  const toggleLanguage = (lang) => {
+    setFormData((prev) => {
+      const exists = prev.additionalInfo.languages.includes(lang);
+      return {
+        ...prev,
+        additionalInfo: {
+          ...prev.additionalInfo,
+          languages: exists
+            ? prev.additionalInfo.languages.filter((l) => l !== lang)
+            : [...prev.additionalInfo.languages, lang],
+        },
+      };
+    });
+  };
+
+
+  const handleExperienceChange = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = [...prev.workExperience];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, workExperience: updated };
+    });
+  };
+
+  const addExperience = () => {
+    setFormData((prev) => ({
+      ...prev,
+      workExperience: [
+        ...prev.workExperience,
+        {
+          role: "",
+          company: "",
+          startYear: "",
+          endYear: "",
+          isCurrent: false,
+        },
+      ],
+    }));
+  };
+
+  const removeExperience = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      workExperience: prev.workExperience.filter((_, i) => i !== index),
+    }));
+  };
+
+  const totalExperience = useMemo(() => {
+    let total = 0;
+
+    formData.workExperience.forEach((exp) => {
+      if (exp.startYear) {
+        const start = Number(exp.startYear);
+        const end = exp.isCurrent
+          ? new Date().getFullYear()
+          : Number(exp.endYear || start);
+        total += Math.max(end - start, 0);
+      }
+    });
+
+    return total;
+  }, [formData.workExperience]);
 
 
   // Logo upload state
@@ -256,117 +256,117 @@ const totalExperience = useMemo(() => {
 
         {/* Company Details */}
         {/* Work Experience */}
-<div className="form-section">
-  <h3 className="section-title">Work Experience</h3>
+        <div className="form-section">
+          <h3 className="section-title">Work Experience</h3>
 
-  {formData.workExperience.map((exp, index) => (
-    <div
-      key={index}
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: "10px",
-        padding: "16px",
-        marginBottom: "12px",
-      }}
-    >
-      <div className="input-grid-2">
-        <div className="auth-group">
-          <label className="auth-label">Role</label>
-          <input
-            type="text"
-            value={exp.role}
-            onChange={(e) =>
-              handleExperienceChange(index, "role", e.target.value)
-            }
-            className="auth-input"
-            placeholder="Recruiter"
-          />
+          {formData.workExperience.map((exp, index) => (
+            <div
+              key={index}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: "10px",
+                padding: "16px",
+                marginBottom: "12px",
+              }}
+            >
+              <div className="input-grid-2">
+                <div className="auth-group">
+                  <label className="auth-label">Role</label>
+                  <input
+                    type="text"
+                    value={exp.role}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "role", e.target.value)
+                    }
+                    className="auth-input"
+                    placeholder="Recruiter"
+                  />
+                </div>
+
+                <div className="auth-group">
+                  <label className="auth-label">Company</label>
+                  <input
+                    type="text"
+                    value={exp.company}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "company", e.target.value)
+                    }
+                    className="auth-input"
+                    placeholder="Nimbus Labs"
+                  />
+                </div>
+              </div>
+
+              <div className="input-grid-3 mt-2">
+                <div className="auth-group">
+                  <label className="auth-label">Start Year</label>
+                  <input
+                    type="number"
+                    value={exp.startYear}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "startYear", e.target.value)
+                    }
+                    className="auth-input"
+                    placeholder="2019"
+                  />
+                </div>
+
+                <div className="auth-group">
+                  <label className="auth-label">End Year</label>
+                  <input
+                    type="number"
+                    value={exp.endYear}
+                    onChange={(e) =>
+                      handleExperienceChange(index, "endYear", e.target.value)
+                    }
+                    className="auth-input"
+                    disabled={exp.isCurrent}
+                    placeholder="2023"
+                  />
+                </div>
+
+                <div className="auth-group" style={{ alignSelf: "end" }}>
+                  <label className="auth-label">
+                    <input
+                      type="checkbox"
+                      checked={exp.isCurrent}
+                      onChange={(e) =>
+                        handleExperienceChange(index, "isCurrent", e.target.checked)
+                      }
+                    />{" "}
+                    Present
+                  </label>
+                </div>
+              </div>
+
+              {formData.workExperience.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeExperience(index)}
+                  className="btn-secondary mt-2"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+
+          <button type="button" onClick={addExperience} className="btn-secondary">
+            + Add Experience
+          </button>
+
+          <div
+            style={{
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "space-between",
+              fontWeight: 600,
+            }}
+          >
+            <span style={{ color: "#64748b" }}>Total Experience:</span>
+            <span>{totalExperience} Years</span>
+          </div>
         </div>
-
-        <div className="auth-group">
-          <label className="auth-label">Company</label>
-          <input
-            type="text"
-            value={exp.company}
-            onChange={(e) =>
-              handleExperienceChange(index, "company", e.target.value)
-            }
-            className="auth-input"
-            placeholder="Nimbus Labs"
-          />
-        </div>
-      </div>
-
-      <div className="input-grid-3 mt-2">
-        <div className="auth-group">
-          <label className="auth-label">Start Year</label>
-          <input
-            type="number"
-            value={exp.startYear}
-            onChange={(e) =>
-              handleExperienceChange(index, "startYear", e.target.value)
-            }
-            className="auth-input"
-            placeholder="2019"
-          />
-        </div>
-
-        <div className="auth-group">
-          <label className="auth-label">End Year</label>
-          <input
-            type="number"
-            value={exp.endYear}
-            onChange={(e) =>
-              handleExperienceChange(index, "endYear", e.target.value)
-            }
-            className="auth-input"
-            disabled={exp.isCurrent}
-            placeholder="2023"
-          />
-        </div>
-
-        <div className="auth-group" style={{ alignSelf: "end" }}>
-          <label className="auth-label">
-            <input
-              type="checkbox"
-              checked={exp.isCurrent}
-              onChange={(e) =>
-                handleExperienceChange(index, "isCurrent", e.target.checked)
-              }
-            />{" "}
-            Present
-          </label>
-        </div>
-      </div>
-
-      {formData.workExperience.length > 1 && (
-        <button
-          type="button"
-          onClick={() => removeExperience(index)}
-          className="btn-secondary mt-2"
-        >
-          Remove
-        </button>
-      )}
-    </div>
-  ))}
-
-  <button type="button" onClick={addExperience} className="btn-secondary">
-    + Add Experience
-  </button>
-
-  <div
-    style={{
-      marginTop: "16px",
-      display: "flex",
-      justifyContent: "space-between",
-      fontWeight: 600,
-    }}
-  >
-    <span style={{ color: "#64748b" }}>Total Experience:</span>
-    <span>{totalExperience} Years</span>
-  </div>
-</div>
 
         {/* Description */}
         <div className="form-section">
@@ -499,123 +499,157 @@ const totalExperience = useMemo(() => {
           </div>
         </div>
 
-       {/* Additional Information */}
-<div className="form-section">
-  <h3 className="section-title">Additional Information</h3>
+        {/* Additional Information */}
+        <div className="form-section">
+          <h3 className="section-title">Additional Information</h3>
 
-  <div className="input-grid-2">
-    <div className="auth-group">
-      <label className="auth-label">Job Title</label>
-      <input
-        type="text"
-        value={formData.additionalInfo.jobTitle}
-        onChange={(e) =>
-          setFormData((prev) => ({
-            ...prev,
-            additionalInfo: {
-              ...prev.additionalInfo,
-              jobTitle: e.target.value,
-            },
-          }))
-        }
-        className="auth-input"
-        placeholder="Recruiter"
-      />
-    </div>
+          <div className="input-grid-2">
+            <div className="auth-group">
+              <label className="auth-label">Job Title</label>
+              <input
+                type="text"
+                value={formData.additionalInfo.jobTitle}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    additionalInfo: {
+                      ...prev.additionalInfo,
+                      jobTitle: e.target.value,
+                    },
+                  }))
+                }
+                className="auth-input"
+                placeholder="Recruiter"
+              />
+            </div>
 
-    <div className="auth-group">
-      <label className="auth-label">Experience (Years)</label>
-      <input
-        type="number"
-        min="0"
-        value={formData.additionalInfo.experience}
-        onChange={(e) =>
-          setFormData((prev) => ({
-            ...prev,
-            additionalInfo: {
-              ...prev.additionalInfo,
-              experience: e.target.value,
-            },
-          }))
-        }
-        className="auth-input"
-        placeholder="5"
-      />
-    </div>
-  </div>
+            <div className="auth-group">
+              <label className="auth-label">Experience (Years)</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.additionalInfo.experience}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    additionalInfo: {
+                      ...prev.additionalInfo,
+                      experience: e.target.value,
+                    },
+                  }))
+                }
+                className="auth-input"
+                placeholder="5"
+              />
+            </div>
+          </div>
 
-  <div className="input-grid-2 mt-3">
-    <div className="auth-group">
-      <label className="auth-label">Education</label>
-      <select
-        value={formData.additionalInfo.education}
-        onChange={(e) =>
-          setFormData((prev) => ({
-            ...prev,
-            additionalInfo: {
-              ...prev.additionalInfo,
-              education: e.target.value,
-            },
-          }))
-        }
-        className="auth-input"
-      >
-        <option value="">Select education</option>
-        <option value="High School">High School</option>
-        <option value="Bachelor's Degree">Bachelor's Degree</option>
-        <option value="Master's Degree">Master's Degree</option>
-        <option value="PhD">PhD</option>
-      </select>
-    </div>
+          <div className="input-grid-2 mt-3">
+            <div className="auth-group">
+              <label className="auth-label">Education</label>
+              <select
+                value={formData.additionalInfo.education}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    additionalInfo: {
+                      ...prev.additionalInfo,
+                      education: e.target.value,
+                    },
+                  }))
+                }
+                className="auth-input"
+              >
+                <option value="">Select education</option>
+                <option value="High School">High School</option>
+                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                <option value="Master's Degree">Master's Degree</option>
+                <option value="PhD">PhD</option>
+              </select>
+            </div>
 
-    <div className="auth-group">
-      <label className="auth-label">Referred By</label>
-      <input
-        type="email"
-        value={formData.additionalInfo.referredBy}
-        onChange={(e) =>
-          setFormData((prev) => ({
-            ...prev,
-            additionalInfo: {
-              ...prev.additionalInfo,
-              referredBy: e.target.value,
-            },
-          }))
-        }
-        className="auth-input"
-        placeholder="gsrinivas@mylastech.com"
-      />
-    </div>
-  </div>
+            <div className="auth-group">
+              <label className="auth-label">Referred By</label>
+              <input
+                type="email"
+                value={formData.additionalInfo.referredBy}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    additionalInfo: {
+                      ...prev.additionalInfo,
+                      referredBy: e.target.value,
+                    },
+                  }))
+                }
+                className="auth-input"
+                placeholder="gsrinivas@mylastech.com"
+              />
+            </div>
+          </div>
 
-  {/* Languages */}
-  <div className="auth-group mt-3">
-    <label className="auth-label">Languages Spoken</label>
+          {/* Languages */}
+          <div className="auth-group mt-3">
+            <label className="auth-label">Languages Spoken</label>
 
-    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-      {["English", "Spanish", "Hindi", "French"].map((lang) => (
-        <button
-          type="button"
-          key={lang}
-          onClick={() => toggleLanguage(lang)}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "999px",
-            border: "1px solid #e5e7eb",
-            background: formData.additionalInfo.languages.includes(lang)
-              ? "#e0f2fe"
-              : "#fff",
-            color: "#0284c7",
-            fontSize: "12px",
-            cursor: "pointer",
-          }}
-        >
-          {lang.toUpperCase()}
-        </button>
-      ))}
-    </div>
-  </div>
-</div>
+            <select
+              className="auth-input"
+              onChange={(e) => {
+                const value = e.target.value;
+                if (!value) return;
+
+                setFormData((prev) => ({
+                  ...prev,
+                  additionalInfo: {
+                    ...prev.additionalInfo,
+                    languages: prev.additionalInfo.languages.includes(value)
+                      ? prev.additionalInfo.languages
+                      : [...prev.additionalInfo.languages, value],
+                  },
+                }));
+
+                e.target.value = "";
+              }}
+              style={{width: "49%", cursor: "pointer"}}
+            >
+              <option value="">Select language</option>
+              {["English", "Spanish", "Hindi", "French"].map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang}
+                </option>
+              ))}
+            </select>
+
+            {/* Selected languages */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+              {formData.additionalInfo.languages.map((lang) => (
+                <span
+                  key={lang}
+                  style={{
+                    background: "#e0f2fe",
+                    color: "#0284c7",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      additionalInfo: {
+                        ...prev.additionalInfo,
+                        languages: prev.additionalInfo.languages.filter((l) => l !== lang),
+                      },
+                    }))
+                  }
+                >
+                  {lang} ✕
+                </span>
+              ))}
+            </div>
+          </div>
+
+        </div>
 
         {/* Action Buttons */}
         <div className="form-actions">

@@ -182,13 +182,14 @@ const TalentFilters = ({ onApplyFilters }) => {
   const handleToggle = (field) =>
     setFilterInputs((prev) => ({ ...prev, [field]: !prev[field] }));
 
-  const toggleJobSelection = (jobId) => {
+   const toggleJobSelection = (jobId) => {
     setFilterInputs((prev) => {
-      const current = prev.selectedJobs;
-      const newJobs = current.includes(jobId)
-        ? current.filter((id) => id !== jobId)
-        : [...current, jobId];
-      return { ...prev, selectedJobs: newJobs };
+      const current = prev.selectedJobs[0];
+
+      return {
+        ...prev,
+        selectedJobs: current === jobId ? [] : [jobId],
+      };
     });
   };
 
