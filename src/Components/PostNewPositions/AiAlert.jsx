@@ -2,6 +2,7 @@ import React from "react";
 import { FiX, FiCheck, FiFileText, FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
+
 /**
  * Error Modal - Replicates the red "Submission Error" design
  */

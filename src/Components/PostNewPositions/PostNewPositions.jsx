@@ -11,6 +11,7 @@ import '../Dashboard/Dashboard.css';
 import '../Auth/Auth.css';
 import './PostNewPositions.css'; // This will hold the modal styles
 
+
 const PostNewPositions = () => {
   const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
@@ -84,35 +85,7 @@ const PostNewPositions = () => {
         </p>
       </div>
 
-      {/* Stepper */}
-      <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '32px 0 48px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', maxWidth: '600px', width: '100%' }}>
-          {[
-            { num: 1, label: 'Basic Info', active: true },
-            { num: 2, label: 'Details', active: false },
-            { num: 3, label: 'Requirements', active: false },
-            { num: 4, label: 'Review', active: false }
-          ].map((step, idx) => (
-            <React.Fragment key={step.num}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{
-                  width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: step.active ? '#1e293b' : '#e2e8f0',
-                  color: step.active ? '#fff' : '#64748b',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '12px', fontWeight: '600'
-                }}>
-                  {step.num}
-                </div>
-                <span style={{ fontSize: '14px', fontWeight: '500', color: step.active ? '#1e293b' : '#64748b' }}>
-                  {step.label}
-                </span>
-              </div>
-              {idx < 3 && <div style={{ flex: 1, height: '1px', backgroundColor: '#e2e8f0' }} />}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
+      
 
       <div className="dashboard-layout">
 
@@ -193,12 +166,6 @@ const PostNewPositions = () => {
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description</label>
-                  {/* <button
-                    className="btn-ai"
-                  >
-                    <BsLightningChargeFill />
-                  </button> */}
-
                   <button className="ai-pill-btn">
                     <span className="ai-pill-icon">✦</span>
                     <span className="ai-pill-text">AI</span>
@@ -278,16 +245,10 @@ const PostNewPositions = () => {
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Additional Requirements</label>
-                  {/* <button
-                    className="btn-ai"
-                  >
-                    <BsLightningChargeFill />
-                  </button> */}
                   <button className="ai-pill-btn">
                     <span className="ai-pill-icon">✦</span>
                     <span className="ai-pill-text">AI</span>
                   </button>
-
                 </div>
                 <textarea className="auth-input" rows={4} placeholder="Any other requirements..." name="additionalReqs" value={formData.additionalReqs} onChange={handleInputChange} />
               </div>
