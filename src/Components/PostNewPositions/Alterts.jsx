@@ -70,7 +70,7 @@ export const SuccessModal = ({ onClose }) => {
                         <h3 className="alert-title mt-0 mb-0">Success!</h3>
                     </div>
 
-                    <p className="alert-message mb-2">
+                    <p className="alert-message mb-3">
                         The Job has been posted sucessfully.
                     </p>
 
@@ -81,6 +81,13 @@ export const SuccessModal = ({ onClose }) => {
                             onClick={() => navigate("/user/user-talentpool")}
                         >
                             Find Talent
+                        </button>
+
+                        <button
+                            className="btn-primary w-100"
+                            onClick={() => navigate("/user/user-dashboard")}
+                        >
+                            Go to Dashboard
                         </button>
                     </div>
                 </div>
