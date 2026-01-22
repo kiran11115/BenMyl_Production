@@ -107,7 +107,9 @@ const UserTalentProfiles = () => {
           experience: item.noofexperience
             ? `${item.noofexperience} years exp`
             : "0 years exp",
-          skills: item.perfWorkTime ? [item.perfWorkTime] : [],
+          skills: item.skills
+  ? item.skills.split(",").map(skill => skill.trim())
+  : [],
           location: item.city || "NA",
           availability: item.status ? [item.status] : [],
           status: item.status?.toUpperCase() || "NEW",

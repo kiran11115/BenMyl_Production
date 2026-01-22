@@ -35,7 +35,7 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
 
         {/* --- Skills Tags --- */}
         <div className="v-tags">
-          {candidate.skills.slice(0, 3).map((s) => (
+          {candidate.skills.map((s) => (
             <span className="status-tag status-progress" key={s}>
               {s}
             </span>
