@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FiGrid, FiList, FiSearch, FiChevronDown } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
@@ -7,150 +7,7 @@ import { useNavigate } from "react-router-dom";
 import UserTalentGrid from "./UserTalentGrid";
 import UserTalentTable from "./UserTalentTable";
 import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
-
-// --- DATA SOURCE ---
-const candidatesMock = [
-  {
-    id: 101,
-    name: "Sarah Johnson",
-    verified: true,
-    email: "sarah.j@techsolutions.com",
-    role: "Senior Developer",
-    experience: "8 years exp",
-    skills: ["React", "Node.js", "AWS"],
-    location: "San Francisco, CA",
-    availability: ["Available Now", "Remote"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 102,
-    name: "Michael Chen",
-    verified: false,
-    email: "m.chen@digitaldyn.net",
-    role: "Project Manager",
-    experience: "12 years exp",
-    skills: ["Agile", "Jira", "Scrum"],
-    location: "New York, NY",
-    availability: ["2 Weeks Notice"],
-    status: "IN REVIEW",
-    rating: 4.7,
-    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 103,
-    name: "Emily Davis",
-    verified: true,
-    email: "edavis.dev@gmail.com",
-    role: "DevOps Engineer",
-    experience: "5 years exp",
-    skills: ["Docker", "K8s", "CI/CD"],
-    location: "Austin, TX",
-    availability: ["Available Now"],
-    status: "INTERVIEWING",
-    rating: 4.8,
-    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 104,
-    name: "David Lee",
-    verified: true,
-    email: "david.lee88@outlook.com",
-    role: "Backend Developer",
-    experience: "6 years exp",
-    skills: ["Python", "Django", "SQL"],
-    location: "Chicago, IL",
-    availability: ["1 Month Notice", "Remote"],
-    status: "INTERVIEWING",
-    rating: 4.6,
-    avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 105,
-    name: "Maria Garcia",
-    verified: false,
-    email: "maria.g.qa@testlab.io",
-    role: "QA Engineer",
-    experience: "4 years exp",
-    skills: ["Selenium", "Cypress"],
-    location: "Miami, FL",
-    availability: ["Available Now"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    avatar: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 106,
-    name: "James Williams",
-    verified: false,
-    email: "jwilliams@dataminds.com",
-    role: "Data Scientist",
-    experience: "7 years exp",
-    skills: ["Python", "TF", "SQL"],
-    location: "Seattle, WA",
-    availability: ["Remote Only"],
-    status: "IN REVIEW",
-    rating: 5.0,
-    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 107,
-    name: "Olivia Martinez",
-    verified: true,
-    email: "omartinez@product.co",
-    role: "Product Owner",
-    experience: "9 years exp",
-    skills: ["Strategy", "Agile"],
-    location: "Denver, CO",
-    availability: ["Available Now"],
-    status: "OFFER EXTENDED",
-    rating: 4.8,
-    avatar: "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 108,
-    name: "John Smith",
-    verified: false,
-    email: "john.smith.ui@design.net",
-    role: "UI/UX Designer",
-    experience: "3 years exp",
-    skills: ["Figma", "Sketch"],
-    location: "Boston, MA",
-    availability: ["Part-time"],
-    status: "NEW",
-    rating: 4.5,
-    avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 109,
-    name: "William Rodriguez",
-    verified: false,
-    email: "will.rod@sysops.org",
-    role: "SysAdmin",
-    experience: "15 years exp",
-    skills: ["Linux", "Bash", "Net"],
-    location: "Houston, TX",
-    availability: ["Available Now"],
-    status: "REJECTED",
-    rating: 4.4,
-    avatar: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 110,
-    name: "Ava Wilson",
-    verified: true,
-    email: "ava.w@frontend.dev",
-    role: "Jr. Frontend Dev",
-    experience: "1 year exp",
-    skills: ["HTML", "CSS", "JS"],
-    location: "Portland, OR",
-    availability: ["Entry Level"],
-    status: "NEW",
-    rating: 4.7,
-    avatar: "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-];
+import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 // --- SORTING FUNCTION ---
 const sortCandidates = (candidates, sortBy) => {
@@ -195,36 +52,134 @@ const sortCandidates = (candidates, sortBy) => {
 // --- MAIN COMPONENT ---
 const UserTalentProfiles = () => {
   const navigate = useNavigate();
+
+  const PAGE_SIZE = 50;
+
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("recommended");
 
-  // New State for Selection & Modal
+  const [candidatesMock, setCandidatesMock] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
-  // Memoized sorted candidates
+  const [getMyBench, { isLoading }] = useGetMyBenchMutation();
+  const hasUserScrolled = useRef(false);
+
+  useEffect(() => {
+    setCandidatesMock([]);
+    setPageNumber(1);
+    setHasMore(true);
+    hasUserScrolled.current = false;
+  }, []);
+
+  /* ================= FETCH ================= */
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchBench = async () => {
+      try {
+        const payload = {
+          companyid: Number(localStorage.getItem("logincompanyid")),
+          pageNumber,
+          pageSize: PAGE_SIZE,
+          filters: [],
+        };
+
+        const res = await getMyBench(payload).unwrap();
+
+        if (!isMounted) return;
+
+        const list =
+          Array.isArray(res) ? res :
+          Array.isArray(res?.data) ? res.data :
+          Array.isArray(res?.data?.records) ? res.data.records :
+          [];
+
+        const mappedData = list.map((item) => ({
+          id: item.employeeID,
+          name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
+          verified: item.status === "Available",
+          email: item.emailaddress,
+          role: item.role,
+          experience: item.noofexperience
+            ? `${item.noofexperience} years exp`
+            : "0 years exp",
+          skills: item.perfWorkTime ? [item.perfWorkTime] : [],
+          location: item.city || "NA",
+          availability: item.status ? [item.status] : [],
+          status: item.status?.toUpperCase() || "NEW",
+          rating: 4.5,
+          avatar:
+            item.profilepicture ||
+            "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg",
+        }));
+
+        // ✅ Page 1 replace, Page 2+ append
+        setCandidatesMock((prev) =>
+          pageNumber === 1 ? mappedData : [...prev, ...mappedData]
+        );
+
+        // ✅ Stop further calls
+        if (mappedData.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+      } catch (err) {
+        console.error("GET MY BENCH FAILED 👉", err);
+      }
+    };
+
+    if (hasMore) fetchBench();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pageNumber, getMyBench, hasMore]);
+
+  /* ================= WINDOW SCROLL ================= */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!hasMore || isLoading) return;
+
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+
+      if (
+        scrollTop + windowHeight >= fullHeight - 100 &&
+        candidatesMock.length >= PAGE_SIZE
+      ) {
+        setPageNumber((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore, isLoading, candidatesMock.length]);
+
+  /* ================= MEMOS ================= */
   const sortedCandidates = useMemo(() => {
     return sortCandidates(candidatesMock, sortBy);
-  }, [sortBy]);
+  }, [candidatesMock, sortBy]);
 
-  // Derive selected objects for the modal
   const selectedCandidates = useMemo(() => {
-    return candidatesMock.filter(c => selectedIds.has(c.id));
-  }, [selectedIds]);
+    return candidatesMock.filter((c) => selectedIds.has(c.id));
+  }, [selectedIds, candidatesMock]);
 
+  /* ================= HANDLERS ================= */
   const handleProfileClick = () => {
     navigate("/user/talent-profile");
   };
 
-  // --- Selection Handlers ---
   const toggleSelection = (id) => {
-    const newSelection = new Set(selectedIds);
-    if (newSelection.has(id)) {
-      newSelection.delete(id);
-    } else {
-      newSelection.add(id);
-    }
-    setSelectedIds(newSelection);
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   const clearSelection = () => {
@@ -348,6 +303,32 @@ const UserTalentProfiles = () => {
 
           <div className="d-flex gap-3">
             <section className="vs-results">
+              {isLoading && (
+    <div
+      style={{
+        padding: "40px",
+        textAlign: "center",
+        color: "#64748b",
+        fontSize: "14px",
+      }}
+    >
+      Loading Talent Profiles...
+    </div>
+  )}
+
+  {/* ❌ No Data */}
+  {!isLoading && sortedCandidates.length === 0 && (
+    <div
+      style={{
+        padding: "40px",
+        textAlign: "center",
+        color: "#64748b",
+        fontSize: "14px",
+      }}
+    >
+      No Talent Profiles found
+    </div>
+  )}
               {viewMode === "grid" ? (
                 <UserTalentGrid
                   candidates={sortedCandidates}

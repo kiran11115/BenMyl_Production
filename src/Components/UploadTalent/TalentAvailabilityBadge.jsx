@@ -1,7 +1,7 @@
 import React from "react";
 
 const TalentAvailabilityBadge = ({ text }) => {
-  let style = { bg: "#f3f4f6", text: "#374151" }; // Default Gray
+  let style = { bg: "#dcf8d3", text: "#3dcf51" }; // Default Gray
 
   if (text.includes("Available Now")) {
     style = { bg: "#dcfce7", text: "#166534" }; // Green
@@ -24,6 +24,7 @@ const TalentAvailabilityBadge = ({ text }) => {
         fontWeight: "600",
         whiteSpace: "nowrap",
         display: "inline-block",
+        width:"fit-content",
         marginRight: "4px",
         marginBottom: "2px",
       }}

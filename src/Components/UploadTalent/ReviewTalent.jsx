@@ -3,7 +3,7 @@ import { Edit2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
-import { useApprovedEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useApprovedEmployeeMutation, useDraftProfileEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
@@ -173,6 +173,8 @@ const ReviewTalent = () => {
   const { data, isLoading } = useGetEmployeeResumeQuery(employeeID);
   const [approveEmployee, { isLoading: isSaving }] =
   useApprovedEmployeeMutation();
+  const [draftProfile, { isLoading: draft }] =
+  useDraftProfileEmployeeMutation();
     const [isReviewed, setIsReviewed] = useState(false);
 
     // SINGLE OPEN ACCORDION
@@ -297,6 +299,124 @@ formData.append(
 
   try {
     await approveEmployee(formData).unwrap();
+    navigate("/user/user-upload-talent");
+  } catch (err) {
+    console.error("Approve failed", err);
+    alert("Failed to save talent");
+  }
+};
+
+const handleDraftTalent = async () => {
+  if (!isReviewed) return;
+
+  const formData = new FormData();
+
+/* ===== BASIC INFO ===== */
+formData.append("EmployeeID", data.employeeID);
+formData.append("CompanyID", data.companyID);
+formData.append("BranchID", data.branchID ?? 0);
+
+formData.append("FirstName", talent.basicInfo.firstName);
+formData.append("LastName", talent.basicInfo.lastName);
+formData.append("Title", talent.basicInfo.position);
+formData.append("PhoneNo", talent.basicInfo.phone);
+formData.append("EmailAddress", talent.basicInfo.email);
+
+formData.append("ProfilePicture", ""); // null not allowed in FormData
+formData.append("ResumeFilePath", data.resumeFilePath ?? "");
+
+/* ===== PERSONAL INFO ===== */
+formData.append("DOB", talent.personalInfo.dob ?? "");
+formData.append("Gender", talent.personalInfo.gender ?? "");
+formData.append("EmergencyContactNumber", talent.personalInfo.emergency ?? "");
+
+formData.append("Country", talent.personalInfo.country ?? "");
+formData.append("State", talent.personalInfo.state ?? "");
+formData.append("City", talent.personalInfo.city ?? "");
+formData.append("Address", talent.personalInfo.address ?? "");
+formData.append("Bio", talent.personalInfo.bio ?? "");
+
+/* ===== SKILLS ===== */
+formData.append("Skills", talent.basicInfo.skills.join(","));
+
+/* ===== META ===== */
+formData.append("InsertBy", data.uploadedBy ?? "");
+formData.append("NoofExperience", data.noofExperience ?? 0);
+formData.append("EmpDetailID", 0);
+formData.append("EmpID", 0);
+formData.append("EmployeeCode", data.employeeCode ?? "");
+formData.append("department", data.department ?? "");
+formData.append("Manager", data.manager ?? "");
+formData.append("Supervisor", "");
+formData.append("startdate", data.startDate ?? "");
+formData.append("lastdate", data.endDate ?? "");
+formData.append("Status", "Approved");
+
+/* ===== SALARY ===== */
+formData.append("Salary", data.salary ?? "");
+formData.append("PayFrequency", data.salaryFrequency ?? "");
+
+/* ===== PREFERENCES ===== */
+formData.append("PreferedLanguage", data.prefLanguage ?? "");
+formData.append("Prefereddistancefromhome", data.prefDistHome ?? "");
+formData.append("OtherPreferedLocations", data.otherPerfLocation ?? "");
+formData.append("PreferedWorkTimings", data.perfWorkTime ?? "");
+
+/* ===== WORK EXPERIENCES (STRING) ===== */
+formData.append(
+  "workexperiences",
+  JSON.stringify([
+    {
+      ExperienceID: 0,
+      EmployeeID: 0,
+      CompanyName: "mylas tech",
+      Position: "developer",
+      StartDate: "1-12-2024",
+      EndDate: "1-12-2024",
+      Skills: ["sdds"],
+      Description: "dasdasd1",
+    },
+  ])
+);
+
+
+/* ===== PROJECTS (STRING — CRITICAL) ===== */
+formData.append(
+  "project",
+  JSON.stringify([
+    {
+      ExperienceID: 0,
+      EmployeeID: 0,
+      projectName: "mylas tech",
+      Role: "developer",
+      StartDate: "1-12-2024",
+      EndDate: "1-12-2024",
+      Skills: ["sdd"],
+      Description: "Description1",
+    },
+  ])
+);
+
+/* ===== EDUCATION (STRING) ===== */
+formData.append(
+  "employee_Heighers",
+  JSON.stringify([
+    {
+      _EductionhigherId: 0,
+      EmployeeID: 0,
+      HighestQualification: "B.Tech",
+      University: "JNTU Hyderabad",
+      Fieldofstudy: "Computer Science",
+      Certifications: "Azure Fundamentals",
+      Percentage: "75",
+      StartDate: "2016-06-01",
+      EndDate: "2020-05-30",
+    },
+  ])
+);
+
+  try {
+    await draftProfile(formData).unwrap();
     navigate("/user/user-upload-talent");
   } catch (err) {
     console.error("Approve failed", err);
@@ -640,7 +760,7 @@ formData.append(
                             <span style={{ fontSize: 14, fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
                         </div>
                         <div className="d-flex gap-3 justify-content-end">
-                            <button className="btn-secondary">Save as Draft</button>
+                            <button className="btn-secondary" onClick={handleDraftTalent}>Save as Draft</button>
                             <button className="btn-primary" disabled={!isReviewed} onClick={handleSaveTalent}>Save Talent</button>
                         </div>
                     </div>

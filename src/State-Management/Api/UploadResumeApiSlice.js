@@ -23,7 +23,7 @@ const UploadResumeApiSlice = apiSlice.injectEndpoints({
         url: `/api/Employee/Get_employeeprofile_id?employeeID=${employeeID}`,
         method: "GET",
       }),
-      
+      providesTags: ["ResumeUpdate"],
     }),
 
     approvedEmployee: builder.mutation({
@@ -34,7 +34,24 @@ const UploadResumeApiSlice = apiSlice.injectEndpoints({
   }),
 }),
 
+draftProfileEmployee: builder.mutation({
+  query: (formData) => ({
+    url: "/api/uatcompany/draftprofilizer_update",
+    method: "POST",
+    body: formData,
+  }),
+  invalidatesTags: ["ResumeUpdate"],
+}),
+
+getMyBench: builder.mutation({
+      query: (body) => ({
+        url: "api/ProfileBuilder/getMyBench",
+        method: "POST",
+        body,
+      }),
+    }),
+
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation  } = UploadResumeApiSlice;
