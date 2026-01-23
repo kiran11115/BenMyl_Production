@@ -33,7 +33,7 @@ export const USER_CREATED_JOBS = [
   },
   {
     id: "job3",
-    title: "AWS Cloud Infrastructure",
+    title: "Marketing Executive",
     company: "TechCorp Inc.",
     location: "Remote",
     budget: "$70-110/hour",
@@ -46,7 +46,7 @@ export const USER_CREATED_JOBS = [
   },
   {
     id: "job4",
-    title: "Full Stack Web App",
+    title: "Full Stack Developer",
     company: "TechCorp Inc.",
     location: "Hybrid",
     budget: "$70-120/hour",
@@ -176,6 +176,14 @@ const TalentFilters = ({ onApplyFilters }) => {
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
   const [isJobDropdownOpen, setIsJobDropdownOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const selectJob = (job) => {
+    setSelectedJob(job);
+    setOpen(false);
+    onApplyFilters(job); // 🔥 send job to parent
+  };
 
   const handleInputChange = (field, value) =>
     setFilterInputs((prev) => ({ ...prev, [field]: value }));
@@ -207,9 +215,11 @@ const TalentFilters = ({ onApplyFilters }) => {
     }));
   };
 
-  const applyFilters = () => {
-    if (onApplyFilters) onApplyFilters(filterInputs);
-  };
+const applyFilters = () => {
+  const jobId = filterInputs.selectedJobs[0] || null;
+  onApplyFilters(jobId);
+};
+
 
   const resetFilters = () => {
     setFilterInputs(initialFilters);

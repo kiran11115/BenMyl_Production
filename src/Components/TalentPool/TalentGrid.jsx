@@ -8,6 +8,7 @@ const TalentGridView = ({
   activeJobId,
   activeJobColor,
   shortlistedMap,
+  hasMore
 }) => {
   const navigate = useNavigate();
 
@@ -18,9 +19,15 @@ const TalentGridView = ({
       {/* Matching profiles count */}
       <div className="grid-meta">
         <div className="grid-count">
-          {matchingCount} matching {matchingCount === 1 ? "profile" : "profiles"}
+         matching {matchingCount === 1 ? "profile" : "profiles"}
         </div>
       </div>
+
+      {!hasMore && (
+  <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
+    No more candidates to Show
+  </div>
+)}
 
       <div className="jobs-grid">
         {candidates.map((candidate) => {
@@ -74,14 +81,14 @@ const TalentGridView = ({
 
               {/* Skills Tags */}
               <div className="skills-row">
-                {candidate.skills.slice(0, 4).map((skill) => (
+                {candidate.skills.slice(0, 3).map((skill) => (
                   <span key={skill} className="status-tag status-progress">
                     {skill}
                   </span>
                 ))}
-                {candidate.skills.length > 4 && (
+                {candidate.skills.length > 3 && (
                   <span className="skill-tag count">
-                    +{candidate.skills.length - 4}
+                    +{candidate.skills.length - 3}
                   </span>
                 )}
               </div>

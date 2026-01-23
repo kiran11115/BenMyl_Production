@@ -90,7 +90,7 @@ const CandidateRow = memo(({ candidate, onShortlist, isShortlisted, activeJobId,
 ));
 
 // --- Main Component ---
-const TalentTableView = ({ candidates, onShortlist, activeJobId, activeJobColor, shortlistedMap }) => {
+const TalentTableView = ({ candidates, onShortlist, activeJobId, activeJobColor, shortlistedMap,hasMore }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
 
   // Universal Sorting Logic
@@ -148,6 +148,21 @@ const TalentTableView = ({ candidates, onShortlist, activeJobId, activeJobColor,
           </tr>
         </thead>
         <tbody>
+          {!hasMore && (
+    <tr>
+      <td
+        colSpan={100}
+        style={{
+          textAlign: "center",
+          padding: "16px",
+          color: "#94a3b8",
+          fontSize: "14px",
+        }}
+      >
+        No more candidates to show
+      </td>
+    </tr>
+  )}
           {sortedCandidates.map((c) => {
             const isShortlisted = activeJobId && shortlistedMap[activeJobId]?.find(item => item.id === c.id);
             return (

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   FiGrid,
   FiList,
@@ -17,160 +17,7 @@ import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
 import TalentFilters, { USER_CREATED_JOBS } from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
-
-// --- DATA SOURCE (With Hourly Rates for Sorting) ---
-const candidatesMock = [
-  {
-    id: 101,
-    name: "Sarah Johnson",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Senior Developer",
-    experience: "8 years exp",
-    skills: ["React", "Node.js", "AWS"],
-    location: "San Francisco, CA",
-    availability: ["Available Now", "Remote"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    hourlyRate: 85,
-    avatar:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 102,
-    name: "Michael Chen",
-    verified: "",
-    role: "Project Manager",
-    experience: "12 years exp",
-    skills: ["Agile", "Jira", "Scrum"],
-    location: "New York, NY",
-    availability: ["2 Weeks Notice"],
-    status: "IN REVIEW",
-    rating: 4.7,
-    hourlyRate: 95,
-    avatar:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 103,
-    name: "Emily Davis",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "DevOps Engineer",
-    experience: "5 years exp",
-    skills: ["Docker", "K8s", "CI/CD"],
-    location: "Austin, TX",
-    availability: ["Available Now"],
-    status: "INTERVIEWING",
-    rating: 4.8,
-    hourlyRate: 70,
-    avatar:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 104,
-    name: "David Lee",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Backend Developer",
-    experience: "6 years exp",
-    skills: ["Python", "Django", "SQL"],
-    location: "Chicago, IL",
-    availability: ["1 Month Notice", "Remote"],
-    status: "INTERVIEWING",
-    rating: 4.6,
-    hourlyRate: 65,
-    avatar:
-      "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 105,
-    name: "Maria Garcia",
-    verified: "",
-    role: "QA Engineer",
-    experience: "4 years exp",
-    skills: ["Selenium", "Cypress"],
-    location: "Miami, FL",
-    availability: ["Available Now"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    hourlyRate: 50,
-    avatar:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 106,
-    name: "James Williams",
-    verified: "",
-    role: "Data Scientist",
-    experience: "7 years exp",
-    skills: ["Python", "TF", "SQL"],
-    location: "Seattle, WA",
-    availability: ["Remote Only"],
-    status: "IN REVIEW",
-    rating: 5.0,
-    hourlyRate: 110,
-    avatar:
-      "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 107,
-    name: "Olivia Martinez",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Product Owner",
-    experience: "9 years exp",
-    skills: ["Strategy", "Agile"],
-    location: "Denver, CO",
-    availability: ["Available Now"],
-    status: "OFFER EXTENDED",
-    rating: 4.8,
-    hourlyRate: 90,
-    avatar:
-      "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 108,
-    name: "John Smith",
-    verified: "",
-    role: "UI/UX Designer",
-    experience: "3 years exp",
-    skills: ["Figma", "Sketch"],
-    location: "Boston, MA",
-    availability: ["Part-time"],
-    status: "NEW",
-    rating: 4.5,
-    hourlyRate: 45,
-    avatar:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 109,
-    name: "William Rodriguez",
-    verified: "",
-    role: "SysAdmin",
-    experience: "15 years exp",
-    skills: ["Linux", "Bash", "Net"],
-    location: "Houston, TX",
-    availability: ["Available Now"],
-    status: "REJECTED",
-    rating: 4.4,
-    hourlyRate: 80,
-    avatar:
-      "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 110,
-    name: "Ava Wilson",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Jr. Frontend Dev",
-    experience: "1 year exp",
-    skills: ["HTML", "CSS", "JS"],
-    location: "Portland, OR",
-    availability: ["Entry Level"],
-    status: "NEW",
-    rating: 4.7,
-    hourlyRate: 30,
-    avatar:
-      "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-];
+import { useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -408,22 +255,122 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
 const TalentPool = () => {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState("grid");
-  const candidates = useMemo(() => candidatesMock, []);
-  const [activeFilters, setActiveFilters] = useState(null);
-
+  const resultsRef = useRef(null);
   const [shortlistedMap, setShortlistedMap] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
-
-  const handleApplyFilters = (newFilters) => setActiveFilters(newFilters);
+  const [selectedJobId, setSelectedJobId] = useState(null);
   const handleProfileClick = () => navigate("/user/user-talent-profile");
+  const [pageNumber, setPageNumber] = useState(1);
+const [hasMore, setHasMore] = useState(true);
+const [allCandidates, setAllCandidates] = useState([]);
+    const activeJobId = selectedJobId;
 
-  const activeJobId = activeFilters?.selectedJobs?.[0] || null;
+  const [getFindTalent, { data, isLoading }] =
+    useTalentPoolMutation();
+
+
+
+  const fetchTalents = async () => {
+  if (!hasMore) return;
+
+  const payload = {
+    companyid: 217,
+    pageNumber,
+    pageSize: 50,
+    filters: activeJob
+      ? [
+          {
+            filterName: "Title",
+            filterOperator: "Equals",
+            filterValue: [activeJob.title],
+          },
+        ]
+      : [],
+  };
+
+  const res = await getFindTalent(payload).unwrap();
+
+  // 🔥 API returns array directly
+  if (!Array.isArray(res) || res.length === 0) {
+    setHasMore(false);
+    return;
+  }
+
+  setAllCandidates((prev) =>
+    pageNumber === 1 ? res : [...prev, ...res]
+  );
+};
+
+
+  const candidates = useMemo(() => {
+  return allCandidates.map((item) => ({
+    id: item.employeeID,
+
+    name: `${item.firstName} ${item.lastName}`,
+
+    role: item.title || "—",
+
+    experience: `${item.noofExperience || 0} yrs`,
+
+    location: item.city || "—",
+
+    skills: item.skills
+      ? item.skills.split(",").map((s) => s.trim())
+      : [],
+
+    avatar:
+      item.profilePicture ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        item.firstName
+      )}`,
+
+    rating: 4.5,
+
+    availability: item.status ? [item.status] : ["Available"],
+
+    verified: <GiCheckMark size={14} color="#059669" />,
+
+    hourlyRate: item.salary || 0,
+  }));
+}, [allCandidates]);
+
+
+
+useEffect(() => {
+  setPageNumber(1);
+  setHasMore(true);
+  setAllCandidates([]);
+}, [activeJobId]);
+
+  useEffect(() => {
+  fetchTalents();
+}, [pageNumber, activeJobId]);
+
+useEffect(() => {
+  const el = resultsRef.current;
+  if (!el) return;
+
+  const onScroll = () => {
+    if (
+      el.scrollTop + el.clientHeight >=
+        el.scrollHeight - 50 &&
+      hasMore &&
+      !isLoading
+    ) {
+      setPageNumber((prev) => prev + 1);
+    }
+  };
+
+  el.addEventListener("scroll", onScroll);
+  return () => el.removeEventListener("scroll", onScroll);
+}, [hasMore, isLoading]);
+
 
   const activeJob = useMemo(() => {
-    if (!activeJobId) return null;
-    return USER_CREATED_JOBS.find((j) => j.id === activeJobId) || null;
-  }, [activeJobId]);
+  if (!selectedJobId) return null;
+  return USER_CREATED_JOBS.find((j) => j.id === selectedJobId) || null;
+}, [selectedJobId]);
 
   const activeJobColor = activeJob?.color || "#4f46e5";
 
@@ -544,16 +491,31 @@ const TalentPool = () => {
         </div>
 
         {/* Layout */}
-        <div className="d-flex gap-3">
-          <aside>
-            <TalentFilters onApplyFilters={handleApplyFilters} />
+        <div className="d-flex gap-3"  style={{
+    display: "flex",
+    gap: "16px",
+    height: "calc(100vh - 10px)", // SAME HEIGHT for both
+  }}>
+          <aside className="hide-scrollbar" style={{
+      overflowY: "auto",
+    }}>
+            <TalentFilters onApplyFilters={setSelectedJobId}  />
           </aside>
 
-          <section className="vs-results">
+          <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
+    height: "calc(100vh - 0px)", // adjust if header height differs
+    overflowY: "auto",
+    overflowX: "hidden",
+  }}>
             {/* ALWAYS render overview card (shows empty state if no job) */}
             <div style={{ marginBottom: 16 }}>
               <JobOverviewCard job={activeJob} />
             </div>
+            {isLoading && (
+  <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
+    Loading candidates...
+  </div>
+)}
 
             {viewMode === "grid" ? (
               <TalentGridView
@@ -563,6 +525,7 @@ const TalentPool = () => {
                 activeJobColor={activeJobColor}
                 shortlistedMap={shortlistedMap}
                 onProfileClick={handleProfileClick}
+                hasMore={hasMore}
               />
             ) : (
               <TalentTableView
@@ -571,6 +534,7 @@ const TalentPool = () => {
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}
                 shortlistedMap={shortlistedMap}
+                hasMore={hasMore}
               />
             )}
           </section>
@@ -615,6 +579,20 @@ const TalentPool = () => {
           color: #64748b;
           pointer-events: none;
         }
+        .hide-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* IE / old Edge */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+}
       `}</style>
     </div>
   );
