@@ -213,6 +213,9 @@ const TalentFilters = ({ onApplyFilters }) => {
       ...prev,
       selectedJobs: prev.selectedJobs.filter((id) => id !== jobId),
     }));
+    if (onApplyFilters) {
+    onApplyFilters(null);
+  }
   };
 
 const applyFilters = () => {

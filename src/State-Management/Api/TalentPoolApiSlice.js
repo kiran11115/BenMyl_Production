@@ -9,7 +9,15 @@ const TalentPoolApiSlice = apiSlice.injectEndpoints({
         body: payload,
       }),
     }),
+
+    getEmployeeTalentProfile: builder.query({
+  query: (employeeId) => ({
+    url: `/api/Employee/GetApprovalEmployeeby_id?employeeid=${employeeId}`,
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
-export const { useTalentPoolMutation } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery } = TalentPoolApiSlice;

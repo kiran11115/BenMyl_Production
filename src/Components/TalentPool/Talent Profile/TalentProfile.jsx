@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./TalentProfile.css";
 import {
   FiMapPin,
@@ -15,83 +15,55 @@ import {
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
 import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const employeeId = state?.employeeID;
+  console.log("EmpId:",employeeId)
 
-  const profileData = {
-    name: "Sarah Anderson",
-    role: "Senior UX Designer",
-    location: "San Francisco, CA",
-    experience: "8+ years experience",
-    status: "Available for hire",
-    summary:
-      "Experienced UX Designer with 8+ years of creating user-centered digital experiences for various industries. Specialized in product design, user research, and design systems. Currently leading design initiatives at TechCorp, focusing on enterprise software solutions.",
-    stats: [
+const [triggerGetProfile, { data: employee, isLoading, isError }] =
+  useLazyGetEmployeeTalentProfileQuery();
+
+  useEffect(() => {
+  if (employeeId) {
+    triggerGetProfile(employeeId);
+  }
+}, [employeeId, triggerGetProfile]);
+
+ const profileData = {
+  name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`,
+  role: employee?.title ?? "—",
+  location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`,
+  experience: `${employee?.noofExperience || 0} yrs experience`,
+  status: employee?.status ?? "—",
+  summary: employee?.bio ?? "",
+  stats: [
       { label: "Projects Completed", value: "150+" },
       { label: "Client Satisfaction", value: "98%" },
     ],
-    skills: [
-      "UI/UX Design",
-      "User Research",
-      "Figma",
-      "Adobe XD",
-      "Sketch",
-      "Prototyping",
-      "Design Systems",
-      "Wireframing",
-      "User Testing",
-      "Information Architecture",
-      "Design Thinking",
-      "Team Leadership",
-    ],
-    workExperience: [
-      {
-        role: "Lead UX Designer",
-        company: "TechCorp",
-        period: "2020 - Present",
-        location: "San Francisco, CA",
-        desc: "Leading a team of designers, developing design systems, and managing enterprise projects.",
-      },
-      {
-        role: "Senior UX Designer",
-        company: "Design Studio",
-        period: "2018 - 2020",
-        location: "New York, NY",
-        desc: "Designed user interfaces for various clients in fintech and healthcare sectors.",
-      },
-      {
-        role: "UX Designer",
-        company: "StartupHub",
-        period: "2015 - 2018",
-        location: "Boston, MA",
-        desc: "Created user experiences for early-stage startups and conducted user research.",
-      },
-    ],
-    portfolio: [
-      {
-        title: "E-commerce Dashboard",
-        tags: ["React", "Redux", "TailwindCSS"],
-        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Travel App UI",
-        tags: ["React Native", "Firebase"],
-        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Financial Analytics Platform",
-        tags: ["TypeScript", "D3.js", "Node.js"],
-        img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Health Tracker",
-        tags: ["React", "GraphQL", "MongoDB"],
-        img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
-      },
-    ],
-  };
+  skills: employee?.skills
+    ? employee?.skills.split(",").map((s) => s.trim())
+    : [],
+
+  workExperience: employee?.workexperiences?.map((exp) => ({
+    role: exp.position,
+    company: exp.companyName,
+    period: `${exp.startDate?.slice(0, 10)} - ${
+      exp.endDate ? exp.endDate.slice(0, 10) : "Present"
+    }`,
+    location: employee?.city,
+    desc: exp.description,
+  })) || [],
+
+  education: employee?.employee_Heighers?.map((edu) => ({
+    degree: edu.highestQualification,
+    school: edu.university,
+    year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
+  })) || [],
+};
 
   return (
     <div className="projects-container">
@@ -166,22 +138,28 @@ const TalentProfile = () => {
               <div className="project-card">
                 <h2 className="card-title">Work Experience</h2>
                 <div className="experience-list">
-                  {profileData.workExperience.map((job, idx) => (
-                    <div key={idx} className="experience-item">
-                      <div className="experience-icon-box">
-                        <FiBriefcase />
-                      </div>
-                      <div className="experience-content">
-                        <h3>{job.role}</h3>
-                        <div className="job-meta">
-                          {job.company} • {job.period}
-                        </div>
-                        <div className="job-location">{job.location}</div>
-                        <p className="job-desc">{job.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+  {profileData.workExperience.length > 0 ? (
+    profileData.workExperience.map((job, idx) => (
+      <div key={idx} className="experience-item">
+        <div className="experience-icon-box">
+          <FiBriefcase />
+        </div>
+        <div className="experience-content">
+          <h3>{job.role}</h3>
+          <div className="job-meta">
+            {job.company} • {job.period}
+          </div>
+          <div className="job-location">{job.location}</div>
+          <p className="job-desc">{job.desc}</p>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div style={{ color: "#94a3b8", fontSize: "14px" }}>
+      No work experience added yet
+    </div>
+  )}
+</div>
               </div>
             </div>
             <div className="col-4">
@@ -203,11 +181,11 @@ const TalentProfile = () => {
           </div>
 
           {/* Portfolio */}
-          <div className="portfolio-section">
+          {/* <div className="portfolio-section">
             <div className="portfolio-header">
               <h2 className="card-title">Portfolio</h2>
               <span className="portfolio-count">
-                {profileData.portfolio.length} Projects
+                {profileData.portfolio} Projects
               </span>
             </div>
 
@@ -244,7 +222,7 @@ const TalentProfile = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* === RIGHT SIDE COLUMN === */}
@@ -362,33 +340,36 @@ const TalentProfile = () => {
 
           {/* Education */}
           <div className="table-card sidebar-card">
-            <h3 className="card-title">Education</h3>
-            <div className="education-list">
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">Master in Interaction Design</div>
-                  <div className="edu-school">Carnegie Mellon University</div>
-                  <div className="edu-year">2013 - 2015</div>
-                </div>
-              </div>
+  <h3 className="card-title">Education</h3>
 
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">BA in Graphic Design</div>
-                  <div className="edu-school">
-                    Rhode Island School of Design
-                  </div>
-                  <div className="edu-year">2009 - 2013</div>
-                </div>
-              </div>
-            </div>
+  <div className="education-list">
+    {profileData.education.length > 0 ? (
+      profileData.education.map((edu, idx) => (
+        <div key={idx} className="interview-item-premium">
+          <div className="edu-icon-box">
+            <FiFileText size={14} />
           </div>
+
+          <div>
+            <div className="edu-degree">{edu.degree}</div>
+            <div className="edu-school">{edu.school}</div>
+            <div className="edu-year">{edu.year}</div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div
+        style={{
+          fontSize: "14px",
+          color: "#94a3b8",
+          padding: "8px 0",
+        }}
+      >
+        No education details added yet
+      </div>
+    )}
+  </div>
+</div>
         </div>
       </div>
     </div>

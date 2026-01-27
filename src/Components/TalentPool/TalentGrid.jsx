@@ -97,7 +97,11 @@ const TalentGridView = ({
               {/* Actions */}
               <div className="d-flex gap-3">
                 <button
-                  onClick={() => navigate("/user/user-talent-profile")}
+                  onClick={() =>
+    navigate("/user/user-talent-profile", {
+      state: { employeeID: candidate.id },
+    })
+  }
                   className="btn-primary"
                 >
                   View Profile
