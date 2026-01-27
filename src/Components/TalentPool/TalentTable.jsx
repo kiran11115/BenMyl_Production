@@ -148,7 +148,7 @@ const TalentTableView = ({ candidates, onShortlist, activeJobId, activeJobColor,
           </tr>
         </thead>
         <tbody>
-          {!hasMore && (
+          {!hasMore && candidates.length === 0 && (
     <tr>
       <td
         colSpan={100}

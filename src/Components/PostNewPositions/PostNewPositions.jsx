@@ -121,8 +121,6 @@ const PostNewPositions = () => {
     try {
       await postJob(fd).unwrap();
       alert("Job posted successfully");
-      setShowPreview(false);
-      navigate("/user/user-dashboard");
     } catch (err) {
       console.error(err);
       alert("Failed to post job");

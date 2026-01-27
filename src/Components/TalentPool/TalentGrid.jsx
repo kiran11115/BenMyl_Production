@@ -23,11 +23,12 @@ const TalentGridView = ({
         </div>
       </div>
 
-      {!hasMore && (
+      {!hasMore && candidates.length === 0 && (
   <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
-    No more candidates to Show
+    No candidates to show
   </div>
 )}
+
 
       <div className="jobs-grid">
         {candidates.map((candidate) => {

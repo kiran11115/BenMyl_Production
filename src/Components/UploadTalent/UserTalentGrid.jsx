@@ -2,7 +2,10 @@ import React, { memo } from "react";
 import { FiMapPin } from "react-icons/fi"; 
 import { FaStar } from "react-icons/fa";
 
-const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle }) => (
+const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle }) => {
+  const visibleSkills = candidate.skills.slice(0, 3);
+    const remainingCount = candidate.skills.length - visibleSkills.length;
+  return (
   <div className="project-card justify-content-between h-100">
       <div className="d-flex flex-column gap-3">
         {/* --- Header Section --- */}
@@ -35,12 +38,18 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
 
         {/* --- Skills Tags --- */}
         <div className="v-tags">
-          {candidate.skills.map((s) => (
-            <span className="status-tag status-progress" key={s}>
-              {s}
-            </span>
-          ))}
-        </div>
+  {visibleSkills.map((s) => (
+    <span className="status-tag status-progress" key={s}>
+      {s}
+    </span>
+  ))}
+
+  {remainingCount > 0 && (
+    <span className="status-tag status-muted">
+      +{remainingCount} more
+    </span>
+  )}
+</div>
 
         {/* --- Meta Info --- */}
         <div className="candidate-meta">
@@ -88,11 +97,19 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
             background-color: #059669 !important; /* Darker Green on hover */
             border-color: #059669 !important;
         }
+
+        .status-muted {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 500;
+  cursor: default;
+}
       `}</style>
   </div>
-));
+)});
 
 const UserTalentGrid = ({ candidates, onProfileClick, selectedIds, onToggleSelect }) => {
+  
   return (
     <div className="jobs-grid">
       {candidates.map((c) => (
