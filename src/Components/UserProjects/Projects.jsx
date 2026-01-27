@@ -16,6 +16,7 @@ import StatsRow from "./StatsRow";
 import ProjectsTimeline from "./ProjectsTimeline";
 import ProjectsHeader from "./ProjectsHeader";
 import ProjectsGrid from "./ProjectsGrid";
+import PostedJobs from "./PostedJobs";
 
 // --- Initial Mock Data ---
 const INITIAL_DATA = [
@@ -131,6 +132,7 @@ const TIMELINE_DATA = [
 
 
 export default function Projects() {
+  const [view, setView] = useState("ongoingprojects");
   const [projects, setProjects] = useState(INITIAL_DATA);
   const [activeFilter, setActiveFilter] = useState("All Projects");
 
@@ -216,16 +218,56 @@ export default function Projects() {
     <div className="projects-page-wrapper">
       <div className="projects-container">
         <StatsRow stats={stats} />
-        <ProjectsTimeline data={TIMELINE_DATA} />
-        <ProjectsHeader 
-          activeFilter={activeFilter} 
-          onFilterChange={setActiveFilter}
-        />
-        <ProjectsGrid 
+        {/* <ProjectsTimeline data={TIMELINE_DATA} /> */}
+
+        <div className="view-toggle1">
+          <button
+            className={`toggle ${view === "ongoingprojects" ? "active" : ""}`}
+            onClick={() => setView("ongoingprojects")}
+          >
+            Ongoing Projects
+          </button>
+          <button
+            className={`toggle ${view === "postedjobs" ? "active" : ""}`}
+            onClick={() => setView("postedjobs")}
+          >
+            Posted jobs
+          </button>
+
+        </div>
+        {/* 
+        <PostedJobs /> */}
+
+        {/* <ProjectsGrid
           projects={filteredProjects}
           onUpload={handleUpload}
           onReview={handleReview}
-        />
+        /> */}
+
+        <div className="view-content">
+          {view === "ongoingprojects" &&
+            <>
+              <div className="upload-main mt-3">
+                <ProjectsHeader
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                />
+                <ProjectsGrid
+                  projects={filteredProjects}
+                  onUpload={handleUpload}
+                  onReview={handleReview}
+                />
+              </div>
+            </>
+          }
+          {view === "postedjobs" &&
+            <>
+              <div className="upload-main mt-3">
+                <PostedJobs />
+              </div >
+            </>
+          }
+        </div>
       </div>
     </div>
   );

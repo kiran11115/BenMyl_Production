@@ -34,6 +34,7 @@ import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
 import EditProfile from "./ProfilePage/EditProfile";
 import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
+import JobOverview from "./UserProjects/JobOverview";
 
 
 
@@ -77,6 +78,7 @@ const routes = createBrowserRouter(
                     <Route path="user-contract-view" element={<ContractView />} />
                     <Route path="create-new-contract" element={<CreateNewContract />} />
                     <Route path="review-talent" element={<ReviewTalent />} />
+                    <Route path="job-overview" element={<JobOverview />} />
                 </Route>
             </Route>
 
