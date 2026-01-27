@@ -510,6 +510,11 @@ p.muted {
   transition: box-shadow 3s ease-in, transform 3s ease-in;
 }
 
+.auth-error{
+  color: red;
+  font-size: 12px;
+}
+
 /* 🔥 Hover = Continuous border animation */
 .ai-pill-btn:hover {
   animation: ai-border-flow 2.5s linear infinite;
