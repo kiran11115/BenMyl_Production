@@ -94,13 +94,14 @@ function SignUp() {
           role: invitedRole || "Admin",
         };
 
-        await register(payload).unwrap();
+        const res = await register(payload).unwrap();
 
         navigate("/otp-verification", {
           state: {
             emailID: values.email,
             fullName: values.fullName,
             companyName: values.companyName,
+            role: res.role,
           },
         });
       } catch (err) {

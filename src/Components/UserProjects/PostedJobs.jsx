@@ -2,54 +2,36 @@ import React, { useMemo } from 'react';
 import { FiEye, FiMapPin, FiPlus } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
+import { useGetGroupedJobTitlesQuery } from '../../State-Management/Api/TalentPoolApiSlice';
 
 // --- DATA ---
-const JOBS_DATA = [
-  {
-    id: 1,
-    title: "Senior Frontend Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
-    type: "Contract",
-    rateText: "$80-100/hr",
-    experienceText: "5+ yrs",
-    skills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"]
-  },
-  {
-    id: 2,
-    title: "Full Stack Engineer",
-    company: "InnovateLabs",
-    location: "Hybrid",
-    type: "Contract",
-    rateText: "$90-120/hr",
-    experienceText: "4+ yrs",
-    skills: ["Node.js", "React", "MongoDB", "AWS", "Docker"]
-  },
-  {
-    id: 3,
-    title: "UI/UX Designer",
-    company: "Creative Studio",
-    location: "On-site",
-    type: "Full-time",
-    rateText: "$60-80/hr",
-    experienceText: "3+ yrs",
-    skills: ["Figma", "Adobe XD", "Prototyping", "User Research"]
-  },
-  {
-    id: 4,
-    title: "React Native Developer",
-    company: "AppSolutions",
-    location: "Remote",
-    type: "Contract",
-    rateText: "$70-95/hr",
-    experienceText: "4+ yrs",
-    skills: ["React Native", "Redux", "iOS", "Android", "Jest"]
-  }
-];
+
 
 const PostedJobs = () => {
-  const jobs = useMemo(() => JOBS_DATA, []);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("CompanyId");
+
+  const { data: apiJobs = [], isLoading } =
+    useGetGroupedJobTitlesQuery(userId);
+
+  const jobs = useMemo(() => {
+    return apiJobs.map((job) => ({
+      id: job.jobID,
+      title: job.jobTitle,
+      company: job.companyName,
+      location: job.location,
+      type: job.employeeType,
+      rateText: `$${job.salaryRange_min}-${job.salaryRange_max}`,
+      experienceText: `${job.yearsofExperience || 0}+ yrs`,
+      skills: job.requiredSkills
+        ? job.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    }));
+  }, [apiJobs]);
+
+  if (isLoading) {
+    return <div style={{ padding: 24 }}>Loading jobs...</div>;
+  }
 
   return (
     <>
@@ -233,7 +215,11 @@ const PostedJobs = () => {
                 ))}
               </div>
 
-              <button className="btn-primary w-100 d-flex gap-2" onClick={()=>navigate("/user/job-overview")}>
+              <button className="btn-primary w-100 d-flex gap-2"  onClick={() =>
+    navigate("/user/job-overview", {
+      state: { jobId: job.id }, // ✅ pass jobID
+    })
+  }>
                 <FiEye size={16} /> View Details
               </button>
 
