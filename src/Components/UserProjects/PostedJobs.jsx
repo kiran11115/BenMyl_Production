@@ -229,7 +229,7 @@ const PostedJobs = () => {
 
               <div className="skills">
                 {job.skills.map(skill => (
-                  <span key={skill} className="skill">{skill}</span>
+                  <span key={skill} className="status-tag status-progress">{skill}</span>
                 ))}
               </div>
 
