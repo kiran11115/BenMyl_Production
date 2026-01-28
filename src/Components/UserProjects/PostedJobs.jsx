@@ -163,14 +163,7 @@ const PostedJobs = () => {
           margin-bottom: 18px;
         }
 
-        .skill {
-          font-size: 12px;
-          padding: 6px 12px;
-          border-radius: 999px;
-          background: #eef2ff;
-          color: #4338ca;
-          white-space: nowrap;
-        }
+   
 
         .add-btn {
           margin-top: auto;
@@ -229,7 +222,7 @@ const PostedJobs = () => {
 
               <div className="skills">
                 {job.skills.map(skill => (
-                  <span key={skill} className="skill">{skill}</span>
+                  <span key={skill} className="status-tag status-progress">{skill}</span>
                 ))}
               </div>
 
