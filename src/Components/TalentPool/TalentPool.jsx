@@ -9,15 +9,15 @@ import {
   FiCheck,
   FiChevronDown,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
 import TalentGridView from "./TalentGrid";
 import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
-import TalentFilters, { USER_CREATED_JOBS } from "../Filters/TalentFilters";
+import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
-import { useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -26,7 +26,7 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs }) => {
   const [offerStatus, setOfferStatus] = useState({});
 
   const handleSendOffer = (jobId) => {
@@ -55,7 +55,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
             <div className="empty-state">No candidates shortlisted yet.</div>
           ) : (
             Object.keys(shortlistedMap).map((jobId) => {
-              const job = USER_CREATED_JOBS.find((j) => j.id === jobId);
+              const job = jobs.find((j) => j.id === jobId);
               const candidates = shortlistedMap[jobId];
               if (!candidates || candidates.length === 0) return null;
 
@@ -254,6 +254,10 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
 // --- MAIN COMPONENT ---
 const TalentPool = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+const preselectedJobTitle = location.state?.jobTitle;
+  const userId = localStorage.getItem("CompanyId");
+  const companyId = localStorage.getItem("logincompanyid");
   const [viewMode, setViewMode] = useState("grid");
   const resultsRef = useRef(null);
   const [shortlistedMap, setShortlistedMap] = useState({});
@@ -264,7 +268,13 @@ const TalentPool = () => {
   const [pageNumber, setPageNumber] = useState(1);
 const [hasMore, setHasMore] = useState(true);
 const [allCandidates, setAllCandidates] = useState([]);
+const [isInitialised, setIsInitialised] = useState(false);
+const [activeJobDetails, setActiveJobDetails] = useState(null);
+
     const activeJobId = selectedJobId;
+
+    const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+    const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
@@ -272,10 +282,9 @@ const [allCandidates, setAllCandidates] = useState([]);
 
 
   const fetchTalents = async () => {
-  if (!hasMore) return;
 
   const payload = {
-    companyid: 217,
+    companyid: companyId,
     pageNumber,
     pageSize: 50,
     filters: activeJob
@@ -335,7 +344,44 @@ const [allCandidates, setAllCandidates] = useState([]);
   }));
 }, [allCandidates]);
 
+const jobs = useMemo(() => {
+  if (!Array.isArray(jobTitles)) return [];
 
+  const colorPalette = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+
+  return jobTitles.map((job, index) => ({
+    id: `job-${job.jobID}`,      // 🔥 unique per job
+    jobID: job.jobID,            // backend id
+    title: job.jobTitle,
+    companyName: job.companyName,
+    color: colorPalette[index % colorPalette.length],
+  }));
+}, [jobTitles]);
+
+
+useEffect(() => {
+  // CASE 1: Coming from Success modal
+  if (preselectedJobTitle && jobs.length > 0) {
+    const matchedJob = jobs.find(
+      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+    );
+
+    if (matchedJob) {
+      setSelectedJobId(matchedJob.id);
+    }
+  }
+
+  // CASE 2: Normal page load (no preselected job)
+  if (!preselectedJobTitle) {
+    setIsInitialised(true);
+  }
+}, [preselectedJobTitle, jobs]);
+
+useEffect(() => {
+  if (selectedJobId !== null) {
+    setIsInitialised(true);
+  }
+}, [selectedJobId]);
 
 useEffect(() => {
   setPageNumber(1);
@@ -343,9 +389,12 @@ useEffect(() => {
   setAllCandidates([]);
 }, [activeJobId]);
 
-  useEffect(() => {
+useEffect(() => {
+  if (!isInitialised) return;   // 🚫 BLOCK early call
   fetchTalents();
-}, [pageNumber, activeJobId]);
+}, [pageNumber, activeJobId, isInitialised]);
+
+
 
 useEffect(() => {
   const el = resultsRef.current;
@@ -367,12 +416,46 @@ useEffect(() => {
 }, [hasMore, isLoading]);
 
 
-  const activeJob = useMemo(() => {
+const activeJob = useMemo(() => {
   if (!selectedJobId) return null;
-  return USER_CREATED_JOBS.find((j) => j.id === selectedJobId) || null;
-}, [selectedJobId]);
+  return jobs.find((j) => j.id === selectedJobId) || null;
+}, [selectedJobId, jobs]);
 
   const activeJobColor = activeJob?.color || "#4f46e5";
+
+  useEffect(() => {
+  if (!activeJob) {
+    setActiveJobDetails(null);
+    return;
+  }
+
+  getJobById({
+    jobId: activeJob.jobID,
+    userId,
+  })
+    .unwrap()
+    .then((res) => {
+      // API returns array → take first item
+      setActiveJobDetails(res?.[0] || null);
+    });
+}, [activeJob]);
+
+const jobOverviewData = useMemo(() => {
+  if (!activeJobDetails) return null;
+
+  return {
+    title: activeJobDetails.jobTitle,
+    company: activeJobDetails.companyName,
+    location: activeJobDetails.location,
+    budget: `$${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
+    experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
+    type: activeJobDetails.employeeType,
+    description: activeJobDetails.jobDescription,
+    requiredSkills: activeJobDetails.requiredSkills
+      ? activeJobDetails.requiredSkills.split(",").map((s) => s.trim())
+      : [],
+  };
+}, [activeJobDetails]);
 
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
@@ -499,7 +582,7 @@ useEffect(() => {
           <aside className="hide-scrollbar" style={{
       overflowY: "auto",
     }}>
-            <TalentFilters onApplyFilters={setSelectedJobId}  />
+            <TalentFilters onApplyFilters={setSelectedJobId}  jobs={jobs} selectedJobId={selectedJobId}/>
           </aside>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
@@ -509,7 +592,7 @@ useEffect(() => {
   }}>
             {/* ALWAYS render overview card (shows empty state if no job) */}
             <div style={{ marginBottom: 16 }}>
-              <JobOverviewCard job={activeJob} />
+              <JobOverviewCard job={jobOverviewData} />
             </div>
             {isLoading && (
   <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
@@ -547,6 +630,7 @@ useEffect(() => {
     onClose={() => setIsDrawerOpen(false)}
     shortlistedMap={shortlistedMap}
     onRemove={handleRemoveFromDrawer}
+    jobs={jobs}
   />
 ) : null}
 

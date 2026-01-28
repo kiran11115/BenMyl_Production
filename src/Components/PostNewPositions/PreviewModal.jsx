@@ -55,7 +55,7 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
      ALERT SCREENS
   ========================= */
   if (status === "success") {
-    return <SuccessModal onClose={onClose} />;
+    return <SuccessModal onClose={onClose} data={data}/>;
   }
 
   if (status === "error") {

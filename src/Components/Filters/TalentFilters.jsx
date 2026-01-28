@@ -3,61 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 
-// --- DATA CONSTANTS (Exported) ---
-export const USER_CREATED_JOBS = [
-  {
-    id: "job1",
-    title: "Senior Frontend Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
-    budget: "$80-100/hour",
-    experience: "5",
-    type: "Contract",
-    description:
-      "We are looking for a Senior Frontend Developer to join our team. You will be responsible for building and maintaining high-quality web applications using modern technologies...",
-    requiredSkills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"],
-    color: "#3b82f6", // Blue
-  },
-  {
-    id: "job2",
-    title: "Node.js Backend API Setup",
-    company: "TechCorp Inc.",
-    location: "New York, NY",
-    budget: "$60-90/hour",
-    experience: "4",
-    type: "Contract",
-    description:
-      "Set up scalable Node.js APIs including auth, logging, and monitoring for production workloads.",
-    requiredSkills: ["Node.js", "TypeScript", "REST", "PostgreSQL"],
-    color: "#10b981", // Green
-  },
-  {
-    id: "job3",
-    title: "Marketing Executive",
-    company: "TechCorp Inc.",
-    location: "Remote",
-    budget: "$70-110/hour",
-    experience: "6",
-    type: "Contract",
-    description:
-      "Design and implement AWS infrastructure with IaC, security best practices, and CI/CD pipelines.",
-    requiredSkills: ["AWS", "Terraform", "Docker", "CI/CD"],
-    color: "#f59e0b", // Orange
-  },
-  {
-    id: "job4",
-    title: "Full Stack Developer",
-    company: "TechCorp Inc.",
-    location: "Hybrid",
-    budget: "$70-120/hour",
-    experience: "5",
-    type: "Contract",
-    description:
-      "Build a full stack web application with a polished UI, robust APIs, and secure deployment pipeline.",
-    requiredSkills: ["React", "Node.js", "SQL"],
-    color: "#8b5cf6", // Purple
-  },
-];
+
 
 const SKILL_TAGS = [
   "React",
@@ -161,7 +107,7 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 };
 
 // --- MAIN FILTERS COMPONENT ---
-const TalentFilters = ({ onApplyFilters }) => {
+const TalentFilters = ({ onApplyFilters,jobs,selectedJobId }) => {
   const initialFilters = {
     selectedJobs: [],
     skills: [],
@@ -184,6 +130,16 @@ const TalentFilters = ({ onApplyFilters }) => {
     setOpen(false);
     onApplyFilters(job); // 🔥 send job to parent
   };
+
+  useEffect(() => {
+  if (!selectedJobId) return;
+
+  setFilterInputs((prev) => ({
+    ...prev,
+    selectedJobs: [selectedJobId],
+  }));
+}, [selectedJobId]);
+
 
   const handleInputChange = (field, value) =>
     setFilterInputs((prev) => ({ ...prev, [field]: value }));
@@ -223,7 +179,6 @@ const applyFilters = () => {
   onApplyFilters(jobId);
 };
 
-
   const resetFilters = () => {
     setFilterInputs(initialFilters);
     if (onApplyFilters) onApplyFilters(initialFilters);
@@ -244,7 +199,7 @@ const applyFilters = () => {
         {filterInputs.selectedJobs.length > 0 && (
           <div className="tags-container">
             {filterInputs.selectedJobs.map((jobId) => {
-              const job = USER_CREATED_JOBS.find((j) => j.id === jobId);
+              const job = jobs.find((j) => j.id === jobId);
               return (
                 <span key={jobId} className="filter-tag">
                   {job?.title}
@@ -279,7 +234,7 @@ const applyFilters = () => {
           </div>
           {isJobDropdownOpen && (
             <div className="custom-dropdown-menu">
-              {USER_CREATED_JOBS.map((job) => (
+              {jobs.map((job) => (
                 <div
                   key={job.id}
                   className="custom-option"

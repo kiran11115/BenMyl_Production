@@ -17,7 +17,22 @@ const TalentPoolApiSlice = apiSlice.injectEndpoints({
   }),
 }),
 
+getGroupedJobTitles: builder.query({
+  query: (userId) => ({
+    url: `/api/uatcompany/getalljobs?userId=${userId}`,
+    method: "GET",
+  }),
+  providesTags: ["JobFilter"],
+}),
+
+getJobById: builder.query({
+  query: ({ jobId, userId }) => ({
+    url: `/api/uatcompany/getalljobs?jobId=${jobId}&userId=${userId}`,
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery } = TalentPoolApiSlice;
