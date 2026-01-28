@@ -52,7 +52,7 @@ export const SubmissionErrorModal = ({
 /**
  * Success Modal - Replicates the green "Success!" design
  */
-export const SuccessModal = ({ onClose }) => {
+export const SuccessModal = ({ onClose,data }) => {
     // 1. Initialize the hook
     const navigate = useNavigate();
     window.scrollTo(0, 0);
@@ -78,7 +78,13 @@ export const SuccessModal = ({ onClose }) => {
                         {/* 2. Apply navigation on button click */}
                         <button
                             className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-talentpool")}
+                            onClick={() =>
+    navigate("/user/user-talentpool", {
+      state: {
+        jobTitle: data?.jobTitle, // 👈 pass title
+      },
+    })
+  }
                         >
                             Find Talent
                         </button>

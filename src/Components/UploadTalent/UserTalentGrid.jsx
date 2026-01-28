@@ -5,18 +5,23 @@ import { FaStar } from "react-icons/fa";
 const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle }) => {
   const visibleSkills = candidate.skills.slice(0, 3);
     const remainingCount = candidate.skills.length - visibleSkills.length;
+    const getInitials = (name = "") => {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0].toUpperCase())
+    .join("");
+};
   return (
   <div className="project-card justify-content-between h-100">
       <div className="d-flex flex-column gap-3">
         {/* --- Header Section --- */}
         <div className="card-header">
           <div className="card-header gap-2">
-            <img
-              src={candidate.avatar}
-              alt={candidate.name}
-              className="v-avatar"
-              loading="lazy"
-            />
+            <div className="initial-avatar">
+  {getInitials(candidate.name)}
+</div>
             <div>
               <div className="candidate-name-row">
                 <div className="d-flex align-items-center gap-2">
@@ -103,6 +108,20 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
   color: #475569;
   font-weight: 500;
   cursor: default;
+}
+ .initial-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #e5e7eb; /* light grey */
+  color: #374151; /* dark text */
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
       `}</style>
   </div>

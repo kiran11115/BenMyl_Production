@@ -13,6 +13,7 @@ function OTPVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const emailID = location.state?.emailID;
+  const role = location.state?.role;
 
   const [timer, setTimer] = useState(60);
   const [otpErrorMsg, setOtpErrorMsg] = useState("");
@@ -53,7 +54,7 @@ function OTPVerification() {
         const response = await otpVerify({
           emailID,
           vcode: Number(otpValue),
-          role: "Admin",
+          role,
         }).unwrap();
 
         if (response?.result_Code !== 200) {
@@ -65,13 +66,18 @@ function OTPVerification() {
           return;
         }
 
-        navigate("/User-details", {
-          state: {
-            emailID,
-            fullName: location.state?.fullName,
-            companyName: location.state?.companyName,
-          },
-        });
+        if (role === "Recruiter") {
+  navigate("/sign-in");
+} else {
+  navigate("/User-details", {
+    state: {
+      emailID,
+      fullName: location.state?.fullName,
+      companyName: location.state?.companyName,
+    },
+  });
+}
+
       } catch (err) {
         console.error("OTP verification failed:", err);
         setOtpErrorMsg("Something went wrong. Please try again.");

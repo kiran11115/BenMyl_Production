@@ -11,40 +11,30 @@ import {
     FiClock,
     FiFileText,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
+import { useLazyGetJobByIdQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
 const JobOverview = () => {
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isTablet, setIsTablet] = useState(window.innerWidth <= 1024);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-            setIsTablet(window.innerWidth <= 1024);
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    const location = useLocation();
 
-    const job = {
-        jobTitle: "Senior Frontend Developer",
-        companyName: "Bennyl Technologies",
-        location: "Bangalore, India",
-        employmentType: "Full-time",
-        salary: "₹18,00,000 - ₹25,00,000 / year",
-        workModel: "Hybrid",
-        department: "Engineering",
-        experienceLevel: "Senior",
-        skills: ["React", "TypeScript", "Redux", "Tailwind CSS"],
-        education: "Bachelor’s Degree",
-        experience: "5+ Years",
-        description:
-            "We are looking for a Senior Frontend Developer to build scalable, high-performance web applications and lead UI development.",
-        additionalRequirements:
-            "Strong problem-solving skills, experience working in agile teams, and excellent communication skills.",
-    };
+  const jobId = location.state?.jobId;
+  const userId = localStorage.getItem("CompanyId");
+
+  const [getJobById, { data, isLoading }] = useLazyGetJobByIdQuery();
+
+  useEffect(() => {
+  if (jobId && userId) {
+    getJobById({ jobId, userId });
+  }
+}, [jobId, userId, getJobById]);
+
+  // API returns array with single object
+  const job = data?.[0];
 
     const styles = {
         page: {
@@ -148,44 +138,48 @@ const JobOverview = () => {
                         </div>
 
                         <div>
-                            <div style={styles.title}>{job.jobTitle}</div>
-                            <div style={styles.subtitle}>{job.companyName}</div>
+                            <div style={styles.title}>{job?.jobTitle}</div>
+                            <div style={styles.subtitle}>{job?.companyName}</div>
                         </div>
                     </div>
 
                     <div style={styles.grid}>
-                        <div><Label icon={FiMapPin} text="Location" /><div style={styles.value}>{job.location}</div></div>
-                        <div><Label icon={FiBriefcase} text="Employment Type" /><div style={styles.value}>{job.employmentType}</div></div>
-                        <div><Label icon={FiHome} text="Work Model" /><div style={styles.value}>{job.workModel}</div></div>
-                        <div><Label icon={FiDollarSign} text="Salary Range" /><div style={styles.value}>{job.salary}</div></div>
-                        <div><Label icon={FiLayers} text="Department" /><div style={styles.value}>{job.department}</div></div>
-                        <div><Label icon={FiTrendingUp} text="Experience Level" /><div style={styles.value}>{job.experienceLevel}</div></div>
+                        <div><Label icon={FiMapPin} text="Location" /><div style={styles.value}>{job?.location}</div></div>
+                        <div><Label icon={FiBriefcase} text="Employment Type" /><div style={styles.value}>{job?.employeeType}</div></div>
+                        <div><Label icon={FiHome} text="Work Model" /><div style={styles.value}>{job?.workModels}</div></div>
+                        <div><Label icon={FiDollarSign} text="Salary Range" /><div style={styles.value}>{job?.salaryRange_min}-{job?.salaryRange_max} USD</div></div>
+                        <div><Label icon={FiLayers} text="Department" /><div style={styles.value}>{job?.department}</div></div>
+                        <div><Label icon={FiTrendingUp} text="Experience Level" /><div style={styles.value}>{job?.yearsofExperience}</div></div>
                     </div>
 
                     <div style={styles.divider} />
 
                     <Label icon={FiFileText} text="Job Description" />
-                    <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job.description}</p>
+                    <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job?.jobDescription}</p>
 
                     <div style={styles.section}>
                         <Label icon={FiLayers} text="Required Skills" />
                         <div className="d-flex gap-2">
-                            {job.skills.map(skill => (
-                                <span key={skill} className="status-tag status-progress" >{skill}</span>
-                            ))}
+                            {job?.requiredSkills
+  ?.split(",")
+  .map((skill) => (
+    <span key={skill.trim()} className="status-tag status-progress">
+      {skill.trim()}
+    </span>
+))}
                         </div>
                     </div>
 
                     <div style={styles.divider} />
 
                     <div style={styles.grid}>
-                        <div><Label icon={FiBookOpen} text="Education Level" /><div style={styles.value}>{job.education}</div></div>
-                        <div><Label icon={FiClock} text="Years of Experience" /><div style={styles.value}>{job.experience}</div></div>
+                        <div><Label icon={FiBookOpen} text="Education Level" /><div style={styles.value}>{job?.educationLevel}</div></div>
+                        <div><Label icon={FiClock} text="Years of Experience" /><div style={styles.value}>{job?.yearsofExperience}</div></div>
                     </div>
 
                     <div style={styles.section} className="mt-3">
                         <Label icon={FiFileText} text="Additional Requirements" />
-                        <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job.additionalRequirements}</p>
+                        <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job?.additionalRequirements}</p>
                     </div>
                 </div>
 

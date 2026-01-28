@@ -11,6 +11,7 @@ export const ProjectApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: formData,
       }),
+      invalidatesTags: ["JobFilter"],
     }),
 
     /* =======================
