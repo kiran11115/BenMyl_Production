@@ -151,10 +151,10 @@ function Header() {
                     <File size={16} />
                     Analytics
                   </button>
-                  <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
+                  {/* <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
                     <Settings size={16} />
                     Account Settings
-                  </button>
+                  </button> */}
                   <div className="popover-divider"></div>
                   <button className="popover-item text-red" onClick={handleSignOut}>
                     <LogOut size={16} />

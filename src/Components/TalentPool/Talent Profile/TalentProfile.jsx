@@ -9,61 +9,96 @@ import {
   FiPhone,
   FiLinkedin,
   FiFileText,
-  FiEye,
-  FiExternalLink,
   FiArrowLeft,
+  FiCalendar,
+  FiUser,
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
 import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
 import { useLocation, useNavigate } from "react-router-dom";
-import {useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
+import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const employeeId = state?.employeeID;
-  console.log("EmpId:",employeeId)
+  console.log("EmpId:", employeeId)
 
-const [triggerGetProfile, { data: employee, isLoading, isError }] =
-  useLazyGetEmployeeTalentProfileQuery();
+  const [triggerGetProfile, { data: employee, isLoading, isError }] =
+    useLazyGetEmployeeTalentProfileQuery();
 
   useEffect(() => {
-  if (employeeId) {
-    triggerGetProfile(employeeId);
-  }
-}, [employeeId, triggerGetProfile]);
+    if (employeeId) {
+      triggerGetProfile(employeeId);
+    }
+  }, [employeeId, triggerGetProfile]);
 
- const profileData = {
-  name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`,
-  role: employee?.title ?? "—",
-  location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`,
-  experience: `${employee?.noofExperience || 0} yrs experience`,
-  status: employee?.status ?? "—",
-  summary: employee?.bio ?? "",
-  stats: [
+  const profileData = {
+    name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`,
+    role: employee?.title ?? "—",
+    location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`,
+    experience: `${employee?.noofExperience || 0} yrs experience`,
+    status: employee?.status ?? "—",
+    summary: employee?.bio ?? "",
+    stats: [
       { label: "Projects Completed", value: "150+" },
       { label: "Client Satisfaction", value: "98%" },
     ],
-  skills: employee?.skills
-    ? employee?.skills.split(",").map((s) => s.trim())
-    : [],
+    skills: employee?.skills
+      ? employee?.skills.split(",").map((s) => s.trim())
+      : [],
 
-  workExperience: employee?.workexperiences?.map((exp) => ({
-    role: exp.position,
-    company: exp.companyName,
-    period: `${exp.startDate?.slice(0, 10)} - ${
-      exp.endDate ? exp.endDate.slice(0, 10) : "Present"
-    }`,
-    location: employee?.city,
-    desc: exp.description,
-  })) || [],
+    workExperience: employee?.workexperiences?.map((exp) => ({
+      role: exp.position,
+      company: exp.companyName,
+      period: `${exp.startDate?.slice(0, 10)} - ${exp.endDate ? exp.endDate.slice(0, 10) : "Present"
+        }`,
+      location: employee?.city,
+      desc: exp.description,
+    })) || [],
 
-  education: employee?.employee_Heighers?.map((edu) => ({
-    degree: edu.highestQualification,
-    school: edu.university,
-    year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
-  })) || [],
-};
+    education: employee?.employee_Heighers?.map((edu) => ({
+      degree: edu.highestQualification,
+      school: edu.university,
+      year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
+    })) || [],
+  };
+
+  const getInitials = (name = "") => {
+    const words = name.trim().split(" ");
+    const first = words[0]?.charAt(0) || "";
+    const second = words[1]?.charAt(0) || "";
+    return (first + second).toUpperCase();
+  };
+
+  const projectsData = [
+    {
+      projectName: "UI/UX",
+      role: "Developer",
+      startDate: "2024-Jan-12",
+      endDate: "2024-Feb-20",
+      skills: ["React", "Native"],
+      description: "Description1 hjasn dvnsd uhsdunv",
+    },
+    {
+      projectName: "Fintech App",
+      role: "Frontend Developer",
+      startDate: "2023-Oct-01",
+      endDate: "2024-Jan-05",
+      skills: ["React", "Redux", "Tailwind"],
+      description: "Worked on onboarding flow and dashboard UI",
+    },
+    {
+      projectName: "Admin Dashboard",
+      role: "UI Developer",
+      startDate: "2023-Jun-15",
+      endDate: "2023-Sept-30",
+      skills: ["HTML", "CSS", "JavaScript"],
+      description: "Built responsive admin panels and tables",
+    },
+  ];
+
+
 
   return (
     <div className="projects-container">
@@ -85,11 +120,9 @@ const [triggerGetProfile, { data: employee, isLoading, isError }] =
             <div className="col-3">
               {/* Profile Header Card */}
               <div className="project-card">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                  alt="Profile"
-                  className="profile-avatar-lg"
-                />
+                <div className="profile-avatar-lg initials-avatar">
+                  {getInitials(profileData.name)}
+                </div>
                 <div className="profile-header-content">
                   <div className="d-flex gap-3">
                     <h1 className="mb-2">{profileData.name}</h1>
@@ -135,36 +168,36 @@ const [triggerGetProfile, { data: employee, isLoading, isError }] =
           <div className="row">
             <div className="col-8">
               {/* Work Experience */}
-              <div className="project-card">
+              <div className="project-card mb-3">
                 <h2 className="card-title">Work Experience</h2>
                 <div className="experience-list">
-  {profileData.workExperience.length > 0 ? (
-    profileData.workExperience.map((job, idx) => (
-      <div key={idx} className="experience-item">
-        <div className="experience-icon-box">
-          <FiBriefcase />
-        </div>
-        <div className="experience-content">
-          <h3>{job.role}</h3>
-          <div className="job-meta">
-            {job.company} • {job.period}
-          </div>
-          <div className="job-location">{job.location}</div>
-          <p className="job-desc">{job.desc}</p>
-        </div>
-      </div>
-    ))
-  ) : (
-    <div style={{ color: "#94a3b8", fontSize: "14px" }}>
-      No work experience added yet
-    </div>
-  )}
-</div>
+                  {profileData.workExperience.length > 0 ? (
+                    profileData.workExperience.map((job, idx) => (
+                      <div key={idx} className="experience-item">
+                        <div className="experience-icon-box">
+                          <FiBriefcase />
+                        </div>
+                        <div className="experience-content">
+                          <h3>{job.role}</h3>
+                          <div className="job-meta">
+                            {job.company} • {job.period}
+                          </div>
+                          <div className="job-location">{job.location}</div>
+                          <p className="job-desc">{job.desc}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ color: "#94a3b8", fontSize: "14px" }}>
+                      No work experience added yet
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="col-4">
               {/* Skills & Expertise */}
-              <div className="project-card">
+              <div className="project-card mb-3">
                 <h2 className="card-title">Skills & Expertise</h2>
                 <div className="skills-container">
                   {profileData.skills.map((skill, idx) => (
@@ -177,52 +210,94 @@ const [triggerGetProfile, { data: employee, isLoading, isError }] =
                   ))}
                 </div>
               </div>
+
+              {/* Education */}
+              <div className="project-card sidebar-card">
+                <h3 className="card-title">Education</h3>
+
+                <div className="education-list">
+                  {profileData.education.length > 0 ? (
+                    profileData.education.map((edu, idx) => (
+                      <div key={idx} className="interview-item-premium">
+                        <div className="edu-icon-box">
+                          <FiFileText size={14} />
+                        </div>
+
+                        <div>
+                          <div className="edu-degree">{edu.degree}</div>
+                          <div className="edu-school">{edu.school}</div>
+                          <div className="edu-year">{edu.year}</div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        fontSize: "14px",
+                        color: "#94a3b8",
+                        padding: "8px 0",
+                      }}
+                    >
+                      No education details added yet
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Portfolio */}
-          {/* <div className="portfolio-section">
+          <div className="portfolio-section">
             <div className="portfolio-header">
-              <h2 className="card-title">Portfolio</h2>
-              <span className="portfolio-count">
-                {profileData.portfolio} Projects
-              </span>
+              <h2 className="card-title">Projects</h2>
             </div>
 
-            <div className="projects-grid premium-portfolio-grid">
-              {profileData.portfolio.map((item, idx) => (
-                <div key={idx} className="premium-portfolio-card">
-                  <div className="portfolio-img-wrapper">
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="portfolio-img"
-                    />
-
-                    <div className="portfolio-overlay">
-                      <button className="overlay-btn">
-                        <FiEye /> Preview
-                      </button>
-                      <button className="overlay-btn secondary">
-                        <FiExternalLink /> Open
-                      </button>
+            <div className="premium-portfolio-grid">
+              {/* projects */}
+              {projectsData.map((data, index) => (
+                <div className="project-card mb-3">
+                  {/* Header */}
+                  <div className="card-top">
+                    <div>
+                      <h3 className="card-title">{data.projectName}</h3>
+                      <p className="card-subtitle">{data.role}</p>
                     </div>
                   </div>
 
-                  <div className="portfolio-content">
-                    <h3 className="portfolio-title">{item.title}</h3>
-                    <div className="portfolio-tags">
-                      {item.tags.map((tag, tIdx) => (
-                        <span key={tIdx} className="portfolio-tag">
-                          {tag}
-                        </span>
-                      ))}
+                  {/* Dates */}
+                  <div className="d-flex justify-content-between">
+                    <div className="">
+                      <span style={{ fontSize: "14px" }}>Start Date</span>
+                      <div className="card-date">
+                        <FiCalendar />
+                        {data.startDate}
+                      </div>
+                    </div>
+
+                    <div className="">
+                      <span style={{ fontSize: "14px" }}>End Date</span>
+                      <div className="card-date">
+                        <FiCalendar />
+                        {data.endDate}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Skills */}
+                  <div className="card-skills">
+                    {data.skills.map((skill, i) => (
+                      <span key={i} className="status-tag status-progress">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Description */}
+                  <p className="card-description">{data.description}</p>
                 </div>
               ))}
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* === RIGHT SIDE COLUMN === */}
@@ -338,38 +413,7 @@ const [triggerGetProfile, { data: employee, isLoading, isError }] =
             </div>
           </div>
 
-          {/* Education */}
-          <div className="table-card sidebar-card">
-  <h3 className="card-title">Education</h3>
 
-  <div className="education-list">
-    {profileData.education.length > 0 ? (
-      profileData.education.map((edu, idx) => (
-        <div key={idx} className="interview-item-premium">
-          <div className="edu-icon-box">
-            <FiFileText size={14} />
-          </div>
-
-          <div>
-            <div className="edu-degree">{edu.degree}</div>
-            <div className="edu-school">{edu.school}</div>
-            <div className="edu-year">{edu.year}</div>
-          </div>
-        </div>
-      ))
-    ) : (
-      <div
-        style={{
-          fontSize: "14px",
-          color: "#94a3b8",
-          padding: "8px 0",
-        }}
-      >
-        No education details added yet
-      </div>
-    )}
-  </div>
-</div>
         </div>
       </div>
     </div>

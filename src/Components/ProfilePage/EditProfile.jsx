@@ -1,103 +1,239 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiX, FiSave, FiImage } from "react-icons/fi";
+import { FiX, FiSave, FiImage } from "react-icons/fi";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import {
+  useUpdateRecruiterProfileMutation,
+  useGetRecruiterProfileQuery,
+} from "../../State-Management/Api/RecruiterProfileApiSlice";
 
 
 function EditProfile() {
   const navigate = useNavigate();
+  const [updateRecruiterProfile] = useUpdateRecruiterProfileMutation();
+  /* ================= LOGO ================= */
+  const [logoPreview, setLogoPreview] = useState(null);
 
-  // Complete empty state matching ALL ProfilePage fields
-  const [formData, setFormData] = useState({
-    id: "",
-    slug: "",
-    name: "",
-    companyname: "",
-    websiteUrl: "",
-    domain: "",
-    description: "",
-    headquarters: {
-      street1: "",
-      street2: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "",
-    },
-    contact: {
-      email: "",
-      phone: "",
-      linkedinUrl: "",
-    },
+  const userId = localStorage.getItem("CompanyId"); // stores authInfoID = 315
 
-    // ✅ NEW: Work Experience
-    workExperience: [
-      {
-        role: "",
-        company: "",
-        startYear: "",
-        endYear: "",
-        isCurrent: false,
+  const {
+    data: recruiterData,
+    isLoading,
+    isError,
+  } = useGetRecruiterProfileQuery(Number(userId), {
+    skip: !userId,
+  });
+
+
+
+
+  /* ================= VALIDATION ================= */
+  const validationSchema = Yup.object({
+    name: Yup.string().required(),
+    companyname: Yup.string().required(),
+    description: Yup.string().required().max(500),
+
+    headquarters: Yup.object({
+      street1: Yup.string().required(),
+      street2: Yup.string(),
+      city: Yup.string().required(),
+      state: Yup.string().required(),
+      postalCode: Yup.string().required(),
+      country: Yup.string().required(),
+    }),
+
+    contact: Yup.object({
+      email: Yup.string().email().required(),
+      phone: Yup.string().required(),
+      linkedinUrl: Yup.string().url(),
+    }),
+
+    workExperience: Yup.array().of(
+      Yup.object({
+        role: Yup.string().required(),
+        company: Yup.string().required(),
+        startYear: Yup.number().required(),
+        endYear: Yup.number().nullable(),
+        isCurrent: Yup.boolean(),
+      })
+    ),
+
+    additionalInfo: Yup.object({
+      jobTitle: Yup.string().required(),
+      experience: Yup.string().required(),
+      education: Yup.string().required(),
+      languages: Yup.array().min(1),
+      referredBy: Yup.string(),
+    }),
+  });
+
+  /* ================= FORMIK ================= */
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      companyname: "",
+      description: "",
+
+      headquarters: {
+        street1: "",
+        street2: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        country: "",
       },
-    ],
-    additionalInfo: {
-      jobTitle: "",
-      experience: "",
-      education: "",
-      languages: [], // ["English", "Spanish"]
-      referredBy: "",
+
+      contact: {
+        email: "",
+        phone: "",
+        linkedinUrl: "",
+      },
+
+      workExperience: [
+        { role: "", company: "", startYear: "", endYear: "", isCurrent: false },
+      ],
+
+      additionalInfo: {
+        jobTitle: "",
+        experience: "",
+        education: "",
+        languages: [],
+        referredBy: "",
+      },
+
+      ProfilePhotos: null,
+    },
+
+    validationSchema,
+
+    onSubmit: async (values) => {
+      const fd = new FormData();
+      // ✅ USER ID BASED API CALL (FROM AUTH)
+      fd.append("AuthInfoID", userId);
+
+      fd.append("FullName", values.name);
+      fd.append("CompanyName", values.companyname);
+      fd.append("Description", values.description);
+
+      fd.append("StreetAddress1", values.headquarters.street1);
+      fd.append("StreetAddress2", values.headquarters.street2);
+      fd.append("City", values.headquarters.city);
+      fd.append("State", values.headquarters.state);
+      fd.append("PostalCode", values.headquarters.postalCode);
+      fd.append("Country", values.headquarters.country);
+
+      fd.append("Emailid", values.contact.email);
+      fd.append("Phone", values.contact.phone);
+      fd.append("LinkedInURL", values.contact.linkedinUrl);
+
+      const exp = values.workExperience[0];
+      fd.append("Role", exp.role);
+      fd.append("Company", exp.company);
+      fd.append("StartYear", exp.startYear);
+      fd.append("EndYear", exp.isCurrent ? "" : exp.endYear);
+
+      fd.append("Jobtitle", values.additionalInfo.jobTitle);
+      fd.append("Experience", values.additionalInfo.experience);
+      fd.append("Education", values.additionalInfo.education);
+      fd.append("ReferedBy", values.additionalInfo.referredBy);
+      fd.append("LanguagesSpoken", values.additionalInfo.languages.join(","));
+
+      if (values.ProfilePhotos) {
+        fd.append("ProfilePhotos", values.ProfilePhotos);
+      }
+
+      await updateRecruiterProfile(fd).unwrap();
+      navigate("/user/user-profile");
     },
   });
 
-  const toggleLanguage = (lang) => {
-    setFormData((prev) => {
-      const exists = prev.additionalInfo.languages.includes(lang);
-      return {
-        ...prev,
-        additionalInfo: {
-          ...prev.additionalInfo,
-          languages: exists
-            ? prev.additionalInfo.languages.filter((l) => l !== lang)
-            : [...prev.additionalInfo.languages, lang],
+  useEffect(() => {
+    if (!recruiterData) return;
+
+    // ✅ SET IMAGE PREVIEW FROM API
+    if (recruiterData.profilePhoto) {
+      setLogoPreview(recruiterData.profilePhoto);
+    }
+
+    formik.setValues({
+      name: recruiterData.fullName || "",
+      companyname: recruiterData.companyName || "",
+      description: recruiterData.description || "",
+
+      headquarters: {
+        street1: recruiterData.streetAddress1 || "",
+        street2: recruiterData.streetAddress2 || "",
+        city: recruiterData.city || "",
+        state: recruiterData.state || "",
+        postalCode: recruiterData.postalCode || "",
+        country: recruiterData.country || "",
+      },
+
+      contact: {
+        email: recruiterData.emailid || "",
+        phone: recruiterData.phone || "",
+        linkedinUrl: recruiterData.linkedinURL || "",
+      },
+
+      workExperience: [
+        {
+          role: recruiterData.role || "",
+          company: recruiterData.company || "",
+          startYear: recruiterData.startYear || "",
+          endYear: recruiterData.endYear || "",
+          isCurrent: !recruiterData.endYear,
         },
-      };
+      ],
+
+      additionalInfo: {
+        jobTitle: recruiterData.jobtitle || "",
+        experience: recruiterData.experience || "",
+        education: recruiterData.education || "",
+        languages: recruiterData.languagesSpoken
+          ? recruiterData.languagesSpoken.split(",")
+          : [],
+        referredBy: recruiterData.referedBy || "",
+      },
+
+      ProfilePhotos: null,
     });
-  };
+  }, [recruiterData]);
 
 
+
+  const formData = formik.values;
+
+  const handleChange = useCallback(
+    (e) => {
+      formik.handleChange(e);
+    },
+    [formik]
+  );
+
+  /* ================= EXPERIENCE ================= */
   const handleExperienceChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updated = [...prev.workExperience];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...prev, workExperience: updated };
-    });
+    const updated = [...formData.workExperience];
+    updated[index] = { ...updated[index], [field]: value };
+    formik.setFieldValue("workExperience", updated);
   };
 
   const addExperience = () => {
-    setFormData((prev) => ({
-      ...prev,
-      workExperience: [
-        ...prev.workExperience,
-        {
-          role: "",
-          company: "",
-          startYear: "",
-          endYear: "",
-          isCurrent: false,
-        },
-      ],
-    }));
+    formik.setFieldValue("workExperience", [
+      ...formData.workExperience,
+      { role: "", company: "", startYear: "", endYear: "", isCurrent: false },
+    ]);
   };
 
   const removeExperience = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      workExperience: prev.workExperience.filter((_, i) => i !== index),
-    }));
+    formik.setFieldValue(
+      "workExperience",
+      formData.workExperience.filter((_, i) => i !== index)
+    );
   };
 
   const totalExperience = useMemo(() => {
     let total = 0;
-
     formData.workExperience.forEach((exp) => {
       if (exp.startYear) {
         const start = Number(exp.startYear);
@@ -107,78 +243,33 @@ function EditProfile() {
         total += Math.max(end - start, 0);
       }
     });
-
     return total;
   }, [formData.workExperience]);
 
 
-  // Logo upload state
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [logoFile, setLogoFile] = useState(null);
 
-  // Fixed nested state handler
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    const path = name.split('.');
-
-    setFormData((prev) => {
-      if (path.length === 1) {
-        return { ...prev, [name]: value };
-      }
-      const newData = { ...prev };
-      let current = newData;
-      for (let i = 0; i < path.length - 1; i++) {
-        current[path[i]] = { ...current[path[i]] };
-        current = current[path[i]];
-      }
-      current[path[path.length - 1]] = value;
-      return newData;
-    });
-  }, []);
-
-  // Logo upload - full card clickable
-  const handleLogoUpload = useCallback((e) => {
+  const handleLogoUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Please select image file only');
-        e.target.value = '';
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Max 5MB');
-        e.target.value = '';
-        return;
-      }
-      setLogoFile(file);
-      const preview = URL.createObjectURL(file);
-      if (logoPreview?.startsWith('blob:')) URL.revokeObjectURL(logoPreview);
-      setLogoPreview(preview);
-    }
-  }, [logoPreview]);
-
-  React.useEffect(() => () => {
-    if (logoPreview?.startsWith('blob:')) URL.revokeObjectURL(logoPreview);
-  }, [logoPreview]);
+    if (!file) return;
+    formik.setFieldValue("ProfilePhotos", file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
 
   const removeLogo = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setLogoFile(null);
-    if (logoPreview?.startsWith('blob:')) {
-      URL.revokeObjectURL(logoPreview);
-      setLogoPreview(null);
-    }
+    setLogoPreview(null);
+    formik.setFieldValue("ProfilePhotos", null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Updated Profile:", { ...formData, logoFile });
-    navigate("/user/user-profile");
+    formik.handleSubmit();
   };
 
   const handleCancel = () => navigate("/user/profile");
 
+  /* ================= JSX ================= */
   return (
     <div className="container" style={{ padding: "2rem 0" }}>
       <div className="profile-header">
@@ -191,6 +282,7 @@ function EditProfile() {
       </div>
 
       <form onSubmit={handleSubmit} className="profile-form shadow-sm">
+
         {/* Profile Photo */}
         <div className="form-section">
           <h3 className="section-title">Profile Photo</h3>
@@ -200,7 +292,11 @@ function EditProfile() {
                 {logoPreview ? (
                   <>
                     <img src={logoPreview} alt="Preview" className="logo-preview" />
-                    <button type="button" className="logo-remove-btn" onClick={removeLogo}>
+                    <button
+                      type="button"
+                      className="logo-remove-btn"
+                      onClick={removeLogo}
+                    >
                       Remove Photo
                     </button>
                   </>
@@ -211,15 +307,12 @@ function EditProfile() {
                   </div>
                 )}
               </div>
-              <input type="file" accept="image/*" onChange={handleLogoUpload} className="logo-input" />
-              <div className="logo-info">
-                <small style={{ color: "#64748b" }}>PNG, JPG up to 5MB</small>
-                {logoFile && (
-                  <small style={{ color: "#10b981", fontWeight: 500 }}>
-                    ✓ {logoFile.name}
-                  </small>
-                )}
-              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="logo-input"
+              />
             </label>
           </div>
         </div>
@@ -236,25 +329,39 @@ function EditProfile() {
                 value={formData.name}
                 onChange={handleChange}
                 className="auth-input"
-                placeholder="John Smith"
-                required
               />
             </div>
             <div className="auth-group">
-              <label className="auth-label">Company Name</label>
+              <label className="auth-label">Company Name *</label>
               <input
                 type="text"
                 name="companyname"
                 value={formData.companyname}
                 onChange={handleChange}
                 className="auth-input"
-                placeholder="Nimbus Labs"
               />
             </div>
           </div>
         </div>
 
-        {/* Company Details */}
+        {/* Description */}
+        <div className="form-section">
+          <div className="auth-group">
+            <label className="auth-label">Description *</label>
+            <textarea
+              name="description"
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+              className="auth-input resize-vertical"
+              maxLength={500}
+            />
+            <small style={{ float: "right", color: "#64748b" }}>
+              {formData.description.length}/500
+            </small>
+          </div>
+        </div>
+
         {/* Work Experience */}
         <div className="form-section">
           <h3 className="section-title">Work Experience</h3>
@@ -271,42 +378,42 @@ function EditProfile() {
             >
               <div className="input-grid-2">
                 <div className="auth-group">
-                  <label className="auth-label">Role</label>
+                  <label className="auth-label">Role *</label>
                   <input
                     type="text"
+                    className="auth-input"
                     value={exp.role}
                     onChange={(e) =>
                       handleExperienceChange(index, "role", e.target.value)
                     }
-                    className="auth-input"
                     placeholder="Recruiter"
                   />
                 </div>
 
                 <div className="auth-group">
-                  <label className="auth-label">Company</label>
+                  <label className="auth-label">Company *</label>
                   <input
                     type="text"
+                    className="auth-input"
                     value={exp.company}
                     onChange={(e) =>
                       handleExperienceChange(index, "company", e.target.value)
                     }
-                    className="auth-input"
-                    placeholder="Nimbus Labs"
+                    placeholder="Company Name"
                   />
                 </div>
               </div>
 
               <div className="input-grid-3 mt-2">
                 <div className="auth-group">
-                  <label className="auth-label">Start Year</label>
+                  <label className="auth-label">Start Year *</label>
                   <input
                     type="number"
+                    className="auth-input"
                     value={exp.startYear}
                     onChange={(e) =>
                       handleExperienceChange(index, "startYear", e.target.value)
                     }
-                    className="auth-input"
                     placeholder="2019"
                   />
                 </div>
@@ -315,12 +422,12 @@ function EditProfile() {
                   <label className="auth-label">End Year</label>
                   <input
                     type="number"
+                    className="auth-input"
                     value={exp.endYear}
+                    disabled={exp.isCurrent}
                     onChange={(e) =>
                       handleExperienceChange(index, "endYear", e.target.value)
                     }
-                    className="auth-input"
-                    disabled={exp.isCurrent}
                     placeholder="2023"
                   />
                 </div>
@@ -331,7 +438,11 @@ function EditProfile() {
                       type="checkbox"
                       checked={exp.isCurrent}
                       onChange={(e) =>
-                        handleExperienceChange(index, "isCurrent", e.target.checked)
+                        handleExperienceChange(
+                          index,
+                          "isCurrent",
+                          e.target.checked
+                        )
                       }
                     />{" "}
                     Present
@@ -351,7 +462,11 @@ function EditProfile() {
             </div>
           ))}
 
-          <button type="button" onClick={addExperience} className="btn-secondary">
+          <button
+            type="button"
+            onClick={addExperience}
+            className="btn-secondary"
+          >
             + Add Experience
           </button>
 
@@ -368,90 +483,78 @@ function EditProfile() {
           </div>
         </div>
 
-        {/* Description */}
-        <div className="form-section">
-          <div className="auth-group">
-            <label className="auth-label">Description</label>
-            <textarea
-              name="description"
-              rows="4"
-              value={formData.description}
-              onChange={handleChange}
-              className="auth-input resize-vertical"
-              placeholder="Enter company description..."
-              maxLength={500}
-            />
-            <small style={{ color: "#64748b", float: "right" }}>{formData.description.length}/500</small>
-          </div>
-        </div>
 
-        {/* Headquarters */}
+        {/* Address */}
         <div className="form-section">
           <h3 className="section-title">Address</h3>
           <div className="input-grid-2">
             <div className="auth-group">
-              <label className="auth-label">Street Address 1</label>
+              <label className="auth-label">Street Address 1 *</label>
               <input
-                type="text"
+                className="auth-input"
                 name="headquarters.street1"
                 value={formData.headquarters.street1}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="27-1-72/4, hms knska"
+                placeholder="Street Address 1"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">Street Address 2</label>
+              <label className="auth-label">Street Address 2 *</label>
               <input
-                type="text"
+                className="auth-input"
                 name="headquarters.street2"
                 value={formData.headquarters.street2}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="3rd Floor, Tech Tower"
+                placeholder="Street Address 2"
               />
             </div>
           </div>
           <div className="input-grid-4">
             <div className="auth-group">
-              <label className="auth-label">City</label>
+              <label className="auth-label">City *</label>
               <input
-                type="text"
+                className="auth-input"
                 name="headquarters.city"
                 value={formData.headquarters.city}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="San francisco"
+                placeholder="City"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">State</label>
+              <label className="auth-label">State *</label>
               <input
-                type="text"
+                className="auth-input"
                 name="headquarters.state"
                 value={formData.headquarters.state}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="CA"
+                placeholder="State"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">Postal Code</label>
+              <label className="auth-label">Postal Code *</label>
               <input
-                type="text"
+                className="auth-input"
                 name="headquarters.postalCode"
                 value={formData.headquarters.postalCode}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="572734"
+                placeholder="Postal Code"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">Country</label>
-              <select name="headquarters.country" value={formData.headquarters.country} onChange={handleChange} className="auth-input">
+              <label className="auth-label">Country *</label>
+              <select
+                className="auth-input"
+                name="headquarters.country"
+                value={formData.headquarters.country}
+                onChange={handleChange}
+              >
                 <option value="">Select country</option>
-                <option value="USA">USA</option>
                 <option value="IN">India</option>
+                <option value="USA">USA</option>
                 <option value="UK">UK</option>
               </select>
             </div>
@@ -465,35 +568,33 @@ function EditProfile() {
             <div className="auth-group">
               <label className="auth-label">Email *</label>
               <input
-                type="email"
+                className="auth-input"
                 name="contact.email"
                 value={formData.contact.email}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="hr@talentbridge.com"
-                required
+                placeholder="Email"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">Phone</label>
+              <label className="auth-label">Phone *</label>
               <input
-                type="tel"
+                className="auth-input"
                 name="contact.phone"
                 value={formData.contact.phone}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="+91 891 234 5678"
+                placeholder="Phone"
               />
             </div>
+
             <div className="auth-group">
-              <label className="auth-label">LinkedIn URL</label>
+              <label className="auth-label">Linkedin Url *</label>
               <input
-                type="url"
+                className="auth-input"
                 name="contact.linkedinUrl"
                 value={formData.contact.linkedinUrl}
                 onChange={handleChange}
-                className="auth-input"
-                placeholder="https://linkedin.com/company/..."
+                placeholder="LinkedIn URL"
               />
             </div>
           </div>
@@ -502,63 +603,38 @@ function EditProfile() {
         {/* Additional Information */}
         <div className="form-section">
           <h3 className="section-title">Additional Information</h3>
-
           <div className="input-grid-2">
             <div className="auth-group">
-              <label className="auth-label">Job Title</label>
+              <label className="auth-label">Job Title *</label>
               <input
-                type="text"
-                value={formData.additionalInfo.jobTitle}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    additionalInfo: {
-                      ...prev.additionalInfo,
-                      jobTitle: e.target.value,
-                    },
-                  }))
-                }
                 className="auth-input"
-                placeholder="Recruiter"
+                name="additionalInfo.jobTitle"
+                value={formData.additionalInfo.jobTitle}
+                onChange={handleChange}
+                placeholder="Job Title"
               />
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Experience (Years)</label>
+              <label className="auth-label">Experience *</label>
               <input
-                type="number"
-                min="0"
-                value={formData.additionalInfo.experience}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    additionalInfo: {
-                      ...prev.additionalInfo,
-                      experience: e.target.value,
-                    },
-                  }))
-                }
                 className="auth-input"
-                placeholder="5"
+                name="additionalInfo.experience"
+                value={formData.additionalInfo.experience}
+                onChange={handleChange}
+                placeholder="Experience"
               />
             </div>
           </div>
 
           <div className="input-grid-2 mt-3">
             <div className="auth-group">
-              <label className="auth-label">Education</label>
+              <label className="auth-label">Education *</label>
               <select
-                value={formData.additionalInfo.education}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    additionalInfo: {
-                      ...prev.additionalInfo,
-                      education: e.target.value,
-                    },
-                  }))
-                }
                 className="auth-input"
+                name="additionalInfo.education"
+                value={formData.additionalInfo.education}
+                onChange={handleChange}
               >
                 <option value="">Select education</option>
                 <option value="High School">High School</option>
@@ -569,28 +645,20 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Referred By</label>
+              <label className="auth-label">Referred By *</label>
               <input
-                type="email"
-                value={formData.additionalInfo.referredBy}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    additionalInfo: {
-                      ...prev.additionalInfo,
-                      referredBy: e.target.value,
-                    },
-                  }))
-                }
                 className="auth-input"
-                placeholder="gsrinivas@mylastech.com"
+                name="additionalInfo.referredBy"
+                value={formData.additionalInfo.referredBy}
+                onChange={handleChange}
+                placeholder="Referred By"
               />
             </div>
           </div>
 
           {/* Languages */}
           <div className="auth-group mt-3">
-            <label className="auth-label">Languages Spoken</label>
+            <label className="auth-label">Languages Spoken *</label>
 
             <select
               className="auth-input"
@@ -598,30 +666,36 @@ function EditProfile() {
                 const value = e.target.value;
                 if (!value) return;
 
-                setFormData((prev) => ({
-                  ...prev,
-                  additionalInfo: {
-                    ...prev.additionalInfo,
-                    languages: prev.additionalInfo.languages.includes(value)
-                      ? prev.additionalInfo.languages
-                      : [...prev.additionalInfo.languages, value],
-                  },
-                }));
+                if (!formData.additionalInfo.languages.includes(value)) {
+                  formik.setFieldValue("additionalInfo.languages", [
+                    ...formData.additionalInfo.languages,
+                    value,
+                  ]);
+                }
 
                 e.target.value = "";
               }}
-              style={{width: "49%", cursor: "pointer"}}
+              style={{ width: "49%", cursor: "pointer" }}
             >
               <option value="">Select language</option>
-              {["English", "Spanish", "Hindi", "French"].map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang}
-                </option>
-              ))}
+              {["English", "Hindi", "Telugu", "Tamil", "Kannada", "Spanish", "French"].map(
+                (lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                )
+              )}
             </select>
 
-            {/* Selected languages */}
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+            {/* Selected language chips */}
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                flexWrap: "wrap",
+                marginTop: "8px",
+              }}
+            >
               {formData.additionalInfo.languages.map((lang) => (
                 <span
                   key={lang}
@@ -634,21 +708,25 @@ function EditProfile() {
                     cursor: "pointer",
                   }}
                   onClick={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      additionalInfo: {
-                        ...prev.additionalInfo,
-                        languages: prev.additionalInfo.languages.filter((l) => l !== lang),
-                      },
-                    }))
+                    formik.setFieldValue(
+                      "additionalInfo.languages",
+                      formData.additionalInfo.languages.filter((l) => l !== lang)
+                    )
                   }
                 >
                   {lang} ✕
                 </span>
               ))}
             </div>
-          </div>
 
+            {/* Validation error */}
+            {formik.touched.additionalInfo?.languages &&
+              formik.errors.additionalInfo?.languages && (
+                <small style={{ color: "red" }}>
+                  {formik.errors.additionalInfo.languages}
+                </small>
+              )}
+          </div>
         </div>
 
         {/* Action Buttons */}
