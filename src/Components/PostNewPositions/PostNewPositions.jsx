@@ -306,7 +306,7 @@ const PostNewPositions = () => {
                 <textarea
                   className="auth-input"
                   rows={6}
-                  style={{ resize: 'vertical' }}
+                  style={{ resize: 'vertical', height:"120px" }}
                   placeholder="Describe the role and responsibilities..."
                   name="description"
                   value={formik.values.description}
@@ -511,6 +511,7 @@ const PostNewPositions = () => {
                 <textarea
                   className="auth-input"
                   rows={4}
+                  style={{height:"120px"}}
                   placeholder="Any other requirements..."
                   name="additionalReqs"
                   value={formik.values.additionalReqs}
