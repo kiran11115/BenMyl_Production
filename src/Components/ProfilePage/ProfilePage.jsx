@@ -16,63 +16,72 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import TeamMembersTable from "./TeamMemberTable";
+import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("CompanyId");
 
-  const companyData = {
-    id: "cmp_24781",
-    slug: "talentbridge-hr",
-    name: "John Smith",
-    companyname: "Nimbus Labs",
-    size: "100-200",
-    status: "Active",
-    industry: "Staffing & Recruiting",
-    foundedYear: "2018",
-    websiteUrl: "https://talentbridge.com",
-    domain: "talentbridge.com",
+  const { data: apiData, isLoading } =
+    useGetRecruiterProfileQuery(Number(userId), {
+      skip: !userId,
+    });
 
-    headquarters: {
-      city: "San francisco",
-      state: "CA",
-      country: "USA",
-      postalCode: "572734",
-      street1: "27-1-72/4, hms  knska",
-      street2: "3rd Floor, Tech Tower",
-    },
+  const companyData = apiData
+    ? {
+      id: apiData.authInfoID,
+      slug: "",
+      name: apiData.fullName,
+      companyname: apiData.companyName,
+      size: "100-200",
+      status: "Active",
+      industry: "Staffing & Recruiting",
+      foundedYear: apiData.createdate,
+      websiteUrl: "",
+      domain: "",
 
-    description:
-      "TalentBridge Solutions is a leading staffing and recruitment firm specializing in healthcare, IT, and engineering talent acquisition. We partner with enterprises to build high-performing teams through strategic hiring, talent pipelining, and workforce management solutions. Our HR technology platform streamlines recruitment workflows, candidate tracking, and employee onboarding for scalable growth.",
-
-    contact: {
-      email: "hr@talentbridge.com",
-      phone: "+91 891 234 5678",
-      linkedinUrl: "https://linkedin.com/company/talentbridge-solutions",
-    },
-
-    teamMembers: [
-      {
-        username: "hr-manager",
-        email: "hr-manager@talentbridge.com",
-        role: "HR Manager",
+      headquarters: {
+        city: apiData.city,
+        state: apiData.state,
+        country: apiData.country,
+        postalCode: apiData.postalCode,
+        street1: apiData.streetAddress1,
+        street2: apiData.streetAddress2,
       },
-      {
-        username: "recruiter-lead",
-        email: "lead-recruiter@talentbridge.com",
-        role: "Recruitment Lead",
+
+      description: apiData.description,
+
+      contact: {
+        email: apiData.emailid,
+        phone: apiData.phone,
+        linkedinUrl: apiData.linkedinURL,
       },
-      {
-        username: "talent-admin",
-        email: "admin@talentbridge.com",
-        role: "Talent Admin",
-      },
-      {
-        username: "onboarding-specialist",
-        email: "onboarding@talentbridge.com",
-        role: "Onboarding Specialist",
-      },
-    ],
-  };
+
+      role: apiData.role,
+      company: apiData.company,
+      startYear: apiData.startYear,
+      endYear: apiData.endYear,
+      experience: apiData.experience,
+      jobtitle: apiData.jobtitle,
+      education: apiData.education,
+      languagesSpoken: apiData.languagesSpoken
+        ? apiData.languagesSpoken.split(",")
+        : [],
+      referredBy: apiData.referedBy,
+
+      profilePhoto:
+        apiData.profilePhoto ||
+        apiData.profilePhotos ||
+        apiData.ProfilePhotos ||
+        apiData.profilephoto,
+
+    }
+    : null;
+
+  /* ✅ NOW place guard HERE */
+  if (isLoading || !companyData) return null;
+
 
   const fullAddress = [
     companyData.headquarters?.street1,
@@ -89,6 +98,18 @@ const ProfilePage = () => {
   const onEdit = () => {
     navigate("/user/edit-profile");
   };
+
+  const workExperiences = companyData.jobtitle
+    ? [
+      {
+        title: companyData.jobtitle,
+        company: companyData.company,
+        start: companyData.startYear,
+        end: companyData.endYear || "Present",
+      },
+    ]
+    : [];
+
 
   const onAccountSettings = () => {
     navigate("/admin/account-settings");
@@ -115,11 +136,25 @@ const ProfilePage = () => {
               {/* Company Header Card */}
               <div className="project-card">
                 <div className="d-flex gap-3 align-items-start">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="TalentBridge Logo"
-                    className="profile-avatar-lg"
-                  />
+                  {/* Profile Photo */}
+                  {companyData.profilePhoto && (
+                    <img
+                      src={
+                        companyData.profilePhoto.startsWith("http")
+                          ? `${companyData.profilePhoto}?t=${Date.now()}`
+                          : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
+                      }
+                      alt="Profile"
+                      className="profile-avatar-lg"
+                    />
+                  )}
+
+                  {/* Initials fallback (only when no photo) */}
+                  {!companyData.profilePhoto && (
+                    <div className="profile-avatar-placeholder">
+                      {companyData.name?.charAt(0)}
+                    </div>
+                  )}
 
                   <div className="profile-header-content w-100">
                     <div className="d-flex align-items-center justify-content-between gap-3">
@@ -344,9 +379,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div
-                className="project-card"
-              >
+              <div className="project-card">
                 {/* Header */}
                 <div
                   style={{
@@ -361,7 +394,6 @@ const ProfilePage = () => {
                 >
                   Work Experience
                 </div>
-       
 
                 {/* Experience List */}
                 <div
@@ -371,39 +403,27 @@ const ProfilePage = () => {
                     gap: "14px",
                   }}
                 >
-                  {/* Experience Row */}
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#1f2937",
-                        marginBottom: "2px",
-                      }}
-                    >
-                      Recruiter
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      Nimbus Labs • 2019 — Present
-                    </div>
-                  </div>
-
-                  {/* Experience Row */}
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#1f2937",
-                        marginBottom: "2px",
-                      }}
-                    >
-                      HR Intern
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      TalentBridge • 2017 — 2019
-                    </div>
-                  </div>
+                  {workExperiences.length > 0 ? (
+                    workExperiences.map((exp, index) => (
+                      <div key={index}>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#1f2937",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          {exp.title}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                          {exp.company} • {exp.start} — {exp.end}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ fontSize: "12px", color: "#6b7280" }}>-</div>
+                  )}
                 </div>
 
                 {/* Summary */}
@@ -419,11 +439,14 @@ const ProfilePage = () => {
                 >
                   <span>Total Experience:</span>
                   <span style={{ fontWeight: 600, color: "#1f2937" }}>
-                    5 Years
+                    {companyData.experience
+                      ? `${companyData.experience} Years`
+                      : "-"}
                   </span>
                 </div>
               </div>
             </div>
+
 
             <div className="col-12 col-md-12 col-lg-4 mb-4">
               <div className="project-card">
@@ -441,7 +464,7 @@ const ProfilePage = () => {
                   </span>
                 </div>
 
-                {/* Professional Information */}
+                {/* Job Title */}
                 <div
                   style={{
                     display: "flex",
@@ -459,10 +482,11 @@ const ProfilePage = () => {
                     Job Title :
                   </span>
                   <span style={{ fontSize: "13px", color: "#374151" }}>
-                    Recruiter
+                    {companyData.jobtitle || "-"}
                   </span>
                 </div>
 
+                {/* Experience */}
                 <div
                   style={{
                     display: "flex",
@@ -480,10 +504,13 @@ const ProfilePage = () => {
                     Experience :
                   </span>
                   <span style={{ fontSize: "13px", color: "#374151" }}>
-                    5 Years
+                    {companyData.experience
+                      ? `${companyData.experience} Years`
+                      : "-"}
                   </span>
                 </div>
 
+                {/* Education */}
                 <div
                   style={{
                     display: "flex",
@@ -501,7 +528,7 @@ const ProfilePage = () => {
                     Education :
                   </span>
                   <span style={{ fontSize: "13px", color: "#374151" }}>
-                    Bachelor's Degree
+                    {companyData.education || "-"}
                   </span>
                 </div>
 
@@ -522,10 +549,13 @@ const ProfilePage = () => {
                   >
                     Languages Spoken :
                   </span>
+
                   <div className="status-tag status-progress d-flex gap-3">
-                    {["English", "Spanish"].map((lang, i) => (
-                      <span key={i}>{lang}</span>
-                    ))}
+                    {companyData.languagesSpoken?.length > 0
+                      ? companyData.languagesSpoken.map((lang, i) => (
+                        <span key={i}>{lang}</span>
+                      ))
+                      : <span>-</span>}
                   </div>
                 </div>
 
@@ -540,10 +570,13 @@ const ProfilePage = () => {
                   >
                     Referred By :
                   </span>
-                  <a href="">gsrinivas@mylastech.com</a>
+                  <span style={{ fontSize: "13px", color: "#374151" }}>
+                    {companyData.referredBy || "-"}
+                  </span>
                 </div>
               </div>
             </div>
+
 
             {/* Team members table */}
             <div className="col-12 mt-3">

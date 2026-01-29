@@ -11,9 +11,14 @@ import {
 
 function EditProfile() {
   const navigate = useNavigate();
-  const [updateRecruiterProfile] = useUpdateRecruiterProfileMutation();
+  const [updateRecruiterProfile, { isLoading: isSaving }] =
+  useUpdateRecruiterProfileMutation();
+
   /* ================= LOGO ================= */
   const [logoPreview, setLogoPreview] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  
+
 
   const userId = localStorage.getItem("CompanyId"); // stores authInfoID = 315
 
@@ -139,22 +144,37 @@ function EditProfile() {
       fd.append("ReferedBy", values.additionalInfo.referredBy);
       fd.append("LanguagesSpoken", values.additionalInfo.languages.join(","));
 
-      if (values.ProfilePhotos) {
-        fd.append("ProfilePhotos", values.ProfilePhotos);
+      if (logoFile instanceof File) {
+        fd.append("ProfilePhotos", logoFile);
       }
 
+
       await updateRecruiterProfile(fd).unwrap();
-      navigate("/user/user-profile");
+      navigate("/user/user-profile", { state: { refresh: true } });
+
     },
   });
 
   useEffect(() => {
     if (!recruiterData) return;
 
-    // ✅ SET IMAGE PREVIEW FROM API
-    if (recruiterData.profilePhoto) {
-      setLogoPreview(recruiterData.profilePhoto);
+
+    // ✅ SET IMAGE PREVIEW FROM API (NORMALIZED)
+    const photo =
+      recruiterData.profilePhoto ||
+      recruiterData.profilePhotos ||
+      recruiterData.ProfilePhotos ||
+      recruiterData.profilephoto;
+
+    if (photo) {
+      const imageUrl = photo.startsWith("http")
+        ? photo
+        : `https://webapidev.benmyl.com/${photo}`;
+
+      setLogoPreview(imageUrl);
     }
+
+
 
     formik.setValues({
       name: recruiterData.fullName || "",
@@ -251,16 +271,38 @@ function EditProfile() {
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    formik.setFieldValue("ProfilePhotos", file);
-    setLogoPreview(URL.createObjectURL(file));
+
+    if (!file.type.startsWith("image/")) {
+      alert("Invalid file type");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Max size 5MB");
+      return;
+    }
+
+    setLogoFile(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    if (logoPreview) URL.revokeObjectURL(logoPreview);
+    setLogoPreview(previewUrl);
   };
+
 
   const removeLogo = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // revoke only blob URLs, not backend URLs
+    if (logoPreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(logoPreview);
+    }
+
     setLogoPreview(null);
-    formik.setFieldValue("ProfilePhotos", null);
+    setLogoFile(null);
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -734,9 +776,15 @@ function EditProfile() {
           <button type="button" onClick={handleCancel} className="btn-secondary">
             <FiX /> Cancel
           </button>
-          <button type="submit" className="btn-primary">
-            <FiSave /> Save Changes
+          <button
+            type="submit"
+            className="btn-primary d-flex gap-1"
+            disabled={isSaving}
+          >
+            <FiSave />
+            {isSaving ? "Saving..." : "Save Changes"}
           </button>
+
         </div>
       </form>
     </div>

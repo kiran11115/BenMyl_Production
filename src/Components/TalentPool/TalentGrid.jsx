@@ -18,7 +18,7 @@ const TalentGridView = ({
     <div>
       {/* Matching profiles count */}
       <div className="grid-meta">
-        <div className="grid-count">
+        <div className="grid-count text-capitalize">
          matching {matchingCount === 1 ? "profile" : "profiles"}
         </div>
       </div>
