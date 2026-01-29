@@ -42,8 +42,6 @@ const JobOverview = () => {
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             gap: "24px",
-            fontFamily: "Inter, sans-serif",
-            background: "#f8fafc",
         },
 
         card: {

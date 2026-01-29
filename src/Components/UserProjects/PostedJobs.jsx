@@ -96,11 +96,6 @@ const PostedJobs = () => {
           flex-shrink: 0;
         }
 
-        .job-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0;
-        }
 
         .company {
           font-size: 14px;
