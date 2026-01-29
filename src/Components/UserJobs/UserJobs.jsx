@@ -1,81 +1,27 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { FiSearch, FiMapPin, FiClock, FiDollarSign, FiUser, FiPlus } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
 import JobFilters from '../Filters/JobFilters';
 import JobModal from './JobModal';
 import './Jobs.css';
+import { useGetFindJobsMutation } from '../../State-Management/Api/ProjectApiSlice';
 
-
-// --- EXPANDED DATA TO FILL CARDS ---
-const JOBS_DATA = [
-  {
-    id: 1,
-    title: "Senior Frontend Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
-    type: "Contract",
-    minRate: 80,
-    maxRate: 100,
-    rateText: "$80-100/hr",
-    experienceLevel: "Senior Level",
-    experienceText: "5+ yrs",
-    timeLeft: "3 days left",
-    description: "We are looking for a Senior Frontend Developer to join our team. You will be responsible for building and maintaining high-quality web applications using modern technologies.",
-    skills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"]
-  },
-  {
-    id: 2,
-    title: "Full Stack Engineer",
-    company: "InnovateLabs",
-    location: "Hybrid",
-    type: "Contract",
-    minRate: 90,
-    maxRate: 120,
-    rateText: "$90-120/hr",
-    experienceLevel: "Mid Level",
-    experienceText: "4+ yrs",
-    timeLeft: "1 day left",
-    description: "Seeking a Full Stack Engineer proficient in MERN stack to lead our backend migration and optimize database performance.",
-    skills: ["Node.js", "React", "MongoDB", "AWS", "Docker"]
-  },
-  {
-    id: 3,
-    title: "UI/UX Designer",
-    company: "Creative Studio",
-    location: "On-site",
-    type: "Full-time",
-    minRate: 60,
-    maxRate: 80,
-    rateText: "$60-80/hr",
-    experienceLevel: "Mid Level",
-    experienceText: "3+ yrs",
-    timeLeft: "5 days left",
-    description: "Design intuitive user interfaces for mobile apps. You will work closely with product managers to define visual languages.",
-    skills: ["Figma", "Adobe XD", "Prototyping", "User Research"]
-  },
-  {
-    id: 4,
-    title: "React Native Developer",
-    company: "AppSolutions",
-    location: "Remote",
-    type: "Contract",
-    minRate: 70,
-    maxRate: 95,
-    rateText: "$70-95/hr",
-    experienceLevel: "Senior Level",
-    experienceText: "4+ yrs",
-    timeLeft: "2 days left",
-    description: "Build cross-platform mobile applications for iOS and Android. Must have experience with native modules.",
-    skills: ["React Native", "Redux", "iOS", "Android", "Jest"]
-  }
-];
-
+const PAGE_SIZE = 10;
 
 const Jobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
 
-  // -- Filter States --
-  const [searchQuery, setSearchQuery] = useState("");
+  // pagination
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [allJobs, setAllJobs] = useState([]);
+
+  // scroll container ref
+  const resultsRef = useRef(null);
+
+  const [getTalentJobs, { isLoading }] = useGetFindJobsMutation();
+
+  // filters (unchanged)
   const [filters, setFilters] = useState({
     keyword: "",
     locationType: "Any Type",
@@ -87,6 +33,80 @@ const Jobs = () => {
     maxBudget: 200,
   });
 
+  // =========================
+  // FETCH JOBS (pagination)
+  // =========================
+  const fetchJobs = async () => {
+    if (!hasMore) return;
+
+    const payload = {
+      pageNumber,
+      pageSize: PAGE_SIZE,
+      filters: [], // plug filters later
+    };
+
+    const res = await getTalentJobs(payload).unwrap();
+
+    if (!Array.isArray(res) || res.length === 0) {
+      setHasMore(false);
+      return;
+    }
+
+    setAllJobs((prev) =>
+      pageNumber === 1 ? res : [...prev, ...res]
+    );
+
+    // stop pagination if backend returns less than page size
+    if (res.length < PAGE_SIZE) {
+      setHasMore(false);
+    }
+  };
+
+  // initial + pagination fetch
+  useEffect(() => {
+    fetchJobs();
+  }, [pageNumber]);
+
+  // =========================
+  // SCROLL HANDLER (same as TalentPool)
+  // =========================
+  useEffect(() => {
+    const el = resultsRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      if (
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+        hasMore &&
+        !isLoading
+      ) {
+        setPageNumber((prev) => prev + 1);
+      }
+    };
+
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [hasMore, isLoading]);
+
+  // =========================
+  // NORMALIZE API DATA → UI
+  // =========================
+  const jobs = useMemo(() => {
+    return allJobs.map((job) => ({
+      id: job.jobID,
+      title: job.jobTitle,
+      company: job.companyName,
+      location: job.location,
+      type: job.employeeType,
+      rateText: job.salaryRange_min
+        ? `$${job.salaryRange_min}-${job.salaryRange_max}/hr`
+        : "N/A",
+      experienceText: job.experienceLevel,
+      skills: job.requiredSkills
+        ? job.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    }));
+  }, [allJobs]);
 
   const updateFilters = (newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -96,18 +116,6 @@ const Jobs = () => {
   const handleAddTalentClick = (job) => {
     setSelectedJob(job);
   };
-
-
-  // -- Filter Logic --
-  const filteredJobs = useMemo(() => {
-    return JOBS_DATA.filter(job => {
-      const matchesSearch =
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesBudget = job.minRate <= filters.maxBudget;
-      return matchesSearch && matchesBudget;
-    });
-  }, [searchQuery, filters]);
 
 
   return (
@@ -152,7 +160,11 @@ const Jobs = () => {
 
 
       {/* 2. Layout (Sidebar + Grid) */}
-      <div className="jobs-layout">
+      <div className="jobs-layout" style={{
+    display: "flex",
+    gap: 16,
+    height: "calc(100vh - 0px)", // ✅ FIXED HEIGHT
+  }}>
 
         {/* Sidebar */}
         <aside>
@@ -164,9 +176,10 @@ const Jobs = () => {
 
 
         {/* Main Grid */}
-        <main className="jobs-grid">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
+        <main className="jobs-results-wrapper" ref={resultsRef}>
+          <div className="jobs-grid">
+          {jobs.length > 0 ? (
+            jobs.map((job) => (
               <div
                 key={job.id}
                 className={`project-card ${selectedJob?.id === job.id ? 'active-card' : ''}`}
@@ -253,6 +266,12 @@ const Jobs = () => {
             <div className="card-base" style={{ padding: '40px', textAlign: 'center', gridColumn: '1 / -1' }}>
               <h3>No jobs found matching your filters</h3>
               <p style={{ color: 'var(--slate-500)' }}>Try adjusting your search criteria.</p>
+            </div>
+          )}
+          </div>
+          {isLoading && (
+            <div style={{ textAlign: "center", padding: 16 }}>
+              Loading more jobs…
             </div>
           )}
         </main>

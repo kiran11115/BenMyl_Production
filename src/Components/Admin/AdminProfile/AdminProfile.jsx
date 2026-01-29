@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   FiMapPin,
   FiBriefcase,
@@ -16,43 +16,51 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import TeamMembersTable from "./TeamMembersTable";
+import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import { useGetTeamMembersQuery } from "../../../State-Management/Api/AdminDetailsApiSlice";
 
 const AdminProfile = () => {
   const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
+  const emailId = localStorage.getItem("Email"); // or from auth state
+
+const {
+  data: apiData,
+  isLoading,
+  isError,
+} = useGetCompanyProfileEditQuery(emailId);
+
+const {
+  data: teamApiData = [],
+  isLoading: isTeamLoading,
+  isError: isTeamError,
+} = useGetTeamMembersQuery(emailId);
 
   // NOTE: Existing data is unchanged; only plan + teamMembers are added.
-  const companyData = {
-    id: "cmp_10231",
-    slug: "nimbus-labs",
-    name: "Nimbus Labs",
-    tagline: "Design-led product studio",
-    status: "Operating",
-    companyType: "Privately Held",
-    industry: "Software Development",
-    size: "51–200 employees",
-    foundedYear: "2016",
-    websiteUrl: "https://nimbuslabs.com",
-    domain: "nimbuslabs.com",
+ const companyData = useMemo(() => {
+  if (!apiData) return null;
 
-    headquarters: {
-      city: "San Francisco",
-      state: "CA",
-      country: "US",
-      postalCode: "94105",
-      street1: "123 Market St",
-      street2: "Suite 500",
-    },
+  return {
+    name: apiData.companyname,
+    tagline: apiData.tagline,
+    industry: apiData.industry,
+    size: apiData.companySize,
+    foundedYear: apiData.foundedYear,
+    description: apiData.description,
+    websiteUrl: apiData.websiteURL,
+    domain: apiData.domain,
+      street1: apiData.streetAddress1,
+      street2: apiData.streetAddress2,
+      city: apiData.city,
+      state: apiData.state,
+      postalCode: apiData.postalCode,
+      country: apiData.country,
+      email: apiData.emailid,
+      phone: apiData.phone,
+      linkedinUrl: apiData.linkedInURL,
 
-    description:
-      "Nimbus Labs builds and improves B2B digital products with UX-first design, fast iteration, and maintainable UI systems. We turn complex workflows into clear, reliable experiences—shipping production-ready interfaces, reducing friction for users, and helping teams scale confidently as requirements evolve, features grow, and timelines stay tight.",
+    logo: apiData.companylogo,
 
-    contact: {
-      email: "hello@nimbuslabs.com",
-      phone: "+1 (555) 123-4567",
-      linkedinUrl: "https://linkedin.com/company/nimbuslabs",
-    },
-
-    // Added: subscription plan
+    // Optional / future
     plan: {
       name: "Business",
       status: "Active",
@@ -61,26 +69,20 @@ const AdminProfile = () => {
       seats: 10,
       seatsUsed: 6,
     },
-
-    // Added: team members
-    teamMembers: [
-      { username: "nimbus.owner", email: "owner@nimbuslabs.com", role: "Owner" },
-      { username: "sarah.admin", email: "sarah@nimbuslabs.com", role: "Admin" },
-      { username: "arun.member", email: "arun@nimbuslabs.com", role: "Member" },
-    ],
   };
+}, [apiData]);
 
-  const fullAddress = [
-    companyData.headquarters?.street1,
-    companyData.headquarters?.street2,
-    [companyData.headquarters?.city, companyData.headquarters?.state]
-      .filter(Boolean)
-      .join(", "),
-    companyData.headquarters?.postalCode,
-    companyData.headquarters?.country,
-  ]
-    .filter(Boolean)
-    .join(" • ");
+const teamMembers = useMemo(() => {
+  if (!Array.isArray(teamApiData)) return [];
+
+  return teamApiData.map((member) => ({
+    username: member.name || member.emailID.split("@")[0],
+    email: member.emailID,
+    role: member.role,
+    status: member.accepted ? "Active" : "Pending",
+    joinedOn: member.dateofjoin,
+  }));
+}, [teamApiData]);
 
   const onEdit = () => {
     navigate("/admin/edit-profile");
@@ -111,57 +113,52 @@ const AdminProfile = () => {
               {/* Company Header Card */}
               <div className="project-card">
                 <div className="d-flex gap-3 align-items-start">
-                  <img
-                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
-                    alt="Company Logo"
-                    className="profile-avatar-lg"
-                  />
-
+                 <img
+  src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"}
+  alt="Company Logo"
+  className="profile-avatar-lg"
+/>
                   <div className="profile-header-content w-100">
                     <div className="d-flex align-items-center gap-3">
-                      <h1 className="mb-1">{companyData.name}</h1>
+                      <h1 className="mb-1">{companyData?.name}</h1>
                     </div>
 
-                    <div className="card-title mb-2">{companyData.tagline}</div>
+                    <div className="card-title mb-2">{companyData?.tagline}</div>
 
                     {/* Meta row */}
                     <div className="profile-meta-row">
                       <span className="meta-item">
-                        <FiBriefcase /> {companyData.industry}
+                        <FiBriefcase /> {companyData?.industry}
                       </span>
                       <span className="meta-item">
-                        <FiMapPin /> {companyData.headquarters.city},{" "}
-                        {companyData.headquarters.state}
+                        <FiMapPin /> {companyData?.city},{" "}
+                        {companyData?.state}
                       </span>
                       <span className="meta-item">
-                        <FiUsers /> {companyData.size}
+                        <FiUsers /> {companyData?.size}
                       </span>
                       {/* <span className="meta-item">
-                        <FiCalendar /> Founded {companyData.foundedYear}
+                        <FiCalendar /> Founded {companyData?.foundedYear}
                       </span> */}
                     </div>
 
                     {/* Status */}
                     <div className="profile-status-wrapper">
-                      <span className="status-tag status-completed">
-                        {companyData.status}
-                      </span>
-                      <span className="status-tag status-progress">
-                        {companyData.companyType}
-                      </span>
+                      <span className="status-tag status-completed">Operating</span>
+                      <span className="status-tag status-progress">Privately Held</span>
                     </div>
 
                     {/* About */}
                     <div className="mt-3">
                       <h3 className="card-title mb-2">About</h3>
                       <div className="small text-muted" style={{height:"40px", overflowY:"scroll"}}>
-                        {companyData.description}
+                        {companyData?.description}
                       </div>
                     </div>
 
-                    {/* Headquarters */}
+                    {/*  */}
                     {/* <div className="mt-3">
-                      <h3 className="card-title">Headquarters</h3>
+                      <h3 className="card-title"></h3>
                       <div className="small text-muted">{fullAddress}</div>
                     </div> */}
                   </div>
@@ -173,20 +170,20 @@ const AdminProfile = () => {
             <h3 className="card-title">Subscription Plan</h3>
             <div className="contact-list">
               <div className="contact-item">
-                <FiFileText className="contact-icon" /> {companyData.plan.name} (
-                {companyData.plan.status})
+                <FiFileText className="contact-icon" /> {companyData?.plan.name} (
+                {companyData?.plan.status})
               </div>
               <div className="contact-item">
                 <FiCalendar className="contact-icon" /> Billing:{" "}
-                {companyData.plan.billingCycle}
+                {companyData?.plan.billingCycle}
               </div>
               <div className="contact-item">
                 <FiCalendar className="contact-icon" /> Renews on:{" "}
-                {companyData.plan.renewsOn}
+                {companyData?.plan.renewsOn}
               </div>
               <div className="contact-item">
                 <FiUsers className="contact-icon" /> Seats:{" "}
-                {companyData.plan.seatsUsed}/{companyData.plan.seats}
+                {companyData?.plan.seatsUsed}/{companyData?.plan.seats}
               </div>
             </div>
           </div>
@@ -195,7 +192,7 @@ const AdminProfile = () => {
             {/* Added: Team members table */}
             <div className="col-12 mt-3">
               <div className="table-card">
-                <TeamMembersTable />
+                <TeamMembersTable  teammembers={teamMembers} isLoading={isTeamLoading}/>
               </div>
             </div>
           </div>
@@ -223,24 +220,24 @@ const AdminProfile = () => {
             <div className="contact-list">
               <div className="contact-item">
                 <FiGlobe className="contact-icon" />{" "}
-                <a href={companyData.websiteUrl} target="_blank" rel="noreferrer">
-                  {companyData.domain}
+                <a href={companyData?.websiteUrl} target="_blank" rel="noreferrer">
+                  {companyData?.domain}
                 </a>
               </div>
               <div className="contact-item">
                 <FiBriefcase className="contact-icon" /> Industry:{" "}
-                {companyData.industry}
+                {companyData?.industry}
               </div>
               <div className="contact-item">
-                <FiUsers className="contact-icon" /> Size: {companyData.size}
+                <FiUsers className="contact-icon" /> Size: {companyData?.size}
               </div>
               <div className="contact-item">
                 <FiCalendar className="contact-icon" /> Founded:{" "}
-                {companyData.foundedYear}
+                {companyData?.foundedYear}
               </div>
               <div className="contact-item">
                 <FiMapPin className="contact-icon" /> HQ:{" "}
-                {companyData.headquarters.city}, {companyData.headquarters.state}
+                {companyData?.city}, {companyData?.state}
               </div>
             </div>
           </div>
@@ -251,17 +248,17 @@ const AdminProfile = () => {
             <div className="contact-list">
               <div className="contact-item">
                 <FiMail className="contact-icon" />{" "}
-                <a href={`mailto:${companyData.contact.email}`}>
-                  {companyData.contact.email}
+                <a href={`mailto:${companyData?.email}`}>
+                  {companyData?.email}
                 </a>
               </div>
               <div className="contact-item">
-                <FiPhone className="contact-icon" /> {companyData.contact.phone}
+                <FiPhone className="contact-icon" /> {companyData?.phone}
               </div>
               <div className="contact-item">
                 <FiLinkedin className="contact-icon" />{" "}
                 <a
-                  href={companyData.contact.linkedinUrl}
+                  href={companyData?.linkedinUrl}
                   target="_blank"
                   rel="noreferrer"
                 >

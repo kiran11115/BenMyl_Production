@@ -14,9 +14,7 @@ const AdminProfileEdit = () => {
   const companyid = localStorage.getItem("logincompanyid");
   const emailId = localStorage.getItem("Email");
   const { data: companyData, isLoading: isFetching } =
-  useGetCompanyProfileEditQuery(emailId, {
-    skip: !emailId,
-  });
+  useGetCompanyProfileEditQuery(emailId);
 
   // Logo preview
   const [logoPreview, setLogoPreview] = useState(null);
@@ -110,8 +108,8 @@ const AdminProfileEdit = () => {
   });
 
   // ✅ Logo preview from backend
-  if (companyData.companylogo) {
-    setLogoPreview(companyData.companylogo);
+  if (companyData?.companylogo) {
+    setLogoPreview(`${companyData.companylogo}?t=${Date.now()}`);
   }
 }, [companyData]);
 

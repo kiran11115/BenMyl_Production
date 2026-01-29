@@ -24,7 +24,16 @@ export const ProjectApiSlice = apiSlice.injectEndpoints({
         body: formData,
       }),
     }),
+
+    getFindJobs: builder.mutation({
+      query: (payload) => ({
+        url: "/api/ProfileBuilder/getuatfindjobs",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
   }),
 });
 
-export const { usePostJobMutation, useSaveJobDraftMutation } = ProjectApiSlice;
+export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation } = ProjectApiSlice;

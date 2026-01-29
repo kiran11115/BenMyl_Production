@@ -51,6 +51,7 @@ function Signin() {
           localStorage.setItem("CompanyName", response?.companyName);
           localStorage.setItem("UserName", response?.userName);
           localStorage.setItem("logincompanyid", response?.compabnyId);
+          localStorage.setItem("Role", response?.roleID);
           const role = response?.roleID;
 
           if (role === "Admin") {

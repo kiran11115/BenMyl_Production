@@ -9,6 +9,8 @@ function AdminHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const profileRef = useRef(null);
+    const company = localStorage.getItem("CompanyName");
+    const role = localStorage.getItem("Role");
 
     // Initialize navigation hook
     const navigate = useNavigate();
@@ -130,8 +132,8 @@ function AdminHeader() {
                                 className="profile-avatar"
                             />
                             <div className="profile-info">
-                                <span className="profile-name">Nimbus Labs</span>
-                                <span className="profile-role">Admin</span>
+                                <span className="profile-name">{company}</span>
+                                <span className="profile-role">{role}</span>
                             </div>
                             <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
                         </div>

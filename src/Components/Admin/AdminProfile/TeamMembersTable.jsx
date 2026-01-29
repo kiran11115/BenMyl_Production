@@ -2,48 +2,8 @@ import React, { useState, useMemo } from "react";
 import { FiMoreVertical, FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 
-function TeamMembersTable() {
-  const companyData = {
-    id: "cmp_10231",
-    slug: "nimbus-labs",
-    name: "Nimbus Labs",
-    tagline: "Design-led product studio for B2B teams",
-    status: "Operating",
-    companyType: "Privately Held",
-    industry: "Software Development",
-    size: "51–200 employees",
-    foundedYear: "2016",
-    websiteUrl: "https://nimbuslabs.com",
-    domain: "nimbuslabs.com",
-    headquarters: {
-      city: "San Francisco",
-      state: "CA",
-      country: "US",
-      postalCode: "94105",
-      street1: "123 Market St",
-      street2: "Suite 500",
-    },
-    description:
-      "Nimbus Labs builds and improves B2B digital products with a focus on UX quality, speed-to-market, and maintainable UI systems.",
-    contact: {
-      email: "hello@nimbuslabs.com",
-      phone: "+1 (555) 123-4567",
-      linkedinUrl: "https://linkedin.com/company/nimbuslabs",
-    },
-    plan: {
-      name: "Business",
-      status: "Active",
-      billingCycle: "Monthly",
-      renewsOn: "2026-02-01",
-      seats: 10,
-      seatsUsed: 6,
-    },
-    teamMembers: [
-      { username: "nimbus.owner", email: "owner@nimbuslabs.com", role: "Owner" },
-      { username: "sarah.admin", email: "sarah@nimbuslabs.com", role: "Admin" },
-      { username: "arun.member", email: "arun@nimbuslabs.com", role: "Member" },
-    ],
-  };
+function TeamMembersTable({ teammembers = [], isLoading }) {
+ 
 
   // --- State (same pattern as RecentApplications) ---
   const [sortConfig, setSortConfig] = useState({
@@ -70,8 +30,8 @@ function TeamMembersTable() {
 
   // --- Sorting logic (same style as RecentApplications) ---
   const visibleMembers = useMemo(() => {
-    const members = companyData.teamMembers || [];
-    let sortableItems = [...members];
+  const members = Array.isArray(teammembers) ? teammembers : [];
+  let sortableItems = [...members];
 
     if (sortConfig.key) {
       sortableItems.sort((a, b) => {
@@ -84,7 +44,7 @@ function TeamMembersTable() {
     }
 
     return sortableItems; // no slicing, small static list
-  }, [companyData.teamMembers, sortConfig]);
+  }, [teammembers, sortConfig]);
 
   // --- Selection handler (same pattern) ---
   const handleSelectRow = (email) => {
@@ -145,7 +105,7 @@ function TeamMembersTable() {
             </span>
           )}
           <span style={{ fontSize: "12px", color: "#64748b" }}>
-            Showing {visibleMembers.length} of {companyData.teamMembers?.length || 0}
+            Showing {visibleMembers.length} of {teammembers.length}
           </span>
         </div>
       </div>

@@ -175,6 +175,13 @@
   gap: 24px;
 }
 
+.jobs-results-wrapper {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .job-card {
   padding: 24px;
   display: flex;
