@@ -58,13 +58,6 @@ const JobOverviewCard = ({ job, onClose }) => {
   gap: 10px;
 }
 
-.job-title {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.2;
-  color: #0f172a;
-}
-
 .job-subtitle {
   margin-top: 4px;
   display: flex;

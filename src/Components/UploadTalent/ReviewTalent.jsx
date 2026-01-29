@@ -110,7 +110,7 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
                     </div>
                 </>
             ) : (
-                <div className="auth-input" style={{ border: 'none', padding: '4px 0', fontWeight: 600 }}>{value || "—"}</div>
+                <div className="auth-input" style={{ border: 'none', padding: '4px 0', fontWeight: 600, height: "100%" }}>{value || "—"}</div>
             )}
         </div>
     );
@@ -133,7 +133,7 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) =
                     </div>
                 </>
             ) : (
-                <div className="auth-input" style={{ border: 'none', padding: '4px 0' }}>{value || "—"}</div>
+                <div className="auth-input" style={{ border: 'none', padding: '4px 0', height: "100%" }}>{value || "—"}</div>
             )}
         </div>
     );
@@ -149,7 +149,7 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel }) => {
             </div>
             {editing ? (
                 <>
-                    <textarea className="auth-input" style={{ minHeight: 70 }} value={temp} onChange={e => setTemp(e.target.value)} />
+                    <textarea className="auth-input" style={{ minHeight: 100 }} value={temp} onChange={e => setTemp(e.target.value)} />
                     <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                         <button className="btn-primary" onClick={() => onSave(temp.split(",").map(t => t.trim()).filter(Boolean))}>Save</button>
                         <button className="btn-secondary" onClick={onCancel}>Cancel</button>
@@ -511,7 +511,7 @@ formData.append(
 
                 {/* LEFT */}
                 <div className="auth-form-side" style={{ border: '1px solid #e2e8f0', borderRadius: '1rem', padding: 24, background: 'white', display: 'flex', flexDirection: 'column' }}>
-                    <h4 className="auth-title mb-4">2. Edit Information</h4>
+                    <h4 className="auth-title mb-4">Review & Edit Information</h4>
 
                     <div style={{ flex: 1, overflowY: 'auto' }}>
 
@@ -529,10 +529,10 @@ formData.append(
                                         cursor: 'pointer',
                                     }}
                                 >
-                                    <h5 className="auth-label">Basic Information</h5>
+                                    <h5 className="auth-label fw-bolder">Basic Information</h5>
                                     {openAccordion === "basicInfo" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
-                                <div style={smoothStyle(openAccordion === "basicInfo")} className="mt-2 scrollable" >
+                                <div style={smoothStyle(openAccordion === "basicInfo")} className="mt-2 scrollable">
                                     {["firstName", "lastName", "position", "phone", "email"].map(f => (
                                         <EditableField key={f} label={f} value={talent.basicInfo[f]}
                                             editing={editingSection === "basicInfo" && editingIndex === f}
@@ -561,10 +561,10 @@ formData.append(
                                 padding: "10px 10px 0px 10px"
                             }}>
                                 <div onClick={() => toggleAccordion("personalInfo")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
-                                    <h5 className="auth-label">Personal Information</h5>
+                                    <h5 className="auth-label fw-bolder">Personal Information</h5>
                                     {openAccordion === "personalInfo" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
-                                <div style={smoothStyle(openAccordion === "personalInfo")} className="mt-2">
+                                <div style={smoothStyle(openAccordion === "personalInfo")} className="mt-2 text-uppercase">
                                     {Object.keys(talent.personalInfo).map(field => {
                                         const isTxt = field === "bio";
                                         return isTxt ? (
@@ -595,7 +595,7 @@ formData.append(
                                 padding: "10px 10px 0px 10px"
                             }}>
                                 <div onClick={() => toggleAccordion("education")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
-                                    <h5 className="auth-label">Education</h5>
+                                    <h5 className="auth-label fw-bolder">Education</h5>
                                     {openAccordion === "education" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
                                 <div style={smoothStyle(openAccordion === "education")} className="mt-2">
@@ -645,7 +645,7 @@ formData.append(
                                 padding: "10px 10px 0px 10px"
                             }}>
                                 <div onClick={() => toggleAccordion("experience")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
-                                    <h5 className="auth-label">Experience</h5>
+                                    <h5 className="auth-label fw-bolder">Experience</h5>
                                     {openAccordion === "experience" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
                                 <div style={smoothStyle(openAccordion === "experience")} className="mt-2">
@@ -703,7 +703,7 @@ formData.append(
                                 padding: "10px 10px 0px 10px"
                             }}>
                                 <div onClick={() => toggleAccordion("projects")} style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
-                                    <h5 className="auth-label">Projects</h5>
+                                    <h5 className="auth-label fw-bolder">Projects</h5>
                                     {openAccordion === "projects" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
                                 <div style={smoothStyle(openAccordion === "projects")} className="mt-2">
@@ -769,7 +769,7 @@ formData.append(
                 {/* RIGHT */}
                 <div style={{ borderRadius: '1rem', border: '1px solid #e2e8f0', background: 'white' }}>
                     <h4 className="auth-title" style={{ padding: 16 }}>Preview Resume</h4>
-                    <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}>
+                    <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto', padding:"1rem" }}>
                         <PDFResumePreview data={data} />
                     </div>
                 </div>
