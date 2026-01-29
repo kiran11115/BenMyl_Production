@@ -16,6 +16,7 @@ export const RecruiterProfileApiSlice = apiSlice.injectEndpoints({
         method: "GET",
         params: { id },
       }),
+      providesTags:["RecruiterProfile"]
     }),
 
     updateRecruiterProfile: builder.mutation({
