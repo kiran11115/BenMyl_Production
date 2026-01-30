@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
+import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
 
 
 function AdminHeader() {
@@ -11,6 +12,23 @@ function AdminHeader() {
     const profileRef = useRef(null);
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
+
+    const emailId = localStorage.getItem("Email"); // or from auth state
+
+    const {
+        data: apiData,
+        isLoading,
+        isError,
+    } = useGetCompanyProfileEditQuery(emailId);
+
+    const companyData = useMemo(() => {
+        if (!apiData) return null;
+
+        return {
+            logo: apiData.companylogo,
+        };
+    }, [apiData]);
+
 
     // Initialize navigation hook
     const navigate = useNavigate();
@@ -127,8 +145,8 @@ function AdminHeader() {
                             tabIndex={0}
                         >
                             <img
-                                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
-                                alt="User Avatar"
+                                src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"}
+                                alt="Company Logo"
                                 className="profile-avatar"
                             />
                             <div className="profile-info">

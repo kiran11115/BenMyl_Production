@@ -36,7 +36,7 @@ const ProfilePage = () => {
       companyname: apiData.companyName,
       size: "100-200",
       status: "Active",
-      industry: "Staffing & Recruiting",
+      industry: apiData.role,
       foundedYear: apiData.createdate,
       websiteUrl: "",
       domain: "",

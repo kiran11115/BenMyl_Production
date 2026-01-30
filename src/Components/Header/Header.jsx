@@ -3,6 +3,8 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNav
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
 import "./Header.css";
 import Notifications from "./Notifications";
+import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +14,21 @@ function Header() {
   const user = localStorage.getItem("UserName");
   const role = localStorage.getItem("Role");
   const email = localStorage.getItem("Email");
+  const userId = localStorage.getItem("CompanyId");
+
+  const { data: apiData, isLoading } =
+    useGetRecruiterProfileQuery(Number(userId), {
+      skip: !userId,
+    });
+
+  const companyData = apiData
+    ? {
+      id: apiData.authInfoID,
+      slug: "",
+      profilePhoto: apiData.profilePhoto
+
+    }
+    : null;
 
   // Initialize navigation hook
   const navigate = useNavigate();
@@ -127,11 +144,17 @@ function Header() {
               role="button"
               tabIndex={0}
             >
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="User Avatar"
-                className="profile-avatar"
-              />
+              {companyData.profilePhoto && (
+                <img
+                  src={
+                    companyData.profilePhoto.startsWith("http")
+                      ? `${companyData.profilePhoto}?t=${Date.now()}`
+                      : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
+                  }
+                  alt="Profile"
+                  className="profile-avatar"
+                />
+              )}
               <div className="profile-info">
                 <span className="profile-name">{user}</span>
                 <span className="profile-role">{role}</span>
