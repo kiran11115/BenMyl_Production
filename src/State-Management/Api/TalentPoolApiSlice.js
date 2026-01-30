@@ -17,6 +17,7 @@ const TalentPoolApiSlice = apiSlice.injectEndpoints({
   }),
 }),
 
+
 getGroupedJobTitles: builder.query({
   query: (userId) => ({
     url: `/api/uatcompany/getalljobs?userId=${userId}`,
