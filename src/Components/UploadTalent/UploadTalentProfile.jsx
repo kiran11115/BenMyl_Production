@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
     FiMapPin,
     FiBriefcase,
@@ -14,83 +14,88 @@ import {
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
 import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useLazyGetEmployeeTalentProfileQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
 const UploadTalentProfile = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    
+const employeeId = location.state?.employeeId;
 
-    const profileData = {
-        name: "Sarah Anderson",
-        role: "Senior UX Designer",
-        location: "San Francisco, CA",
-        experience: "8+ years experience",
-        status: "Available for hire",
-        summary:
-            "Experienced UX Designer with 8+ years of creating user-centered digital experiences for various industries. Specialized in product design, user research, and design systems. Currently leading design initiatives at TechCorp, focusing on enterprise software solutions.",
-        stats: [
-            { label: "Projects Completed", value: "150+" },
-            { label: "Client Satisfaction", value: "98%" },
-        ],
-        skills: [
-            "UI/UX Design",
-            "User Research",
-            "Figma",
-            "Adobe XD",
-            "Sketch",
-            "Prototyping",
-            "Design Systems",
-            "Wireframing",
-            "User Testing",
-            "Information Architecture",
-            "Design Thinking",
-            "Team Leadership",
-        ],
-        workExperience: [
-            {
-                role: "Lead UX Designer",
-                company: "TechCorp",
-                period: "2020 - Present",
-                location: "San Francisco, CA",
-                desc: "Leading a team of designers, developing design systems, and managing enterprise projects.",
-            },
-            {
-                role: "Senior UX Designer",
-                company: "Design Studio",
-                period: "2018 - 2020",
-                location: "New York, NY",
-                desc: "Designed user interfaces for various clients in fintech and healthcare sectors.",
-            },
-            {
-                role: "UX Designer",
-                company: "StartupHub",
-                period: "2015 - 2018",
-                location: "Boston, MA",
-                desc: "Created user experiences for early-stage startups and conducted user research.",
-            },
-        ],
-        portfolio: [
-            {
-                title: "E-commerce Dashboard",
-                tags: ["React", "Redux", "TailwindCSS"],
-                img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-            },
-            {
-                title: "Travel App UI",
-                tags: ["React Native", "Firebase"],
-                img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-            },
-            {
-                title: "Financial Analytics Platform",
-                tags: ["TypeScript", "D3.js", "Node.js"],
-                img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
-            },
-            {
-                title: "Health Tracker",
-                tags: ["React", "GraphQL", "MongoDB"],
-                img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
-            },
-        ],
-    };
+const [
+  getEmployeeProfile,
+  { data: apiData, isLoading, isError },
+] = useLazyGetEmployeeTalentProfileQuery();
+
+useEffect(() => {
+  if (employeeId) {
+    getEmployeeProfile(employeeId);
+  }
+}, [employeeId, getEmployeeProfile]);
+
+const profileData = useMemo(() => {
+  if (!apiData) return null;
+
+  return {
+    name: `${apiData?.firstName} ${apiData?.lastName}`,
+    role: apiData?.title,
+    location: `${apiData?.city}, ${apiData?.state}`,
+    experience: `${apiData?.noofExperience}+ years experience`,
+    status: apiData?.status,
+
+    summary: apiData?.bio,
+    email: apiData?.emailAddress,
+    phoneNo: apiData?.phoneNo,
+    stats: [
+      { label: "Experience", value: `${apiData?.noofExperience}+ yrs` },
+      { label: "Projects", value: apiData?.employeeprojects?.length || 0 },
+    ],
+
+    skills: apiData?.skills ? apiData?.skills.split(",") : [],
+
+    workExperience:
+      apiData?.workexperiences?.map((w) => ({
+        role: w.position,
+        company: w.companyName,
+        period: `${w.startDate?.slice(0, 4)} - ${
+          w.endDate ? w.endDate.slice(0, 4) : "Present"
+        }`,
+        location: apiData?.city,
+        desc: w.description,
+      })) || [],
+
+    portfolio:
+      apiData?.employeeprojects?.map((p) => ({
+        title: p.projectName,
+        role: p.role,
+        description: p.description,
+        period: `${p.startDate?.slice(0, 10)} - ${
+      p.endDate ? p.endDate.slice(0, 10) : "Present"
+    }`,
+        tags: p.skills ? p.skills.split(",") : [],
+        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
+      })) || [],
+
+    education:
+      apiData.employee_Heighers?.map((edu) => ({
+        degree: edu.highestQualification,
+        school: edu.university,
+        field: edu.fieldofstudy,
+        year: `${edu.startDate?.slice(0, 4)} - ${
+          edu.endDate ? edu.endDate.slice(0, 4) : "Present"
+        }`,
+        certifications: edu.certifications,
+        percentage: edu.percentage,
+      })) || [],
+
+    resume: apiData?.resumeFilePath,
+
+    languages: apiData?.prefLanguage
+      ? apiData?.prefLanguage.split(",")
+      : [],
+  };
+}, [apiData]);
 
     return (
         <div className="projects-container">
@@ -119,23 +124,23 @@ const UploadTalentProfile = () => {
                                 />
                                 <div className="profile-header-content">
                                     <div className="d-flex gap-3">
-                                        <h1 className="mb-2">{profileData.name}</h1>
+                                        <h1 className="mb-2">{profileData?.name}</h1>
                                         <FiFileText className="profile-verified-icon" />
                                     </div>
-                                    <div className="card-title mb-2">{profileData.role}</div>
+                                    <div className="card-title mb-2">{profileData?.role}</div>
 
                                     <div className="profile-meta-row">
                                         <span className="meta-item">
-                                            <FiMapPin /> {profileData.location}
+                                            <FiMapPin /> {profileData?.location}
                                         </span>
                                         <span className="meta-item">
-                                            <FiBriefcase /> {profileData.experience}
+                                            <FiBriefcase /> {profileData?.experience}
                                         </span>
                                     </div>
 
                                     <div className="profile-status-wrapper">
                                         <span className="status-tag status-completed">
-                                            {profileData.status}
+                                            {profileData?.status}
                                         </span>
                                     </div>
                                 </div>
@@ -145,10 +150,10 @@ const UploadTalentProfile = () => {
                             {/* Professional Summary */}
                             <div className="project-card">
                                 <h2 className="card-title">Professional Summary</h2>
-                                <p className="summary-text">{profileData.summary}</p>
+                                <p className="summary-text">{profileData?.summary}</p>
 
                                 <div className="summary-stats-grid">
-                                    {profileData.stats.map((stat, idx) => (
+                                    {profileData?.stats.map((stat, idx) => (
                                         <div key={idx} className="summary-stat-box">
                                             <div className="summary-stat-value">{stat.value}</div>
                                             <div className="summary-stat-label">{stat.label}</div>
@@ -165,7 +170,7 @@ const UploadTalentProfile = () => {
                             <div className="project-card">
                                 <h2 className="card-title">Work Experience</h2>
                                 <div className="experience-list">
-                                    {profileData.workExperience.map((job, idx) => (
+                                    {profileData?.workExperience.map((job, idx) => (
                                         <div key={idx} className="experience-item">
                                             <div className="experience-icon-box">
                                                 <FiBriefcase />
@@ -188,7 +193,7 @@ const UploadTalentProfile = () => {
                             <div className="project-card">
                                 <h2 className="card-title">Skills & Expertise</h2>
                                 <div className="skills-container">
-                                    {profileData.skills.map((skill, idx) => (
+                                    {profileData?.skills.map((skill, idx) => (
                                         <span
                                             key={idx}
                                             className="status-tag status-progress"
@@ -204,14 +209,14 @@ const UploadTalentProfile = () => {
                     {/* Portfolio */}
                     <div className="portfolio-section">
                         <div className="portfolio-header">
-                            <h2 className="card-title">Portfolio</h2>
+                            <h2 className="card-title">Projects</h2>
                             <span className="portfolio-count">
-                                {profileData.portfolio.length} Projects
+                                {profileData?.portfolio.length} Projects
                             </span>
                         </div>
 
                         <div className="projects-grid premium-portfolio-grid">
-                            {profileData.portfolio.map((item, idx) => (
+                            {profileData?.portfolio.map((item, idx) => (
                                 <div key={idx} className="premium-portfolio-card">
                                     <div className="portfolio-img-wrapper">
                                         <img
@@ -232,6 +237,13 @@ const UploadTalentProfile = () => {
 
                                     <div className="portfolio-content">
                                         <h3 className="portfolio-title">{item.title}</h3>
+                                         <div className="small text-muted">
+    {item.role} • {item.period}
+  </div>
+
+  {item.description && (
+    <p className="small text-muted mt-1">{item.description}</p>
+  )}
                                         <div className="portfolio-tags">
                                             {item.tags.map((tag, tIdx) => (
                                                 <span key={tIdx} className="portfolio-tag">
@@ -314,10 +326,10 @@ const UploadTalentProfile = () => {
                             // }}
                         >
                             <div className="contact-item">
-                                <FiMail className="contact-icon" /> [sarah.anderson@example.com]
+                                <FiMail className="contact-icon" /> {profileData?.email}
                             </div>
                             <div className="contact-item">
-                                <FiPhone className="contact-icon" /> +1 (555) 123-4567
+                                <FiPhone className="contact-icon" /> {profileData?.phoneNo}
                             </div>
                             <div className="contact-item">
                                 <FiLinkedin className="contact-icon" />{" "}
@@ -333,33 +345,39 @@ const UploadTalentProfile = () => {
 
                     {/* Education */}
                     <div className="table-card sidebar-card">
-                        <h3 className="card-title">Education</h3>
-                        <div className="education-list">
-                            <div className="interview-item-premium">
-                                <div className="edu-icon-box">
-                                    <FiFileText size={14} />
-                                </div>
-                                <div>
-                                    <div className="edu-degree">Master in Interaction Design</div>
-                                    <div className="edu-school">Carnegie Mellon University</div>
-                                    <div className="edu-year">2013 - 2015</div>
-                                </div>
-                            </div>
+  <h3 className="card-title">Education</h3>
 
-                            <div className="interview-item-premium">
-                                <div className="edu-icon-box">
-                                    <FiFileText size={14} />
-                                </div>
-                                <div>
-                                    <div className="edu-degree">BA in Graphic Design</div>
-                                    <div className="edu-school">
-                                        Rhode Island School of Design
-                                    </div>
-                                    <div className="edu-year">2009 - 2013</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <div className="education-list">
+    {profileData?.education.length === 0 ? (
+      <p className="text-muted">No education details available</p>
+    ) : (
+      profileData?.education.map((edu, index) => (
+        <div key={index} className="interview-item-premium">
+          <div className="edu-icon-box">
+            <FiFileText size={14} />
+          </div>
+
+          <div>
+            <div className="edu-degree">
+              {edu.degree}
+              {edu.field && ` in ${edu.field}`}
+            </div>
+
+            <div className="edu-school">{edu.school}</div>
+
+            <div className="edu-year">{edu.year}</div>
+
+            {edu.certifications && (
+              <div className="edu-cert">
+                Certification: {edu.certifications}
+              </div>
+            )}
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+</div>
                 </div>
             </div>
         </div>

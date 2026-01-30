@@ -14,7 +14,9 @@ const AdminProfileEdit = () => {
   const companyid = localStorage.getItem("logincompanyid");
   const emailId = localStorage.getItem("Email");
   const { data: companyData, isLoading: isFetching } =
-  useGetCompanyProfileEditQuery(emailId);
+  useGetCompanyProfileEditQuery(emailId, {
+  refetchOnMountOrArgChange: true,
+});
 
   // Logo preview
   const [logoPreview, setLogoPreview] = useState(null);

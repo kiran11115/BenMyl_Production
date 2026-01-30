@@ -70,11 +70,7 @@ const ProfilePage = () => {
         : [],
       referredBy: apiData.referedBy,
 
-      profilePhoto:
-        apiData.profilePhoto ||
-        apiData.profilePhotos ||
-        apiData.ProfilePhotos ||
-        apiData.profilephoto,
+      profilePhoto: apiData.profilePhoto
 
     }
     : null;

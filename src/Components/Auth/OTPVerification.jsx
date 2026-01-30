@@ -14,6 +14,7 @@ function OTPVerification() {
   const location = useLocation();
   const emailID = location.state?.emailID;
   const role = location.state?.role;
+  console.log("Role:",role);
 
   const [timer, setTimer] = useState(60);
   const [otpErrorMsg, setOtpErrorMsg] = useState("");

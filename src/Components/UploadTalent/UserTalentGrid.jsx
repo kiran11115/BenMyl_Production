@@ -1,8 +1,17 @@
 import React, { memo } from "react";
 import { FiMapPin } from "react-icons/fi"; 
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle }) => {
+const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
+    const navigate = useNavigate();
+  const handleProfileClick = () => {
+  navigate("/user/talent-profile", {
+    state: {
+      employeeId: candidate.id,
+    },
+  });
+};
   const visibleSkills = candidate.skills.slice(0, 3);
     const remainingCount = candidate.skills.length - visibleSkills.length;
     const getInitials = (name = "") => {
@@ -75,7 +84,7 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
 
       {/* --- ACTION BUTTONS --- */}
       <div className="card-actions d-flex gap-2">
-        <button className="btn-primary flex-grow-1" onClick={onProfileClick}>
+        <button className="btn-primary flex-grow-1" onClick={handleProfileClick}>
           View Profile
         </button>
 
@@ -127,7 +136,7 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
   </div>
 )});
 
-const UserTalentGrid = ({ candidates, onProfileClick, selectedIds, onToggleSelect }) => {
+const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
   
   return (
     <div className="jobs-grid">
@@ -135,7 +144,6 @@ const UserTalentGrid = ({ candidates, onProfileClick, selectedIds, onToggleSelec
         <CandidateCard
           key={c.id}
           candidate={c}
-          onProfileClick={onProfileClick}
           isSelected={selectedIds.has(c.id)}
           onToggle={onToggleSelect}
         />

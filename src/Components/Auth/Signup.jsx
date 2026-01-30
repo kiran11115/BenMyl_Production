@@ -101,7 +101,7 @@ function SignUp() {
             emailID: values.email,
             fullName: values.fullName,
             companyName: values.companyName,
-            role: res.role,
+            role: payload.role,
           },
         });
       } catch (err) {

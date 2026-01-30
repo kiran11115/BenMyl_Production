@@ -27,8 +27,8 @@ function EditProfile() {
     isLoading,
     isError,
   } = useGetRecruiterProfileQuery(Number(userId), {
-    skip: !userId,
-  });
+  refetchOnMountOrArgChange: true,
+});
 
 
 
@@ -106,8 +106,6 @@ function EditProfile() {
         languages: [],
         referredBy: "",
       },
-
-      ProfilePhotos: null,
     },
 
     validationSchema,
@@ -150,7 +148,7 @@ function EditProfile() {
 
 
       await updateRecruiterProfile(fd).unwrap();
-      navigate("/user/user-profile", { state: { refresh: true } });
+      navigate("/user/user-profile");
 
     },
   });
@@ -158,23 +156,9 @@ function EditProfile() {
   useEffect(() => {
     if (!recruiterData) return;
 
-
-    // ✅ SET IMAGE PREVIEW FROM API (NORMALIZED)
-    const photo =
-      recruiterData.profilePhoto ||
-      recruiterData.profilePhotos ||
-      recruiterData.ProfilePhotos ||
-      recruiterData.profilephoto;
-
-    if (photo) {
-      const imageUrl = photo.startsWith("http")
-        ? photo
-        : `https://webapidev.benmyl.com/${photo}`;
-
-      setLogoPreview(imageUrl);
-    }
-
-
+    if (recruiterData?.profilePhoto) {
+    setLogoPreview(`${recruiterData.profilePhoto}?t=${Date.now()}`);
+  }
 
     formik.setValues({
       name: recruiterData.fullName || "",
@@ -215,8 +199,6 @@ function EditProfile() {
           : [],
         referredBy: recruiterData.referedBy || "",
       },
-
-      ProfilePhotos: null,
     });
   }, [recruiterData]);
 
@@ -268,7 +250,7 @@ function EditProfile() {
 
 
 
-  const handleLogoUpload = (e) => {
+ const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -290,17 +272,10 @@ function EditProfile() {
   };
 
 
-  const removeLogo = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // revoke only blob URLs, not backend URLs
-    if (logoPreview?.startsWith("blob:")) {
-      URL.revokeObjectURL(logoPreview);
-    }
-
-    setLogoPreview(null);
+  const removeLogo = () => {
     setLogoFile(null);
+    if (logoPreview) URL.revokeObjectURL(logoPreview);
+    setLogoPreview(null);
   };
 
 

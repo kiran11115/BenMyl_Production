@@ -51,7 +51,6 @@ const sortCandidates = (candidates, sortBy) => {
 
 // --- MAIN COMPONENT ---
 const UserTalentProfiles = () => {
-  const navigate = useNavigate();
 
   const PAGE_SIZE = 50;
 
@@ -170,11 +169,6 @@ const UserTalentProfiles = () => {
   const selectedCandidates = useMemo(() => {
     return candidatesMock.filter((c) => selectedIds.has(c.id));
   }, [selectedIds, candidatesMock]);
-
-  /* ================= HANDLERS ================= */
-  const handleProfileClick = () => {
-    navigate("/user/talent-profile");
-  };
 
   const toggleSelection = (id) => {
     setSelectedIds((prev) => {
@@ -334,7 +328,6 @@ const UserTalentProfiles = () => {
               {viewMode === "grid" ? (
                 <UserTalentGrid
                   candidates={sortedCandidates}
-                  onProfileClick={handleProfileClick}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
                 />
