@@ -9,6 +9,10 @@ function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
 
+  const user = localStorage.getItem("UserName");
+  const role = localStorage.getItem("Role");
+  const email = localStorage.getItem("Email");
+
   // Initialize navigation hook
   const navigate = useNavigate();
 
@@ -129,8 +133,8 @@ function Header() {
                 className="profile-avatar"
               />
               <div className="profile-info">
-                <span className="profile-name">John Smith</span>
-                <span className="profile-role">HR Manager</span>
+                <span className="profile-name">{user}</span>
+                <span className="profile-role">{role}</span>
               </div>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
             </div>
@@ -140,7 +144,7 @@ function Header() {
               <div className="profile-popover">
                 <div className="popover-header">
                   {/* <p className="popover-name">John Smith</p> */}
-                  <p className="popover-email">john.smith@benchsales.com</p>
+                  <p className="popover-email">{email}</p>
                 </div>
                 <div className="popover-menu">
                   <button className="popover-item" onClick={handleViewProfile}>
@@ -168,11 +172,11 @@ function Header() {
       </header>
 
       <div class="app-zoom">
-         <main className="cust-main">
+        <main className="cust-main">
           <Outlet />
-         </main>
-       </div>
-     
+        </main>
+      </div>
+
     </>
   );
 }
