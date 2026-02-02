@@ -34,6 +34,13 @@ useEffect(() => {
   }
 }, [employeeId, getEmployeeProfile]);
 
+const getInitials = (firstName = "", lastName = "") => {
+  const first = firstName.trim().charAt(0);
+  const last = lastName.trim().charAt(0);
+  return (first + last).toUpperCase();
+};
+
+
 const profileData = useMemo(() => {
   if (!apiData) return null;
 
@@ -97,6 +104,11 @@ const profileData = useMemo(() => {
   };
 }, [apiData]);
 
+const initials = useMemo(() => {
+  if (!apiData) return "";
+  return getInitials(apiData.firstName, apiData.lastName);
+}, [apiData]);
+
     return (
         <div className="projects-container">
             {/* Breadcrumb - Matches Global Text Styles */}
@@ -117,11 +129,17 @@ const profileData = useMemo(() => {
                         <div className="col-3">
                             {/* Profile Header Card */}
                             <div className="project-card">
-                                <img
-                                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                                    alt="Profile"
-                                    className="profile-avatar-lg"
-                                />
+                                {apiData?.profileImage ? (
+  <img
+    src={apiData.profileImage}
+    alt={profileData?.name}
+    className="profile-avatar-lg"
+  />
+) : (
+  <div className="profile-avatar-lg avatar-initials">
+    {initials}
+  </div>
+)}
                                 <div className="profile-header-content">
                                     <div className="d-flex gap-3">
                                         <h1 className="mb-2">{profileData?.name}</h1>

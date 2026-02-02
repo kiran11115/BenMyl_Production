@@ -348,3 +348,20 @@ input, button, select, textarea, label {
 .tt-action-btn:hover {
   color: #374151;
 }
+
+.avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #ffffff;
+
+  font-size: 28px;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  border-radius: 50%;
+  border: 3px solid #e2e8f0;
+}
+
