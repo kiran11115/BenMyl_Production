@@ -69,6 +69,15 @@ function Header() {
     };
   }, []);
 
+  const getInitials = (name = "") => {
+    return name
+      .trim()
+      .split(" ")
+      .slice(0, 2)
+      .map(word => word[0]?.toUpperCase())
+      .join("");
+  };
+
   return (
     <>
       <header className="header-container">
@@ -144,17 +153,22 @@ function Header() {
               role="button"
               tabIndex={0}
             >
-              {companyData?.profilePhoto && (
+              {companyData?.profilePhoto ? (
                 <img
                   src={
-                    companyData?.profilePhoto.startsWith("http")
-                      ? `${companyData?.profilePhoto}?t=${Date.now()}`
-                      : `https://webapidev.benmyl.com/${companyData?.profilePhoto}?t=${Date.now()}`
+                    companyData.profilePhoto.startsWith("http")
+                      ? `${companyData.profilePhoto}?t=${Date.now()}`
+                      : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
                   }
                   alt="Profile"
                   className="profile-avatar"
                 />
+              ) : (
+                <div className="profile-avatar initials-avatar">
+                  {getInitials(user)}
+                </div>
               )}
+
               <div className="profile-info">
                 <span className="profile-name">{user}</span>
                 <span className="profile-role">{role}</span>

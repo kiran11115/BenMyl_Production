@@ -211,6 +211,28 @@
   color: #ffffff;
 }
 
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Initials fallback */
+.initials-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+
 .profile-role {
   font-size: 0.75rem;
   /* 12px */
@@ -496,18 +518,19 @@
 /* Notifications */
 
 /* Backdrop always full viewport */
-.notification-backdrop{
+.notification-backdrop {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,.4);
+  background: rgba(0, 0, 0, .4);
   z-index: 9998;
 }
 
-.notification-panel{
+.notification-panel {
   transform: scale(0.9);
-  transform-origin: top right; /* adjust to your placement */
+  transform-origin: top right;
+  /* adjust to your placement */
 }
 
 
