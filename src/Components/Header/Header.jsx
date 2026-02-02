@@ -144,12 +144,12 @@ function Header() {
               role="button"
               tabIndex={0}
             >
-              {companyData.profilePhoto && (
+              {companyData?.profilePhoto && (
                 <img
                   src={
-                    companyData.profilePhoto.startsWith("http")
-                      ? `${companyData.profilePhoto}?t=${Date.now()}`
-                      : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
+                    companyData?.profilePhoto.startsWith("http")
+                      ? `${companyData?.profilePhoto}?t=${Date.now()}`
+                      : `https://webapidev.benmyl.com/${companyData?.profilePhoto}?t=${Date.now()}`
                   }
                   alt="Profile"
                   className="profile-avatar"
