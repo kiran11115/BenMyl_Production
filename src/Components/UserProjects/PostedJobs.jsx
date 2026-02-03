@@ -192,7 +192,7 @@ const PostedJobs = () => {
               <div className="stats">
                 <div>
                   <div className="stat-label1">Budget</div>
-                  <div className="stat-value1">{job.rateText}</div>
+                  <div className="stat-value1">{job.rateText} / hr</div>
                 </div>
                 <div>
                   <div className="stat-label1">Experience</div>

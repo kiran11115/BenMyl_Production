@@ -354,8 +354,8 @@ input, button, select, textarea, label {
   align-items: center;
   justify-content: center;
 
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: #ffffff;
+  background: #e5e7eb;
+  color: #000;
 
   font-size: 28px;
   font-weight: 700;
