@@ -591,12 +591,12 @@ const ProfilePage = () => {
               <FiEdit /> Edit
             </button>
 
-            <button
+            {/* <button
               className="btn-secondary w-100 gap-2"
               onClick={onAccountSettings}
             >
               <FiSettings /> Account Settings
-            </button>
+            </button> */}
           </div>
 
           {/* Company Information */}

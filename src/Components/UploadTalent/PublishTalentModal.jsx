@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import html2canvas from "html2canvas";
 import {
   FiX,
   FiCopy,
@@ -10,13 +11,10 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiTrash2,
-  FiEye,
+  FiDownload,
 } from "react-icons/fi";
 import { FaPuzzlePiece } from "react-icons/fa";
 import { GiCheckMark } from "react-icons/gi";
-
-// Ensure you import your existing CSS file here if it's not global
-// import "./PostNewPositions.css";
 
 export default function PublishTalentModal({
   open,
@@ -25,29 +23,42 @@ export default function PublishTalentModal({
   onRemove,
   onPublish,
 }) {
-  const [status, setStatus] = useState("idle"); // idle, loading, success
+  const [status, setStatus] = useState("idle");
   const [isVendorOpen, setIsVendorOpen] = useState(true);
+  const [showHotlist, setShowHotlist] = useState(false);
+  const [hotlistLoading, setHotlistLoading] = useState(false);
 
   if (!open) return null;
 
-  const handlePublish = () => {
-    if (selectedTalents.length === 0) return;
-
-    setStatus("loading");
-
-    // Simulate API call 1 second
-    setTimeout(() => {
-      setStatus("idle"); // or 'success' if you want a success screen
-      if (onPublish) onPublish();
-      onClose(); // Close modal after publishing
-    }, 1000);
+  const handleCreateHotlist = () => {
+    setShowHotlist(true);
+    setHotlistLoading(true);
+    setTimeout(() => setHotlistLoading(false), 1200);
   };
 
-  // Prevent clicks inside modal from closing it
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget && status !== "loading") {
+  const handleClearHotlist = () => {
+    setShowHotlist(false);
+    setHotlistLoading(false);
+  };
+
+  const handleDownloadHotlist = async () => {
+    const table = document.getElementById("hotlist-table");
+    if (!table) return;
+    const canvas = await html2canvas(table, { scale: 2 });
+    const link = document.createElement("a");
+    link.download = "Hotlist.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const handlePublish = () => {
+    if (!selectedTalents.length) return;
+    setStatus("loading");
+    setTimeout(() => {
+      setStatus("idle");
+      onPublish?.();
       onClose();
-    }
+    }, 1000);
   };
 
   const getInitials = (name = "") =>
@@ -60,119 +71,160 @@ export default function PublishTalentModal({
 
   return createPortal(
     <>
-      <div className="modal-overlay" onClick={handleOverlayClick}>
-        <div
-          className="modal-window"
-          style={{ height: "85vh", maxHeight: "800px", position: "relative" }}
-        >
-          {/* --- LOADER OVERLAY --- */}
+      <div className="modal-overlay">
+        <div className="modal-window" style={{ height: "85vh", position: "relative" }}>
           {status === "loading" && (
             <div className="loading-overlay">
-              <div className="spinner"></div>
+              <div className="spinner" />
               <div className="loading-text">
-                Publishing {selectedTalents.length} Profiles...
+                Publishing {selectedTalents.length} profiles…
               </div>
             </div>
           )}
 
-          <button
-            className="modal-close"
-            onClick={onClose}
-            disabled={status === "loading"}
-          >
+          <button className="modal-close" onClick={onClose}>
             <FiX />
           </button>
 
-          <div
-            className="modal-inner"
-            style={{ height: "calc(100% - 80px)", overflow: "hidden" }}
-          >
-            {/* --- LEFT SIDE: SELECTED TALENTS --- */}
-            <div
-              className="modal-left"
-              style={{ overflowY: "auto", paddingRight: "10px" }}
-            >
-              <div className="d-flex align-content-center justify-content-between">
-                <div className="modal-top-row" style={{ display: "block" }}>
-                  <h2
-                    className="modal-job-title"
-                    style={{ marginBottom: "6px" }}
-                  >
-                    Selected Candidates
-                  </h2>
+          <div className="modal-inner">
+            {/* LEFT */}
+            <div className="modal-left">
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <h2>Selected Candidates</h2>
                   <p className="muted small">
-                    Review the candidates you are about to publish to your
-                    network.
+                    Review candidates or create hotlist
                   </p>
                 </div>
 
-                <button className="btn-primary h-50" style={{width: "fit-content"}}>Create Hotlist</button>
+                {!showHotlist && (
+                  <button
+                    className="btn-primary"
+                    onClick={handleCreateHotlist}
+                    disabled={!selectedTalents.length}
+                  >
+                    Create Hotlist
+                  </button>
+                )}
               </div>
 
-              <hr className="modal-divider" style={{ margin: "16px 0" }} />
+              <hr className="modal-divider" />
 
-              {selectedTalents.length === 0 ? (
-                <div className="empty-state">
-                  No candidates selected. Please close and select talents from
-                  the grid.
-                </div>
-              ) : (
-                <div className="talent-list">
-                  {selectedTalents.map((talent) => (
-                    <div key={talent.id} className="talent-card-row">
-                      {/* Avatar Section */}
-                      <div className="initial-avatar">
-                        {getInitials(talent.name)}
-                      </div>
-
-                      {/* Info Section */}
-                      <div className="t-info">
-                        <div className="t-header">
-                          <span className="t-name">{talent.name}</span>
-                          {talent.verified && (
-                            <span className="t-verified" title="Verified">
-                              <GiCheckMark />
-                            </span>
-                          )}
-                        </div>
-                        <div className="t-role">{talent.role}</div>
-                        <div className="t-meta">
-                          <span>
-                            <FiMapPin size={10} /> {talent.location}
-                          </span>
-                          <span className="bullet">•</span>
-                          <span>{talent.experience}</span>
-                        </div>
-                      </div>
-
-                      {/* Actions Section (New Design) */}
-                      <div className="t-actions">
-                        <button
-                          className="btn-primary w-75"
-                          title="View Full Profile"
-                        >
-                          View Profile
-                        </button>
-                        <button
-                          className="t-remove-btn"
-                          onClick={() => onRemove(talent.id)}
-                          disabled={status === "loading"}
-                          title="Remove from batch"
-                        >
-                          <FiTrash2 />
-                        </button>
+              {/* HOTLIST */}
+              {showHotlist && (
+                <div className="hotlist-wrapper">
+                  {hotlistLoading ? (
+                    <div
+                      className="loading-overlay"
+                      style={{ position: "relative" }}
+                    >
+                      <div className="spinner" />
+                      <div className="loading-text">
+                        Creating hotlist table…
                       </div>
                     </div>
-                  ))}
+                  ) : (
+                    <>
+                      <div className="hotlist-actions">
+                        <h3>Hotlist Preview</h3>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button
+                            className="btn-secondary gap-2"
+                            onClick={handleDownloadHotlist}
+                          >
+                            <FiDownload /> Download
+                          </button>
+                          <button
+                            className="btn-secondary"
+                            onClick={handleClearHotlist}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+
+                      <table id="hotlist-table" className="hotlist-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Technology</th>
+                            <th>Experience</th>
+                            <th>Location</th>
+                            <th>Visa</th>
+                            <th>Relocation</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedTalents.map((t) => (
+                            <tr key={t.id}>
+                              <td>{t.name}</td>
+                              <td>{t.role}</td>
+                              <td>{t.experience}</td>
+                              <td>{t.location}</td>
+                              <td>{t.visa || "H1B"}</td>
+                              <td>{t.relocation || "Yes"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* TALENT LIST */}
+              {!showHotlist && (
+                <div className="talent-list">
+                  {selectedTalents.length === 0 ? (
+                    <div className="empty-state">No candidates selected</div>
+                  ) : (
+                    selectedTalents.map((talent) => (
+                      <div key={talent.id} className="talent-card-row">
+                        <div className="initial-avatar">
+                          {getInitials(talent.name)}
+                        </div>
+
+                        <div className="t-info">
+                          <div className="t-header">
+                            <span className="t-name">{talent.name}</span>
+                            {talent.verified && (
+                              <span className="t-verified">
+                                <GiCheckMark />
+                              </span>
+                            )}
+                          </div>
+                          <div className="t-role">{talent.role}</div>
+                          <div className="t-meta">
+                            <FiMapPin size={12} />
+                            {talent.location}
+                            <span className="bullet">•</span>
+                            {talent.experience}
+                          </div>
+                        </div>
+
+                        <div className="t-actions">
+                          <button className="btn-primary w-75">
+                            View Profile
+                          </button>
+                          <button
+                            className="t-remove-btn"
+                            onClick={() => onRemove(talent.id)}
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
 
-            {/* --- RIGHT SIDE: SHARE & VENDOR (Unchanged) --- */}
-            <aside className="modal-right">
+            {/* RIGHT */}
+       <aside className="modal-right">
               <div className="share-card">
                 <h4 className="share-title">Share Profile Batch</h4>
-
+ 
                 <div className="share-input-group">
                   <label className="input-label">Batch Link</label>
                   <div className="share-link-row">
@@ -186,7 +238,7 @@ export default function PublishTalentModal({
                     </button>
                   </div>
                 </div>
-
+ 
                 <div className="social-buttons-stack">
                   <button className="social-btn linkedin">
                     <FiLinkedin className="social-icon" /> Share on LinkedIn
@@ -198,7 +250,7 @@ export default function PublishTalentModal({
                     <FiMail className="social-icon" /> Share via Email
                   </button>
                 </div>
-
+ 
                 <div className="vendor-section">
                   <button
                     className="vendor-header"
@@ -210,7 +262,7 @@ export default function PublishTalentModal({
                     </div>
                     {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                   </button>
-
+ 
                   {isVendorOpen && (
                     <div className="vendor-list">
                       <label className="checkbox-row">
@@ -240,7 +292,6 @@ export default function PublishTalentModal({
             </aside>
           </div>
 
-          {/* --- FOOTER ACTIONS --- */}
           <div
             className="modal-actions-left gap-3"
             style={{ padding: "24px", borderTop: "1px solid #e2e8f0" }}
@@ -264,95 +315,120 @@ export default function PublishTalentModal({
         </div>
       </div>
 
-      {/* --- INLINE STYLES FOR NEW ELEMENTS --- */}
+      {/* 🔹 INLINE STYLES (YOUR STYLES + HOTLIST) */}
       <style>{`
-                .loading-overlay {
-                    position: absolute; inset: 0; background: rgba(255,255,255,0.9);
-                    z-index: 50; display: flex; flex-direction: column;
-                    align-items: center; justify-content: center;
-                }
-                .spinner {
-                    width: 32px; height: 32px; border: 3px solid #e2e8f0;
-                    border-top-color: #3b82f6; border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                .loading-text { margin-top: 16px; color: #64748b; font-weight: 500; font-size: 14px; }
+        .loading-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0.9);
+          z-index: 50;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .spinner {
+          width: 32px;
+          height: 32px;
+          border: 3px solid #e2e8f0;
+          border-top-color: #3b82f6;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        .loading-text {
+          margin-top: 16px;
+          color: #64748b;
+          font-weight: 500;
+          font-size: 14px;
+        }
 
-                .talent-list { display: flex; flex-direction: column; gap: 12px; }
-                
-                /* Updated Card Design */
-                .talent-card-row {
-                    display: grid; 
-                    grid-template-columns: auto 1fr auto; /* Avatar | Info | Actions */
-                    align-items: center; 
-                    gap: 16px;
-                    padding: 16px; 
-                    border: 1px solid #e2e8f0; 
-                    border-radius: 10px;
-                    background: white; 
-                    transition: all 0.2s ease;
-                }
-                .talent-card-row:hover { 
-                    border-color: #cbd5e1; 
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-                }
-                
-                .t-avatar { 
-                    width: 48px; height: 48px; 
-                    border-radius: 50%; /* Circular avatar looks more modern */
-                    object-fit: cover; 
-                    border: 2px solid #f1f5f9;
-                }
-                
-                .t-info { display: flex; flex-direction: column; gap: 2px; }
-                .t-header { display: flex; align-items: center; gap: 6px; }
-                .t-name { font-weight: 700; color: #1e293b; font-size: 15px; }
-                .t-verified { color: #059669; display: flex; align-items: center; font-size: 14px; }
-                
-                .t-role { 
-                    color: #3b82f6; /* Blue for role */
-                    font-weight: 500; 
-                    font-size: 13px; 
-                }
-                
-                .t-meta { 
-                    display: flex; align-items: center; gap: 6px; 
-                    color: #64748b; font-size: 12px; margin-top: 2px;
-                }
-                .bullet { color: #cbd5e1; }
+        .talent-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
 
-                /* Action Buttons */
-                .t-actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
+        .talent-card-row {
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 16px;
+          padding: 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          background: white;
+          transition: all 0.2s ease;
+        }
+        .talent-card-row:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
 
-                .t-remove-btn {
-                    background: transparent; 
-                    border: 1px solid transparent; 
-                    color: #94a3b8;
-                    cursor: pointer; 
-                    padding: 6px; 
-                    border-radius: 6px; 
-                    transition: all 0.2s;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .t-remove-btn:hover { 
-                    background: #fee2e2; 
-                    color: #ef4444; 
-                    border-color: #fecaca;
-                }
-                
-                .empty-state {
-                    padding: 32px; text-align: center; color: #94a3b8; font-size: 14px;
-                    border: 2px dashed #e2e8f0; border-radius: 8px; background: #f8fafc;
-                }
-            `}</style>
+        .t-info { display: flex; flex-direction: column; gap: 2px; }
+        .t-header { display: flex; align-items: center; gap: 6px; }
+        .t-name { font-weight: 700; color: #1e293b; font-size: 15px; }
+        .t-verified { color: #059669; display: flex; align-items: center; }
+        .t-role { color: #3b82f6; font-size: 13px; font-weight: 500; }
+        .t-meta { display: flex; gap: 6px; font-size: 12px; color: #64748b; }
+        .bullet { color: #cbd5e1; }
+
+        .t-actions { display: flex; gap: 8px; }
+        .t-remove-btn {
+          background: transparent;
+          border: 1px solid transparent;
+          color: #94a3b8;
+          padding: 6px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+        .t-remove-btn:hover {
+          background: #fee2e2;
+          color: #ef4444;
+          border-color: #fecaca;
+        }
+
+        .empty-state {
+          padding: 32px;
+          text-align: center;
+          color: #94a3b8;
+          border: 2px dashed #e2e8f0;
+          border-radius: 8px;
+          background: #f8fafc;
+        }
+
+        .hotlist-wrapper {
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 16px;
+          background: #ffffff;
+        }
+        .hotlist-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+        .hotlist-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+        }
+        .hotlist-table th {
+          background: #2590EB;
+          color: #fefefe;
+          padding: 10px;
+          border: 1px solid #d1d5db;
+          text-align: left;
+        }
+        .hotlist-table td {
+          padding: 10px;
+          border: 1px solid #d1d5db;
+        }
+      `}</style>
     </>,
-    document.body,
+    document.body
   );
 }

@@ -15,6 +15,7 @@
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",
     "formik": "^2.4.9",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.553.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
