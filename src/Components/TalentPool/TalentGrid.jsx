@@ -8,7 +8,7 @@ const TalentGridView = ({
   activeJobId,
   activeJobColor,
   shortlistedMap,
-  hasMore
+  hasMore,
 }) => {
   const navigate = useNavigate();
 
@@ -19,16 +19,15 @@ const TalentGridView = ({
       {/* Matching profiles count */}
       <div className="grid-meta">
         <div className="grid-count text-capitalize">
-         matching {matchingCount === 1 ? "profile" : "profiles"}
+          matching {matchingCount === 1 ? "profile" : "profiles"}
         </div>
       </div>
 
       {!hasMore && candidates.length === 0 && (
-  <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
-    No candidates to show
-  </div>
-)}
-
+        <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
+          No candidates to show
+        </div>
+      )}
 
       <div className="jobs-grid">
         {candidates.map((candidate) => {
@@ -98,10 +97,10 @@ const TalentGridView = ({
               <div className="d-flex gap-3">
                 <button
                   onClick={() =>
-    navigate("/user/user-talent-profile", {
-      state: { employeeID: candidate.id },
-    })
-  }
+                    navigate("/user/user-talent-profile", {
+                      state: { employeeID: candidate.id },
+                    })
+                  }
                   className="btn-primary"
                 >
                   View Profile
@@ -111,12 +110,14 @@ const TalentGridView = ({
                   onClick={() => onShortlist(candidate)}
                   style={{
                     borderColor: activeJobId ? activeJobColor : "#cbd5e1",
-                    backgroundColor: isShortlisted ? activeJobColor : "transparent",
+                    backgroundColor: isShortlisted
+                      ? activeJobColor
+                      : "transparent",
                     color: isShortlisted
                       ? "white"
                       : activeJobId
-                      ? activeJobColor
-                      : "#64748b",
+                        ? activeJobColor
+                        : "#64748b",
                   }}
                   className="btn-secondary"
                 >

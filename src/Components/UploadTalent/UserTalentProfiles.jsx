@@ -22,7 +22,10 @@ const sortCandidates = (candidates, sortBy) => {
           NEW: 1,
           REJECTED: 0,
         };
-        return statusPriority[b.status] - statusPriority[a.status] || b.rating - a.rating;
+        return (
+          statusPriority[b.status] - statusPriority[a.status] ||
+          b.rating - a.rating
+        );
 
       case "rating_high":
         return b.rating - a.rating;
@@ -51,7 +54,6 @@ const sortCandidates = (candidates, sortBy) => {
 
 // --- MAIN COMPONENT ---
 const UserTalentProfiles = () => {
-
   const PAGE_SIZE = 50;
 
   const [viewMode, setViewMode] = useState("grid");
@@ -91,11 +93,13 @@ const UserTalentProfiles = () => {
 
         if (!isMounted) return;
 
-        const list =
-          Array.isArray(res) ? res :
-          Array.isArray(res?.data) ? res.data :
-          Array.isArray(res?.data?.records) ? res.data.records :
-          [];
+        const list = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.records)
+              ? res.data.records
+              : [];
 
         const mappedData = list.map((item) => ({
           id: item.employeeID,
@@ -107,8 +111,8 @@ const UserTalentProfiles = () => {
             ? `${item.noofexperience} years exp`
             : "0 years exp",
           skills: item.skills
-  ? item.skills.split(",").map(skill => skill.trim())
-  : [],
+            ? item.skills.split(",").map((skill) => skill.trim())
+            : [],
           location: item.city || "NA",
           availability: item.status ? [item.status] : [],
           status: item.status?.toUpperCase() || "NEW",
@@ -120,7 +124,7 @@ const UserTalentProfiles = () => {
 
         // ✅ Page 1 replace, Page 2+ append
         setCandidatesMock((prev) =>
-          pageNumber === 1 ? mappedData : [...prev, ...mappedData]
+          pageNumber === 1 ? mappedData : [...prev, ...mappedData],
         );
 
         // ✅ Stop further calls
@@ -195,7 +199,6 @@ const UserTalentProfiles = () => {
 
       <div className="vs-page">
         <div className="projects-container d-flex flex-column gap-3 p-0">
-
           {/* Heading Section */}
           <div
             style={{
@@ -207,7 +210,10 @@ const UserTalentProfiles = () => {
             }}
           >
             <div>
-              <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
+              <h1
+                className="section-title"
+                style={{ fontSize: "24px", marginBottom: "8px" }}
+              >
                 Talent Profiles
               </h1>
               <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
@@ -274,7 +280,10 @@ const UserTalentProfiles = () => {
                 onClick={() => setIsPublishModalOpen(true)}
                 disabled={selectedIds.size === 0}
               >
-                <span>Publish {selectedIds.size > 0 ? `(${selectedIds.size})` : "Talent"}</span>
+                <span>
+                  Publish{" "}
+                  {selectedIds.size > 0 ? `(${selectedIds.size})` : "Talent"}
+                </span>
               </button>
 
               {/* VIEW TOGGLE */}
@@ -300,31 +309,31 @@ const UserTalentProfiles = () => {
           <div className="d-flex gap-3">
             <section className="vs-results">
               {isLoading && (
-    <div
-      style={{
-        padding: "40px",
-        textAlign: "center",
-        color: "#64748b",
-        fontSize: "14px",
-      }}
-    >
-      Loading Talent Profiles...
-    </div>
-  )}
+                <div
+                  style={{
+                    padding: "40px",
+                    textAlign: "center",
+                    color: "#64748b",
+                    fontSize: "14px",
+                  }}
+                >
+                  Loading Talent Profiles...
+                </div>
+              )}
 
-  {/* ❌ No Data */}
-  {!isLoading && sortedCandidates.length === 0 && (
-    <div
-      style={{
-        padding: "40px",
-        textAlign: "center",
-        color: "#64748b",
-        fontSize: "14px",
-      }}
-    >
-      No Talent Profiles found
-    </div>
-  )}
+              {/* ❌ No Data */}
+              {!isLoading && sortedCandidates.length === 0 && (
+                <div
+                  style={{
+                    padding: "40px",
+                    textAlign: "center",
+                    color: "#64748b",
+                    fontSize: "14px",
+                  }}
+                >
+                  No Talent Profiles found
+                </div>
+              )}
               {viewMode === "grid" ? (
                 <UserTalentGrid
                   candidates={sortedCandidates}

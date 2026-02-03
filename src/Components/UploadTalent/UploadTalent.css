@@ -114,6 +114,21 @@
   height: fit-content;
 }
 
+.initial-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e5e7eb; /* light gray */
+  color: #374151;      /* dark text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
 
 .upload-cloud-btn {
   display: inline-flex;
