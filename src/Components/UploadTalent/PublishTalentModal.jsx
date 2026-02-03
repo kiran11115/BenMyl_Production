@@ -203,9 +203,9 @@ export default function PublishTalentModal({
                         </div>
 
                         <div className="t-actions">
-                          <button className="btn-primary w-75">
+                          {/* <button className="btn-primary w-75">
                             View Profile
-                          </button>
+                          </button> */}
                           <button
                             className="t-remove-btn"
                             onClick={() => onRemove(talent.id)}
