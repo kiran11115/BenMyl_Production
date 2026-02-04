@@ -221,10 +221,10 @@ export default function PublishTalentModal({
             </div>
 
             {/* RIGHT */}
-       <aside className="modal-right">
+            <aside className="modal-right">
               <div className="share-card">
                 <h4 className="share-title">Share Profile Batch</h4>
- 
+
                 <div className="share-input-group">
                   <label className="input-label">Batch Link</label>
                   <div className="share-link-row">
@@ -238,7 +238,7 @@ export default function PublishTalentModal({
                     </button>
                   </div>
                 </div>
- 
+
                 <div className="social-buttons-stack">
                   <button className="social-btn linkedin">
                     <FiLinkedin className="social-icon" /> Share on LinkedIn
@@ -250,7 +250,7 @@ export default function PublishTalentModal({
                     <FiMail className="social-icon" /> Share via Email
                   </button>
                 </div>
- 
+
                 <div className="vendor-section">
                   <button
                     className="vendor-header"
@@ -262,7 +262,7 @@ export default function PublishTalentModal({
                     </div>
                     {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                   </button>
- 
+
                   {isVendorOpen && (
                     <div className="vendor-list">
                       <label className="checkbox-row">

@@ -35,6 +35,7 @@ import AdminProfile from "./Admin/AdminProfile/AdminProfile";
 import EditProfile from "./ProfilePage/EditProfile";
 import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
 import JobOverview from "./UserProjects/JobOverview";
+import NotificationsPage from "./Header/NotificationsPage";
 
 
 
@@ -58,6 +59,7 @@ const routes = createBrowserRouter(
                 </Route>
 
                 <Route path="User" element={<Header />}>
+                    <Route path="notifications-page" element={<NotificationsPage />} />
                     <Route path="AI-screen" element={<AIScreen />} />
                     <Route path="user-projects" element={<Projects />} />
                     <Route path="user-dashboard" element={<Dashboard />} />

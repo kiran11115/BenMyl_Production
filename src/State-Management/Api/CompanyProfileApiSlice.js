@@ -28,9 +28,11 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["CompanyProfile"],
     }),
-    
   }),
 });
 
-export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation,useGetCompanyProfileEditQuery } =
-  CompanyProfileApiSlice;
+export const {
+  useGetCompanyProfileQuery,
+  useUpdateCompanyProfileMutation,
+  useGetCompanyProfileEditQuery,
+} = CompanyProfileApiSlice;
