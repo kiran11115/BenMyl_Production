@@ -22,7 +22,7 @@ const TalentProfile = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const employeeId = state?.employeeID;
-  console.log("EmpId:", employeeId)
+  console.log("EmpId:", employeeId);
 
   const [triggerGetProfile, { data: employee, isLoading, isError }] =
     useLazyGetEmployeeTalentProfileQuery();
@@ -48,20 +48,23 @@ const TalentProfile = () => {
       ? employee?.skills.split(",").map((s) => s.trim())
       : [],
 
-    workExperience: employee?.workexperiences?.map((exp) => ({
-      role: exp.position,
-      company: exp.companyName,
-      period: `${exp.startDate?.slice(0, 10)} - ${exp.endDate ? exp.endDate.slice(0, 10) : "Present"
+    workExperience:
+      employee?.workexperiences?.map((exp) => ({
+        role: exp.position,
+        company: exp.companyName,
+        period: `${exp.startDate?.slice(0, 10)} - ${
+          exp.endDate ? exp.endDate.slice(0, 10) : "Present"
         }`,
-      location: employee?.city,
-      desc: exp.description,
-    })) || [],
+        location: employee?.city,
+        desc: exp.description,
+      })) || [],
 
-    education: employee?.employee_Heighers?.map((edu) => ({
-      degree: edu.highestQualification,
-      school: edu.university,
-      year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
-    })) || [],
+    education:
+      employee?.employee_Heighers?.map((edu) => ({
+        degree: edu.highestQualification,
+        school: edu.university,
+        year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
+      })) || [],
   };
 
   const getInitials = (name = "") => {
@@ -97,8 +100,6 @@ const TalentProfile = () => {
       description: "Built responsive admin panels and tables",
     },
   ];
-
-
 
   return (
     <div className="projects-container">
@@ -188,8 +189,29 @@ const TalentProfile = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ color: "#94a3b8", fontSize: "14px" }}>
+                    <div
+                      style={{
+                        color: "#94a3b8",
+                        fontSize: "14px",
+                        textAlign: "center",
+                      }}
+                    >
                       No work experience added yet
+                      <img
+                        src="../Images/no data.svg"
+                        alt="No data"
+                        style={{
+                          width: "100%",
+                          maxWidth: "300px",
+                          height: "auto",
+                          marginTop: "12px",
+                          objectFit: "contain",
+                          display: "block",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                          opacity:"50%"
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -201,10 +223,7 @@ const TalentProfile = () => {
                 <h2 className="card-title">Skills & Expertise</h2>
                 <div className="skills-container">
                   {profileData.skills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="status-tag status-progress"
-                    >
+                    <span key={idx} className="status-tag status-progress">
                       {skill}
                     </span>
                   ))}
@@ -239,6 +258,21 @@ const TalentProfile = () => {
                       }}
                     >
                       No education details added yet
+                      <img
+                        src="../Images/no data.svg"
+                        alt="No data"
+                        style={{
+                          width: "100%",
+                          maxWidth: "110px",
+                          height: "auto",
+                          marginTop: "12px",
+                          objectFit: "contain",
+                          display: "block",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                          opacity:"50%"
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -399,21 +433,15 @@ const TalentProfile = () => {
                 gap: "12px",
               }}
             >
-              <button
-                className="link-btn"
-              >
+              <button className="link-btn">
                 <FaGem /> Unlock Premium
               </button>
 
-              <button
-                className="btn-primary w-50"
-              >
+              <button className="btn-primary w-50">
                 Contact Hiring Manager
               </button>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
