@@ -12,12 +12,12 @@ import {
 function EditProfile() {
   const navigate = useNavigate();
   const [updateRecruiterProfile, { isLoading: isSaving }] =
-  useUpdateRecruiterProfileMutation();
+    useUpdateRecruiterProfileMutation();
 
   /* ================= LOGO ================= */
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
-  
+
 
 
   const userId = localStorage.getItem("CompanyId"); // stores authInfoID = 315
@@ -27,51 +27,141 @@ function EditProfile() {
     isLoading,
     isError,
   } = useGetRecruiterProfileQuery(Number(userId), {
-  refetchOnMountOrArgChange: true,
-});
+    refetchOnMountOrArgChange: true,
+  });
 
 
 
 
   /* ================= VALIDATION ================= */
+  const currentYear = new Date().getFullYear();
+
   const validationSchema = Yup.object({
-    name: Yup.string().required(),
-    companyname: Yup.string().required(),
-    description: Yup.string().required().max(500),
+    /* ================= BASIC INFO ================= */
+    name: Yup.string()
+      .trim()
+      .min(3, "Full name must be at least 3 characters")
+      .max(100, "Full name is too long")
+      .required("Full name is required"),
 
+    companyname: Yup.string()
+      .trim()
+      .min(2, "Company name must be at least 2 characters")
+      .max(150, "Company name is too long")
+      .required("Company name is required"),
+
+    description: Yup.string()
+      .trim()
+      .min(20, "Description must be at least 20 characters")
+      .max(500, "Maximum 500 characters allowed")
+      .required("Description is required"),
+
+    /* ================= ADDRESS ================= */
     headquarters: Yup.object({
-      street1: Yup.string().required(),
-      street2: Yup.string(),
-      city: Yup.string().required(),
-      state: Yup.string().required(),
-      postalCode: Yup.string().required(),
-      country: Yup.string().required(),
+      street1: Yup.string()
+        .trim()
+        .required("Street address is required"),
+
+      street2: Yup.string().trim(),
+
+      city: Yup.string()
+        .trim()
+        .required("City is required"),
+
+      state: Yup.string()
+        .trim()
+        .required("State is required"),
+
+      postalCode: Yup.string()
+        .trim()
+        .matches(/^[0-9A-Za-z -]{4,10}$/, "Invalid postal code")
+        .required("Postal code is required"),
+
+      country: Yup.string()
+        .required("Country is required"),
     }),
 
+    /* ================= CONTACT ================= */
     contact: Yup.object({
-      email: Yup.string().email().required(),
-      phone: Yup.string().required(),
-      linkedinUrl: Yup.string().url(),
+      email: Yup.string()
+        .trim()
+        .email("Invalid email address")
+        .required("Email is required"),
+
+      phone: Yup.string()
+        .trim()
+        .matches(/^[0-9+()-]{8,15}$/, "Invalid phone number")
+        .required("Phone number is required"),
+
+      linkedinUrl: Yup.string()
+        .nullable()
+        .transform((value) => (value === "" ? null : value))
+        .matches(
+          /^https?:\/\/(www\.)?linkedin\.com\/.*$/,
+          "Enter a valid LinkedIn URL"
+        ),
     }),
 
-    workExperience: Yup.array().of(
-      Yup.object({
-        role: Yup.string().required(),
-        company: Yup.string().required(),
-        startYear: Yup.number().required(),
-        endYear: Yup.number().nullable(),
-        isCurrent: Yup.boolean(),
-      })
-    ),
+    /* ================= WORK EXPERIENCE ================= */
+    workExperience: Yup.array()
+      .of(
+        Yup.object({
+          role: Yup.string()
+            .trim()
+            .required("Role is required"),
 
+          company: Yup.string()
+            .trim()
+            .required("Company is required"),
+
+          startYear: Yup.number()
+            .typeError("Start year must be a number")
+            .min(1950, "Invalid start year")
+            .max(currentYear, "Start year cannot be in the future")
+            .required("Start year is required"),
+
+          endYear: Yup.number()
+            .nullable()
+            .when("isCurrent", {
+              is: false,
+              then: (schema) =>
+                schema
+                  .typeError("End year must be a number")
+                  .min(Yup.ref("startYear"), "End year cannot be before start year")
+                  .max(currentYear, "End year cannot be in the future")
+                  .required("End year is required"),
+              otherwise: (schema) => schema.nullable(),
+            }),
+
+          isCurrent: Yup.boolean(),
+        })
+      )
+      .min(1, "At least one work experience is required"),
+
+    /* ================= ADDITIONAL INFO ================= */
     additionalInfo: Yup.object({
-      jobTitle: Yup.string().required(),
-      experience: Yup.string().required(),
-      education: Yup.string().required(),
-      languages: Yup.array().min(1),
-      referredBy: Yup.string(),
+      jobTitle: Yup.string()
+        .trim()
+        .required("Job title is required"),
+
+      experience: Yup.string()
+        .trim()
+        .required("Experience is required"),
+
+      education: Yup.string()
+        .required("Education is required"),
+
+      languages: Yup.array()
+        .of(Yup.string())
+        .min(1, "Select at least one language")
+        .required("Languages are required"),
+
+      referredBy: Yup.string()
+        .trim()
+        .max(100, "Referred by name is too long"),
     }),
   });
+
 
   /* ================= FORMIK ================= */
   const formik = useFormik({
@@ -157,8 +247,8 @@ function EditProfile() {
     if (!recruiterData) return;
 
     if (recruiterData?.profilePhoto) {
-    setLogoPreview(`${recruiterData.profilePhoto}?t=${Date.now()}`);
-  }
+      setLogoPreview(`${recruiterData.profilePhoto}?t=${Date.now()}`);
+    }
 
     formik.setValues({
       name: recruiterData.fullName || "",
@@ -250,7 +340,7 @@ function EditProfile() {
 
 
 
- const handleLogoUpload = (e) => {
+  const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -285,6 +375,16 @@ function EditProfile() {
   };
 
   const handleCancel = () => navigate("/user/profile");
+
+  const FormError = ({ error, touched }) => {
+    if (!touched || !error) return null;
+    return (
+      <small style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>
+        {error}
+      </small>
+    );
+  };
+
 
   /* ================= JSX ================= */
   return (
@@ -345,7 +445,13 @@ function EditProfile() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                onBlur={formik.handleBlur}
                 className="auth-input"
+              />
+
+              <FormError
+                error={formik.errors.name}
+                touched={formik.touched.name}
               />
             </div>
             <div className="auth-group">
@@ -355,7 +461,13 @@ function EditProfile() {
                 name="companyname"
                 value={formData.companyname}
                 onChange={handleChange}
+                onBlur={formik.handleBlur}
                 className="auth-input"
+              />
+
+              <FormError
+                error={formik.errors.companyname}
+                touched={formik.touched.companyname}
               />
             </div>
           </div>
@@ -370,8 +482,13 @@ function EditProfile() {
               rows="4"
               value={formData.description}
               onChange={handleChange}
+              onBlur={formik.handleBlur}
               className="auth-input resize-vertical"
-              maxLength={500}
+            />
+
+            <FormError
+              error={formik.errors.description}
+              touched={formik.touched.description}
             />
             <small style={{ float: "right", color: "#64748b" }}>
               {formData.description.length}/500
@@ -403,7 +520,14 @@ function EditProfile() {
                     onChange={(e) =>
                       handleExperienceChange(index, "role", e.target.value)
                     }
-                    placeholder="Recruiter"
+                    onBlur={() =>
+                      formik.setFieldTouched(`workExperience.${index}.role`, true)
+                    }
+                  />
+
+                  <FormError
+                    error={formik.errors.workExperience?.[index]?.role}
+                    touched={formik.touched.workExperience?.[index]?.role}
                   />
                 </div>
 
@@ -431,22 +555,40 @@ function EditProfile() {
                     onChange={(e) =>
                       handleExperienceChange(index, "startYear", e.target.value)
                     }
-                    placeholder="2019"
+                    onBlur={() =>
+                      formik.setFieldTouched(`workExperience.${index}.startYear`, true)
+                    }
+                  />
+
+                  <FormError
+                    error={formik.errors.workExperience?.[index]?.startYear}
+                    touched={formik.touched.workExperience?.[index]?.startYear}
                   />
                 </div>
 
                 <div className="auth-group">
                   <label className="auth-label">End Year</label>
-                  <input
-                    type="number"
-                    className="auth-input"
-                    value={exp.endYear}
-                    disabled={exp.isCurrent}
-                    onChange={(e) =>
-                      handleExperienceChange(index, "endYear", e.target.value)
-                    }
-                    placeholder="2023"
-                  />
+                  {!exp.isCurrent && (
+                    <>
+                      <input
+                        type="number"
+                        className="auth-input"
+                        value={exp.endYear}
+                        onChange={(e) =>
+                          handleExperienceChange(index, "endYear", e.target.value)
+                        }
+                        onBlur={() =>
+                          formik.setFieldTouched(`workExperience.${index}.endYear`, true)
+                        }
+                      />
+
+                      <FormError
+                        error={formik.errors.workExperience?.[index]?.endYear}
+                        touched={formik.touched.workExperience?.[index]?.endYear}
+                      />
+                    </>
+                  )}
+
                 </div>
 
                 <div className="auth-group" style={{ alignSelf: "end" }}>
@@ -512,7 +654,12 @@ function EditProfile() {
                 name="headquarters.street1"
                 value={formData.headquarters.street1}
                 onChange={handleChange}
-                placeholder="Street Address 1"
+                onBlur={formik.handleBlur}
+              />
+
+              <FormError
+                error={formik.errors.headquarters?.street1}
+                touched={formik.touched.headquarters?.street1}
               />
             </div>
 
@@ -589,8 +736,14 @@ function EditProfile() {
                 name="contact.email"
                 value={formData.contact.email}
                 onChange={handleChange}
-                placeholder="Email"
+                onBlur={formik.handleBlur}
               />
+
+              <FormError
+                error={formik.errors.contact?.email}
+                touched={formik.touched.contact?.email}
+              />
+
             </div>
 
             <div className="auth-group">
@@ -754,7 +907,7 @@ function EditProfile() {
           <button
             type="submit"
             className="btn-primary d-flex gap-1"
-            disabled={isSaving}
+            disabled={isSaving || !formik.isValid}
           >
             <FiSave />
             {isSaving ? "Saving..." : "Save Changes"}

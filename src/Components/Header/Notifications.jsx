@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
     const [showPopover, setShowPopover] = useState(false);
@@ -60,7 +61,13 @@ const Notifications = () => {
         return () => document.removeEventListener("keydown", handleEscape);
     }, [showPopover]);
 
-    const handleClose = () => setShowPopover(false);
+    const navigate = useNavigate();
+
+    const handleClose = () => {
+        setShowPopover(false);          // close popover
+        navigate("/User/notifications-page"); // navigate
+    };
+
     const markAllRead = () => console.log("Mark all as read");
 
     return (
@@ -134,9 +141,14 @@ const Notifications = () => {
                             </div>
 
                             <div className="popover-footer">
-                                <button className="btn-link" onClick={handleClose} type="button">
+                                <button
+                                    className="btn-link"
+                                    onClick={handleClose}
+                                    type="button"
+                                >
                                     View all notifications
                                 </button>
+
                             </div>
                         </div>
                     </div>

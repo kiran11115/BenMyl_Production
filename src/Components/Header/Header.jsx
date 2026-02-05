@@ -143,9 +143,9 @@ function Header() {
           </button>
 
           {/* Notification Bell */}
-          {/* <Notifications /> */}
+          <Notifications />
 
-          <button
+          {/* <button
             onClick={() => navigate("/User/notifications-page")}
             className="header-action-btn"
             aria-label="Notifications"
@@ -153,7 +153,7 @@ function Header() {
           >
             <Bell size={20} />
             <span className="notification-badge">5</span>
-          </button>
+          </button> */}
 
           {/* User Profile Dropdown */}
           <div className="header-profile-wrapper" ref={profileRef}>

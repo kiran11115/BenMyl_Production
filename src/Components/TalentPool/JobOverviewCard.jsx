@@ -175,51 +175,51 @@ const JobOverviewCard = ({ job, onClose }) => {
 
   return (
     <>
-    <style>{stylesoverivew}</style>
-       <div className="job-overview-card">
-      <div className="job-overview-top">
-     <div className="company-icon-box large">
-                <BsBuilding size={28} />
-              </div>
-        <div className="job-title-block">
-          <div className="job-title-row">
-            <h3 className="job-title">{job.title}</h3>
+      <style>{stylesoverivew}</style>
+      <div className="job-overview-card">
+        <div className="job-overview-top">
+          <div className="company-icon-box large">
+            <BsBuilding size={28} />
           </div>
+          <div className="job-title-block">
+            <div className="job-title-row">
+              <h3 className="job-title">{job.title}</h3>
+            </div>
 
-          <div className="job-subtitle">
-            <div className="job-company">{job.company}</div>
-            <div className="job-location">
-              <FiMapPin />
-              <span>{job.location}</span>
+            <div className="job-subtitle">
+              <div className="job-company">{job.company}</div>
+              <div className="job-location">
+                <FiMapPin />
+                <span>{job.location}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="job-stats-row">
-        <Stat label="BUDGET" value={job.budget} />
-        <Stat label="EXPERIENCE" value={`${job.experience}+`} />
-        <Stat label="TYPE" value={job.type} />
-      </div>
+        <div className="job-stats-row">
+          <Stat label="BUDGET" value={`$${job.budget} / hr`} />
+          <Stat label="EXPERIENCE" value={`${job.experience}+`} />
+          <Stat label="TYPE" value={job.type} />
+        </div>
 
-      <div className="job-section">
-        <div className="job-section-title">Job Description</div>
-        <div className="job-section-text">{job.description}</div>
-      </div>
+        <div className="job-section">
+          <div className="job-section-title">Job Description</div>
+          <div className="job-section-text">{job.description}</div>
+        </div>
 
-      <div className="job-section">
-        <div className="job-section-title">Required Skills</div>
-        <div className="d-flex gap-2">
-          {(job.requiredSkills || []).map((s) => (
-            <span key={s} className="status-tag status-progress">
-              {s}
-            </span>
-          ))}
+        <div className="job-section">
+          <div className="job-section-title">Required Skills</div>
+          <div className="d-flex gap-2">
+            {(job.requiredSkills || []).map((s) => (
+              <span key={s} className="status-tag status-progress">
+                {s}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
     </>
- 
+
   );
 };
 
