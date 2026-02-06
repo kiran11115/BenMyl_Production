@@ -1,186 +1,316 @@
-import React, { useState } from "react";
-import "./Header.css";
+import React, { useMemo, useState } from "react";
+import { User } from "lucide-react";
 
-function NotificationsPage() {
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            author: "Daniel Thompson",
-            action: "commented on the course",
-            message:
-                "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-            time: "Today at 11:45 AM",
-            avatar: "https://i.pravatar.cc/150?img=12",
-            read: false,
-        },
-        {
-            id: 2,
-            author: "Daniel Thompson",
-            action: "replied to your comment",
-            message:
-                "The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.",
-            time: "Today at 11:45 AM",
-            avatar: "https://i.pravatar.cc/150?img=15",
-            read: false,
-        },
-        {
-            id: 3,
-            author: "Daniel Thompson",
-            action: "commented on the course",
-            message:
-                "It is a long established fact that a reader will be distracted by the readable content.",
-            time: "Today at 11:45 AM",
-            avatar: "https://i.pravatar.cc/150?img=18",
-            read: true,
-        },
-        {
-            id: 4,
-            author: "Sophia Martinez",
-            action: "liked your comment",
-            message:
-                "Sophia liked your thoughts on the lesson about creative confidence.",
-            time: "Today at 10:12 AM",
-            avatar: "https://i.pravatar.cc/150?img=32",
-            read: false,
-        },
-        {
-            id: 5,
-            author: "Michael Johnson",
-            action: "replied to your discussion",
-            message:
-                "I completely agree with your point. Consistency is the key to learning.",
-            time: "Yesterday at 9:30 PM",
-            avatar: "https://i.pravatar.cc/150?img=45",
-            read: true,
-        },
-        {
-            id: 6,
-            author: "Emily Davis",
-            action: "mentioned you in a comment",
-            message:
-                "@you This part of the course really helped me overcome anxiety.",
-            time: "Yesterday at 6:15 PM",
-            avatar: "https://i.pravatar.cc/150?img=25",
-            read: true,
-        },
-        {
-            id: 7,
-            author: "James Wilson",
-            action: "started following you",
-            message:
-                "James Wilson is now following your learning journey.",
-            time: "Yesterday at 4:50 PM",
-            avatar: "https://i.pravatar.cc/150?img=55",
-            read: true,
-        },
-        {
-            id: 8,
-            author: "Olivia Brown",
-            action: "commented on your post",
-            message:
-                "Great insights! I especially liked the example you shared.",
-            time: "2 days ago",
-            avatar: "https://i.pravatar.cc/150?img=60",
-            read: true,
-        },
-        {
-            id: 9,
-            author: "Ethan Clark",
-            action: "shared your post",
-            message:
-                "Ethan shared your post with his followers.",
-            time: "2 days ago",
-            avatar: "https://i.pravatar.cc/150?img=64",
-            read: true,
-        },
-        {
-            id: 10,
-            author: "Isabella Moore",
-            action: "replied to your question",
-            message:
-                "You can practice this technique daily to see faster improvement.",
-            time: "3 days ago",
-            avatar: "https://i.pravatar.cc/150?img=48",
-            read: true,
-        },
-    ]);
+/* -------------------------------
+   Mock Data (UNCHANGED)
+-------------------------------- */
 
-    const markAllRead = () => {
-        setNotifications(notifications.map(n => ({ ...n, read: true })));
-    };
+const INITIAL_NOTIFICATIONS = [
+  {
+    id: 1,
+    type: "talent",
+    sender: "Acme Corp",
+    time: "1h ago",
+    read: false,
+   talents: [
+  { name: "Logitech Ganesh", role: "UI/UX" },
+  { name: "Daniel Nguyen", role: "Full Stack Developer" },
+  { name: "Aarav Mehta", role: "Backend Developer" },
+  { name: "Sophia Lee", role: "QA Engineer" }
+]
 
-    const clearAll = () => {
-        setNotifications([]);
-    };
+  },
+  {
+    id: 2,
+    type: "message",
+    sender: "John (Client)",
+    message: "Can we fine-tune the dashboard animation timing?",
+    time: "3h ago",
+    read: false,
+  },
+  {
+    id: 3,
+    type: "project",
+    sender: "Project Phoenix",
+    message: "Milestone 2 has been approved.",
+    time: "Yesterday",
+    read: true,
+  },
+];
 
-    const newNotifications = notifications.filter(n => !n.read);
-    const earlyNotifications = notifications.filter(n => n.read);
+/* -------------------------------
+   Component
+-------------------------------- */
+
+const NotificationsPage = () => {
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [expandedId, setExpandedId] = useState(null);
+  const [decisions, setDecisions] = useState({});
+
+  const unread = useMemo(
+    () => notifications.filter((n) => !n.read),
+    [notifications]
+  );
+
+  const earlier = useMemo(
+    () => notifications.filter((n) => n.read),
+    [notifications]
+  );
+
+  const markAllAsRead = () => {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read: true }))
+    );
+  };
+
+  const markAsReadWithDecision = (id, decision) => {
+    setDecisions((prev) => ({ ...prev, [id]: decision }));
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, read: true } : n
+      )
+    );
+  };
+
+  const renderTalentSummary = (talents) => {
+    const visible = talents.slice(0, 2);
+    const remaining = talents.length - visible.length;
 
     return (
-        <div className="container" style={{ padding: "20px 0" }}>
-            <div className="container-notification">
-
-                {/* 🔒 STICKY HEADER */}
-                <div className="notifications-header">
-                    <h2>Notifications</h2>
-                    <div className="header-actions">
-                        <button onClick={markAllRead}>Mark as read</button>
-                        {/* <button onClick={clearAll} className="clear-btn">
-              Clear all
-            </button> */}
-                        <button className="clear-btn">
-                            Clear all
-                        </button>
-                    </div>
-                </div>
-
-                {/* 📜 SCROLLABLE CONTENT */}
-                <div className="notifications-scroll">
-                    {newNotifications.length > 0 && (
-                        <>
-                            <div className="section-title">
-                                New {newNotifications.length}
-                            </div>
-                            {newNotifications.map(item => (
-                                <div key={item.id} className="notification-item unread">
-                                    <img src={item.avatar} alt="" className="avatar" />
-                                    <div className="notification-content">
-                                        <div className="title">
-                                            <strong>{item.author}</strong>{" "}
-                                            <span>{item.action}</span>
-                                        </div>
-                                        <div className="message">{item.message}</div>
-                                        <div className="time">{item.time}</div>
-                                    </div>
-                                    <span className="blue-dot" />
-                                </div>
-                            ))}
-                        </>
-                    )}
-
-                    {earlyNotifications.length > 0 && (
-                        <>
-                            <div className="section-title">Early</div>
-                            {earlyNotifications.map(item => (
-                                <div key={item.id} className="notification-item">
-                                    <img src={item.avatar} alt="" className="avatar" />
-                                    <div className="notification-content">
-                                        <div className="title">
-                                            <strong>{item.author}</strong>{" "}
-                                            <span>{item.action}</span>
-                                        </div>
-                                        <div className="message">{item.message}</div>
-                                        <div className="time">{item.time}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </>
-                    )}
-                </div>
-
-            </div>
-        </div>
+      <>
+        <strong>Talent request:</strong>{" "}
+        {visible.map((t, i) => (
+          <span key={i}>
+            {t.name} - {t.role}
+            {i < visible.length - 1 && ", "}
+          </span>
+        ))}
+        {remaining > 0 && (
+          <span style={{ color: "#64748b" }}>
+            {" "}
+            +{remaining} more
+          </span>
+        )}
+      </>
     );
-}
+  };
+
+  const renderDecisionStatus = (id) => {
+    if (!decisions[id]) return null;
+
+    return (
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: decisions[id] === "approved" ? "#16a34a" : "#dc2626",
+        }}
+      >
+        {decisions[id] === "approved" ? "Approved" : "Declined"}
+      </span>
+    );
+  };
+
+  const renderRow = (n, isEarlier = false) => {
+    const isExpanded = expandedId === n.id;
+
+    return (
+      <div
+        key={n.id}
+        style={{
+          display: "flex",
+          gap: 16,
+          padding: "14px 20px",
+          borderRadius: 12,
+          borderLeft: !n.read ? "2px solid #6843C7" : "2px solid transparent",
+          background: "#fff",
+          opacity: isEarlier ? 0.65 : 1,
+          marginBottom: 8,
+        }}
+      >
+        {/* Profile Icon */}
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            background: "#f1f5f9",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#64748b",
+            flexShrink: 0,
+          }}
+        >
+          <User size={18} />
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Header */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: n.read ? 500 : 700,
+                color: "#1e293b",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {n.sender}
+            </div>
+
+            <div style={{ fontSize: 12, color: "#64748b" }}>
+              {n.time}
+            </div>
+          </div>
+
+          {/* Message */}
+          <div
+            style={{
+              fontSize: 13,
+              color: "#475569",
+              marginTop: 4,
+              lineHeight: 1.4,
+            }}
+          >
+            {n.type === "talent"
+              ? renderTalentSummary(n.talents)
+              : n.message}
+          </div>
+
+          {/* Decision status */}
+          {n.read && n.type === "talent" && (
+            <div style={{ marginTop: 6 }}>
+              {renderDecisionStatus(n.id)}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 8,
+              marginTop: 12,
+            }}
+          >
+            <button
+              className="btn-secondary"
+              onClick={() =>
+                setExpandedId(isExpanded ? null : n.id)
+              }
+            >
+              {isExpanded ? "Hide details" : "View details"}
+            </button>
+
+            {!n.read && n.type === "talent" && (
+              <>
+                <button
+                  className="btn-primary"
+                  onClick={() =>
+                    markAsReadWithDecision(n.id, "approved")
+                  }
+                >
+                  Approve
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() =>
+                    markAsReadWithDecision(n.id, "declined")
+                  }
+                >
+                  Decline
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Expanded Details */}
+          {isExpanded && (
+            <div
+              style={{
+                marginTop: 12,
+                paddingTop: 12,
+                borderTop: "1px solid #e2e8f0",
+                fontSize: 13,
+                color: "#475569",
+              }}
+            >
+              {n.type === "talent" &&
+                n.talents.map((t, i) => (
+                  <div key={i}>
+                    {t.name} - {t.role}
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="jobs-container">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 24,
+        }}
+      >
+        <h2 style={{ margin: 0 }}>Notifications</h2>
+
+        {unread.length > 0 && (
+          <button className="btn-secondary" onClick={markAllAsRead}>
+            Mark all as read
+          </button>
+        )}
+      </div>
+
+      {unread.length > 0 && (
+        <>
+          <div
+            style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#1e293b",
+              marginBottom: 12,
+            }}
+          >
+            Unread
+          </div>
+          {unread.map((n) => renderRow(n))}
+        </>
+      )}
+
+      {earlier.length > 0 && (
+        <>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#64748b",
+              margin: "24px 0 12px",
+            }}
+          >
+            Earlier
+          </div>
+          {earlier.map((n) => renderRow(n, true))}
+        </>
+      )}
+    </div>
+  );
+};
 
 export default NotificationsPage;
