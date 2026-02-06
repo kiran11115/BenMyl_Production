@@ -137,6 +137,37 @@
   opacity: 1;
 }
 
+
+
+
+/* --- EXACT STAT CARD1 HOVER --- */
+.project-card1:hover {
+  /* MATCH STAT CARD: Lift distance (-3px) */
+  transform: translateY(-3px);
+  
+  /* MATCH STAT CARD: Hover Shadow */
+  box-shadow: 
+    0 20px 25px -5px rgba(15, 23, 42, 0.08),
+    0 10px 10px -5px rgba(15, 23, 42, 0.03);
+}
+
+/* --- Optional: The Bottom Gradient Bar (Kept for visual flair) --- */
+.project-card1::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  opacity: 0;
+  transition: opacity 0.2s ease; /* Matched speed */
+}
+
+.project-card1:hover::after {
+  opacity: 1;
+}
+
 /* --- Rest of the Internal Elements (Kept Premium) --- */
 
 .card-header {
