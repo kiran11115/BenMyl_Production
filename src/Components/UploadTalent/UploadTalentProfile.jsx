@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FiMapPin,
   FiBriefcase,
@@ -8,20 +8,17 @@ import {
   FiPhone,
   FiLinkedin,
   FiFileText,
-  FiEye,
-  FiExternalLink,
   FiArrowLeft,
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
-import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLazyGetEmployeeTalentProfileQuery } from "../../State-Management/Api/TalentPoolApiSlice";
-import NoData from "./NoData"; // adjust path if needed
-
+import NoData from "./NoData";
 
 const UploadTalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showContent, setShowContent] = useState(false);
 
   const employeeId = location.state?.employeeId;
 
@@ -33,6 +30,19 @@ const UploadTalentProfile = () => {
       getEmployeeProfile(employeeId);
     }
   }, [employeeId, getEmployeeProfile]);
+
+  // Delay showing content to prevent flash of NoData components
+  useEffect(() => {
+    let timer;
+    if (apiData && !isLoading) {
+      timer = setTimeout(() => {
+        setShowContent(true);
+      }, 100);
+    } else if (isLoading) {
+      setShowContent(false);
+    }
+    return () => clearTimeout(timer);
+  }, [apiData, isLoading]);
 
   const getInitials = (firstName = "", lastName = "") => {
     const first = firstName.trim().charAt(0);
@@ -144,6 +154,179 @@ const UploadTalentProfile = () => {
   
   `;
 
+  // Loading skeleton component
+  if (isLoading || !showContent) {
+    return (
+      <>
+        <style>{styleCards}</style>
+        <div className="projects-container">
+          {/* Breadcrumb Skeleton */}
+          <div className="profile-breadcrumb d-flex gap-1 mb-4">
+            <div className="skeleton-text" style={{ width: "150px", height: "24px" }}></div>
+          </div>
+
+          <div className="dashboard-layout">
+            {/* === LEFT MAIN COLUMN === */}
+            <div className="dashboard-column-main">
+              <div className="row mb-4">
+                <div className="col-3">
+                  {/* Profile Header Card Skeleton */}
+                  <div className="project-card">
+                    <div className="skeleton-circle" style={{ width: "100px", height: "100px", margin: "0 auto 16px auto" }}></div>
+                    <div className="skeleton-text" style={{ width: "80%", height: "24px", margin: "0 auto 8px auto" }}></div>
+                    <div className="skeleton-text" style={{ width: "60%", height: "20px", margin: "0 auto 12px auto" }}></div>
+                    <div className="d-flex gap-2 justify-content-center">
+                      <div className="skeleton-text" style={{ width: "40px", height: "24px" }}></div>
+                      <div className="skeleton-text" style={{ width: "40px", height: "24px" }}></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-9">
+                  {/* Professional Summary Skeleton */}
+                  <div className="project-card">
+                    <div className="skeleton-text" style={{ width: "40%", height: "28px", marginBottom: "16px" }}></div>
+                    <div className="skeleton-text" style={{ width: "100%", height: "16px", marginBottom: "8px" }}></div>
+                    <div className="skeleton-text" style={{ width: "90%", height: "16px", marginBottom: "8px" }}></div>
+                    <div className="skeleton-text" style={{ width: "80%", height: "16px", marginBottom: "16px" }}></div>
+                    
+                    <div className="summary-stats-grid">
+                      <div className="summary-stat-box">
+                        <div className="skeleton-text" style={{ width: "50px", height: "32px", margin: "0 auto 4px auto" }}></div>
+                        <div className="skeleton-text" style={{ width: "60px", height: "16px", margin: "0 auto" }}></div>
+                      </div>
+                      <div className="summary-stat-box">
+                        <div className="skeleton-text" style={{ width: "40px", height: "32px", margin: "0 auto 4px auto" }}></div>
+                        <div className="skeleton-text" style={{ width: "50px", height: "16px", margin: "0 auto" }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mb-4">
+                <div className="col-7">
+                  {/* Work Experience Skeleton */}
+                  <div className="project-card1">
+                    <div className="skeleton-text" style={{ width: "30%", height: "28px", marginBottom: "16px" }}></div>
+                    {[1, 2].map((i) => (
+                      <div key={i} className="experience-item mb-3">
+                        <div className="skeleton-circle" style={{ width: "40px", height: "40px", marginRight: "12px" }}></div>
+                        <div style={{ flex: 1 }}>
+                          <div className="skeleton-text" style={{ width: "60%", height: "20px", marginBottom: "8px" }}></div>
+                          <div className="skeleton-text" style={{ width: "40%", height: "16px", marginBottom: "4px" }}></div>
+                          <div className="skeleton-text" style={{ width: "30%", height: "16px", marginBottom: "8px" }}></div>
+                          <div className="skeleton-text" style={{ width: "100%", height: "14px" }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="col-5">
+                  {/* Skills & Expertise Skeleton */}
+                  <div className="project-card1">
+                    <div className="skeleton-text" style={{ width: "35%", height: "28px", marginBottom: "16px" }}></div>
+                    <div className="skills-container">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="skeleton-text d-inline-block" style={{ 
+                          width: `${Math.random() * 40 + 60}px`, 
+                          height: "28px", 
+                          borderRadius: "16px",
+                          marginRight: "8px",
+                          marginBottom: "8px"
+                        }}></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Portfolio Skeleton */}
+              <div className="portfolio-section">
+                <div className="portfolio-header mb-3">
+                  <div className="skeleton-text" style={{ width: "20%", height: "28px" }}></div>
+                  <div className="skeleton-text" style={{ width: "80px", height: "20px" }}></div>
+                </div>
+
+                <div className="projects-grid premium-portfolio-grid">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="project-card">
+                      <div className="portfolio-content p-3">
+                        <div className="skeleton-text" style={{ width: "70%", height: "24px", marginBottom: "8px" }}></div>
+                        <div className="skeleton-text" style={{ width: "50%", height: "16px", marginBottom: "12px" }}></div>
+                        <div className="skeleton-text" style={{ width: "100%", height: "14px", marginBottom: "8px" }}></div>
+                        <div className="skeleton-text" style={{ width: "90%", height: "14px", marginBottom: "12px" }}></div>
+                        <div className="portfolio-tags">
+                          {[1, 2, 3].map((j) => (
+                            <div key={j} className="skeleton-text d-inline-block" style={{ 
+                              width: "60px", 
+                              height: "24px", 
+                              borderRadius: "12px",
+                              marginRight: "8px"
+                            }}></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* === RIGHT SIDE COLUMN === */}
+            <div className="dashboard-column-side">
+              {/* Action Buttons Skeleton */}
+              <div className="sidebar-actions mb-4">
+                <div className="skeleton-text" style={{ width: "100%", height: "40px", borderRadius: "8px", marginBottom: "8px" }}></div>
+                <div className="skeleton-text" style={{ width: "100%", height: "40px", borderRadius: "8px", marginBottom: "12px" }}></div>
+                <div className="sidebar-links">
+                  <div className="skeleton-text" style={{ width: "100%", height: "32px", marginBottom: "8px" }}></div>
+                  <div className="skeleton-text" style={{ width: "100%", height: "32px" }}></div>
+                </div>
+              </div>
+
+              {/* Quick Information Skeleton */}
+              <div className="table-card sidebar-card mb-4">
+                <div className="skeleton-text" style={{ width: "50%", height: "24px", marginBottom: "16px" }}></div>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="quick-info-item mb-3">
+                    <div className="skeleton-text" style={{ width: "60%", height: "16px", marginBottom: "4px" }}></div>
+                    <div className="skeleton-text" style={{ width: "80%", height: "18px" }}></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Contact Information Skeleton */}
+              <div className="table-card sidebar-card mb-4">
+                <div className="skeleton-text" style={{ width: "50%", height: "24px", marginBottom: "16px" }}></div>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="contact-item mb-2">
+                    <div className="skeleton-text" style={{ width: "100%", height: "20px" }}></div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Education Skeleton */}
+              <div className="table-card sidebar-card">
+                <div className="skeleton-text" style={{ width: "40%", height: "24px", marginBottom: "16px" }}></div>
+                {[1, 2].map((i) => (
+                  <div key={i} className="interview-item-premium mb-3">
+                    <div className="skeleton-circle" style={{ width: "32px", height: "32px", marginRight: "12px" }}></div>
+                    <div style={{ flex: 1 }}>
+                      <div className="skeleton-text" style={{ width: "80%", height: "18px", marginBottom: "4px" }}></div>
+                      <div className="skeleton-text" style={{ width: "60%", height: "16px", marginBottom: "4px" }}></div>
+                      <div className="skeleton-text" style={{ width: "40%", height: "14px" }}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Original component return (unchanged)
   return (
     <>
       <style>{styleCards}</style>
