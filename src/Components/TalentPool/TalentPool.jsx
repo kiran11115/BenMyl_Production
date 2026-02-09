@@ -9,7 +9,7 @@ import {
   FiCheck,
   FiChevronDown,
 } from "react-icons/fi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
 import TalentGridView from "./TalentGrid";
@@ -39,7 +39,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId
     if (!shortlistedCandidates.length) return;
 
     const userIds = shortlistedCandidates.map(
-      (c) => Number(c.inviteUserId) // ✅ number
+      (c) => Number(c.inviteUserId)
     );
 
     const usernames = shortlistedCandidates.map((c) => c.name);
@@ -298,12 +298,14 @@ const TalentPool = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedJobId, setSelectedJobId] = useState(null);
-  const handleProfileClick = () => navigate("/user/user-talent-profile");
+  
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allCandidates, setAllCandidates] = useState([]);
   const [isInitialised, setIsInitialised] = useState(false);
   const [activeJobDetails, setActiveJobDetails] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
 
   const activeJobId = selectedJobId;
 
@@ -312,8 +314,6 @@ const TalentPool = () => {
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
-
-
 
   const fetchTalents = async () => {
 
@@ -509,6 +509,41 @@ const TalentPool = () => {
     });
   };
 
+    useEffect(() => {
+  const jobIdFromUrl = searchParams.get("jobId");
+
+  if (jobIdFromUrl && jobs.length > 0) {
+    setSelectedJobId(jobIdFromUrl);
+    setIsInitialised(true);
+  }
+}, [jobs]);
+
+ const handleApplyFilter = (jobId) => {
+  setSelectedJobId(jobId);
+
+  if (!jobId) {
+    // 🔥 remove jobId completely from URL
+    setSearchParams({});
+  } else {
+    setSearchParams({ jobId });
+  }
+};
+
+
+
+const handleProfileClick = (candidate) => {
+  const from = location.pathname + location.search;
+
+  navigate(
+    `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
+    {
+      state: { employeeID: candidate.id },
+    }
+  );
+};
+
+
+
   const handleRemoveFromDrawer = (jobId, candId) => {
     setShortlistedMap((prev) => ({
       ...prev,
@@ -617,7 +652,7 @@ const TalentPool = () => {
           <aside className="hide-scrollbar" style={{
             overflowY: "auto",
           }}>
-            <TalentFilters onApplyFilters={setSelectedJobId} jobs={jobs} selectedJobId={selectedJobId} />
+            <TalentFilters  onApplyFilters={handleApplyFilter} jobs={jobs} selectedJobId={selectedJobId} />
           </aside>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{

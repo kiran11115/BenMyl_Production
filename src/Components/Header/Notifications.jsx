@@ -7,6 +7,24 @@ const Notifications = () => {
   const [showPopover, setShowPopover] = useState(false);
   const containerRef = useRef(null);
 
+  const formatNotificationTime = (dateString) => {
+  if (!dateString) return "";
+
+  const createdTime = new Date(dateString);
+  const now = new Date();
+
+  const diffMs = now - createdTime;
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+  if (diffHours < 24) {
+    if (diffHours <= 0) return "Just now";
+    return `${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
+  }
+
+  return createdTime.toLocaleDateString("en-IN");
+};
+
+
   const userId = localStorage.getItem("CompanyId");
 
   const { data: apiNotifications = [], isLoading } =
@@ -20,7 +38,7 @@ const Notifications = () => {
       )}`,
       name: item.Username || "System",
       message: item.Message,
-      time: new Date(item.CreatedAt).toLocaleString(),
+     time: formatNotificationTime(item.CreatedAt),
     }))
     .slice(0, 4); // Limit to 4 notifications
 
