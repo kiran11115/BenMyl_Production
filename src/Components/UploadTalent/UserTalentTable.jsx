@@ -8,6 +8,7 @@ import {
 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
+import NoData from "./NoData"; // adjust path if needed
 
 /* ---------------- HELPER: INITIALS ---------------- */
 const getInitials = (name = "") => {
@@ -144,6 +145,16 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
     return items;
   }, [candidates, sortConfig]);
 
+
+  // ✅ PLACE IT HERE (IMMEDIATELY AFTER STATE)
+  if (!candidates || candidates.length === 0) {
+    return (
+      <div className="d-flex justify-content-center align-items-center w-100">
+        <NoData text="No professional summary added yet" />
+      </div>
+    );
+  }
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -219,15 +230,33 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
         </thead>
 
         <tbody>
-          {sortedCandidates.map((c) => (
-            <CandidateRow
-              key={c.id}
-              candidate={c}
-              isSelected={selectedIds.has(c.id)}
-              onToggle={onToggleSelect}
-            />
-          ))}
+          {sortedCandidates.length === 0 ? (
+            <tr>
+              <td colSpan={7}>
+                <div
+                  style={{
+                    minHeight: "260px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NoData text="No professional summary added yet" />
+                </div>
+              </td>
+            </tr>
+          ) : (
+            sortedCandidates.map((c) => (
+              <CandidateRow
+                key={c.id}
+                candidate={c}
+                isSelected={selectedIds.has(c.id)}
+                onToggle={onToggleSelect}
+              />
+            ))
+          )}
         </tbody>
+
       </table>
     </div>
   );

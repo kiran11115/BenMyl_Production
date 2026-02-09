@@ -18,6 +18,7 @@ import "./TalentPool.css";
 import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import NoData from "../UploadTalent/NoData";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -26,7 +27,7 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs }) => {
   const [offerStatus, setOfferStatus] = useState({});
 
   const handleSendOffer = (jobId) => {
@@ -255,7 +256,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs }) => 
 const TalentPool = () => {
   const navigate = useNavigate();
   const location = useLocation();
-const preselectedJobTitle = location.state?.jobTitle;
+  const preselectedJobTitle = location.state?.jobTitle;
   const userId = localStorage.getItem("CompanyId");
   const companyId = localStorage.getItem("logincompanyid");
   const [viewMode, setViewMode] = useState("grid");
@@ -266,15 +267,15 @@ const preselectedJobTitle = location.state?.jobTitle;
   const [selectedJobId, setSelectedJobId] = useState(null);
   const handleProfileClick = () => navigate("/user/user-talent-profile");
   const [pageNumber, setPageNumber] = useState(1);
-const [hasMore, setHasMore] = useState(true);
-const [allCandidates, setAllCandidates] = useState([]);
-const [isInitialised, setIsInitialised] = useState(false);
-const [activeJobDetails, setActiveJobDetails] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [allCandidates, setAllCandidates] = useState([]);
+  const [isInitialised, setIsInitialised] = useState(false);
+  const [activeJobDetails, setActiveJobDetails] = useState(null);
 
-    const activeJobId = selectedJobId;
+  const activeJobId = selectedJobId;
 
-    const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
-    const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
+  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+  const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
@@ -283,179 +284,179 @@ const [activeJobDetails, setActiveJobDetails] = useState(null);
 
   const fetchTalents = async () => {
 
-  const payload = {
-    companyid: companyId,
-    pageNumber,
-    pageSize: 50,
-    filters: activeJob
-      ? [
+    const payload = {
+      companyid: companyId,
+      pageNumber,
+      pageSize: 50,
+      filters: activeJob
+        ? [
           {
             filterName: "Title",
             filterOperator: "Equals",
             filterValue: [activeJob.title],
           },
         ]
-      : [],
+        : [],
+    };
+
+    const res = await getFindTalent(payload).unwrap();
+
+    // 🔥 API returns array directly
+    if (!Array.isArray(res) || res.length === 0) {
+      setHasMore(false);
+      return;
+    }
+
+    setAllCandidates((prev) =>
+      pageNumber === 1 ? res : [...prev, ...res]
+    );
   };
-
-  const res = await getFindTalent(payload).unwrap();
-
-  // 🔥 API returns array directly
-  if (!Array.isArray(res) || res.length === 0) {
-    setHasMore(false);
-    return;
-  }
-
-  setAllCandidates((prev) =>
-    pageNumber === 1 ? res : [...prev, ...res]
-  );
-};
 
 
   const candidates = useMemo(() => {
-  return allCandidates.map((item) => ({
-    id: item.employeeID,
+    return allCandidates.map((item) => ({
+      id: item.employeeID,
 
-    name: `${item.firstName} ${item.lastName}`,
+      name: `${item.firstName} ${item.lastName}`,
 
-    role: item.title || "—",
+      role: item.title || "—",
 
-    experience: `${item.noofExperience || 0} yrs`,
+      experience: `${item.noofExperience || 0} yrs`,
 
-    location: item.city || "—",
+      location: item.city || "—",
 
-    skills: item.skills
-      ? item.skills.split(",").map((s) => s.trim())
-      : [],
+      skills: item.skills
+        ? item.skills.split(",").map((s) => s.trim())
+        : [],
 
-    avatar:
-      item.profilePicture ||
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        item.firstName
-      )}`,
+      avatar:
+        item.profilePicture ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          item.firstName
+        )}`,
 
-    rating: 4.5,
+      rating: 4.5,
 
-    availability: item.status ? [item.status] : ["Available"],
+      availability: item.status ? [item.status] : ["Available"],
 
-    verified: <GiCheckMark size={14} color="#059669" />,
+      verified: <GiCheckMark size={14} color="#059669" />,
 
-    hourlyRate: item.salary || 0,
-  }));
-}, [allCandidates]);
+      hourlyRate: item.salary || 0,
+    }));
+  }, [allCandidates]);
 
-const jobs = useMemo(() => {
-  if (!Array.isArray(jobTitles)) return [];
+  const jobs = useMemo(() => {
+    if (!Array.isArray(jobTitles)) return [];
 
-  const colorPalette = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+    const colorPalette = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
-  return jobTitles.map((job, index) => ({
-    id: `job-${job.jobID}`,      // 🔥 unique per job
-    jobID: job.jobID,            // backend id
-    title: job.jobTitle,
-    companyName: job.companyName,
-    color: colorPalette[index % colorPalette.length],
-  }));
-}, [jobTitles]);
+    return jobTitles.map((job, index) => ({
+      id: `job-${job.jobID}`,      // 🔥 unique per job
+      jobID: job.jobID,            // backend id
+      title: job.jobTitle,
+      companyName: job.companyName,
+      color: colorPalette[index % colorPalette.length],
+    }));
+  }, [jobTitles]);
 
 
-useEffect(() => {
-  // CASE 1: Coming from Success modal
-  if (preselectedJobTitle && jobs.length > 0) {
-    const matchedJob = jobs.find(
-      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
-    );
+  useEffect(() => {
+    // CASE 1: Coming from Success modal
+    if (preselectedJobTitle && jobs.length > 0) {
+      const matchedJob = jobs.find(
+        (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+      );
 
-    if (matchedJob) {
-      setSelectedJobId(matchedJob.id);
+      if (matchedJob) {
+        setSelectedJobId(matchedJob.id);
+      }
     }
-  }
 
-  // CASE 2: Normal page load (no preselected job)
-  if (!preselectedJobTitle) {
-    setIsInitialised(true);
-  }
-}, [preselectedJobTitle, jobs]);
+    // CASE 2: Normal page load (no preselected job)
+    if (!preselectedJobTitle) {
+      setIsInitialised(true);
+    }
+  }, [preselectedJobTitle, jobs]);
 
-useEffect(() => {
-  if (selectedJobId !== null) {
-    setIsInitialised(true);
-  }
-}, [selectedJobId]);
+  useEffect(() => {
+    if (selectedJobId !== null) {
+      setIsInitialised(true);
+    }
+  }, [selectedJobId]);
 
-useEffect(() => {
-  setPageNumber(1);
-  setHasMore(true);
-  setAllCandidates([]);
-}, [activeJobId]);
+  useEffect(() => {
+    setPageNumber(1);
+    setHasMore(true);
+    setAllCandidates([]);
+  }, [activeJobId]);
 
-useEffect(() => {
-  if (!isInitialised) return;   // 🚫 BLOCK early call
-  fetchTalents();
-}, [pageNumber, activeJobId, isInitialised]);
-
+  useEffect(() => {
+    if (!isInitialised) return;   // 🚫 BLOCK early call
+    fetchTalents();
+  }, [pageNumber, activeJobId, isInitialised]);
 
 
-useEffect(() => {
-  const el = resultsRef.current;
-  if (!el) return;
 
-  const onScroll = () => {
-    if (
-      el.scrollTop + el.clientHeight >=
+  useEffect(() => {
+    const el = resultsRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      if (
+        el.scrollTop + el.clientHeight >=
         el.scrollHeight - 50 &&
-      hasMore &&
-      !isLoading
-    ) {
-      setPageNumber((prev) => prev + 1);
-    }
-  };
+        hasMore &&
+        !isLoading
+      ) {
+        setPageNumber((prev) => prev + 1);
+      }
+    };
 
-  el.addEventListener("scroll", onScroll);
-  return () => el.removeEventListener("scroll", onScroll);
-}, [hasMore, isLoading]);
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [hasMore, isLoading]);
 
 
-const activeJob = useMemo(() => {
-  if (!selectedJobId) return null;
-  return jobs.find((j) => j.id === selectedJobId) || null;
-}, [selectedJobId, jobs]);
+  const activeJob = useMemo(() => {
+    if (!selectedJobId) return null;
+    return jobs.find((j) => j.id === selectedJobId) || null;
+  }, [selectedJobId, jobs]);
 
   const activeJobColor = activeJob?.color || "#4f46e5";
 
   useEffect(() => {
-  if (!activeJob) {
-    setActiveJobDetails(null);
-    return;
-  }
+    if (!activeJob) {
+      setActiveJobDetails(null);
+      return;
+    }
 
-  getJobById({
-    jobId: activeJob.jobID,
-    userId,
-  })
-    .unwrap()
-    .then((res) => {
-      // API returns array → take first item
-      setActiveJobDetails(res?.[0] || null);
-    });
-}, [activeJob]);
+    getJobById({
+      jobId: activeJob.jobID,
+      userId,
+    })
+      .unwrap()
+      .then((res) => {
+        // API returns array → take first item
+        setActiveJobDetails(res?.[0] || null);
+      });
+  }, [activeJob]);
 
-const jobOverviewData = useMemo(() => {
-  if (!activeJobDetails) return null;
+  const jobOverviewData = useMemo(() => {
+    if (!activeJobDetails) return null;
 
-  return {
-    title: activeJobDetails.jobTitle,
-    company: activeJobDetails.companyName,
-    location: activeJobDetails.location,
-    budget: `$${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
-    experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
-    type: activeJobDetails.employeeType,
-    description: activeJobDetails.jobDescription,
-    requiredSkills: activeJobDetails.requiredSkills
-      ? activeJobDetails.requiredSkills.split(",").map((s) => s.trim())
-      : [],
-  };
-}, [activeJobDetails]);
+    return {
+      title: activeJobDetails.jobTitle,
+      company: activeJobDetails.companyName,
+      location: activeJobDetails.location,
+      budget: `$${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
+      experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
+      type: activeJobDetails.employeeType,
+      description: activeJobDetails.jobDescription,
+      requiredSkills: activeJobDetails.requiredSkills
+        ? activeJobDetails.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    };
+  }, [activeJobDetails]);
 
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
@@ -574,33 +575,44 @@ const jobOverviewData = useMemo(() => {
         </div>
 
         {/* Layout */}
-        <div className="d-flex gap-3"  style={{
-    display: "flex",
-    gap: "16px",
-    height: "calc(100vh - 10px)", // SAME HEIGHT for both
-  }}>
+        <div className="d-flex gap-3" style={{
+          display: "flex",
+          gap: "16px",
+          height: "calc(100vh - 10px)", // SAME HEIGHT for both
+        }}>
           <aside className="hide-scrollbar" style={{
-      overflowY: "auto",
-    }}>
-            <TalentFilters onApplyFilters={setSelectedJobId}  jobs={jobs} selectedJobId={selectedJobId}/>
+            overflowY: "auto",
+          }}>
+            <TalentFilters onApplyFilters={setSelectedJobId} jobs={jobs} selectedJobId={selectedJobId} />
           </aside>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
-    height: "calc(100vh - 0px)", // adjust if header height differs
-    overflowY: "auto",
-    overflowX: "hidden",
-  }}>
+            height: "calc(100vh - 0px)", // adjust if header height differs
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}>
             {/* ALWAYS render overview card (shows empty state if no job) */}
             <div style={{ marginBottom: 16 }}>
               <JobOverviewCard job={jobOverviewData} />
             </div>
             {isLoading && (
-  <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
-    Loading candidates...
-  </div>
-)}
+              <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
+                Loading candidates...
+              </div>
+            )}
 
-            {viewMode === "grid" ? (
+            {!isLoading && sortedCandidates.length === 0 ? (
+              <div
+                style={{
+                  minHeight: "320px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <NoData text="No candidates found" />
+              </div>
+            ) : viewMode === "grid" ? (
               <TalentGridView
                 candidates={sortedCandidates}
                 onShortlist={handleShortlist}
@@ -620,19 +632,20 @@ const jobOverviewData = useMemo(() => {
                 hasMore={hasMore}
               />
             )}
+
           </section>
         </div>
       </div>
 
-     {isDrawerOpen ? (
-  <ShortlistDrawer
-    isOpen={isDrawerOpen}
-    onClose={() => setIsDrawerOpen(false)}
-    shortlistedMap={shortlistedMap}
-    onRemove={handleRemoveFromDrawer}
-    jobs={jobs}
-  />
-) : null}
+      {isDrawerOpen ? (
+        <ShortlistDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          shortlistedMap={shortlistedMap}
+          onRemove={handleRemoveFromDrawer}
+          jobs={jobs}
+        />
+      ) : null}
 
       <style jsx>{`
         .sort-wrapper {

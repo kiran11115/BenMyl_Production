@@ -6,21 +6,23 @@ import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
+import NoData from "../UploadTalent/NoData"; // adjust path if needed
+
 
 const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
     const [view, setView] = useState("Talent");
     const [refreshKey, setRefreshKey] = useState(0);
 
-const handleUploadSuccess = () => {
-  // 🔁 Immediate refresh (optional)
-  setRefreshKey((prev) => prev + 1);
- 
-  // ⏱ Auto refresh after 20 seconds
-  setTimeout(() => {
-    setRefreshKey((prev) => prev + 1);
-  }, 20000);
-};
+    const handleUploadSuccess = () => {
+        // 🔁 Immediate refresh (optional)
+        setRefreshKey((prev) => prev + 1);
+
+        // ⏱ Auto refresh after 20 seconds
+        setTimeout(() => {
+            setRefreshKey((prev) => prev + 1);
+        }, 20000);
+    };
 
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
@@ -79,26 +81,52 @@ const handleUploadSuccess = () => {
 
                 {/* CONTENT */}
                 <div className="view-content">
-                    {view === "Talent" &&
-                        <>
-                            <div className="upload-main mt-3">
+                    {/* TALENT TAB */}
+                    {view === "Talent" && (
+                        <div className="upload-main mt-3">
+                            {talentsData && talentsData.length > 0 ? (
                                 <UserTalentProfiles />
-                            </div>
-                        </>
-                    }
-                    {view === "Review" &&
-                        <>
-                            <div className="upload-main mt-3">
+                            ) : (
+                                <div
+                                    style={{
+                                        minHeight: "320px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <NoData text="No talent profiles available" />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* REVIEW TAB */}
+                    {view === "Review" && (
+                        <div className="upload-main mt-3">
+                            {talentsData && talentsData.length > 0 ? (
                                 <UploadTalentTable
                                     talents={talentsData}
                                     selectedEmails={selectedEmails}
                                     onToggleSelect={toggleSelect}
                                     refreshKey={refreshKey}
                                 />
-                            </div >
-                        </>
-                    }
+                            ) : (
+                                <div
+                                    style={{
+                                        minHeight: "320px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <NoData text="No talent profiles to review yet" />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
+
             </div>
         </>
     );
