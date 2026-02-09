@@ -45,26 +45,26 @@ const UploadTalentProfile = () => {
   }, [apiData, isLoading]);
 
   const getInitials = (firstName = "", lastName = "") => {
-    const first = firstName.trim().charAt(0);
-    const last = lastName.trim().charAt(0);
-    return (first + last).toUpperCase();
+    const first = firstName?.trim().charAt(0) || "";
+    const last = lastName?.trim().charAt(0) || "";
+    return (first + last).toUpperCase() || "N/A";
   };
 
   const profileData = useMemo(() => {
     if (!apiData) return null;
 
     return {
-      name: `${apiData?.firstName} ${apiData?.lastName}`,
-      role: apiData?.title,
-      location: `${apiData?.city}, ${apiData?.state}`,
-      experience: `${apiData?.noofExperience}+ years experience`,
-      status: apiData?.status,
+      name: `${apiData?.firstName || "N/A"} ${apiData?.lastName || ""}`.trim(),
+      role: apiData?.title || "N/A",
+      location: `${apiData?.city || "N/A"}, ${apiData?.state || ""}`.replace(/, $/, ""),
+      experience: apiData?.noofExperience ? `${apiData.noofExperience}+ years experience` : "N/A",
+      status: apiData?.status || "N/A",
 
-      summary: apiData?.bio,
-      email: apiData?.emailAddress,
-      phoneNo: apiData?.phoneNo,
+      summary: apiData?.bio || "N/A",
+      email: apiData?.emailAddress || "N/A",
+      phoneNo: apiData?.phoneNo || "N/A",
       stats: [
-        { label: "Experience", value: `${apiData?.noofExperience}+ yrs` },
+        { label: "Experience", value: apiData?.noofExperience ? `${apiData.noofExperience}+ yrs` : "N/A" },
         { label: "Projects", value: apiData?.employeeprojects?.length || 0 },
       ],
 
@@ -72,20 +72,20 @@ const UploadTalentProfile = () => {
 
       workExperience:
         apiData?.workexperiences?.map((w) => ({
-          role: w.position,
-          company: w.companyName,
-          period: `${w.startDate?.slice(0, 4)} - ${w.endDate ? w.endDate.slice(0, 4) : "Present"
+          role: w.position || "N/A",
+          company: w.companyName || "N/A",
+          period: `${w.startDate?.slice(0, 4) || "N/A"} - ${w.endDate ? w.endDate.slice(0, 4) : "Present"
             }`,
-          location: apiData?.city,
-          desc: w.description,
+          location: w.city || apiData?.city || "N/A",
+          desc: w.description || "N/A",
         })) || [],
 
       portfolio:
         apiData?.employeeprojects?.map((p) => ({
-          title: p.projectName,
-          role: p.role,
-          description: p.description,
-          period: `${p.startDate?.slice(0, 10)} - ${p.endDate ? p.endDate.slice(0, 10) : "Present"
+          title: p.projectName || "N/A",
+          role: p.role || "N/A",
+          description: p.description || "N/A",
+          period: `${p.startDate?.slice(0, 10) || "N/A"} - ${p.endDate ? p.endDate.slice(0, 10) : "Present"
             }`,
           tags: p.skills ? p.skills.split(",") : [],
 
@@ -93,30 +93,30 @@ const UploadTalentProfile = () => {
 
       education:
         apiData.employee_Heighers?.map((edu) => ({
-          degree: edu.highestQualification,
-          school: edu.university,
-          field: edu.fieldofstudy,
-          year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate ? edu.endDate.slice(0, 4) : "Present"
+          degree: edu.highestQualification || "N/A",
+          school: edu.university || "N/A",
+          field: edu.fieldofstudy || "N/A",
+          year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate ? edu.endDate.slice(0, 4) : "Present"
             }`,
-          certifications: edu.certifications,
-          percentage: edu.percentage,
+          certifications: edu.certifications || "N/A",
+          percentage: edu.percentage || "N/A",
         })) || [],
 
-      resume: apiData?.resumeFilePath,
+      resume: apiData?.resumeFilePath || "N/A",
 
       languages: apiData?.prefLanguage ? apiData?.prefLanguage.split(",") : [],
     };
   }, [apiData]);
 
   const initials = useMemo(() => {
-    if (!apiData) return "";
+    if (!apiData) return "N/A";
     return getInitials(apiData.firstName, apiData.lastName);
   }, [apiData]);
 
   const styleCards = `
 
   .project-card1{
-  background: #ffffff;
+    background: #ffffff;
     border-radius: 1rem;
     padding: 16px;
     border: 1px solid #e2e8f0;
@@ -132,26 +132,80 @@ const UploadTalentProfile = () => {
   }
   
   .experience-list {
-  max-height: 285px;     /* adjust as needed */
-  overflow-y: auto;
-  width: 100%;
-  padding-right: 6px;   /* prevents scrollbar overlap */
+    max-height: 285px;
+    overflow-y: auto;
+    width: 100%;
+    padding-right: 6px;
+  }
+
+  .experience-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .experience-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .experience-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+ .skills-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 250px;
+    padding: 2px 4px; /* Reduced padding inside container */
 }
 
-.experience-list::-webkit-scrollbar {
-  width: 6px;
+.status-tag.status-progress {
+    margin: 1px; /* Minimal margin if needed */
+    padding: 2px 6px; /* Even more compact */
+    font-size: 11px; /* Slightly smaller font */
 }
 
-.experience-list::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 4px;
-}
+  .skills-container::-webkit-scrollbar {
+    width: 6px;
+  }
 
-.experience-list::-webkit-scrollbar-track {
-  background: transparent;
-}
+  .skills-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
 
-  
+  .education-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 250px;
+    padding-right: 6px;
+  }
+
+  .education-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .education-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .summary-text-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 150px;
+    margin-bottom: 16px;
+    padding-right: 6px;
+  }
+
+  .summary-text-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .summary-text-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
   `;
 
   // Loading skeleton component
@@ -171,7 +225,7 @@ const UploadTalentProfile = () => {
               <div className="row mb-4">
                 <div className="col-3">
                   {/* Profile Header Card Skeleton */}
-                  <div className="project-card">
+                  <div className="project-card h-100">
                     <div className="skeleton-circle" style={{ width: "100px", height: "100px", margin: "0 auto 16px auto" }}></div>
                     <div className="skeleton-text" style={{ width: "80%", height: "24px", margin: "0 auto 8px auto" }}></div>
                     <div className="skeleton-text" style={{ width: "60%", height: "20px", margin: "0 auto 12px auto" }}></div>
@@ -183,12 +237,13 @@ const UploadTalentProfile = () => {
                 </div>
                 <div className="col-9">
                   {/* Professional Summary Skeleton */}
-                  <div className="project-card">
+                  <div className="project-card h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                     <div className="skeleton-text" style={{ width: "40%", height: "28px", marginBottom: "16px" }}></div>
-                    <div className="skeleton-text" style={{ width: "100%", height: "16px", marginBottom: "8px" }}></div>
-                    <div className="skeleton-text" style={{ width: "90%", height: "16px", marginBottom: "8px" }}></div>
-                    <div className="skeleton-text" style={{ width: "80%", height: "16px", marginBottom: "16px" }}></div>
-                    
+                    <div style={{ flex: 1, overflow: "auto", marginBottom: "16px" }}>
+                      <div className="skeleton-text" style={{ width: "100%", height: "16px", marginBottom: "8px" }}></div>
+                      <div className="skeleton-text" style={{ width: "90%", height: "16px", marginBottom: "8px" }}></div>
+                      <div className="skeleton-text" style={{ width: "80%", height: "16px", marginBottom: "8px" }}></div>
+                    </div>
                     <div className="summary-stats-grid">
                       <div className="summary-stat-box">
                         <div className="skeleton-text" style={{ width: "50px", height: "32px", margin: "0 auto 4px auto" }}></div>
@@ -203,33 +258,35 @@ const UploadTalentProfile = () => {
                 </div>
               </div>
 
-              <div className="row mb-4">
+              <div className="row mb-4" style={{ minHeight: "300px" }}>
                 <div className="col-7">
                   {/* Work Experience Skeleton */}
-                  <div className="project-card1">
+                  <div className="project-card1 h-100">
                     <div className="skeleton-text" style={{ width: "30%", height: "28px", marginBottom: "16px" }}></div>
-                    {[1, 2].map((i) => (
-                      <div key={i} className="experience-item mb-3">
-                        <div className="skeleton-circle" style={{ width: "40px", height: "40px", marginRight: "12px" }}></div>
-                        <div style={{ flex: 1 }}>
-                          <div className="skeleton-text" style={{ width: "60%", height: "20px", marginBottom: "8px" }}></div>
-                          <div className="skeleton-text" style={{ width: "40%", height: "16px", marginBottom: "4px" }}></div>
-                          <div className="skeleton-text" style={{ width: "30%", height: "16px", marginBottom: "8px" }}></div>
-                          <div className="skeleton-text" style={{ width: "100%", height: "14px" }}></div>
+                    <div style={{ flex: 1, overflow: "auto" }}>
+                      {[1, 2].map((i) => (
+                        <div key={i} className="experience-item mb-3">
+                          <div className="skeleton-circle" style={{ width: "40px", height: "40px", marginRight: "12px" }}></div>
+                          <div style={{ flex: 1 }}>
+                            <div className="skeleton-text" style={{ width: "60%", height: "20px", marginBottom: "8px" }}></div>
+                            <div className="skeleton-text" style={{ width: "40%", height: "16px", marginBottom: "4px" }}></div>
+                            <div className="skeleton-text" style={{ width: "30%", height: "16px", marginBottom: "8px" }}></div>
+                            <div className="skeleton-text" style={{ width: "100%", height: "14px" }}></div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <div className="col-5">
                   {/* Skills & Expertise Skeleton */}
-                  <div className="project-card1">
+                  <div className="project-card1 h-100" style={{ display: "flex", flexDirection: "column" }}>
                     <div className="skeleton-text" style={{ width: "35%", height: "28px", marginBottom: "16px" }}></div>
-                    <div className="skills-container">
+                    <div style={{ flex: 1, overflow: "auto" }}>
                       {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className="skeleton-text d-inline-block" style={{ 
-                          width: `${Math.random() * 40 + 60}px`, 
-                          height: "28px", 
+                        <div key={i} className="skeleton-text d-inline-block" style={{
+                          width: `${Math.random() * 40 + 60}px`,
+                          height: "28px",
                           borderRadius: "16px",
                           marginRight: "8px",
                           marginBottom: "8px"
@@ -257,9 +314,9 @@ const UploadTalentProfile = () => {
                         <div className="skeleton-text" style={{ width: "90%", height: "14px", marginBottom: "12px" }}></div>
                         <div className="portfolio-tags">
                           {[1, 2, 3].map((j) => (
-                            <div key={j} className="skeleton-text d-inline-block" style={{ 
-                              width: "60px", 
-                              height: "24px", 
+                            <div key={j} className="skeleton-text d-inline-block" style={{
+                              width: "60px",
+                              height: "24px",
                               borderRadius: "12px",
                               marginRight: "8px"
                             }}></div>
@@ -306,18 +363,20 @@ const UploadTalentProfile = () => {
               </div>
 
               {/* Education Skeleton */}
-              <div className="table-card sidebar-card">
+              <div className="table-card sidebar-card h-100" style={{ display: "flex", flexDirection: "column" }}>
                 <div className="skeleton-text" style={{ width: "40%", height: "24px", marginBottom: "16px" }}></div>
-                {[1, 2].map((i) => (
-                  <div key={i} className="interview-item-premium mb-3">
-                    <div className="skeleton-circle" style={{ width: "32px", height: "32px", marginRight: "12px" }}></div>
-                    <div style={{ flex: 1 }}>
-                      <div className="skeleton-text" style={{ width: "80%", height: "18px", marginBottom: "4px" }}></div>
-                      <div className="skeleton-text" style={{ width: "60%", height: "16px", marginBottom: "4px" }}></div>
-                      <div className="skeleton-text" style={{ width: "40%", height: "14px" }}></div>
+                <div style={{ flex: 1, overflow: "auto" }}>
+                  {[1, 2].map((i) => (
+                    <div key={i} className="interview-item-premium mb-3">
+                      <div className="skeleton-circle" style={{ width: "32px", height: "32px", marginRight: "12px" }}></div>
+                      <div style={{ flex: 1 }}>
+                        <div className="skeleton-text" style={{ width: "80%", height: "18px", marginBottom: "4px" }}></div>
+                        <div className="skeleton-text" style={{ width: "60%", height: "16px", marginBottom: "4px" }}></div>
+                        <div className="skeleton-text" style={{ width: "40%", height: "14px" }}></div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -326,7 +385,7 @@ const UploadTalentProfile = () => {
     );
   }
 
-  // Original component return (unchanged)
+  // Original component return with height matching and N/A
   return (
     <>
       <style>{styleCards}</style>
@@ -345,10 +404,10 @@ const UploadTalentProfile = () => {
         <div className="dashboard-layout">
           {/* === LEFT MAIN COLUMN === */}
           <div className="dashboard-column-main">
-            <div className="row">
+            <div className="row mb-2">
               <div className="col-3">
                 {/* Profile Header Card */}
-                <div className="project-card">
+                <div className="project-card h-100">
                   {apiData?.profileImage ? (
                     <img
                       src={apiData.profileImage}
@@ -386,16 +445,14 @@ const UploadTalentProfile = () => {
               </div>
               <div className="col-9">
                 {/* Professional Summary */}
-                <div className="project-card">
+                <div className="project-card h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                   <h2 className="card-title">Professional Summary</h2>
-                  {profileData?.summary ? (
-                    <p className="summary-text">{profileData.summary}</p>
-                  ) : (
-                    <NoData text="No professional summary added yet" />
-                  )}
+                  <div className="summary-text-container">
+                    <p className="summary-text">{profileData?.summary}</p>
+                  </div>
 
                   {profileData?.stats?.length > 0 && (
-                    <div className="summary-stats-grid">
+                    <div className="summary-stats-grid" style={{ flexShrink: 0 }}>
                       {profileData.stats.map((stat, idx) => (
                         <div key={idx} className="summary-stat-box">
                           <div className="summary-stat-value">{stat.value}</div>
@@ -404,17 +461,15 @@ const UploadTalentProfile = () => {
                       ))}
                     </div>
                   )}
-
                 </div>
               </div>
             </div>
 
-            <div className="row">
+            <div className="row mb-4" style={{ minHeight: "300px" }}>
               <div className="col-7">
                 {/* Work Experience */}
-                <div className="project-card1">
+                <div className="project-card1 h-100" style={{ display: "flex", flexDirection: "column" }}>
                   <h2 className="card-title">Work Experience</h2>
-
                   <div className="experience-list">
                     {profileData?.workExperience?.length > 0 ? (
                       profileData.workExperience.map((job, idx) => (
@@ -437,23 +492,33 @@ const UploadTalentProfile = () => {
                     )}
                   </div>
                 </div>
-
               </div>
               <div className="col-5">
                 {/* Skills & Expertise */}
-                <div className="project-card1">
-                  <h2 className="card-title">Skills & Expertise</h2>
+                <div className="project-card1 h-100" style={{ display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title mb-2">Skills & Expertise</h2>
                   <div className="skills-container">
                     {profileData?.skills?.length > 0 ? (
-                      profileData.skills.map((skill, idx) => (
-                        <span key={idx} className="status-tag status-progress">
-                          {skill}
-                        </span>
-                      ))
+                      <div style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "4px 6px", /* Reduced gaps: 4px vertical, 6px horizontal */
+                        alignItems: "flex-start"
+                      }}>
+                        {profileData.skills.map((skill, idx) => (
+                          <span key={idx} className="status-tag status-progress" style={{
+                            flex: "0 0 auto",
+                            padding: "3px 8px", /* Reduced padding */
+                            fontSize: "12px",
+                            lineHeight: "1.2"
+                          }}>
+                            {skill.trim()}
+                          </span>
+                        ))}
+                      </div>
                     ) : (
                       <NoData text="No skills added yet" />
                     )}
-
                   </div>
                 </div>
               </div>
@@ -471,7 +536,7 @@ const UploadTalentProfile = () => {
               <div className="projects-grid premium-portfolio-grid">
                 {profileData?.portfolio?.length > 0 ? (
                   profileData.portfolio.map((item, idx) => (
-                    <div key={idx} className="project-card" style={{padding: "0px"}}>
+                    <div key={idx} className="project-card" style={{ padding: "0px" }}>
                       <div className="portfolio-content">
                         <h3 className="portfolio-title">{item.title}</h3>
                         <div className="small text-muted">
@@ -550,42 +615,28 @@ const UploadTalentProfile = () => {
               </div>
             </div>
 
-            {/* Contact Information - BLURRED PREMIUM SECTION */}
-            <div
-              className="table-card sidebar-card"
-              style={{ position: "relative", overflow: "hidden" }}
-            >
+            {/* Contact Information */}
+            <div className="table-card sidebar-card">
               <h3 className="card-title">Contact Information</h3>
-
-              {/* Blurred Content Layer */}
               <div className="contact-list">
-                {profileData?.email ? (
-                  <div className="contact-item">
-                    <FiMail className="contact-icon" /> {profileData.email}
-                  </div>
-                ) : null}
-
-                {profileData?.phoneNo ? (
-                  <div className="contact-item">
-                    <FiPhone className="contact-icon" /> {profileData.phoneNo}
-                  </div>
-                ) : null}
-
+                <div className="contact-item">
+                  <FiMail className="contact-icon" /> {profileData?.email}
+                </div>
+                <div className="contact-item">
+                  <FiPhone className="contact-icon" /> {profileData?.phoneNo}
+                </div>
                 <div className="contact-item">
                   <FiLinkedin className="contact-icon" /> linkedin.com/in/sarahanderson
                 </div>
-
                 <div className="contact-item">
                   <BsDribbble className="contact-icon" /> sarahanderson.design
                 </div>
               </div>
-
             </div>
 
             {/* Education */}
-            <div className="table-card sidebar-card">
+            <div className="table-card sidebar-card h-100" style={{ display: "flex", flexDirection: "column" }}>
               <h3 className="card-title">Education</h3>
-
               <div className="education-list">
                 {profileData?.education?.length > 0 ? (
                   profileData.education.map((edu, index) => (
@@ -593,16 +644,13 @@ const UploadTalentProfile = () => {
                       <div className="edu-icon-box">
                         <FiFileText size={14} />
                       </div>
-
                       <div>
                         <div className="edu-degree">
                           {edu.degree}
                           {edu.field && ` in ${edu.field}`}
                         </div>
-
                         <div className="edu-school">{edu.school}</div>
                         <div className="edu-year">{edu.year}</div>
-
                         {edu.certifications && (
                           <div className="edu-cert">
                             Certification: {edu.certifications}
