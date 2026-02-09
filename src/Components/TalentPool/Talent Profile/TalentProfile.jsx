@@ -20,6 +20,18 @@ import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/
 
 const TalentProfile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+const query = new URLSearchParams(location.search);
+const from = query.get("from");
+
+const handleBack = () => {
+  if (from) {
+    navigate(decodeURIComponent(from));
+  } else {
+    navigate(-1);
+  }
+};
   const { state } = useLocation();
   const employeeId = state?.employeeID;
   console.log("EmpId:", employeeId);
@@ -107,7 +119,7 @@ const TalentProfile = () => {
       <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
-          onClick={() => navigate("/user/user-talentpool")}
+          onClick={handleBack}
         >
           <FiArrowLeft /> Talent Pool{" "}
         </button>
