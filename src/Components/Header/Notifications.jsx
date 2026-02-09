@@ -12,15 +12,17 @@ const Notifications = () => {
   const { data: apiNotifications = [], isLoading } =
     useGetUserNotificationsQuery(userId);
 
-  const notifications = apiNotifications.map((item, index) => ({
-    id: item.Id || index,
-    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      item.Username || "User",
-    )}`,
-    name: item.Username || "System",
-    message: item.Message,
-    time: new Date(item.CreatedAt).toLocaleString(),
-  }));
+  const notifications = apiNotifications
+    .map((item, index) => ({
+      id: item.Id || index,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        item.Username || "User",
+      )}`,
+      name: item.Username || "System",
+      message: item.Message,
+      time: new Date(item.CreatedAt).toLocaleString(),
+    }))
+    .slice(0, 4); // Limit to 4 notifications
 
   const togglePopover = () => setShowPopover(!showPopover);
 
@@ -52,13 +54,11 @@ const Notifications = () => {
     navigate("/User/notifications-page"); // navigate
   };
 
-  const markAllRead = () => console.log("Mark all as read");
-
   return (
     <>
       {/* Full page backdrop */}
       {showPopover && (
-        <div className="notification-backdrop" onClick={handleClose} />
+        <div className="notification-backdrop" onClick={() => setShowPopover(false)} />
       )}
 
       <div ref={containerRef} className="notification-container">
@@ -78,13 +78,6 @@ const Notifications = () => {
             <div className="notification-popover">
               <div className="popover-header" style={{ background: "#fff" }}>
                 <h4>Notifications</h4>
-                <button
-                  className="mark-all-btn"
-                  onClick={markAllRead}
-                  type="button"
-                >
-                  Mark all as read
-                </button>
               </div>
 
               <div className="popover-body">
@@ -119,15 +112,18 @@ const Notifications = () => {
                 )}
               </div>
 
-              <div className="popover-footer">
-                <button
-                  className="btn-link"
-                  onClick={handleClose}
-                  type="button"
-                >
-                  View all notifications
-                </button>
-              </div>
+              {/* Only show footer if there are notifications */}
+              {notifications.length > 0 && (
+                <div className="popover-footer">
+                  <button
+                    className="btn-link"
+                    onClick={handleClose}
+                    type="button"
+                  >
+                    View all notifications
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
