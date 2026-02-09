@@ -46,12 +46,12 @@ const handleBack = () => {
   }, [employeeId, triggerGetProfile]);
 
   const profileData = {
-    name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`,
-    role: employee?.title ?? "—",
-    location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`,
-    experience: `${employee?.noofExperience || 0} yrs experience`,
-    status: employee?.status ?? "—",
-    summary: employee?.bio ?? "",
+    name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`.trim() || "N/A",
+    role: employee?.title ?? "N/A",
+    location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
+    experience: employee?.noofExperience ? `${employee.noofExperience} yrs experience` : "N/A",
+    status: employee?.status ?? "N/A",
+    summary: employee?.bio ?? "N/A",
     stats: [
       { label: "Projects Completed", value: "150+" },
       { label: "Client Satisfaction", value: "98%" },
@@ -62,24 +62,24 @@ const handleBack = () => {
 
     workExperience:
       employee?.workexperiences?.map((exp) => ({
-        role: exp.position,
-        company: exp.companyName,
-        period: `${exp.startDate?.slice(0, 10)} - ${
-          exp.endDate ? exp.endDate.slice(0, 10) : "Present"
-        }`,
-        location: employee?.city,
-        desc: exp.description,
+        role: exp.position || "N/A",
+        company: exp.companyName || "N/A",
+        period: `${exp.startDate?.slice(0, 10) || "N/A"} - ${exp.endDate ? exp.endDate.slice(0, 10) : "Present"
+          }`,
+        location: employee?.city || "N/A",
+        desc: exp.description || "N/A",
       })) || [],
 
     education:
       employee?.employee_Heighers?.map((edu) => ({
-        degree: edu.highestQualification,
-        school: edu.university,
-        year: `${edu.startDate?.slice(0, 4)} - ${edu.endDate?.slice(0, 4)}`,
+        degree: edu.highestQualification || "N/A",
+        school: edu.university || "N/A",
+        year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate?.slice(0, 4) || "N/A"}`,
       })) || [],
   };
 
   const getInitials = (name = "") => {
+    if (name === "N/A") return "N/A";
     const words = name.trim().split(" ");
     const first = words[0]?.charAt(0) || "";
     const second = words[1]?.charAt(0) || "";
@@ -126,167 +126,220 @@ const handleBack = () => {
         <span className="crumb">/ Profile Page</span>
       </div>
 
-      <div className="dashboard-layout">
+      <div className="dashboard-layout gap-2">
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-3">
-              {/* Profile Header Card */}
-              <div className="project-card">
-                <div className="profile-avatar-lg initials-avatar">
-                  {getInitials(profileData.name)}
-                </div>
-                <div className="profile-header-content">
-                  <div className="d-flex gap-3">
-                    <h1 className="mb-2">{profileData.name}</h1>
-                    <FiFileText className="profile-verified-icon" />
+            <div className="row">
+              <div className="col-3">
+                {/* Profile Header Card */}
+                <div className="project-card h-100">
+                  <div className="profile-avatar-lg initials-avatar">
+                    {getInitials(profileData.name)}
                   </div>
-                  <div className="card-title mb-2">{profileData.role}</div>
-
-                  <div className="profile-meta-row">
-                    <span className="meta-item">
-                      <FiMapPin /> {profileData.location}
-                    </span>
-                    <span className="meta-item">
-                      <FiBriefcase /> {profileData.experience}
-                    </span>
-                  </div>
-
-                  <div className="profile-status-wrapper">
-                    <span className="status-tag status-completed">
-                      {profileData.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-9">
-              {/* Professional Summary */}
-              <div className="project-card">
-                <h2 className="card-title">Professional Summary</h2>
-                <p className="summary-text">{profileData.summary}</p>
-
-                <div className="summary-stats-grid">
-                  {profileData.stats.map((stat, idx) => (
-                    <div key={idx} className="summary-stat-box">
-                      <div className="summary-stat-value">{stat.value}</div>
-                      <div className="summary-stat-label">{stat.label}</div>
+                  <div className="profile-header-content">
+                    <div className="d-flex gap-3">
+                      <h1 className="mb-2">{profileData.name}</h1>
+                      <FiFileText className="profile-verified-icon" />
                     </div>
-                  ))}
+                    <div className="card-title mb-2">{profileData.role}</div>
+
+                    <div className="profile-meta-row">
+                      <span className="meta-item">
+                        <FiMapPin /> {profileData.location}
+                      </span>
+                      <span className="meta-item">
+                        <FiBriefcase /> {profileData.experience}
+                      </span>
+                    </div>
+
+                    <div className="profile-status-wrapper">
+                      <span className="status-tag status-completed">
+                        {profileData.status}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <div className="col-9">
+                {/* Professional Summary */}
+
+                <div className="project-card h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title">Professional Summary</h2>
+
+                  <div className="summary-text-container" style={{
+                    flex: 1,
+                    overflow: "auto",
+                    maxHeight: "calc(100% - 200px)", /* Adjust based on your needs */
+                    marginBottom: "16px"
+                  }}>
+                    <p className="summary-text">{profileData.summary}</p>
+                  </div>
+
+                  <div className="summary-stats-grid" style={{ flexShrink: 0 }}>
+                    {profileData.stats.map((stat, idx) => (
+                      <div key={idx} className="summary-stat-box">
+                        <div className="summary-stat-value">{stat.value}</div>
+                        <div className="summary-stat-label">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
           <div className="row">
-            <div className="col-8">
-              {/* Work Experience */}
-              <div className="project-card mb-3">
-                <h2 className="card-title">Work Experience</h2>
-                <div className="experience-list">
-                  {profileData.workExperience.length > 0 ? (
-                    profileData.workExperience.map((job, idx) => (
-                      <div key={idx} className="experience-item">
-                        <div className="experience-icon-box">
-                          <FiBriefcase />
-                        </div>
-                        <div className="experience-content">
-                          <h3>{job.role}</h3>
-                          <div className="job-meta">
-                            {job.company} • {job.period}
+            <div className="row" style={{ minHeight: "400px" }}>
+              <div className="col-8">
+                {/* Work Experience */}
+                <div className="project-card mb-3 h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title">Work Experience</h2>
+                  <div className="experience-list" style={{ flex: 1, overflow: "auto" }}>
+                    {profileData.workExperience.length > 0 ? (
+                      profileData.workExperience.map((job, idx) => (
+                        <div key={idx} className="experience-item">
+                          <div className="experience-icon-box">
+                            <FiBriefcase />
                           </div>
-                          <div className="job-location">{job.location}</div>
-                          <p className="job-desc">{job.desc}</p>
+                          <div className="experience-content">
+                            <h3>{job.role}</h3>
+                            <div className="job-meta">
+                              {job.company} • {job.period}
+                            </div>
+                            <div className="job-location">{job.location}</div>
+                            <p className="job-desc">{job.desc}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div
-                      style={{
-                        color: "#94a3b8",
-                        fontSize: "14px",
-                        textAlign: "center",
-                      }}
-                    >
-                      No work experience added yet
-                      <img
-                        src="../Images/no data.svg"
-                        alt="No data"
+                      ))
+                    ) : (
+                      <div
                         style={{
-                          width: "100%",
-                          maxWidth: "300px",
-                          height: "auto",
-                          marginTop: "12px",
-                          objectFit: "contain",
-                          display: "block",
-                          marginLeft: "auto",
-                          marginRight: "auto",
-                          opacity:"50%"
+                          color: "#94a3b8",
+                          fontSize: "14px",
+                          textAlign: "center",
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "100%",
                         }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="col-4">
-              {/* Skills & Expertise */}
-              <div className="project-card mb-3">
-                <h2 className="card-title">Skills & Expertise</h2>
-                <div className="skills-container">
-                  {profileData.skills.map((skill, idx) => (
-                    <span key={idx} className="status-tag status-progress">
-                      {skill}
-                    </span>
-                  ))}
+                      >
+                        No work experience added yet
+                        <img
+                          src="../Images/no data.svg"
+                          alt="No data"
+                          style={{
+                            width: "100%",
+                            maxWidth: "300px",
+                            height: "auto",
+                            marginTop: "12px",
+                            objectFit: "contain",
+                            opacity: "50%"
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Education */}
-              <div className="project-card sidebar-card">
-                <h3 className="card-title">Education</h3>
-
-                <div className="education-list">
-                  {profileData.education.length > 0 ? (
-                    profileData.education.map((edu, idx) => (
-                      <div key={idx} className="interview-item-premium">
-                        <div className="edu-icon-box">
-                          <FiFileText size={14} />
-                        </div>
-
-                        <div>
-                          <div className="edu-degree">{edu.degree}</div>
-                          <div className="edu-school">{edu.school}</div>
-                          <div className="edu-year">{edu.year}</div>
-                        </div>
+              <div className="col-4 d-flex flex-column gap-3" style={{ height: "100%" }}>
+                {/* Skills & Expertise */}
+                <div className="project-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title">Skills & Expertise</h2>
+                  <div className="skills-container" style={{ flex: 1, overflow: "auto" }}>
+                    {profileData.skills.length > 0 ? (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {profileData.skills.map((skill, idx) => (
+                          <span key={idx} className="status-tag status-progress">
+                            {skill}
+                          </span>
+                        ))}
                       </div>
-                    ))
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        color: "#94a3b8",
-                        padding: "8px 0",
-                      }}
-                    >
-                      No education details added yet
-                      <img
-                        src="../Images/no data.svg"
-                        alt="No data"
+                    ) : (
+                      <div
                         style={{
+                          fontSize: "14px",
+                          color: "#94a3b8",
+                          padding: "8px 0",
                           width: "100%",
-                          maxWidth: "110px",
-                          height: "auto",
-                          marginTop: "12px",
-                          objectFit: "contain",
-                          display: "block",
-                          marginLeft: "auto",
-                          marginRight: "auto",
-                          opacity:"50%"
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          textAlign: "center",
                         }}
-                      />
-                    </div>
-                  )}
+                      >
+                        No skills added yet
+                        <img
+                          src="../Images/no data.svg"
+                          alt="No data"
+                          style={{
+                            width: "100%",
+                            maxWidth: "110px",
+                            height: "auto",
+                            marginTop: "12px",
+                            objectFit: "contain",
+                            opacity: "50%"
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Education */}
+                <div className="project-card sidebar-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h3 className="card-title">Education</h3>
+                  <div className="education-list" style={{ flex: 1, overflow: "auto" }}>
+                    {profileData.education.length > 0 ? (
+                      profileData.education.map((edu, idx) => (
+                        <div key={idx} className="interview-item-premium">
+                          <div className="edu-icon-box">
+                            <FiFileText size={14} />
+                          </div>
+                          <div>
+                            <div className="edu-degree">{edu.degree}</div>
+                            <div className="edu-school">{edu.school}</div>
+                            <div className="edu-year">{edu.year}</div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          color: "#94a3b8",
+                          padding: "8px 0",
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          textAlign: "center",
+                        }}
+                      >
+                        No education details added yet
+                        <img
+                          src="../Images/no data.svg"
+                          alt="No data"
+                          style={{
+                            width: "100%",
+                            maxWidth: "110px",
+                            height: "auto",
+                            marginTop: "12px",
+                            objectFit: "contain",
+                            opacity: "50%"
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -369,7 +422,7 @@ const handleBack = () => {
           </div>
 
           {/* Quick Information */}
-          <div className="table-card sidebar-card">
+          <div className=" sidebar-card project-card">
             <h3 className="card-title">Quick Information</h3>
 
             <div className="quick-info-item">
@@ -398,7 +451,7 @@ const handleBack = () => {
 
           {/* Contact Information - BLURRED PREMIUM SECTION */}
           <div
-            className="table-card sidebar-card"
+            className="sidebar-card project-card"
             style={{ position: "relative", overflow: "hidden" }}
           >
             <h3 className="card-title">Contact Information</h3>
