@@ -28,6 +28,14 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["CompanyProfile"],
     }),
+
+    getUserNotifications: builder.query({
+  query: (userId) => ({
+    url: `/api/Account/user/${userId}`,
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
@@ -35,4 +43,5 @@ export const {
   useGetCompanyProfileQuery,
   useUpdateCompanyProfileMutation,
   useGetCompanyProfileEditQuery,
+  useGetUserNotificationsQuery
 } = CompanyProfileApiSlice;
