@@ -33,7 +33,15 @@ getJobById: builder.query({
   }),
 }),
 
+ sendInviteNotification: builder.mutation({
+      query: (payload) => ({
+        url: "/api/Account/uatnotificationsend",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation } = TalentPoolApiSlice;

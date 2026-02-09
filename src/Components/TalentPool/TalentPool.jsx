@@ -17,7 +17,7 @@ import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
 import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
-import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import NoData from "../UploadTalent/NoData";
 
 // --- UTILS ---
@@ -27,8 +27,41 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId }) => {
   const [offerStatus, setOfferStatus] = useState({});
+  const [sendInviteNotification] = useSendInviteNotificationMutation();
+
+  const handleSendInvite = async (jobId) => {
+  setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
+
+  try {
+    const shortlistedCandidates = shortlistedMap[jobId] || [];
+    if (!shortlistedCandidates.length) return;
+
+    const userIds = shortlistedCandidates.map(
+      (c) => Number(c.inviteUserId) // ✅ number
+    );
+
+    const usernames = shortlistedCandidates.map((c) => c.name);
+
+    const payload = {
+      userIds,
+      usernames,
+      message: "You have been shortlisted. Please check your dashboard.",
+      uatUserId: Number(userId),
+    };
+
+    await sendInviteNotification(payload).unwrap();
+
+    setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
+    onClose();
+  } catch (err) {
+    console.error("Invite failed", err);
+    setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
+    alert("Failed to send invite");
+  }
+};
+
 
   const handleSendOffer = (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
@@ -92,7 +125,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs }) =>
                   <div className="job-footer">
                     <button
                       className={`btn-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
-                      onClick={() => handleSendOffer(jobId)}
+                      onClick={() => handleSendInvite(jobId)}
                       disabled={currentStatus !== "idle"}
                     >
                       {currentStatus === "loading" && (
@@ -317,7 +350,8 @@ const TalentPool = () => {
     return allCandidates.map((item) => ({
       id: item.employeeID,
 
-      name: `${item.firstName} ${item.lastName}`,
+    name: `${item.firstName} ${item.lastName}`,
+    inviteUserId: Number(item.insertBy),
 
       role: item.title || "—",
 
@@ -644,6 +678,7 @@ const TalentPool = () => {
           shortlistedMap={shortlistedMap}
           onRemove={handleRemoveFromDrawer}
           jobs={jobs}
+    userId={userId}
         />
       ) : null}
 
