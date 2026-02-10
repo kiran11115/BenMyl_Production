@@ -255,7 +255,7 @@ const handleBack = () => {
                     {profileData.skills.length > 0 ? (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                         {profileData.skills.map((skill, idx) => (
-                          <span key={idx} className="status-tag status-progress">
+                          <span key={idx} className="status-tag status-progress" style={{height: "25px"}}>
                             {skill}
                           </span>
                         ))}
