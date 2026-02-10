@@ -62,13 +62,10 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId
   }
 };
 
+const hasAnyShortlistedCandidates = Object.values(shortlistedMap).some(
+  (list) => Array.isArray(list) && list.length > 0
+);
 
-  const handleSendOffer = (jobId) => {
-    setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
-    setTimeout(() => {
-      setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
-    }, 1000);
-  };
 
   return (
     <>
@@ -85,7 +82,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId
         </div>
 
         <div className="drawer-content">
-          {Object.keys(shortlistedMap).length === 0 ? (
+          {!hasAnyShortlistedCandidates ?  (
             <div className="empty-state">No candidates shortlisted yet.</div>
           ) : (
             Object.keys(shortlistedMap).map((jobId) => {

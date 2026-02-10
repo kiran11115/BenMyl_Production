@@ -59,6 +59,11 @@ useEffect(() => {
   const profileData = {
     name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`.trim() || "N/A",
     role: employee?.title ?? "N/A",
+    avatar:
+    employee?.profilePicture ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`
+    )}`,
     location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
     experience: employee?.noofExperience ? `${employee.noofExperience} yrs experience` : "N/A",
     status: employee?.status ?? "N/A",

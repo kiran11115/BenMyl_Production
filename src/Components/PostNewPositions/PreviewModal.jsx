@@ -9,7 +9,7 @@ import {
   FiChevronDown,
   FiChevronUp
 } from "react-icons/fi";
-import { FaPuzzlePiece } from "react-icons/fa";
+import { FaBuilding, FaPuzzlePiece } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 // Alerts
@@ -119,8 +119,9 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
           {/* LEFT SIDE */}
           <div className="modal-left">
             <div className="modal-top-row">
-              <div className="modal-badge">TS</div>
-
+              <div className="modal-badge icon">
+  <FaBuilding size={18} />
+</div>
               <div>
                 <h2 className="modal-job-title">{jobTitle}</h2>
                 <div className="muted small">{companyName}</div>
