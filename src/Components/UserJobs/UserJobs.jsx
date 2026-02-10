@@ -12,7 +12,7 @@ import NoData from '../UploadTalent/NoData';
 
 const PAGE_SIZE = 10;
 
-const Jobs = () => {
+const UserJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
 
   // pagination
@@ -300,4 +300,4 @@ const Jobs = () => {
 };
 
 
-export default Jobs;
+export default UserJobs;
