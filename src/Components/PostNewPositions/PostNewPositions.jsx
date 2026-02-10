@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
-  FileText, X, Building2
+  FileText, X, Building2, Check
 } from 'lucide-react';
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -44,13 +44,26 @@ const PostNewPositions = () => {
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState([]);
 
+  // Work Authorization states - all start as false (unselected)
+  const [workAuthorization, setWorkAuthorization] = useState({
+    usCitizen: false,
+    gc: false,
+    h1b: false,
+    ead: false
+  });
+
+  // Preferred Employment states - all start as false (unselected)
+  const [preferredEmployment, setPreferredEmployment] = useState({
+    corpCorp: false,
+    w2Permanent: false,
+    w2Contract: false,
+    contract1099: false,
+    contractToHire: false
+  });
+
   const [postJob] = usePostJobMutation();
-
   const [saveJobDraft] = useSaveJobDraftMutation();
-
   const user = localStorage.getItem("CompanyId");
-
-
 
   /* =========================
      FORMIK
@@ -127,7 +140,6 @@ const PostNewPositions = () => {
     }
   };
 
-
   const handleSaveDraft = async () => {
     const fd = new FormData();
 
@@ -149,6 +161,7 @@ const PostNewPositions = () => {
     fd.append("YearsofExperience", formik.values.yearsExperience || 0);
     fd.append("RequiredSkills", skills.join(","));
     fd.append("AdditionalRequirements", formik.values.additionalReqs);
+
     fd.append("CreatedBy", "Admin");
     fd.append("IsDraft", true);
     fd.append("CreatedOn", new Date().toISOString());
@@ -161,7 +174,6 @@ const PostNewPositions = () => {
       alert("Failed to save draft");
     }
   };
-
 
   /* =========================
      SKILLS
@@ -180,13 +192,31 @@ const PostNewPositions = () => {
     setSkills(skills.filter(s => s !== skill));
   };
 
+  /* =========================
+     CHECKBOX HANDLERS
+  ========================= */
+  const handleWorkAuthChange = (field) => {
+    setWorkAuthorization(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
+
+  const handlePreferredEmpChange = (field) => {
+    setPreferredEmployment(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
+
   const modalData = {
     ...formik.values,
     skills,
     currency: formik.values.salaryCurrency,
-    additional: formik.values.additionalReqs
+    additional: formik.values.additionalReqs,
+    workAuthorization,
+    preferredEmployment
   };
-
 
   const err = (name) =>
     formik.touched[name] && formik.errors[name] && (
@@ -498,6 +528,353 @@ const PostNewPositions = () => {
                 </div>
               </div>
 
+              {/* =======================
+   Work Authorization Section
+======================= */}
+              <div style={{ marginBottom: '32px' }}>
+                <label className="auth-label" style={{ marginBottom: '12px', display: 'block' }}>
+                  Work Authorization
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '16px',
+                    marginBottom: '16px'
+                  }}
+                >
+                  {/* US Citizen */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${workAuthorization.usCitizen ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: workAuthorization.usCitizen ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handleWorkAuthChange('usCitizen')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${workAuthorization.usCitizen ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: workAuthorization.usCitizen ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {workAuthorization.usCitizen && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>US Citizen</span>
+                  </div>
+
+                  {/* Green Card */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${workAuthorization.gc ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: workAuthorization.gc ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handleWorkAuthChange('gc')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${workAuthorization.gc ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: workAuthorization.gc ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {workAuthorization.gc && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>GC</span>
+                  </div>
+
+                  {/* H1B */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${workAuthorization.h1b ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: workAuthorization.h1b ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handleWorkAuthChange('h1b')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${workAuthorization.h1b ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: workAuthorization.h1b ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {workAuthorization.h1b && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>H1B</span>
+                  </div>
+
+                  {/* EAD */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${workAuthorization.ead ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: workAuthorization.ead ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handleWorkAuthChange('ead')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${workAuthorization.ead ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: workAuthorization.ead ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {workAuthorization.ead && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>
+                      EAD (OPT/CPT/GC/H4)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* =======================
+   Preferred Employment Section
+======================= */}
+              <div style={{ marginBottom: '32px' }}>
+                <label className="auth-label" style={{ marginBottom: '12px', display: 'block' }}>
+                  Preferred Employment
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '16px'
+                  }}
+                >
+                  {/* Corp-Corp */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${preferredEmployment.corpCorp ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: preferredEmployment.corpCorp ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handlePreferredEmpChange('corpCorp')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${preferredEmployment.corpCorp ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: preferredEmployment.corpCorp ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {preferredEmployment.corpCorp && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>Corp-Corp</span>
+                  </div>
+
+                  {/* W2-Permanent */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${preferredEmployment.w2Permanent ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: preferredEmployment.w2Permanent ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handlePreferredEmpChange('w2Permanent')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${preferredEmployment.w2Permanent ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: preferredEmployment.w2Permanent ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {preferredEmployment.w2Permanent && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>
+                      W2-Permanent
+                    </span>
+                  </div>
+
+                  {/* W2-Contract */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${preferredEmployment.w2Contract ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: preferredEmployment.w2Contract ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handlePreferredEmpChange('w2Contract')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${preferredEmployment.w2Contract ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: preferredEmployment.w2Contract ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {preferredEmployment.w2Contract && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>W2-Contract</span>
+                  </div>
+
+                  {/* 1099-Contract */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${preferredEmployment.contract1099 ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: preferredEmployment.contract1099 ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handlePreferredEmpChange('contract1099')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${preferredEmployment.contract1099 ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: preferredEmployment.contract1099 ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {preferredEmployment.contract1099 && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>
+                      1099-Contract
+                    </span>
+                  </div>
+
+                  {/* Contract to Hire */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      border: `1px solid ${preferredEmployment.contractToHire ? '#3b82f6' : '#e2e8f0'}`,
+                      borderRadius: '8px',
+                      backgroundColor: preferredEmployment.contractToHire ? '#eff6ff' : '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onClick={() => handlePreferredEmpChange('contractToHire')}
+                  >
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        border: `2px solid ${preferredEmployment.contractToHire ? '#3b82f6' : '#cbd5e1'}`,
+                        borderRadius: '4px',
+                        marginRight: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: preferredEmployment.contractToHire ? '#3b82f6' : '#ffffff'
+                      }}
+                    >
+                      {preferredEmployment.contractToHire && (
+                        <Check size={14} color="#ffffff" />
+                      )}
+                    </div>
+                    <span style={{ fontWeight: '500' }}>
+                      Contract to Hire
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Additional Requirements */}
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
@@ -540,8 +917,6 @@ const PostNewPositions = () => {
                 >
                   Preview
                 </button>
-
-
               </div>
             </div>
 
