@@ -1,5 +1,6 @@
 import React from "react";
 import { FiMapPin, FiStar, FiBriefcase, FiClock } from "react-icons/fi";
+import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 
 const TalentGridView = ({
@@ -8,6 +9,7 @@ const TalentGridView = ({
   activeJobId,
   activeJobColor,
   shortlistedMap,
+  onProfileClick,
   hasMore,
 }) => {
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ const TalentGridView = ({
                     <div className="header-info">
                       <div className="name-row">
                         <h4 className="name">
-                          {candidate.name} {candidate.verified}
+                          {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
                         </h4>
                         <div className="rating">
                           <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
@@ -100,11 +102,7 @@ const TalentGridView = ({
                 {/* Actions */}
                 <div className="d-flex gap-3">
                   <button
-                    onClick={() =>
-                      navigate("/user/user-talent-profile", {
-                        state: { employeeID: candidate.id },
-                      })
-                    }
+                    onClick={() => onProfileClick(candidate)}
                     className="btn-primary"
                   >
                     View Profile

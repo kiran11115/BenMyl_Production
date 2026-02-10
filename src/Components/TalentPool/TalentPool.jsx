@@ -294,7 +294,15 @@ const TalentPool = () => {
   const companyId = localStorage.getItem("logincompanyid");
   const [viewMode, setViewMode] = useState("grid");
   const resultsRef = useRef(null);
-  const [shortlistedMap, setShortlistedMap] = useState({});
+  const [shortlistedMap, setShortlistedMap] = useState(() => {
+  try {
+    const stored = localStorage.getItem("shortlistedMap");
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+});
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedJobId, setSelectedJobId] = useState(null);
@@ -373,7 +381,7 @@ const TalentPool = () => {
 
       availability: item.status ? [item.status] : ["Available"],
 
-      verified: <GiCheckMark size={14} color="#059669" />,
+      verified: true,
 
       hourlyRate: item.salary || 0,
     }));
@@ -537,10 +545,14 @@ const handleProfileClick = (candidate) => {
   navigate(
     `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
     {
-      state: { employeeID: candidate.id },
+      state: {
+        employeeID: candidate.id,
+        jobId: activeJobId, // 🔥 this is critical
+      },
     }
   );
 };
+
 
 
 
@@ -568,6 +580,14 @@ const handleProfileClick = (candidate) => {
         return sortable;
     }
   }, [candidates, sortBy]);
+
+  useEffect(() => {
+  localStorage.setItem(
+    "shortlistedMap",
+    JSON.stringify(shortlistedMap)
+  );
+}, [shortlistedMap]);
+
 
   return (
     <div className="vs-page">

@@ -35,6 +35,17 @@ const handleBack = () => {
   const { state } = useLocation();
   const employeeId = state?.employeeID;
   console.log("EmpId:", employeeId);
+  const jobId = state?.jobId;
+
+const [isShortlisted, setIsShortlisted] = React.useState(false);
+
+useEffect(() => {
+  if (!jobId || !employeeId) return;
+
+  const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+  const exists = stored[jobId]?.some(c => c.id === employeeId);
+  setIsShortlisted(!!exists);
+}, [jobId, employeeId]);
 
   const [triggerGetProfile, { data: employee, isLoading, isError }] =
     useLazyGetEmployeeTalentProfileQuery();
@@ -112,6 +123,38 @@ const handleBack = () => {
       description: "Built responsive admin panels and tables",
     },
   ];
+
+  const handleShortlistFromProfile = () => {
+  if (!jobId || !employeeId) {
+    alert("Select a job before shortlisting");
+    return;
+  }
+
+  const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+  const currentList = stored[jobId] || [];
+
+  const exists = currentList.some(c => c.id === employeeId);
+
+  const updated = {
+    ...stored,
+    [jobId]: exists
+      ? currentList.filter(c => c.id !== employeeId)
+      : [
+          ...currentList,
+          {
+            id: employeeId,
+            name: profileData.name,
+            role: profileData.role,
+            avatar: profileData.avatar,
+            inviteUserId: employee?.insertBy,
+          },
+        ],
+  };
+
+  localStorage.setItem("shortlistedMap", JSON.stringify(updated));
+  setIsShortlisted(!exists); // 🔥 update UI instantly
+};
+
 
   return (
     <div className="projects-container">
@@ -409,7 +452,13 @@ const handleBack = () => {
             >
               Schedule Interview
             </button>
-            <button className="btn-secondary w-100">Shortlist Candidate</button>
+            <button
+  className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
+  onClick={handleShortlistFromProfile}
+>
+  {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
+</button>
+
 
             <div className="sidebar-links">
               <button className="link-btn">

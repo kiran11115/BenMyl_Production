@@ -187,6 +187,10 @@ const ReviewTalent = () => {
     const cancelEdit = () => { setEditingSection(null); setEditingIndex(null); };
 
     const [talent, setTalent] = useState(null);
+    const getToday = () => {
+  return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+};
+
 
     const handleSaveTalent = async () => {
   if (!isReviewed) return;
@@ -247,54 +251,55 @@ formData.append("PreferedWorkTimings", data.perfWorkTime ?? "");
 /* ===== WORK EXPERIENCES (STRING) ===== */
 formData.append(
   "workexperiences",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.experience.map((exp) => ({
       ExperienceID: 0,
       EmployeeID: 0,
-      CompanyName: "mylas tech",
-      Position: "developer",
-      StartDate: "1-12-2024",
-      EndDate: "1-12-2024",
-      Skills: ["sdds"],
-      Description: "dasdasd1",
-    },
-  ])
+      CompanyName: exp.company ?? "",
+      Position: exp.position ?? "",
+      StartDate: exp.startDate ?? "",
+      EndDate: exp.endDate || getToday(),
+      Skills: exp.skills ?? [],
+      Description: exp.description ?? "",
+    }))
+  )
 );
 
 
 /* ===== PROJECTS (STRING — CRITICAL) ===== */
 formData.append(
   "project",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.projects.map((proj) => ({
       ExperienceID: 0,
       EmployeeID: 0,
-      projectName: "mylas tech",
-      Role: "developer",
-      StartDate: "1-12-2024",
-      EndDate: "1-12-2024",
-      Skills: ["sdd"],
-      Description: "Description1",
-    },
-  ])
+      projectName: proj.name ?? "",
+      Role: proj.role ?? "",
+      StartDate: proj.startDate ?? "",
+      EndDate: proj.endDate || getToday(),  // ✅ current date fallback
+      Skills: proj.skills ?? [],
+      Description: proj.description ?? "",
+    }))
+  )
 );
+
 
 /* ===== EDUCATION (STRING) ===== */
 formData.append(
   "employee_Heighers",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.education.map((edu) => ({
       _EductionhigherId: 0,
       EmployeeID: 0,
-      HighestQualification: "B.Tech",
-      University: "JNTU Hyderabad",
-      Fieldofstudy: "Computer Science",
-      Certifications: "Azure Fundamentals",
-      Percentage: "75",
-      StartDate: "2016-06-01",
-      EndDate: "2020-05-30",
-    },
-  ])
+      HighestQualification: edu.qualification ?? "",
+      University: edu.university ?? "",
+      Fieldofstudy: edu.field ?? "",
+      Certifications: (edu.certifications ?? []).join(","),
+      Percentage: edu.percentage ?? "",
+      StartDate: edu.startDate ?? "",
+      EndDate: edu.endDate || getToday(),   // ✅ current date fallback
+    }))
+  )
 );
 
   try {
@@ -365,54 +370,55 @@ formData.append("PreferedWorkTimings", data.perfWorkTime ?? "");
 /* ===== WORK EXPERIENCES (STRING) ===== */
 formData.append(
   "workexperiences",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.experience.map((exp) => ({
       ExperienceID: 0,
       EmployeeID: 0,
-      CompanyName: "mylas tech",
-      Position: "developer",
-      StartDate: "1-12-2024",
-      EndDate: "1-12-2024",
-      Skills: ["sdds"],
-      Description: "dasdasd1",
-    },
-  ])
+      CompanyName: exp.company ?? "",
+      Position: exp.position ?? "",
+      StartDate: exp.startDate ?? "",
+      EndDate: exp.endDate || getToday(),
+      Skills: exp.skills ?? [],
+      Description: exp.description ?? "",
+    }))
+  )
 );
 
 
 /* ===== PROJECTS (STRING — CRITICAL) ===== */
 formData.append(
   "project",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.projects.map((proj) => ({
       ExperienceID: 0,
       EmployeeID: 0,
-      projectName: "mylas tech",
-      Role: "developer",
-      StartDate: "1-12-2024",
-      EndDate: "1-12-2024",
-      Skills: ["sdd"],
-      Description: "Description1",
-    },
-  ])
+      projectName: proj.name ?? "",
+      Role: proj.role ?? "",
+      StartDate: proj.startDate ?? "",
+      EndDate: proj.endDate || getToday(),  // ✅ current date fallback
+      Skills: proj.skills ?? [],
+      Description: proj.description ?? "",
+    }))
+  )
 );
+
 
 /* ===== EDUCATION (STRING) ===== */
 formData.append(
   "employee_Heighers",
-  JSON.stringify([
-    {
+  JSON.stringify(
+    talent.education.map((edu) => ({
       _EductionhigherId: 0,
       EmployeeID: 0,
-      HighestQualification: "B.Tech",
-      University: "JNTU Hyderabad",
-      Fieldofstudy: "Computer Science",
-      Certifications: "Azure Fundamentals",
-      Percentage: "75",
-      StartDate: "2016-06-01",
-      EndDate: "2020-05-30",
-    },
-  ])
+      HighestQualification: edu.qualification ?? "",
+      University: edu.university ?? "",
+      Fieldofstudy: edu.field ?? "",
+      Certifications: (edu.certifications ?? []).join(","),
+      Percentage: edu.percentage ?? "",
+      StartDate: edu.startDate ?? "",
+      EndDate: edu.endDate || getToday(),   // ✅ current date fallback
+    }))
+  )
 );
 
   try {
