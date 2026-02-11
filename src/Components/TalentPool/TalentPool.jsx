@@ -487,7 +487,7 @@ const TalentPool = () => {
       title: activeJobDetails.jobTitle,
       company: activeJobDetails.companyName,
       location: activeJobDetails.location,
-      budget: `$${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
+      budget: `${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
       experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
       type: activeJobDetails.employeeType,
       description: activeJobDetails.jobDescription,
