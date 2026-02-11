@@ -5,10 +5,12 @@ import {
   FiMoreVertical,
   FiChevronUp,
   FiChevronDown,
+  FiEye,
 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
 import NoData from "./NoData"; // adjust path if needed
+import { useNavigate } from "react-router-dom";
 
 /* ---------------- HELPER: INITIALS ---------------- */
 const getInitials = (name = "") => {
@@ -33,6 +35,7 @@ const SortIcon = ({ active, direction }) => {
 
 /* ---------------- TABLE ROW ---------------- */
 const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
+  const navigate = useNavigate();
   return (
     <tr className="tt-row">
       {/* Checkbox */}
@@ -104,8 +107,8 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
 
       {/* Action */}
       <td className="tt-td action">
-        <button className="tt-action-btn">
-          <FiMoreVertical size={18} />
+        <button className="tt-action-btn" onClick={()=>navigate("/user/talent-profile")}>
+          <FiEye size={16} />
         </button>
       </td>
     </tr>
@@ -114,6 +117,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
 
 /* ---------------- MAIN TABLE ---------------- */
 const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
+  const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
