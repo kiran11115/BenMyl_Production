@@ -32,6 +32,13 @@
   align-items: start;
 }
 
+.jobs-layout-overview {
+  display: grid;
+  grid-template-columns: 960px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
 @media (max-width: 1024px) {
   .jobs-layout {
     grid-template-columns: 1fr;
