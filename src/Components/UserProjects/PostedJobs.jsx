@@ -1,18 +1,16 @@
-import React, { useMemo } from 'react';
-import { FiEye, FiMapPin, FiPlus } from 'react-icons/fi';
-import { BsBuilding } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
-import { useGetGroupedJobTitlesQuery } from '../../State-Management/Api/TalentPoolApiSlice';
+import React, { useMemo } from "react";
+import { FiEye, FiMapPin, FiPlus } from "react-icons/fi";
+import { BsBuilding } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
 // --- DATA ---
-
 
 const PostedJobs = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
 
-  const { data: apiJobs = [], isLoading } =
-    useGetGroupedJobTitlesQuery(userId);
+  const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
 
   const jobs = useMemo(() => {
     return apiJobs.map((job) => ({
@@ -173,51 +171,56 @@ const PostedJobs = () => {
       {/* JSX */}
       <div className="jobs-wrapper">
         <div className="jobs-grid">
-          {jobs.map(job => (
-            <div key={job.id} className="job-card">
-
-              <div className="job-header">
-                <div className="icon-box">
-                  <BsBuilding size={22} />
-                </div>
-                <div>
-                  <h3 className="job-title">{job.title}</h3>
-                  <div className="company">{job.company}</div>
-                  <div className="location">
-                    <FiMapPin size={12} /> {job.location}
+          {jobs.map((job) => (
+            <div key={job.id} className="job-card justify-content-between">
+              <div className="d-flex flex-column gap-3">
+                <div className="job-header">
+                  <div className="icon-box">
+                    <BsBuilding size={22} />
+                  </div>
+                  <div>
+                    <h3 className="job-title">{job.title}</h3>
+                    <div className="company">{job.company}</div>
+                    <div className="location">
+                      <FiMapPin size={12} /> {job.location}
+                    </div>
                   </div>
                 </div>
+
+                <div className="stats">
+                  <div>
+                    <div className="stat-label1">Budget</div>
+                    <div className="stat-value1">{job.rateText} / hr</div>
+                  </div>
+                  <div>
+                    <div className="stat-label1">Experience</div>
+                    <div className="stat-value1">{job.experienceText}</div>
+                  </div>
+                  <div>
+                    <div className="stat-label1">Type</div>
+                    <div className="stat-value1">{job.type}</div>
+                  </div>
+                </div>
+
+                <div className="skills">
+                  {job.skills.map((skill) => (
+                    <span key={skill} className="status-tag status-progress">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <div className="stats">
-                <div>
-                  <div className="stat-label1">Budget</div>
-                  <div className="stat-value1">{job.rateText} / hr</div>
-                </div>
-                <div>
-                  <div className="stat-label1">Experience</div>
-                  <div className="stat-value1">{job.experienceText}</div>
-                </div>
-                <div>
-                  <div className="stat-label1">Type</div>
-                  <div className="stat-value1">{job.type}</div>
-                </div>
-              </div>
-
-              <div className="skills">
-                {job.skills.map(skill => (
-                  <span key={skill} className="status-tag status-progress">{skill}</span>
-                ))}
-              </div>
-
-              <button className="btn-primary w-100 d-flex gap-2"  onClick={() =>
-    navigate("/user/job-overview", {
-      state: { jobId: job.id }, // ✅ pass jobID
-    })
-  }>
+              <button
+                className="btn-primary w-100 d-flex gap-2"
+                onClick={() =>
+                  navigate("/user/job-overview", {
+                    state: { jobId: job.id }, // ✅ pass jobID
+                  })
+                }
+              >
                 <FiEye size={16} /> View Details
               </button>
-
             </div>
           ))}
         </div>
