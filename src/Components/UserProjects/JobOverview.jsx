@@ -45,10 +45,10 @@ const JobOverview = () => {
         </p>
       </div>
 
-      <div className="jobs-layout-overview">
+      <div className="dashboard-layout">
 
         {/* LEFT MAIN CONTENT */}
-        <div className="card-base job-card full-width">
+        <div className="dashboard-column-main card-base" style={{padding: "16px"}}>
 
           {/* Job Header */}
           <div className="job-card-top">
@@ -150,11 +150,10 @@ const JobOverview = () => {
               </span>
             </div>
           </div>
-
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="card-base filters-sidebar">
+        <div className="dashboard-column-side card-base filters-sidebar">
           <ShareJobCard />
           <WorkAndPreference />
         </div>
