@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  FiCopy,
-  FiCheck,
-  FiMail,
-} from "react-icons/fi";
+import { FiCopy, FiCheck, FiMail } from "react-icons/fi";
 import { FaLinkedinIn, FaFacebookF } from "react-icons/fa";
 
 const ShareJobCard = () => {
@@ -41,6 +37,7 @@ const ShareJobCard = () => {
     linkRow: {
       display: "flex",
       gap: "8px",
+      flexWrap: "wrap", // ✅ Add this
       marginBottom: "16px",
     },
 
@@ -128,7 +125,7 @@ const ShareJobCard = () => {
   );
 
   return (
-    <div style={styles.card}>
+    <div>
       <div style={styles.title}>Shared with</div>
 
       {/* Job Link */}
@@ -148,27 +145,21 @@ const ShareJobCard = () => {
         icon={FaLinkedinIn}
         label="Share on LinkedIn"
         isShared={shared.linkedin}
-        onClick={() =>
-          setShared((p) => ({ ...p, linkedin: true }))
-        }
+        onClick={() => setShared((p) => ({ ...p, linkedin: true }))}
       />
 
       <ShareButton
         icon={FaFacebookF}
         label="Share on Facebook"
         isShared={shared.facebook}
-        onClick={() =>
-          setShared((p) => ({ ...p, facebook: true }))
-        }
+        onClick={() => setShared((p) => ({ ...p, facebook: true }))}
       />
 
       <ShareButton
         icon={FiMail}
         label="Share via Email"
         isShared={shared.email}
-        onClick={() =>
-          setShared((p) => ({ ...p, email: true }))
-        }
+        onClick={() => setShared((p) => ({ ...p, email: true }))}
       />
 
       {/* Posted by */}

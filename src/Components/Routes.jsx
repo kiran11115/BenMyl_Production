@@ -1,6 +1,6 @@
 import {
-    createBrowserRouter,
-    createRoutesFromElements,
+  createBrowserRouter,
+  createRoutesFromElements,
 } from "react-router-dom";
 import { Route } from "react-router-dom";
 import Signin from "./Auth/Signin";
@@ -12,7 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Header from "./Header/Header";
 import Projects from "./UserProjects/Projects";
 import Dashboard from "./Dashboard/Dashboard";
-import Jobs from "./UserJobs/UserJobs";
+import UserJobs from "./UserJobs/UserJobs";
 import Messages from "./Messages/Messages";
 import TalentPool from "./TalentPool/TalentPool";
 import Analytics from "./Analytics/Analytics";
@@ -37,54 +37,61 @@ import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
 import JobOverview from "./UserProjects/JobOverview";
 import NotificationsPage from "./Header/NotificationsPage";
 
-
-
 const routes = createBrowserRouter(
-    createRoutesFromElements(
-        <Route path="/">
-            <Route index element={<Signin />} />
-            <Route path="sign-in" element={<Signin />} />
-            <Route path="sign-up" element={<Signup />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="OTP-Verification" element={<OTPVerification />} />
-            <Route path="user-details" element={<FormWizard />} />
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<Signin />} />
+      <Route path="sign-in" element={<Signin />} />
+      <Route path="sign-up" element={<Signup />} />
+      <Route path="forgot-password" element={<ForgotPassword />} />
+      <Route path="OTP-Verification" element={<OTPVerification />} />
+      <Route path="user-details" element={<FormWizard />} />
 
-
-            <Route element={<ProtectedRoute />}>
-
-                <Route path="Admin" element={<AdminHeader />}>
-                    <Route path="admin-profile" element={<AdminProfile />} />
-                    <Route path="account-settings" element={<AccountSettings />} />
-                    <Route path="edit-profile" element={<AdminProfileEdit />} />
-                </Route>
-
-                <Route path="User" element={<Header />}>
-                    <Route path="notifications-page" element={<NotificationsPage />} />
-                    <Route path="AI-screen" element={<AIScreen />} />
-                    <Route path="user-projects" element={<Projects />} />
-                    <Route path="user-dashboard" element={<Dashboard />} />
-                    <Route path="user-upload-talent" element={<UploadTalent />} />
-                    <Route path="user-Jobs" element={<Jobs />} />
-                    <Route path="user-messages" element={<Messages />} />
-                    <Route path="user-talentpool" element={<TalentPool />} />
-                    <Route path="user-talent-profile" element={<TalentProfile />} />
-                    <Route path="talent-profile" element={<UploadTalentProfile />} />
-                    <Route path="user-analytics" element={<Analytics />} />
-                    <Route path="user-profile" element={<ProfilePage />} />
-                    <Route path="edit-profile" element={<EditProfile />} />
-                    <Route path="user-post-new-positions" element={<PostNewPositions />} />
-                    <Route path="user-invite-bid" element={<InviteBid />} />
-                    <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
-                    <Route path="user-schedule-interview" element={<ScheduleInterview />} />
-                    <Route path="user-contract-management" element={<ContractManagement />} />
-                    <Route path="user-contract-view" element={<ContractView />} />
-                    <Route path="create-new-contract" element={<CreateNewContract />} />
-                    <Route path="review-talent" element={<ReviewTalent />} />
-                    <Route path="job-overview" element={<JobOverview />} />
-                </Route>
-            </Route>
-
+      <Route element={<ProtectedRoute />}>
+        <Route path="Admin" element={<AdminHeader />}>
+          <Route path="admin-profile" element={<AdminProfile />} />
+          <Route path="account-settings" element={<AccountSettings />} />
+          <Route path="edit-profile" element={<AdminProfileEdit />} />
         </Route>
-    )
+
+        <Route path="User" element={<Header />}>
+          <Route path="notifications-page" element={<NotificationsPage />} />
+          <Route path="AI-screen" element={<AIScreen />} />
+          <Route path="user-projects" element={<Projects />} />
+          <Route path="user-dashboard" element={<Dashboard />} />
+          <Route path="user-upload-talent" element={<UploadTalent />} />
+          <Route path="user-Jobs" element={<UserJobs />} />
+          <Route path="user-messages" element={<Messages />} />
+          <Route path="user-talentpool" element={<TalentPool />} />
+          <Route path="user-talent-profile" element={<TalentProfile />} />
+          <Route path="talent-profile" element={<UploadTalentProfile />} />
+          <Route path="user-analytics" element={<Analytics />} />
+          <Route path="user-profile" element={<ProfilePage />} />
+          <Route path="edit-profile" element={<EditProfile />} />
+          <Route
+            path="user-post-new-positions"
+            element={<PostNewPositions />}
+          />
+          <Route path="user-invite-bid" element={<InviteBid />} />
+          <Route
+            path="user-upcoming-interview"
+            element={<UpcomingInterview />}
+          />
+          <Route
+            path="user-schedule-interview"
+            element={<ScheduleInterview />}
+          />
+          <Route
+            path="user-contract-management"
+            element={<ContractManagement />}
+          />
+          <Route path="user-contract-view" element={<ContractView />} />
+          <Route path="create-new-contract" element={<CreateNewContract />} />
+          <Route path="review-talent" element={<ReviewTalent />} />
+          <Route path="job-overview" element={<JobOverview />} />
+        </Route>
+      </Route>
+    </Route>,
+  ),
 );
 export default routes;

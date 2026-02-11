@@ -18,7 +18,10 @@ import {
 import { X } from "lucide-react";
 import { BsDribbble, BsBuilding } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useGetRecommendJobsListMutation, useLazyGetEmployeeTalentProfileQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import {
+  useGetRecommendJobsListMutation,
+  useLazyGetEmployeeTalentProfileQuery,
+} from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
@@ -26,7 +29,7 @@ import JobModal from "../UserJobs/JobModal";
 // ===========================
 // RecommendedJobs Component (Simplified for inline use)
 // ===========================
-const RecommendedJobs = ({ navigate,role,skills }) => {
+const RecommendedJobs = ({ navigate, role, skills }) => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,36 +37,34 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
   const [getRecommendedJobs] = useGetRecommendJobsListMutation();
 
   useEffect(() => {
-  const fetchRecommendedJobs = async () => {
-    if (!role || !skills || skills.length === 0) return;
+    const fetchRecommendedJobs = async () => {
+      if (!role || !skills || skills.length === 0) return;
 
-    try {
-      setIsLoading(true);
+      try {
+        setIsLoading(true);
 
-      const payload = {
-        role: role,
-        skills: skills,
-      };
+        const payload = {
+          role: role,
+          skills: skills,
+        };
 
-      const res = await getRecommendedJobs(payload).unwrap();
+        const res = await getRecommendedJobs(payload).unwrap();
 
-      if (Array.isArray(res) && res.length > 0) {
-        setAllJobs(res);
-      } else {
+        if (Array.isArray(res) && res.length > 0) {
+          setAllJobs(res);
+        } else {
+          setAllJobs([]);
+        }
+      } catch (error) {
+        console.error("Error fetching recommended jobs:", error);
         setAllJobs([]);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-    } catch (error) {
-      console.error("Error fetching recommended jobs:", error);
-      setAllJobs([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  fetchRecommendedJobs();
-}, [role, skills, getRecommendedJobs]);
-
+    fetchRecommendedJobs();
+  }, [role, skills, getRecommendedJobs]);
 
   // Normalize API data
   const jobs = useMemo(() => {
@@ -93,33 +94,55 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
   };
 
   const handleViewMoreJobs = () => {
-    navigate('/user/user-jobs');
+    navigate("/user/user-jobs");
   };
 
   return (
-    <div style={{ padding: '0' }}>
+    <div style={{ padding: "0" }}>
       <div>
         <div className="jobs-grid">
           {!isLoading && firstThreeJobs.length > 0 ? (
             <>
               {firstThreeJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="project-card"
-                  style={{ gap: '0' }}
-                >
+                <div key={job.id} className="project-card" style={{ gap: "0" }}>
                   {/* Job Card Header */}
-                  <div className="job-card-top" style={{ marginBottom: '16px', alignItems: 'flex-start' }}>
+                  <div
+                    className="job-card-top"
+                    style={{ marginBottom: "16px", alignItems: "flex-start" }}
+                  >
                     <div className="company-icon-box large">
                       <BsBuilding size={24} />
                     </div>
                     <div className="job-header-info">
-                      <h3 className="job-title" style={{ fontSize: '18px', marginBottom: '6px' }}>{job.title}</h3>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                        <p className="company-name" style={{ fontSize: '14px', fontWeight: 600, color: '#6366f1' }}>
+                      <h3
+                        className="job-title"
+                        style={{ fontSize: "18px", marginBottom: "6px" }}
+                      >
+                        {job.title}
+                      </h3>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "2px",
+                        }}
+                      >
+                        <p
+                          className="company-name"
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: 600,
+                            color: "#6366f1",
+                          }}
+                        >
                           {job.company}
                         </p>
-                        <div style={{ fontSize: '13px', color: 'var(--slate-500)' }}>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            color: "var(--slate-500)",
+                          }}
+                        >
                           {job.location}
                         </div>
                       </div>
@@ -127,7 +150,10 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
                   </div>
 
                   {/* Stats Block */}
-                  <div className="drawer-stats" style={{ marginBottom: '20px' }}>
+                  <div
+                    className="drawer-stats"
+                    style={{ marginBottom: "20px" }}
+                  >
                     <div className="drawer-stat-item">
                       <span className="label">Budget</span>
                       <span className="value">{job.rateText}</span>
@@ -143,13 +169,23 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
                   </div>
 
                   {/* Skills */}
-                  <div style={{ marginBottom: '24px' }}>
-                    <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)', margin: '0 0 8px 0' }}>
+                  <div style={{ marginBottom: "24px" }}>
+                    <h4
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: "var(--slate-800)",
+                        margin: "0 0 8px 0",
+                      }}
+                    >
                       Required Skills
                     </h4>
                     <div className="skills-cloud">
-                      {job.skills.map(skill => (
-                        <span key={skill} className="status-tag status-progress">
+                      {job.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="status-tag status-progress"
+                        >
                           {skill}
                         </span>
                       ))}
@@ -157,63 +193,87 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
                   </div>
 
                   {/* Action Button */}
-                  <div className="card-actions full-width" style={{ marginTop: 'auto', borderTop: 'none', paddingTop: 0 }}>
+                  <div
+                    className="card-actions full-width"
+                    style={{
+                      marginTop: "auto",
+                      borderTop: "none",
+                      paddingTop: 0,
+                    }}
+                  >
                     <button
                       className="btn-primary full-width"
                       onClick={() => handleAddTalentClick(job)}
                     >
-                      <FiPlus size={16} style={{ marginRight: '8px' }} />
+                      <FiPlus size={16} style={{ marginRight: "8px" }} />
                       Add Talent
                     </button>
                   </div>
                 </div>
               ))}
-              
+
               {/* More Jobs Card */}
               {firstThreeJobs.length >= 3 && (
-                <div className="project-card" style={{ 
-                  gap: '0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  backgroundColor: '#f8fafc',
-                  border: '2px dashed #e2e8f0'
-                }}>
-                  <div style={{ 
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '50%',
-                    backgroundColor: '#e2e8f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 24px'
-                  }}>
+                <div
+                  className="project-card"
+                  style={{
+                    gap: "0",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    backgroundColor: "#f8fafc",
+                    border: "2px dashed #e2e8f0",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "64px",
+                      height: "64px",
+                      borderRadius: "50%",
+                      backgroundColor: "#e2e8f0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 24px",
+                    }}
+                  >
                     <FiArrowRight size={32} color="#64748b" />
                   </div>
-                  
-                  <h3 style={{ 
-                    fontSize: '18px', 
-                    fontWeight: 600, 
-                    color: '#334155',
-                    marginBottom: '12px'
-                  }}>
+
+                  <h3
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      color: "#334155",
+                      marginBottom: "12px",
+                    }}
+                  >
                     Discover More Opportunities
                   </h3>
-                  
-                  <p style={{ 
-                    fontSize: '14px', 
-                    color: '#64748b',
-                    marginBottom: '32px',
-                    lineHeight: '1.5',
-                    maxWidth: '300px'
-                  }}>
-                    Explore additional job opportunities that match your skills and preferences
+
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#64748b",
+                      marginBottom: "32px",
+                      lineHeight: "1.5",
+                      maxWidth: "300px",
+                    }}
+                  >
+                    Explore additional job opportunities that match your skills
+                    and preferences
                   </p>
-                  
-                  <div className="card-actions full-width" style={{ marginTop: 'auto', borderTop: 'none', paddingTop: 0 }}>
+
+                  <div
+                    className="card-actions full-width"
+                    style={{
+                      marginTop: "auto",
+                      borderTop: "none",
+                      paddingTop: 0,
+                    }}
+                  >
                     <button
                       className="btn-primary full-width"
                       onClick={handleViewMoreJobs}
@@ -260,10 +320,7 @@ const RecommendedJobs = ({ navigate,role,skills }) => {
 
       {/* Job Modal */}
       {selectedJob && (
-        <JobModal
-          job={selectedJob}
-          onClose={() => setSelectedJob(null)}
-        />
+        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
     </div>
   );
@@ -1645,19 +1702,32 @@ const UploadTalentProfile = () => {
                       style={{ padding: "0px" }}
                     >
                       <div className="portfolio-content">
-                        <h3 className="portfolio-title">{item.title}</h3>
+                        <h3
+                          className="portfolio-title"
+                          style={{ fontSize: "18px" }}
+                        >
+                          {item.title}
+                        </h3>
                         <div className="small text-muted">
                           {item.role} • {item.period}
                         </div>
 
-                        {item.description && (
-                          <p className="small text-muted mt-1">
-                            {item.description}
-                          </p>
-                        )}
-                        <div className="portfolio-tags">
+                        <div
+                          className="mt-2 rounded-2"
+                          style={{ background: "#f8fafc", padding: "5px 10px" }}
+                        >
+                          {item.description && (
+                            <p className="small mt-1 mb-0 value">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="portfolio-tags mt-2">
                           {item.tags.map((tag, tIdx) => (
-                            <span key={tIdx} className="portfolio-tag">
+                            <span
+                              key={tIdx}
+                              className="status-tag status-progress"
+                            >
                               {tag}
                             </span>
                           ))}
@@ -1680,10 +1750,10 @@ const UploadTalentProfile = () => {
                 <h2 className="card-title mb-0">Recommended Jobs</h2>
               </div>
               <RecommendedJobs
-  navigate={navigate}
-  role={profileData?.role}
-  skills={profileData?.skills}
-/>
+                navigate={navigate}
+                role={profileData?.role}
+                skills={profileData?.skills}
+              />
             </div>
           </div>
 
