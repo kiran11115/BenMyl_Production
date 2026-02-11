@@ -96,7 +96,7 @@ const PostedJobs = () => {
 
 
         .company {
-          font-size: 14px;
+          font-size: 12px;
           color: #6366f1;
           font-weight: 500;
           margin: 4px 0;
