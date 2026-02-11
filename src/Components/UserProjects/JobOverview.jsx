@@ -83,8 +83,8 @@ const JobOverview = () => {
     },
 
     title: {
-      fontSize: "26px",
-      fontWeight: 700,
+      fontSize: "24px",
+      fontWeight: 600,
       color: "#1e293b",
       marginBottom: "4px",
     },
@@ -157,7 +157,7 @@ const JobOverview = () => {
       display: "inline-block",
       padding: "4px 10px",
       borderRadius: "6px",
-      fontSize: "12px",
+      fontSize: "13px",
       fontWeight: "600",
       whiteSpace: "normal",
       backgroundColor: " #eff0ff",
@@ -271,15 +271,15 @@ const JobOverview = () => {
 
         <h1
           style={{
-            fontSize: "28px",
-            fontWeight: 700,
+            fontSize: "24px",
+            fontWeight: 600,
             margin: "12px 0 4px",
             color: "#1e293b",
           }}
         >
           Job Overview
         </h1>
-        <p style={{ color: "#64748b", margin: 0, fontSize: "16px" }}>
+        <p style={{ color: "#64748b", margin: 0, fontSize: "14px" }}>
           A complete summary of the job details and requirements
         </p>
       </div>
