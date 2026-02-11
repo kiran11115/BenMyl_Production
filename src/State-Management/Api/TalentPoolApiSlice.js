@@ -49,7 +49,14 @@ getJobById: builder.query({
   }),
 }),
 
+getAllRoleNames: builder.query({
+  query: (userId) => ({
+    url: `/api/uatcompany/getallRoleNames?userId=${userId}`,
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation,useGetAllRoleNamesQuery } = TalentPoolApiSlice;

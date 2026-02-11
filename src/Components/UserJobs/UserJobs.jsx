@@ -18,6 +18,7 @@ const PAGE_SIZE = 10;
 
 const UserJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
+  const companyId = localStorage.getItem("logincompanyid");
 
   // pagination
   const [pageNumber, setPageNumber] = useState(1);
@@ -36,7 +37,7 @@ const UserJobs = () => {
     minRate: 0,
     experience: "Any Experience",
     availability: [],
-    talentRoles: [],
+    roles: [],
     locations: [],
     maxBudget: 200,
   });
@@ -48,9 +49,20 @@ const UserJobs = () => {
     if (!hasMore) return;
 
     const payload = {
+      companyid: Number(companyId),
       pageNumber,
       pageSize: PAGE_SIZE,
-      filters: [], // plug filters later
+      filters: filters.roles?.length
+  ? [
+      {
+        filterName: "Job Title",
+        filterOperator: "Equals",
+        filterValue: filters.roles,
+      },
+    ]
+  : [],
+
+
     };
 
     const res = await getTalentJobs(payload).unwrap();
@@ -70,8 +82,8 @@ const UserJobs = () => {
 
   // initial + pagination fetch
   useEffect(() => {
-    fetchJobs();
-  }, [pageNumber]);
+  fetchJobs();
+}, [pageNumber, filters]);
 
   // =========================
   // SCROLL HANDLER (same as TalentPool)
@@ -113,6 +125,13 @@ const UserJobs = () => {
         : [],
     }));
   }, [allJobs]);
+
+  useEffect(() => {
+  setAllJobs([]);
+  setPageNumber(1);
+  setHasMore(true);
+}, [filters]);
+
 
   const updateFilters = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -179,7 +198,13 @@ const UserJobs = () => {
       >
         {/* Sidebar */}
         <aside>
-          <JobFilters currentFilters={filters} onFilterChange={updateFilters} />
+          <JobFilters onApplyFilters={(appliedFilters) => {
+  setAllJobs([]);
+  setPageNumber(1);
+  setHasMore(true);
+  setFilters(appliedFilters);
+}} />
+
         </aside>
 
         {/* Main Grid */}

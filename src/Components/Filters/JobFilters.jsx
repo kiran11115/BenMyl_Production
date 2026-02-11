@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from 'react-icons/fi';
 import '../Filters/FiltersSidebar.css';
+import { useGetAllRoleNamesQuery } from '../../State-Management/Api/TalentPoolApiSlice';
 
 
 // --- DATA CONSTANTS ---
@@ -122,6 +123,9 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 
 // --- MAIN COMPONENT ---
 const JobFilters = ({ onApplyFilters }) => {
+  const userId = localStorage.getItem("CompanyId");
+
+const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
   const initialFilters = {
     roles: [],          // Fixed key name from 'Role' to 'roles'
     locations: [],        
@@ -143,11 +147,21 @@ const JobFilters = ({ onApplyFilters }) => {
 
   // --- TAG REMOVAL HELPERS ---
   const removeTag = (field, value) => {
-    setFilterInputs(prev => ({
+  setFilterInputs(prev => {
+    const updatedFilters = {
       ...prev,
       [field]: prev[field].filter(item => item !== value)
-    }));
-  };
+    };
+
+    // 🔥 Immediately notify parent
+    if (onApplyFilters) {
+      onApplyFilters(updatedFilters);
+    }
+
+    return updatedFilters;
+  });
+};
+
 
 
   const applyFilters = () => {
@@ -190,7 +204,7 @@ const JobFilters = ({ onApplyFilters }) => {
         )}
          <MultiSelectDropdown 
           label="Find by Roles"
-          options={ROLE_TYPES}
+          options={roleOptions}
           selectedValues={filterInputs.roles}
           onChange={(newValues) => handleInputChange('roles', newValues)}
         />
