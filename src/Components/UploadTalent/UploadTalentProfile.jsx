@@ -18,7 +18,7 @@ import {
 import { X } from "lucide-react";
 import { BsDribbble, BsBuilding } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLazyGetEmployeeTalentProfileQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetRecommendJobsListMutation, useLazyGetEmployeeTalentProfileQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
@@ -26,38 +26,44 @@ import JobModal from "../UserJobs/JobModal";
 // ===========================
 // RecommendedJobs Component (Simplified for inline use)
 // ===========================
-const RecommendedJobs = ({ navigate }) => {
+const RecommendedJobs = ({ navigate,role,skills }) => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [getTalentJobs] = useGetFindJobsMutation();
+  const [getRecommendedJobs] = useGetRecommendJobsListMutation();
 
-  // Fetch jobs on component mount
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setIsLoading(true);
-        const payload = {
-          pageNumber: 1,
-          pageSize: 10,
-          filters: [],
-        };
+  const fetchRecommendedJobs = async () => {
+    if (!role || !skills || skills.length === 0) return;
 
-        const res = await getTalentJobs(payload).unwrap();
-        
-        if (Array.isArray(res) && res.length > 0) {
-          setAllJobs(res);
-        }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      } finally {
-        setIsLoading(false);
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        role: role,
+        skills: skills,
+      };
+
+      const res = await getRecommendedJobs(payload).unwrap();
+
+      if (Array.isArray(res) && res.length > 0) {
+        setAllJobs(res);
+      } else {
+        setAllJobs([]);
       }
-    };
 
-    fetchJobs();
-  }, [getTalentJobs]);
+    } catch (error) {
+      console.error("Error fetching recommended jobs:", error);
+      setAllJobs([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchRecommendedJobs();
+}, [role, skills, getRecommendedJobs]);
+
 
   // Normalize API data
   const jobs = useMemo(() => {
@@ -1673,7 +1679,11 @@ const UploadTalentProfile = () => {
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="card-title mb-0">Recommended Jobs</h2>
               </div>
-              <RecommendedJobs navigate={navigate} />
+              <RecommendedJobs
+  navigate={navigate}
+  role={profileData?.role}
+  skills={profileData?.skills}
+/>
             </div>
           </div>
 

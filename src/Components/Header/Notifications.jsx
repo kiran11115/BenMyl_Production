@@ -28,7 +28,9 @@ const Notifications = () => {
   const userId = localStorage.getItem("CompanyId");
 
   const { data: apiNotifications = [], isLoading } =
-    useGetUserNotificationsQuery(userId);
+    useGetUserNotificationsQuery(userId, {
+  pollingInterval: 5000,
+});
 
   const notifications = apiNotifications
     .map((item, index) => ({

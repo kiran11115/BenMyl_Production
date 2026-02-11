@@ -41,7 +41,15 @@ getJobById: builder.query({
       }),
     }),
 
+    getRecommendJobsList: builder.mutation({
+  query: (payload) => ({
+    url: "/api/uatcompany/getrecommendjosblist",
+    method: "POST",
+    body: payload,
+  }),
+}),
+
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation } = TalentPoolApiSlice;
