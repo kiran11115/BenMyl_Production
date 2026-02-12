@@ -322,31 +322,7 @@ const PostNewPositions = () => {
                 }}
               >
                 Job Details
-              </h3>
-
-              <div className="auth-form-group">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <label className="auth-label m-0">Job Description</label>
-                  <button type="button" className="ai-pill-btn">
-                    <span className="ai-pill-icon">✦</span>
-                    <span className="ai-pill-text">AI</span>
-                  </button>
-                </div>
-
-                <textarea
-                  className="auth-input"
-                  rows={6}
-                  style={{ resize: 'vertical', height:"120px" }}
-                  placeholder="Describe the role and responsibilities..."
-                  name="description"
-                  value={formik.values.description}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                {formik.touched.description && formik.errors.description && (
-                  <div className="auth-error">{formik.errors.description}</div>
-                )}
-              </div>
+              </h3>     
 
               {/* 3 Column Grid */}
               <div
@@ -526,6 +502,30 @@ const PostNewPositions = () => {
                     <div className="auth-error">{formik.errors.yearsExperience}</div>
                   )}
                 </div>
+              </div>
+
+                    <div className="auth-form-group">
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <label className="auth-label m-0">Job Description</label>
+                  <button type="button" className="ai-pill-btn">
+                    <span className="ai-pill-icon">✦</span>
+                    <span className="ai-pill-text">AI</span>
+                  </button>
+                </div>
+
+                <textarea
+                  className="auth-input"
+                  rows={6}
+                  style={{ resize: 'vertical', height:"120px" }}
+                  placeholder="Describe the role and responsibilities..."
+                  name="description"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                {formik.touched.description && formik.errors.description && (
+                  <div className="auth-error">{formik.errors.description}</div>
+                )}
               </div>
 
               {/* =======================
