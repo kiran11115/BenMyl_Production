@@ -18,66 +18,65 @@ import { useNavigate } from "react-router-dom";
 import TeamMembersTable from "./TeamMemberTable";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 
-
 const ProfilePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
 
-  const { data: apiData, isLoading } =
-    useGetRecruiterProfileQuery(Number(userId), {
+  const { data: apiData, isLoading } = useGetRecruiterProfileQuery(
+    Number(userId),
+    {
       skip: !userId,
-    });
+    },
+  );
 
   const companyData = apiData
     ? {
-      id: apiData.authInfoID,
-      slug: "",
-      name: apiData.fullName,
-      companyname: apiData.companyName,
-      size: "100-200",
-      status: "Active",
-      industry: apiData.role,
-      foundedYear: apiData.createdate,
-      websiteUrl: "",
-      domain: "",
+        id: apiData.authInfoID,
+        slug: "",
+        name: apiData.fullName,
+        companyname: apiData.companyName,
+        size: "100-200",
+        status: "Active",
+        industry: apiData.role,
+        foundedYear: apiData.createdate,
+        websiteUrl: "",
+        domain: "",
 
-      headquarters: {
-        city: apiData.city,
-        state: apiData.state,
-        country: apiData.country,
-        postalCode: apiData.postalCode,
-        street1: apiData.streetAddress1,
-        street2: apiData.streetAddress2,
-      },
+        headquarters: {
+          city: apiData.city,
+          state: apiData.state,
+          country: apiData.country,
+          postalCode: apiData.postalCode,
+          street1: apiData.streetAddress1,
+          street2: apiData.streetAddress2,
+        },
 
-      description: apiData.description,
+        description: apiData.description,
 
-      contact: {
-        email: apiData.emailid,
-        phone: apiData.phone,
-        linkedinUrl: apiData.linkedinURL,
-      },
+        contact: {
+          email: apiData.emailid,
+          phone: apiData.phone,
+          linkedinUrl: apiData.linkedinURL,
+        },
 
-      role: apiData.role,
-      company: apiData.company,
-      startYear: apiData.startYear,
-      endYear: apiData.endYear,
-      experience: apiData.experience,
-      jobtitle: apiData.jobtitle,
-      education: apiData.education,
-      languagesSpoken: apiData.languagesSpoken
-        ? apiData.languagesSpoken.split(",")
-        : [],
-      referredBy: apiData.referedBy,
+        role: apiData.role,
+        company: apiData.company,
+        startYear: apiData.startYear,
+        endYear: apiData.endYear,
+        experience: apiData.experience,
+        jobtitle: apiData.jobtitle,
+        education: apiData.education,
+        languagesSpoken: apiData.languagesSpoken
+          ? apiData.languagesSpoken.split(",")
+          : [],
+        referredBy: apiData.referedBy,
 
-      profilePhoto: apiData.profilePhoto
-
-    }
+        profilePhoto: apiData.profilePhoto,
+      }
     : null;
 
   /* ✅ NOW place guard HERE */
   if (isLoading || !companyData) return null;
-
 
   const fullAddress = [
     companyData.headquarters?.street1,
@@ -97,15 +96,14 @@ const ProfilePage = () => {
 
   const workExperiences = companyData.jobtitle
     ? [
-      {
-        title: companyData.jobtitle,
-        company: companyData.company,
-        start: companyData.startYear,
-        end: companyData.endYear || "Present",
-      },
-    ]
+        {
+          title: companyData.jobtitle,
+          company: companyData.company,
+          start: companyData.startYear,
+          end: companyData.endYear || "Present",
+        },
+      ]
     : [];
-
 
   const onAccountSettings = () => {
     navigate("/admin/account-settings");
@@ -130,7 +128,7 @@ const ProfilePage = () => {
           <div className="row">
             <div className="col-12 col-md-12 col-lg-8 mb-4">
               {/* Company Header Card */}
-              <div className="project-card">
+              <div className="project-card" style={{ height: "200px" }}>
                 <div className="d-flex gap-3 align-items-start">
                   {/* Profile Photo */}
                   {companyData.profilePhoto && (
@@ -181,7 +179,7 @@ const ProfilePage = () => {
                     {/* About */}
                     <div className="mt-3">
                       <h3 className="card-title mb-2">About</h3>
-                      <div className="small text-muted">
+                      <div className="small text-muted" style={{height: "50px", overflowY: 'auto'}}>
                         {companyData.description}
                       </div>
                     </div>
@@ -310,7 +308,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card" style={{ padding: "14px 16px" }}>
+              <div className="project-card" style={{ padding: "14px 16px", height: "280px", overflowY: 'auto' }}>
                 <div
                   style={{
                     display: "flex",
@@ -375,7 +373,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card">
+              <div className="project-card" style={{ height: "280px", overflowY: 'auto' }}>
                 {/* Header */}
                 <div
                   style={{
@@ -443,9 +441,8 @@ const ProfilePage = () => {
               </div>
             </div>
 
-
             <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card">
+              <div className="project-card" style={{ height: "280px", overflowY: 'auto' }}>
                 {/* Header */}
                 <div
                   style={{
@@ -547,11 +544,13 @@ const ProfilePage = () => {
                   </span>
 
                   <div className="status-tag status-progress d-flex gap-3">
-                    {companyData.languagesSpoken?.length > 0
-                      ? companyData.languagesSpoken.map((lang, i) => (
+                    {companyData.languagesSpoken?.length > 0 ? (
+                      companyData.languagesSpoken.map((lang, i) => (
                         <span key={i}>{lang}</span>
                       ))
-                      : <span>-</span>}
+                    ) : (
+                      <span>-</span>
+                    )}
                   </div>
                 </div>
 
@@ -572,7 +571,6 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-
 
             {/* Team members table */}
             <div className="col-12 mt-3">

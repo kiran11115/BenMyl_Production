@@ -1,6 +1,16 @@
 import React, { useEffect } from "react";
-import { FiArrowLeft, FiMapPin, FiBriefcase, FiHome, FiDollarSign,
-  FiLayers, FiTrendingUp, FiBookOpen, FiClock, FiFileText } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiMapPin,
+  FiBriefcase,
+  FiHome,
+  FiDollarSign,
+  FiLayers,
+  FiTrendingUp,
+  FiBookOpen,
+  FiClock,
+  FiFileText,
+} from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
 import { useLazyGetJobByIdQuery } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -25,7 +35,6 @@ const JobOverview = () => {
 
   return (
     <div className="jobs-container">
-
       {/* HEADER */}
       <div className="mb-4">
         <div className="profile-breadcrumb d-flex gap-1">
@@ -46,10 +55,11 @@ const JobOverview = () => {
       </div>
 
       <div className="dashboard-layout">
-
         {/* LEFT MAIN CONTENT */}
-        <div className="dashboard-column-main card-base" style={{padding: "16px"}}>
-
+        <div
+          className="dashboard-column-main card-base"
+          style={{ padding: "16px" }}
+        >
           {/* Job Header */}
           <div className="job-card-top">
             <div className="company-icon-box large">
@@ -71,8 +81,7 @@ const JobOverview = () => {
                 </div>
 
                 <div className="meta-item">
-                  <FiDollarSign size={14} />
-                  ${job?.salaryRange_min || "25"} - 
+                  <FiDollarSign size={14} />${job?.salaryRange_min || "25"} -
                   {job?.salaryRange_max || "30"} USD/hour
                 </div>
 
@@ -102,6 +111,11 @@ const JobOverview = () => {
                 {job?.yearsofExperience || "5"} years
               </span>
             </div>
+
+            <div className="drawer-stat-item">
+              <span className="label">Education</span>
+              <span className="value">{job?.educationLevel || "Masters"}</span>
+            </div>
           </div>
 
           {/* Job Description */}
@@ -121,12 +135,14 @@ const JobOverview = () => {
               <FiLayers size={14} /> Required Skills
             </h4>
             <div className="skills-cloud">
-              {(job?.requiredSkills?.split(",") || [
-                "REACT",
-                "HTML",
-                "CSS",
-                "JAVASCRIPT",
-              ]).map((skill) => (
+              {(
+                job?.requiredSkills?.split(",") || [
+                  "REACT",
+                  "HTML",
+                  "CSS",
+                  "JAVASCRIPT",
+                ]
+              ).map((skill) => (
                 <span key={skill.trim()} className="status-tag status-progress">
                   {skill.trim()}
                 </span>
@@ -135,12 +151,10 @@ const JobOverview = () => {
           </div>
 
           {/* Education & Experience */}
-          <div className="drawer-stats">
+          {/* <div className="drawer-stats">
             <div className="drawer-stat-item">
               <span className="label">Education</span>
-              <span className="value">
-                {job?.educationLevel || "Masters"}
-              </span>
+              <span className="value">{job?.educationLevel || "Masters"}</span>
             </div>
 
             <div className="drawer-stat-item">
@@ -149,7 +163,7 @@ const JobOverview = () => {
                 {job?.yearsofExperience || "5"} years
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* RIGHT SIDEBAR */}
@@ -157,7 +171,6 @@ const JobOverview = () => {
           <ShareJobCard />
           <WorkAndPreference />
         </div>
-
       </div>
     </div>
   );

@@ -400,7 +400,8 @@
 
 .drawer-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  flex-wrap: wrap;
   background: #f8fafc;
   border-radius: 12px;
   padding: 16px;

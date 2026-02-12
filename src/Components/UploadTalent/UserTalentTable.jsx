@@ -36,6 +36,13 @@ const SortIcon = ({ active, direction }) => {
 /* ---------------- TABLE ROW ---------------- */
 const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
   const navigate = useNavigate();
+   const handleProfileClick = () => {
+    navigate("/user/talent-profile", {
+      state: {
+        employeeId: candidate.id,
+      },
+    });
+  };
   return (
     <tr className="tt-row">
       {/* Checkbox */}
@@ -107,7 +114,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
 
       {/* Action */}
       <td className="tt-td action">
-        <button className="tt-action-btn" onClick={()=>navigate("/user/talent-profile")}>
+        <button className="tt-action-btn"  onClick={handleProfileClick}>
           <FiEye size={16} />
         </button>
       </td>
