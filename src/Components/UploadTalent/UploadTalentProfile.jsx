@@ -1717,7 +1717,7 @@ const UploadTalentProfile = () => {
 >
   Find Jobs
 </button>
-              <button className="btn-secondary w-100">Preview Resume</button>
+              {/* <button className="btn-secondary w-100">Preview Resume</button>
 
               <div className="sidebar-links">
                 <button className="link-btn">
@@ -1726,7 +1726,7 @@ const UploadTalentProfile = () => {
                 <button className="link-btn">
                   <FiShare2 /> Share Profile
                 </button>
-              </div> */}
+              </div>  */}
             </div>
 
             {/* Quick Information with Edit Button */}
