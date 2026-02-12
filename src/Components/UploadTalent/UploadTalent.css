@@ -169,6 +169,32 @@
 }
 
 
+/* quick info */
+
+.quickinfo{
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border: 1px solid rgb(226, 232, 240);
+    border-radius: 8px;
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.quick-check{
+  width: 20px;
+    height: 20px;
+    border: 2px solid rgb(203, 213, 225);
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(255, 255, 255);
+}
+
+
 /* ============================= */
 /* RESPONSIVE */
 /* ============================= */

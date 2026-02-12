@@ -182,7 +182,7 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
           {/* RIGHT SIDE */}
           <aside className="modal-right">
             <div className="share-card">
-              <h4 className="share-title">Share This Job</h4>
+              <h4 className="share-title">Share this Job</h4>
 
               <div className="share-input-group">
                 <label className="input-label">Job Link</label>

@@ -460,8 +460,13 @@ useEffect(() => {
             <button
   className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
   onClick={handleShortlistFromProfile}
+  style={{
+    backgroundColor: isShortlisted ? "#3B82F6" : "",
+    color: isShortlisted ? "#fff" : ""
+  }}
 >
   {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
+
 </button>
 
 

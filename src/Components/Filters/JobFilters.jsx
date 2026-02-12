@@ -153,7 +153,7 @@ const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
       [field]: prev[field].filter(item => item !== value)
     };
 
-    // 🔥 Immediately notify parent
+    // Immediately notify parent
     if (onApplyFilters) {
       onApplyFilters(updatedFilters);
     }
