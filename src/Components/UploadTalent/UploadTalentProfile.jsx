@@ -362,12 +362,9 @@ const UploadTalentProfile = () => {
   };
 
   const workPreferenceOptions = [
-    "Onsite",
-    "Remote",
-    "Hybrid (1–2 days onsite)",
-    "Hybrid (2–3 days onsite)",
-    "Hybrid (3–4 days onsite)",
-    "Flexible",
+    "Full Time",
+    "Part Time",
+    "Contract",
   ];
 
   const [editFormData, setEditFormData] = useState({
@@ -404,7 +401,7 @@ const UploadTalentProfile = () => {
         expectedSalaryMin: minSalary,
         expectedSalaryMax: maxSalary,
         noticePeriod: "2",
-        workPreference: "Hybrid (2-3 days remote)",
+        workPreference: "Contract",
         languages: ["English", "Spanish"],
         workAuthorization: [],
         preferredEmployment: [],
@@ -1293,9 +1290,9 @@ const UploadTalentProfile = () => {
         <div className="edit-modal-overlay">
           <div className="edit-modal">
             <div className="edit-modal-header">
-              <h3 className="card-title mb-0">Edit Profile Information</h3>
+              <h1 className="mb-0">Edit Profile Information</h1>
               <button
-                className="btn btn-sm btn-outline-secondary"
+                className="modal-close-btn"
                 onClick={handleCloseModal}
               >
                 <FiX size={18} />
@@ -1307,7 +1304,7 @@ const UploadTalentProfile = () => {
                 {/* Salary Range */}
                 <div className="form-group">
                   <label htmlFor="expectedSalaryMin" className="auth-label">
-                    Expected Salary Range
+                  Salary Range
                   </label>
                   <div className="salary-inputs">
                     <input
@@ -1342,20 +1339,6 @@ const UploadTalentProfile = () => {
                     </select>
                   </div>
                 </div>
-
-                {/* Notice Period */}
-                {/* <div className="form-group">
-                  <label htmlFor="noticePeriod" className="auth-label">Notice Period (weeks)</label>
-                  <input
-                    type="number"
-                    id="noticePeriod"
-                    name="noticePeriod"
-                    className="auth-input"
-                    placeholder="Enter notice period in weeks"
-                    value={editFormData.noticePeriod}
-                    onChange={handleInputChange}
-                  />
-                </div> */}
 
                 {/* Work Preference */}
                 <div className="form-group">
@@ -1423,7 +1406,9 @@ const UploadTalentProfile = () => {
                   </div>
                 </div>
 
-                {/* Work Authorization - Full Width */}
+<div className="row">
+  <div className="col-6">
+      {/* Work Authorization - Full Width */}
                 <div className="form-group full-width">
                   <label className="auth-label">Work Authorization</label>
                   <div className="checkbox-group">
@@ -1444,8 +1429,9 @@ const UploadTalentProfile = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Preferred Employment - Full Width */}
+  </div>
+  <div className="col-6">
+    {/* Preferred Employment - Full Width */}
                 <div className="form-group full-width">
                   <label className="auth-label">Preferred Employment</label>
                   <div className="checkbox-group">
@@ -1466,54 +1452,14 @@ const UploadTalentProfile = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Skills - Full Width */}
-                <div className="form-group full-width">
-                  <label className="auth-label">Skills</label>
-
-                  <input
-                    className="auth-input w-100"
-                    placeholder="Add skills (e.g. React, Node.js) and press Enter"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={handleAddSkill}
-                  />
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "8px",
-                      marginTop: "12px",
-                    }}
-                  >
-                    {editFormData.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="status-tag status-progress"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          fontSize: "12px",
-                          padding: "6px 10px",
-                        }}
-                      >
-                        {skill}
-                        <X
-                          size={12}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => removeSkill(skill)}
-                        />
-                      </span>
-                    ))}
-                  </div>
-                </div>
+  </div>
+</div>
+           
               </div>
             </div>
 
             <div className="edit-modal-footer">
-              <button className="btn btn-secondary" onClick={handleCloseModal}>
+              <button className="btn-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
               <button className="btn-primary gap-1" onClick={handleSave}>
@@ -1780,7 +1726,7 @@ const UploadTalentProfile = () => {
                 <button className="link-btn">
                   <FiShare2 /> Share Profile
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {/* Quick Information with Edit Button */}
@@ -1788,7 +1734,7 @@ const UploadTalentProfile = () => {
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h3 className="card-title mb-0">Quick Information</h3>
                 <button
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn-secondary w-25 gap-2"
                   onClick={handleEditClick}
                   style={{ padding: "4px 8px", fontSize: "12px" }}
                 >
@@ -1803,13 +1749,6 @@ const UploadTalentProfile = () => {
                     editFormData.expectedSalaryMin,
                     editFormData.expectedSalaryMax,
                   )}
-                </div>
-              </div>
-
-              <div className="quick-info-item">
-                <div className="stat-label">Notice Period</div>
-                <div className="info-value">
-                  {editFormData.noticePeriod} weeks
                 </div>
               </div>
 
