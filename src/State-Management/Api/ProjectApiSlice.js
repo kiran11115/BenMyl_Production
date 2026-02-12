@@ -33,7 +33,16 @@ export const ProjectApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    generateJobDescriptionAI: builder.mutation({
+  query: (body) => ({
+    url: "/api/uatcompany/GenerateJobDescriptionAI",
+    method: "POST",
+    body,
+  }),
+}),
+
+
   }),
 });
 
-export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation } = ProjectApiSlice;
+export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation,useGenerateJobDescriptionAIMutation } = ProjectApiSlice;

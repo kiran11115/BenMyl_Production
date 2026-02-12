@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import PreviewModal from './PreviewModal';
 import {
+  useGenerateJobDescriptionAIMutation,
   usePostJobMutation,
   useSaveJobDraftMutation
 } from '../../State-Management/Api/ProjectApiSlice';
@@ -43,6 +44,8 @@ const PostNewPositions = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState([]);
+  const [generateAI, { isLoading: isAiLoading }] =
+  useGenerateJobDescriptionAIMutation();
 
   // Work Authorization states - all start as false (unselected)
   const [workAuthorization, setWorkAuthorization] = useState({
@@ -174,6 +177,35 @@ const PostNewPositions = () => {
       alert("Failed to save draft");
     }
   };
+
+  const handleGenerateAI = async () => {
+  if (!formik.values.jobTitle || !formik.values.companyName || !formik.values.employmentType || !formik.values.workModel || !formik.values.educationLevel || !formik.values.yearsExperience || !skills) {
+    alert("Please enter All Required Fields");
+    return;
+  }
+
+  try {
+    const payload = {
+      jobTitle: formik.values.jobTitle,
+      companyName: formik.values.companyName,
+      employmentType: formik.values.employmentType,
+      workModel: formik.values.workModel,
+      education: formik.values.educationLevel,
+      experienceYears: formik.values.yearsExperience,
+      skills: skills,
+    };
+
+    const res = await generateAI(payload).unwrap();
+
+    // 🔥 IMPORTANT: adjust this based on your API response structure
+    formik.setFieldValue("description", res?.description || res);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate AI description");
+  }
+};
+
 
   /* =========================
      SKILLS
@@ -507,9 +539,9 @@ const PostNewPositions = () => {
                     <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description</label>
-                  <button type="button" className="ai-pill-btn">
+                  <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
                     <span className="ai-pill-icon">✦</span>
-                    <span className="ai-pill-text">AI</span>
+                    <span className="ai-pill-text">{isAiLoading ? "Generating..." : "AI"}</span>
                   </button>
                 </div>
 
@@ -879,10 +911,10 @@ const PostNewPositions = () => {
               <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Additional Requirements</label>
-                  <button type="button" className="ai-pill-btn">
+                  {/* <button type="button" className="ai-pill-btn">
                     <span className="ai-pill-icon">✦</span>
                     <span className="ai-pill-text">AI</span>
-                  </button>
+                  </button> */}
                 </div>
 
                 <textarea

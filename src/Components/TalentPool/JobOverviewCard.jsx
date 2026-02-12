@@ -11,6 +11,28 @@ const Stat = ({ label, value }) => (
 
 const JobOverviewCard = ({ job, onClose }) => {
   // Empty state when no job is selected
+  const formatMarkdownToHtml = (text) => {
+  if (!text) return "";
+
+  let formatted = text;
+
+  // Convert bold **text**
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Convert bullet points
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+
+  // Wrap <li> items inside <ul>
+  if (formatted.includes("<li>")) {
+    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+  }
+
+  // Convert line breaks
+  formatted = formatted.replace(/\n/g, "<br/>");
+
+  return formatted;
+};
+
   if (!job) {
     return (
       <div className="job-overview-card job-empty">
@@ -204,7 +226,12 @@ const JobOverviewCard = ({ job, onClose }) => {
 
         <div className="job-section">
           <div className="job-section-title">Job Description</div>
-          <div className="job-section-text">{job.description}</div>
+          {/* <div className="job-section-text">{job.description}</div> */}
+          <div
+  dangerouslySetInnerHTML={{
+    __html: formatMarkdownToHtml(job.description),
+  }}
+/>
         </div>
 
         <div className="job-section">

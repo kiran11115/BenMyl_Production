@@ -1762,11 +1762,15 @@ const UploadTalentProfile = () => {
             {/* Action Buttons */}
             <div className="sidebar-actions">
               <button
-                className="btn-primary w-100"
-                onClick={() => navigate("/user/user-jobs")}
-              >
-                Find Jobs
-              </button>
+  className="btn-primary w-100"
+  onClick={() =>
+    navigate("/user/user-jobs", {
+      state: { role: profileData?.role },
+    })
+  }
+>
+  Find Jobs
+</button>
               <button className="btn-secondary w-100">Preview Resume</button>
 
               <div className="sidebar-links">

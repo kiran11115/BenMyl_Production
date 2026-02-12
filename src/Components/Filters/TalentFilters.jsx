@@ -29,11 +29,9 @@ const EXPERIENCE_LEVELS = [
   "Senior (8+ years)",
 ];
 const AVAILABILITY_OPTIONS = [
-  "Any Time",
-  "Immediate",
-  "1-3 Days",
-  "3-7 Days",
-  "1-2 Weeks",
+  "Part-Time",
+  "Full-Time",
+  "Contract",
 ];
 const LOCATION_TYPES = ["Any Type", "Remote", "On-Site", "Hybrid"];
 
@@ -107,13 +105,16 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 };
 
 // --- MAIN FILTERS COMPONENT ---
-const TalentFilters = ({ onApplyFilters,jobs,selectedJobId }) => {
+const TalentFilters = ({ onApplyFilters,jobs,selectedJobId,skillsList = [],appliedFilters }) => {
   const initialFilters = {
     selectedJobs: [],
     skills: [],
-    locations: [],
+    location: "",
     availability: [],
-    experience: "Any Experience",
+    minExperience: "",
+    maxExperience: "",
+    minSalary: "",
+    maxSalary: "",
     minRating: 0,
     maxBudget: 50000,
     isVerified: false,
@@ -175,14 +176,22 @@ const TalentFilters = ({ onApplyFilters,jobs,selectedJobId }) => {
   };
 
 const applyFilters = () => {
-  const jobId = filterInputs.selectedJobs[0] || null;
-  onApplyFilters(jobId);
+  onApplyFilters(filterInputs);
 };
 
   const resetFilters = () => {
     setFilterInputs(initialFilters);
     if (onApplyFilters) onApplyFilters(initialFilters);
   };
+
+  useEffect(() => {
+  if (!appliedFilters) return;
+
+  setFilterInputs((prev) => ({
+    ...prev,
+    ...appliedFilters,
+  }));
+}, [appliedFilters]);
 
   return (
     <div className="filter-sidebar">
@@ -331,7 +340,7 @@ const applyFilters = () => {
         )}
         <MultiSelectDropdown
           label="Add Skills..."
-          options={SKILL_TAGS}
+          options={skillsList}
           selectedValues={filterInputs.skills}
           onChange={(v) => handleInputChange("skills", v)}
         />
@@ -339,7 +348,7 @@ const applyFilters = () => {
 
       {/* Availability */}
       <div className="filter-section">
-        <h4 className="section-title">Availability</h4>
+        <h4 className="section-title">Employement Type</h4>
         {filterInputs.availability.length > 0 && (
           <div className="tags-container">
             {filterInputs.availability.map((a) => (
@@ -362,52 +371,81 @@ const applyFilters = () => {
       </div>
 
       {/* Locations */}
-      <div className="filter-section">
-        <h4 className="section-title">Locations</h4>
-        {filterInputs.locations.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.locations.map((l) => (
-              <span key={l} className="filter-tag">
-                {l}
-                <FiX
-                  className="tag-close-icon"
-                  onClick={() => removeArrayItem("locations", l)}
-                />
-              </span>
-            ))}
-          </div>
-        )}
-        <MultiSelectDropdown
-          label="Add Locations..."
-          options={POPULAR_LOCATIONS}
-          selectedValues={filterInputs.locations}
-          onChange={(v) => handleInputChange("locations", v)}
-        />
-      </div>
+     <div className="filter-section">
+  <h4 className="section-title">Location</h4>
+
+  <input
+    type="text"
+    className="filter-input"
+    placeholder="Add Location..."
+    value={filterInputs.location || ""}
+    onChange={(e) =>
+      handleInputChange("location", e.target.value)
+    }
+  />
+</div>
+
 
       {/* Experience */}
       <div className="filter-section">
-        <h4 className="section-title">Experience Level</h4>
-        <div className="select-wrapper">
-          <select
-            className="filter-select"
-            value={filterInputs.experience}
-            onChange={(e) =>
-              handleInputChange("experience", e.target.value)
-            }
-          >
-            {EXPERIENCE_LEVELS.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <FiChevronDown className="select-icon" />
-        </div>
-      </div>
+  <h4 className="section-title">Years Of Experience</h4>
+
+  <div style={{ display: "flex", gap: "8px" }}>
+    <input
+      type="number"
+      className="filter-input"
+      placeholder="Min"
+      value={filterInputs.minExperience || ""}
+      onChange={(e) =>
+        handleInputChange("minExperience", e.target.value)
+      }
+    />
+
+    <input
+      type="number"
+      className="filter-input"
+      placeholder="Max"
+      value={filterInputs.maxExperience || ""}
+      onChange={(e) =>
+        handleInputChange("maxExperience", e.target.value)
+      }
+    />
+  </div>
+</div>
+
+{/*Salary Range*/}
+
+{/* Salary Range */}
+<div className="filter-section">
+  <h4 className="section-title">Salary Range</h4>
+
+  <div style={{ display: "flex", gap: "8px" }}>
+    <input
+      type="number"
+      className="filter-input"
+      placeholder="Min Salary"
+      value={filterInputs.minSalary}
+      onChange={(e) =>
+        handleInputChange("minSalary", e.target.value)
+      }
+    />
+
+    <input
+      type="number"
+      className="filter-input"
+      placeholder="Max Salary"
+      value={filterInputs.maxSalary}
+      onChange={(e) =>
+        handleInputChange("maxSalary", e.target.value)
+      }
+    />
+  </div>
+</div>
+
+
 
       {/* Rating */}
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <h4 className="section-title">Minimum Rating</h4>
         <div className="rating-container">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -433,10 +471,10 @@ const applyFilters = () => {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Budget */}
-      <div className="budget-section">
+      {/* <div className="budget-section">
         <h4 className="section-title">Max Hourly Rate</h4>
         <input
           type="range"
@@ -453,7 +491,7 @@ const applyFilters = () => {
           <span>$0</span>
           <span>${filterInputs.maxBudget}/hr</span>
         </div>
-      </div>
+      </div> */}
 
       <button onClick={applyFilters} className="apply-btn">
         Apply Filters
@@ -569,6 +607,22 @@ const applyFilters = () => {
           background-color: #6366f1;
           border-color: #6366f1;
         }
+          .filter-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  background: #fff;
+  color: #334155;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.filter-input:focus {
+  border-color: #3b82f6;
+}
+
       `}</style>
     </div>
   );

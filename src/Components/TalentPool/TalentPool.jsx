@@ -310,6 +310,7 @@ const TalentPool = () => {
   const [isInitialised, setIsInitialised] = useState(false);
   const [activeJobDetails, setActiveJobDetails] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [appliedFilters, setAppliedFilters] = useState(null);
 
 
   const activeJobId = selectedJobId;
@@ -322,20 +323,78 @@ const TalentPool = () => {
 
   const fetchTalents = async () => {
 
-    const payload = {
-      companyid: companyId,
-      pageNumber,
-      pageSize: 50,
-      filters: activeJob
-        ? [
-          {
-            filterName: "Title",
-            filterOperator: "Equals",
-            filterValue: [activeJob.title],
-          },
-        ]
-        : [],
-    };
+    const filtersArray = [];
+
+  if (appliedFilters) {
+
+    // Title
+    if (appliedFilters.selectedJobs?.length) {
+      const job = jobs.find(j => j.id === appliedFilters.selectedJobs[0]);
+      if (job) {
+        filtersArray.push({
+          filterName: "Title",
+          filterOperator: "Equals",
+          filterValue: [job.title],
+        });
+      }
+    }
+
+    // Skills
+    if (appliedFilters.skills?.length) {
+      filtersArray.push({
+        filterName: "skills",
+        filterOperator: "Equals",
+        filterValue: appliedFilters.skills,
+      });
+    }
+
+    // Location
+    if (appliedFilters.location) {
+      filtersArray.push({
+        filterName: "Location",
+        filterOperator: "Equals",
+        filterValue: [appliedFilters.location],
+      });
+    }
+
+    // Salary Range
+    if (appliedFilters.minSalary && appliedFilters.maxSalary) {
+      filtersArray.push({
+        filterName: "Salary Range",
+        filterOperator: "Equals",
+        filterValue: [
+          `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
+        ],
+      });
+    }
+
+    // Years of Experience
+    if (appliedFilters.minExperience && appliedFilters.maxExperience) {
+      filtersArray.push({
+        filterName: "Years of Experience",
+        filterOperator: "Equals",
+        filterValue: [
+          `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
+        ],
+      });
+    }
+
+    // Employment Type
+    if (appliedFilters.availability?.length) {
+      filtersArray.push({
+        filterName: "Employment Type",
+        filterOperator: "Equals",
+        filterValue: appliedFilters.availability,
+      });
+    }
+  }
+
+  const payload = {
+    companyid: Number(companyId),
+    pageNumber,
+    pageSize: 50,
+    filters: filtersArray,
+  };
 
     const res = await getFindTalent(payload).unwrap();
 
@@ -397,25 +456,48 @@ const TalentPool = () => {
       color: colorPalette[index % colorPalette.length],
     }));
   }, [jobTitles]);
+  
+const allSkills = useMemo(() => {
+  if (!Array.isArray(jobTitles)) return [];
+
+  const skillSet = new Set();
+
+  jobTitles.forEach((job) => {
+    if (job.requiredSkills) {
+      job.requiredSkills.split(",").forEach((skill) => {
+        const clean = skill.trim().toLowerCase();
+        if (clean) {
+          skillSet.add(clean);
+        }
+      });
+    }
+  });
+
+  return Array.from(skillSet).map(
+    (skill) => skill.charAt(0).toUpperCase() + skill.slice(1)
+  );
+}, [jobTitles]);
 
 
   useEffect(() => {
-    // CASE 1: Coming from Success modal
-    if (preselectedJobTitle && jobs.length > 0) {
-      const matchedJob = jobs.find(
-        (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
-      );
+  if (preselectedJobTitle && jobs.length > 0) {
+    const matchedJob = jobs.find(
+      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+    );
 
-      if (matchedJob) {
-        setSelectedJobId(matchedJob.id);
-      }
-    }
+    if (matchedJob) {
+      setSelectedJobId(matchedJob.id);
 
-    // CASE 2: Normal page load (no preselected job)
-    if (!preselectedJobTitle) {
+      // ✅ THIS IS WHAT YOU WERE MISSING
+      setAppliedFilters({
+        selectedJobs: [matchedJob.id],
+      });
+
       setIsInitialised(true);
     }
-  }, [preselectedJobTitle, jobs]);
+  }
+}, [preselectedJobTitle, jobs]);
+
 
   useEffect(() => {
     if (selectedJobId !== null) {
@@ -432,7 +514,7 @@ const TalentPool = () => {
   useEffect(() => {
     if (!isInitialised) return;   // 🚫 BLOCK early call
     fetchTalents();
-  }, [pageNumber, activeJobId, isInitialised]);
+  }, [pageNumber, appliedFilters, isInitialised,activeJobId]);
 
 
 
@@ -514,25 +596,80 @@ const TalentPool = () => {
     });
   };
 
-    useEffect(() => {
-  const jobIdFromUrl = searchParams.get("jobId");
+useEffect(() => {
+  if (jobs.length === 0) return;
 
-  if (jobIdFromUrl && jobs.length > 0) {
-    setSelectedJobId(jobIdFromUrl);
-    setIsInitialised(true);
+  const jobId = searchParams.get("jobId");
+  const skills = searchParams.get("skills");
+  const location = searchParams.get("location");
+  const minExp = searchParams.get("minExp");
+  const maxExp = searchParams.get("maxExp");
+  const minSal = searchParams.get("minSal");
+  const maxSal = searchParams.get("maxSal");
+  const type = searchParams.get("type");
+
+  if (!jobId && preselectedJobTitle) {
+    return; // 🔥 do NOT override
   }
-}, [jobs]);
 
- const handleApplyFilter = (jobId) => {
-  setSelectedJobId(jobId);
+  const restoredFilters = {
+    selectedJobs: jobId ? [jobId] : [],
+    skills: skills ? skills.split(",") : [],
+    location: location || "",
+    minExperience: minExp || "",
+    maxExperience: maxExp || "",
+    minSalary: minSal || "",
+    maxSalary: maxSal || "",
+    availability: type ? type.split(",") : [],
+  };
 
-  if (!jobId) {
-    // 🔥 remove jobId completely from URL
-    setSearchParams({});
-  } else {
-    setSearchParams({ jobId });
+  setSelectedJobId(jobId || null);
+  setAppliedFilters(restoredFilters);
+  setIsInitialised(true);
+}, [jobs, searchParams,preselectedJobTitle]);
+
+
+
+const handleApplyFilter = (filters) => {
+  setAppliedFilters(filters);
+
+  const params = {};
+
+  if (filters?.selectedJobs?.length) {
+    params.jobId = filters.selectedJobs[0];
   }
+
+  if (filters?.skills?.length) {
+    params.skills = filters.skills.join(",");
+  }
+
+  if (filters?.location) {
+    params.location = filters.location;
+  }
+
+  if (filters?.minExperience) {
+    params.minExp = filters.minExperience;
+  }
+
+  if (filters?.maxExperience) {
+    params.maxExp = filters.maxExperience;
+  }
+
+  if (filters?.minSalary) {
+    params.minSal = filters.minSalary;
+  }
+
+  if (filters?.maxSalary) {
+    params.maxSal = filters.maxSalary;
+  }
+
+  if (filters?.availability?.length) {
+    params.type = filters.availability.join(",");
+  }
+
+  setSearchParams(params);
 };
+
 
 
 
@@ -669,7 +806,7 @@ const handleProfileClick = (candidate) => {
           <aside className="hide-scrollbar" style={{
             overflowY: "auto",
           }}>
-            <TalentFilters  onApplyFilters={handleApplyFilter} jobs={jobs} selectedJobId={selectedJobId} />
+            <TalentFilters  onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters}/>
           </aside>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{

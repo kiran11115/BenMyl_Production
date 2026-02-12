@@ -122,19 +122,10 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 
 
 // --- MAIN COMPONENT ---
-const JobFilters = ({ onApplyFilters }) => {
-  const userId = localStorage.getItem("CompanyId");
+const JobFilters = ({ onApplyFilters,initialFilters }) => {
+  const userId = localStorage.getItem("logincompanyid");
 
 const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
-  const initialFilters = {
-    roles: [],          // Fixed key name from 'Role' to 'roles'
-    locations: [],        
-    locationType: 'Any Type', 
-    experience: 'Any Experience',
-    availability: [],
-    minRating: 0,
-    maxBudget: 200,
-  };
 
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);

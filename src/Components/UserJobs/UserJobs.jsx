@@ -13,12 +13,15 @@ import JobModal from "./JobModal";
 import "./Jobs.css";
 import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "../UploadTalent/NoData";
+import { useLocation } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
 const UserJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const companyId = localStorage.getItem("logincompanyid");
+  const location = useLocation();
+const roleFromProfile = location.state?.role;
 
   // pagination
   const [pageNumber, setPageNumber] = useState(1);
@@ -37,7 +40,7 @@ const UserJobs = () => {
     minRate: 0,
     experience: "Any Experience",
     availability: [],
-    roles: [],
+    roles: roleFromProfile ? [roleFromProfile] : [],
     locations: [],
     maxBudget: 200,
   });
@@ -198,7 +201,7 @@ const UserJobs = () => {
       >
         {/* Sidebar */}
         <aside>
-          <JobFilters onApplyFilters={(appliedFilters) => {
+          <JobFilters initialFilters={filters} onApplyFilters={(appliedFilters) => {
   setAllJobs([]);
   setPageNumber(1);
   setHasMore(true);
