@@ -15,6 +15,7 @@ const TalentPoolApiSlice = apiSlice.injectEndpoints({
     url: `/api/Employee/GetApprovalEmployeeby_id?employeeid=${employeeId}`,
     method: "GET",
   }),
+  providesTags: ["EditQuick"],
 }),
 
 
@@ -56,7 +57,27 @@ getAllRoleNames: builder.query({
   }),
 }),
 
+// TalentPoolApiSlice.js
+
+addEmployeeProfessionalDetails: builder.mutation({
+  query: (body) => ({
+    url: "/api/uatcompany/EmployeeProfessionalDetailsModel",
+    method: "POST",
+    body,
+  }),
+  invalidatesTags: ["EditQuick"],
+}),
+
+getEmployeeProfessionalDetails: builder.query({
+  query: (employeeId) => ({
+    url: `/api/uatcompany/GetProfessionalDetails?employeeId=${employeeId}`,
+    method: "GET",
+  }),
+  providesTags: ["EditQuick"],
+}),
+
+
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation,useGetAllRoleNamesQuery } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation,useGetAllRoleNamesQuery,useAddEmployeeProfessionalDetailsMutation,useGetEmployeeProfessionalDetailsQuery } = TalentPoolApiSlice;
