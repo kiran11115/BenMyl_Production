@@ -43,10 +43,12 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId
     );
 
     const usernames = shortlistedCandidates.map((c) => c.name);
+    const employeeIds = shortlistedCandidates.map((c) => c.id);
 
     const payload = {
       userIds,
       usernames,
+      employeeIds,
       message: "You have been shortlisted. Please check your dashboard.",
       uatUserId: Number(userId),
     };

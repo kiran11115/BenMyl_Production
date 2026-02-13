@@ -25,6 +25,28 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [isVendorOpen, setIsVendorOpen] = useState(true);
 
+  const formatMarkdownToHtml = (text) => {
+  if (!text) return "";
+
+  let formatted = text;
+
+  // Convert bold **text**
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Convert bullet points
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+
+  // Wrap <li> items inside <ul>
+  if (formatted.includes("<li>")) {
+    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+  }
+
+  // Convert line breaks
+  formatted = formatted.replace(/\n/g, "<br/>");
+
+  return formatted;
+};
+
   /* =========================
      HANDLERS
   ========================= */
@@ -175,7 +197,11 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
             </h4>
 
             <div className="modal-description">
-              {description || "No description provided."}
+              <div
+  dangerouslySetInnerHTML={{
+    __html: formatMarkdownToHtml(description),
+  }}
+/>
             </div>
           </div>
 

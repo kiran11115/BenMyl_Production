@@ -133,6 +133,19 @@ const PostNewPositions = () => {
     fd.append("CreatedBy", "Admin");
     fd.append("IsDraft", false);
     fd.append("CreatedOn", new Date().toISOString());
+    // 🔹 Work Authorization
+fd.append("IsUSCitizen", workAuthorization.usCitizen);
+fd.append("IsGC", workAuthorization.gc);
+fd.append("IsH1B", workAuthorization.h1b);
+fd.append("IsEAD", workAuthorization.ead);
+
+// 🔹 Preferred Employment
+fd.append("IsCorpToCorp", preferredEmployment.corpCorp);
+fd.append("IsW2Permanent", preferredEmployment.w2Permanent);
+fd.append("IsW2Contract", preferredEmployment.w2Contract);
+fd.append("Is1099Contract", preferredEmployment.contract1099);
+fd.append("IsContractToHire", preferredEmployment.contractToHire);
+
 
     try {
       await postJob(fd).unwrap();
@@ -168,6 +181,19 @@ const PostNewPositions = () => {
     fd.append("CreatedBy", "Admin");
     fd.append("IsDraft", true);
     fd.append("CreatedOn", new Date().toISOString());
+    // 🔹 Work Authorization
+fd.append("IsUSCitizen", workAuthorization.usCitizen);
+fd.append("IsGC", workAuthorization.gc);
+fd.append("IsH1B", workAuthorization.h1b);
+fd.append("IsEAD", workAuthorization.ead);
+
+// 🔹 Preferred Employment
+fd.append("IsCorpToCorp", preferredEmployment.corpCorp);
+fd.append("IsW2Permanent", preferredEmployment.w2Permanent);
+fd.append("IsW2Contract", preferredEmployment.w2Contract);
+fd.append("Is1099Contract", preferredEmployment.contract1099);
+fd.append("IsContractToHire", preferredEmployment.contractToHire);
+
 
     try {
       await saveJobDraft(fd).unwrap();
