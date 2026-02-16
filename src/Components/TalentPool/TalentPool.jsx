@@ -571,7 +571,7 @@ const allSkills = useMemo(() => {
       title: activeJobDetails.jobTitle,
       company: activeJobDetails.companyName,
       location: activeJobDetails.location,
-      budget: `${activeJobDetails.salaryRange_min} - $${activeJobDetails.salaryRange_max}`,
+      budget: `${activeJobDetails.salaryRange_Min} - $${activeJobDetails.salaryRange_Max}`,
       experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
       type: activeJobDetails.employeeType,
       description: activeJobDetails.jobDescription,

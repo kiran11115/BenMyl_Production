@@ -1,5 +1,5 @@
 // Signin.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Eye, EyeOff } from "lucide-react";
@@ -54,6 +54,16 @@ function Signin() {
           localStorage.setItem("Role", response?.roleID);
           const role = response?.roleID;
 
+          if (formik.values.rememberMe) {
+  localStorage.setItem("rememberedEmail", formik.values.email);
+  localStorage.setItem("rememberedPassword", formik.values.password);
+  localStorage.setItem("rememberMe", "true");
+} else {
+  localStorage.removeItem("rememberedEmail");
+  localStorage.removeItem("rememberedPassword");
+  localStorage.setItem("rememberMe", "false");
+}
+
           if (role === "Admin") {
             navigate("/Admin/account-settings");
             return;
@@ -80,6 +90,23 @@ function Signin() {
     }
 
   });
+
+  useEffect(() => {
+  const savedEmail = localStorage.getItem("rememberedEmail");
+  const savedPassword = localStorage.getItem("rememberedPassword");
+  const remember = localStorage.getItem("rememberMe") === "true";
+
+  if (remember && savedEmail && savedPassword) {
+    formik.setValues({
+      email: savedEmail,
+      password: savedPassword,
+      rememberMe: true,
+    });
+  }
+}, []);
+
+
+
 
   return (
     <div className="auth-container">

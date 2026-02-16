@@ -67,14 +67,16 @@ const PostNewPositions = () => {
   const [postJob] = usePostJobMutation();
   const [saveJobDraft] = useSaveJobDraftMutation();
   const user = localStorage.getItem("CompanyId");
+    const companyname = localStorage.getItem("CompanyName");
 
   /* =========================
      FORMIK
   ========================= */
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       jobTitle: '',
-      companyName: '',
+      companyName: companyname,
       location: '',
       employmentType: '',
       workModel: '',
@@ -326,8 +328,8 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
                 <div>
                   <label className="auth-label">Company Name</label>
-                  <input className="auth-input" name="companyName" placeholder="Company"
-                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                  <input className="auth-input bg-light" name="companyName" placeholder="Company"
+                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }}/>
                   {err("companyName")}
                 </div>
 

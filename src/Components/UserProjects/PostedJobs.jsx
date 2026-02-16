@@ -19,7 +19,7 @@ const PostedJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-      rateText: `$${job.salaryRange_min}-${job.salaryRange_max}`,
+      rateText: `$${job.salaryRange_Min}-${job.salaryRange_Max}`,
       experienceText: `${job.yearsofExperience || 0}+ yrs`,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())

@@ -169,7 +169,7 @@ const JobOverview = () => {
         {/* RIGHT SIDEBAR */}
         <div className="dashboard-column-side card-base filters-sidebar">
           <ShareJobCard />
-          <WorkAndPreference />
+          <WorkAndPreference job={job}/>
         </div>
       </div>
     </div>

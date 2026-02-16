@@ -4,7 +4,7 @@ import { FaLinkedinIn, FaFacebookF } from "react-icons/fa";
 
 const ShareJobCard = () => {
   const jobLink = "https://techstream.jobs/";
-  const postedByEmail = "hr@techstream.jobs";
+  const postedByEmail = localStorage.getItem("Email");
 
   const [shared, setShared] = useState({
     linkedin: true,
