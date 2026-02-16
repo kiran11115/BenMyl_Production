@@ -623,6 +623,20 @@ const applyFilters = () => {
   border-color: #3b82f6;
 }
 
+/* Remove spinner arrows in Chrome, Edge, Safari */
+.filter-input::-webkit-outer-spin-button,
+.filter-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove spinner arrows in Firefox */
+.filter-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+
       `}</style>
     </div>
   );

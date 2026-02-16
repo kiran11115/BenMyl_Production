@@ -4,6 +4,27 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
 import { useApprovedEmployeeMutation, useDraftProfileEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
+
+const formatDateToDisplay = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`; // 16-Feb-2026
+};
+
+const formatDateToInput = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return "";
+  return date.toISOString().split("T")[0]; // YYYY-MM-DD for input type=date
+};
+
+
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
@@ -94,27 +115,81 @@ const PDFResumePreview = ({ data }) => {
 };
 
 const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
-    const [temp, setTemp] = useState(value || "");
+
+    const isDateField =
+        label.toLowerCase().includes("date") ||
+        label.toLowerCase().includes("dob");
+
+    const [temp, setTemp] = useState(
+        isDateField ? formatDateToInput(value) : (value || "")
+    );
+
+    const handleSave = () => {
+        if (isDateField) {
+            onSave(temp); // save YYYY-MM-DD internally
+        } else {
+            onSave(temp);
+        }
+    };
+
     return (
         <div className="auth-form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <label className="auth-label">{label}</label>
-                {!editing && <button className="auth-link" onClick={onEdit}><Edit2 size={12} /> Edit</button>}
+                {!editing && (
+                    <button className="auth-link" onClick={onEdit}>
+                        <Edit2 size={12} /> Edit
+                    </button>
+                )}
             </div>
+
             {editing ? (
                 <>
-                    <input className="auth-input" value={temp} onChange={e => setTemp(e.target.value)} autoFocus />
+                    {isDateField ? (
+                        <input
+                            type="date"
+                            className="auth-input"
+                            value={temp}
+                            onChange={e => setTemp(e.target.value)}
+                            autoFocus
+                        />
+                    ) : (
+                        <input
+                            className="auth-input"
+                            value={temp}
+                            onChange={e => setTemp(e.target.value)}
+                            autoFocus
+                        />
+                    )}
+
                     <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={() => onSave(temp)}>Save</button>
-                        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
+                        <button className="btn-primary" onClick={handleSave}>
+                            Save
+                        </button>
+                        <button className="btn-secondary" onClick={onCancel}>
+                            Cancel
+                        </button>
                     </div>
                 </>
             ) : (
-                <div className="auth-input" style={{ border: 'none', padding: '4px 0', fontWeight: 600, height: "100%" }}>{value || "—"}</div>
+                <div
+                    className="auth-input"
+                    style={{
+                        border: 'none',
+                        padding: '4px 0',
+                        fontWeight: 600,
+                        height: "100%"
+                    }}
+                >
+                    {isDateField
+                        ? formatDateToDisplay(value)
+                        : (value || "—")}
+                </div>
             )}
         </div>
     );
 };
+
 
 const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) => {
     const [temp, setTemp] = useState(value || "");
@@ -766,9 +841,34 @@ formData.append(
                             <span style={{ fontSize: 14, fontWeight: 600 }}>I have reviewed and verified all information is correct</span>
                         </div>
                         <div className="d-flex gap-3 justify-content-end">
-                            <button className="btn-secondary" onClick={handleDraftTalent}>Save as Draft</button>
-                            <button className="btn-primary" disabled={!isReviewed} onClick={handleSaveTalent}>Save Talent</button>
-                        </div>
+
+    <button
+        className="btn-secondary"
+        disabled={!isReviewed}
+        onClick={handleDraftTalent}
+        style={{
+            opacity: !isReviewed ? 0.6 : 1,
+            cursor: !isReviewed ? "not-allowed" : "pointer"
+        }}
+    >
+        Save as Draft
+    </button>
+
+
+    <button
+        className="btn-primary"
+        disabled={!isReviewed}
+        onClick={handleSaveTalent}
+        style={{
+            opacity: !isReviewed ? 0.6 : 1,
+            cursor: !isReviewed ? "not-allowed" : "pointer"
+        }}
+    >
+        Save Talent
+    </button>
+
+</div>
+
                     </div>
                 </div>
 

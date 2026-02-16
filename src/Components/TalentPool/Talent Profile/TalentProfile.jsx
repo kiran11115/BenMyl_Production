@@ -213,13 +213,12 @@ useEffect(() => {
               <div className="col-9">
                 {/* Professional Summary */}
 
-                <div className="project-card h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                <div className="project-card h-100">
                   <h2 className="card-title">Professional Summary</h2>
 
                   <div className="summary-text-container" style={{
                     flex: 1,
                     overflow: "auto",
-                    maxHeight: "calc(100% - 200px)", /* Adjust based on your needs */
                     marginBottom: "16px"
                   }}>
                     <p className="summary-text">{profileData.summary}</p>
@@ -299,7 +298,7 @@ useEffect(() => {
                 {/* Skills & Expertise */}
                 <div className="project-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                   <h2 className="card-title">Skills & Expertise</h2>
-                  <div className="skills-container" style={{ flex: 1, overflow: "auto" }}>
+                  <div className="skills-container">
                     {profileData.skills.length > 0 ? (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                         {profileData.skills.map((skill, idx) => (
@@ -487,11 +486,6 @@ useEffect(() => {
             <div className="quick-info-item">
               <div className="stat-label">Expected Salary</div>
               <div className="info-value">$120,000 - $150,000 / year</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Notice Period</div>
-              <div className="info-value">2 weeks</div>
             </div>
 
             <div className="quick-info-item">

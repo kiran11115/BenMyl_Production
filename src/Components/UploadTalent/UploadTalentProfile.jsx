@@ -1651,14 +1651,7 @@ const UploadTalentProfile = () => {
                   <h2 className="card-title mb-2">Skills & Expertise</h2>
                   <div className="skills-container">
                     {profileData?.skills?.length > 0 ? (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "4px 6px",
-                          alignItems: "flex-start",
-                        }}
-                      >
+                      <div>
                         {profileData.skills.map((skill, idx) => (
                           <span
                             key={idx}
@@ -1668,6 +1661,7 @@ const UploadTalentProfile = () => {
                               padding: "3px 8px",
                               fontSize: "12px",
                               lineHeight: "1.2",
+                              margin: "3px 6px",
                             }}
                           >
                             {skill.trim()}
