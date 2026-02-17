@@ -35,15 +35,22 @@ const roleFromProfile = location.state?.role;
 
   // filters (unchanged)
   const [filters, setFilters] = useState({
-    keyword: "",
-    locationType: "Any Type",
-    minRate: 0,
-    experience: "Any Experience",
-    availability: [],
-    roles: roleFromProfile ? [roleFromProfile] : [],
-    locations: [],
-    maxBudget: 200,
-  });
+  keyword: "",
+  locationType: "Any Type",
+
+  roles: roleFromProfile ? [roleFromProfile] : [],
+  skills: [],
+  availability: [],
+
+  location: "",
+
+  minExperience: "",
+  maxExperience: "",
+
+  minSalary: "",
+  maxSalary: "",
+});
+
 
   // =========================
   // FETCH JOBS (pagination)

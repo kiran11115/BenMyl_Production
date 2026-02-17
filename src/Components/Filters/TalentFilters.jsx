@@ -363,7 +363,7 @@ const applyFilters = () => {
           </div>
         )}
         <MultiSelectDropdown
-          label="Add Availability..."
+          label="Employement Type..."
           options={AVAILABILITY_OPTIONS}
           selectedValues={filterInputs.availability}
           onChange={(v) => handleInputChange("availability", v)}
@@ -413,7 +413,6 @@ const applyFilters = () => {
   </div>
 </div>
 
-{/*Salary Range*/}
 
 {/* Salary Range */}
 <div className="filter-section">
