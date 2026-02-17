@@ -481,7 +481,7 @@ const allSkills = useMemo(() => {
 }, [jobTitles]);
 
 
-  useEffect(() => {
+ useEffect(() => {
   if (preselectedJobTitle && jobs.length > 0) {
     const matchedJob = jobs.find(
       (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
@@ -490,15 +490,16 @@ const allSkills = useMemo(() => {
     if (matchedJob) {
       setSelectedJobId(matchedJob.id);
 
-      // ✅ THIS IS WHAT YOU WERE MISSING
-      setAppliedFilters({
+      setAppliedFilters((prev) => ({
+        ...prev,
         selectedJobs: [matchedJob.id],
-      });
+      }));
 
       setIsInitialised(true);
     }
   }
 }, [preselectedJobTitle, jobs]);
+
 
 
   useEffect(() => {
@@ -633,6 +634,9 @@ useEffect(() => {
 
 
 const handleApplyFilter = (filters) => {
+  setPageNumber(1);          // 🔥 RESET TO PAGE 1
+  setHasMore(true);          // reset infinite scroll
+  setAllCandidates([]);      // clear old data
   setAppliedFilters(filters);
 
   const params = {};

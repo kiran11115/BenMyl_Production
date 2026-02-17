@@ -33,6 +33,31 @@ const JobOverview = () => {
 
   const job = data?.[0];
 
+ const formatMarkdownToHtml = (text) => {
+  if (!text) return "";
+
+  let formatted = text;
+
+  // Remove first line completely
+  formatted = formatted.replace(/^[^\n]*\n?/, "");
+
+  // Convert bold
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Convert bullet points
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+
+  if (formatted.includes("<li>")) {
+    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+  }
+
+  formatted = formatted.replace(/\n/g, "<br/>");
+
+  return formatted;
+};
+
+
+
   return (
     <div className="jobs-container">
       {/* HEADER */}
@@ -123,10 +148,18 @@ const JobOverview = () => {
             <h4>
               <FiFileText size={14} /> Job Description
             </h4>
-            <p>
-              {job?.jobDescription ||
-                "Lead frontend development by building scalable, high-performance applications using React.js and modern best practices."}
-            </p>
+            {job?.jobDescription ? (
+  <div
+    dangerouslySetInnerHTML={{
+      __html: formatMarkdownToHtml(job.jobDescription),
+    }}
+  />
+) : (
+  <p style={{ color: "#64748b" }}>
+    No description available for this job.
+  </p>
+)}
+
           </div>
 
           {/* Skills */}
