@@ -119,10 +119,13 @@ const roleFromProfile = location.state?.role;
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-      rateText: job.salaryRange_min
-        ? `$${job.salaryRange_min}-${job.salaryRange_max}/hr`
+      rateText: job.salaryRange_Min
+        ? `$${job.salaryRange_Min}-${job.salaryRange_Max}/hr`
         : "N/A",
       experienceText: job.experienceLevel,
+      description:job.jobDescription,
+      educationLevel:job.educationLevel,
+      yearsOfExperience:job.yearsOfExperience,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
         : [],
