@@ -13,13 +13,13 @@ function AdminHeader() {
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
 
-    const emailId = localStorage.getItem("Email"); // or from auth state
+    const emailid = localStorage.getItem("Email"); // or from auth state
 
     const {
         data: apiData,
         isLoading,
         isError,
-    } = useGetCompanyProfileEditQuery(emailId);
+    } = useGetCompanyProfileEditQuery(emailid);
 
     const companyData = useMemo(() => {
         if (!apiData) return null;
@@ -92,11 +92,11 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
                         {[
-                            { path: "/user/user-dashboard", label: "Dashboard" },
-                            { path: "/user/user-talentpool", label: "Talent Pool" },
-                            { path: "/user/user-projects", label: "Projects" },
-                            { path: "/user/user-jobs", label: "Find Jobs" },
-                            { path: "/user/user-upload-talent", label: "Talent Management" },
+                            // { path: "/user/user-dashboard", label: "Dashboard" },
+                            // { path: "/user/user-talentpool", label: "Talent Pool" },
+                            // { path: "/user/user-projects", label: "Projects" },
+                            // { path: "/user/user-jobs", label: "Find Jobs" },
+                            // { path: "/user/user-upload-talent", label: "Talent Management" },
                         ].map((link) => (
                             <NavLink
                                 key={link.path}
@@ -161,7 +161,7 @@ function AdminHeader() {
                             <div className="profile-popover">
                                 <div className="popover-header">
                                     {/* <p className="popover-name">John Smith</p> */}
-                                    <p className="popover-email">nimbuslabs@company.com</p>
+                                    <p className="popover-email">{emailid}</p>
                                 </div>
                                 <div className="popover-menu">
                                     <button className="popover-item" onClick={handleViewProfile}>

@@ -163,7 +163,7 @@ const JobOverview = () => {
           </div>
 
           {/* Skills */}
-          <div className="drawer-section">
+          <div className="drawer-section mt-3">
             <h4>
               <FiLayers size={14} /> Required Skills
             </h4>

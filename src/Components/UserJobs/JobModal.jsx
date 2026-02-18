@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { FiX, FiCheck, FiEye, FiLoader } from "react-icons/fi";
 import { useGetEmployeesByTitleQuery } from "../../State-Management/Api/ProjectApiSlice";
+import { useNavigate } from "react-router-dom";
 
 // Mock Data for Talent Profiles inside Modal
 
 
-const JobModal = ({ job, onClose }) => {
+const JobModal = ({ candidate, job, onClose }) => {
   const title = job?.title;
 
 const {
@@ -25,6 +26,7 @@ const {
       prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id],
     );
   };
+  
 
   const handleDone = async () => {
     if (isSubmitting) return;
@@ -37,6 +39,39 @@ const {
     setIsSubmitting(false);
     onClose();
   };
+
+   const navigate = useNavigate();
+
+   const handleProfileClick = () => {
+    navigate("/user/talent-profile", {
+      state: {
+        employeeId: job?.id,
+      },
+    });
+  };
+
+   const formatMarkdownToHtml = (text) => {
+  if (!text) return "";
+
+  let formatted = text;
+
+  // Remove first line completely
+  formatted = formatted.replace(/^[^\n]*\n?/, "");
+
+  // Convert bold
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Convert bullet points
+  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+
+  if (formatted.includes("<li>")) {
+    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+  }
+
+  formatted = formatted.replace(/\n/g, "<br/>");
+
+  return formatted;
+};
   
   const normalizedTalents = talents.map((t) => ({
   id: t.employeeID,
@@ -342,7 +377,17 @@ const {
                       margin: "0 0 20px 0",
                     }}
                   >
-                    {job.description}
+                   {job?.description ? (
+  <div
+    dangerouslySetInnerHTML={{
+      __html: formatMarkdownToHtml(job.description),
+    }}
+  />
+) : (
+  <p style={{ color: "#64748b" }}>
+    No description available for this job.
+  </p>
+)}
                   </p>
                   <h5
                     style={{
@@ -542,10 +587,15 @@ const {
 
         <button
           className="btn-primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            alert(`Viewing profile of ${profile.name}`);
-          }}
+          // onClick={(e) => {
+          //   e.stopPropagation();
+          //   alert(`Viewing profile of ${profile.name}`);
+          // }}
+          onClick={()=>navigate("/user/talent-profile", {
+      state: {
+        employeeId: profile?.id,
+      },
+    })}
          style={{
                           padding: "6px 12px",
                           fontSize: "12px",

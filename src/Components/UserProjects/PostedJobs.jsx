@@ -20,7 +20,7 @@ const PostedJobs = () => {
       location: job.location,
       type: job.employeeType,
       rateText: `$${job.salaryRange_Min}-${job.salaryRange_Max}`,
-      experienceText: `${job.yearsofExperience || 0}+ yrs`,
+      experienceLevel: job.experienceLevel,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
         : [],
@@ -121,8 +121,10 @@ const PostedJobs = () => {
         }
 
         .stat-label1 {
-          font-size: 12px;
+          font-size: 11px;
           color: #64748b;
+          font-weight: 600;
+          text-transform: uppercase;
         }
 
         .stat-value1 {
@@ -193,8 +195,8 @@ const PostedJobs = () => {
                     <div className="stat-value1">{job.rateText} / hr</div>
                   </div>
                   <div>
-                    <div className="stat-label1">Experience</div>
-                    <div className="stat-value1">{job.experienceText}</div>
+                    <div className="stat-label1">Experience Level</div>
+                    <div className="stat-value1">{job.experienceLevel}</div>
                   </div>
                   <div>
                     <div className="stat-label1">Type</div>

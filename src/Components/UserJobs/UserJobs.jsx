@@ -303,7 +303,7 @@ const fetchJobs = async () => {
 
                   {/* B. Stats Block (Grey Box) */}
                   <div
-                    className="drawer-stats"
+                    className="drawer-stats-3"
                     style={{ marginBottom: "20px" }}
                   >
                     <div className="drawer-stat-item">
