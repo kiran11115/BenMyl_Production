@@ -819,6 +819,7 @@ const handleProfileClick = (candidate) => {
             height: "calc(100vh - 0px)", // adjust if header height differs
             overflowY: "auto",
             overflowX: "hidden",
+            width:"600px"
           }}>
             {/* ALWAYS render overview card (shows empty state if no job) */}
             <div style={{ marginBottom: 16 }}>

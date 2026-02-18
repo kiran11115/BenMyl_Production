@@ -1,41 +1,19 @@
 import React, { useState } from "react";
 import { FiX, FiCheck, FiEye, FiLoader } from "react-icons/fi";
+import { useGetEmployeesByTitleQuery } from "../../State-Management/Api/ProjectApiSlice";
 
 // Mock Data for Talent Profiles inside Modal
-const TALENT_PROFILES = [
-  {
-    id: 1,
-    name: "Emily Davis",
-    role: "DevOps Engineer",
-    avatar: "https://i.pravatar.cc/150?u=1",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    role: "Project Manager",
-    avatar: "https://i.pravatar.cc/150?u=2",
-  },
-  {
-    id: 3,
-    name: "James Williams",
-    role: "Data Scientist",
-    avatar: "https://i.pravatar.cc/150?u=3",
-  },
-  {
-    id: 4,
-    name: "Olivia Martinez",
-    role: "Product Owner",
-    avatar: "https://i.pravatar.cc/150?u=4",
-  },
-  {
-    id: 5,
-    name: "Sarah Wilson",
-    role: "Frontend Dev",
-    avatar: "https://i.pravatar.cc/150?u=5",
-  },
-];
+
 
 const JobModal = ({ job, onClose }) => {
+  const title = job?.title;
+
+const {
+  data: talents = [],
+  isLoading,
+  isError,
+} = useGetEmployeesByTitleQuery(title);
+
   const [selectedTalents, setSelectedTalents] = useState([]);
   const [customNote, setCustomNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false); // Loader state
@@ -59,6 +37,16 @@ const JobModal = ({ job, onClose }) => {
     setIsSubmitting(false);
     onClose();
   };
+  
+  const normalizedTalents = talents.map((t) => ({
+  id: t.employeeID,
+  name: `${t.firstName} ${t.lastName}`,
+  role: title,
+  email: t.emailAddress,
+  resume: t.resumeFilePath,
+  status: t.status,
+  avatar: `https://ui-avatars.com/api/?name=${t.firstName}+${t.lastName}`,
+}));
 
   return (
     <div
@@ -484,93 +472,94 @@ const JobModal = ({ job, onClose }) => {
                   minHeight: 0,
                 }}
               >
-                {TALENT_PROFILES.map((profile) => {
-                  const isSelected = selectedTalents.includes(profile.id);
-                  return (
-                    <div
-                      key={profile.id}
-                      onClick={() => handleToggleTalent(profile.id)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "16px",
-                        borderBottom: "1px solid #f1f5f9",
-                        cursor: isSubmitting ? "not-allowed" : "pointer",
-                        background: isSelected ? "#f0f9ff" : "transparent",
-                        transition: "all 0.2s ease",
-                        opacity: isSubmitting ? 0.6 : 1,
-                      }}
-                      className="talent-row"
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: "20px",
-                            height: "20px",
-                            borderRadius: "4px",
-                            border: isSelected ? "none" : "2px solid #cbd5e1",
-                            background: isSelected ? "#3b82f6" : "#fff",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "0.2s",
-                          }}
-                        >
-                          {isSelected && <FiCheck size={14} color="#fff" />}
-                        </div>
-                        <img
-                          src={profile.avatar}
-                          alt={profile.name}
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                            border: "1px solid #e2e8f0",
-                          }}
-                        />
-                        <div>
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: 600,
-                              color: "#1e293b",
-                            }}
-                          >
-                            {profile.name}
-                          </div>
-                          <div style={{ fontSize: "12px", color: "#64748b" }}>
-                            {profile.role}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isSubmitting)
-                            alert(`Viewing profile: ${profile.name}`);
-                        }}
-                        className="btn-primary"
-                        disabled={isSubmitting}
-                        style={{
+              {isLoading ? (
+  <div style={{ padding: "20px", textAlign: "center" }}>
+    Loading talents...
+  </div>
+) : isError ? (
+  <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
+    Failed to load talents
+  </div>
+) : normalizedTalents.length === 0 ? (
+  <div style={{ padding: "20px", textAlign: "center" }}>
+    No talents found for this role
+  </div>
+) : (
+  normalizedTalents.map((profile) => {
+    const isSelected = selectedTalents.includes(profile.id);
+
+    return (
+      <div
+        key={profile.id}
+        onClick={() => handleToggleTalent(profile.id)}
+        className="talent-row"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px",
+          borderBottom: "1px solid #f1f5f9",
+          cursor: isSubmitting ? "not-allowed" : "pointer",
+          background: isSelected ? "#f0f9ff" : "transparent",
+        }}
+      >
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "4px",
+              border: isSelected ? "none" : "2px solid #cbd5e1",
+              background: isSelected ? "#3b82f6" : "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isSelected && <FiCheck size={14} color="#fff" />}
+          </div>
+
+          <img
+            src={profile.avatar}
+            alt={profile.name}
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              border: "1px solid #e2e8f0",
+            }}
+          />
+
+          <div>
+            <div style={{ fontSize: "14px", fontWeight: 600 }}>
+              {profile.name}
+            </div>
+            <div style={{ fontSize: "12px", color: "#64748b" }}>
+              {profile.role}
+            </div>
+          </div>
+        </div>
+
+        <button
+          className="btn-primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            alert(`Viewing profile of ${profile.name}`);
+          }}
+         style={{
                           padding: "6px 12px",
                           fontSize: "12px",
                           opacity: isSubmitting ? 0.6 : 1,
                           width: "8rem",
                         }}
-                      >
-                        View Profile
-                      </button>
-                    </div>
-                  );
-                })}
+        >
+          View Profile
+        </button>
+      </div>
+    );
+  })
+)}
+
               </div>
             </div>
           </div>

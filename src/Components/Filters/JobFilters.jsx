@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from 'react-icons/fi';
 import '../Filters/FiltersSidebar.css';
 import { useGetAllRoleNamesQuery } from '../../State-Management/Api/TalentPoolApiSlice';
+import { useGetSkillsByTitleQuery } from '../../State-Management/Api/ProjectApiSlice';
 
 
 // --- DATA CONSTANTS ---
@@ -45,22 +46,8 @@ const AVAILABILITY_OPTIONS = [
   'Contract',
 ];
 
-const SKILLS_LIST = [
-  "React",
-  "JavaScript",
-  "TypeScript",
-  "Node.js",
-  "Python",
-  "SQL",
-  "Power BI",
-  "Redux",
-  "HTML",
-  "CSS",
-  "C#",
-  ".NET",
-  "Azure",
-  "AWS"
-];
+
+
 
 
 
@@ -141,11 +128,29 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 // --- MAIN COMPONENT ---
 const JobFilters = ({ onApplyFilters,initialFilters }) => {
   const userId = localStorage.getItem("logincompanyid");
-
+   const [filterInputs, setFilterInputs] = useState(initialFilters);
+const selectedRole = filterInputs.roles?.[0];
 const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
 
 
-  const [filterInputs, setFilterInputs] = useState(initialFilters);
+
+const {
+  data: skillsResponse,
+  isFetching: isSkillsLoading,
+} =  useGetSkillsByTitleQuery(selectedRole, {
+  skip: !selectedRole,
+});
+
+ 
+  
+  const skillsOptions = skillsResponse?.data || [];
+  useEffect(() => {
+  setFilterInputs((prev) => ({
+    ...prev,
+    skills: [],
+  }));
+}, [selectedRole]);
+
 
 
   const handleInputChange = (field, value) => {
@@ -265,13 +270,14 @@ const removeSkill = (skill) => {
 
 
 {/* Skills & Tech */}
+{/* Skills & Tech */}
 <div className="filter-section">
   <h4 className="section-title">Skills & Tech</h4>
 
-  {/* Active Skills Tags */}
+  {/* Active Skill Tags */}
   {filterInputs.skills?.length > 0 && (
     <div className="tags-container">
-      {filterInputs.skills.map(skill => (
+      {filterInputs.skills.map((skill) => (
         <span key={skill} className="filter-tag">
           {skill}
           <FiX
@@ -283,14 +289,22 @@ const removeSkill = (skill) => {
     </div>
   )}
 
-  {/* Multi Select Dropdown */}
   <MultiSelectDropdown
-    label="Add Skills..."
-    options={SKILLS_LIST}
+    label={
+      isSkillsLoading
+        ? "Loading skills..."
+        : selectedRole
+        ? "Add Skills..."
+        : "Select role first"
+    }
+    options={skillsOptions}
     selectedValues={filterInputs.skills || []}
-    onChange={(newValues) => handleInputChange("skills", newValues)}
+    onChange={(newValues) =>
+      handleInputChange("skills", newValues)
+    }
   />
 </div>
+
 
 
 

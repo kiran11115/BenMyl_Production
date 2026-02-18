@@ -55,40 +55,63 @@ const roleFromProfile = location.state?.role;
   // =========================
   // FETCH JOBS (pagination)
   // =========================
-  const fetchJobs = async () => {
-    if (!hasMore) return;
+  const buildApiFilters = (filters) => {
+  const apiFilters = [];
 
-    const payload = {
-      companyid: Number(companyId),
-      pageNumber,
-      pageSize: PAGE_SIZE,
-      filters: filters.roles?.length
-  ? [
-      {
-        filterName: "Job Title",
-        filterOperator: "Equals",
-        filterValue: filters.roles,
-      },
-    ]
-  : [],
+  // Job Title
+  if (filters.roles?.length) {
+    apiFilters.push({
+      filterName: "Job Title",
+      filterOperator: "Equals",
+      filterValue: filters.roles,
+    });
+  }
 
+  // Location (single input → array)
+  if (filters.location?.trim()) {
+    apiFilters.push({
+      filterName: "Location",
+      filterOperator: "Equals",
+      filterValue: [filters.location.trim()],
+    });
+  }
 
-    };
+  // Skills (multi-select)
+  if (filters.skills?.length) {
+    apiFilters.push({
+      filterName: "skills",
+      filterOperator: "Equals",
+      filterValue: filters.skills.map(s => s.toLowerCase()),
+    });
+  }
 
-    const res = await getTalentJobs(payload).unwrap();
+  return apiFilters;
+};
+const fetchJobs = async () => {
+  if (!hasMore) return;
 
-    if (!Array.isArray(res) || res.length === 0) {
-      setHasMore(false);
-      return;
-    }
-
-    setAllJobs((prev) => (pageNumber === 1 ? res : [...prev, ...res]));
-
-    // stop pagination if backend returns less than page size
-    if (res.length < PAGE_SIZE) {
-      setHasMore(false);
-    }
+  const payload = {
+    ComponyID: Number(companyId), // ⚠ exact casing required
+    pageNumber,
+    pageSize: PAGE_SIZE,
+    filters: buildApiFilters(filters),
   };
+
+  const res = await getTalentJobs(payload).unwrap();
+
+  if (!Array.isArray(res) || res.length === 0) {
+    setHasMore(false);
+    return;
+  }
+
+  setAllJobs((prev) =>
+    pageNumber === 1 ? res : [...prev, ...res]
+  );
+
+  if (res.length < PAGE_SIZE) {
+    setHasMore(false);
+  }
+};
 
   // initial + pagination fetch
   useEffect(() => {

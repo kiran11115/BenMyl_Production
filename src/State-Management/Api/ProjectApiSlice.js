@@ -33,7 +33,7 @@ export const ProjectApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    generateJobDescriptionAI: builder.mutation({
+  generateJobDescriptionAI: builder.mutation({
   query: (body) => ({
     url: "/api/uatcompany/GenerateJobDescriptionAI",
     method: "POST",
@@ -41,8 +41,25 @@ export const ProjectApiSlice = apiSlice.injectEndpoints({
   }),
 }),
 
+  getEmployeesByTitle: builder.query({
+  query: (title) => ({
+    url: 'api/uatcompany/GetEmployeesByTitle',
+    params: { title },
+    method: "GET",
+  }),
+}),
+
+getSkillsByTitle: builder.query({
+  query: (title) => ({
+    url: "api/uatcompany/GetSkillsByTitle",
+    params: { title },
+    method: "GET",
+  }),
+}),
+
 
   }),
 });
 
-export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation,useGenerateJobDescriptionAIMutation } = ProjectApiSlice;
+export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation,useGenerateJobDescriptionAIMutation, useGetEmployeesByTitleQuery,  useGetSkillsByTitleQuery,
+ } = ProjectApiSlice;
