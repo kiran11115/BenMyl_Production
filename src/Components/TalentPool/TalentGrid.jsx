@@ -14,7 +14,11 @@ const TalentGridView = ({
 }) => {
   const navigate = useNavigate();
 
-  const matchingCount = candidates.length;
+  
+  const visibleCandidates = candidates.filter(
+  (candidate) => candidate.isshortlisted  === false
+);
+const matchingCount = visibleCandidates.length;
 
   return (
     <div>
@@ -25,14 +29,14 @@ const TalentGridView = ({
         </div>
       </div>
 
-      {!hasMore && candidates.length === 0 && (
+      {visibleCandidates.length === 0 && (
         <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
           No candidates to show
         </div>
       )}
 
       <div className="jobs-grid">
-        {candidates.map((candidate) => {
+        {visibleCandidates.map((candidate) => {
           const isShortlisted =
             activeJobId &&
             shortlistedMap?.[activeJobId]?.find((c) => c.id === candidate.id);

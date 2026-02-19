@@ -440,6 +440,7 @@ const TalentPool = () => {
       availability: item.status ? [item.status] : ["Available"],
 
       verified: true,
+      isshortlisted: item.isshortlisted,
 
       hourlyRate: item.salary || 0,
     }));
