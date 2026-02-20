@@ -9,19 +9,18 @@ export const ValidationErrorModal = ({ errors = [], onClose, onRetry, onContactS
         <button className="alert-close-icon" onClick={onClose}><FiX /></button>
 
         <div className="alert-content">
+          <div className="d-flex gap-3 align-items-center">
           <div className="icon-circle error-icon-bg">
             <FiX className="icon-main" />
           </div>
-
+<div className="d-flex flex-column">
           <h3 className="alert-title">Submission Error</h3>
           <p className="alert-message">Please fix validation errors.</p>
-
+          </div>
+</div>
           <div className="link-button" style={{ marginTop: 16 }}>
-            <button className="btn-alert-primary error-btn" onClick={onRetry}>
+            <button className="btn-alert-primary error-btn w-100" onClick={onRetry}>
               Try Again
-            </button>
-            <button className="btn-alert-text" onClick={onContactSupport} style={{ marginLeft: 12 }}>
-              Contact Support
             </button>
           </div>
         </div>
@@ -87,13 +86,15 @@ export const SaveErrorModal = ({ onClose, onRetry }) => {
         <button className="alert-close-icon" onClick={onClose}><FiX /></button>
 
         <div className="alert-content">
+          <div className="d-flex gap-3 align-items-center">
           <div className="icon-circle error-icon-bg">
             <FiX className="icon-main" />
           </div>
-
+ <div className="d-flex flex-column">
           <h3 className="alert-title">Save Failed</h3>
           <p className="alert-message">There was a problem saving the talent. Please try again.</p>
-
+          </div>
+</div>
           <div className="link-button">
             <button className="btn-alert-primary error-btn" onClick={onRetry}>Try Again</button>
             <button className="btn-alert-text error-text-btn" onClick={onClose}>Cancel</button>
