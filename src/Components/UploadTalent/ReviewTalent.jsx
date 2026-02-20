@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Edit2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Edit2, Plus, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
@@ -555,6 +555,7 @@ const ReviewTalent = () => {
 
     const [talent, setTalent] = useState(null);
     const [validationErrorsState, setValidationErrorsState] = useState(null);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const getToday = () => {
   return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 };
@@ -820,7 +821,7 @@ formData.append(
 
   try {
     await approveEmployee(formData).unwrap();
-    navigate("/user/user-upload-talent");
+    setShowSuccessModal(true);
   } catch (err) {
     console.error("Approve failed", err);
     alert("Failed to save talent");
@@ -952,7 +953,7 @@ formData.append(
 
   try {
     await draftProfile(formData).unwrap();
-    navigate("/user/user-upload-talent");
+    setShowSuccessModal(true);
   } catch (err) {
     console.error("Approve failed", err);
     alert("Failed to save talent");
@@ -1016,6 +1017,18 @@ formData.append(
     const addEducation = () => setTalent(p => ({ ...p, education: [...p.education, { university: "", qualification: "", startDate: "", endDate: "", field: "", percentage: "", certifications: [] }] }));
     const addExperience = () => setTalent(p => ({ ...p, experience: [...p.experience, { company: "", position: "", startDate: "", endDate: "", skills: [], description: "" }] }));
     const addProjects = () => setTalent(p => ({ ...p, projects: [...p.projects, { name: "", role: "", startDate: "", endDate: "", skills: [], description: "" }] }));
+
+    const deleteExperience = (index) => {
+      if (window.confirm("Are you sure you want to delete this experience entry?")) {
+        setTalent(p => ({ ...p, experience: p.experience.filter((_, i) => i !== index) }));
+      }
+    };
+
+    const deleteProjects = (index) => {
+      if (window.confirm("Are you sure you want to delete this project entry?")) {
+        setTalent(p => ({ ...p, projects: p.projects.filter((_, i) => i !== index) }));
+      }
+    };
 
    const smoothStyle = (open) => ({
   maxHeight: open ? 1000 : 0,
@@ -1231,8 +1244,16 @@ formData.append(
                                         </div>
                                     ))}
 
-                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
                                         <button className="btn-secondary" onClick={addExperience}><Plus size={12} /> Add</button>
+                                        <button className="btn-secondary" onClick={() => {
+                                          const experienceCount = talent.experience.length;
+                                          if (experienceCount > 1) {
+                                            deleteExperience(experienceCount - 1);
+                                          } else {
+                                            alert("Cannot delete the last experience entry");
+                                          }
+                                        }}><Trash2 size={12} /> Remove</button>
                                     </div>
                                 </div>
                             </div>
@@ -1291,8 +1312,16 @@ formData.append(
                                         </div>
                                     ))}
 
-                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
                                         <button className="btn-secondary" onClick={addProjects}><Plus size={12} /> Add</button>
+                                        <button className="btn-secondary" onClick={() => {
+                                          const projectsCount = talent.projects.length;
+                                          if (projectsCount > 1) {
+                                            deleteProjects(projectsCount - 1);
+                                          } else {
+                                            alert("Cannot delete the last project entry");
+                                          }
+                                        }}><Trash2 size={12} /> Remove</button>
                                     </div>
                                 </div>
                             </div>
@@ -1345,14 +1374,18 @@ formData.append(
                 </div>
             </div>
 
-            {validationErrorsState && (
+            {validationErrorsState &&  (
               <ValidationErrorModal
                 errors={validationErrorsState}
                 onClose={() => setValidationErrorsState(null)}
                 onRetry={() => setValidationErrorsState(null)}
                 onContactSupport={() => { setValidationErrorsState(null); navigate('/support'); }}
               />
-            ) && <SaveSuccessModal/>}
+            )}
+
+            {showSuccessModal && (
+              <SaveSuccessModal onClose={() => setShowSuccessModal(false)} />
+            )}
 
 
         </div>

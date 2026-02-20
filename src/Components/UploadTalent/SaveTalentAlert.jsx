@@ -72,7 +72,7 @@ export const SaveSuccessModal = ({ onClose }) => {
           <p className="alert-message mb-3">The talent profile was saved successfully.</p>
 
           <div className="alert-actions start">
-            <button className="btn-primary w-100" onClick={() => navigate("/user/user-upload-talent")}>Go to Uploads</button>
+            <button className="btn-primary w-100" onClick={() => navigate("/user/user-upload-talent")}>Back to Talent Profiles</button>
           </div>
         </div>
       </div>
