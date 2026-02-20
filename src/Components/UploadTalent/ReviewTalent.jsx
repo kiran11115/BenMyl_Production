@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
 import { useApprovedEmployeeMutation, useDraftProfileEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
+import { ValidationErrorModal, ConfirmSaveModal, SaveSuccessModal, SaveErrorModal } from "./SaveTalentAlert";
 
 const formatDateToDisplay = (value) => {
   if (!value) return "";
@@ -114,7 +115,240 @@ const PDFResumePreview = ({ data }) => {
   );
 };
 
-const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
+// ===== VALIDATION FUNCTIONS =====
+const validateFirstName = (val) => {
+    if (!val || val.trim() === "") return "First name is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "First name should contain only letters";
+    return null;
+};
+
+const validateLastName = (val) => {
+    if (!val || val.trim() === "") return "Last name is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "Last name should contain only letters";
+    return null;
+};
+
+const validatePosition = (val) => {
+    if (!val || val.trim() === "") return "Position is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "Position should contain only letters";
+    return null;
+};
+
+const validatePhone = (val) => {
+    if (!val || val.trim() === "") return "Phone number is required";
+    if (!/^\d+$/.test(val.replace(/[\s\-\(\)+]/g, ""))) return "Phone number should contain only numbers";
+    return null;
+};
+
+const validateEmail = (val) => {
+    if (!val || val.trim() === "") return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return "Please enter a valid email address";
+    if (!val.toLowerCase().includes(".com")) return "Email should have .com domain";
+    return null;
+};
+
+// ===== PERSONAL INFO VALIDATION FUNCTIONS =====
+const validateDOB = (val) => {
+    if (!val || val.trim() === "") return "Date of Birth is required";
+    return null;
+};
+
+const validateGender = (val) => {
+    if (!val || val.trim() === "") return "Gender is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "Gender should contain only letters";
+    return null;
+};
+
+const validateEmergency = (val) => {
+    if (!val || val.trim() === "") return "Emergency contact is required";
+    if (!/^\d+$/.test(val.replace(/[\s\-\(\)]/g, ""))) return "Emergency contact should contain only numbers";
+    return null;
+};
+
+const validateCountry = (val) => {
+    if (!val || val.trim() === "") return "Country is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "Country should contain only letters";
+    return null;
+};
+
+const validateState = (val) => {
+    if (!val || val.trim() === "") return "State is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "State should contain only letters";
+    return null;
+};
+
+const validateCity = (val) => {
+    if (!val || val.trim() === "") return "City is required";
+    if (!/^[a-zA-Z\s]*$/.test(val)) return "City should contain only letters";
+    return null;
+};
+
+const validateBio = (val) => {
+    if (!val || val.trim() === "") return "Bio is required";
+    if (val.trim().length < 50) return "Bio should contain at least 50 characters";
+    return null;
+};
+
+// ===== EDUCATION VALIDATION FUNCTIONS =====
+const validateUniversity = (val) => {
+  if (!val || val.trim() === "") return "University is required";
+  if (!/^[a-zA-Z\s.]*$/.test(val)) return "University should contain only letters";
+  return null;
+};
+
+const validateQualification = (val) => {
+  if (!val || val.trim() === "") return "Qualification is required";
+  if (!/^[a-zA-Z\s]*$/.test(val)) return "Qualification should contain only letters";
+  return null;
+};
+
+const validateEduStartDate = (val) => {
+  if (!val || val.trim() === "") return "Start date is required";
+  return null;
+};
+
+const validateEduEndDate = (val) => {
+  if (!val || val.trim() === "") return "End date is required";
+  return null;
+};
+
+const validateEduField = (val) => {
+  if (!val || val.trim() === "") return "Field of study is required";
+  if (!/^[a-zA-Z\s]*$/.test(val)) return "Field should contain only letters";
+  return null;
+};
+
+const validatePercentage = (val) => {
+  if (!val || String(val).trim() === "") return "Percentage is required";
+  if (!/^\d+(?:\.\d+)?$/.test(String(val).trim())) return "Percentage should contain only numbers";
+  return null;
+};
+
+const validateCertifications = (val) => {
+  if (!val || val.trim() === "") return "Certifications is required";
+  if (!/^[a-zA-Z,\s]*$/.test(val)) return "Certifications should contain only letters, commas and spaces";
+  return null;
+};
+
+// ===== EXPERIENCE VALIDATION FUNCTIONS =====
+const validateCompany = (val) => {
+      if (!val || val.trim() === "") return "Company name is required";
+  return null;
+};
+
+const validateExpPosition = (val) => {
+  if (!val || val.trim() === "") return "Position is required";
+  return null;
+};
+
+const validateExpStartDate = (val) => {
+  if (!val || val.trim() === "") return "Start date is required";
+  return null;
+};
+
+const validateExpEndDate = (val) => {
+  if (!val || val.trim() === "") return "End date is required";
+  return null;
+};
+
+const validateExpSkills = (val) => {
+  if (!val || val.trim() === "") return "Skills are required";
+  return null;
+};
+
+const validateExpDescription = (val) => {
+  if (!val || val.trim() === "") return "Description is required";
+  return null;
+};
+
+// ===== PROJECTS VALIDATION FUNCTIONS =====
+const validateProjectName = (val) => {
+  if (!val || val.trim() === "") return " name is required";
+  if (!/^[a-zA-Z\s]*$/.test(val)) return "Project name should contain only letters";
+  return null;
+};
+
+const validateProjectRole = (val) => {
+  if (!val || val.trim() === "") return "Role is required";
+  return null;
+};
+
+const validateProjectStartDate = (val) => {
+  if (!val || val.trim() === "") return "Start date is required";
+  return null;
+};
+
+const validateProjectEndDate = (val) => {
+  if (!val || val.trim() === "") return "End date is required";
+  return null;
+};
+
+const validateProjectSkills = (val) => {
+  if (!val || val.trim() === "") return "Skills are required";
+  return null;
+};
+
+const validateProjectDescription = (val) => {
+  if (!val || val.trim() === "") return "Description is required";
+  return null;
+};
+
+// ===== GET VALIDATION FUNCTION BY FIELD =====
+const getValidationForField = (fieldName, section) => {
+  const key = String(fieldName).toLowerCase();
+  
+  // Experience section has its own validators
+  if (section === "experience") {
+    const expValidations = {
+      company: validateCompany,
+      position: validateExpPosition,
+      startdate: validateExpStartDate,
+      enddate: validateExpEndDate,
+      skills: validateExpSkills,
+      description: validateExpDescription
+    };
+    return expValidations[key] || null;
+  }
+
+  // Projects section has its own validators
+  if (section === "projects") {
+    const projValidations = {
+      name: validateProjectName,
+      role: validateProjectRole,
+      startdate: validateProjectStartDate,
+      enddate: validateProjectEndDate,
+      skills: validateProjectSkills,
+      description: validateProjectDescription
+    };
+    return projValidations[key] || null;
+  }
+
+  // Default validations for other sections
+  const validations = {
+    firstname: validateFirstName,
+    lastname: validateLastName,
+    position: validatePosition,
+    phone: validatePhone,
+    email: validateEmail,
+    dob: validateDOB,
+    gender: validateGender,
+    emergency: validateEmergency,
+    country: validateCountry,
+    state: validateState,
+    city: validateCity,
+    bio: validateBio,
+    university: validateUniversity,
+    qualification: validateQualification,
+    startdate: validateEduStartDate,
+    enddate: validateEduEndDate,
+    field: validateEduField,
+    percentage: validatePercentage,
+    certifications: validateCertifications
+  };
+  return validations[key] || null;
+};
+
+const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, section }) => {
 
     const isDateField =
         label.toLowerCase().includes("date") ||
@@ -123,8 +357,22 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
     const [temp, setTemp] = useState(
         isDateField ? formatDateToInput(value) : (value || "")
     );
+    
+    const [error, setError] = useState(null);
+
+    // Get validation function for fields, passing section for context
+    const validationFn = (section === "basicInfo" || section === "personalInfo" || section === "education" || section === "experience" || section === "projects") ? getValidationForField(label, section) : null;
 
     const handleSave = () => {
+        // Validate if validation function exists
+        if (validationFn) {
+            const validationError = validationFn(temp);
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+        }
+        setError(null);
         if (isDateField) {
             onSave(temp); // save YYYY-MM-DD internally
         } else {
@@ -150,20 +398,22 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
                             type="date"
                             className="auth-input"
                             value={temp}
-                            onChange={e => setTemp(e.target.value)}
+                            onChange={e => { setTemp(e.target.value); setError(null); }}
                             autoFocus
                         />
                     ) : (
                         <input
                             className="auth-input"
                             value={temp}
-                            onChange={e => setTemp(e.target.value)}
+                            onChange={e => { setTemp(e.target.value); setError(null); }}
                             autoFocus
+                            style={{ borderColor: error ? '#ef4444' : undefined }}
                         />
                     )}
+                    {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
 
                     <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={handleSave}>
+                        <button className="btn-primary" onClick={handleSave} disabled={error}>
                             Save
                         </button>
                         <button className="btn-secondary" onClick={onCancel}>
@@ -191,8 +441,26 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel }) => {
 };
 
 
-const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) => {
+const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, section }) => {
     const [temp, setTemp] = useState(value || "");
+    const [error, setError] = useState(null);
+
+    // Get validation function for personal info, experience and projects description fields, passing section for context
+    const validationFn = (section === "personalInfo" || section === "experience" || section === "projects") ? getValidationForField(label, section) : null;
+
+    const handleSave = () => {
+        // Validate if validation function exists
+        if (validationFn) {
+            const validationError = validationFn(temp);
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+        }
+        setError(null);
+        onSave(temp);
+    };
+
     return (
         <div className="auth-form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -201,9 +469,15 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) =
             </div>
             {editing ? (
                 <>
-                    <textarea className="auth-input" style={{ minHeight: 120 }} value={temp} onChange={e => setTemp(e.target.value)} />
+                    <textarea 
+                        className="auth-input" 
+                        style={{ minHeight: 120, borderColor: error ? '#ef4444' : undefined }} 
+                        value={temp} 
+                        onChange={e => { setTemp(e.target.value); setError(null); }} 
+                    />
+                    {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
                     <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={() => onSave(temp)}>Save</button>
+                        <button className="btn-primary" onClick={handleSave} disabled={error}>Save</button>
                         <button className="btn-secondary" onClick={onCancel}>Cancel</button>
                     </div>
                 </>
@@ -214,8 +488,25 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel }) =
     );
 };
 
-const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel }) => {
+const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, section }) => {
     const [temp, setTemp] = useState(values.join(", "));
+    const [error, setError] = useState(null);
+
+    // validation function applies when a section provides a mapped validator (e.g., skills in experience, certifications in education)
+    const validationFn = section ? getValidationForField(label, section) : null;
+
+    const handleSave = () => {
+        if (validationFn) {
+            const validationError = validationFn(temp);
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+        }
+        setError(null);
+        onSave(temp.split(",").map(t => t.trim()).filter(Boolean));
+    };
+
     return (
         <div className="auth-form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -224,9 +515,10 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel }) => {
             </div>
             {editing ? (
                 <>
-                    <textarea className="auth-input" style={{ minHeight: 100 }} value={temp} onChange={e => setTemp(e.target.value)} />
+                    <textarea className="auth-input" style={{ minHeight: 100, borderColor: error ? '#ef4444' : undefined }} value={temp} onChange={e => { setTemp(e.target.value); setError(null); }} />
+                    {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
                     <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                        <button className="btn-primary" onClick={() => onSave(temp.split(",").map(t => t.trim()).filter(Boolean))}>Save</button>
+                        <button className="btn-primary" onClick={handleSave} disabled={!!error}>Save</button>
                         <button className="btn-secondary" onClick={onCancel}>Cancel</button>
                     </div>
                 </>
@@ -262,13 +554,162 @@ const ReviewTalent = () => {
     const cancelEdit = () => { setEditingSection(null); setEditingIndex(null); };
 
     const [talent, setTalent] = useState(null);
+    const [validationErrorsState, setValidationErrorsState] = useState(null);
     const getToday = () => {
   return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+};
+
+// ===== VALIDATE ALL BASIC INFO =====
+const validateAllBasicInfo = (basicInfo) => {
+  const errors = [];
+  
+  const firstNameError = validateFirstName(basicInfo.firstName);
+  if (firstNameError) errors.push(firstNameError);
+  
+  const lastNameError = validateLastName(basicInfo.lastName);
+  if (lastNameError) errors.push(lastNameError);
+  
+  const positionError = validatePosition(basicInfo.position);
+  if (positionError) errors.push(positionError);
+  
+  const phoneError = validatePhone(basicInfo.phone);
+  if (phoneError) errors.push(phoneError);
+  
+  const emailError = validateEmail(basicInfo.email);
+  if (emailError) errors.push(emailError);
+  
+  return errors;
+};
+
+// ===== VALIDATE ALL PERSONAL INFO =====
+const validateAllPersonalInfo = (personalInfo) => {
+  const errors = [];
+  
+  const dobError = validateDOB(personalInfo.dob);
+  if (dobError) errors.push(dobError);
+  
+  const genderError = validateGender(personalInfo.gender);
+  if (genderError) errors.push(genderError);
+  
+  const emergencyError = validateEmergency(personalInfo.emergency);
+  if (emergencyError) errors.push(emergencyError);
+  
+  const countryError = validateCountry(personalInfo.country);
+  if (countryError) errors.push(countryError);
+  
+  const stateError = validateState(personalInfo.state);
+  if (stateError) errors.push(stateError);
+  
+  const cityError = validateCity(personalInfo.city);
+  if (cityError) errors.push(cityError);
+  
+  const bioError = validateBio(personalInfo.bio);
+  if (bioError) errors.push(bioError);
+  
+  return errors;
+};
+
+// ===== VALIDATE ALL EDUCATION ENTRIES =====
+const validateAllEducation = (educationArr) => {
+  const errors = [];
+  if (!Array.isArray(educationArr)) return errors;
+  educationArr.forEach((edu, idx) => {
+    const uniErr = validateUniversity(edu.university);
+    if (uniErr) errors.push(`Education[${idx}] University: ${uniErr}`);
+
+    const qualErr = validateQualification(edu.qualification);
+    if (qualErr) errors.push(`Education[${idx}] Qualification: ${qualErr}`);
+
+    const sdErr = validateEduStartDate(edu.startDate);
+    if (sdErr) errors.push(`Education[${idx}] Start Date: ${sdErr}`);
+
+    const edErr = validateEduEndDate(edu.endDate);
+    if (edErr) errors.push(`Education[${idx}] End Date: ${edErr}`);
+
+    const fieldErr = validateEduField(edu.field);
+    if (fieldErr) errors.push(`Education[${idx}] Field: ${fieldErr}`);
+
+    const perErr = validatePercentage(edu.percentage);
+    if (perErr) errors.push(`Education[${idx}] Percentage: ${perErr}`);
+
+    const certs = (edu.certifications || []).join(", ");
+    const certErr = validateCertifications(certs);
+    if (certErr) errors.push(`Education[${idx}] Certifications: ${certErr}`);
+  });
+  return errors;
+};
+
+// ===== VALIDATE ALL EXPERIENCE ENTRIES =====
+const validateAllExperience = (experienceArr) => {
+  const errors = [];
+  if (!Array.isArray(experienceArr)) return errors;
+  experienceArr.forEach((exp, idx) => {
+    const compErr = validateCompany(exp.company);
+    if (compErr) errors.push(`Experience[${idx}] Company: ${compErr}`);
+
+    const posErr = validateExpPosition(exp.position);
+    if (posErr) errors.push(`Experience[${idx}] Position: ${posErr}`);
+
+    const sdErr = validateExpStartDate(exp.startDate);
+    if (sdErr) errors.push(`Experience[${idx}] Start Date: ${sdErr}`);
+
+    const edErr = validateExpEndDate(exp.endDate);
+    if (edErr) errors.push(`Experience[${idx}] End Date: ${edErr}`);
+
+    const skillsStr = Array.isArray(exp.skills) ? exp.skills.join(", ") : (exp.skills || "");
+    const skillErr = validateExpSkills(skillsStr);
+    if (skillErr) errors.push(`Experience[${idx}] Skills: ${skillErr}`);
+
+    const descErr = validateExpDescription(exp.description);
+    if (descErr) errors.push(`Experience[${idx}] Description: ${descErr}`);
+  });
+  return errors;
+};
+
+
+// ===== VALIDATE ALL PROJECTS ENTRIES =====
+const validateAllProjects = (projectsArr) => {
+  const errors = [];
+  if (!Array.isArray(projectsArr)) return errors;
+  projectsArr.forEach((proj, idx) => {
+    const nameErr = validateProjectName(proj.name);
+    if (nameErr) errors.push(`Project[${idx}] Name: ${nameErr}`);
+
+    const roleErr = validateProjectRole(proj.role);
+    if (roleErr) errors.push(`Project[${idx}] Role: ${roleErr}`);
+
+    const sdErr = validateProjectStartDate(proj.startDate);
+    if (sdErr) errors.push(`Project[${idx}] Start Date: ${sdErr}`);
+
+    const edErr = validateProjectEndDate(proj.endDate);
+    if (edErr) errors.push(`Project[${idx}] End Date: ${edErr}`);
+
+    const skillsStr = Array.isArray(proj.skills) ? proj.skills.join(", ") : (proj.skills || "");
+    const skillErr = validateProjectSkills(skillsStr);
+    if (skillErr) errors.push(`Project[${idx}] Skills: ${skillErr}`);
+
+    const descErr = validateProjectDescription(proj.description);
+    if (descErr) errors.push(`Project[${idx}] Description: ${descErr}`);
+  });
+  return errors;
 };
 
 
     const handleSaveTalent = async () => {
   if (!isReviewed) return;
+
+  // Validate basic info before saving
+  const validationErrors = validateAllBasicInfo(talent.basicInfo);
+  const personalErrors = validateAllPersonalInfo(talent.personalInfo);
+  const educationErrors = validateAllEducation(talent.education);
+  const experienceErrors = validateAllExperience(talent.experience);
+  const projectErrors = validateAllProjects(talent.projects);
+  
+  const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
+  if (allErrors.length > 0) {
+    setValidationErrorsState(allErrors);
+    return;
+  }
 
   const formData = new FormData();
 
@@ -388,6 +829,19 @@ formData.append(
 
 const handleDraftTalent = async () => {
   if (!isReviewed) return;
+
+  // Validate basic info before saving
+  const validationErrors = validateAllBasicInfo(talent.basicInfo);
+  const personalErrors = validateAllPersonalInfo(talent.personalInfo);
+  const educationErrors = validateAllEducation(talent.education);
+  const experienceErrors = validateAllExperience(talent.experience);
+  const projectErrors = validateAllProjects(talent.projects);
+  
+  const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
+  if (allErrors.length > 0) {
+    alert("Please fix validation errors:\n" + allErrors.join("\n"));
+    return;
+  }
 
   const formData = new FormData();
 
@@ -620,6 +1074,7 @@ formData.append(
                                             onEdit={() => beginEdit("basicInfo", f)}
                                             onSave={val => { setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, [f]: val } })); cancelEdit(); }}
                                             onCancel={cancelEdit}
+                                            section="basicInfo"
                                         />
                                     ))}
                                     <EditableTags
@@ -645,7 +1100,7 @@ formData.append(
                                     <h5 className="auth-label fw-bolder">Personal Information</h5>
                                     {openAccordion === "personalInfo" ? <ChevronUp /> : <ChevronDown />}
                                 </div>
-                                <div style={smoothStyle(openAccordion === "personalInfo")} className="mt-2 text-uppercase">
+                                <div style={smoothStyle(openAccordion === "personalInfo")} className="mt-2">
                                     {Object.keys(talent.personalInfo).map(field => {
                                         const isTxt = field === "bio";
                                         return isTxt ? (
@@ -654,6 +1109,7 @@ formData.append(
                                                 onEdit={() => beginEdit("personalInfo", field)}
                                                 onSave={val => { setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } })); cancelEdit(); }}
                                                 onCancel={cancelEdit}
+                                                section="personalInfo"
                                             />
                                         ) : (
                                             <EditableField key={field} label={field} value={talent.personalInfo[field]}
@@ -661,6 +1117,7 @@ formData.append(
                                                 onEdit={() => beginEdit("personalInfo", field)}
                                                 onSave={val => { setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } })); cancelEdit(); }}
                                                 onCancel={cancelEdit}
+                                                section="personalInfo"
                                             />
                                         )
                                     })}
@@ -682,33 +1139,35 @@ formData.append(
                                 <div style={smoothStyle(openAccordion === "education")} className="mt-2">
                                    
                                     {talent.education.map((ed, i) => (
-                                        <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
-                                            {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
-                                                <EditableField
-                                                    key={field}
-                                                    label={field}
-                                                    value={ed[field]}
-                                                    editing={editingSection === "education" && editingIndex === `${i}-${field}`}
-                                                    onEdit={() => beginEdit("education", `${i}-${field}`)}
-                                                    onSave={val => {
-                                                        const arr = [...talent.education]; arr[i][field] = val;
-                                                        setTalent(p => ({ ...p, education: arr })); cancelEdit();
-                                                    }}
-                                                    onCancel={cancelEdit}
-                                                />
-                                            ))}
-                                            <EditableTags
-                                                label="Certifications"
-                                                values={ed.certifications}
-                                                editing={editingSection === "education" && editingIndex === `${i}-certifications`}
-                                                onEdit={() => beginEdit("education", `${i}-certifications`)}
-                                                onSave={val => {
-                                                    const arr = [...talent.education]; arr[i].certifications = val;
-                                                    setTalent(p => ({ ...p, education: arr })); cancelEdit();
-                                                }}
-                                                onCancel={cancelEdit}
-                                            />
-                                        </div>
+                                      <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
+                                        {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
+                                          <EditableField
+                                            key={field}
+                                            label={field}
+                                            value={ed[field]}
+                                            section="education"
+                                            editing={editingSection === "education" && editingIndex === `${i}-${field}`}
+                                            onEdit={() => beginEdit("education", `${i}-${field}`)}
+                                            onSave={val => {
+                                              const arr = [...talent.education]; arr[i][field] = val;
+                                              setTalent(p => ({ ...p, education: arr })); cancelEdit();
+                                            }}
+                                            onCancel={cancelEdit}
+                                          />
+                                        ))}
+                                        <EditableTags
+                                          label="Certifications"
+                                          section="education"
+                                          values={ed.certifications}
+                                          editing={editingSection === "education" && editingIndex === `${i}-certifications`}
+                                          onEdit={() => beginEdit("education", `${i}-certifications`)}
+                                          onSave={val => {
+                                            const arr = [...talent.education]; arr[i].certifications = val;
+                                            setTalent(p => ({ ...p, education: arr })); cancelEdit();
+                                          }}
+                                          onCancel={cancelEdit}
+                                        />
+                                      </div>
                                     ))}
 
                                      <div className="mb-3" style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -735,6 +1194,7 @@ formData.append(
                                         <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
                                             {["company", "position", "startDate", "endDate"].map(field => (
                                                 <EditableField key={field} label={field} value={ex[field]}
+                                                    section="experience"
                                                     editing={editingSection === "experience" && editingIndex === `${i}-${field}`}
                                                     onEdit={() => beginEdit("experience", `${i}-${field}`)}
                                                     onSave={val => {
@@ -746,6 +1206,7 @@ formData.append(
                                             ))}
                                             <EditableTags
                                                 label="Skills"
+                                                section="experience"
                                                 values={ex.skills}
                                                 editing={editingSection === "experience" && editingIndex === `${i}-skills`}
                                                 onEdit={() => beginEdit("experience", `${i}-skills`)}
@@ -757,6 +1218,7 @@ formData.append(
                                             />
                                             <EditableTextarea
                                                 label="Description"
+                                                section="experience"
                                                 value={ex.description}
                                                 editing={editingSection === "experience" && editingIndex === `${i}-description`}
                                                 onEdit={() => beginEdit("experience", `${i}-description`)}
@@ -792,7 +1254,7 @@ formData.append(
                                     {talent.projects.map((pr, i) => (
                                         <div key={i} style={{ border: '1px solid #e2e8f0', padding: 12, borderRadius: 8, marginTop: 10, marginBottom: 14 }}>
                                             {["name", "role", "startDate", "endDate"].map(field => (
-                                                <EditableField key={field} label={field} value={pr[field]}
+                                                <EditableField key={field} label={field} value={pr[field]} section="projects"
                                                     editing={editingSection === "projects" && editingIndex === `${i}-${field}`}
                                                     onEdit={() => beginEdit("projects", `${i}-${field}`)}
                                                     onSave={val => {
@@ -805,6 +1267,7 @@ formData.append(
                                             <EditableTags
                                                 label="Skills"
                                                 values={pr.skills}
+                                                section="projects"
                                                 editing={editingSection === "projects" && editingIndex === `${i}-skills`}
                                                 onEdit={() => beginEdit("projects", `${i}-skills`)}
                                                 onSave={val => {
@@ -816,6 +1279,7 @@ formData.append(
                                             <EditableTextarea
                                                 label="Description"
                                                 value={pr.description}
+                                                section="projects"
                                                 editing={editingSection === "projects" && editingIndex === `${i}-description`}
                                                 onEdit={() => beginEdit("projects", `${i}-description`)}
                                                 onSave={val => {
@@ -880,6 +1344,17 @@ formData.append(
                     </div>
                 </div>
             </div>
+
+            {validationErrorsState && (
+              <ValidationErrorModal
+                errors={validationErrorsState}
+                onClose={() => setValidationErrorsState(null)}
+                onRetry={() => setValidationErrorsState(null)}
+                onContactSupport={() => { setValidationErrorsState(null); navigate('/support'); }}
+              />
+            ) && <SaveSuccessModal/>}
+
+
         </div>
     );
 };
