@@ -13,8 +13,24 @@ const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
     const [view, setView] = useState("Talent");
     const [refreshKey, setRefreshKey] = useState(0);
+    const [showUploading, setShowUploading] = useState(false);
+    const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
+    const [showUploadError, setShowUploadError] = useState(false);
+    const [uploadErrorMessage, setUploadErrorMessage] = useState("");
 
-    const handleUploadSuccess = () => {
+    const handleUploadSuccess = (message) => {
+        // if message indicates failure, show error toast
+        if (message && String(message).toLowerCase().includes("fail")) {
+            setUploadErrorMessage(message);
+            setShowUploadError(true);
+            setTimeout(() => setShowUploadError(false), 10000);
+            return;
+        }
+
+        // otherwise show success modal
+        setShowUploadedSuccess(true);
+        // hide after 10s
+        setTimeout(() => setShowUploadedSuccess(false), 10000);
         // 🔁 Immediate refresh (optional)
         setRefreshKey((prev) => prev + 1);
 
@@ -76,6 +92,7 @@ const UploadTalent = () => {
                         onHide={handleCloseModal}
                         onShow={handleShowModal}
                         onSuccess={handleUploadSuccess}
+                        onUploading={(isUploading) => setShowUploading(!!isUploading)}
                     />
                 </div>
 
@@ -128,6 +145,36 @@ const UploadTalent = () => {
                 </div>
 
             </div>
+            {/* Uploading overlay */}
+            {showUploading && (
+                <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:20000}}>
+                    <div style={{background:'white',padding:24,borderRadius:8,display:'flex',flexDirection:'column',alignItems:'center',gap:12,minWidth:280}}>
+                        <div style={{width:36,height:36,border:'4px solid #6843c7',borderTopColor:'transparent',borderRadius:'50%',animation:'spin 0.8s linear infinite'}} />
+                        <div style={{fontWeight:700}}>Uploading — please wait</div>
+                        <div style={{color:'#6b7280',fontSize:13}}>Processing resumes. This may take a moment.</div>
+                    </div>
+                    <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+                </div>
+            )}
+
+            {/* Success toast/modal (top centered) */}
+            {showUploadedSuccess && (
+                <div aria-live="polite" style={{position:'fixed',top:24,right:24,zIndex:20001}}>
+                    <div style={{background:'#10b981',color:'white',padding:'12px 16px',borderRadius:8,boxShadow:'0 6px 18px rgba(16,185,129,0.12)',display:'flex',alignItems:'center',gap:12,minWidth:280}}>
+                        <div style={{flex:1,fontWeight:700,textAlign:'left'}}>Resume(s) uploaded successfully</div>
+                        <button onClick={() => setShowUploadedSuccess(false)} style={{background:'transparent',border:'none',color:'white',fontSize:16,cursor:'pointer'}} aria-label="Close success">×</button>
+                    </div>
+                </div>
+            )}
+            {showUploadError && (
+                <div aria-live="assertive" style={{position:'fixed',top:24,right:24,zIndex:20001}}>
+                    <div style={{background:'#dc2626',color:'white',padding:'12px 16px',borderRadius:8,boxShadow:'0 6px 18px rgba(220,38,38,0.12)',display:'flex',alignItems:'center',gap:12,minWidth:320}}>
+                        <div style={{flex:1,fontWeight:700,textAlign:'left'}}>Upload failed</div>
+                        <div style={{fontSize:13,opacity:0.95}}>{uploadErrorMessage}</div>
+                        <button onClick={() => setShowUploadError(false)} style={{background:'transparent',border:'none',color:'white',fontSize:16,cursor:'pointer'}} aria-label="Close error">×</button>
+                    </div>
+                </div>
+            )}
         </>
     );
 };

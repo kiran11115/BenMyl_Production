@@ -64,6 +64,9 @@ const PostNewPositions = () => {
     contractToHire: false
   });
 
+  // Salary Type state
+  const [salaryType, setSalaryType] = useState('perHour');
+
   const [postJob] = usePostJobMutation();
   const [saveJobDraft] = useSaveJobDraftMutation();
   const user = localStorage.getItem("CompanyId");
@@ -80,6 +83,7 @@ const PostNewPositions = () => {
       location: '',
       employmentType: '',
       workModel: '',
+      jobDuration: '',
       salaryMin: '',
       salaryMax: '',
       salaryCurrency: 'USD',
@@ -353,8 +357,51 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                 </div>
               </div>
 
+              
+
               <label className="auth-label">Salary Range</label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px', gap: '16px' }}>
+              
+              {/* Radio Button Options */}
+              <div style={{ marginBottom: '16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input
+                    type="radio"
+                    id="perHour"
+                    name="salaryType"
+                    value="perHour"
+                    checked={salaryType === 'perHour'}
+                    onChange={(e) => setSalaryType(e.target.value)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label htmlFor="perHour" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Hour</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input
+                    type="radio"
+                    id="perMonth"
+                    name="salaryType"
+                    value="perMonth"
+                    checked={salaryType === 'perMonth'}
+                    onChange={(e) => setSalaryType(e.target.value)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label htmlFor="perMonth" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Month</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input
+                    type="radio"
+                    id="entireBudget"
+                    name="salaryType"
+                    value="entireBudget"
+                    checked={salaryType === 'entireBudget'}
+                    onChange={(e) => setSalaryType(e.target.value)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label htmlFor="entireBudget" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Entire Budget</label>
+                </div>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 80px', gap: '16px' }}>
                 <input className="auth-input" name="salaryMin" placeholder="Min"
                   value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                 <input className="auth-input" name="salaryMax" placeholder="Max"
@@ -364,10 +411,17 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                   <option>USD</option>
                   <option>EUR</option>
                 </select>
+                
               </div>
               {err("salaryMin")}
               {err("salaryMax")}
             </div>
+
+            <div style={{ marginBottom: '20px' }}>
+                <label className="auth-label">Project / Job Duration</label>
+                <input className="auth-input" name="jobDuration" placeholder="e.g., 3 months, 6 weeks, Ongoing"
+                  value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+              </div>
 
             {/* =======================
    Section 2: Job Details

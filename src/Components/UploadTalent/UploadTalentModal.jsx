@@ -10,6 +10,7 @@ function UploadTalentModal({
   show = false,
   onHide,
   onShow,
+  onUploading,
 }) {
   const [showModal, setShowModal] = useState(show);
   const [dragActive, setDragActive] = useState(false);
@@ -67,6 +68,9 @@ function UploadTalentModal({
 const handleAIProcess = async () => {
   if (uploadedFiles.length === 0) return;
 
+  // notify parent that uploading started
+  if (typeof onUploading === "function") onUploading(true);
+
   setIsProcessing(true);
 
   try {
@@ -102,6 +106,7 @@ const handleAIProcess = async () => {
     }
   } finally {
     setIsProcessing(false);
+    if (typeof onUploading === "function") onUploading(false);
   }
 };
 

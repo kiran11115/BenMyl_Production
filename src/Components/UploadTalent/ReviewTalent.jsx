@@ -264,7 +264,7 @@ const validateExpDescription = (val) => {
 // ===== PROJECTS VALIDATION FUNCTIONS =====
 const validateProjectName = (val) => {
   if (!val || val.trim() === "") return " name is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "Project name should contain only letters";
+  if (!/^[a-zA-Z0-9\s]*$/.test(val)) return "Project name should contain only letters";
   return null;
 };
 
@@ -708,7 +708,7 @@ const validateAllProjects = (projectsArr) => {
   
   const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
   if (allErrors.length > 0) {
-    setValidationErrorsState(allErrors);
+    setValidationErrorsState(allErrors[0]);
     return;
   }
 

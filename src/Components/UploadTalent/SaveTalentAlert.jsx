@@ -14,7 +14,7 @@ export const ValidationErrorModal = ({ errors = [], onClose, onRetry, onContactS
           </div>
 
           <h3 className="alert-title">Submission Error</h3>
-          <p className="alert-message">Please fix validation errors.</p>
+          <p className="alert-message">{errors}</p>
 
           <div className="link-button" style={{ marginTop: 16 }}>
             <button className="btn-alert-primary error-btn" onClick={onRetry}>
