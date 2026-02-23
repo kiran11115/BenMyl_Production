@@ -27,7 +27,7 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId,refreshTalents,clearShortlistForJob }) => {
   const [offerStatus, setOfferStatus] = useState({});
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
@@ -56,6 +56,8 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId
     await sendInviteNotification(payload).unwrap();
 
     setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
+    clearShortlistForJob(jobId); 
+    await refreshTalents();
     onClose();
   } catch (err) {
     console.error("Invite failed", err);
@@ -324,6 +326,9 @@ const TalentPool = () => {
     useTalentPoolMutation();
 
   const fetchTalents = async () => {
+    setPageNumber(1);
+  setHasMore(true);
+  setAllCandidates([]);
 
     const filtersArray = [];
 
@@ -600,6 +605,15 @@ const allSkills = useMemo(() => {
     });
   };
 
+  const clearShortlistForJob = (jobId) => {
+  setShortlistedMap((prev) => {
+    const updated = { ...prev };
+    delete updated[jobId];
+    return updated;
+  });
+};
+
+
 useEffect(() => {
   if (jobs.length === 0) return;
 
@@ -841,7 +855,7 @@ const handleProfileClick = (candidate) => {
                   justifyContent: "center",
                 }}
               >
-                <NoData text="No candidates found" />
+                <NoData text="No Matching Profiles found" />
               </div>
             ) : viewMode === "grid" ? (
               <TalentGridView
@@ -876,6 +890,8 @@ const handleProfileClick = (candidate) => {
           onRemove={handleRemoveFromDrawer}
           jobs={jobs}
     userId={userId}
+    refreshTalents={fetchTalents}
+    clearShortlistForJob={clearShortlistForJob}
         />
       ) : null}
 

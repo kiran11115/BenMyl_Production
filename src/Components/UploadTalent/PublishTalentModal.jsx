@@ -15,7 +15,8 @@ import {
 } from "react-icons/fi";
 import { FaPuzzlePiece } from "react-icons/fa";
 import { GiCheckMark } from "react-icons/gi";
-
+import { useLazyGetLinkedInAuthUrlQuery, useSaveHotlistImageMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+ 
 export default function PublishTalentModal({
   open,
   onClose,
@@ -27,20 +28,73 @@ export default function PublishTalentModal({
   const [isVendorOpen, setIsVendorOpen] = useState(true);
   const [showHotlist, setShowHotlist] = useState(false);
   const [hotlistLoading, setHotlistLoading] = useState(false);
+ 
+ 
+ const [saveHotlistImage] = useSaveHotlistImageMutation();
+const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlQuery();
 
+const handleLinkedInShare = async () => {
+  try {
+    const element = document.getElementById("hotlist-table");
+
+    if (!element) {
+      alert("Please create hotlist first.");
+      return;
+    }
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+    });
+
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((b) => {
+        if (!b) reject(new Error("Image generation failed"));
+        else resolve(b);
+      }, "image/png");
+    });
+
+    const EmailId = localStorage.getItem("Email");
+
+    const formData = new FormData();
+    formData.append("Title", "Selected Candidates Batch");
+    formData.append("Description", "Latest talent hotlist");
+    formData.append("File", blob, "hotlist.png");
+    formData.append("images", "null");
+    formData.append("EmailId", EmailId);
+
+    // 🔹 RTK Mutation Call
+    await saveHotlistImage(formData).unwrap();
+
+    // 🔹 RTK Lazy Query Call
+    const authResponse = await getLinkedInAuthUrl().unwrap();
+
+    if (!authResponse?.result_Message) {
+      throw new Error("LinkedIn auth URL not received");
+    }
+
+    window.location.href = authResponse.result_Message;
+
+  } catch (error) {
+    console.error("LinkedIn Share Error:", error);
+    alert(error?.data?.message || error.message || "LinkedIn share failed");
+  }
+};
+ 
+ 
   if (!open) return null;
-
+ 
   const handleCreateHotlist = () => {
     setShowHotlist(true);
     setHotlistLoading(true);
     setTimeout(() => setHotlistLoading(false), 1200);
   };
-
+ 
   const handleClearHotlist = () => {
     setShowHotlist(false);
     setHotlistLoading(false);
   };
-
+ 
   const handleDownloadHotlist = async () => {
     const table = document.getElementById("hotlist-table");
     if (!table) return;
@@ -50,7 +104,7 @@ export default function PublishTalentModal({
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
-
+ 
   const handlePublish = () => {
     if (!selectedTalents.length) return;
     setStatus("loading");
@@ -60,7 +114,7 @@ export default function PublishTalentModal({
       onClose();
     }, 1000);
   };
-
+ 
   const getInitials = (name = "") =>
     name
       .split(" ")
@@ -68,7 +122,7 @@ export default function PublishTalentModal({
       .slice(0, 2)
       .map((n) => n[0].toUpperCase())
       .join("");
-
+ 
   return createPortal(
     <>
       <div className="modal-overlay">
@@ -81,11 +135,11 @@ export default function PublishTalentModal({
               </div>
             </div>
           )}
-
+ 
           <button className="modal-close" onClick={onClose}>
             <FiX />
           </button>
-
+ 
           <div className="modal-inner">
             {/* LEFT */}
             <div className="modal-left">
@@ -96,7 +150,7 @@ export default function PublishTalentModal({
                     Review candidates or create hotlist
                   </p>
                 </div>
-
+ 
                 {!showHotlist && (
                   <button
                     className="btn-primary"
@@ -107,9 +161,9 @@ export default function PublishTalentModal({
                   </button>
                 )}
               </div>
-
+ 
               <hr className="modal-divider" />
-
+ 
               {/* HOTLIST */}
               {showHotlist && (
                 <div className="hotlist-wrapper">
@@ -142,7 +196,7 @@ export default function PublishTalentModal({
                           </button>
                         </div>
                       </div>
-
+ 
                       <table id="hotlist-table" className="hotlist-table">
                         <thead>
                           <tr>
@@ -171,7 +225,7 @@ export default function PublishTalentModal({
                   )}
                 </div>
               )}
-
+ 
               {/* TALENT LIST */}
               {!showHotlist && (
                 <div className="talent-list">
@@ -183,7 +237,7 @@ export default function PublishTalentModal({
                         <div className="initial-avatar">
                           {getInitials(talent.name)}
                         </div>
-
+ 
                         <div className="t-info">
                           <div className="t-header">
                             <span className="t-name">{talent.name}</span>
@@ -201,7 +255,7 @@ export default function PublishTalentModal({
                             {talent.experience}
                           </div>
                         </div>
-
+ 
                         <div className="t-actions">
                           {/* <button className="btn-primary w-75">
                             View Profile
@@ -219,12 +273,12 @@ export default function PublishTalentModal({
                 </div>
               )}
             </div>
-
+ 
             {/* RIGHT */}
             <aside className="modal-right">
               <div className="share-card">
                 <h4 className="share-title">Share Profile Batch</h4>
-
+ 
                 <div className="share-input-group">
                   <label className="input-label">Batch Link</label>
                   <div className="share-link-row">
@@ -238,9 +292,9 @@ export default function PublishTalentModal({
                     </button>
                   </div>
                 </div>
-
+ 
                 <div className="social-buttons-stack">
-                  <button className="social-btn linkedin">
+                 <button className="social-btn linkedin" onClick={handleLinkedInShare}>
                     <FiLinkedin className="social-icon" /> Share on LinkedIn
                   </button>
                   <button className="social-btn facebook">
@@ -250,7 +304,7 @@ export default function PublishTalentModal({
                     <FiMail className="social-icon" /> Share via Email
                   </button>
                 </div>
-
+ 
                 <div className="vendor-section">
                   <button
                     className="vendor-header"
@@ -262,7 +316,7 @@ export default function PublishTalentModal({
                     </div>
                     {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                   </button>
-
+ 
                   {isVendorOpen && (
                     <div className="vendor-list">
                       <label className="checkbox-row">
@@ -291,7 +345,7 @@ export default function PublishTalentModal({
               </div>
             </aside>
           </div>
-
+ 
           <div
             className="modal-actions-left gap-3"
             style={{ padding: "24px", borderTop: "1px solid #e2e8f0" }}
@@ -314,7 +368,7 @@ export default function PublishTalentModal({
           </div>
         </div>
       </div>
-
+ 
       {/* 🔹 INLINE STYLES (YOUR STYLES + HOTLIST) */}
       <style>{`
         .loading-overlay {
@@ -344,13 +398,13 @@ export default function PublishTalentModal({
           font-weight: 500;
           font-size: 14px;
         }
-
+ 
         .talent-list {
           display: flex;
           flex-direction: column;
           gap: 12px;
         }
-
+ 
         .talent-card-row {
           display: grid;
           grid-template-columns: auto 1fr auto;
@@ -366,7 +420,7 @@ export default function PublishTalentModal({
           border-color: #cbd5e1;
           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
-
+ 
         .t-info { display: flex; flex-direction: column; gap: 2px; }
         .t-header { display: flex; align-items: center; gap: 6px; }
         .t-name { font-weight: 700; color: #1e293b; font-size: 15px; }
@@ -374,7 +428,7 @@ export default function PublishTalentModal({
         .t-role { color: #3b82f6; font-size: 13px; font-weight: 500; }
         .t-meta { display: flex; gap: 6px; font-size: 12px; color: #64748b; }
         .bullet { color: #cbd5e1; }
-
+ 
         .t-actions { display: flex; gap: 8px; }
         .t-remove-btn {
           background: transparent;
@@ -389,7 +443,7 @@ export default function PublishTalentModal({
           color: #ef4444;
           border-color: #fecaca;
         }
-
+ 
         .empty-state {
           padding: 32px;
           text-align: center;
@@ -398,7 +452,7 @@ export default function PublishTalentModal({
           border-radius: 8px;
           background: #f8fafc;
         }
-
+ 
         .hotlist-wrapper {
           border: 1px solid #e2e8f0;
           border-radius: 10px;

@@ -31,7 +31,7 @@ const matchingCount = visibleCandidates.length;
 
       {visibleCandidates.length === 0 && (
         <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
-          No candidates to show
+          No Matching Profiles Found
         </div>
       )}
 

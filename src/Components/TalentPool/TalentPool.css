@@ -45,9 +45,6 @@
   padding: 0;
 }
 
-.link-button:hover {
-  text-decoration: underline;
-}
 
 /* Filter Groups */
 .fg {
