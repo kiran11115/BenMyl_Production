@@ -1731,7 +1731,17 @@ const UploadTalentProfile = () => {
                     </div>
                   ))
                 ) : (
+                  <div
+              style={{
+                gridColumn: "1 / -1",
+                minHeight: "320px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
                   <NoData text="No projects added yet" />
+                  </div>
                 )}
               </div>
             </div>

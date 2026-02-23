@@ -3,6 +3,7 @@ import { FiEye, FiMapPin, FiPlus } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import NoData from "../UploadTalent/NoData";
 
 // --- DATA ---
 
@@ -172,6 +173,9 @@ const PostedJobs = () => {
 
       {/* JSX */}
       <div className="jobs-wrapper">
+        {jobs.length === 0 ? (
+    <NoData text="No posted jobs available yet." />
+  ) : (
         <div className="jobs-grid">
           {jobs.map((job) => (
             <div key={job.id} className="job-card justify-content-between">
@@ -226,6 +230,7 @@ const PostedJobs = () => {
             </div>
           ))}
         </div>
+          )}
       </div>
     </>
   );

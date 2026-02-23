@@ -51,7 +51,22 @@ getMyBench: builder.mutation({
       }),
     }),
 
+    saveHotlistImage: builder.mutation({
+      query: (formData) => ({
+        url: "/api/uatcompany/save-image",
+        method: "POST",
+        body: formData,
+      }),
+    }),
+
+    getLinkedInAuthUrl: builder.query({
+      query: () => ({
+        url: "/api/Account/LoginWithLinkedInssds",
+        method: "GET",
+      }),
+    }),
+
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation  } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery  } = UploadResumeApiSlice;
