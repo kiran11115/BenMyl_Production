@@ -1,12 +1,10 @@
 import React from "react";
 import {
-  MoreVertical,
-  Clock,
-  DollarSign,
-  UploadCloud,
-  CheckCircle,
-  MessageSquare,
-} from "lucide-react";
+  FiMoreVertical,
+  FiClock,
+  FiDollarSign,
+  FiEye,
+} from "react-icons/fi";
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-US", {
@@ -22,14 +20,14 @@ const getStatusClass = (status) => {
   return "status-progress";
 };
 
-export default function ProjectCard({ project, onUpload, onReview }) {
+export default function ProjectCard({ project, onViewProgress }) {
   return (
     <div className="project-card">
       {/* Header */}
       <div className="card-header">
         <h3 className="card-title">{project.title}</h3>
         <button className="card-options-btn">
-          <MoreVertical size={16} />
+          <FiMoreVertical size={16} />
         </button>
       </div>
 
@@ -61,62 +59,32 @@ export default function ProjectCard({ project, onUpload, onReview }) {
         </div>
       </div>
 
-    <div className="d-flex justify-content-between">
-      {/* Details */}
-      <div className="card-details">
-        <div className="detail-item">
-          <Clock size={14} /> Due {project.dueDate}
+      <div className="d-flex justify-content-between">
+        {/* Details */}
+        <div className="card-details">
+          <div className="detail-item">
+            <FiClock size={14} /> Due {project.dueDate}
+          </div>
+          <div className="detail-item">
+            <FiDollarSign size={14} /> Budget: {formatCurrency(project.budget)}
+          </div>
         </div>
-        <div className="detail-item">
-          <DollarSign size={14} /> Budget: {formatCurrency(project.budget)}
+
+        {/* Status Tag */}
+        <div>
+          <span className={`status-tag ${getStatusClass(project.status)}`}>
+            {project.status}
+          </span>
         </div>
       </div>
 
-      {/* Status Tag */}
-      <div>
-        <span className={`status-tag ${getStatusClass(project.status)}`}>
-          {project.status}
-        </span>
-      </div>
-      </div>
-
-      {/* Action Buttons */}
+      {/* Action Button */}
       <div className="card-actions">
-        {project.status === "In Progress" && (
-          <button
-            className="btn-upload w-100"
-            onClick={() => onUpload(project.id)}
-          >
-            <UploadCloud size={14} /> Upload Work
-          </button>
-        )}
-
-        {project.status === "Awaiting Review" && (
-          <button
-            className="btn-review"
-            onClick={() => onReview(project.id)}
-            style={{
-              backgroundColor: "#10B981",
-              color: "white",
-              borderColor: "#10B981",
-            }}
-          >
-            <CheckCircle size={14} /> Mark Done
-          </button>
-        )}
-
-        {project.status === "Completed" && (
-          <button
-            className="btn-review"
-            disabled
-            style={{ opacity: 0.6 }}
-          >
-            <CheckCircle size={14} /> Completed
-          </button>
-        )}
-
-        <button className="btn-chat">
-          <MessageSquare size={16} />
+        <button
+          className="btn-upload w-100"
+          onClick={() => onViewProgress && onViewProgress(project)}
+        >
+          <FiEye size={14} /> View Progress
         </button>
       </div>
     </div>

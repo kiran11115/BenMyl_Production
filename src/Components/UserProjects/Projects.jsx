@@ -1,16 +1,17 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  MoreVertical,
-  Clock,
-  DollarSign,
-  UploadCloud,
-  CheckCircle,
-  MessageSquare,
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-} from "lucide-react";
+  FiMoreVertical,
+  FiClock,
+  FiDollarSign,
+  FiUploadCloud,
+  FiCheckCircle,
+  FiMessageSquare,
+  FiActivity,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiAlertCircle,
+} from "react-icons/fi";
 import "./Projects.css";
 import StatsRow from "./StatsRow";
 import ProjectsTimeline from "./ProjectsTimeline";
@@ -18,7 +19,7 @@ import ProjectsHeader from "./ProjectsHeader";
 import ProjectsGrid from "./ProjectsGrid";
 import PostedJobs from "./PostedJobs";
 
-// --- Initial Mock Data ---
+// ... (Constants remained same)
 const INITIAL_DATA = [
   {
     id: 1,
@@ -77,61 +78,8 @@ const INITIAL_DATA = [
   },
 ];
 
-// timeline data just for the colored bars
-// timeline data for status bars per project
-const TIMELINE_DATA = [
-  {
-    id: 1,
-    title: "E-commerce Website Redesign",
-    totalHours: "68h",
-    active: 65,
-    review: 20,
-    done: 15,
-  },
-  {
-    id: 2,
-    title: "Mobile App Development",
-    totalHours: "54h",
-    active: 50,
-    review: 30,
-    done: 20,
-  },
-  {
-    id: 3,
-    title: "Brand Identity Design",
-    totalHours: "40h",
-    active: 30,
-    review: 10,
-    done: 60,
-  },
-  {
-    id: 4,
-    title: "Marketing Campaign",
-    totalHours: "72h",
-    active: 70,
-    review: 15,
-    done: 15,
-  },
-  // {
-  //   id: 5,
-  //   title: "SEO Optimization",
-  //   totalHours: "36h",
-  //   active: 55,
-  //   review: 25,
-  //   done: 20,
-  // },
-  // {
-  //   id: 6,
-  //   title: "Landing Page A/B Test",
-  //   totalHours: "24h",
-  //   active: 40,
-  //   review: 35,
-  //   done: 25,
-  // },
-];
-
-
 export default function Projects() {
+  const navigate = useNavigate();
   const [view, setView] = useState("ongoingprojects");
   const [projects, setProjects] = useState(INITIAL_DATA);
   const [activeFilter, setActiveFilter] = useState("All Projects");
@@ -155,7 +103,7 @@ export default function Projects() {
         value: `$ ${totalEarnings.toLocaleString()}`,
         trend: "+12.5%",
         isPositive: true,
-        icon: DollarSign,
+        icon: FiDollarSign,
         colorClass: "blue",
       },
       {
@@ -163,7 +111,7 @@ export default function Projects() {
         value: activeProjects.length,
         trend: "+2 new",
         isPositive: true,
-        icon: Activity,
+        icon: FiActivity,
         colorClass: "indigo",
       },
       {
@@ -171,7 +119,7 @@ export default function Projects() {
         value: reviewProjects.length,
         trend: "Needs attn",
         isPositive: false,
-        icon: Clock,
+        icon: FiClock,
         colorClass: "amber",
       },
       {
@@ -179,7 +127,7 @@ export default function Projects() {
         value: completedProjects.length,
         trend: "All time",
         isPositive: true,
-        icon: CheckCircle,
+        icon: FiCheckCircle,
         colorClass: "emerald",
       },
     ];
@@ -198,27 +146,14 @@ export default function Projects() {
   }, [projects, activeFilter]);
 
   // --- Event Handlers ---
-  const handleUpload = (id) => {
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: "Awaiting Review", progress: 95 } : p
-      )
-    );
-  };
-
-  const handleReview = (id) => {
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: "Completed", progress: 100 } : p
-      )
-    );
+  const handleViewProgress = (project) => {
+    navigate(`/User/project-progress/${project.id}`, { state: { project } });
   };
 
   return (
     <div className="projects-page-wrapper">
       <div className="projects-container">
         <StatsRow stats={stats} />
-        {/* <ProjectsTimeline data={TIMELINE_DATA} /> */}
 
         <div className="view-toggle1">
           <button
@@ -233,39 +168,25 @@ export default function Projects() {
           >
             Posted jobs
           </button>
-
         </div>
-        {/* 
-        <PostedJobs /> */}
-
-        {/* <ProjectsGrid
-          projects={filteredProjects}
-          onUpload={handleUpload}
-          onReview={handleReview}
-        /> */}
 
         <div className="view-content">
           {view === "ongoingprojects" &&
-            <>
-              <div className="upload-main mt-3">
-                <ProjectsHeader
-                  activeFilter={activeFilter}
-                  onFilterChange={setActiveFilter}
-                />
-                <ProjectsGrid
-                  projects={filteredProjects}
-                  onUpload={handleUpload}
-                  onReview={handleReview}
-                />
-              </div>
-            </>
+            <div className="upload-main mt-3">
+              <ProjectsHeader
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+              />
+              <ProjectsGrid
+                projects={filteredProjects}
+                onViewProgress={handleViewProgress}
+              />
+            </div>
           }
           {view === "postedjobs" &&
-            <>
-              <div className="upload-main mt-3">
-                <PostedJobs />
-              </div >
-            </>
+            <div className="upload-main mt-3">
+              <PostedJobs />
+            </div >
           }
         </div>
       </div>

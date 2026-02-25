@@ -35,6 +35,7 @@ import AdminProfile from "./Admin/AdminProfile/AdminProfile";
 import EditProfile from "./ProfilePage/EditProfile";
 import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
 import JobOverview from "./UserProjects/JobOverview";
+import ProjectProgress from "./UserProjects/ProjectProgress";
 
 
 
@@ -60,6 +61,7 @@ const routes = createBrowserRouter(
                 <Route path="User" element={<Header />}>
                     <Route path="AI-screen" element={<AIScreen />} />
                     <Route path="user-projects" element={<Projects />} />
+                    <Route path="project-progress/:id" element={<ProjectProgress />} />
                     <Route path="user-dashboard" element={<Dashboard />} />
                     <Route path="user-upload-talent" element={<UploadTalent />} />
                     <Route path="user-Jobs" element={<Jobs />} />

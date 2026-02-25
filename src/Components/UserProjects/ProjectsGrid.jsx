@@ -1,8 +1,8 @@
 import React from "react";
-import { AlertCircle } from "lucide-react";
+import { FiAlertCircle } from "react-icons/fi";
 import ProjectCard from "./ProjectCard";
 
-export default function ProjectsGrid({ projects, onUpload, onReview }) {
+export default function ProjectsGrid({ projects, onViewProgress }) {
   if (projects.length === 0) {
     return (
       <div className="jobs-grid">
@@ -14,7 +14,7 @@ export default function ProjectsGrid({ projects, onUpload, onReview }) {
             color: "#64748b",
           }}
         >
-          <AlertCircle
+          <FiAlertCircle
             size={48}
             style={{ margin: "0 auto 16px", opacity: 0.5 }}
           />
@@ -30,8 +30,7 @@ export default function ProjectsGrid({ projects, onUpload, onReview }) {
         <ProjectCard
           key={project.id}
           project={project}
-          onUpload={onUpload}
-          onReview={onReview}
+          onViewProgress={onViewProgress}
         />
       ))}
     </div>
