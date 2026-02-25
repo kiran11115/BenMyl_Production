@@ -96,7 +96,7 @@ const handleAIProcess = async () => {
     handleClose();
 
     navigate("/user/user-upload-talent", {
-      state: { files: uploadedFiles },
+      state: { files: uploadedFiles,activeTab: "Review", },
     });
 
   } catch (error) {

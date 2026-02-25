@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 const PAGE_SIZE = 10;
-const UploadTalentTable = ({refreshKey}) => {
+const UploadTalentTable = ({refreshKey,externalLoading }) => {
  const navigate = useNavigate();
 
   const [talents, setTalents] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [tableLoading, setTableLoading] = useState(false);
 
   const [getQueueManagement, { isLoading }] =
     useGetQueueManagementMutation();
@@ -22,6 +23,7 @@ const UploadTalentTable = ({refreshKey}) => {
 
     const fetchQueue = async () => {
       try {
+        
         const payload = {
           companyid: Number(localStorage.getItem("logincompanyid")),
           pageNumber,
@@ -195,7 +197,7 @@ const UploadTalentTable = ({refreshKey}) => {
           </thead>
 
           <tbody>
-            {isLoading && (
+            {isLoading || externalLoading && (
     <tr>
       <td colSpan={9} style={{ textAlign: "center", padding: "40px" }}>
         <span style={{ color: "#64748b", fontSize: "14px" }}>
