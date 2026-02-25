@@ -199,7 +199,7 @@ const PostedJobs = () => {
                     <div className="stat-value1">{job.rateText} / hr</div>
                   </div>
                   <div>
-                    <div className="stat-label1">Experience Level</div>
+                    <div className="stat-label1">Exp Level</div>
                     <div className="stat-value1">{job.experienceLevel}</div>
                   </div>
                   <div>

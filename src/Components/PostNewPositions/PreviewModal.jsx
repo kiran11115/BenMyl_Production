@@ -26,26 +26,26 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
   const [isVendorOpen, setIsVendorOpen] = useState(true);
 
   const formatMarkdownToHtml = (text) => {
-  if (!text) return "";
+    if (!text) return "";
 
-  let formatted = text;
+    let formatted = text;
 
-  // Convert bold **text**
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    // Convert bold **text**
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  // Convert bullet points
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+    // Convert bullet points
+    formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
 
-  // Wrap <li> items inside <ul>
-  if (formatted.includes("<li>")) {
-    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  }
+    // Wrap <li> items inside <ul>
+    if (formatted.includes("<li>")) {
+      formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+    }
 
-  // Convert line breaks
-  formatted = formatted.replace(/\n/g, "<br/>");
+    // Convert line breaks
+    formatted = formatted.replace(/\n/g, "<br/>");
 
-  return formatted;
-};
+    return formatted;
+  };
 
   /* =========================
      HANDLERS
@@ -77,7 +77,7 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
      ALERT SCREENS
   ========================= */
   if (status === "success") {
-    return <SuccessModal onClose={onClose} data={data}/>;
+    return <SuccessModal onClose={onClose} data={data} />;
   }
 
   if (status === "error") {
@@ -106,13 +106,16 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
     department = "Engineering",
     experienceLevel = "4+ years",
     skills = [],
-    educationLevel = "Bachelor's degree"
+    educationLevel = "Bachelor's degree",
+    salaryType
   } = data || {};
 
   const salaryDisplay =
-    salaryMin || salaryMax
-      ? `${salaryMin || "—"} - ${salaryMax || "—"} ${currency}`
-      : "$120,000 - $150,000 /year";
+    salaryType === "entireBudget"
+      ? `${salaryMin} ${currency} (Fixed)`
+      : (salaryMin || salaryMax)
+        ? `${salaryMin || "—"} - ${salaryMax || "—"} ${currency}`
+        : "Salary Range Not Specified";
 
   /* =========================
      UI
@@ -142,8 +145,8 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
           <div className="modal-left">
             <div className="modal-top-row">
               <div className="modal-badge icon">
-  <FaBuilding size={18} />
-</div>
+                <FaBuilding size={18} />
+              </div>
               <div>
                 <h2 className="modal-job-title">{jobTitle}</h2>
                 <div className="muted small">{companyName}</div>
@@ -198,10 +201,10 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
 
             <div className="modal-description">
               <div
-  dangerouslySetInnerHTML={{
-    __html: formatMarkdownToHtml(description),
-  }}
-/>
+                dangerouslySetInnerHTML={{
+                  __html: formatMarkdownToHtml(description),
+                }}
+              />
             </div>
           </div>
 

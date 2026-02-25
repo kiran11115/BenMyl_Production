@@ -295,11 +295,8 @@ p.muted {
 
 /* [NEW] Vendor Section (Collapsible) */
 .vendor-section {
-  background-color: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  width: 100%;
 }
 
 .vendor-header {
@@ -307,17 +304,14 @@ p.muted {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  color: #334155;
-  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .vendor-header:hover {
-  background-color: #f8fafc;
+  border-color: #3b82f6;
 }
 
 .vendor-header-left {
@@ -333,10 +327,20 @@ p.muted {
 }
 
 .vendor-list {
-  padding: 0 16px 16px 16px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  z-index: 100;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .checkbox-row {
@@ -508,7 +512,7 @@ p.muted {
   transition: box-shadow 3s ease-in, transform 3s ease-in;
 }
 
-.auth-error{
+.auth-error {
   color: red;
   font-size: 12px;
 }
@@ -543,6 +547,7 @@ p.muted {
       #6f87ec,
       #e90fd8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -555,6 +560,7 @@ p.muted {
       #6f87ec,
       #e90fd8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

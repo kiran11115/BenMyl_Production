@@ -33,28 +33,39 @@ const JobOverview = () => {
 
   const job = data?.[0];
 
- const formatMarkdownToHtml = (text) => {
-  if (!text) return "";
 
-  let formatted = text;
+  const formatPostedDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-  // Remove first line completely
-  formatted = formatted.replace(/^[^\n]*\n?/, "");
+  const formatMarkdownToHtml = (text) => {
+    if (!text) return "";
 
-  // Convert bold
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    let formatted = text;
 
-  // Convert bullet points
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+    // Remove first line completely
+    formatted = formatted.replace(/^[^\n]*\n?/, "");
 
-  if (formatted.includes("<li>")) {
-    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  }
+    // Convert bold
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  formatted = formatted.replace(/\n/g, "<br/>");
+    // Convert bullet points
+    formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
 
-  return formatted;
-};
+    if (formatted.includes("<li>")) {
+      formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+    }
+
+    formatted = formatted.replace(/\n/g, "<br/>");
+
+    return formatted;
+  };
 
 
 
@@ -112,7 +123,7 @@ const JobOverview = () => {
 
                 <div className="meta-item text-orange">
                   <FiClock size={14} />
-                  Posted 2 days ago
+                  Posted on {formatPostedDate(job?.createdOn || job?.postedDate)}
                 </div>
               </div>
             </div>
@@ -149,16 +160,16 @@ const JobOverview = () => {
               <FiFileText size={14} /> Job Description
             </h4>
             {job?.jobDescription ? (
-  <div
-    dangerouslySetInnerHTML={{
-      __html: formatMarkdownToHtml(job.jobDescription),
-    }}
-  />
-) : (
-  <p style={{ color: "#64748b" }}>
-    No description available for this job.
-  </p>
-)}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: formatMarkdownToHtml(job.jobDescription),
+                }}
+              />
+            ) : (
+              <p style={{ color: "#64748b" }}>
+                No description available for this job.
+              </p>
+            )}
 
           </div>
 
@@ -202,7 +213,7 @@ const JobOverview = () => {
         {/* RIGHT SIDEBAR */}
         <div className="dashboard-column-side card-base filters-sidebar">
           <ShareJobCard />
-          <WorkAndPreference job={job}/>
+          <WorkAndPreference job={job} />
         </div>
       </div>
     </div>
