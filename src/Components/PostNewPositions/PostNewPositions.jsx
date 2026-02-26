@@ -170,7 +170,6 @@ const PostNewPositions = () => {
 
     try {
       await postJob(fd).unwrap();
-      alert("Job posted successfully");
     } catch (err) {
       console.error(err);
       alert("Failed to post job");
@@ -558,7 +557,7 @@ const PostNewPositions = () => {
                 style={{
                   paddingBottom: '16px',
                   borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '24px'
+                  marginBottom: '5px'
                 }}
               >
                 Job Details
@@ -628,13 +627,13 @@ const PostNewPositions = () => {
             {/* =======================
    Section 3: Requirements
 ======================= */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginTop: '34px' }}>
               <h3
                 className="section-title"
                 style={{
                   paddingBottom: '16px',
                   borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '24px'
+                  marginBottom: '5px'
                 }}
               >
                 Requirements

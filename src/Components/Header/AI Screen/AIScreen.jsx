@@ -149,165 +149,169 @@ const formReducer = (state, action) => {
  * Theme + styles (inline only)
  * ---------------------------- */
 const UI = {
-  bg: "#0b1020",
-  panelA: "rgba(255,255,255,0.06)",
+  bg: "#0a0e27",
+  panelA: "rgba(255,255,255,0.07)",
   panelB: "rgba(255,255,255,0.04)",
-  border: "rgba(255,255,255,0.10)",
-  border2: "rgba(255,255,255,0.14)",
-  text: "rgba(255,255,255,0.92)",
-  muted: "rgba(255,255,255,0.62)",
-  muted2: "rgba(255,255,255,0.48)",
+  border: "rgba(255,255,255,0.12)",
+  border2: "rgba(255,255,255,0.16)",
+  text: "rgba(255,255,255,0.95)",
+  muted: "rgba(255,255,255,0.65)",
+  muted2: "rgba(255,255,255,0.5)",
   primary: "#7c5cff",
-  primary2: "#9b7bff",
+  primary2: "#a78bfa",
+  accent: "#00d1ff",
+  accent2: "#ff0080",
   danger: "#ff4d4f",
-  shadow: "0 8px 30px rgba(0,0,0,0.35)",
-  shadow2: "0 16px 50px rgba(0,0,0,0.45)",
-  radiusLg: 18,
+  shadow: "0 12px 40px rgba(0,0,0,0.4)",
+  shadow2: "0 20px 60px rgba(0,0,0,0.5)",
+  radiusLg: 20,
   radiusMd: 14,
 };
 
 const S = {
   page: {
-    minHeight: "92vh",
-    padding: 22,
+    minHeight: "100vh",
+    padding: "32px 28px",
     background:
-      "radial-gradient(900px 500px at 20% 0%, rgba(124, 92, 255, 0.22), transparent 60%), radial-gradient(700px 450px at 80% 10%, rgba(0, 209, 255, 0.18), transparent 55%), radial-gradient(900px 600px at 60% 120%, rgba(255, 0, 128, 0.10), transparent 55%), " +
+      "radial-gradient(1000px 600px at 15% 0%, rgba(124, 92, 255, 0.25), transparent 50%), radial-gradient(800px 500px at 85% 10%, rgba(0, 209, 255, 0.2), transparent 45%), radial-gradient(900px 700px at 50% 120%, rgba(255, 0, 128, 0.12), transparent 55%), " +
       UI.bg,
     color: UI.text,
   },
-  container: { maxWidth: 1180, margin: "0 auto" },
+  container: { maxWidth: 1280, margin: "0 auto" },
 
-  header: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 16 },
-  title: { margin: 0, fontSize: 22, fontWeight: 900, letterSpacing: 0.2, color: UI.text },
+  header: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24, marginBottom: 32 },
+  title: { margin: 0, fontSize: 32, fontWeight: 900, letterSpacing: -0.5, color: UI.text, background: `linear-gradient(135deg, ${UI.primary}, ${UI.accent})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" },
 
   panel: {
-    background: `linear-gradient(180deg, ${UI.panelA}, ${UI.panelB})`,
+    background: `linear-gradient(135deg, ${UI.panelA}, ${UI.panelB})`,
     border: `1px solid ${UI.border}`,
     borderRadius: UI.radiusLg,
     boxShadow: UI.shadow,
-    padding: 18,
-    backdropFilter: "blur(10px)",
+    padding: 28,
+    backdropFilter: "blur(12px)",
   },
 
-  row: { display: "flex", alignItems: "center" },
-  rowGap8: { display: "flex", alignItems: "center", gap: 8 },
-  rowGap12: { display: "flex", alignItems: "center", gap: 12 },
-  rowBetween: { display: "flex", alignItems: "center", justifyContent: "space-between" },
+  row: { display: "flex", alignItems: "center", gap: 12 },
+  rowGap8: { display: "flex", alignItems: "center", gap: 12 },
+  rowGap12: { display: "flex", alignItems: "center", gap: 16 },
+  rowBetween: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 },
 
   btnBase: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    height: 40,
-    padding: "0 14px",
+    gap: 10,
+    height: 44,
+    padding: "0 16px",
     borderRadius: 999,
     border: "1px solid transparent",
     cursor: "pointer",
     userSelect: "none",
-    transition: "transform 140ms ease, box-shadow 140ms ease, background 140ms ease, border-color 140ms ease, opacity 140ms ease",
-    fontSize: 13,
+    transition: "all 160ms cubic-bezier(0.4, 0, 0.2, 1)",
+    fontSize: 14,
     fontWeight: 900,
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
     color: UI.text,
     background: "transparent",
   },
-  btnPrimary: { background: `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})`, boxShadow: "0 10px 28px rgba(124, 92, 255, 0.25)" },
-  btnSecondary: { background: "rgba(255,255,255,0.06)", border: `1px solid ${UI.border}` },
-  btnDisabled: { opacity: 0.55, cursor: "not-allowed" },
+  btnPrimary: { background: `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})`, boxShadow: "0 12px 32px rgba(124, 92, 255, 0.3)", border: "1px solid transparent" },
+  btnSecondary: { background: "rgba(255,255,255,0.08)", border: `1px solid ${UI.border2}` },
+  btnDisabled: { opacity: 0.5, cursor: "not-allowed" },
 
   iconBtn: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     borderRadius: 12,
     border: `1px solid ${UI.border}`,
-    background: "rgba(255,255,255,0.06)",
+    background: "rgba(255,255,255,0.07)",
     color: UI.text,
     cursor: "pointer",
-    transition: "background 140ms ease, transform 140ms ease, border-color 140ms ease",
+    transition: "all 160ms ease",
     display: "grid",
     placeItems: "center",
   },
 
-  inputWrap: { display: "flex", alignItems: "flex-end", gap: 10, padding: 12, borderRadius: UI.radiusLg, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)" },
-  textarea: { flex: 1, minHeight: 40, resize: "none", border: "none", outline: "none", background: "transparent", color: UI.text, fontSize: 14, lineHeight: 1.35, padding: "8px 8px" },
+  inputWrap: { display: "flex", alignItems: "flex-end", gap: 12, padding: 14, borderRadius: UI.radiusMd, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)" },
+  textarea: { flex: 1, minHeight: 48, resize: "none", border: "none", outline: "none", background: "transparent", color: UI.text, fontSize: 14, lineHeight: 1.5, padding: "10px 10px" },
 
   dropdown: {
     position: "absolute",
-    top: "calc(100% + 10px)",
+    top: "calc(100% + 12px)",
     left: 0,
     right: 0,
     zIndex: 30,
-    background: "rgba(10, 14, 28, 0.92)",
+    background: "rgba(10, 14, 28, 0.93)",
     border: `1px solid ${UI.border}`,
     borderRadius: UI.radiusLg,
     boxShadow: UI.shadow2,
     overflow: "hidden",
-    backdropFilter: "blur(10px)",
+    backdropFilter: "blur(12px)",
   },
-  dropdownHeader: { padding: "12px 14px", borderBottom: `1px solid ${UI.border}` },
-  dropdownTitle: { display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 900, fontSize: 13, color: UI.text },
-  listRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
+  dropdownHeader: { padding: "14px 16px", borderBottom: `1px solid ${UI.border}` },
+  dropdownTitle: { display: "inline-flex", alignItems: "center", gap: 10, fontWeight: 900, fontSize: 14, color: UI.text },
+  listRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
 
-  chip: { display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 999, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", color: UI.text, fontSize: 12 },
+  chip: { display: "inline-flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 999, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", color: UI.text, fontSize: 13 },
 
-  messageRow: { display: "flex", gap: 12 },
-  avatar: { width: 36, height: 36, borderRadius: 12, display: "grid", placeItems: "center", fontWeight: 950, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", flexShrink: 0 },
-  bubble: { background: "rgba(255,255,255,0.05)", border: `1px solid ${UI.border}`, borderRadius: 16, padding: "12px 14px", color: UI.text, fontSize: 13, lineHeight: 1.55 },
+  messageRow: { display: "flex", gap: 14 },
+  avatar: { width: 40, height: 40, borderRadius: 12, display: "grid", placeItems: "center", fontWeight: 950, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.07)", flexShrink: 0 },
+  bubble: { background: "rgba(255,255,255,0.06)", border: `1px solid ${UI.border}`, borderRadius: 16, padding: "14px 16px", color: UI.text, fontSize: 14, lineHeight: 1.6 },
 
-  grid4: { display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12 },
-  grid2: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 },
+  grid4: { display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 18 },
+  grid2: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18 },
 
   card: {
     borderRadius: 16,
     border: `1px solid ${UI.border}`,
-    background: "rgba(255,255,255,0.05)",
-    padding: 12,
+    background: "rgba(255,255,255,0.06)",
+    padding: 18,
     cursor: "pointer",
-    transition: "transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease",
+    transition: "all 160ms cubic-bezier(0.4, 0, 0.2, 1)",
     textAlign: "left",
+    overflow: "hidden",
+    position: "relative",
   },
 
   // overlay already has padding so modal doesn't stick to edges
-  modalOverlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "grid", placeItems: "center", padding: 18, zIndex: 60 },
+  modalOverlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", display: "grid", placeItems: "center", padding: 20, zIndex: 60 },
 
   // UPDATED: responsive modal box
   modal: {
     width: "96vw",
-    maxWidth: 880,
-    maxHeight: "75vh",
-    borderRadius: 18,
+    maxWidth: 920,
+    maxHeight: "82vh",
+    borderRadius: 20,
     border: `1px solid ${UI.border}`,
-    background: "rgba(10, 14, 28, 0.92)",
+    background: "rgba(10, 14, 28, 0.93)",
     boxShadow: UI.shadow2,
-    backdropFilter: "blur(12px)",
+    backdropFilter: "blur(14px)",
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
   },
 
-  modalHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${UI.border}` },
-  modalTitle: { margin: 0, fontSize: 14, fontWeight: 950, color: UI.text },
+  modalHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 20px", borderBottom: `1px solid ${UI.border}` },
+  modalTitle: { margin: 0, fontSize: 18, fontWeight: 950, color: UI.text },
 
   // UPDATED: allow scroll inside body
-  modalBody: { padding: 16, overflowY: "auto" },
+  modalBody: { padding: 20, overflowY: "auto" },
 
   // base grid (2 columns on desktop) – mobile handled by class + media query
-  formGrid: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 },
+  formGrid: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 },
 
-  field: { display: "flex", flexDirection: "column", gap: 6 },
-  label: { fontSize: 12, fontWeight: 950, color: UI.muted },
-  control: { borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", color: UI.text, padding: "10px 12px", outline: "none", fontSize: 13 },
+  field: { display: "flex", flexDirection: "column", gap: 8 },
+  label: { fontSize: 13, fontWeight: 950, color: UI.muted, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 },
+  control: { borderRadius: 14, border: `2px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", color: UI.text, padding: "12px 14px", outline: "none", fontSize: 14, minHeight: 44, transition: "all 200ms ease", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" },
 
-  multiselectTrigger: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: "10px 12px", cursor: "pointer" },
-  dropdownPanel: { position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, zIndex: 40, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(10, 14, 28, 0.96)", boxShadow: UI.shadow, maxHeight: 220, overflow: "auto" },
-  optionRow: { display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
+  multiselectTrigger: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", padding: "12px 14px", cursor: "pointer", minHeight: 44, transition: "all 160ms ease" },
+  dropdownPanel: { position: "absolute", top: "calc(100% + 10px)", left: 0, right: 0, zIndex: 40, borderRadius: 14, border: `1px solid ${UI.border}`, background: "rgba(10, 14, 28, 0.96)", boxShadow: UI.shadow2, maxHeight: 260, overflow: "auto" },
+  optionRow: { display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
 
-  pillRow: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 10 },
-  pill: { display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, border: "1px solid rgba(124,92,255,0.35)", background: "rgba(124,92,255,0.12)", padding: "8px 10px", fontSize: 12 },
-  pillX: { border: "none", background: "transparent", color: UI.text, cursor: "pointer", opacity: 0.8 },
+  pillRow: { display: "flex", flexWrap: "wrap", gap: 12, marginTop: 12 },
+  pill: { display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, border: "1px solid rgba(124,92,255,0.4)", background: "linear-gradient(135deg, rgba(124,92,255,0.15), rgba(167,139,250,0.08))", padding: "10px 12px", fontSize: 13, fontWeight: 600 },
+  pillX: { border: "none", background: "transparent", color: UI.text, cursor: "pointer", opacity: 0.8, transition: "all 160ms ease" },
 
-  benchCard: { borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14, transition: "transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease" },
+  benchCard: { borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", padding: 18, transition: "all 160ms cubic-bezier(0.4, 0, 0.2, 1)" },
 };
 
 /** -----------------------------
@@ -515,7 +519,7 @@ function SearchBar({
               >
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 10, minWidth: 0 }}>
                   <FiSearch size={16} style={{ color: UI.muted, flexShrink: 0 }} />
-                  <span style={{ color: UI.text, fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{search.text}</span>
+                  <span style={{ color: UI.text, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{search.text}</span>
                 </div>
 
                 <button
@@ -591,7 +595,7 @@ const TalentForm = React.memo(function TalentForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <div style={{ fontWeight: 950, margin: "0 0 10px", color: UI.text }}>Search Filters</div>
+      <div style={{ fontWeight: 950, margin: "0 0 10px", color: UI.text }}></div>
 
       {/* className enables media-query single-column on small screens */}
       <div style={S.formGrid} className="modal-form-grid">
@@ -605,6 +609,16 @@ const TalentForm = React.memo(function TalentForm({
               value={talentRoleInputDisplay}
               onChange={handleRoleChange}
               onBlur={handleRoleBlur}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = UI.primary;
+                e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+                e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = UI.border;
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+              }}
               style={S.control}
             />
 
@@ -634,18 +648,22 @@ const TalentForm = React.memo(function TalentForm({
               style={S.multiselectTrigger}
               onClick={() => setSkillsDropdownOpen((prev) => !prev)}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = UI.border2;
-                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+                e.currentTarget.style.borderColor = UI.primary;
+                e.currentTarget.style.background = "rgba(124,92,255,0.1)";
+                e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 6px 16px rgba(0,0,0,0.15)`;
+                e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = UI.border;
-                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              <span style={{ color: talentForm.skills.length === 0 ? UI.muted2 : UI.text }}>
+              <span style={{ color: talentForm.skills.length === 0 ? UI.muted2 : UI.text, fontWeight: 600 }}>
                 {talentForm.skills.length === 0 ? "Select skills" : `${talentForm.skills.length} selected`}
               </span>
-              <span style={{ color: UI.muted }}>{skillsDropdownOpen ? "▲" : "▼"}</span>
+              <span style={{ color: UI.muted, fontSize: 12 }}>{skillsDropdownOpen ? "▲" : "▼"}</span>
             </div>
 
             {skillsDropdownOpen && (
@@ -668,16 +686,18 @@ const TalentForm = React.memo(function TalentForm({
                       >
                         <span
                           style={{
-                            width: 18,
-                            height: 18,
+                            width: 20,
+                            height: 20,
                             borderRadius: 6,
-                            border: `1px solid ${UI.border2}`,
+                            border: `2px solid ${checked ? UI.primary : UI.border}`,
                             display: "grid",
                             placeItems: "center",
                             background: checked ? `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})` : "transparent",
                             color: UI.text,
                             fontSize: 12,
                             fontWeight: 950,
+                            transition: "all 160ms ease",
+                            boxShadow: checked ? `0 0 12px rgba(124,92,255,0.3)` : "none",
                           }}
                         >
                           {checked ? "✓" : ""}
@@ -724,6 +744,16 @@ const TalentForm = React.memo(function TalentForm({
               dispatch({ type: "SETFIELD", field: "qualifications", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = UI.primary;
+              e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = UI.border;
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+            }}
             style={S.control}
           />
         </div>
@@ -736,7 +766,17 @@ const TalentForm = React.memo(function TalentForm({
               dispatch({ type: "SETFIELD", field: "experience", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
-            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = UI.primary;
+              e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = UI.border;
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+            }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none", backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="%23a78bfa" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center", backgroundSize: "20px", paddingRight: "36px" }}
           >
             <option value="">Select experience</option>
             <option value="0-2 years">0-2 years</option>
@@ -755,7 +795,17 @@ const TalentForm = React.memo(function TalentForm({
               dispatch({ type: "SETFIELD", field: "salary", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
-            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = UI.primary;
+              e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = UI.border;
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+            }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none", backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="%23a78bfa" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center", backgroundSize: "20px", paddingRight: "36px" }}
           >
             <option value="">Select range</option>
             <option value="6 LPA">6 LPA</option>
@@ -776,7 +826,17 @@ const TalentForm = React.memo(function TalentForm({
               dispatch({ type: "SETFIELD", field: "workType", payload: e.target.value });
               setTalentPromptDirty(false);
             }}
-            style={{ ...S.control, appearance: "none", WebkitAppearance: "none" }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = UI.primary;
+              e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = UI.border;
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+            }}
+            style={{ ...S.control, appearance: "none", WebkitAppearance: "none", backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="%23a78bfa" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center", backgroundSize: "20px", paddingRight: "36px" }}
           >
             <option value="">Select work type</option>
             <option value="Remote">Remote</option>
@@ -794,6 +854,16 @@ const TalentForm = React.memo(function TalentForm({
             onChange={(e) => {
               dispatch({ type: "SETFIELD", field: "location", payload: e.target.value });
               setTalentPromptDirty(false);
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = UI.primary;
+              e.currentTarget.style.background = "rgba(124,92,255,0.08)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(124,92,255,0.1), 0 4px 12px rgba(0,0,0,0.15)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = UI.border;
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
             }}
             style={S.control}
           />
@@ -1212,15 +1282,15 @@ function AIScreen() {
         <div style={S.panel}>
           {showSavedPrompts ? (
             <>
-              <h3 style={{ margin: "0 0 14px", fontSize: 18, fontWeight: 950, color: UI.text }}>Saved Prompts</h3>
+              <h3 style={{ margin: "0 0 18px", fontSize: 20, fontWeight: 950, color: UI.text, letterSpacing: -0.3 }}>Saved Prompts</h3>
               {savedPrompts.length === 0 ? (
                 <p style={{ margin: 0, color: UI.muted }}>No saved prompts yet.</p>
               ) : (
                 <div style={S.grid2}>
                   {savedPrompts.map((savedPrompt) => (
-                    <div key={savedPrompt.id} style={{ borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14 }}>
-                      <div style={{ fontWeight: 950, marginBottom: 6 }}>{savedPrompt.name}</div>
-                      <div style={{ color: UI.muted, fontSize: 12, lineHeight: 1.55 }}>{savedPrompt.prompt}</div>
+                    <div key={savedPrompt.id} style={{ borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.06)", padding: 18, transition: "all 160ms ease" }}>
+                      <div style={{ fontWeight: 950, marginBottom: 8, fontSize: 15 }}>{savedPrompt.name}</div>
+                      <div style={{ color: UI.muted, fontSize: 13, lineHeight: 1.6 }}>{savedPrompt.prompt}</div>
 
                       <div style={{ ...S.rowGap8, marginTop: 10 }}>
                         <Button onClick={() => handleLoadSavedPrompt(savedPrompt)} style={{ flex: 1, height: 34, fontSize: 12 }} type="button">
@@ -1240,8 +1310,8 @@ function AIScreen() {
             </>
           ) : messages.length === 0 ? (
             <>
-              <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 950 }}>Looking for suggestions...</h3>
-              <p style={{ margin: "0 0 14px", color: UI.muted, fontSize: 13 }}>
+              <h3 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 950, color: UI.text, letterSpacing: -0.3 }}>Looking for suggestions...</h3>
+              <p style={{ margin: "0 0 20px", color: UI.muted, fontSize: 14, lineHeight: 1.6 }}>
                 Start by asking for talent or projects, or use a quick template to generate a search prompt.
               </p>
 
@@ -1252,21 +1322,21 @@ function AIScreen() {
                     onClick={() => handleSuggestedPromptClick(prompt)}
                     style={S.card}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.transform = "translateY(-6px)";
                       e.currentTarget.style.boxShadow = UI.shadow2;
-                      e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+                      e.currentTarget.style.borderColor = "rgba(124,92,255,0.5)";
+                      e.currentTarget.style.background = "rgba(255,255,255,0.09)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
                       e.currentTarget.style.boxShadow = "none";
                       e.currentTarget.style.borderColor = UI.border;
-                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
                     }}
                   >
-                    <div style={{ fontWeight: 950, fontSize: 14, color: UI.primary, marginBottom: 2 }}>{prompt.name}</div>
-                    <div style={{ fontSize: 11, color: UI.muted, fontWeight: 900 }}>{prompt.role}</div>
-                    <div style={{ fontSize: 12, color: UI.muted2, marginTop: 8 }}>
+                    <div style={{ fontWeight: 950, fontSize: 16, color: UI.primary, marginBottom: 4 }}>{prompt.name}</div>
+                    <div style={{ fontSize: 12, color: UI.muted, fontWeight: 900, marginBottom: 10 }}>{prompt.role}</div>
+                    <div style={{ fontSize: 13, color: UI.muted2 }}>
                       {prompt.data.salary} • {prompt.data.experience}
                     </div>
                   </button>
@@ -1276,32 +1346,36 @@ function AIScreen() {
                   onClick={() => alert("More templates coming soon!")}
                   style={{
                     ...S.card,
-                    border: `1px dashed ${UI.border2}`,
-                    background: "transparent",
+                    border: `2px dashed ${UI.border2}`,
+                    background: "rgba(255,255,255,0.03)",
                     color: UI.muted,
                     display: "flex",
                     alignItems: "center",
-                    gap: 10,
+                    gap: 12,
                     justifyContent: "center",
                     fontWeight: 950,
+                    fontSize: 14,
+                    transition: "all 160ms ease",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = UI.text;
-                    e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
+                    e.currentTarget.style.borderColor = UI.primary;
+                    e.currentTarget.style.background = "rgba(124,92,255,0.08)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = UI.muted;
                     e.currentTarget.style.borderColor = UI.border2;
+                    e.currentTarget.style.background = "rgba(255,255,255,0.03)";
                   }}
                 >
-                  <span>View More Templates</span>
+                  <span>✨ View More Templates</span>
                 </button>
               </div>
 
               {recentSearches.length > 0 && (
-                <div style={{ marginTop: 16 }}>
-                  <h4 style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 950, color: UI.text }}>Recent Searches</h4>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                <div style={{ marginTop: 20 }}>
+                  <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 950, color: UI.text, textTransform: "uppercase", letterSpacing: 0.5 }}>Recent Searches</h4>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                     {recentSearches.slice(0, 6).map((search, index) => (
                       <button
                         key={index}
@@ -1334,20 +1408,17 @@ function AIScreen() {
             </>
           ) : (
             <>
-              <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: 18 }}>
                 {messages.map((message) => (
                   <div key={message.id} style={S.messageRow}>
                     <div
                       style={{
                         ...S.avatar,
-                        background: message.type === "user" ? "rgba(124, 92, 255, 0.18)" : "rgba(0, 209, 255, 0.12)",
-                        borderColor: message.type === "user" ? "rgba(124, 92, 255, 0.35)" : "rgba(0, 209, 255, 0.25)",
-                      }}
-                    >
-                      {message.type === "user" ? "U" : "AI"}
-                    </div>
-
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                          background: message.type === "user" ? "rgba(124, 92, 255, 0.2)" : "rgba(0, 209, 255, 0.15)",
+                          borderColor: message.type === "user" ? "rgba(124, 92, 255, 0.4)" : "rgba(0, 209, 255, 0.3)",
+                        }}
+                      >
+                        {message.type === "user" ? "👤" : "🤖"}
                       <div style={S.bubble}>{message.content}</div>
 
                       {message.files && message.files.length > 0 && (
@@ -1362,7 +1433,7 @@ function AIScreen() {
                       )}
 
                       {message.type === "ai" && (
-                        <div style={{ ...S.grid4, marginTop: 12 }}>
+                        <div style={{ ...S.grid4, marginTop: 14 }}>
                           {suggestedBench.map((bench) => (
                             <SuggestedBenchCard key={bench.name} bench={bench} />
                           ))}
@@ -1375,7 +1446,7 @@ function AIScreen() {
                 {isLoading && (
                   <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     <div style={{ ...S.avatar, background: "rgba(0, 209, 255, 0.12)", borderColor: "rgba(0, 209, 255, 0.25)" }}>AI</div>
-                    <div style={{ color: UI.muted, fontSize: 13 }}>Thinking…</div>
+                    <div style={{ color: UI.muted, fontSize: 14 }}>Thinking…</div>
                   </div>
                 )}
 
@@ -1385,7 +1456,7 @@ function AIScreen() {
               <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
                 <div style={{ flex: 1 }}>
                   {attachedFiles.length > 0 && (
-                    <div style={{ marginBottom: 10, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    <div style={{ marginBottom: 10, display: "flex", flexWrap: "wrap", gap: 10 }}>>
                       {attachedFiles.map((file) => (
                         <div key={file.id} style={S.chip}>
                           <FiPaperclip size={14} />

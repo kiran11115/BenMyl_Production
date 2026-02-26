@@ -3,10 +3,11 @@ import UploadTalentTable from "./UploadTalentTable";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
+import { toast } from "react-toastify";
 
 
 const UploadTalent = () => {
@@ -64,6 +65,20 @@ useEffect(() => {
         updated.has(email) ? updated.delete(email) : updated.add(email);
         setSelectedEmails(updated);
     };
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+useEffect(() => {
+  const linkedinStatus = searchParams.get("linkedin");
+
+  if (linkedinStatus === "posted") {
+    toast.success("Posted successfully on LinkedIn 🎉");
+
+    // Remove query param so it doesn’t show again on refresh
+    searchParams.delete("linkedin");
+    setSearchParams(searchParams);
+  }
+}, []);
 
     return (
         <>
