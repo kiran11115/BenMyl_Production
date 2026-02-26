@@ -4,6 +4,8 @@ import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, Messa
 import "./Header.css";
 import Notifications from "./Notifications";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function Header() {
@@ -50,6 +52,7 @@ function Header() {
 
   const handleSignOut = () => {
     setIsProfileOpen(false); // Close menu
+    localStorage.removeItem("shortlistedMap");
     // Add your actual sign-out logic here (clearing tokens, context, etc.)
     console.log("User signed out");
     navigate("/sign-in"); // Redirect to login
@@ -223,7 +226,7 @@ function Header() {
           <Outlet />
         </main>
       </div>
-
+    <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }

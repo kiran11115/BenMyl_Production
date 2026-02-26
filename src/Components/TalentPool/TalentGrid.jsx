@@ -2,6 +2,7 @@ import React from "react";
 import { FiMapPin, FiStar, FiBriefcase, FiClock } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
+import NoData from "../UploadTalent/NoData";
 
 const TalentGridView = ({
   candidates = [],
@@ -30,9 +31,16 @@ const matchingCount = visibleCandidates.length;
       </div>
 
       {visibleCandidates.length === 0 && (
-        <div style={{ textAlign: "center", padding: "12px", color: "#94a3b8" }}>
-          No Matching Profiles Found
-        </div>
+        <div
+                style={{
+                  minHeight: "320px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <NoData text="No Matching Profiles found" />
+              </div>
       )}
 
       <div className="jobs-grid">

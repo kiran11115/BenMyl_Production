@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
-  FileText, X, Building2, Check
+  FileText, X, Building2, Check, ChevronDown
 } from 'lucide-react';
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import JobTitleAutocomplete from './JobTitleAutocomplete';
 import PreviewModal from './PreviewModal';
 import {
   useGenerateJobDescriptionAIMutation,
@@ -21,7 +22,7 @@ import './PostNewPositions.css';
 /* =========================
    VALIDATION SCHEMA
 ========================= */
-const validationSchema = Yup.object({
+const validationSchema = Yup.object().shape({
   jobTitle: Yup.string().required("Job Title is required"),
   companyName: Yup.string().required("Company Name is required"),
   location: Yup.string().required("Location is required"),
@@ -29,8 +30,13 @@ const validationSchema = Yup.object({
   salaryMin: Yup.number().typeError("Enter valid amount").required("Required"),
   salaryMax: Yup.number()
     .typeError("Enter valid amount")
-    .moreThan(Yup.ref("salaryMin"), "Must be greater than Min")
-    .required("Required"),
+    .when('salaryType', {
+      is: (val) => val !== 'entireBudget',
+      then: (schema) => schema
+        .required("Required")
+        .moreThan(Yup.ref("salaryMin"), "Must be greater than Min"),
+      otherwise: (schema) => schema.notRequired()
+    }),
   description: Yup.string().min(20, "Minimum 20 characters").required("Required"),
   workModel: Yup.string().required("Required"),
   department: Yup.string().required("Required"),
@@ -45,32 +51,37 @@ const PostNewPositions = () => {
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState([]);
   const [generateAI, { isLoading: isAiLoading }] =
-  useGenerateJobDescriptionAIMutation();
+    useGenerateJobDescriptionAIMutation();
 
-  // Work Authorization states - all start as false (unselected)
+  // Work Authorization states
   const [workAuthorization, setWorkAuthorization] = useState({
-    usCitizen: false,
-    gc: false,
-    h1b: false,
-    ead: false
+    Citizenship: false,
+    GC: false,
+    H1B: false,
+    EAD: false,
+    OPT: false,
+    CPT: false,
+    H4: false
   });
 
-  // Preferred Employment states - all start as false (unselected)
+  // Preferred Employment states
   const [preferredEmployment, setPreferredEmployment] = useState({
-    corpCorp: false,
-    w2Permanent: false,
-    w2Contract: false,
-    contract1099: false,
-    contractToHire: false
+    "Corp-Corp": false,
+    "W2-Permanent": false,
+    "W2-Contract": false,
+    "1099-Contract": false,
+    "Contract to Hire": false
   });
 
-  // Salary Type state
-  const [salaryType, setSalaryType] = useState('perHour');
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isEmpOpen, setIsEmpOpen] = useState(false);
+
+
 
   const [postJob] = usePostJobMutation();
   const [saveJobDraft] = useSaveJobDraftMutation();
   const user = localStorage.getItem("CompanyId");
-    const companyname = localStorage.getItem("CompanyName");
+  const companyname = localStorage.getItem("CompanyName");
 
   /* =========================
      FORMIK
@@ -87,6 +98,7 @@ const PostNewPositions = () => {
       salaryMin: '',
       salaryMax: '',
       salaryCurrency: 'USD',
+      salaryType: 'perHour',
       description: '',
       department: '',
       experienceLevel: '',
@@ -140,17 +152,20 @@ const PostNewPositions = () => {
     fd.append("IsDraft", false);
     fd.append("CreatedOn", new Date().toISOString());
     // 🔹 Work Authorization
-fd.append("IsUSCitizen", workAuthorization.usCitizen);
-fd.append("IsGC", workAuthorization.gc);
-fd.append("IsH1B", workAuthorization.h1b);
-fd.append("IsEAD", workAuthorization.ead);
+    fd.append("IsUSCitizen", workAuthorization.Citizenship);
+    fd.append("IsGC", workAuthorization.GC);
+    fd.append("IsH1B", workAuthorization.H1B);
+    fd.append("IsEAD", workAuthorization.EAD);
+    fd.append("IsOPT", workAuthorization.OPT);
+    fd.append("IsCPT", workAuthorization.CPT);
+    fd.append("IsH4", workAuthorization.H4);
 
-// 🔹 Preferred Employment
-fd.append("IsCorpToCorp", preferredEmployment.corpCorp);
-fd.append("IsW2Permanent", preferredEmployment.w2Permanent);
-fd.append("IsW2Contract", preferredEmployment.w2Contract);
-fd.append("Is1099Contract", preferredEmployment.contract1099);
-fd.append("IsContractToHire", preferredEmployment.contractToHire);
+    // 🔹 Preferred Employment
+    fd.append("IsCorpToCorp", preferredEmployment["Corp-Corp"]);
+    fd.append("IsW2Permanent", preferredEmployment["W2-Permanent"]);
+    fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
+    fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
+    fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
 
 
     try {
@@ -187,17 +202,20 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
     fd.append("IsDraft", true);
     fd.append("CreatedOn", new Date().toISOString());
     // 🔹 Work Authorization
-fd.append("IsUSCitizen", workAuthorization.usCitizen);
-fd.append("IsGC", workAuthorization.gc);
-fd.append("IsH1B", workAuthorization.h1b);
-fd.append("IsEAD", workAuthorization.ead);
+    fd.append("IsUSCitizen", workAuthorization.Citizenship);
+    fd.append("IsGC", workAuthorization.GC);
+    fd.append("IsH1B", workAuthorization.H1B);
+    fd.append("IsEAD", workAuthorization.EAD);
+    fd.append("IsOPT", workAuthorization.OPT);
+    fd.append("IsCPT", workAuthorization.CPT);
+    fd.append("IsH4", workAuthorization.H4);
 
-// 🔹 Preferred Employment
-fd.append("IsCorpToCorp", preferredEmployment.corpCorp);
-fd.append("IsW2Permanent", preferredEmployment.w2Permanent);
-fd.append("IsW2Contract", preferredEmployment.w2Contract);
-fd.append("Is1099Contract", preferredEmployment.contract1099);
-fd.append("IsContractToHire", preferredEmployment.contractToHire);
+    // 🔹 Preferred Employment
+    fd.append("IsCorpToCorp", preferredEmployment["Corp-Corp"]);
+    fd.append("IsW2Permanent", preferredEmployment["W2-Permanent"]);
+    fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
+    fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
+    fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
 
 
     try {
@@ -210,32 +228,54 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
   };
 
   const handleGenerateAI = async () => {
-  if (!formik.values.jobTitle || !formik.values.companyName || !formik.values.employmentType || !formik.values.workModel || !formik.values.educationLevel || !formik.values.yearsExperience || !skills) {
-    alert("Please enter All Required Fields");
-    return;
-  }
+    const selectedEmpTypes = Object.entries(preferredEmployment)
+      .filter(([_, v]) => v)
+      .map(([k]) => k)
+      .join(", ");
 
-  try {
-    const payload = {
-      jobTitle: formik.values.jobTitle,
-      companyName: formik.values.companyName,
-      employmentType: formik.values.employmentType,
-      workModel: formik.values.workModel,
-      education: formik.values.educationLevel,
-      experienceYears: formik.values.yearsExperience,
-      skills: skills,
-    };
+    const isAnyEmpTypeSelected = selectedEmpTypes.length > 0;
 
-    const res = await generateAI(payload).unwrap();
+    if (
+      !formik.values.jobTitle ||
+      !formik.values.companyName ||
+      !isAnyEmpTypeSelected ||
+      !formik.values.workModel ||
+      !formik.values.educationLevel ||
+      !formik.values.yearsExperience ||
+      skills.length === 0
+    ) {
+      alert("Please enter All Required Fields (Job Title, Company, Employment Type, Work Model, Education, Experience, and at least one Skill)");
+      return;
+    }
 
-    // 🔥 IMPORTANT: adjust this based on your API response structure
-    formik.setFieldValue("description", res?.description || res);
+    try {
+      const payload = {
+        jobTitle: formik.values.jobTitle,
+        companyName: formik.values.companyName,
+        employmentType: selectedEmpTypes,
+        workModel: formik.values.workModel,
+        education: formik.values.educationLevel,
+        experienceYears: formik.values.yearsExperience,
+        skills: skills,
+      };
 
-  } catch (err) {
-    console.error(err);
-    alert("Failed to generate AI description");
-  }
-};
+      const res = await generateAI(payload).unwrap();
+      let cleanedDescription = res?.description || res;
+
+      if (typeof cleanedDescription === 'string') {
+        cleanedDescription = cleanedDescription
+          .replace(/Job Description:\s*/gi, '')
+          .replace(/Required Skills:\s*/gi, '')
+          .trim();
+      }
+
+      formik.setFieldValue("description", cleanedDescription);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate AI description");
+    }
+  };
 
 
   /* =========================
@@ -255,30 +295,25 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
     setSkills(skills.filter(s => s !== skill));
   };
 
-  /* =========================
-     CHECKBOX HANDLERS
-  ========================= */
-  const handleWorkAuthChange = (field) => {
-    setWorkAuthorization(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
-  };
-
-  const handlePreferredEmpChange = (field) => {
-    setPreferredEmployment(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
-  };
 
   const modalData = {
     ...formik.values,
     skills,
     currency: formik.values.salaryCurrency,
     additional: formik.values.additionalReqs,
-    workAuthorization,
-    preferredEmployment
+    workAuthorization: {
+      usCitizen: workAuthorization.Citizenship,
+      gc: workAuthorization.GC,
+      h1b: workAuthorization.H1B,
+      ead: workAuthorization.EAD || workAuthorization.OPT || workAuthorization.CPT || workAuthorization.H4
+    },
+    preferredEmployment: {
+      corpCorp: preferredEmployment["Corp-Corp"],
+      w2Permanent: preferredEmployment["W2-Permanent"],
+      w2Contract: preferredEmployment["W2-Contract"],
+      contract1099: preferredEmployment["1099-Contract"],
+      contractToHire: preferredEmployment["Contract to Hire"]
+    }
   };
 
   const err = (name) =>
@@ -322,17 +357,39 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
               <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
                 Basic Information
               </h3>
-
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
+              <div>
               <label className="auth-label">Job Title</label>
-              <input className="auth-input" name="jobTitle" placeholder="e.g. Senior Frontend Developer"
-                value={formik.values.jobTitle} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-              {err("jobTitle")}
+              <JobTitleAutocomplete
+                name="jobTitle"
+                value={formik.values.jobTitle}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={err("jobTitle")}
+              />
+              </div>
+
+              <div>
+              <label className="auth-label">Project / Job Duration</label>
+              <select className="auth-input" name="jobDuration"
+                value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                <option value="">Select duration</option>
+                <option>1 Month</option>
+                <option>3 Months</option>
+                <option>6 Months</option>
+                <option>1 Year</option>
+                <option>Ongoing</option>
+              </select>
+              {err("jobDuration")}
+            </div>
+
+              </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
                 <div>
                   <label className="auth-label">Company Name</label>
                   <input className="auth-input bg-light" name="companyName" placeholder="Company"
-                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }}/>
+                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
                   {err("companyName")}
                 </div>
 
@@ -343,23 +400,53 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                   {err("location")}
                 </div>
 
-                <div>
+                <div style={{ flex: 1 }}>
                   <label className="auth-label">Employment Type</label>
-                  <select className="auth-input" name="employmentType"
-                    value={formik.values.employmentType} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select type</option>
-                    <option>Full-time</option>
-                    <option>Contract</option>
-                    <option>Freelance</option>
-                  </select>
+                  <div className="vendor-section">
+                    <div className="auth-input" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span>Select Employment Type</span>
+                      <ChevronDown size={16} className={`chevron ${isEmpOpen ? 'rotate' : ''}`} />
+                    </div>
+                    {isEmpOpen && (
+                      <div className="vendor-list">
+                        {Object.keys(preferredEmployment).map(type => (
+                          <label key={type} className="checkbox-row">
+                            <input
+                              type="checkbox"
+                              checked={preferredEmployment[type]}
+                              onChange={() => {
+                                const nextState = { ...preferredEmployment, [type]: !preferredEmployment[type] };
+                                setPreferredEmployment(nextState);
+
+                                // Keep Formik in sync for validation and AI
+                                const selected = Object.entries(nextState)
+                                  .filter(([_, v]) => v)
+                                  .map(([k]) => k)
+                                  .join(", ");
+                                formik.setFieldValue("employmentType", selected);
+                              }}
+                            />
+                            {type}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="modal-tags-row" style={{ marginTop: '8px' }}>
+                    {Object.entries(preferredEmployment)
+                      .filter(([_, v]) => v)
+                      .map(([k]) => (
+                        <span key={k} className="status-tag status-progress">{k}</span>
+                      ))}
+                  </div>
                   {err("employmentType")}
                 </div>
               </div>
 
-              
 
               <label className="auth-label">Salary Range</label>
-              
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
+             <div>
               {/* Radio Button Options */}
               <div style={{ marginBottom: '16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -368,8 +455,8 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     id="perHour"
                     name="salaryType"
                     value="perHour"
-                    checked={salaryType === 'perHour'}
-                    onChange={(e) => setSalaryType(e.target.value)}
+                    checked={formik.values.salaryType === 'perHour'}
+                    onChange={formik.handleChange}
                     style={{ cursor: 'pointer' }}
                   />
                   <label htmlFor="perHour" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Hour</label>
@@ -380,8 +467,8 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     id="perMonth"
                     name="salaryType"
                     value="perMonth"
-                    checked={salaryType === 'perMonth'}
-                    onChange={(e) => setSalaryType(e.target.value)}
+                    checked={formik.values.salaryType === 'perMonth'}
+                    onChange={formik.handleChange}
                     style={{ cursor: 'pointer' }}
                   />
                   <label htmlFor="perMonth" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Month</label>
@@ -392,38 +479,79 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     id="entireBudget"
                     name="salaryType"
                     value="entireBudget"
-                    checked={salaryType === 'entireBudget'}
-                    onChange={(e) => setSalaryType(e.target.value)}
+                    checked={formik.values.salaryType === 'entireBudget'}
+                    onChange={formik.handleChange}
                     style={{ cursor: 'pointer' }}
                   />
-                  <label htmlFor="entireBudget" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Entire Budget</label>
+                  <label htmlFor="entireBudget" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Fixed budget</label>
                 </div>
               </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 80px', gap: '16px' }}>
-                <input className="auth-input" name="salaryMin" placeholder="Min"
-                  value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                <input className="auth-input" name="salaryMax" placeholder="Max"
-                  value={formik.values.salaryMax} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr 100px' : '1fr 1fr 100px', gap: '16px' }}>
+                {formik.values.salaryType === 'entireBudget' ? (
+                  <input className="auth-input" name="salaryMin" placeholder="Fixed Budget Amount"
+                    value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                ) : (
+                  <>
+                    <input className="auth-input" name="salaryMin" placeholder="Min"
+                      value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                    <input className="auth-input" name="salaryMax" placeholder="Max"
+                      value={formik.values.salaryMax} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                  </>
+                )}
                 <select className="auth-input" name="salaryCurrency"
                   value={formik.values.salaryCurrency} onChange={formik.handleChange}>
                   <option>USD</option>
                   <option>EUR</option>
                 </select>
-                
               </div>
               {err("salaryMin")}
               {err("salaryMax")}
-            </div>
-
-            <div>
-                <label className="auth-label">Project / Job Duration</label>
-                <input className="auth-input" name="jobDuration" placeholder="e.g., 3 months, 6 weeks, Ongoing"
-                  value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur} />
               </div>
 
-            {/* ======================= Section 2: Job Details ======================= */}
-            <div style={{ marginTop: '40px' }}>
+
+
+   {/* Work Authorization Section
+=======================  */}
+              <div>
+                <label style={{marginBottom:"20px"}} className="auth-label">Work Authorization</label>
+                <div className="vendor-section">
+                  <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                    <span>Select Work Authorization</span>
+                    <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
+                  </div>
+                  {isAuthOpen && (
+                    <div className="vendor-list">
+                      {Object.keys(workAuthorization).map(auth => (
+                        <label key={auth} className="checkbox-row">
+                          <input
+                            type="checkbox"
+                            checked={workAuthorization[auth]}
+                            onChange={() => setWorkAuthorization(prev => ({ ...prev, [auth]: !prev[auth] }))}
+                          />
+                          {auth}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="modal-tags-row" style={{ marginTop: '8px' }}>
+                  {Object.entries(workAuthorization)
+                    .filter(([_, v]) => v)
+                    .map(([k]) => (
+                      <span key={k} className="status-tag status-progress">{k}</span>
+                    ))}
+                </div>
+              </div>
+</div>
+            </div>
+
+         
+
+            {/* =======================
+   Section 2: Job Details
+======================= */}
+            <div style={{ marginBottom: '40px' }}>
               <h3
                 className="section-title"
                 style={{
@@ -433,7 +561,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                 }}
               >
                 Job Details
-              </h3>     
+              </h3>
 
               {/* 3 Column Grid */}
               <div
@@ -457,9 +585,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     <option value="On-site">On-site</option>
                     <option value="Hybrid">Hybrid</option>
                   </select>
-                  {formik.touched.workModel && formik.errors.workModel && (
-                    <div className="auth-error">{formik.errors.workModel}</div>
-                  )}
+                  {err("workModel")}
                 </div>
 
                 <div>
@@ -476,9 +602,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     <option value="Design">Design</option>
                     <option value="Product">Product</option>
                   </select>
-                  {formik.touched.department && formik.errors.department && (
-                    <div className="auth-error">{formik.errors.department}</div>
-                  )}
+                  {err("department")}
                 </div>
 
                 <div>
@@ -495,9 +619,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     <option value="Mid-Level">Mid-Level</option>
                     <option value="Senior">Senior</option>
                   </select>
-                  {formik.touched.experienceLevel && formik.errors.experienceLevel && (
-                    <div className="auth-error">{formik.errors.experienceLevel}</div>
-                  )}
+                  {err("experienceLevel")}
                 </div>
               </div>
             </div>
@@ -581,9 +703,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                     <option value="Bachelors">Bachelor's Degree</option>
                     <option value="Masters">Master's Degree</option>
                   </select>
-                  {formik.touched.educationLevel && formik.errors.educationLevel && (
-                    <div className="auth-error">{formik.errors.educationLevel}</div>
-                  )}
+                  {err("educationLevel")}
                 </div>
 
                 <div>
@@ -609,13 +729,11 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                       }}
                     />
                   </div>
-                  {formik.touched.yearsExperience && formik.errors.yearsExperience && (
-                    <div className="auth-error">{formik.errors.yearsExperience}</div>
-                  )}
+                  {err("yearsExperience")}
                 </div>
               </div>
 
-                    <div className="auth-form-group">
+              <div className="auth-form-group">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description</label>
                   <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
@@ -627,364 +745,20 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                 <textarea
                   className="auth-input"
                   rows={6}
-                  style={{ resize: 'vertical', height:"120px" }}
+                  style={{ resize: 'vertical', height: "120px" }}
                   placeholder="Describe the role and responsibilities..."
                   name="description"
                   value={formik.values.description}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
-                {formik.touched.description && formik.errors.description && (
-                  <div className="auth-error">{formik.errors.description}</div>
-                )}
+                {err("description")}
               </div>
 
               {/* =======================
-   Work Authorization Section
-======================= */}
-              <div style={{ marginBottom: '32px' }}>
-                <label className="auth-label" style={{ marginBottom: '12px', display: 'block' }}>
-                  Work Authorization
-                </label>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '16px',
-                    marginBottom: '16px'
-                  }}
-                >
-                  {/* US Citizen */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${workAuthorization.usCitizen ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: workAuthorization.usCitizen ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handleWorkAuthChange('usCitizen')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${workAuthorization.usCitizen ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: workAuthorization.usCitizen ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {workAuthorization.usCitizen && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>US Citizen</span>
-                  </div>
 
-                  {/* Green Card */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${workAuthorization.gc ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: workAuthorization.gc ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handleWorkAuthChange('gc')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${workAuthorization.gc ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: workAuthorization.gc ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {workAuthorization.gc && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>GC</span>
-                  </div>
 
-                  {/* H1B */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${workAuthorization.h1b ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: workAuthorization.h1b ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handleWorkAuthChange('h1b')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${workAuthorization.h1b ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: workAuthorization.h1b ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {workAuthorization.h1b && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>H1B</span>
-                  </div>
-
-                  {/* EAD */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${workAuthorization.ead ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: workAuthorization.ead ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handleWorkAuthChange('ead')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${workAuthorization.ead ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: workAuthorization.ead ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {workAuthorization.ead && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>
-                      EAD (OPT/CPT/GC/H4)
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* =======================
-   Preferred Employment Section
-======================= */}
-              <div style={{ marginBottom: '32px' }}>
-                <label className="auth-label" style={{ marginBottom: '12px', display: 'block' }}>
-                  Preferred Employment
-                </label>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '16px'
-                  }}
-                >
-                  {/* Corp-Corp */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${preferredEmployment.corpCorp ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: preferredEmployment.corpCorp ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handlePreferredEmpChange('corpCorp')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${preferredEmployment.corpCorp ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: preferredEmployment.corpCorp ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {preferredEmployment.corpCorp && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>Corp-Corp</span>
-                  </div>
-
-                  {/* W2-Permanent */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${preferredEmployment.w2Permanent ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: preferredEmployment.w2Permanent ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handlePreferredEmpChange('w2Permanent')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${preferredEmployment.w2Permanent ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: preferredEmployment.w2Permanent ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {preferredEmployment.w2Permanent && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>
-                      W2-Permanent
-                    </span>
-                  </div>
-
-                  {/* W2-Contract */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${preferredEmployment.w2Contract ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: preferredEmployment.w2Contract ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handlePreferredEmpChange('w2Contract')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${preferredEmployment.w2Contract ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: preferredEmployment.w2Contract ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {preferredEmployment.w2Contract && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>W2-Contract</span>
-                  </div>
-
-                  {/* 1099-Contract */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${preferredEmployment.contract1099 ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: preferredEmployment.contract1099 ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handlePreferredEmpChange('contract1099')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${preferredEmployment.contract1099 ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: preferredEmployment.contract1099 ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {preferredEmployment.contract1099 && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>
-                      1099-Contract
-                    </span>
-                  </div>
-
-                  {/* Contract to Hire */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      border: `1px solid ${preferredEmployment.contractToHire ? '#3b82f6' : '#e2e8f0'}`,
-                      borderRadius: '8px',
-                      backgroundColor: preferredEmployment.contractToHire ? '#eff6ff' : '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onClick={() => handlePreferredEmpChange('contractToHire')}
-                  >
-                    <div
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        border: `2px solid ${preferredEmployment.contractToHire ? '#3b82f6' : '#cbd5e1'}`,
-                        borderRadius: '4px',
-                        marginRight: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: preferredEmployment.contractToHire ? '#3b82f6' : '#ffffff'
-                      }}
-                    >
-                      {preferredEmployment.contractToHire && (
-                        <Check size={14} color="#ffffff" />
-                      )}
-                    </div>
-                    <span style={{ fontWeight: '500' }}>
-                      Contract to Hire
-                    </span>
-                  </div>
-                </div>
-              </div>
+              {/* Preferred Employment Section removed because it is now part of Employment Type dropdown as requested */}
 
               {/* Additional Requirements */}
               <div className="auth-form-group">
@@ -999,7 +773,7 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                 <textarea
                   className="auth-input"
                   rows={4}
-                  style={{height:"120px"}}
+                  style={{ height: "120px" }}
                   placeholder="Any other requirements..."
                   name="additionalReqs"
                   value={formik.values.additionalReqs}
@@ -1083,9 +857,11 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
                 <div className="d-flex align-items-center gap-2">
                   <DollarSign size={14} />
                   <span>
-                    {formik.values.salaryMin && formik.values.salaryMax
-                      ? `${formik.values.salaryMin} - ${formik.values.salaryMax} ${formik.values.salaryCurrency}`
-                      : "Salary Range"}
+                    {formik.values.salaryType === 'entireBudget'
+                      ? `${formik.values.salaryMin} ${formik.values.salaryCurrency} (Fixed)`
+                      : formik.values.salaryMin && formik.values.salaryMax
+                        ? `${formik.values.salaryMin} - ${formik.values.salaryMax} ${formik.values.salaryCurrency}`
+                        : "Salary Range"}
                   </span>
                 </div>
 

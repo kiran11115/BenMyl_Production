@@ -3,42 +3,54 @@ import UploadTalentTable from "./UploadTalentTable";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
+import { toast } from "react-toastify";
 
 
 const UploadTalent = () => {
     const [showModal, setShowModal] = useState(false);
-    const [view, setView] = useState("Talent");
+    const location = useLocation();
+
+const [view, setView] = useState(
+  location.state?.activeTab || "Talent"
+);
+
+useEffect(() => {
+  if (location.state?.activeTab) {
+    setView(location.state.activeTab);
+  }
+}, [location.state]);
+
     const [refreshKey, setRefreshKey] = useState(0);
     const [showUploading, setShowUploading] = useState(false);
     const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
     const [showUploadError, setShowUploadError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
+    const [waitingForRefresh, setWaitingForRefresh] = useState(false);
 
     const handleUploadSuccess = (message) => {
-        // if message indicates failure, show error toast
-        if (message && String(message).toLowerCase().includes("fail")) {
-            setUploadErrorMessage(message);
-            setShowUploadError(true);
-            setTimeout(() => setShowUploadError(false), 10000);
-            return;
-        }
+  if (message && String(message).toLowerCase().includes("fail")) {
+    setUploadErrorMessage(message);
+    setShowUploadError(true);
+    setTimeout(() => setShowUploadError(false), 10000);
+    return;
+  }
 
-        // otherwise show success modal
-        setShowUploadedSuccess(true);
-        // hide after 10s
-        setTimeout(() => setShowUploadedSuccess(false), 10000);
-        // 🔁 Immediate refresh (optional)
-        setRefreshKey((prev) => prev + 1);
+  setShowUploadedSuccess(true);
+  setTimeout(() => setShowUploadedSuccess(false), 10000);
 
-        // ⏱ Auto refresh after 20 seconds
-        setTimeout(() => {
-            setRefreshKey((prev) => prev + 1);
-        }, 20000);
-    };
+  // 🔥 Start showing loading in table
+  setWaitingForRefresh(true);
+
+  // ⏳ Wait 20 seconds
+  setTimeout(() => {
+    setRefreshKey((prev) => prev + 1);
+    setWaitingForRefresh(false); // stop loading after refresh starts
+  }, 20000);
+};
 
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
@@ -53,6 +65,20 @@ const UploadTalent = () => {
         updated.has(email) ? updated.delete(email) : updated.add(email);
         setSelectedEmails(updated);
     };
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+useEffect(() => {
+  const linkedinStatus = searchParams.get("linkedin");
+
+  if (linkedinStatus === "posted") {
+    toast.success("Posted successfully on LinkedIn 🎉");
+
+    // Remove query param so it doesn’t show again on refresh
+    searchParams.delete("linkedin");
+    setSearchParams(searchParams);
+  }
+}, []);
 
     return (
         <>
@@ -127,6 +153,7 @@ const UploadTalent = () => {
                                     selectedEmails={selectedEmails}
                                     onToggleSelect={toggleSelect}
                                     refreshKey={refreshKey}
+                                    externalLoading={waitingForRefresh}
                                 />
                             ) : (
                                 <div

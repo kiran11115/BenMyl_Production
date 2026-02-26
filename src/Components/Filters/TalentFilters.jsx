@@ -73,8 +73,8 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
           {isOpen
             ? "Close List"
             : selectedValues.length > 0
-            ? "Add / Remove..."
-            : label}
+              ? "Add / Remove..."
+              : label}
         </span>
         {isOpen ? <FiChevronDown style={{ transform: "rotate(180deg)" }} /> : <FiPlus />}
       </div>
@@ -87,9 +87,8 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
               onClick={() => toggleOption(option)}
             >
               <div
-                className={`custom-checkbox ${
-                  selectedValues.includes(option) ? "checked" : ""
-                }`}
+                className={`custom-checkbox ${selectedValues.includes(option) ? "checked" : ""
+                  }`}
               >
                 {selectedValues.includes(option) && (
                   <FiCheck size={10} color="white" />
@@ -105,7 +104,7 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 };
 
 // --- MAIN FILTERS COMPONENT ---
-const TalentFilters = ({ onApplyFilters,jobs,selectedJobId,skillsList = [],appliedFilters }) => {
+const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], appliedFilters }) => {
   const initialFilters = {
     selectedJobs: [],
     skills: [],
@@ -133,13 +132,13 @@ const TalentFilters = ({ onApplyFilters,jobs,selectedJobId,skillsList = [],appli
   };
 
   useEffect(() => {
-  if (!selectedJobId) return;
+    if (!selectedJobId) return;
 
-  setFilterInputs((prev) => ({
-    ...prev,
-    selectedJobs: [selectedJobId],
-  }));
-}, [selectedJobId]);
+    setFilterInputs((prev) => ({
+      ...prev,
+      selectedJobs: [selectedJobId],
+    }));
+  }, [selectedJobId]);
 
 
   const handleInputChange = (field, value) =>
@@ -147,13 +146,16 @@ const TalentFilters = ({ onApplyFilters,jobs,selectedJobId,skillsList = [],appli
   const handleToggle = (field) =>
     setFilterInputs((prev) => ({ ...prev, [field]: !prev[field] }));
 
-   const toggleJobSelection = (jobId) => {
+  const toggleJobSelection = (jobId) => {
     setFilterInputs((prev) => {
-      const current = prev.selectedJobs[0];
+      const isSelected = prev.selectedJobs.includes(jobId);
+      const newSelectedJobs = isSelected
+        ? prev.selectedJobs.filter((id) => id !== jobId)
+        : [...prev.selectedJobs, jobId];
 
       return {
         ...prev,
-        selectedJobs: current === jobId ? [] : [jobId],
+        selectedJobs: newSelectedJobs,
       };
     });
   };
@@ -171,13 +173,13 @@ const TalentFilters = ({ onApplyFilters,jobs,selectedJobId,skillsList = [],appli
       selectedJobs: prev.selectedJobs.filter((id) => id !== jobId),
     }));
     if (onApplyFilters) {
-    onApplyFilters(null);
-  }
+      onApplyFilters(null);
+    }
   };
 
-const applyFilters = () => {
-  onApplyFilters(filterInputs);
-};
+  const applyFilters = () => {
+    onApplyFilters(filterInputs);
+  };
 
   const resetFilters = () => {
     setFilterInputs(initialFilters);
@@ -185,13 +187,13 @@ const applyFilters = () => {
   };
 
   useEffect(() => {
-  if (!appliedFilters) return;
+    if (!appliedFilters) return;
 
-  setFilterInputs((prev) => ({
-    ...prev,
-    ...appliedFilters,
-  }));
-}, [appliedFilters]);
+    setFilterInputs((prev) => ({
+      ...prev,
+      ...appliedFilters,
+    }));
+  }, [appliedFilters]);
 
   return (
     <div className="filter-sidebar">
@@ -250,17 +252,16 @@ const applyFilters = () => {
                   onClick={() => toggleJobSelection(job.id)}
                 >
                   <div
-                    className={`custom-checkbox ${
-                      filterInputs.selectedJobs.includes(job.id)
+                    className={`custom-checkbox ${filterInputs.selectedJobs.includes(job.id)
                         ? "checked"
                         : ""
-                    }`}
+                      }`}
                     style={
                       filterInputs.selectedJobs.includes(job.id)
                         ? {
-                            borderColor: job.color,
-                            backgroundColor: job.color,
-                          }
+                          borderColor: job.color,
+                          backgroundColor: job.color,
+                        }
                         : {}
                     }
                   >
@@ -371,75 +372,75 @@ const applyFilters = () => {
       </div>
 
       {/* Locations */}
-     <div className="filter-section">
-  <h4 className="section-title">Location</h4>
+      <div className="filter-section">
+        <h4 className="section-title">Location</h4>
 
-  <input
-    type="text"
-    className="filter-input"
-    placeholder="Add Location..."
-    value={filterInputs.location || ""}
-    onChange={(e) =>
-      handleInputChange("location", e.target.value)
-    }
-  />
-</div>
+        <input
+          type="text"
+          className="filter-input"
+          placeholder="Add Location..."
+          value={filterInputs.location || ""}
+          onChange={(e) =>
+            handleInputChange("location", e.target.value)
+          }
+        />
+      </div>
 
 
       {/* Experience */}
       <div className="filter-section">
-  <h4 className="section-title">Years Of Experience</h4>
+        <h4 className="section-title">Years Of Experience</h4>
 
-  <div style={{ display: "flex", gap: "8px" }}>
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Min"
-      value={filterInputs.minExperience || ""}
-      onChange={(e) =>
-        handleInputChange("minExperience", e.target.value)
-      }
-    />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            type="number"
+            className="filter-input"
+            placeholder="Min"
+            value={filterInputs.minExperience || ""}
+            onChange={(e) =>
+              handleInputChange("minExperience", e.target.value)
+            }
+          />
 
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Max"
-      value={filterInputs.maxExperience || ""}
-      onChange={(e) =>
-        handleInputChange("maxExperience", e.target.value)
-      }
-    />
-  </div>
-</div>
+          <input
+            type="number"
+            className="filter-input"
+            placeholder="Max"
+            value={filterInputs.maxExperience || ""}
+            onChange={(e) =>
+              handleInputChange("maxExperience", e.target.value)
+            }
+          />
+        </div>
+      </div>
 
 
-{/* Salary Range */}
-<div className="filter-section">
-  <h4 className="section-title">Salary Range</h4>
+      {/* Salary Range */}
+      <div className="filter-section">
+        <h4 className="section-title">Salary Range</h4>
 
-  <div style={{ display: "flex", gap: "8px" }}>
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Min Salary"
-      value={filterInputs.minSalary}
-      onChange={(e) =>
-        handleInputChange("minSalary", e.target.value)
-      }
-    />
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            type="number"
+            className="filter-input"
+            placeholder="Min Salary"
+            value={filterInputs.minSalary}
+            onChange={(e) =>
+              handleInputChange("minSalary", e.target.value)
+            }
+          />
 
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Max Salary"
-      value={filterInputs.maxSalary}
-      onChange={(e) =>
-        handleInputChange("maxSalary", e.target.value)
-      }
-    />
-  </div>
-</div>
+          <input
+            type="number"
+            className="filter-input"
+            placeholder="Max Salary"
+            value={filterInputs.maxSalary}
+            onChange={(e) =>
+              handleInputChange("maxSalary", e.target.value)
+            }
+          />
+        </div>
+      </div>
 
 
 

@@ -27,48 +27,48 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove,jobs,userId,refreshTalents,clearShortlistForJob }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob }) => {
   const [offerStatus, setOfferStatus] = useState({});
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
   const handleSendInvite = async (jobId) => {
-  setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
+    setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
 
-  try {
-    const shortlistedCandidates = shortlistedMap[jobId] || [];
-    if (!shortlistedCandidates.length) return;
+    try {
+      const shortlistedCandidates = shortlistedMap[jobId] || [];
+      if (!shortlistedCandidates.length) return;
 
-    const userIds = shortlistedCandidates.map(
-      (c) => Number(c.inviteUserId)
-    );
+      const userIds = shortlistedCandidates.map(
+        (c) => Number(c.inviteUserId)
+      );
 
-    const usernames = shortlistedCandidates.map((c) => c.name);
-    const employeeIds = shortlistedCandidates.map((c) => c.id);
+      const usernames = shortlistedCandidates.map((c) => c.name);
+      const employeeIds = shortlistedCandidates.map((c) => c.id);
 
-    const payload = {
-      userIds,
-      usernames,
-      employeeIds,
-      message: "You have been shortlisted. Please check your dashboard.",
-      uatUserId: Number(userId),
-    };
+      const payload = {
+        userIds,
+        usernames,
+        employeeIds,
+        message: "You have been shortlisted. Please check your dashboard.",
+        uatUserId: Number(userId),
+      };
 
-    await sendInviteNotification(payload).unwrap();
+      await sendInviteNotification(payload).unwrap();
 
-    setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
-    clearShortlistForJob(jobId); 
-    await refreshTalents();
-    onClose();
-  } catch (err) {
-    console.error("Invite failed", err);
-    setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
-    alert("Failed to send invite");
-  }
-};
+      setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
+      clearShortlistForJob(jobId);
+      await refreshTalents();
+      onClose();
+    } catch (err) {
+      console.error("Invite failed", err);
+      setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
+      alert("Failed to send invite");
+    }
+  };
 
-const hasAnyShortlistedCandidates = Object.values(shortlistedMap).some(
-  (list) => Array.isArray(list) && list.length > 0
-);
+  const hasAnyShortlistedCandidates = Object.values(shortlistedMap).some(
+    (list) => Array.isArray(list) && list.length > 0
+  );
 
 
   return (
@@ -86,7 +86,7 @@ const hasAnyShortlistedCandidates = Object.values(shortlistedMap).some(
         </div>
 
         <div className="drawer-content">
-          {!hasAnyShortlistedCandidates ?  (
+          {!hasAnyShortlistedCandidates ? (
             <div className="empty-state">No candidates shortlisted yet.</div>
           ) : (
             Object.keys(shortlistedMap).map((jobId) => {
@@ -296,23 +296,23 @@ const TalentPool = () => {
   const [viewMode, setViewMode] = useState("grid");
   const resultsRef = useRef(null);
   const [shortlistedMap, setShortlistedMap] = useState(() => {
-  try {
-    const stored = localStorage.getItem("shortlistedMap");
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-});
+    try {
+      const stored = localStorage.getItem("shortlistedMap");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedJobId, setSelectedJobId] = useState(null);
-  
+
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [allCandidates, setAllCandidates] = useState([]);
   const [isInitialised, setIsInitialised] = useState(false);
-  const [activeJobDetails, setActiveJobDetails] = useState(null);
+  const [allSelectedJobDetails, setAllSelectedJobDetails] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [appliedFilters, setAppliedFilters] = useState(null);
 
@@ -327,81 +327,84 @@ const TalentPool = () => {
 
   const fetchTalents = async () => {
     setPageNumber(1);
-  setHasMore(true);
-  setAllCandidates([]);
+    setHasMore(true);
+    setAllCandidates([]);
 
     const filtersArray = [];
 
-  if (appliedFilters) {
+    if (appliedFilters) {
 
-    // Title
-    if (appliedFilters.selectedJobs?.length) {
-      const job = jobs.find(j => j.id === appliedFilters.selectedJobs[0]);
-      if (job) {
+      // Title
+      if (appliedFilters.selectedJobs?.length) {
+        const selectedTitles = appliedFilters.selectedJobs
+          .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+          .filter(Boolean);
+
+        if (selectedTitles.length > 0) {
+          filtersArray.push({
+            filterName: "Title",
+            filterOperator: "Equals",
+            filterValue: selectedTitles,
+          });
+        }
+      }
+
+      // Skills
+      if (appliedFilters.skills?.length) {
         filtersArray.push({
-          filterName: "Title",
+          filterName: "skills",
           filterOperator: "Equals",
-          filterValue: [job.title],
+          filterValue: appliedFilters.skills,
+        });
+      }
+
+      // Location
+      if (appliedFilters.location) {
+        filtersArray.push({
+          filterName: "Location",
+          filterOperator: "Equals",
+          filterValue: [appliedFilters.location],
+        });
+      }
+
+      // Salary Range
+      if (appliedFilters.minSalary && appliedFilters.maxSalary) {
+        filtersArray.push({
+          filterName: "Salary Range",
+          filterOperator: "Equals",
+          filterValue: [
+            `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
+          ],
+        });
+      }
+
+      // Years of Experience
+      if (appliedFilters.minExperience && appliedFilters.maxExperience) {
+        filtersArray.push({
+          filterName: "Years of Experience",
+          filterOperator: "Equals",
+          filterValue: [
+            `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
+          ],
+        });
+      }
+
+      // Employment Type
+      if (appliedFilters.availability?.length) {
+        filtersArray.push({
+          filterName: "Employment Type",
+          filterOperator: "Equals",
+          filterValue: appliedFilters.availability,
         });
       }
     }
 
-    // Skills
-    if (appliedFilters.skills?.length) {
-      filtersArray.push({
-        filterName: "skills",
-        filterOperator: "Equals",
-        filterValue: appliedFilters.skills,
-      });
-    }
-
-    // Location
-    if (appliedFilters.location) {
-      filtersArray.push({
-        filterName: "Location",
-        filterOperator: "Equals",
-        filterValue: [appliedFilters.location],
-      });
-    }
-
-    // Salary Range
-    if (appliedFilters.minSalary && appliedFilters.maxSalary) {
-      filtersArray.push({
-        filterName: "Salary Range",
-        filterOperator: "Equals",
-        filterValue: [
-          `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
-        ],
-      });
-    }
-
-    // Years of Experience
-    if (appliedFilters.minExperience && appliedFilters.maxExperience) {
-      filtersArray.push({
-        filterName: "Years of Experience",
-        filterOperator: "Equals",
-        filterValue: [
-          `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
-        ],
-      });
-    }
-
-    // Employment Type
-    if (appliedFilters.availability?.length) {
-      filtersArray.push({
-        filterName: "Employment Type",
-        filterOperator: "Equals",
-        filterValue: appliedFilters.availability,
-      });
-    }
-  }
-
-  const payload = {
-    companyid: Number(companyId),
-    pageNumber,
-    pageSize: 50,
-    filters: filtersArray,
-  };
+    const payload = {
+      companyid: Number(companyId),
+      pageNumber,
+      pageSize: 50,
+      filters: filtersArray,
+    };
 
     const res = await getFindTalent(payload).unwrap();
 
@@ -421,8 +424,8 @@ const TalentPool = () => {
     return allCandidates.map((item) => ({
       id: item.employeeID,
 
-    name: `${item.firstName} ${item.lastName}`,
-    inviteUserId: Number(item.insertBy),
+      name: `${item.firstName} ${item.lastName}`,
+      inviteUserId: Number(item.insertBy),
 
       role: item.title || "—",
 
@@ -464,47 +467,47 @@ const TalentPool = () => {
       color: colorPalette[index % colorPalette.length],
     }));
   }, [jobTitles]);
-  
-const allSkills = useMemo(() => {
-  if (!Array.isArray(jobTitles)) return [];
 
-  const skillSet = new Set();
+  const allSkills = useMemo(() => {
+    if (!Array.isArray(jobTitles)) return [];
 
-  jobTitles.forEach((job) => {
-    if (job.requiredSkills) {
-      job.requiredSkills.split(",").forEach((skill) => {
-        const clean = skill.trim().toLowerCase();
-        if (clean) {
-          skillSet.add(clean);
-        }
-      });
-    }
-  });
+    const skillSet = new Set();
 
-  return Array.from(skillSet).map(
-    (skill) => skill.charAt(0).toUpperCase() + skill.slice(1)
-  );
-}, [jobTitles]);
+    jobTitles.forEach((job) => {
+      if (job.requiredSkills) {
+        job.requiredSkills.split(",").forEach((skill) => {
+          const clean = skill.trim().toLowerCase();
+          if (clean) {
+            skillSet.add(clean);
+          }
+        });
+      }
+    });
 
-
- useEffect(() => {
-  if (preselectedJobTitle && jobs.length > 0) {
-    const matchedJob = jobs.find(
-      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+    return Array.from(skillSet).map(
+      (skill) => skill.charAt(0).toUpperCase() + skill.slice(1)
     );
+  }, [jobTitles]);
 
-    if (matchedJob) {
-      setSelectedJobId(matchedJob.id);
 
-      setAppliedFilters((prev) => ({
-        ...prev,
-        selectedJobs: [matchedJob.id],
-      }));
+  useEffect(() => {
+    if (preselectedJobTitle && jobs.length > 0) {
+      const matchedJob = jobs.find(
+        (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+      );
 
-      setIsInitialised(true);
+      if (matchedJob) {
+        setSelectedJobId(matchedJob.id);
+
+        setAppliedFilters((prev) => ({
+          ...prev,
+          selectedJobs: [matchedJob.id],
+        }));
+
+        setIsInitialised(true);
+      }
     }
-  }
-}, [preselectedJobTitle, jobs]);
+  }, [preselectedJobTitle, jobs]);
 
 
 
@@ -521,9 +524,8 @@ const allSkills = useMemo(() => {
   }, [activeJobId]);
 
   useEffect(() => {
-    if (!isInitialised) return;   // 🚫 BLOCK early call
     fetchTalents();
-  }, [pageNumber, appliedFilters, isInitialised,activeJobId]);
+  }, [pageNumber, appliedFilters, activeJobId]);
 
 
 
@@ -554,39 +556,52 @@ const allSkills = useMemo(() => {
 
   const activeJobColor = activeJob?.color || "#4f46e5";
 
+  const allJobOverviewData = useMemo(() => {
+    return allSelectedJobDetails.map((details) => ({
+      id: details.jobID,
+      title: details.jobTitle,
+      company: details.companyName,
+      location: details.location,
+      budget: `${details.salaryRange_Min} - $${details.salaryRange_Max}`,
+      experience: details.yearsofExperience || details.experienceLevel,
+      type: details.employeeType,
+      description: details.jobDescription,
+      requiredSkills: details.requiredSkills
+        ? details.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    }));
+  }, [allSelectedJobDetails]);
+
   useEffect(() => {
-    if (!activeJob) {
-      setActiveJobDetails(null);
+    let isMounted = true;
+    const selectedJobIds = appliedFilters?.selectedJobs || [];
+    if (selectedJobIds.length === 0) {
+      setAllSelectedJobDetails([]);
       return;
     }
 
-    getJobById({
-      jobId: activeJob.jobID,
-      userId,
-    })
-      .unwrap()
-      .then((res) => {
-        // API returns array → take first item
-        setActiveJobDetails(res?.[0] || null);
+    const fetchDetails = async () => {
+      const detailsPromises = selectedJobIds.map((id) => {
+        const job = jobs.find((j) => j.id === id);
+        if (!job) return null;
+        return getJobById({ jobId: job.jobID, userId }).unwrap();
       });
-  }, [activeJob]);
 
-  const jobOverviewData = useMemo(() => {
-    if (!activeJobDetails) return null;
+      const results = await Promise.all(detailsPromises);
+      if (!isMounted) return;
 
-    return {
-      title: activeJobDetails.jobTitle,
-      company: activeJobDetails.companyName,
-      location: activeJobDetails.location,
-      budget: `${activeJobDetails.salaryRange_Min} - $${activeJobDetails.salaryRange_Max}`,
-      experience: activeJobDetails.yearsofExperience || activeJobDetails.experienceLevel,
-      type: activeJobDetails.employeeType,
-      description: activeJobDetails.jobDescription,
-      requiredSkills: activeJobDetails.requiredSkills
-        ? activeJobDetails.requiredSkills.split(",").map((s) => s.trim())
-        : [],
+      const validDetails = results
+        .filter(Boolean)
+        .map((res) => res?.[0])
+        .filter(Boolean);
+      setAllSelectedJobDetails(validDetails);
     };
-  }, [activeJobDetails]);
+
+    fetchDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, [appliedFilters?.selectedJobs, jobs, userId]);
 
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
@@ -606,107 +621,108 @@ const allSkills = useMemo(() => {
   };
 
   const clearShortlistForJob = (jobId) => {
-  setShortlistedMap((prev) => {
-    const updated = { ...prev };
-    delete updated[jobId];
-    return updated;
-  });
-};
-
-
-useEffect(() => {
-  if (jobs.length === 0) return;
-
-  const jobId = searchParams.get("jobId");
-  const skills = searchParams.get("skills");
-  const location = searchParams.get("location");
-  const minExp = searchParams.get("minExp");
-  const maxExp = searchParams.get("maxExp");
-  const minSal = searchParams.get("minSal");
-  const maxSal = searchParams.get("maxSal");
-  const type = searchParams.get("type");
-
-  if (!jobId && preselectedJobTitle) {
-    return; // 🔥 do NOT override
-  }
-
-  const restoredFilters = {
-    selectedJobs: jobId ? [jobId] : [],
-    skills: skills ? skills.split(",") : [],
-    location: location || "",
-    minExperience: minExp || "",
-    maxExperience: maxExp || "",
-    minSalary: minSal || "",
-    maxSalary: maxSal || "",
-    availability: type ? type.split(",") : [],
+    setShortlistedMap((prev) => {
+      const updated = { ...prev };
+      delete updated[jobId];
+      return updated;
+    });
   };
 
-  setSelectedJobId(jobId || null);
-  setAppliedFilters(restoredFilters);
-  setIsInitialised(true);
-}, [jobs, searchParams,preselectedJobTitle]);
 
+  useEffect(() => {
+    if (jobs.length === 0) return;
 
+    const jobId = searchParams.get("jobId");
+    const jobIdArray = jobId ? jobId.split(",") : [];
+    const skills = searchParams.get("skills");
+    const location = searchParams.get("location");
+    const minExp = searchParams.get("minExp");
+    const maxExp = searchParams.get("maxExp");
+    const minSal = searchParams.get("minSal");
+    const maxSal = searchParams.get("maxSal");
+    const type = searchParams.get("type");
 
-const handleApplyFilter = (filters) => {
-  setPageNumber(1);          // 🔥 RESET TO PAGE 1
-  setHasMore(true);          // reset infinite scroll
-  setAllCandidates([]);      // clear old data
-  setAppliedFilters(filters);
-
-  const params = {};
-
-  if (filters?.selectedJobs?.length) {
-    params.jobId = filters.selectedJobs[0];
-  }
-
-  if (filters?.skills?.length) {
-    params.skills = filters.skills.join(",");
-  }
-
-  if (filters?.location) {
-    params.location = filters.location;
-  }
-
-  if (filters?.minExperience) {
-    params.minExp = filters.minExperience;
-  }
-
-  if (filters?.maxExperience) {
-    params.maxExp = filters.maxExperience;
-  }
-
-  if (filters?.minSalary) {
-    params.minSal = filters.minSalary;
-  }
-
-  if (filters?.maxSalary) {
-    params.maxSal = filters.maxSalary;
-  }
-
-  if (filters?.availability?.length) {
-    params.type = filters.availability.join(",");
-  }
-
-  setSearchParams(params);
-};
-
-
-
-
-const handleProfileClick = (candidate) => {
-  const from = location.pathname + location.search;
-
-  navigate(
-    `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
-    {
-      state: {
-        employeeID: candidate.id,
-        jobId: activeJobId, // 🔥 this is critical
-      },
+    if (!jobId && preselectedJobTitle) {
+      return; // 🔥 do NOT override
     }
-  );
-};
+
+    const restoredFilters = {
+      selectedJobs: jobIdArray,
+      skills: skills ? skills.split(",") : [],
+      location: location || "",
+      minExperience: minExp || "",
+      maxExperience: maxExp || "",
+      minSalary: minSal || "",
+      maxSalary: maxSal || "",
+      availability: type ? type.split(",") : [],
+    };
+
+    setSelectedJobId(jobIdArray[0] || null);
+    setAppliedFilters(restoredFilters);
+    setIsInitialised(true);
+  }, [jobs, searchParams, preselectedJobTitle]);
+
+
+
+  const handleApplyFilter = (filters) => {
+    setPageNumber(1);          // 🔥 RESET TO PAGE 1
+    setHasMore(true);          // reset infinite scroll
+    setAllCandidates([]);      // clear old data
+    setAppliedFilters(filters);
+
+    const params = {};
+
+    if (filters?.selectedJobs?.length) {
+      params.jobId = filters.selectedJobs.join(",");
+    }
+
+    if (filters?.skills?.length) {
+      params.skills = filters.skills.join(",");
+    }
+
+    if (filters?.location) {
+      params.location = filters.location;
+    }
+
+    if (filters?.minExperience) {
+      params.minExp = filters.minExperience;
+    }
+
+    if (filters?.maxExperience) {
+      params.maxExp = filters.maxExperience;
+    }
+
+    if (filters?.minSalary) {
+      params.minSal = filters.minSalary;
+    }
+
+    if (filters?.maxSalary) {
+      params.maxSal = filters.maxSalary;
+    }
+
+    if (filters?.availability?.length) {
+      params.type = filters.availability.join(",");
+    }
+
+    setSearchParams(params);
+  };
+
+
+
+
+  const handleProfileClick = (candidate) => {
+    const from = location.pathname + location.search;
+
+    navigate(
+      `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
+      {
+        state: {
+          employeeID: candidate.id,
+          jobId: activeJobId, // 🔥 this is critical
+        },
+      }
+    );
+  };
 
 
 
@@ -737,11 +753,11 @@ const handleProfileClick = (candidate) => {
   }, [candidates, sortBy]);
 
   useEffect(() => {
-  localStorage.setItem(
-    "shortlistedMap",
-    JSON.stringify(shortlistedMap)
-  );
-}, [shortlistedMap]);
+    localStorage.setItem(
+      "shortlistedMap",
+      JSON.stringify(shortlistedMap)
+    );
+  }, [shortlistedMap]);
 
 
   return (
@@ -827,18 +843,23 @@ const handleProfileClick = (candidate) => {
           <aside className="hide-scrollbar" style={{
             overflowY: "auto",
           }}>
-            <TalentFilters  onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters}/>
+            <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
           </aside>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
             height: "calc(100vh - 0px)", // adjust if header height differs
             overflowY: "auto",
             overflowX: "hidden",
-            width:"600px"
+            width: "600px"
           }}>
-            {/* ALWAYS render overview card (shows empty state if no job) */}
-            <div style={{ marginBottom: 16 }}>
-              <JobOverviewCard job={jobOverviewData} />
+            {/* Render overview cards for all selected jobs */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
+              {allJobOverviewData.map((jobData) => (
+                <JobOverviewCard key={jobData.id} job={jobData} />
+              ))}
+              {allJobOverviewData.length === 0 && (
+                <JobOverviewCard job={null} />
+              )}
             </div>
             {isLoading && (
               <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
@@ -889,9 +910,9 @@ const handleProfileClick = (candidate) => {
           shortlistedMap={shortlistedMap}
           onRemove={handleRemoveFromDrawer}
           jobs={jobs}
-    userId={userId}
-    refreshTalents={fetchTalents}
-    clearShortlistForJob={clearShortlistForJob}
+          userId={userId}
+          refreshTalents={fetchTalents}
+          clearShortlistForJob={clearShortlistForJob}
         />
       ) : null}
 

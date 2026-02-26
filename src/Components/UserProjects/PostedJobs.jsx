@@ -20,6 +20,7 @@ const PostedJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
+      workModels:job.workModels,
       rateText: `$${job.salaryRange_Min}-${job.salaryRange_Max}`,
       experienceLevel: job.experienceLevel,
       skills: job.requiredSkills
@@ -199,12 +200,12 @@ const PostedJobs = () => {
                     <div className="stat-value1">{job.rateText} / hr</div>
                   </div>
                   <div>
-                    <div className="stat-label1">Experience Level</div>
+                    <div className="stat-label1">Exp Level</div>
                     <div className="stat-value1">{job.experienceLevel}</div>
                   </div>
                   <div>
-                    <div className="stat-label1">Type</div>
-                    <div className="stat-value1">{job.type}</div>
+                    <div className="stat-label1">Work Model</div>
+                    <div className="stat-value1">{job.workModels}</div>
                   </div>
                 </div>
 

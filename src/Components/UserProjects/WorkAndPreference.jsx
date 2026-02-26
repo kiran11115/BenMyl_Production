@@ -10,10 +10,13 @@ function WorkAndPreference({ job }) {
         <h2 className="section-title">Work Authorization</h2>
         <div className="options-grid">
 
-          <Option label="US Citizen" value={job?.isUSCitizen} />
-          <Option label="GC" value={job?.isGC} />
+          <Option label="OPT" value={job?.isOPT} />
+          <Option label="CPT" value={job?.isCPT} />
           <Option label="H1B" value={job?.isH1B} />
-          <Option label="EAD (OPT/CPT/GC/H4)" value={job?.isEAD} />
+          <Option label="EAD" value={job?.isEAD} />
+          <Option label="GC" value={job?.isGC} />
+          <Option label="H4" value={job?.isH4} />
+          <Option label="Citizenship" value={job?.isUSCitizen} />
 
         </div>
       </div>

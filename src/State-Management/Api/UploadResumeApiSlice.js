@@ -61,7 +61,7 @@ getMyBench: builder.mutation({
 
     getLinkedInAuthUrl: builder.query({
       query: () => ({
-        url: "/api/Account/LoginWithLinkedInssds",
+        url: "/api/uatcompany/LoginWithLinkedInssds",
         method: "GET",
       }),
     }),
