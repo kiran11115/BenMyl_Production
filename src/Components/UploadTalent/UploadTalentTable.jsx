@@ -4,10 +4,11 @@ import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import "./UploadTalent.css";
 
 const PAGE_SIZE = 10;
-const UploadTalentTable = ({refreshKey,externalLoading }) => {
- const navigate = useNavigate();
+const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false }) => {
+  const navigate = useNavigate();
 
   const [talents, setTalents] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -23,7 +24,7 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
 
     const fetchQueue = async () => {
       try {
-        
+
         const payload = {
           companyid: Number(localStorage.getItem("logincompanyid")),
           pageNumber,
@@ -36,7 +37,7 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
         if (!isMounted) return;
 
         const mapped = res.map((item) => ({
-          employeeID:item.employeeID,
+          employeeID: item.employeeID,
           fileName: item.resumeFileName,
           batchFormat: item.resumeFileName?.split(".").pop(),
           extractStatus: item.status,
@@ -74,12 +75,12 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
     return () => {
       isMounted = false;
     };
-  }, [pageNumber, getQueueManagement,refreshKey]);
+  }, [pageNumber, getQueueManagement, refreshKey]);
 
   useEffect(() => {
-  setPageNumber(1);
-  setHasMore(true);
-}, [refreshKey]);
+    setPageNumber(1);
+    setHasMore(true);
+  }, [refreshKey]);
 
   /* ================= SCROLL ================= */
   const handleScroll = (e) => {
@@ -162,7 +163,7 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
         <table className="custom-table">
           <thead>
             <tr>
-              <th style={{ width: 40 }}></th>
+              {!isDashboard && <th style={{ width: 40 }}></th>}
 
               <th onClick={() => requestSort("fileName")}>
                 FILE NAME <SortIcon columnKey="fileName" />
@@ -180,52 +181,58 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
                 CREATED <SortIcon columnKey="created" />
               </th>
 
-              <th onClick={() => requestSort("uploadedBy")}>
-                UPLOADED BY <SortIcon columnKey="uploadedBy" />
-              </th>
+              {!isDashboard && (
+                <th onClick={() => requestSort("uploadedBy")}>
+                  UPLOADED BY <SortIcon columnKey="uploadedBy" />
+                </th>
+              )}
 
               <th onClick={() => requestSort("uploadDate")}>
                 UPLOAD DATE <SortIcon columnKey="uploadDate" />
               </th>
 
-              <th onClick={() => requestSort("confidence")}>
-                CONFIDENCE <SortIcon columnKey="confidence" />
-              </th>
+              {!isDashboard && (
+                <th onClick={() => requestSort("confidence")}>
+                  CONFIDENCE <SortIcon columnKey="confidence" />
+                </th>
+              )}
 
               <th>ACTIONS</th>
             </tr>
           </thead>
 
           <tbody>
-            {isLoading || externalLoading && (
-    <tr>
-      <td colSpan={9} style={{ textAlign: "center", padding: "40px" }}>
-        <span style={{ color: "#64748b", fontSize: "14px" }}>
-          Loading resumes...
-        </span>
-      </td>
-    </tr>
-  )}
+            {(isLoading || externalLoading) && (
+              <tr>
+                <td colSpan={isDashboard ? 6 : 9} style={{ textAlign: "center", padding: "40px" }}>
+                  <span style={{ color: "#64748b", fontSize: "14px" }}>
+                    Loading resumes...
+                  </span>
+                </td>
+              </tr>
+            )}
             {!isLoading && sortedTalents.length === 0 && (
-    <tr>
-      <td colSpan={9} style={{ textAlign: "center", padding: "40px" }}>
-        <span style={{ color: "#64748b", fontSize: "14px" }}>
-          No resumes uploaded
-        </span>
-      </td>
-    </tr>
-  )}
+              <tr>
+                <td colSpan={isDashboard ? 6 : 9} style={{ textAlign: "center", padding: "40px" }}>
+                  <span style={{ color: "#64748b", fontSize: "14px" }}>
+                    No resumes uploaded
+                  </span>
+                </td>
+              </tr>
+            )}
             {sortedTalents.map((talent, i) => {
               const isSelected = selectedEmails.has(talent.email);
               return (
                 <tr key={i} className={isSelected ? "row-selected" : ""}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => onToggleSelect(talent.email)}
-                    />
-                  </td>
+                  {!isDashboard && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect(talent.email)}
+                      />
+                    </td>
+                  )}
 
                   {/* FILE NAME */}
                   <td>
@@ -265,19 +272,21 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
                   </td>
 
                   {/* UPLOADED BY */}
-                  <td>{talent.uploadedBy}</td>
+                  {!isDashboard && <td>{talent.uploadedBy}</td>}
 
                   {/* UPLOAD DATE */}
                   <td>{talent.uploadDate}</td>
 
                   {/* CONFIDENCE */}
-                  <td>
-                    <span
-                      className={`status-tag ${talent.confidenceClass}`}
-                    >
-                      {talent.confidence}
-                    </span>
-                  </td>
+                  {!isDashboard && (
+                    <td>
+                      <span
+                        className={`status-tag ${talent.confidenceClass}`}
+                      >
+                        {talent.confidence}
+                      </span>
+                    </td>
+                  )}
 
                   {/* ACTIONS */}
                   <td>
@@ -285,10 +294,10 @@ const UploadTalentTable = ({refreshKey,externalLoading }) => {
                       className="border-0 w-50"
                       style={{ background: "none" }}
                       onClick={() =>
-      navigate("/user/review-talent", {
-        state: { employeeID: talent.employeeID },
-      })
-    }
+                        navigate("/user/review-talent", {
+                          state: { employeeID: talent.employeeID },
+                        })
+                      }
                     >
                       <IoEyeOutline size={16} />
                     </button>

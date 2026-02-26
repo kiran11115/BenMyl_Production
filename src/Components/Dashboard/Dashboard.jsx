@@ -14,7 +14,7 @@ import {
 import { Briefcase, Users, FileText, DollarSign } from "lucide-react";
 import StatsGrid from "./StatsGrid";
 import ProjectsSection from "./ProjectsSection";
-import RecentApplications from "./RecentApplications";
+import UploadTalentTable from "../UploadTalent/UploadTalentTable";
 import HiringPipelineChart from "./charts/HiringPipelineChart";
 import BudgetChart from "./charts/BudgetChart";
 import InterviewsList from "./InterviewsList";
@@ -49,88 +49,7 @@ const projects = [
   { title: "Cybersecurity Audit", company: "SecureNet Solutions", status: "Pending", statusClass: "status-pending", progress: 0, budget: "$45,000", dueDate: "Jan 10, 2024" },
 ];
 
-const recentApplications = [
-  { 
-    name: "Sarah Johnson", 
-    email: "sarah.j@techsolutions.com",
-    role: "Senior Dev", 
-    status: "Shortlisted", 
-    statusClass: "status-completed",
-    avatar: "https://i.pravatar.cc/150?img=1"
-  },
-  { 
-    name: "Michael Chen", 
-    email: "m.chen@digitaldyn.net",
-    role: "Project Mgr", 
-    status: "In Review", 
-    statusClass: "status-review",
-    avatar: "https://i.pravatar.cc/150?img=11"
-  },
-  { 
-    name: "Emily Davis", 
-    email: "edavis.dev@gmail.com",
-    role: "DevOps Eng", 
-    status: "Interviewing", 
-    statusClass: "status-progress",
-    avatar: "https://i.pravatar.cc/150?img=5"
-  },
-  { 
-    name: "David Lee", 
-    email: "david.lee88@outlook.com",
-    role: "Backend Dev", 
-    status: "Interviewing", 
-    statusClass: "status-progress",
-    avatar: "https://i.pravatar.cc/150?img=3"
-  },
-  { 
-    name: "Maria Garcia", 
-    email: "maria.g.qa@testlab.io",
-    role: "QA Engineer", 
-    status: "Shortlisted", 
-    statusClass: "status-completed",
-    avatar: "https://i.pravatar.cc/150?img=9"
-  },
-  { 
-    name: "James Williams", 
-    email: "jwilliams@dataminds.com",
-    role: "Data Scientist", 
-    status: "In Review", 
-    statusClass: "status-review",
-    avatar: "https://i.pravatar.cc/150?img=8"
-  },
-  { 
-    name: "Olivia Martinez", 
-    email: "omartinez@product.co",
-    role: "Product Owner", 
-    status: "Offer Extended", 
-    statusClass: "status-progress",
-    avatar: "https://i.pravatar.cc/150?img=20"
-  },
-  { 
-    name: "John Smith", 
-    email: "john.smith.ui@design.net",
-    role: "UI/UX Designer", 
-    status: "New", 
-    statusClass: "status-review",
-    avatar: "https://i.pravatar.cc/150?img=12"
-  },
-  { 
-    name: "William Rodriguez", 
-    email: "will.rod@sysops.org",
-    role: "SysAdmin", 
-    status: "Rejected", 
-    statusClass: "status-pending",
-    avatar: "https://i.pravatar.cc/150?img=53"
-  },
-  { 
-    name: "Ava Wilson", 
-    email: "ava.w@frontend.dev",
-    role: "Jr. Frontend Dev", 
-    status: "New", 
-    statusClass: "status-review",
-    avatar: "https://i.pravatar.cc/150?img=44"
-  },
-];
+// Data constants removed as UploadTalentTable handles its own fetching
 
 const interviews = [
   { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Final" },
@@ -204,22 +123,25 @@ const Dashboard = () => {
         {/* LEFT COLUMN: Projects & Applications */}
         <div className="dashboard-column-main">
           <ProjectsSection projects={projects} />
-          <RecentApplications applications={recentApplications} />
+          <div style={{ marginTop: "32px", marginBottom: "16px" }}>
+            <h3 className="section-title">Review Profiles</h3>
+          </div>
+          <UploadTalentTable isDashboard={true} />
         </div>
 
         {/* RIGHT COLUMN: Charts & Interviews */}
         <div className="dashboard-column-side">
-          <HiringPipelineChart 
-            data={pipelineLineData} 
-            tooltipTheme={tooltipTheme} 
+          <HiringPipelineChart
+            data={pipelineLineData}
+            tooltipTheme={tooltipTheme}
           />
-          
+
           <BudgetChart
-            data={budgetDoughnutData} 
-            totalBudget={125000} 
-            tooltipTheme={tooltipTheme} 
+            data={budgetDoughnutData}
+            totalBudget={125000}
+            tooltipTheme={tooltipTheme}
           />
-          
+
           <InterviewsList interviews={interviews} />
         </div>
       </div>
