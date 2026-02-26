@@ -117,9 +117,13 @@ const JobOverview = () => {
                 </div>
 
                 <div className="meta-item">
-                  <FiDollarSign size={14} />${job?.salaryRange_min || "25"} -
-                  {job?.salaryRange_max || "30"} USD/hour
-                </div>
+  <FiDollarSign size={14} />
+  {job?.salaryRange_Min && job?.salaryRange_Max
+    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} USD/hour`
+    : job?.salaryRange_Min
+    ? `${job.salaryRange_Min} USD/hour`
+    : ""}
+</div>
 
                 <div className="meta-item text-orange">
                   <FiClock size={14} />

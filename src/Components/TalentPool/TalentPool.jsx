@@ -524,9 +524,8 @@ const TalentPool = () => {
   }, [activeJobId]);
 
   useEffect(() => {
-    if (!isInitialised) return;   // 🚫 BLOCK early call
     fetchTalents();
-  }, [pageNumber, appliedFilters, isInitialised, activeJobId]);
+  }, [pageNumber, appliedFilters, activeJobId]);
 
 
 
