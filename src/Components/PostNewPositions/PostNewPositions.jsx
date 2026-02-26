@@ -155,7 +155,6 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
 
     try {
       await postJob(fd).unwrap();
-      alert("Job posted successfully");
     } catch (err) {
       console.error(err);
       alert("Failed to post job");
@@ -417,22 +416,20 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
               {err("salaryMax")}
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
+            <div>
                 <label className="auth-label">Project / Job Duration</label>
                 <input className="auth-input" name="jobDuration" placeholder="e.g., 3 months, 6 weeks, Ongoing"
                   value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur} />
               </div>
 
-            {/* =======================
-   Section 2: Job Details
-======================= */}
-            <div style={{ marginBottom: '40px' }}>
+            {/* ======================= Section 2: Job Details ======================= */}
+            <div style={{ marginTop: '40px' }}>
               <h3
                 className="section-title"
                 style={{
                   paddingBottom: '16px',
                   borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '24px'
+                  marginBottom: '5px'
                 }}
               >
                 Job Details
@@ -508,13 +505,13 @@ fd.append("IsContractToHire", preferredEmployment.contractToHire);
             {/* =======================
    Section 3: Requirements
 ======================= */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginTop: '34px' }}>
               <h3
                 className="section-title"
                 style={{
                   paddingBottom: '16px',
                   borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '24px'
+                  marginBottom: '5px'
                 }}
               >
                 Requirements
