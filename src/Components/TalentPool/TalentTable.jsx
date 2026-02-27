@@ -139,8 +139,13 @@ const TalentTableView = ({
   });
 
   // Universal Sorting Logic
-  const sortedCandidates = useMemo(() => {
-    let sortableItems = [...candidates];
+  const filteredAndSortedCandidates = useMemo(() => {
+     const visibleCandidates = candidates.filter(
+    (candidate) => candidate.isshortlisted === false
+  );
+
+  // 2️⃣ SORT FILTERED DATA
+  let sortableItems = [...visibleCandidates];
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
         let aValue = a[sortConfig.key] ?? "";
@@ -235,7 +240,7 @@ const TalentTableView = ({
           </tr>
         </thead>
         <tbody>
-          {!hasMore && candidates.length === 0 && (
+          {!hasMore && filteredAndSortedCandidates.length === 0 && (
             <tr>
               <td
                 colSpan={100}
@@ -250,7 +255,7 @@ const TalentTableView = ({
               </td>
             </tr>
           )}
-          {sortedCandidates.map((c) => {
+          {filteredAndSortedCandidates.map((c) => {
             const isShortlisted =
               activeJobId &&
               shortlistedMap[activeJobId]?.find((item) => item.id === c.id);
