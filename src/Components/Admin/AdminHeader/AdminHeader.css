@@ -496,18 +496,19 @@
 /* Notifications */
 
 /* Backdrop always full viewport */
-.notification-backdrop{
+.notification-backdrop {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,.4);
+  background: rgba(0, 0, 0, .4);
   z-index: 9998;
 }
 
-.notification-panel{
+.notification-panel {
   transform: scale(0.9);
-  transform-origin: top right; /* adjust to your placement */
+  transform-origin: top right;
+  /* adjust to your placement */
 }
 
 
@@ -720,7 +721,7 @@
 }
 
 .action-btn.accept {
-  background: #6843C7;
+  background: #f5810c;
   color: #fff;
 }
 
@@ -731,8 +732,8 @@
 
 .action-btn.decline {
   background: none;
-  color: #6843C7;
-  border: 1px solid #6843C7;
+  color: #f5810c;
+  border: 1px solid #f5810c;
 }
 
 .action-btn.decline:hover {

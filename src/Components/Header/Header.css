@@ -412,7 +412,7 @@
   font-size: 12px;
   color: #64748b;
   margin: 2px 0 0 0;
-  word-break: break-all;    
+  word-break: break-all;
   overflow-wrap: break-word;
 }
 
@@ -749,7 +749,7 @@
 }
 
 .action-btn.accept {
-  background: #6843C7;
+  background: #f5810c;
   color: #fff;
 }
 
@@ -760,8 +760,8 @@
 
 .action-btn.decline {
   background: none;
-  color: #6843C7;
-  border: 1px solid #6843C7;
+  color: #f5810c;
+  border: 1px solid #f5810c;
 }
 
 .action-btn.decline:hover {

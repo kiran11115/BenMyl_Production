@@ -2,8 +2,8 @@
 
 /* --- Containers --- */
 
-.auth-container-signup{
-width: 100%;
+.auth-container-signup {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -242,16 +242,16 @@ width: 100%;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  background-color: #6843c7;
+  background-color: #f5810c;
   color: #ffffff;
-  border: 1px solid #6843c7;
+  border: 1px solid #f5810c;
   transition: all 0.2s ease;
 }
 
 .auth-btn-primary:hover {
-  background-color: #5735ac;
-  border-color: #5735ac;
-  box-shadow: 0 8px 15px -5px rgba(88, 28, 135, 0.4);
+  background-color: #f5810c;
+  border-color: #f5810c;
+  box-shadow: 0 8px 15px -5px rgba(245, 129, 12, 0.4);
 }
 
 .auth-btn-primary:disabled {

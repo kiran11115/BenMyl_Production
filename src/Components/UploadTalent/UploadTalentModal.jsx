@@ -65,50 +65,50 @@ function UploadTalentModal({
 
   const [uploadProfiles] = useUploadProfilesMutation();
 
-const handleAIProcess = async () => {
-  if (uploadedFiles.length === 0) return;
+  const handleAIProcess = async () => {
+    if (uploadedFiles.length === 0) return;
 
-  // notify parent that uploading started
-  if (typeof onUploading === "function") onUploading(true);
+    // notify parent that uploading started
+    if (typeof onUploading === "function") onUploading(true);
 
-  setIsProcessing(true);
+    setIsProcessing(true);
 
-  try {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    // ✅ multiple files (same key: "file")
-    uploadedFiles.forEach((item) => {
-      formData.append("file", item.file);
-    });
+      // ✅ multiple files (same key: "file")
+      uploadedFiles.forEach((item) => {
+        formData.append("file", item.file);
+      });
 
-    // ✅ required metadata
-    formData.append("companyid", 0);
-    formData.append("branchid", 0);
-    formData.append("userid", 0);
-    formData.append("sessionid", "hii");
+      // ✅ required metadata
+      formData.append("companyid", 0);
+      formData.append("branchid", 0);
+      formData.append("userid", 0);
+      formData.append("sessionid", "hii");
 
-    await uploadProfiles(formData).unwrap();
-    onSuccess?.();
-    if (onSuccess) {
-      onSuccess(`Successfully uploaded ${uploadedFiles.length} resume(s)`);
+      await uploadProfiles(formData).unwrap();
+      onSuccess?.();
+      if (onSuccess) {
+        onSuccess(`Successfully uploaded ${uploadedFiles.length} resume(s)`);
+      }
+
+      handleClose();
+
+      navigate("/user/user-upload-talent", {
+        state: { files: uploadedFiles, activeTab: "Review", },
+      });
+
+    } catch (error) {
+      console.error("Upload failed", error);
+      if (onSuccess) {
+        onSuccess("Failed to upload resumes");
+      }
+    } finally {
+      setIsProcessing(false);
+      if (typeof onUploading === "function") onUploading(false);
     }
-
-    handleClose();
-
-    navigate("/user/user-upload-talent", {
-      state: { files: uploadedFiles,activeTab: "Review", },
-    });
-
-  } catch (error) {
-    console.error("Upload failed", error);
-    if (onSuccess) {
-      onSuccess("Failed to upload resumes");
-    }
-  } finally {
-    setIsProcessing(false);
-    if (typeof onUploading === "function") onUploading(false);
-  }
-};
+  };
 
 
   const handleClose = () => {
@@ -138,9 +138,9 @@ const handleAIProcess = async () => {
     fontSize: "12px",
     fontWeight: "500",
     cursor: "pointer",
-    backgroundColor: "#6843c7",
+    backgroundColor: "#f5810c",
     color: "#ffffff",
-    border: "1px solid #6843c7",
+    border: "1px solid #f5810c",
     transition: "all 0.2s ease",
   };
 
@@ -229,9 +229,9 @@ const handleAIProcess = async () => {
     fontSize: "12px",
     fontWeight: "500",
     cursor: "pointer",
-    backgroundColor: "#6843c7",
+    backgroundColor: "#f5810c",
     color: "#ffffff",
-    border: "1px solid #6843c7",
+    border: "1px solid #f5810c",
     transition: "all 0.2s ease",
   };
 
@@ -424,7 +424,7 @@ const handleAIProcess = async () => {
                   }}
                   onMouseLeave={(e) => {
                     if (uploadedFiles.length > 0 && !isProcessing) {
-                      e.currentTarget.style.backgroundColor = "#6843c7";
+                      e.currentTarget.style.backgroundColor = "#f5810c";
                     }
                   }}
                 >

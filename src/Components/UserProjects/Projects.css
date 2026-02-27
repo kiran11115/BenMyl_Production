@@ -79,10 +79,25 @@
 }
 
 
-.box-blue { background-color: #eff6ff; color: #3b82f6; }
-.box-indigo { background-color: #eef2ff; color: #6366f1; }
-.box-amber { background-color: #fffbeb; color: #f59e0b; }
-.box-emerald { background-color: #ecfdf5; color: #10b981; }
+.box-blue {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.box-indigo {
+  background-color: #eef2ff;
+  color: #6366f1;
+}
+
+.box-amber {
+  background-color: #fffbeb;
+  color: #f59e0b;
+}
+
+.box-emerald {
+  background-color: #ecfdf5;
+  color: #10b981;
+}
 
 /* =========================================
    3. Projects Grid (Matched to Stat Cards)
@@ -96,7 +111,7 @@
 
 .project-card {
   background: #ffffff;
-  border-radius: 1rem; 
+  border-radius: 1rem;
   padding: 16px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.05);
@@ -113,9 +128,9 @@
 .project-card:hover {
   /* MATCH STAT CARD: Lift distance (-3px) */
   transform: translateY(-3px);
-  
+
   /* MATCH STAT CARD: Hover Shadow */
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(15, 23, 42, 0.08),
     0 10px 10px -5px rgba(15, 23, 42, 0.03);
 }
@@ -130,7 +145,8 @@
   height: 3px;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
   opacity: 0;
-  transition: opacity 0.2s ease; /* Matched speed */
+  transition: opacity 0.2s ease;
+  /* Matched speed */
 }
 
 .project-card:hover::after {
@@ -144,9 +160,9 @@
 .project-card1:hover {
   /* MATCH STAT CARD: Lift distance (-3px) */
   transform: translateY(-3px);
-  
+
   /* MATCH STAT CARD: Hover Shadow */
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(15, 23, 42, 0.08),
     0 10px 10px -5px rgba(15, 23, 42, 0.03);
 }
@@ -161,7 +177,8 @@
   height: 3px;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
   opacity: 0;
-  transition: opacity 0.2s ease; /* Matched speed */
+  transition: opacity 0.2s ease;
+  /* Matched speed */
 }
 
 .project-card1:hover::after {
@@ -207,7 +224,7 @@
   height: 28px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .author-name {
@@ -267,16 +284,16 @@
   font-weight: 500;
   cursor: pointer;
 
-  background-color: #6843c7;
+  background-color: #f5810c;
   color: #ffffff;
-  border: 1px solid #6843c7;
+  border: 1px solid #f5810c;
 
   transition: all 0.2s ease;
 }
 
 .btn-upload:hover {
-  background-color: #5735ac;
-  border-color: #5735ac;
+  background-color: #f5810c;
+  border-color: #f5810c;
   box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.25);
 }
 
@@ -380,9 +397,17 @@
 }
 
 /* colors reuse your palette */
-.timeline-bar-green { background-color: #22c55e; }
-.timeline-bar-amber { background-color: #f59e0b; }
-.timeline-bar-red   { background-color: #ef4444; }
+.timeline-bar-green {
+  background-color: #22c55e;
+}
+
+.timeline-bar-amber {
+  background-color: #f59e0b;
+}
+
+.timeline-bar-red {
+  background-color: #ef4444;
+}
 
 /* Today vertical line */
 .timeline-today-line {
@@ -464,5 +489,3 @@
     row-gap: 4px;
   }
 }
-
-

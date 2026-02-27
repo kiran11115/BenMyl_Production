@@ -12,12 +12,12 @@ const INITIAL_NOTIFICATIONS = [
     sender: "Acme Corp",
     time: "1h ago",
     read: false,
-   talents: [
-  { name: "Logitech Ganesh", role: "UI/UX" },
-  { name: "Daniel Nguyen", role: "Full Stack Developer" },
-  { name: "Aarav Mehta", role: "Backend Developer" },
-  { name: "Sophia Lee", role: "QA Engineer" }
-]
+    talents: [
+      { name: "Logitech Ganesh", role: "UI/UX" },
+      { name: "Daniel Nguyen", role: "Full Stack Developer" },
+      { name: "Aarav Mehta", role: "Backend Developer" },
+      { name: "Sophia Lee", role: "QA Engineer" }
+    ]
 
   },
   {
@@ -122,7 +122,7 @@ const NotificationsPage = () => {
           gap: 16,
           padding: "14px 20px",
           borderRadius: 12,
-          borderLeft: !n.read ? "2px solid #6843C7" : "2px solid transparent",
+          borderLeft: !n.read ? "2px solid #f5810c" : "2px solid transparent",
           background: "#fff",
           opacity: isEarlier ? 0.65 : 1,
           marginBottom: 8,

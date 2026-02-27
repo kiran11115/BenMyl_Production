@@ -257,6 +257,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -268,6 +269,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -275,9 +277,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.4;
   }
+
   50% {
     opacity: 1;
   }
@@ -486,7 +491,7 @@
 
 .search-send-btn {
   right: 12px;
-  background-color: #6843C7;
+  background-color: #f5810c;
   color: var(--secondary);
 }
 
@@ -649,7 +654,7 @@
 }
 
 .message-avatar.user {
-  background-color: #6843C7;
+  background-color: #f5810c;
   color: var(--secondary);
 }
 

@@ -1159,7 +1159,7 @@ const ReviewTalent = () => {
               <h2 className="header-title" style={{ fontSize: '24px', fontWeight: 700 }}>Review & Edit</h2>
               <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>Please verify the extracted information before saving.</p>
             </div>
-            <div style={{ background: '#f4f0ff', color: '#6944c7', padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ background: '#f4f0ff', color: '#f5810c', padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
               <CheckCircle size={14} /> AI Processing Complete
             </div>
           </div>
@@ -1182,7 +1182,7 @@ const ReviewTalent = () => {
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "basicInfo" ? '#6944c7' : '#94a3b8',
+                    color: openAccordion === "basicInfo" ? '#f5810c' : '#94a3b8',
                     transform: openAccordion === "basicInfo" ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
@@ -1236,7 +1236,7 @@ const ReviewTalent = () => {
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "personalInfo" ? '#6944c7' : '#94a3b8',
+                    color: openAccordion === "personalInfo" ? '#f5810c' : '#94a3b8',
                     transform: openAccordion === "personalInfo" ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
@@ -1296,7 +1296,7 @@ const ReviewTalent = () => {
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "education" ? '#6944c7' : '#94a3b8',
+                    color: openAccordion === "education" ? '#f5810c' : '#94a3b8',
                     transform: openAccordion === "education" ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
@@ -1373,7 +1373,7 @@ const ReviewTalent = () => {
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "experience" ? '#6944c7' : '#94a3b8',
+                    color: openAccordion === "experience" ? '#f5810c' : '#94a3b8',
                     transform: openAccordion === "experience" ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
@@ -1456,7 +1456,7 @@ const ReviewTalent = () => {
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "projects" ? '#6944c7' : '#94a3b8',
+                    color: openAccordion === "projects" ? '#f5810c' : '#94a3b8',
                     transform: openAccordion === "projects" ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />

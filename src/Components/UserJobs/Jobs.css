@@ -4,8 +4,9 @@
   --slate-500: #64748b;
   --slate-400: #94a3b8;
   --slate-200: #e2e8f0;
-  --blue-primary: #6843C7; /* Requested Color */
-  --blue-hover: #5735ac;
+  --blue-primary: #f5810c;
+  /* Requested Color */
+  --blue-hover: #d17519;
   --bg-page: #f8fafc;
 }
 
@@ -20,8 +21,8 @@
   border-radius: 16px;
   border: 1px solid var(--slate-200);
   /* Soft premium shadow from original CSS */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-              0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 /* --- Layout Grid --- */
@@ -43,8 +44,10 @@
   .jobs-layout {
     grid-template-columns: 1fr;
   }
+
   .filters-sidebar {
-    display: none; /* Hidden on mobile for simplicity in this demo */
+    display: none;
+    /* Hidden on mobile for simplicity in this demo */
   }
 }
 
@@ -159,7 +162,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .search-input-wrapper input {
@@ -274,7 +277,8 @@
 }
 
 .text-orange {
-  color: #f97316; /* Orange for time left */
+  color: #f97316;
+  /* Orange for time left */
 }
 
 /* Action Buttons */
@@ -340,7 +344,7 @@
 .drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   z-index: 40;
   backdrop-filter: blur(2px);
 }
@@ -362,8 +366,15 @@
 }
 
 @keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .drawer-header {
@@ -467,7 +478,9 @@
   margin-top: auto;
 }
 
-.mb-2 { margin-bottom: 8px; }
+.mb-2 {
+  margin-bottom: 8px;
+}
 
 .no-results {
   grid-column: 1 / -1;

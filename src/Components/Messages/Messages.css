@@ -1,7 +1,8 @@
 /* --- 1. Global & Layout --- */
 .messages-root {
   padding: 24px;
-  color: #334155; /* Slate 700 */
+  color: #334155;
+  /* Slate 700 */
   height: 90vh;
   box-sizing: border-box;
 }
@@ -14,11 +15,12 @@
   height: 100%;
   display: flex;
   background: #ffffff;
-  border-radius: 16px; /* Project card radius */
+  border-radius: 16px;
+  /* Project card radius */
   border: 1px solid #e2e8f0;
   /* Premium shadow from reference */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-              0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
 
@@ -42,7 +44,8 @@
 .sidebar-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b; /* Slate 800 */
+  color: #1e293b;
+  /* Slate 800 */
 }
 
 .sidebar-add-btn {
@@ -130,7 +133,8 @@
 
 /* ACTIVE STATE - Matches .tab-btn.active from project CSS */
 .conversation-item.conversation-active {
-  background-color: #1e293b; /* Slate 800 */
+  background-color: #1e293b;
+  /* Slate 800 */
   color: #ffffff;
   /* Active shadow */
   box-shadow: 0 4px 6px -1px rgba(30, 41, 59, 0.3);
@@ -148,7 +152,7 @@
   font-weight: 600;
   font-size: 14px;
   flex-shrink: 0;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .conversation-item.conversation-active .avatar-circle {
@@ -303,8 +307,10 @@
 
 /* ME: Primary Blue Style */
 .message-row.me .message-bubble {
-  background-color: #3b82f6; /* The requested Project Blue */
-  color: #ffffff; /* FORCE WHITE TEXT */
+  background-color: #3b82f6;
+  /* The requested Project Blue */
+  color: #ffffff;
+  /* FORCE WHITE TEXT */
   border: 1px solid #3b82f6;
   border-bottom-right-radius: 4px;
   box-shadow: 0 4px 6px -1px rgba(65, 46, 250, 0.25);
@@ -360,7 +366,7 @@
 
 .file-download {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -382,7 +388,7 @@
 }
 
 .message-row.me .file-download:hover {
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Image Placeholder */
@@ -450,7 +456,7 @@
 
 /* Send Button - Matches .btn-upload from Project CSS */
 .chat-send-btn {
-  background-color: #6843C7;
+  background-color: #f5810c;
   color: #ffffff;
   border: none;
   width: 40px;
@@ -465,7 +471,7 @@
 }
 
 .chat-send-btn:hover {
-  background-color: #5735ac;
+  background-color: #f5810c;
   transform: translateY(-1px);
 }
 
@@ -477,7 +483,8 @@
 .chat-attach-btn {
   background: transparent;
   border: none;
-  color: #94a3b8; /* Muted Slate */
+  color: #94a3b8;
+  /* Muted Slate */
   width: 40px;
   height: 40px;
   border-radius: 10px;

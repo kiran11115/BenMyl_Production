@@ -318,7 +318,7 @@
 }
 
 .accordion-item.active .header-icon-wrapper {
-  background: #6944c7;
+  background: #f5810c;
   color: white;
 }
 
@@ -366,7 +366,7 @@
 
 .field-input:focus {
   outline: none;
-  border-color: #6944c7;
+  border-color: #f5810c;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
