@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./Dashboard.css";
 import {
   Chart as ChartJS,
@@ -11,7 +11,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Briefcase, Users, FileText, DollarSign } from "lucide-react";
+import { Briefcase, Users, FileText, DollarSign, Info } from "lucide-react";
 import StatsGrid from "./StatsGrid";
 import ProjectsSection from "./ProjectsSection";
 import UploadTalentTable from "../UploadTalent/UploadTalentTable";
@@ -20,7 +20,7 @@ import BudgetChart from "./charts/BudgetChart";
 import InterviewsList from "./InterviewsList";
 
 // Component Imports
-
+import Guide from "../Guide/Guide";
 
 // Register ChartJS
 ChartJS.register(
@@ -48,8 +48,6 @@ const projects = [
   { title: "Cloud Infrastructure", company: "Nexus Systems", status: "Review", statusClass: "status-review", progress: 75, budget: "$120,000", dueDate: "Feb 28, 2024" },
   { title: "Cybersecurity Audit", company: "SecureNet Solutions", status: "Pending", statusClass: "status-pending", progress: 0, budget: "$45,000", dueDate: "Jan 10, 2024" },
 ];
-
-// Data constants removed as UploadTalentTable handles its own fetching
 
 const interviews = [
   { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Final" },
@@ -113,36 +111,81 @@ const budgetDoughnutData = {
 };
 
 const Dashboard = () => {
+  const guideRef = useRef();
+
   return (
     <div className="projects-container">
+      {/* Dashboard Header with Guide Trigger */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="section-title m-0">Dashboard Overview</h2>
+        <button
+          className="btn d-flex align-items-center gap-2"
+          onClick={() => guideRef.current?.startTour()}
+          style={{
+            background: "rgba(59, 130, 246, 0.1)",
+            color: "#3b82f6",
+            border: "1px solid rgba(59, 130, 246, 0.2)",
+            borderRadius: "10px",
+            padding: "8px 16px",
+            fontWeight: "600",
+            fontSize: "14px",
+            transition: "all 0.2s"
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <Info size={18} />
+          Help Guide
+        </button>
+      </div>
+
+      {/* Workflow Guide */}
+      <Guide ref={guideRef} />
+
       {/* 1. KPI Stats Grid */}
-      <StatsGrid data={kpiCards} />
+      <div id="dashboard-stats-grid">
+        <StatsGrid data={kpiCards} />
+      </div>
 
       {/* 2. Main Dashboard Layout */}
       <div className="dashboard-layout">
         {/* LEFT COLUMN: Projects & Applications */}
         <div className="dashboard-column-main">
-          <ProjectsSection projects={projects} />
+          <div id="dashboard-projects-section">
+            <ProjectsSection projects={projects} />
+          </div>
           <div style={{ marginTop: "32px", marginBottom: "16px" }}>
             <h3 className="section-title">Review Profiles</h3>
           </div>
-          <UploadTalentTable isDashboard={true} />
+          <div id="dashboard-talent-table">
+            <UploadTalentTable isDashboard={true} />
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Charts & Interviews */}
         <div className="dashboard-column-side">
-          <HiringPipelineChart
-            data={pipelineLineData}
-            tooltipTheme={tooltipTheme}
-          />
+          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column">
+            <HiringPipelineChart
+              data={pipelineLineData}
+              tooltipTheme={tooltipTheme}
+            />
 
-          <BudgetChart
-            data={budgetDoughnutData}
-            totalBudget={125000}
-            tooltipTheme={tooltipTheme}
-          />
+            <BudgetChart
+              data={budgetDoughnutData}
+              totalBudget={125000}
+              tooltipTheme={tooltipTheme}
+            />
+          </div>
 
-          <InterviewsList interviews={interviews} />
+          <div id="dashboard-interviews-list">
+            <InterviewsList interviews={interviews} />
+          </div>
         </div>
       </div>
     </div>

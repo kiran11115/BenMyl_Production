@@ -41,6 +41,9 @@
 }
 
 .custom-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background: #1E293B;
   color: #ffffff;
   font-size: 13px;
@@ -118,8 +121,10 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #e5e7eb; /* light gray */
-  color: #374151;      /* dark text */
+  background: #e5e7eb;
+  /* light gray */
+  color: #374151;
+  /* dark text */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,27 +176,27 @@
 
 /* quick info */
 
-.quickinfo{
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    border: 1px solid rgb(226, 232, 240);
-    border-radius: 8px;
-    background-color: rgb(255, 255, 255);
-    cursor: pointer;
-    transition: 0.2s;
+.quickinfo {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid rgb(226, 232, 240);
+  border-radius: 8px;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.quick-check{
+.quick-check {
   width: 20px;
-    height: 20px;
-    border: 2px solid rgb(203, 213, 225);
-    border-radius: 4px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(255, 255, 255);
+  height: 20px;
+  border: 2px solid rgb(203, 213, 225);
+  border-radius: 4px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
 }
 
 

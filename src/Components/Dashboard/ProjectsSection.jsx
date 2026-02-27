@@ -22,13 +22,14 @@ const ProjectsSection = ({ projects }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginBottom: "1rem"
         }}
       >
         <div className="d-flex gap-3">
           <h3 className="section-title" style={{ margin: 0 }}>
             Ongoing Projects
           </h3>
-          <button className="border-0" style={{textDecoration: "underline", background: "none", color: "Blue", fontSize: "13px"}}>View all</button>
+          <button className="border-0" style={{ textDecoration: "underline", background: "none", color: "Blue", fontSize: "13px" }}>View all</button>
         </div>
 
         <div className="d-flex align-items-center gap-2">
@@ -38,7 +39,7 @@ const ProjectsSection = ({ projects }) => {
           >
             + Create Job
           </button>
-          <UploadTalentModal/>
+          <UploadTalentModal />
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-upcoming-interview")}
@@ -92,22 +93,22 @@ const ProjectsSection = ({ projects }) => {
                 </div>
               </div>
 
-      <div className="d-flex justify-content-between">
-              <div className="card-details">
-                <div className="detail-item">
-                  <Clock size={14} /> Due: {project.dueDate}
+              <div className="d-flex justify-content-between">
+                <div className="card-details">
+                  <div className="detail-item">
+                    <Clock size={14} /> Due: {project.dueDate}
+                  </div>
+                  <div className="detail-item">
+                    <DollarSign size={14} /> Budget: {project.budget}
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <DollarSign size={14} /> Budget: {project.budget}
-                </div>
-              </div>
 
-              <div>
-                <span className={`status-tag ${project.statusClass}`}>
-                  {project.status}
-                </span>
+                <div>
+                  <span className={`status-tag ${project.statusClass}`}>
+                    {project.status}
+                  </span>
+                </div>
               </div>
-            </div>
             </div>
           );
         })}
