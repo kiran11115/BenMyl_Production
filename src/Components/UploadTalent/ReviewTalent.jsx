@@ -533,7 +533,7 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, sectio
       ) : (
         <div className="tag-container">
           {values.length === 0 ? <span className="auth-subtitle">No items</span> :
-            values.map((v, i) => <span key={i} className="professional-tag">{v}</span>)}
+            values.map((v, i) => <span key={i} className="status-tag status-progress">{v}</span>)}
         </div>
       )}
     </div>
