@@ -28,16 +28,16 @@ const tutorialSteps = [
         position: "right"
     },
     {
-        targetId: "dashboard-talent-table",
-        title: "Talent Pipeline",
-        description: "Review profile submissions in real-time. Direct access to candidate resumes and screening status.",
-        position: "top"
-    },
-    {
         targetId: "dashboard-charts-area",
         title: "Data Visualization",
         description: "Visualize your hiring pipeline and budget allocation. Data-driven insights to optimize your recruitment strategy.",
         position: "left"
+    },
+    {
+        targetId: "dashboard-talent-table",
+        title: "Talent Pipeline",
+        description: "Review profile submissions in real-time. Direct access to candidate resumes and screening status.",
+        position: "top"
     },
     {
         targetId: "dashboard-interviews-list",
