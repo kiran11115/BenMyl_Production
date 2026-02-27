@@ -177,7 +177,7 @@ function Header() {
                   className="profile-avatar"
                 />
               ) : (
-                <div className="profile-avatar initials-avatar">
+                <div className="profile-avatar initials-avatar fs-5">
                   {getInitials(user)}
                 </div>
               )}
