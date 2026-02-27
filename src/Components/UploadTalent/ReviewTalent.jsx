@@ -950,7 +950,7 @@ const handleDraftTalent = async () => {
   
   const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
   if (allErrors.length > 0) {
-    alert("Please fix validation errors:\n" + allErrors.join("\n"));
+    setValidationErrorsState(allErrors[0]);
     return;
   }
 

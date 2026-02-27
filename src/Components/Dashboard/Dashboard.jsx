@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import "./Dashboard.css";
 import {
   Chart as ChartJS,
@@ -18,6 +18,8 @@ import UploadTalentTable from "../UploadTalent/UploadTalentTable";
 import HiringPipelineChart from "./charts/HiringPipelineChart";
 import BudgetChart from "./charts/BudgetChart";
 import InterviewsList from "./InterviewsList";
+import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
 // Component Imports
 import Guide from "../Guide/Guide";
@@ -35,13 +37,6 @@ ChartJS.register(
 );
 
 // --- DATA CONSTANTS ---
-const kpiCards = [
-  { label: "Active Job Posts", value: "24", change: "+8%", icon: Briefcase, cardType: "card-blue", bubbleColor: "#3b82f6" },
-  { label: "Total Applications", value: "156", change: "+15%", icon: Users, cardType: "card-purple", bubbleColor: "#6366f1" },
-  { label: "Ongoing Contracts", value: "18", change: "+12%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a" },
-  { label: "Total Spend", value: "$125K", change: "+18%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981" },
-];
-
 const projects = [
   { title: "Cloud Migration Project", company: "Tech Solutions Inc.", status: "On Track", statusClass: "status-completed", progress: 75, budget: "$45,000", dueDate: "Dec 20, 2023" },
   { title: "Mobile App Development", company: "Digital Dynamics", status: "In Progress", statusClass: "status-review", progress: 40, budget: "$85,000", dueDate: "Jan 15, 2024" },
@@ -112,6 +107,46 @@ const budgetDoughnutData = {
 
 const Dashboard = () => {
   const guideRef = useRef();
+  const [pendingReviewCount, setPendingReviewCount] = useState(0);
+  const [postedJobsCount, setPostedJobsCount] = useState(0);
+  const [getQueueManagement] = useGetQueueManagementMutation();
+  const userId = localStorage.getItem("CompanyId");
+  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+
+  const kpiCards = [
+    { label: "Posted Jobs", value: String(postedJobsCount), change: "+8%", icon: Briefcase, cardType: "card-blue", bubbleColor: "#3b82f6" },
+    { label: "Pending Review Profiles", value: String(pendingReviewCount), change: "+15%", icon: Users, cardType: "card-purple", bubbleColor: "#6366f1" },
+    { label: "Ongoing Contracts", value: "18", change: "+12%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a" },
+    { label: "Total Spend", value: "$125K", change: "+18%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981" },
+  ];
+
+  useEffect(() => {
+    const fetchPendingReviewCount = async () => {
+      try {
+        const payload = {
+          companyid: Number(localStorage.getItem("logincompanyid")),
+          pageNumber: 1,
+          pageSize: 1000, // Fetch enough to get all pending items
+          filters: [],
+        };
+
+        const res = await getQueueManagement(payload).unwrap();
+        const pendingCount = Array.isArray(res) 
+          ? res.filter(item => item.status === "Pending For Review").length 
+          : 0;
+        setPendingReviewCount(pendingCount);
+      } catch (err) {
+        console.error("Failed to fetch pending review count", err);
+      }
+    };
+
+    fetchPendingReviewCount();
+  }, [getQueueManagement]);
+
+  useEffect(() => {
+    // Update posted jobs count from job titles
+    setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
+  }, [jobTitles]);
 
   return (
     <div className="projects-container">

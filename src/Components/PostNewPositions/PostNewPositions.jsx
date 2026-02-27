@@ -788,13 +788,13 @@ const PostNewPositions = () => {
                 Cancel
               </button>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <button
+                {/* <button
                   type="button"
                   className="btn-secondary"
                   onClick={handleSaveDraft}
                 >
                   Save as Draft
-                </button>
+                </button> */}
 
                 <button
                   type="submit"

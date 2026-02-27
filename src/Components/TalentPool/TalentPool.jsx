@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 import {
   FiGrid,
   FiList,
@@ -605,7 +606,7 @@ const TalentPool = () => {
 
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
-      alert("Please select a Job from the filters first to shortlist.");
+      toast.error("Please select a Job from the filters first to shortlist.");
       return;
     }
 
