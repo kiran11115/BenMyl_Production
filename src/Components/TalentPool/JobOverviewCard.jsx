@@ -1,6 +1,6 @@
 import React from "react";
 import { BsBuilding } from "react-icons/bs";
-import { FiMapPin, FiX } from "react-icons/fi";
+import { FiMapPin, FiChevronDown, FiPlus } from "react-icons/fi";
 
 const Stat = ({ label, value }) => (
   <div className="job-stat">
@@ -9,29 +9,29 @@ const Stat = ({ label, value }) => (
   </div>
 );
 
-const JobOverviewCard = ({ job, onClose }) => {
+const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
   // Empty state when no job is selected
   const formatMarkdownToHtml = (text) => {
-  if (!text) return "";
+    if (!text) return "";
 
-  let formatted = text;
+    let formatted = text;
 
-  // Convert bold **text**
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    // Convert bold **text**
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  // Convert bullet points
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+    // Convert bullet points
+    formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
 
-  // Wrap <li> items inside <ul>
-  if (formatted.includes("<li>")) {
-    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  }
+    // Wrap <li> items inside <ul>
+    if (formatted.includes("<li>")) {
+      formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+    }
 
-  // Convert line breaks
-  formatted = formatted.replace(/\n/g, "<br/>");
+    // Convert line breaks
+    formatted = formatted.replace(/\n/g, "<br/>");
 
-  return formatted;
-};
+    return formatted;
+  };
 
   if (!job) {
     return (
@@ -45,19 +45,24 @@ const JobOverviewCard = ({ job, onClose }) => {
   }
 
   const stylesoverivew = `
-  
 .job-overview-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 16px 18px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.job-overview-card:hover {
+  border-color: #cbd5e1;
 }
 
 .job-overview-top {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .job-icon {
@@ -77,7 +82,14 @@ const JobOverviewCard = ({ job, onClose }) => {
 .job-title-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+}
+
+.job-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .job-subtitle {
@@ -100,21 +112,28 @@ const JobOverviewCard = ({ job, onClose }) => {
   gap: 6px;
 }
 
-.job-close-btn {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
+.job-label-icon {
   color: #94a3b8;
-  padding: 6px;
-  border-radius: 10px;
+  transition: transform 0.3s ease;
 }
-.job-close-btn:hover {
-  background: #f1f5f9;
-  color: #334155;
+
+.job-label-icon.expanded {
+  transform: rotate(180deg);
+  color: #0f172a;
+}
+
+.job-accordion-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  max-height: 0;
+}
+
+.job-accordion-content.expanded {
+  max-height: 1000px; /* Large enough to fit content */
+  margin-top: 16px;
 }
 
 .job-stats-row {
-  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -177,6 +196,7 @@ const JobOverviewCard = ({ job, onClose }) => {
   padding: 18px;
   border-style: dashed;
   background: #fcfcfd;
+  cursor: default;
 }
 
 .job-empty-title {
@@ -191,21 +211,33 @@ const JobOverviewCard = ({ job, onClose }) => {
   color: #64748b;
   line-height: 1.4;
 }
-
-
-  `
+  `;
 
   return (
     <>
       <style>{stylesoverivew}</style>
-      <div className="job-overview-card">
+      <div
+        className={`job-overview-card ${isExpanded ? "expanded" : ""}`}
+        onClick={onToggle}
+      >
         <div className="job-overview-top">
           <div className="company-icon-box large">
-            <BsBuilding size={28} />
+            <BsBuilding size={24} />
           </div>
           <div className="job-title-block">
             <div className="job-title-row">
               <h3 className="job-title">{job.title}</h3>
+              {isExpanded ? (
+                <FiChevronDown
+                  className="job-label-icon expanded"
+                  size={20}
+                />
+              ) : (
+                <FiPlus
+                  className="job-label-icon"
+                  size={20}
+                />
+              )}
             </div>
 
             <div className="job-subtitle">
@@ -218,35 +250,36 @@ const JobOverviewCard = ({ job, onClose }) => {
           </div>
         </div>
 
-        <div className="job-stats-row">
-          <Stat label="BUDGET" value={`$${job.budget} / hr`} />
-          <Stat label="EXPERIENCE" value={`${job.experience}+`} />
-          <Stat label="TYPE" value={job.type} />
-        </div>
+        <div className={`job-accordion-content ${isExpanded ? "expanded" : ""}`}>
+          <div className="job-stats-row">
+            <Stat label="BUDGET" value={`$${job.budget} / hr`} />
+            <Stat label="EXPERIENCE" value={`${job.experience}+`} />
+            <Stat label="TYPE" value={job.type} />
+          </div>
 
-        <div className="job-section">
-          <div className="job-section-title">Job Description</div>
-          {/* <div className="job-section-text">{job.description}</div> */}
-          <div
-  dangerouslySetInnerHTML={{
-    __html: formatMarkdownToHtml(job.description),
-  }}
-/>
-        </div>
+          <div className="job-section">
+            <div className="job-section-title">Job Description</div>
+            <div
+              className="job-section-text"
+              dangerouslySetInnerHTML={{
+                __html: formatMarkdownToHtml(job.description),
+              }}
+            />
+          </div>
 
-        <div className="job-section">
-          <div className="job-section-title">Required Skills</div>
-          <div className="d-flex gap-2">
-            {(job.requiredSkills || []).map((s) => (
-              <span key={s} className="status-tag status-progress">
-                {s}
-              </span>
-            ))}
+          <div className="job-section">
+            <div className="job-section-title">Required Skills</div>
+            <div className="d-flex flex-wrap gap-2">
+              {(job.requiredSkills || []).map((s) => (
+                <span key={s} className="status-tag status-progress">
+                  {s}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     </>
-
   );
 };
 

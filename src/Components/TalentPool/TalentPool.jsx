@@ -761,6 +761,12 @@ const TalentPool = () => {
   }, [shortlistedMap]);
 
 
+  const [expandedCardId, setExpandedCardId] = useState(null);
+
+  const toggleCard = (id) => {
+    setExpandedCardId(prev => (prev === id ? null : id));
+  };
+
   return (
     <div className="vs-page">
       <div className="projects-container d-flex flex-column gap-3">
@@ -856,7 +862,12 @@ const TalentPool = () => {
             {/* Render overview cards for all selected jobs */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
               {allJobOverviewData.map((jobData) => (
-                <JobOverviewCard key={jobData.id} job={jobData} />
+                <JobOverviewCard
+                  key={jobData.id}
+                  job={jobData}
+                  isExpanded={expandedCardId === jobData.id}
+                  onToggle={() => toggleCard(jobData.id)}
+                />
               ))}
               {allJobOverviewData.length === 0 && (
                 <JobOverviewCard job={null} />

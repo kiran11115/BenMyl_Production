@@ -9,8 +9,8 @@ import { useGetSkillsByTitleQuery } from '../../State-Management/Api/ProjectApiS
 const ROLE_TYPES = [
   'Frontend Developer',
   'Full Stack Engineer',
-  'UI/UX Designer', 
-  'React Native Developer', 
+  'UI/UX Designer',
+  'React Native Developer',
 ];
 
 
@@ -78,25 +78,25 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 
   return (
     <div className="select-wrapper" ref={dropdownRef} style={{ position: 'relative' }}>
-      <div 
-        className="filter-select" 
+      <div
+        className="filter-select"
         onClick={() => setIsOpen(!isOpen)}
-        style={{ 
-          cursor: 'pointer', 
-          display: 'flex', 
-          alignItems: 'center', 
+        style={{
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'space-between',
           minHeight: '44px'
         }}
       >
-        <span style={{ 
+        <span style={{
           color: selectedValues.length ? '#0f172a' : '#64748b',
           fontSize: '14px'
         }}>
           {isOpen ? "Close List" : (selectedValues.length > 0 ? `${selectedValues.length} selected` : label)}
         </span>
         {isOpen ? (
-          <FiChevronDown style={{ transform: 'rotate(180deg)', fontSize: '16px' }} /> 
+          <FiChevronDown style={{ transform: 'rotate(180deg)', fontSize: '16px' }} />
         ) : (
           <FiPlus style={{ fontSize: '16px' }} />
         )}
@@ -106,9 +106,9 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
       {isOpen && (
         <div className="custom-dropdown-menu">
           {options.map(option => (
-            <div 
-              key={option} 
-              className="custom-option" 
+            <div
+              key={option}
+              className="custom-option"
               onClick={() => toggleOption(option)}
             >
               <div className={`custom-checkbox ${selectedValues.includes(option) ? 'checked' : ''}`}>
@@ -126,30 +126,34 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 
 
 // --- MAIN COMPONENT ---
-const JobFilters = ({ onApplyFilters,initialFilters }) => {
+const JobFilters = ({ onApplyFilters, initialFilters }) => {
   const userId = localStorage.getItem("logincompanyid");
-   const [filterInputs, setFilterInputs] = useState(initialFilters);
-const selectedRole = filterInputs.roles?.[0];
-const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
+  const [filterInputs, setFilterInputs] = useState(initialFilters);
+  const [activeSection, setActiveSection] = useState('roles'); // Default to roles open
+
+  const selectedRole = filterInputs.roles?.[0];
+  const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
+
+  const toggleSection = (section) => {
+    setActiveSection(prev => (prev === section ? null : section));
+  };
+
+  const {
+    data: skillsResponse,
+    isFetching: isSkillsLoading,
+  } = useGetSkillsByTitleQuery(selectedRole, {
+    skip: !selectedRole,
+  });
 
 
 
-const {
-  data: skillsResponse,
-  isFetching: isSkillsLoading,
-} =  useGetSkillsByTitleQuery(selectedRole, {
-  skip: !selectedRole,
-});
-
- 
-  
   const skillsOptions = skillsResponse?.data || [];
   useEffect(() => {
-  setFilterInputs((prev) => ({
-    ...prev,
-    skills: [],
-  }));
-}, [selectedRole]);
+    setFilterInputs((prev) => ({
+      ...prev,
+      skills: [],
+    }));
+  }, [selectedRole]);
 
 
 
@@ -160,38 +164,49 @@ const {
 
   // --- TAG REMOVAL HELPERS ---
   const removeTag = (field, value) => {
-  setFilterInputs(prev => {
-    const updatedFilters = {
-      ...prev,
-      [field]: prev[field].filter(item => item !== value)
-    };
+    setFilterInputs(prev => {
+      const updatedFilters = {
+        ...prev,
+        [field]: prev[field].filter(item => item !== value)
+      };
 
-    // Immediately notify parent
-    if (onApplyFilters) {
-      onApplyFilters(updatedFilters);
-    }
+      // Immediately notify parent
+      if (onApplyFilters) {
+        onApplyFilters(updatedFilters);
+      }
 
-    return updatedFilters;
-  });
-};
+      return updatedFilters;
+    });
+  };
 
-const removeSkill = (skill) => {
-  setFilterInputs(prev => {
-    const updatedFilters = {
-      ...prev,
-      skills: prev.skills.filter(item => item !== skill)
-    };
+  const removeSkill = (skill) => {
+    setFilterInputs(prev => {
+      const updatedFilters = {
+        ...prev,
+        skills: prev.skills.filter(item => item !== skill)
+      };
 
-    if (onApplyFilters) {
-      onApplyFilters(updatedFilters);
-    }
+      if (onApplyFilters) {
+        onApplyFilters(updatedFilters);
+      }
 
-    return updatedFilters;
-  });
-};
+      return updatedFilters;
+    });
+  };
 
   const [availability, setAvailability] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const employmentTypeRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (employmentTypeRef.current && !employmentTypeRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleOption = (option) => {
     if (availability.includes(option)) {
@@ -214,6 +229,35 @@ const removeSkill = (skill) => {
     setFilterInputs(initialFilters);
   };
 
+  const SectionHeader = ({ id, title, isExpanded, summary }) => (
+    <div
+      className={`filter-section-header ${isExpanded ? 'active' : ''}`}
+      onClick={() => toggleSection(id)}
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: 'pointer',
+        padding: '10px 0',
+        borderBottom: '1px solid #f1f5f9',
+        marginBottom: isExpanded ? '12px' : '0'
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <h4 className="section-title" style={{ margin: 0 }}>{title}</h4>
+        {!isExpanded && summary && (
+          <span className="header-summary" style={{ fontSize: '12px', color: '#f5810c', fontWeight: '600' }}>
+            {summary}
+          </span>
+        )}
+      </div>
+      {isExpanded ? (
+        <FiChevronDown style={{ color: '#0f172a', fontSize: '16px' }} />
+      ) : (
+        <FiPlus style={{ color: '#94a3b8', fontSize: '16px' }} />
+      )}
+    </div>
+  );
 
   return (
     <div className="filter-sidebar">
@@ -226,234 +270,305 @@ const removeSkill = (skill) => {
 
       {/* 1. Roles */}
       <div className="filter-section">
-        <h4 className="section-title">Find by Roles</h4>
-
-
-        {/* Active Role Tags */}
-        {filterInputs.roles.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.roles.map(role => (
-              <span key={role} className="filter-tag">
-                {role}
-                <FiX 
-                  className="tag-close-icon" 
-                  onClick={() => removeTag('roles', role)} 
-                />
-              </span>
-            ))}
+        <SectionHeader
+          id="roles"
+          title="Find by Roles"
+          isExpanded={activeSection === 'roles'}
+          summary={filterInputs.roles.join(', ')}
+        />
+        {activeSection === 'roles' && (
+          <div className="section-content">
+            {/* Active Role Tags */}
+            {filterInputs.roles.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.roles.map(role => (
+                  <span key={role} className="filter-tag">
+                    {role}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeTag('roles', role)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+            <MultiSelectDropdown
+              label="Find by Roles"
+              options={roleOptions}
+              selectedValues={filterInputs.roles}
+              onChange={(newValues) => handleInputChange('roles', newValues)}
+            />
           </div>
         )}
-         <MultiSelectDropdown 
-          label="Find by Roles"
-          options={roleOptions}
-          selectedValues={filterInputs.roles}
-          onChange={(newValues) => handleInputChange('roles', newValues)}
-        />
       </div>
 
       {/* Location Type (Single Selection) */}
       <div className="filter-section">
-        <h4 className="section-title">Job Type</h4>
-        <div className="select-wrapper">
-          <select 
-            className="filter-select"
-            value={filterInputs.locationType}
-            onChange={(e) => handleInputChange('locationType', e.target.value)}
-          >
-            {LOCATION_TYPES.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-          <FiChevronDown className="select-icon" />
-        </div>
-      </div>
-
-
-{/* Skills & Tech */}
-{/* Skills & Tech */}
-<div className="filter-section">
-  <h4 className="section-title">Skills & Tech</h4>
-
-  {/* Active Skill Tags */}
-  {filterInputs.skills?.length > 0 && (
-    <div className="tags-container">
-      {filterInputs.skills.map((skill) => (
-        <span key={skill} className="filter-tag">
-          {skill}
-          <FiX
-            className="tag-close-icon"
-            onClick={() => removeSkill(skill)}
-          />
-        </span>
-      ))}
-    </div>
-  )}
-
-  <MultiSelectDropdown
-    label={
-      isSkillsLoading
-        ? "Loading skills..."
-        : selectedRole
-        ? "Add Skills..."
-        : "Select role first"
-    }
-    options={skillsOptions}
-    selectedValues={filterInputs.skills || []}
-    onChange={(newValues) =>
-      handleInputChange("skills", newValues)
-    }
-  />
-</div>
-
-
-
-
-    <div className="filter-section">
-      <h4 className="section-title">Employment Type</h4>
-
-      {/* Selected Tags */}
-      {availability.length > 0 && (
-        <div className="tags-container">
-          {availability.map((a) => (
-            <span key={a} className="filter-tag">
-              {a}
-              <FiX
-                className="tag-close-icon"
-                onClick={() => removeAvailability(a)}
-              />
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Dropdown */}
-      <div className="select-wrapper" style={{ position: "relative" }}>
-        <div
-          className="filter-select"
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            minHeight: "44px"
-          }}
-        >
-          <span style={{ color: availability.length ? "#0f172a" : "#64748b" }}>
-            {availability.length > 0
-              ? `${availability.length} selected`
-              : "Employment Type..."}
-          </span>
-
-          {isOpen ? <FiChevronDown /> : <FiPlus />}
-        </div>
-
-        {/* Options */}
-        {isOpen && (
-          <div className="custom-dropdown-menu">
-            {AVAILABILITY_OPTIONS.map((option) => (
-              <div
-                key={option}
-                className="custom-option"
-                onClick={() => toggleOption(option)}
+        <SectionHeader
+          id="jobType"
+          title="Job Type"
+          isExpanded={activeSection === 'jobType'}
+          summary={filterInputs.locationType !== 'Any Type' ? filterInputs.locationType : ''}
+        />
+        {activeSection === 'jobType' && (
+          <div className="section-content">
+            <div className="select-wrapper">
+              <select
+                className="filter-select"
+                value={filterInputs.locationType}
+                onChange={(e) => handleInputChange('locationType', e.target.value)}
               >
-                <div
-                  className={`custom-checkbox ${
-                    availability.includes(option) ? "checked" : ""
-                  }`}
-                >
-                  {availability.includes(option) && (
-                    <FiCheck size={10} color="white" />
-                  )}
-                </div>
-                <span>{option}</span>
-              </div>
-            ))}
+                {LOCATION_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              <FiChevronDown className="select-icon" />
+            </div>
           </div>
         )}
       </div>
-    </div>
 
 
-        {/* Locations */}
-     <div className="filter-section">
-  <h4 className="section-title">Location</h4>
+      {/* Skills & Tech */}
+      {/* Skills & Tech */}
+      <div className="filter-section">
+        <SectionHeader
+          id="skills"
+          title="Skills & Tech"
+          isExpanded={activeSection === 'skills'}
+          summary={filterInputs.skills.join(', ')}
+        />
+        {activeSection === 'skills' && (
+          <div className="section-content">
+            {/* Active Skill Tags */}
+            {filterInputs.skills?.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.skills.map((skill) => (
+                  <span key={skill} className="filter-tag">
+                    {skill}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeSkill(skill)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
 
-  <input
-    type="text"
-    className="filter-input"
-    placeholder="Add Location..."
-    value={filterInputs.location || ""}
-    onChange={(e) =>
-      handleInputChange("location", e.target.value)
-    }
-  />
-</div>
+            <MultiSelectDropdown
+              label={
+                isSkillsLoading
+                  ? "Loading skills..."
+                  : selectedRole
+                    ? "Add Skills..."
+                    : "Select role first"
+              }
+              options={skillsOptions}
+              selectedValues={filterInputs.skills || []}
+              onChange={(newValues) =>
+                handleInputChange("skills", newValues)
+              }
+            />
+          </div>
+        )}
+      </div>
+
+
+
+
+      <div className="filter-section">
+        <SectionHeader
+          id="employment"
+          title="Employment Type"
+          isExpanded={activeSection === 'employment'}
+          summary={availability.join(', ')}
+        />
+        {activeSection === 'employment' && (
+          <div className="section-content">
+            {/* Selected Tags */}
+            {availability.length > 0 && (
+              <div className="tags-container">
+                {availability.map((a) => (
+                  <span key={a} className="filter-tag">
+                    {a}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeAvailability(a)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Dropdown */}
+            <div className="select-wrapper" ref={employmentTypeRef} style={{ position: "relative" }}>
+              <div
+                className="filter-select"
+                onClick={() => setIsOpen(!isOpen)}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  minHeight: "44px"
+                }}
+              >
+                <span style={{ color: availability.length ? "#0f172a" : "#64748b" }}>
+                  {availability.length > 0
+                    ? `${availability.length} selected`
+                    : "Employment Type..."}
+                </span>
+
+                {isOpen ? <FiChevronDown /> : <FiPlus />}
+              </div>
+
+              {/* Options */}
+              {isOpen && (
+                <div className="custom-dropdown-menu">
+                  {AVAILABILITY_OPTIONS.map((option) => (
+                    <div
+                      key={option}
+                      className="custom-option"
+                      onClick={() => toggleOption(option)}
+                    >
+                      <div
+                        className={`custom-checkbox ${availability.includes(option) ? "checked" : ""
+                          }`}
+                      >
+                        {availability.includes(option) && (
+                          <FiCheck size={10} color="white" />
+                        )}
+                      </div>
+                      <span>{option}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+
+      {/* Locations */}
+      <div className="filter-section">
+        <SectionHeader
+          id="location"
+          title="Location"
+          isExpanded={activeSection === 'location'}
+          summary={filterInputs.location}
+        />
+        {activeSection === 'location' && (
+          <div className="section-content">
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="Add Location..."
+              value={filterInputs.location || ""}
+              onChange={(e) =>
+                handleInputChange("location", e.target.value)
+              }
+            />
+          </div>
+        )}
+      </div>
 
       {/* Experience */}
       <div className="filter-section">
-  <h4 className="section-title">Years Of Experience</h4>
+        <SectionHeader
+          id="experience"
+          title="Years Of Experience"
+          isExpanded={activeSection === 'experience'}
+          summary={filterInputs.minExperience || filterInputs.maxExperience ? `${filterInputs.minExperience || 0}-${filterInputs.maxExperience || '+'} years` : ''}
+        />
+        {activeSection === 'experience' && (
+          <div className="section-content">
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min"
+                value={filterInputs.minExperience || ""}
+                onChange={(e) =>
+                  handleInputChange("minExperience", e.target.value)
+                }
+              />
 
-  <div style={{ display: "flex", gap: "8px" }}>
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Min"
-      value={filterInputs.minExperience || ""}
-      onChange={(e) =>
-        handleInputChange("minExperience", e.target.value)
-      }
-    />
-
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Max"
-      value={filterInputs.maxExperience || ""}
-      onChange={(e) =>
-        handleInputChange("maxExperience", e.target.value)
-      }
-    />
-  </div>
-</div>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max"
+                value={filterInputs.maxExperience || ""}
+                onChange={(e) =>
+                  handleInputChange("maxExperience", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
 
-{/* Salary Range */}
-<div className="filter-section">
-  <h4 className="section-title">Salary Range</h4>
+      {/* Salary Range */}
+      <div className="filter-section">
+        <SectionHeader
+          id="salary"
+          title="Salary Range"
+          isExpanded={activeSection === 'salary'}
+          summary={filterInputs.minSalary || filterInputs.maxSalary ? `$${filterInputs.minSalary || 0} - $${filterInputs.maxSalary || '+'}` : ''}
+        />
+        {activeSection === 'salary' && (
+          <div className="section-content">
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min Salary"
+                value={filterInputs.minSalary}
+                onChange={(e) =>
+                  handleInputChange("minSalary", e.target.value)
+                }
+              />
 
-  <div style={{ display: "flex", gap: "8px" }}>
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Min Salary"
-      value={filterInputs.minSalary}
-      onChange={(e) =>
-        handleInputChange("minSalary", e.target.value)
-      }
-    />
-
-    <input
-      type="number"
-      className="filter-input"
-      placeholder="Max Salary"
-      value={filterInputs.maxSalary}
-      onChange={(e) =>
-        handleInputChange("maxSalary", e.target.value)
-      }
-    />
-  </div>
-</div>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max Salary"
+                value={filterInputs.maxSalary}
+                onChange={(e) =>
+                  handleInputChange("maxSalary", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
 
       {/* Apply Button */}
-      <button onClick={applyFilters} className="apply-btn">
+      <button onClick={applyFilters} className="apply-btn mt-3">
         Apply Filters
       </button>
 
 
       {/* INLINE STYLES */}
       <style jsx>{`
+           .filter-section {
+          margin-bottom: 8px;
+          background: #fff;
+          border-radius: 8px;
+        }
+        .filter-section-header:hover h4 {
+          color: #f5810c;
+        }
+        .section-content {
+          padding-bottom: 12px;
+          animation: slideDown 0.2s ease-out;
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
            .tags-container {
           display: flex;
           flex-wrap: wrap;
