@@ -85,6 +85,27 @@ const roleFromProfile = location.state?.role;
     });
   }
 
+  if (filters.minSalary && filters.maxSalary) {
+        apiFilters.push({
+          filterName: "Salary Range",
+          filterOperator: "Equals",
+          filterValue: [
+            `${filters.minSalary} - ${filters.maxSalary}`
+          ],
+        });
+      }
+
+      // Years of Experience
+      if (filters.minExperience && filters.maxExperience) {
+        apiFilters.push({
+          filterName: "Years of Experience",
+          filterOperator: "Equals",
+          filterValue: [
+            `${filters.minExperience}- ${filters.maxExperience}`
+          ],
+        });
+      }
+
   return apiFilters;
 };
 const fetchJobs = async () => {
