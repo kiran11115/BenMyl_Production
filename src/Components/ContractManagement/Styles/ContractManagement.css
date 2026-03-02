@@ -2,7 +2,7 @@
   --bg: #f6f7fb;
   --card: #ffffff;
   --muted: #718096;
-  --blue: #2563eb;
+  --blue: #f5810c;
   --accent-green: #10b981;
   --accent-red: #ef4444;
   --muted-border: #eef2f7;
@@ -34,12 +34,12 @@
 /* back row */
 .back-row {
   font-size: 13px;
-  color: #3b82f6;
+  color: #f5810c;
   margin-bottom: 12px;
 }
 
 .back-link {
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 600;
   text-decoration: none;
   display: inline-flex;
@@ -127,7 +127,7 @@ input[type="range"]::-moz-range-thumb {
   color: #fff;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 6px 18px rgba(245, 129, 12, 0.12);
 }
 
 /* main */
@@ -262,7 +262,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .sort-item.selected {
-  background: #eef6ff;
+  background: #fff7ed;
   color: #0f172a;
 }
 

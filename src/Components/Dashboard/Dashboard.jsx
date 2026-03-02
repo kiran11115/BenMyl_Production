@@ -157,9 +157,8 @@ const Dashboard = () => {
           className="btn d-flex align-items-center gap-2"
           onClick={() => guideRef.current?.startTour()}
           style={{
-            background: "rgba(59, 130, 246, 0.1)",
-            color: "#3b82f6",
-            border: "1px solid rgba(59, 130, 246, 0.2)",
+            background: "#eff6ff",
+            color: "#313131",
             borderRadius: "10px",
             padding: "8px 16px",
             fontWeight: "600",
@@ -167,11 +166,9 @@ const Dashboard = () => {
             transition: "all 0.2s"
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
             e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.background = "rgba(59, 130, 246, 0.1)";
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >

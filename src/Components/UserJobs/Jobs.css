@@ -4,9 +4,9 @@
   --slate-500: #64748b;
   --slate-400: #94a3b8;
   --slate-200: #e2e8f0;
-  --blue-primary: #f5810c;
+  --blue-primary: #1e293b;
   /* Requested Color */
-  --blue-hover: #d17519;
+  --blue-hover: #272f3b;
   --bg-page: #f8fafc;
 }
 
@@ -250,7 +250,7 @@
 .contract-badge {
   font-size: 11px;
   font-weight: 500;
-  color: #3b82f6;
+  color: #f5810c;
   background: #eff6ff;
   padding: 4px 8px;
   border-radius: 6px;
@@ -467,7 +467,7 @@
 
 .skill-chip {
   background: #eff6ff;
-  color: #3b82f6;
+  color: #f5810c;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;

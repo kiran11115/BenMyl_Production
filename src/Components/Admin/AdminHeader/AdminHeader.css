@@ -89,7 +89,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #3b82f6;
+  background-color: #f5810c;
   border-radius: 2px;
 }
 
@@ -303,7 +303,7 @@
   /* Add a left border indicator instead for mobile */
   .header-nav.mobile-active .header-nav-link.active {
     padding-left: 12px;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid #f5810c;
   }
 }
 

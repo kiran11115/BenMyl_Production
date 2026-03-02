@@ -29,7 +29,7 @@ const ProjectsSection = ({ projects }) => {
           <h3 className="section-title" style={{ margin: 0 }}>
             Ongoing Projects
           </h3>
-          <button className="border-0" style={{ textDecoration: "underline", background: "none", color: "Blue", fontSize: "13px" }}>View all</button>
+          <button className="border-0" style={{ textDecoration: "underline", background: "none", color: "#3b82f6 ", fontSize: "13px" }}>View all</button>
         </div>
 
         <div className="d-flex align-items-center gap-2">

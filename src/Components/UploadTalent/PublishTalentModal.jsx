@@ -471,7 +471,7 @@ const handleLinkedInShare = async () => {
           font-size: 14px;
         }
         .hotlist-table th {
-          background: #2590EB;
+          background: #1e293b;
           color: #fefefe;
           padding: 10px;
           border: 1px solid #d1d5db;

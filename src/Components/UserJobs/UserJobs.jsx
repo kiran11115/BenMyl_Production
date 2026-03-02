@@ -281,7 +281,7 @@ const fetchJobs = async () => {
                           style={{
                             fontSize: "14px",
                             fontWeight: 600,
-                            color: "#6366f1",
+                            color: "#3b82f6",
                           }}
                         >
                           {job.company}

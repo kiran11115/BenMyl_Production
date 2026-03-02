@@ -178,7 +178,7 @@
 
 /* Links */
 .auth-link {
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 600;
   text-decoration: none;
   background: none;
@@ -215,8 +215,8 @@
 }
 
 .auth-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #f5810c;
+  box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
 }
 
 .auth-input-error {

@@ -23,12 +23,12 @@
 .analytics-stat-icon-analytics {
   width: 38px;
   height: 38px;
-  background: #eff6ff;
+  background: #fff7ed;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
+  color: #f5810c;
 }
 
 .analytics-stat-label-analytics {
@@ -55,7 +55,8 @@
   padding: 18px;
   box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
   margin-top: 16px;
-   min-width: 0;       /* 🔑 critical */
+  min-width: 0;
+  /* 🔑 critical */
   overflow: hidden;
 }
 

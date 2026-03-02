@@ -104,7 +104,7 @@
 
 .tutorial-badge {
     background: #eff6ff;
-    color: #3b82f6;
+    color: #313131;
     font-size: 0.75rem;
     font-weight: 700;
     padding: 4px 10px;
@@ -168,7 +168,7 @@
 }
 
 .tutorial-dot.active {
-    background: #3b82f6;
+    background: #f5810c;
     width: 18px;
     border-radius: 10px;
 }
@@ -207,13 +207,13 @@
 }
 
 .tutorial-btn.primary {
-    background: #3b82f6;
+    background: #f5810c;
     border: none;
     color: #ffffff;
 }
 
 .tutorial-btn.primary:hover {
-    background: #2563eb;
+    background: #dd7812;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
