@@ -18,7 +18,7 @@ const AvailabilityBadge = ({ text }) => (
       borderRadius: "6px",
       fontSize: "11px",
       fontWeight: "600",
-      marginRight: "4px",
+      whiteSpace: "normal",
       backgroundColor: "#f0fdf4",
       color: "#22c55e",
     }}
