@@ -344,17 +344,25 @@ const validateProjectRole = (val) => {
 };
 
 const validateProjectStartDate = (val) => {
-  // Start date optional — only validate when provided
-  if (!val || String(val).trim() === "") return null;
+  if (!val || String(val).trim() === "")
+    return "Project start date is required";
+
   const d = new Date(val);
-  if (isNaN(d)) return null;
+  if (isNaN(d))
+    return "Please enter a valid project start date";
+
+  return null;
 };
 
 const validateProjectEndDate = (val) => {
-  // End date optional — only validate when provided
-  if (!val || String(val).trim() === "") return null;
+  if (!val || String(val).trim() === "")
+    return "Project end date is required";
+
   const d = new Date(val);
-  if (isNaN(d)) return null;
+  if (isNaN(d))
+    return "Please enter a valid project end date";
+
+  return null;
 };
 
 const validateProjectSkills = (val) => {
