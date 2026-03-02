@@ -505,9 +505,9 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           gap: 6px;
           margin-bottom: 8px;
         }
-        .filter-tag {
-          background: #e0e7ff;
-          color: #4338ca;
+          .filter-tag {
+          background: #eff6ff;
+          color: #1e293b;
           padding: 4px 8px;
           border-radius: 4px;
           font-size: 12px;
