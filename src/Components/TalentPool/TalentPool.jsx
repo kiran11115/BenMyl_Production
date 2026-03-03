@@ -328,6 +328,8 @@ const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
 
+    const PAGE_SIZE = 50;
+
   const fetchTalents = async () => {
 
      try {
@@ -409,7 +411,7 @@ const [isFetchingMore, setIsFetchingMore] = useState(false);
     const payload = {
       companyid: Number(companyId),
       pageNumber,
-      pageSize: 50,
+      pageSize: PAGE_SIZE,
       filters: filtersArray,
     };
 
@@ -421,7 +423,7 @@ const [isFetchingMore, setIsFetchingMore] = useState(false);
       return;
     }
 
-    if (res.length < 50) {
+    if (res.length < PAGE_SIZE) {
   setHasMore(false);   // no more pages
 }
 
@@ -566,23 +568,23 @@ const filtersReady = useMemo(() => {
 
 
   useEffect(() => {
-    const el = resultsRef.current;
-    if (!el) return;
+  const el = resultsRef.current;
+  if (!el) return;
 
-    const onScroll = () => {
-      if (
-        el.scrollTop + el.clientHeight >=
-        el.scrollHeight - 50 &&
-        hasMore &&
-        !isLoading
-      ) {
-        setPageNumber((prev) => prev + 1);
-      }
-    };
+  const onScroll = () => {
+    if (
+      el.scrollHeight > el.clientHeight &&
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+      hasMore &&
+      !isFetchingMore
+    ) {
+      setPageNumber((prev) => prev + 1);
+    }
+  };
 
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [hasMore, isLoading]);
+  el.addEventListener("scroll", onScroll);
+  return () => el.removeEventListener("scroll", onScroll);
+}, [hasMore, isFetchingMore]);
 
 
   const activeJob = useMemo(() => {
