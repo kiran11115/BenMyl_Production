@@ -322,14 +322,20 @@ const TalentPool = () => {
 
   const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
   const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
 
   const fetchTalents = async () => {
-    setPageNumber(1);
-    setHasMore(true);
-    setAllCandidates([]);
+
+     try {
+    if (pageNumber === 1) {
+      setIsInitialLoading(true);   // first load
+    } else {
+      setIsFetchingMore(true);     // scroll load
+    }
 
     const filtersArray = [];
 
@@ -415,9 +421,18 @@ const TalentPool = () => {
       return;
     }
 
+    if (res.length < 50) {
+  setHasMore(false);   // no more pages
+}
+
     setAllCandidates((prev) =>
       pageNumber === 1 ? res : [...prev, ...res]
     );
+
+     } finally {
+    setIsInitialLoading(false);
+    setIsFetchingMore(false);
+  }
   };
 
 
@@ -492,25 +507,43 @@ const TalentPool = () => {
 
 
   useEffect(() => {
-    if (preselectedJobTitle && jobs.length > 0) {
-      const matchedJob = jobs.find(
-        (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
-      );
+  if (!preselectedJobTitle || jobs.length === 0) return;
 
-      if (matchedJob) {
-        setSelectedJobId(matchedJob.id);
+  const matchedJob = jobs.find(
+    (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+  );
 
-        setAppliedFilters((prev) => ({
-          ...prev,
-          selectedJobs: [matchedJob.id],
-        }));
+  if (!matchedJob) return;
 
-        setIsInitialised(true);
-      }
-    }
-  }, [preselectedJobTitle, jobs]);
+  const filters = {
+    selectedJobs: [matchedJob.id],
+    skills: [],
+    location: "",
+    minExperience: "",
+    maxExperience: "",
+    minSalary: "",
+    maxSalary: "",
+    availability: [],
+  };
 
+  setSelectedJobId(matchedJob.id);
+  setAppliedFilters(filters);
 
+  // 🔥 VERY IMPORTANT → sync to URL
+  setSearchParams({ jobId: matchedJob.id });
+
+}, [preselectedJobTitle, jobs]);
+
+const filtersReady = useMemo(() => {
+  const hasURLParams = searchParams.toString().length > 0;
+
+  // If URL has filters but appliedFilters not restored yet → wait
+  if (hasURLParams && appliedFilters === null) {
+    return false;
+  }
+
+  return true;
+}, [searchParams, appliedFilters]);
 
   useEffect(() => {
     if (selectedJobId !== null) {
@@ -525,8 +558,10 @@ const TalentPool = () => {
   }, [activeJobId]);
 
   useEffect(() => {
-    fetchTalents();
-  }, [pageNumber, appliedFilters, activeJobId]);
+  if (!filtersReady) return;
+
+  fetchTalents();
+}, [pageNumber, appliedFilters, activeJobId, filtersReady]);
 
 
 
