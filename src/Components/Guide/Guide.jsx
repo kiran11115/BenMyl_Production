@@ -37,7 +37,7 @@ const tutorialSteps = [
         targetId: "dashboard-talent-table",
         title: "Talent Pipeline",
         description: "Review profile submissions in real-time. Direct access to candidate resumes and screening status.",
-        position: "top"
+        position: "right"
     },
     {
         targetId: "dashboard-interviews-list",
