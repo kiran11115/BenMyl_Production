@@ -58,7 +58,10 @@ const handleLinkedInShare = async () => {
 
     const formData = new FormData();
     formData.append("Title", "Selected Candidates Batch");
-    formData.append("Description", "Latest talent hotlist");
+    formData.append(
+  "Description",
+  "Latest talent hotlist\n\nExplore more profiles:\nhttps://react.benmyl.com/sign-in"
+);
     formData.append("File", blob, "hotlist.png");
     formData.append("images", "null");
     formData.append("EmailId", EmailId);
@@ -197,7 +200,7 @@ const handleLinkedInShare = async () => {
                         </div>
                       </div>
  
-                      <table id="hotlist-table" className="hotlist-table">
+                      <table id="hotlist-table" className="hotlist-table" >
                         <thead>
                           <tr>
                             <th>Name</th>

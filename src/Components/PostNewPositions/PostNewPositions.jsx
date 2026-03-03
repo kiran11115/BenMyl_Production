@@ -166,6 +166,7 @@ const PostNewPositions = () => {
     fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
     fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
+    fd.append("SalarType", formik.values.salaryType);
 
 
     try {

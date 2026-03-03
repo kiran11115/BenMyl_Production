@@ -173,7 +173,6 @@ const validateLastName = (val) => {
 
 const validatePosition = (val) => {
   if (!val || val.trim() === "") return "Position is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "Position should contain only letters";
   return null;
 };
 
@@ -334,7 +333,6 @@ const validateExpDescription = (val) => {
 // ===== PROJECTS VALIDATION FUNCTIONS =====
 const validateProjectName = (val) => {
   if (!val || val.trim() === "") return " name is required";
-  if (!/^[a-zA-Z0-9\s]*$/.test(val)) return "Project name should contain only letters";
   return null;
 };
 
