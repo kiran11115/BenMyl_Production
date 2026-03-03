@@ -102,32 +102,21 @@ useEffect(() => {
     return (first + second).toUpperCase();
   };
 
-  const projectsData = [
-    {
-      projectName: "UI/UX",
-      role: "Developer",
-      startDate: "2024-Jan-12",
-      endDate: "2024-Feb-20",
-      skills: ["React", "Native"],
-      description: "Description1 hjasn dvnsd uhsdunv",
-    },
-    {
-      projectName: "Fintech App",
-      role: "Frontend Developer",
-      startDate: "2023-Oct-01",
-      endDate: "2024-Jan-05",
-      skills: ["React", "Redux", "Tailwind"],
-      description: "Worked on onboarding flow and dashboard UI",
-    },
-    {
-      projectName: "Admin Dashboard",
-      role: "UI Developer",
-      startDate: "2023-Jun-15",
-      endDate: "2023-Sept-30",
-      skills: ["HTML", "CSS", "JavaScript"],
-      description: "Built responsive admin panels and tables",
-    },
-  ];
+  const projectsData =
+  employee?.employeeprojects?.map((proj) => ({
+    projectName: proj.projectName || "N/A",
+    role: proj.role || "N/A",
+    startDate: proj.startDate
+      ? proj.startDate.slice(0, 10)
+      : "N/A",
+    endDate: proj.endDate
+      ? proj.endDate.slice(0, 10)
+      : "Present",
+    skills: proj.skills
+      ? proj.skills.split(",").map((s) => s.trim())
+      : [],
+    description: proj.description || "N/A",
+  })) || [];
 
   const handleShortlistFromProfile = () => {
   if (!jobId || !employeeId) {
@@ -399,50 +388,75 @@ useEffect(() => {
             </div>
 
             <div className="premium-portfolio-grid">
-              {/* projects */}
-              {projectsData.map((data, index) => (
-                <div className="project-card mb-3">
-                  {/* Header */}
-                  <div className="card-top">
-                    <div>
-                      <h3 className="card-title">{data.projectName}</h3>
-                      <p className="card-subtitle">{data.role}</p>
-                    </div>
-                  </div>
+  {projectsData.length > 0 ? (
+    projectsData.map((data, index) => (
+      <div key={index} className="project-card mb-3">
+        <div className="card-top">
+          <div>
+            <h3 className="card-title">{data.projectName}</h3>
+            <p className="card-subtitle">{data.role}</p>
+          </div>
+        </div>
 
-                  {/* Dates */}
-                  <div className="d-flex justify-content-between">
-                    <div className="">
-                      <span style={{ fontSize: "14px" }}>Start Date</span>
-                      <div className="card-date">
-                        <FiCalendar />
-                        {data.startDate}
-                      </div>
-                    </div>
-
-                    <div className="">
-                      <span style={{ fontSize: "14px" }}>End Date</span>
-                      <div className="card-date">
-                        <FiCalendar />
-                        {data.endDate}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Skills */}
-                  <div className="card-skills">
-                    {data.skills.map((skill, i) => (
-                      <span key={i} className="status-tag status-progress">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Description */}
-                  <p className="card-description">{data.description}</p>
-                </div>
-              ))}
+        <div className="d-flex justify-content-between">
+          <div>
+            <span style={{ fontSize: "14px" }}>Start Date</span>
+            <div className="card-date">
+              <FiCalendar />
+              {data.startDate}
             </div>
+          </div>
+
+          <div>
+            <span style={{ fontSize: "14px" }}>End Date</span>
+            <div className="card-date">
+              <FiCalendar />
+              {data.endDate}
+            </div>
+          </div>
+        </div>
+
+        <div className="card-skills">
+          {data.skills.map((skill, i) => (
+            <span key={i} className="status-tag status-progress">
+              {skill}
+            </span>
+          ))}
+        </div>
+
+        <p className="card-description">{data.description}</p>
+      </div>
+    ))
+  ) : (
+  <div
+    style={{
+      color: "#94a3b8",
+      fontSize: "14px",
+      textAlign: "center",
+      padding: "30px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    No projects added yet
+
+    <img
+      src="../Images/no data.svg"
+      alt="No data"
+      style={{
+        width: "100%",
+        maxWidth: "200px",
+        height: "auto",
+        marginTop: "12px",
+        objectFit: "contain",
+        opacity: "50%",
+      }}
+    />
+  </div>
+)}
+</div>
           </div>
         </div>
 
