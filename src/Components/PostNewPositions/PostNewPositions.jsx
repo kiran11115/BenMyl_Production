@@ -180,7 +180,7 @@ console.log("JobID:",JobID)
       await postJob(fd).unwrap();
     } catch (err) {
       console.error(err);
-      alert("Failed to post job");
+      throw err; // 🔥 VERY IMPORTANT
     }
   };
 
