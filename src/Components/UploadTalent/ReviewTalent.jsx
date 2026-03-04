@@ -73,87 +73,116 @@ const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div className="auth-card" style={{ flexDirection: "column", minHeight: "800px", padding: "40px", maxWidth: "100%" }}>
-      <div style={{ textAlign: "center", borderBottom: "1px solid #e2e8f0", paddingBottom: 20, marginBottom: 20 }}>
-        <h1 className="auth-title">
+    <div className="premium-resume-card">
+      {/* Header Section */}
+      <div className="resume-header-section">
+        <h1 className="resume-name">
           {data.firstName} {data.lastName}
         </h1>
-        <div className="auth-subtitle">
-          {data.emailAddress} • {data.phoneNo}
-          <br />
-          {data.city}, {data.state}, {data.country}
+        <div className="resume-contact">
+          <span>{data.emailAddress}</span>
+          <span>{data.phoneNo}</span>
+          {data.city && (
+            <span>{data.city}, {data.state}</span>
+          )}
         </div>
       </div>
 
+      {/* Summary */}
       {data.bio && (
-        <div className="auth-form-group">
-          <h3 className="auth-label">PROFESSIONAL SUMMARY</h3>
-          <div className="auth-subtitle" style={{ lineHeight: 1.6 }}>
+        <div className="resume-section">
+          <h3 className="resume-section-title">
+            Professional Summary
+          </h3>
+          <p className="resume-list" style={{ paddingLeft: 0, textAlign: 'justify', borderBottom: 'none' }}>
             {data.bio}
-          </div>
+          </p>
         </div>
       )}
 
-      {/* EDUCATION */}
-      <div className="auth-form-group">
-        <h3 className="auth-label">EDUCATION</h3>
-        {data.employee_Heighers?.map((e, i) => (
-          <div key={i} style={{ marginBottom: 10 }}>
-            <div className="auth-label">{e.university}</div>
-            <div className="auth-subtitle">
-              {e.fieldofstudy} • {e.percentage}
+      {/* Experience */}
+      {data.workexperiences && data.workexperiences.length > 0 && (
+        <div className="resume-section">
+          <h3 className="resume-section-title">
+            Professional Experience
+          </h3>
+          {data.workexperiences.map((e, i) => (
+            <div key={i} className="resume-item">
+              <div className="resume-item-header">
+                <div className="resume-item-main">{e.companyName}</div>
+                <div className="resume-date-badge">
+                  {e.startDate?.slice(0, 7)} — {e.endDate ? e.endDate.slice(0, 7) : "Present"}
+                </div>
+              </div>
+              <div className="resume-item-sub">{e.position}</div>
+              <ul className="resume-list">
+                {e.description?.split(".").map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
+              </ul>
             </div>
-            <div className="auth-subtitle">
-              {e.startDate?.slice(0, 4)} - {e.endDate?.slice(0, 4)}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* EXPERIENCE */}
-      <div className="auth-form-group">
-        <h3 className="auth-label">EXPERIENCE</h3>
-        {data.workexperiences?.map((e, i) => (
-          <div key={i} style={{ marginBottom: 14 }}>
-            <div className="auth-label">{e.companyName}</div>
-            <div className="auth-subtitle">
-              {e.position} • {e.startDate?.slice(0, 7)} - {e.endDate ? e.endDate.slice(0, 7) : "Present"}
-            </div>
-            <ul className="auth-subtitle" style={{ paddingLeft: 20 }}>
-              {e.description?.split(".").map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      {/* PROJECTS */}
-      <div className="auth-form-group">
-        <h3 className="auth-label">PROJECTS</h3>
-        {data.employeeprojects?.map((p, i) => (
-          <div key={i} style={{ marginBottom: 14 }}>
-            <div className="auth-label">{p.projectName}</div>
-            <div className="auth-subtitle">
-              {p.startDate?.slice(0, 7)} - {p.endDate ? p.endDate.slice(0, 7) : "Present"}
-            </div>
-            <div className="auth-subtitle">{p.description}</div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
-              {p.skills?.split(",").map((s, idx) => (
-                <span key={idx} className="status-tag status-progress">{s}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* SKILLS */}
-      <div className="auth-form-group">
-        <h3 className="auth-label">SKILLS</h3>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {data.skills?.split(",").map((s, i) => (
-            <span key={i} className="status-tag status-progress">{s}</span>
           ))}
         </div>
-      </div>
+      )}
+
+      {/* Education */}
+      {data.employee_Heighers && data.employee_Heighers.length > 0 && (
+        <div className="resume-section">
+          <h3 className="resume-section-title">
+            Education
+          </h3>
+          {data.employee_Heighers.map((e, i) => (
+            <div key={i} className="resume-item">
+              <div className="resume-item-header">
+                <div className="resume-item-main">{e.university}</div>
+                <div className="resume-date-badge">
+                  {e.startDate?.slice(0, 4)} — {e.endDate?.slice(0, 4)}
+                </div>
+              </div>
+              <div className="resume-item-sub">
+                {e.highestQualification} {e.fieldofstudy && `• ${e.fieldofstudy}`} {e.percentage && `(${e.percentage})`}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Projects */}
+      {data.employeeprojects && data.employeeprojects.length > 0 && (
+        <div className="resume-section">
+          <h3 className="resume-section-title">
+            Key Projects
+          </h3>
+          {data.employeeprojects.map((p, i) => (
+            <div key={i} className="resume-item">
+              <div className="resume-item-header">
+                <div className="resume-item-main">{p.projectName}</div>
+                <div className="resume-date-badge">
+                  {p.startDate?.slice(0, 7)} — {p.endDate ? p.endDate.slice(0, 7) : "Present"}
+                </div>
+              </div>
+              <p className="resume-list" style={{ paddingLeft: 0, marginBottom: '12px' }}>{p.description}</p>
+              <div className="resume-skills-grid">
+                {p.skills?.split(",").map((s, idx) => (
+                  <span key={idx} className="resume-skill-pill">{s.trim()}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Skills */}
+      {data.skills && (
+        <div className="resume-section">
+          <h3 className="resume-section-title">
+            Core Competencies
+          </h3>
+          <div className="resume-skills-grid">
+            {data.skills.split(",").map((s, i) => (
+              <span key={i} className="resume-skill-pill">{s.trim()}</span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -653,14 +682,8 @@ const ReviewTalent = () => {
     const firstNameError = validateFirstName(basicInfo.firstName);
     if (firstNameError) errors.push(firstNameError);
 
-    const lastNameError = validateLastName(basicInfo.lastName);
-    if (lastNameError) errors.push(lastNameError);
-
     const positionError = validatePosition(basicInfo.position);
     if (positionError) errors.push(positionError);
-
-    const phoneError = validatePhone(basicInfo.phone);
-    if (phoneError) errors.push(phoneError);
 
     const emailError = validateEmail(basicInfo.email);
     if (emailError) errors.push(emailError);
@@ -672,29 +695,8 @@ const ReviewTalent = () => {
   const validateAllPersonalInfo = (personalInfo) => {
     const errors = [];
 
-    const dobError = validateDOB(personalInfo.dob);
-    if (dobError) errors.push(dobError);
-
-    const genderError = validateGender(personalInfo.gender);
-    if (genderError) errors.push(genderError);
-
-    const emergencyError = validateEmergency(personalInfo.emergency);
-    if (emergencyError) errors.push(emergencyError);
-
     const addressError = validateAddress(personalInfo.address);
     if (addressError) errors.push(addressError);
-
-    const countryError = validateCountry(personalInfo.country);
-    if (countryError) errors.push(countryError);
-
-    const stateError = validateState(personalInfo.state);
-    if (stateError) errors.push(stateError);
-
-    const cityError = validateCity(personalInfo.city);
-    if (cityError) errors.push(cityError);
-
-    const bioError = validateBio(personalInfo.bio);
-    if (bioError) errors.push(bioError);
 
     return errors;
   };
@@ -704,27 +706,17 @@ const ReviewTalent = () => {
     const errors = [];
     if (!Array.isArray(educationArr)) return errors;
     educationArr.forEach((edu, idx) => {
-      const uniErr = validateUniversity(edu.university);
-      if (uniErr) errors.push(`Education[${idx}] University: ${uniErr}`);
+      // Only validate dates if any info is entered in this education entry
+      const hasData = edu.university?.trim() || edu.qualification?.trim() || edu.field?.trim();
 
-      const qualErr = validateQualification(edu.qualification);
-      if (qualErr) errors.push(`Education[${idx}] Qualification: ${qualErr}`);
-
-      const sdErr = validateEduStartDate(edu.startDate);
-      if (sdErr) errors.push(`Education[${idx}] Start Date: ${sdErr}`);
-
-      const edErr = validateEduEndDate(edu.endDate);
-      if (edErr) errors.push(`Education[${idx}] End Date: ${edErr}`);
-
-      const fieldErr = validateEduField(edu.field);
-      if (fieldErr) errors.push(`Education[${idx}] Field: ${fieldErr}`);
-
-      const perErr = validatePercentage(edu.percentage);
-      if (perErr) errors.push(`Education[${idx}] Percentage: ${perErr}`);
-
-      const certs = (edu.certifications || []).join(", ");
-      const certErr = validateCertifications(certs);
-      if (certErr) errors.push(`Education[${idx}] Certifications: ${certErr}`);
+      if (hasData) {
+        if (!edu.startDate || String(edu.startDate).trim() === "") {
+          errors.push(`Education[${idx + 1}]: Start Date is required`);
+        }
+        if (!edu.endDate || String(edu.endDate).trim() === "") {
+          errors.push(`Education[${idx + 1}]: End Date is required`);
+        }
+      }
     });
     return errors;
   };
@@ -734,24 +726,17 @@ const ReviewTalent = () => {
     const errors = [];
     if (!Array.isArray(experienceArr)) return errors;
     experienceArr.forEach((exp, idx) => {
-      const compErr = validateCompany(exp.company);
-      if (compErr) errors.push(`Experience[${idx}] Company: ${compErr}`);
+      // Only validate dates if any info is entered
+      const hasData = exp.company?.trim() || exp.position?.trim();
 
-      const posErr = validateExpPosition(exp.position);
-      if (posErr) errors.push(`Experience[${idx}] Position: ${posErr}`);
-
-      const sdErr = validateExpStartDate(exp.startDate);
-      if (sdErr) errors.push(`Experience[${idx}] Start Date: ${sdErr}`);
-
-      const edErr = validateExpEndDate(exp.endDate);
-      if (edErr) errors.push(`Experience[${idx}] End Date: ${edErr}`);
-
-      const skillsStr = Array.isArray(exp.skills) ? exp.skills.join(", ") : (exp.skills || "");
-      const skillErr = validateExpSkills(skillsStr);
-      if (skillErr) errors.push(`Experience[${idx}] Skills: ${skillErr}`);
-
-      const descErr = validateExpDescription(exp.description);
-      if (descErr) errors.push(`Experience[${idx}] Description: ${descErr}`);
+      if (hasData) {
+        if (!exp.startDate || String(exp.startDate).trim() === "") {
+          errors.push(`Experience[${idx + 1}]: Start Date is required`);
+        }
+        if (!exp.endDate || String(exp.endDate).trim() === "") {
+          errors.push(`Experience[${idx + 1}]: End Date is required`);
+        }
+      }
     });
     return errors;
   };
@@ -759,29 +744,7 @@ const ReviewTalent = () => {
 
   // ===== VALIDATE ALL PROJECTS ENTRIES =====
   const validateAllProjects = (projectsArr) => {
-    const errors = [];
-    if (!Array.isArray(projectsArr)) return errors;
-    projectsArr.forEach((proj, idx) => {
-      const nameErr = validateProjectName(proj.name);
-      if (nameErr) errors.push(`Project[${idx}] Name: ${nameErr}`);
-
-      const roleErr = validateProjectRole(proj.role);
-      if (roleErr) errors.push(`Project[${idx}] Role: ${roleErr}`);
-
-      const sdErr = validateProjectStartDate(proj.startDate);
-      if (sdErr) errors.push(`Project[${idx}] Start Date: ${sdErr}`);
-
-      const edErr = validateProjectEndDate(proj.endDate);
-      if (edErr) errors.push(`Project[${idx}] End Date: ${edErr}`);
-
-      const skillsStr = Array.isArray(proj.skills) ? proj.skills.join(", ") : (proj.skills || "");
-      const skillErr = validateProjectSkills(skillsStr);
-      if (skillErr) errors.push(`Project[${idx}] Skills: ${skillErr}`);
-
-      const descErr = validateProjectDescription(proj.description);
-      if (descErr) errors.push(`Project[${idx}] Description: ${descErr}`);
-    });
-    return errors;
+    return []; // No validations for projects as per requirement
   };
 
 
@@ -797,7 +760,26 @@ const ReviewTalent = () => {
 
     const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
     if (allErrors.length > 0) {
-      setValidationErrorsState(allErrors[0]);
+      setValidationErrorsState(allErrors);
+
+      // Auto-expand and enter edit mode for the first failing section
+      if (validationErrors.length > 0) {
+        setOpenAccordion("basicInfo");
+        beginEdit("basicInfo");
+      } else if (personalErrors.length > 0) {
+        setOpenAccordion("personalInfo");
+        beginEdit("personalInfo");
+      } else if (educationErrors.length > 0) {
+        setOpenAccordion("education");
+        beginEdit("education", "all");
+      } else if (experienceErrors.length > 0) {
+        setOpenAccordion("experience");
+        beginEdit("experience", "all");
+      } else if (projectErrors.length > 0) {
+        setOpenAccordion("projects");
+        beginEdit("projects", "all");
+      }
+
       return;
     }
 
@@ -929,7 +911,26 @@ const ReviewTalent = () => {
 
     const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
     if (allErrors.length > 0) {
-      setValidationErrorsState(allErrors[0]);
+      setValidationErrorsState(allErrors);
+
+      // Auto-expand and enter edit mode for the first failing section
+      if (validationErrors.length > 0) {
+        setOpenAccordion("basicInfo");
+        beginEdit("basicInfo");
+      } else if (personalErrors.length > 0) {
+        setOpenAccordion("personalInfo");
+        beginEdit("personalInfo");
+      } else if (educationErrors.length > 0) {
+        setOpenAccordion("education");
+        beginEdit("education", "all");
+      } else if (experienceErrors.length > 0) {
+        setOpenAccordion("experience");
+        beginEdit("experience", "all");
+      } else if (projectErrors.length > 0) {
+        setOpenAccordion("projects");
+        beginEdit("projects", "all");
+      }
+
       return;
     }
 

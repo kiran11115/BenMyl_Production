@@ -52,11 +52,11 @@ const PostNewPositions = () => {
   const [skills, setSkills] = useState([]);
   const [generateAI, { isLoading: isAiLoading }] =
     useGenerateJobDescriptionAIMutation();
-    const location = useLocation();
-const editData = location.state?.jobData;
-const isEdit = location.state?.isEdit;
-const JobID = location.state?.jobId;
-console.log("JobID:",JobID)
+  const location = useLocation();
+  const editData = location.state?.jobData;
+  const isEdit = location.state?.isEdit;
+  const JobID = location.state?.jobId;
+  console.log("JobID:", JobID)
 
   // Work Authorization states
   const [workAuthorization, setWorkAuthorization] = useState({
@@ -94,24 +94,23 @@ console.log("JobID:",JobID)
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-  jobTitle: editData?.jobTitle || '',
-  companyName: editData?.companyName || companyname,
-  location: editData?.location || '',
-  employmentType: editData?.employeeType || '',
-  workModel: editData?.workModels || '',
-  jobDuration: editData?.jobDuration || '',
-  salaryMin: editData?.salaryRange_Min || '',
-  salaryMax: editData?.salaryRange_Max || '',
-  salaryCurrency: 'USD',
-  salaryType: editData?.salarType || 'perHour',
-  description: editData?.jobDescription || '',
-  department: editData?.department || '',
-  experienceLevel: editData?.experienceLevel || '',
-  educationLevel: editData?.educationLevel || '',
-  yearsExperience: editData?.yearsOfExperience || '',
-  additionalReqs: editData?.additionalRequirements || '',
-  jobDuration: editData?.jobDuration || '',
-},
+      jobTitle: editData?.jobTitle || '',
+      companyName: editData?.companyName || companyname,
+      location: editData?.location || '',
+      employmentType: editData?.employeeType || '',
+      workModel: editData?.workModels || '',
+      jobDuration: editData?.jobDuration || '',
+      salaryMin: editData?.salaryRange_Min || '',
+      salaryMax: editData?.salaryRange_Max || '',
+      salaryCurrency: 'USD',
+      salaryType: editData?.salarType || 'perHour',
+      description: editData?.jobDescription || '',
+      department: editData?.department || '',
+      experienceLevel: editData?.experienceLevel || '',
+      educationLevel: editData?.educationLevel || '',
+      yearsExperience: editData?.yearsOfExperience || '',
+      additionalReqs: editData?.additionalRequirements || '',
+    },
     validationSchema,
     // ✅ ONLY OPEN PREVIEW
     onSubmit: () => {
@@ -180,7 +179,7 @@ console.log("JobID:",JobID)
       await postJob(fd).unwrap();
     } catch (err) {
       console.error(err);
-      alert("Failed to post job");
+      throw err; // 🔥 VERY IMPORTANT
     }
   };
 
@@ -235,56 +234,56 @@ console.log("JobID:",JobID)
     }
   };
 
- useEffect(() => {
-  if (!editData) return;
+  useEffect(() => {
+    if (!editData) return;
 
-  /* ======================
-     Skills Binding
-  ====================== */
-  if (editData.requiredSkills) {
-    setSkills(editData.requiredSkills.split(","));
-  }
+    /* ======================
+       Skills Binding
+    ====================== */
+    if (editData.requiredSkills) {
+      setSkills(editData.requiredSkills.split(","));
+    }
 
-  /* ======================
-     Employment Type Binding
-  ====================== */
-  if (editData.employeeType) {
-    const types = editData.employeeType.split(",");
+    /* ======================
+       Employment Type Binding
+    ====================== */
+    if (editData.employeeType) {
+      const types = editData.employeeType.split(",");
 
-    const updatedEmployment = {
-      "Corp-Corp": false,
-      "W2-Permanent": false,
-      "W2-Contract": false,
-      "1099-Contract": false,
-      "Contract to Hire": false
-    };
+      const updatedEmployment = {
+        "Corp-Corp": false,
+        "W2-Permanent": false,
+        "W2-Contract": false,
+        "1099-Contract": false,
+        "Contract to Hire": false
+      };
 
-    types.forEach(type => {
-      const trimmed = type.trim();
-      if (updatedEmployment.hasOwnProperty(trimmed)) {
-        updatedEmployment[trimmed] = true;
-      }
+      types.forEach(type => {
+        const trimmed = type.trim();
+        if (updatedEmployment.hasOwnProperty(trimmed)) {
+          updatedEmployment[trimmed] = true;
+        }
+      });
+
+      setPreferredEmployment(updatedEmployment);
+
+      formik.setFieldValue("employmentType", editData.employeeType);
+    }
+
+    /* ======================
+       Work Authorization Binding
+    ====================== */
+    setWorkAuthorization({
+      Citizenship: editData?.isUSCitizen || false,
+      GC: editData?.isGC || false,
+      H1B: editData?.isH1B || false,
+      EAD: editData?.isEAD || false,
+      OPT: editData?.isOPT || false,
+      CPT: editData?.isCPT || false,
+      H4: editData?.isH4 || false
     });
 
-    setPreferredEmployment(updatedEmployment);
-
-    formik.setFieldValue("employmentType", editData.employeeType);
-  }
-
-  /* ======================
-     Work Authorization Binding
-  ====================== */
-  setWorkAuthorization({
-    Citizenship: editData?.isUSCitizen || false,
-    GC: editData?.isGC || false,
-    H1B: editData?.isH1B || false,
-    EAD: editData?.isEAD || false,
-    OPT: editData?.isOPT || false,
-    CPT: editData?.isCPT || false,
-    H4: editData?.isH4 || false
-  });
-
-}, [editData]);
+  }, [editData]);
 
   const handleGenerateAI = async () => {
     const selectedEmpTypes = Object.entries(preferredEmployment)
@@ -379,11 +378,10 @@ console.log("JobID:",JobID)
     formik.touched[name] && formik.errors[name] && (
       <div className="auth-error">{formik.errors[name]}</div>
     );
-
   return (
-    <form onSubmit={formik.handleSubmit} className="container p-3">
+    <form onSubmit={formik.handleSubmit} className="post-job-form">
       {/* HEADER */}
-      <div style={{ marginBottom: '24px' }}>
+      <div className="form-header">
         <div className="vs-breadcrumbs mb-3 d-flex gap-2">
           <button type="button" className="link-button" onClick={() => navigate("/user/user-dashboard")}>
             <FiArrowLeft /> Back to Dashboard
@@ -391,10 +389,10 @@ console.log("JobID:",JobID)
           <span className="crumb">/ Job Posting</span>
         </div>
 
-        <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' }}>
+        <h1>
           {isEdit ? "Edit Job Posting" : "Creating New Job Posting"}
         </h1>
-        <p style={{ color: '#64748b', margin: 0 }}>
+        <p className="muted">
           Here's what's happening with your projects today
         </p>
       </div>
@@ -403,53 +401,38 @@ console.log("JobID:",JobID)
 
         {/* ================= MAIN FORM ================= */}
         <div className="dashboard-column-main">
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            border: '1px solid #e2e8f0',
-            padding: '32px',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
-          }}>
+          <div className="premium-card">
 
             {/* BASIC INFO */}
             <div style={{ marginBottom: '40px' }}>
-              <h3 className="section-title" style={{ paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '24px' }}>
-                Basic Information
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
-              <div>
-              <label className="auth-label">Job Title</label>
-              <JobTitleAutocomplete
-                name="jobTitle"
-                value={formik.values.jobTitle}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={err("jobTitle")}
-              />
+              <div className="section-header">
+                <h3>Basic Information</h3>
               </div>
 
-              <div>
-              <label className="auth-label">Project / Job Duration</label>
-              <select className="auth-input" name="jobDuration"
-                value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                 <option value="">Select duration</option>
-    <option value="1">1 Month</option>
-    <option value="3">3 Months</option>
-    <option value="6">6 Months</option>
-    <option value="12">1 Year</option>
-    <option value="0">Ongoing</option>
-              </select>
-              {err("jobDuration")}
-            </div>
-
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
+              <div className="grid-4">
                 <div>
-                  <label className="auth-label">Company Name</label>
-                  <input className="auth-input bg-light" name="companyName" placeholder="Company"
-                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
-                  {err("companyName")}
+                  <label className="auth-label">Job Title</label>
+                  <JobTitleAutocomplete
+                    name="jobTitle"
+                    value={formik.values.jobTitle}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={err("jobTitle")}
+                  />
+                </div>
+
+                <div>
+                  <label className="auth-label">Duration</label>
+                  <select className="auth-input" name="jobDuration"
+                    value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                    <option value="">Select duration</option>
+                    <option value="1">1 Month</option>
+                    <option value="3">3 Months</option>
+                    <option value="6">6 Months</option>
+                    <option value="12">1 Year</option>
+                    <option value="0">Ongoing</option>
+                  </select>
+                  {err("jobDuration")}
                 </div>
 
                 <div>
@@ -459,11 +442,20 @@ console.log("JobID:",JobID)
                   {err("location")}
                 </div>
 
-                <div style={{ flex: 1 }}>
+                <div>
+                  <label className="auth-label">Company</label>
+                  <input className="auth-input bg-light" name="companyName" placeholder="Company"
+                    value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
+                  {err("companyName")}
+                </div>
+              </div>
+
+              <div className="grid-3">
+                <div>
                   <label className="auth-label">Employment Type</label>
                   <div className="vendor-section">
                     <div className="auth-input" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <span>Select Employment Type</span>
+                      <span>Select Type</span>
                       <ChevronDown size={16} className={`chevron ${isEmpOpen ? 'rotate' : ''}`} />
                     </div>
                     {isEmpOpen && (
@@ -500,145 +492,87 @@ console.log("JobID:",JobID)
                   </div>
                   {err("employmentType")}
                 </div>
-              </div>
 
-
-              <label className="auth-label">Salary Range</label>
-<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '1.25rem', marginTop: '1.25rem' }}>
-             <div>
-              {/* Radio Button Options */}
-              <div style={{ marginBottom: '16px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="radio"
-                    id="perHour"
-                    name="salaryType"
-                    value="perHour"
-                    checked={formik.values.salaryType === 'perHour'}
-                    onChange={formik.handleChange}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <label htmlFor="perHour" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Hour</label>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="radio"
-                    id="perMonth"
-                    name="salaryType"
-                    value="perMonth"
-                    checked={formik.values.salaryType === 'perMonth'}
-                    onChange={formik.handleChange}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <label htmlFor="perMonth" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Per Month</label>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="radio"
-                    id="entireBudget"
-                    name="salaryType"
-                    value="entireBudget"
-                    checked={formik.values.salaryType === 'entireBudget'}
-                    onChange={formik.handleChange}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <label htmlFor="entireBudget" style={{ cursor: 'pointer', margin: 0, fontSize: '14px' }}>Fixed budget</label>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr 100px' : '1fr 1fr 100px', gap: '16px' }}>
-                {formik.values.salaryType === 'entireBudget' ? (
-                  <input className="auth-input" name="salaryMin" placeholder="Fixed Budget Amount"
-                    value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                ) : (
-                  <>
-                    <input className="auth-input" name="salaryMin" placeholder="Min"
-                      value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                    <input className="auth-input" name="salaryMax" placeholder="Max"
-                      value={formik.values.salaryMax} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                  </>
-                )}
-                <select className="auth-input" name="salaryCurrency"
-                  value={formik.values.salaryCurrency} onChange={formik.handleChange}>
-                  <option>USD</option>
-                  <option>EUR</option>
-                </select>
-              </div>
-              {err("salaryMin")}
-              {err("salaryMax")}
-              </div>
-
-
-
-   {/* Work Authorization Section
-=======================  */}
-              <div>
-                <label style={{marginBottom:"20px"}} className="auth-label">Work Authorization</label>
-                <div className="vendor-section">
-                  <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                    <span>Select Work Authorization</span>
-                    <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
-                  </div>
-                  {isAuthOpen && (
-                    <div className="vendor-list">
-                      {Object.keys(workAuthorization).map(auth => (
-                        <label key={auth} className="checkbox-row">
-                          <input
-                            type="checkbox"
-                            checked={workAuthorization[auth]}
-                            onChange={() => setWorkAuthorization(prev => ({ ...prev, [auth]: !prev[auth] }))}
-                          />
-                          {auth}
-                        </label>
-                      ))}
+                <div>
+                  <label className="auth-label">Work Authorization</label>
+                  <div className="vendor-section">
+                    <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span>Select Auth</span>
+                      <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
                     </div>
-                  )}
+                    {isAuthOpen && (
+                      <div className="vendor-list">
+                        {Object.keys(workAuthorization).map(auth => (
+                          <label key={auth} className="checkbox-row">
+                            <input
+                              type="checkbox"
+                              checked={workAuthorization[auth]}
+                              onChange={() => setWorkAuthorization(prev => ({ ...prev, [auth]: !prev[auth] }))}
+                            />
+                            {auth}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="modal-tags-row" style={{ marginTop: '8px' }}>
+                    {Object.entries(workAuthorization)
+                      .filter(([_, v]) => v)
+                      .map(([k]) => (
+                        <span key={k} className="status-tag status-progress">{k}</span>
+                      ))}
+                  </div>
                 </div>
-                <div className="modal-tags-row" style={{ marginTop: '8px' }}>
-                  {Object.entries(workAuthorization)
-                    .filter(([_, v]) => v)
-                    .map(([k]) => (
-                      <span key={k} className="status-tag status-progress">{k}</span>
-                    ))}
+
+                <div>
+                  <label className="auth-label">Salary Range</label>
+                  <div className="salary-radio-group" style={{ padding: '8px', gap: '8px' }}>
+                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
+                      <input type="radio" name="salaryType" value="perHour" checked={formik.values.salaryType === 'perHour'} onChange={formik.handleChange} />
+                      Hourly
+                    </label>
+                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
+                      <input type="radio" name="salaryType" value="perMonth" checked={formik.values.salaryType === 'perMonth'} onChange={formik.handleChange} />
+                      Monthly
+                    </label>
+                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
+                      <input type="radio" name="salaryType" value="entireBudget" checked={formik.values.salaryType === 'entireBudget'} onChange={formik.handleChange} />
+                      Fixed
+                    </label>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr 60px' : '1fr 1fr 60px', gap: '8px' }}>
+                    {formik.values.salaryType === 'entireBudget' ? (
+                      <input className="auth-input" name="salaryMin" placeholder="Budget" value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                    ) : (
+                      <>
+                        <input className="auth-input" name="salaryMin" placeholder="Min" value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                        <input className="auth-input" name="salaryMax" placeholder="Max" value={formik.values.salaryMax} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                      </>
+                    )}
+                    <select className="auth-input" name="salaryCurrency" value={formik.values.salaryCurrency} onChange={formik.handleChange} style={{ padding: '10px 4px' }}>
+                      <option>USD</option>
+                      <option>EUR</option>
+                    </select>
+                  </div>
+                  {err("salaryMin")}
+                  {err("salaryMax")}
                 </div>
               </div>
-</div>
             </div>
 
-         
 
-            {/* =======================
-   Section 2: Job Details
-======================= */}
+
+            {/* JOB DETAILS & REQUIREMENTS */}
             <div style={{ marginBottom: '40px' }}>
-              <h3
-                className="section-title"
-                style={{
-                  paddingBottom: '16px',
-                  borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '5px'
-                }}
-              >
-                Job Details
-              </h3>
+              <div className="section-header">
+                <h3>Job Details & Requirements</h3>
+              </div>
 
-              {/* 3 Column Grid */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '24px'
-                }}
-              >
+              <div className="grid-4">
                 <div>
                   <label className="auth-label">Work Model</label>
-                  <select
-                    className="auth-input"
-                    name="workModel"
-                    value={formik.values.workModel}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
+                  <select className="auth-input" name="workModel" value={formik.values.workModel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select model</option>
                     <option value="Remote">Remote</option>
                     <option value="On-site">On-site</option>
@@ -649,13 +583,7 @@ console.log("JobID:",JobID)
 
                 <div>
                   <label className="auth-label">Department</label>
-                  <select
-                    className="auth-input"
-                    name="department"
-                    value={formik.values.department}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
+                  <select className="auth-input" name="department" value={formik.values.department} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select department</option>
                     <option value="Engineering">Engineering</option>
                     <option value="Design">Design</option>
@@ -665,14 +593,8 @@ console.log("JobID:",JobID)
                 </div>
 
                 <div>
-                  <label className="auth-label">Experience Level</label>
-                  <select
-                    className="auth-input"
-                    name="experienceLevel"
-                    value={formik.values.experienceLevel}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
+                  <label className="auth-label">Experience</label>
+                  <select className="auth-input" name="experienceLevel" value={formik.values.experienceLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select level</option>
                     <option value="Junior">Junior</option>
                     <option value="Mid-Level">Mid-Level</option>
@@ -680,91 +602,19 @@ console.log("JobID:",JobID)
                   </select>
                   {err("experienceLevel")}
                 </div>
-              </div>
-            </div>
 
-            {/* =======================
-   Section 3: Requirements
-======================= */}
-            <div style={{ marginTop: '34px' }}>
-              <h3
-                className="section-title"
-                style={{
-                  paddingBottom: '16px',
-                  borderBottom: '1px solid #f1f5f9',
-                  marginBottom: '5px'
-                }}
-              >
-                Requirements
-              </h3>
-
-              {/* Required Skills */}
-              <div className="auth-form-group">
-                <label className="auth-label">Required Skills</label>
-                <input
-                  className="auth-input"
-                  placeholder="Add skills (e.g. React, Node.js) and press Enter"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={handleAddSkill}
-                />
-
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                    marginTop: '12px'
-                  }}
-                >
-                  {skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="status-tag status-progress"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '12px',
-                        padding: '6px 10px'
-                      }}
-                    >
-                      {skill}
-                      <X
-                        size={12}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => removeSkill(skill)}
-                      />
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Education + Experience */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '24px',
-                  marginBottom: '1.25rem'
-                }}
-              >
                 <div>
-                  <label className="auth-label">Education Level</label>
-                  <select
-                    className="auth-input"
-                    name="educationLevel"
-                    value={formik.values.educationLevel}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  >
+                  <label className="auth-label">Education</label>
+                  <select className="auth-input" name="educationLevel" value={formik.values.educationLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select education</option>
-                    <option value="Bachelors">Bachelor's Degree</option>
-                    <option value="Masters">Master's Degree</option>
+                    <option value="Bachelors">Bachelor's</option>
+                    <option value="Masters">Master's</option>
                   </select>
                   {err("educationLevel")}
                 </div>
+              </div>
 
+              <div className="grid-2">
                 <div>
                   <label className="auth-label">Years of Experience</label>
                   <div className="auth-password-wrapper">
@@ -790,9 +640,28 @@ console.log("JobID:",JobID)
                   </div>
                   {err("yearsExperience")}
                 </div>
+
+                <div className="auth-form-group" style={{ marginBottom: 0 }}>
+                  <label className="auth-label">Required Skills</label>
+                  <input
+                    className="auth-input"
+                    placeholder="Add skills (Enter)"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={handleAddSkill}
+                  />
+                  <div className="modal-tags-row mt-2">
+                    {skills.map((skill) => (
+                      <span key={skill} className="status-tag status-progress">
+                        {skill}
+                        <X size={12} className="ms-1" style={{ cursor: 'pointer' }} onClick={() => removeSkill(skill)} />
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="auth-form-group">
+              <div className="auth-form-group mt-4">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description</label>
                   <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
@@ -801,38 +670,26 @@ console.log("JobID:",JobID)
                   </button>
                 </div>
 
-                <textarea
-                  className="auth-input"
-                  rows={6}
-                  style={{ resize: 'vertical', height: "120px" }}
-                  placeholder="Describe the role and responsibilities..."
-                  name="description"
-                  value={formik.values.description}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+                <div className="ai-highlight-wrapper">
+                  <textarea
+                    className="ai-textarea"
+                    rows={4}
+                    placeholder="Describe the role and responsibilities..."
+                    name="description"
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
                 {err("description")}
               </div>
 
-              {/* =======================
-
-
-              {/* Preferred Employment Section removed because it is now part of Employment Type dropdown as requested */}
-
-              {/* Additional Requirements */}
               <div className="auth-form-group">
-                <div className="d-flex align-items-center justify-content-between mb-2">
-                  <label className="auth-label m-0">Additional Requirements</label>
-                  {/* <button type="button" className="ai-pill-btn">
-                    <span className="ai-pill-icon">✦</span>
-                    <span className="ai-pill-text">AI</span>
-                  </button> */}
-                </div>
-
+                <label className="auth-label mb-2">Additional Requirements</label>
                 <textarea
                   className="auth-input"
-                  rows={4}
-                  style={{ height: "120px" }}
+                  rows={2}
+                  style={{ height: "60px" }}
                   placeholder="Any other requirements..."
                   name="additionalReqs"
                   value={formik.values.additionalReqs}
@@ -842,26 +699,13 @@ console.log("JobID:",JobID)
             </div>
 
             {/* FOOTER */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
+            <div className="d-flex justify-content-between mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
               <button type="button" className="btn-secondary" onClick={() => navigate("/user/user-dashboard")}>
                 Cancel
               </button>
-              <div style={{ display: 'flex', gap: '16px' }}>
-                {/* <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={handleSaveDraft}
-                >
-                  Save as Draft
-                </button> */}
-
-                <button
-                  type="submit"
-                  className="btn-primary"
-                >
-                  Preview
-                </button>
-              </div>
+              <button type="submit" className="btn-primary">
+                Preview
+              </button>
             </div>
 
           </div>
@@ -869,7 +713,7 @@ console.log("JobID:",JobID)
 
         {/* ================= PREVIEW ================= */}
         <div className="dashboard-column-side">
-          <div style={{ position: 'sticky', top: '24px' }}>
+          <div className="sticky-preview">
             <h3 className="section-title mb-3">Preview</h3>
             <div className="project-card" style={{ gap: '20px' }}>
 
@@ -965,15 +809,17 @@ console.log("JobID:",JobID)
 
       </div>
 
-      {showPreview && (
-        <PreviewModal
-          data={modalData}
-          onClose={() => setShowPreview(false)}
-          onPostJob={handlePostJob}   // ✅ API CALL HERE
-          isEdit={isEdit}
-        />
-      )}
-    </form>
+      {
+        showPreview && (
+          <PreviewModal
+            data={modalData}
+            onClose={() => setShowPreview(false)}
+            onPostJob={handlePostJob}   // ✅ API CALL HERE
+            isEdit={isEdit}
+          />
+        )
+      }
+    </form >
   );
 };
 
