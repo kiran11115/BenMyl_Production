@@ -16,7 +16,7 @@ import {
 import { FaPuzzlePiece } from "react-icons/fa";
 import { GiCheckMark } from "react-icons/gi";
 import { useLazyGetLinkedInAuthUrlQuery, useSaveHotlistImageMutation } from "../../State-Management/Api/UploadResumeApiSlice";
- 
+
 export default function PublishTalentModal({
   open,
   onClose,
@@ -28,78 +28,80 @@ export default function PublishTalentModal({
   const [isVendorOpen, setIsVendorOpen] = useState(true);
   const [showHotlist, setShowHotlist] = useState(false);
   const [hotlistLoading, setHotlistLoading] = useState(false);
- 
- 
- const [saveHotlistImage] = useSaveHotlistImageMutation();
-const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlQuery();
+  const [postDescription, setPostDescription] = useState("Latest talent hotlist");
+  const [postLink, setPostLink] = useState("https://react.benmyl.com/sign-in");
 
-const handleLinkedInShare = async () => {
-  try {
-    const element = document.getElementById("hotlist-table");
 
-    if (!element) {
-      alert("Please create hotlist first.");
-      return;
+  const [saveHotlistImage] = useSaveHotlistImageMutation();
+  const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlQuery();
+
+  const handleLinkedInShare = async () => {
+    try {
+      const element = document.getElementById("post-capture-area");
+
+      if (!element) {
+        alert("Please create post first.");
+        return;
+      }
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+      });
+
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob((b) => {
+          if (!b) reject(new Error("Image generation failed"));
+          else resolve(b);
+        }, "image/png");
+      });
+
+      const EmailId = localStorage.getItem("Email");
+
+      const formData = new FormData();
+      formData.append("Title", "Selected Candidates Batch");
+      formData.append(
+        "Description",
+        `${postDescription}\n\nExplore more profiles:\n${postLink}`
+      );
+      formData.append("File", blob, "hotlist.png");
+      formData.append("images", "null");
+      formData.append("EmailId", EmailId);
+
+      // 🔹 RTK Mutation Call
+      await saveHotlistImage(formData).unwrap();
+
+      // 🔹 RTK Lazy Query Call
+      const authResponse = await getLinkedInAuthUrl().unwrap();
+
+      if (!authResponse?.result_Message) {
+        throw new Error("LinkedIn auth URL not received");
+      }
+
+      window.location.href = authResponse.result_Message;
+
+    } catch (error) {
+      console.error("LinkedIn Share Error:", error);
+      alert(error?.data?.message || error.message || "LinkedIn share failed");
     }
+  };
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-    });
 
-    const blob = await new Promise((resolve, reject) => {
-      canvas.toBlob((b) => {
-        if (!b) reject(new Error("Image generation failed"));
-        else resolve(b);
-      }, "image/png");
-    });
-
-    const EmailId = localStorage.getItem("Email");
-
-    const formData = new FormData();
-    formData.append("Title", "Selected Candidates Batch");
-    formData.append(
-  "Description",
-  "Latest talent hotlist\n\nExplore more profiles:\nhttps://react.benmyl.com/sign-in"
-);
-    formData.append("File", blob, "hotlist.png");
-    formData.append("images", "null");
-    formData.append("EmailId", EmailId);
-
-    // 🔹 RTK Mutation Call
-    await saveHotlistImage(formData).unwrap();
-
-    // 🔹 RTK Lazy Query Call
-    const authResponse = await getLinkedInAuthUrl().unwrap();
-
-    if (!authResponse?.result_Message) {
-      throw new Error("LinkedIn auth URL not received");
-    }
-
-    window.location.href = authResponse.result_Message;
-
-  } catch (error) {
-    console.error("LinkedIn Share Error:", error);
-    alert(error?.data?.message || error.message || "LinkedIn share failed");
-  }
-};
- 
- 
   if (!open) return null;
- 
+
   const handleCreateHotlist = () => {
     setShowHotlist(true);
     setHotlistLoading(true);
     setTimeout(() => setHotlistLoading(false), 1200);
   };
- 
+
   const handleClearHotlist = () => {
     setShowHotlist(false);
     setHotlistLoading(false);
   };
- 
+
   const handleDownloadHotlist = async () => {
-    const table = document.getElementById("hotlist-table");
+    const table = document.getElementById("post-capture-area");
     if (!table) return;
     const canvas = await html2canvas(table, { scale: 2 });
     const link = document.createElement("a");
@@ -107,7 +109,7 @@ const handleLinkedInShare = async () => {
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
- 
+
   const handlePublish = () => {
     if (!selectedTalents.length) return;
     setStatus("loading");
@@ -117,7 +119,7 @@ const handleLinkedInShare = async () => {
       onClose();
     }, 1000);
   };
- 
+
   const getInitials = (name = "") =>
     name
       .split(" ")
@@ -125,7 +127,7 @@ const handleLinkedInShare = async () => {
       .slice(0, 2)
       .map((n) => n[0].toUpperCase())
       .join("");
- 
+
   return createPortal(
     <>
       <div className="modal-overlay">
@@ -138,11 +140,11 @@ const handleLinkedInShare = async () => {
               </div>
             </div>
           )}
- 
+
           <button className="modal-close" onClick={onClose}>
             <FiX />
           </button>
- 
+
           <div className="modal-inner">
             {/* LEFT */}
             <div className="modal-left">
@@ -150,23 +152,23 @@ const handleLinkedInShare = async () => {
                 <div>
                   <h2>Selected Candidates</h2>
                   <p className="muted small">
-                    Review candidates or create hotlist
+                    Review candidates or create post for sharing
                   </p>
                 </div>
- 
+
                 {!showHotlist && (
                   <button
                     className="btn-primary"
                     onClick={handleCreateHotlist}
                     disabled={!selectedTalents.length}
                   >
-                    Create Hotlist
+                    Create Post
                   </button>
                 )}
               </div>
- 
+
               <hr className="modal-divider" />
- 
+
               {/* HOTLIST */}
               {showHotlist && (
                 <div className="hotlist-wrapper">
@@ -177,13 +179,13 @@ const handleLinkedInShare = async () => {
                     >
                       <div className="spinner" />
                       <div className="loading-text">
-                        Creating hotlist table…
+                        Creating post preview…
                       </div>
                     </div>
                   ) : (
                     <>
                       <div className="hotlist-actions">
-                        <h3>Hotlist Preview</h3>
+                        <h3>Post Preview</h3>
                         <div style={{ display: "flex", gap: "8px" }}>
                           <button
                             className="btn-secondary gap-2"
@@ -199,89 +201,117 @@ const handleLinkedInShare = async () => {
                           </button>
                         </div>
                       </div>
- 
-                      <table id="hotlist-table" className="hotlist-table" >
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>Technology</th>
-                            <th>Experience</th>
-                            <th>Location</th>
-                            <th>Visa</th>
-                            <th>Relocation</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedTalents.map((t) => (
-                            <tr key={t.id}>
-                              <td>{t.name}</td>
-                              <td>{t.role}</td>
-                              <td>{t.experience}</td>
-                              <td>{t.location}</td>
-                              <td>{t.visa || "H1B"}</td>
-                              <td>{t.relocation || "Yes"}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+
+                      <div className="post-preview-display">
+                        <div style={{ marginBottom: "16px" }}>
+                          <p style={{ fontWeight: "700", fontSize: "16px", color: "#1e293b", marginBottom: "4px", whiteSpace: "pre-wrap" }}>{postDescription}</p>
+                          <p style={{ color: "#3b82f6", fontSize: "14px" }}>{postLink}</p>
+                        </div>
+
+                        <div id="post-capture-area" style={{background: "#ffffff", borderRadius: "8px" }}>
+                          <table id="hotlist-table" className="hotlist-table" >
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Technology</th>
+                                <th>Experience</th>
+                                <th>Location</th>
+                                <th>Visa</th>
+                                <th>Relocation</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedTalents.map((t) => (
+                                <tr key={t.id}>
+                                  <td>{t.name}</td>
+                                  <td>{t.role}</td>
+                                  <td>{t.experience}</td>
+                                  <td>{t.location}</td>
+                                  <td>{t.visa || "H1B"}</td>
+                                  <td>{t.relocation || "Yes"}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
               )}
- 
+
               {/* TALENT LIST */}
               {!showHotlist && (
-                <div className="talent-list">
-                  {selectedTalents.length === 0 ? (
-                    <div className="empty-state">No candidates selected</div>
-                  ) : (
-                    selectedTalents.map((talent) => (
-                      <div key={talent.id} className="talent-card-row">
-                        <div className="initial-avatar">
-                          {getInitials(talent.name)}
-                        </div>
- 
-                        <div className="t-info">
-                          <div className="t-header">
-                            <span className="t-name">{talent.name}</span>
-                            {talent.verified && (
-                              <span className="t-verified">
-                                <GiCheckMark />
-                              </span>
-                            )}
+                <div className="talent-list-container">
+                  <div className="talent-list" style={{ maxHeight: "290px", overflowY: "auto", paddingRight: "8px" }}>
+                    {selectedTalents.length === 0 ? (
+                      <div className="empty-state">No candidates selected</div>
+                    ) : (
+                      selectedTalents.map((talent) => (
+                        <div key={talent.id} className="talent-card-row">
+                          <div className="initial-avatar">
+                            {getInitials(talent.name)}
                           </div>
-                          <div className="t-role">{talent.role}</div>
-                          <div className="t-meta">
-                            <FiMapPin size={12} />
-                            {talent.location}
-                            <span className="bullet">•</span>
-                            {talent.experience}
+
+                          <div className="t-info">
+                            <div className="t-header">
+                              <span className="t-name">{talent.name}</span>
+                              {talent.verified && (
+                                <span className="t-verified">
+                                  <GiCheckMark />
+                                </span>
+                              )}
+                            </div>
+                            <div className="t-role">{talent.role}</div>
+                            <div className="t-meta">
+                              <FiMapPin size={12} />
+                              {talent.location}
+                              <span className="bullet">•</span>
+                              {talent.experience}
+                            </div>
+                          </div>
+
+                          <div className="t-actions">
+                            <button
+                              className="t-remove-btn"
+                              onClick={() => onRemove(talent.id)}
+                            >
+                              <FiTrash2 />
+                            </button>
                           </div>
                         </div>
- 
-                        <div className="t-actions">
-                          {/* <button className="btn-primary w-75">
-                            View Profile
-                          </button> */}
-                          <button
-                            className="t-remove-btn"
-                            onClick={() => onRemove(talent.id)}
-                          >
-                            <FiTrash2 />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
+                  <div className="talent-selection-description" style={{ marginTop: "16px", padding: "16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                    <div style={{ marginBottom: "12px" }}>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "4px", textTransform: "uppercase" }}>Post Description</label>
+                      <textarea
+                        style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", color: "#1e293b", minHeight: "80px", resize: "vertical" }}
+                        value={postDescription}
+                        onChange={(e) => setPostDescription(e.target.value)}
+                        placeholder="Enter post description..."
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "4px", textTransform: "uppercase" }}>Post Link</label>
+                      <input
+                        type="text"
+                        style={{ width: "100%", padding: "8px 10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", color: "#3b82f6", backgroundColor: "#f1f5f9", cursor: "not-allowed" }}
+                        value={postLink}
+                        readOnly
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
- 
+
             {/* RIGHT */}
             <aside className="modal-right">
               <div className="share-card">
                 <h4 className="share-title">Share Profile Batch</h4>
- 
+
                 <div className="share-input-group">
                   <label className="input-label">Batch Link</label>
                   <div className="share-link-row">
@@ -295,9 +325,9 @@ const handleLinkedInShare = async () => {
                     </button>
                   </div>
                 </div>
- 
+
                 <div className="social-buttons-stack">
-                 <button className="social-btn linkedin" onClick={handleLinkedInShare}>
+                  <button className="social-btn linkedin" onClick={handleLinkedInShare}>
                     <FiLinkedin className="social-icon" /> Share on LinkedIn
                   </button>
                   <button className="social-btn facebook">
@@ -307,7 +337,7 @@ const handleLinkedInShare = async () => {
                     <FiMail className="social-icon" /> Share via Email
                   </button>
                 </div>
- 
+
                 <div className="vendor-section">
                   <button
                     className="vendor-header"
@@ -319,7 +349,7 @@ const handleLinkedInShare = async () => {
                     </div>
                     {isVendorOpen ? <FiChevronUp /> : <FiChevronDown />}
                   </button>
- 
+
                   {isVendorOpen && (
                     <div className="vendor-list">
                       <label className="checkbox-row">
@@ -348,7 +378,7 @@ const handleLinkedInShare = async () => {
               </div>
             </aside>
           </div>
- 
+
           <div
             className="modal-actions-left gap-3"
             style={{ padding: "24px", borderTop: "1px solid #e2e8f0" }}
@@ -371,7 +401,7 @@ const handleLinkedInShare = async () => {
           </div>
         </div>
       </div>
- 
+
       {/* 🔹 INLINE STYLES (YOUR STYLES + HOTLIST) */}
       <style>{`
         .loading-overlay {

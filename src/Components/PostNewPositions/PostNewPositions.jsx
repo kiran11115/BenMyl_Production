@@ -795,7 +795,7 @@ console.log("JobID:",JobID)
                   <label className="auth-label m-0">Job Description</label>
                   <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
                     <span className="ai-pill-icon">✦</span>
-                    <span className="ai-pill-text">{isAiLoading ? "Generating..." : "AI"}</span>
+                    <span className="ai-pill-text">{isAiLoading ? "Generating..." : "Generate with AI"}</span>
                   </button>
                 </div>
 

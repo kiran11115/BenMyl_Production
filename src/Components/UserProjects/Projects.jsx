@@ -10,6 +10,10 @@ import {
   TrendingUp,
   TrendingDown,
   AlertCircle,
+  Briefcase,
+  Globe,
+  Users,
+  Zap
 } from "lucide-react";
 import "./Projects.css";
 import StatsRow from "./StatsRow";
@@ -17,6 +21,7 @@ import ProjectsTimeline from "./ProjectsTimeline";
 import ProjectsHeader from "./ProjectsHeader";
 import ProjectsGrid from "./ProjectsGrid";
 import PostedJobs from "./PostedJobs";
+import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
 // --- Initial Mock Data ---
 const INITIAL_DATA = [
@@ -136,8 +141,11 @@ export default function Projects() {
   const [projects, setProjects] = useState(INITIAL_DATA);
   const [activeFilter, setActiveFilter] = useState("All Projects");
 
+  const userId = localStorage.getItem("CompanyId");
+  const { data: apiJobs = [] } = useGetGroupedJobTitlesQuery(userId);
+
   // --- Dynamic Stats Calculation ---
-  const stats = useMemo(() => {
+  const projectStats = useMemo(() => {
     const completedProjects = projects.filter((p) => p.status === "Completed");
     const activeProjects = projects.filter((p) => p.status === "In Progress");
     const reviewProjects = projects.filter(
@@ -156,7 +164,8 @@ export default function Projects() {
         trend: "+12.5%",
         isPositive: true,
         icon: DollarSign,
-        colorClass: "blue",
+        cardType: "card-blue",
+        bubbleColor: "#3b82f6",
       },
       {
         label: "Active Projects",
@@ -164,7 +173,8 @@ export default function Projects() {
         trend: "+2 new",
         isPositive: true,
         icon: Activity,
-        colorClass: "indigo",
+        cardType: "card-purple",
+        bubbleColor: "#a855f7",
       },
       {
         label: "Pending Review",
@@ -172,7 +182,8 @@ export default function Projects() {
         trend: "Needs attn",
         isPositive: false,
         icon: Clock,
-        colorClass: "amber",
+        cardType: "card-yellow",
+        bubbleColor: "#f59f0a",
       },
       {
         label: "Completed",
@@ -180,10 +191,57 @@ export default function Projects() {
         trend: "All time",
         isPositive: true,
         icon: CheckCircle,
-        colorClass: "emerald",
+        cardType: "card-green",
+        bubbleColor: "#22c55e",
       },
     ];
   }, [projects]);
+
+  const jobStats = useMemo(() => {
+    const remoteJobs = apiJobs.filter(j => j.workModels === "Remote").length;
+    const fullTimeJobs = apiJobs.filter(j => j.employeeType?.includes("Full-time")).length;
+
+    return [
+      {
+        label: "Total Postings",
+        value: apiJobs.length,
+        trend: "Total active",
+        isPositive: true,
+        icon: Briefcase,
+        cardType: "card-cyan",
+        bubbleColor: "#0ea5e9",
+      },
+      {
+        label: "Remote Roles",
+        value: remoteJobs,
+        trend: "Work from home",
+        isPositive: true,
+        icon: Globe,
+        cardType: "card-purple",
+        bubbleColor: "#a855f7",
+      },
+      {
+        label: "Full-Time Roles",
+        value: fullTimeJobs,
+        trend: "Growth roles",
+        isPositive: true,
+        icon: Users,
+        cardType: "card-blue",
+        bubbleColor: "#3b82f6",
+      },
+      {
+        label: "Active Listings",
+        value: apiJobs.length,
+        trend: "Live now",
+        isPositive: true,
+        icon: Zap,
+        cardType: "card-yellow",
+        bubbleColor: "#f59f0a",
+      },
+    ];
+  }, [apiJobs]);
+
+  const stats = view === "ongoingprojects" ? projectStats : jobStats;
 
   // --- filter for dropdown ---
   const filteredProjects = useMemo(() => {
