@@ -110,6 +110,7 @@ console.log("JobID:",JobID)
   educationLevel: editData?.educationLevel || '',
   yearsExperience: editData?.yearsOfExperience || '',
   additionalReqs: editData?.additionalRequirements || '',
+  jobDuration: editData?.jobDuration || '',
 },
     validationSchema,
     // ✅ ONLY OPEN PREVIEW
@@ -172,6 +173,7 @@ console.log("JobID:",JobID)
     fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
     fd.append("SalarType", formik.values.salaryType);
+    fd.append("JobDuration", formik.values.jobDuration);
 
 
     try {
@@ -430,12 +432,12 @@ console.log("JobID:",JobID)
               <label className="auth-label">Project / Job Duration</label>
               <select className="auth-input" name="jobDuration"
                 value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                <option value="">Select duration</option>
-                <option>1 Month</option>
-                <option>3 Months</option>
-                <option>6 Months</option>
-                <option>1 Year</option>
-                <option>Ongoing</option>
+                 <option value="">Select duration</option>
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12">1 Year</option>
+    <option value="0">Ongoing</option>
               </select>
               {err("jobDuration")}
             </div>

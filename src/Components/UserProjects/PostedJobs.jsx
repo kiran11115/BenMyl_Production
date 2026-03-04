@@ -21,7 +21,13 @@ const PostedJobs = () => {
       location: job.location,
       type: job.employeeType,
       workModels:job.workModels,
-      rateText: `$${job.salaryRange_Min}-${job.salaryRange_Max}`,
+      salaryType:job.salarType,
+      rateText:
+  job.salaryRange_Min && job.salaryRange_Max
+    ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+    : job.salaryRange_Min
+    ? `$${job.salaryRange_Min}`
+    : "N/A",
       experienceLevel: job.experienceLevel,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
@@ -197,7 +203,7 @@ const PostedJobs = () => {
                 <div className="stats">
                   <div>
                     <div className="stat-label1">Budget</div>
-                    <div className="stat-value1">{job.rateText} / hr</div>
+                    <div className="stat-value1">{job.rateText} {job.salaryType || "Per Hour"}</div>
                   </div>
                   <div>
                     <div className="stat-label1">Exp Level</div>
