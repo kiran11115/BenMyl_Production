@@ -600,7 +600,10 @@ const filtersReady = useMemo(() => {
       title: details.jobTitle,
       company: details.companyName,
       location: details.location,
-      budget: `${details.salaryRange_Min} - $${details.salaryRange_Max}`,
+      budget:
+  details.salaryRange_Min && details.salaryRange_Max
+    ? `${details.salaryRange_Min} - ${details.salaryRange_Max}`
+    : `${details.salaryRange_Min || ""}`,
       experience: details.yearsofExperience || details.experienceLevel,
       type: details.employeeType,
       salaryType:details.salarType,

@@ -67,6 +67,7 @@ export default function PreviewModal({ onClose, data, onPostJob,isEdit  }) {
 
   const handleRetry = () => {
     setStatus("idle");
+    onClose();
   };
 
   const toggleVendorSection = () => {
