@@ -14,9 +14,9 @@ const AdminProfileEdit = () => {
   const companyid = localStorage.getItem("logincompanyid");
   const emailId = localStorage.getItem("Email");
   const { data: companyData, isLoading: isFetching } =
-  useGetCompanyProfileEditQuery(emailId, {
-  refetchOnMountOrArgChange: true,
-});
+    useGetCompanyProfileEditQuery(emailId, {
+      refetchOnMountOrArgChange: true,
+    });
 
   // Logo preview
   const [logoPreview, setLogoPreview] = useState(null);
@@ -26,7 +26,7 @@ const AdminProfileEdit = () => {
   const formik = useFormik({
     initialValues: {
       companyname: "",
-      companyid:companyid,
+      companyid: companyid,
       Tagline: "",
       Industry: "",
       CompanySize: "",
@@ -59,8 +59,8 @@ const AdminProfileEdit = () => {
       try {
         const formData = new FormData();
 
-           // IMPORTANT: overwrite companyid to ensure correct storage
-    formData.append("companyid", companyid);
+        // IMPORTANT: overwrite companyid to ensure correct storage
+        formData.append("companyid", companyid);
 
         // Append text fields
         Object.keys(values).forEach((key) => {
@@ -69,8 +69,8 @@ const AdminProfileEdit = () => {
 
         // Swagger rules: companylogo null, companyimages = uploaded
         if (logoFile instanceof File) {
-      formData.append("companyimages", logoFile);
-    }
+          formData.append("companyimages", logoFile);
+        }
 
         await updateCompanyProfile(formData).unwrap();
 
@@ -82,38 +82,38 @@ const AdminProfileEdit = () => {
   });
 
   useEffect(() => {
-  if (!companyData) return;
+    if (!companyData) return;
 
-  formik.setValues({
-    companyname: companyData.companyname || "",
-    companyid: companyData.companyid || companyid,
+    formik.setValues({
+      companyname: companyData.companyname || "",
+      companyid: companyData.companyid || companyid,
 
-    Tagline: companyData.tagline || "",
-    Industry: companyData.industry || "",
-    CompanySize: companyData.companySize || "",
-    FoundedYear: companyData.foundedYear || "",
-    Description: companyData.description || "",
+      Tagline: companyData.tagline || "",
+      Industry: companyData.industry || "",
+      CompanySize: companyData.companySize || "",
+      FoundedYear: companyData.foundedYear || "",
+      Description: companyData.description || "",
 
-    WebsiteURL: companyData.websiteURL || "",
-    Domain: companyData.domain || "",
+      WebsiteURL: companyData.websiteURL || "",
+      Domain: companyData.domain || "",
 
-    StreetAddress1: companyData.streetAddress1 || "",
-    StreetAddress2: companyData.streetAddress2 || "",
-    City: companyData.city || "",
-    State: companyData.state || "",
-    PostalCode: companyData.postalCode || "",
-    Country: companyData.country || "",
+      StreetAddress1: companyData.streetAddress1 || "",
+      StreetAddress2: companyData.streetAddress2 || "",
+      City: companyData.city || "",
+      State: companyData.state || "",
+      PostalCode: companyData.postalCode || "",
+      Country: companyData.country || "",
 
-    Emailid: companyData.emailid || "",
-    Phone: companyData.phone || "",
-    LinkedInURL: companyData.linkedinURL || "",
-  });
+      Emailid: companyData.emailid || "",
+      Phone: companyData.phone || "",
+      LinkedInURL: companyData.linkedinURL || "",
+    });
 
-  // ✅ Logo preview from backend
-  if (companyData?.companylogo) {
-    setLogoPreview(`${companyData.companylogo}?t=${Date.now()}`);
-  }
-}, [companyData]);
+    // ✅ Logo preview from backend
+    if (companyData?.companylogo) {
+      setLogoPreview(`${companyData.companylogo}?t=${Date.now()}`);
+    }
+  }, [companyData]);
 
 
   // Logo handler
@@ -248,7 +248,7 @@ const AdminProfileEdit = () => {
             <h3 className="section-title">Company Information</h3>
             <div className="input-grid-3">
               <div className="auth-group">
-                <label className="auth-label">Company Name *</label>
+                <label className="auth-label">Company Name<span style={{ color: '#ef4444' }}> *</span></label>
                 <input
                   type="text"
                   name="companyname"
@@ -272,7 +272,7 @@ const AdminProfileEdit = () => {
               </div>
 
               <div className="auth-group">
-                <label className="auth-label">Industry *</label>
+                <label className="auth-label">Industry<span style={{ color: '#ef4444' }}> *</span></label>
                 <input
                   type="text"
                   name="Industry"
@@ -453,7 +453,7 @@ const AdminProfileEdit = () => {
 
             <div className="input-grid-3">
               <div className="auth-group">
-                <label className="auth-label">Email *</label>
+                <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
                 <input
                   type="email"
                   name="Emailid"

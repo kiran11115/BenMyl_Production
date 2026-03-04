@@ -68,7 +68,6 @@ export const SaveSuccessModal = ({ onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="alert-card success-theme">
-        <button className="alert-close-icon btn-secondary" style={{ fontSize: "12px", width: "3rem" }} onClick={onClose}>Close</button>
 
         <div className="alert-content left-align">
           <div className="d-flex align-items-center gap-2 mb-3">

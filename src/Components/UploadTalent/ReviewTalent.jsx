@@ -460,7 +460,7 @@ const getValidationForField = (fieldName, section) => {
   return validations[key] || null;
 };
 
-const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton }) => {
+const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
 
   const isDateField =
     label.toLowerCase().includes("date") ||
@@ -470,29 +470,34 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, sectio
     isDateField ? formatDateToInput(value) : (value || "")
   );
 
-  const [error, setError] = useState(null);
+  const [errorLocal, setErrorLocal] = useState(null);
 
   const handleChange = (e) => {
     const newVal = e.target.value;
     setTemp(newVal);
-    setError(null);
+    setErrorLocal(null);
     onSave(newVal);
   };
 
+  const hasValidationError = required && !temp;
+
   return (
     <div className="field-group">
-      <label className="field-label">{label}</label>
+      <label className="field-label">
+        {label}
+        {required && <span style={{ color: '#ef4444' }}> *</span>}
+      </label>
 
       {editing ? (
         <div style={{ position: 'relative' }}>
           <input
             type={isDateField ? "date" : "text"}
-            className="field-input"
+            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
+          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
         </div>
       ) : (
         <div className="field-value">
@@ -506,30 +511,35 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, sectio
 };
 
 
-const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton }) => {
+const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
   const [temp, setTemp] = useState(value || "");
-  const [error, setError] = useState(null);
+  const [errorLocal, setErrorLocal] = useState(null);
 
   const handleChange = (e) => {
     const newVal = e.target.value;
     setTemp(newVal);
-    setError(null);
+    setErrorLocal(null);
     onSave(newVal);
   };
 
+  const hasValidationError = required && !temp;
+
   return (
     <div className="field-group">
-      <label className="field-label">{label}</label>
+      <label className="field-label">
+        {label}
+        {required && <span style={{ color: '#ef4444' }}> *</span>}
+      </label>
       {editing ? (
         <div style={{ position: 'relative' }}>
           <textarea
-            className="field-input"
+            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
             style={{ minHeight: 120 }}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
+          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
         </div>
       ) : (
         <div className="field-value" style={{ display: 'block', height: 'auto', minHeight: '80px', lineHeight: '1.6' }}>
@@ -540,30 +550,35 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, sec
   );
 };
 
-const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, section, hideEditButton }) => {
+const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
   const [temp, setTemp] = useState(values.join(", "));
-  const [error, setError] = useState(null);
+  const [errorLocal, setErrorLocal] = useState(null);
 
   const handleChange = (e) => {
     const newVal = e.target.value;
     setTemp(newVal);
-    setError(null);
+    setErrorLocal(null);
     onSave(newVal.split(",").map(t => t.trim()).filter(Boolean));
   };
 
+  const hasValidationError = required && (!temp || temp.length === 0);
+
   return (
     <div className="field-group">
-      <label className="field-label">{label}</label>
+      <label className="field-label">
+        {label}
+        {required && <span style={{ color: '#ef4444' }}> *</span>}
+      </label>
       {editing ? (
         <div style={{ position: 'relative' }}>
           <textarea
-            className="field-input"
+            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
             style={{ minHeight: 100 }}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {error && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{error}</div>}
+          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
         </div>
       ) : (
         <div className="tag-container">
@@ -1203,6 +1218,7 @@ const ReviewTalent = () => {
                         editing={editingSection === "basicInfo"}
                         onSave={val => setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, [f]: val } }))}
                         section="basicInfo"
+                        required={["firstName", "position", "email"].includes(f)}
                       />
                     ))}
                   </div>
@@ -1259,6 +1275,7 @@ const ReviewTalent = () => {
                           editing={editingSection === "personalInfo"}
                           onSave={val => setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } }))}
                           section="personalInfo"
+                          required={field === "address"}
                         />
                       );
                     })}
@@ -1321,6 +1338,7 @@ const ReviewTalent = () => {
                               const arr = [...talent.education]; arr[i][field] = val;
                               setTalent(p => ({ ...p, education: arr }));
                             }}
+                            required={["startDate", "endDate"].includes(field)}
                           />
                         ))}
                       </div>
@@ -1398,6 +1416,7 @@ const ReviewTalent = () => {
                               const arr = [...talent.experience]; arr[i][field] = val;
                               setTalent(p => ({ ...p, experience: arr }));
                             }}
+                            required={["startDate", "endDate"].includes(field)}
                           />
                         ))}
                       </div>

@@ -192,7 +192,7 @@ const Dashboard = () => {
           <div id="dashboard-projects-section">
             <ProjectsSection projects={projects} />
           </div>
-          <div style={{ marginTop: "32px", marginBottom: "16px" }}>
+          <div style={{ marginTop: "12px", marginBottom: "16px" }}>
             <h3 className="section-title">Review Profiles</h3>
           </div>
           <div id="dashboard-talent-table">

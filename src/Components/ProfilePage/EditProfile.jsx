@@ -439,7 +439,7 @@ function EditProfile() {
           <h3 className="section-title">Personal Information</h3>
           <div className="input-grid-2">
             <div className="auth-group">
-              <label className="auth-label">Full Name *</label>
+              <label className="auth-label">Full Name<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 type="text"
                 name="name"
@@ -455,7 +455,7 @@ function EditProfile() {
               />
             </div>
             <div className="auth-group">
-              <label className="auth-label">Company Name *</label>
+              <label className="auth-label">Company Name<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 type="text"
                 name="companyname"
@@ -476,7 +476,7 @@ function EditProfile() {
         {/* Description */}
         <div className="form-section">
           <div className="auth-group">
-            <label className="auth-label">Description *</label>
+            <label className="auth-label">Description<span style={{ color: '#ef4444' }}> *</span></label>
             <textarea
               name="description"
               rows="4"
@@ -512,7 +512,7 @@ function EditProfile() {
             >
               <div className="input-grid-2">
                 <div className="auth-group">
-                  <label className="auth-label">Role *</label>
+                  <label className="auth-label">Role<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
                     type="text"
                     className="auth-input"
@@ -532,7 +532,7 @@ function EditProfile() {
                 </div>
 
                 <div className="auth-group">
-                  <label className="auth-label">Company *</label>
+                  <label className="auth-label">Company<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
                     type="text"
                     className="auth-input"
@@ -547,7 +547,7 @@ function EditProfile() {
 
               <div className="input-grid-3 mt-2">
                 <div className="auth-group">
-                  <label className="auth-label">Start Year *</label>
+                  <label className="auth-label">Start Year<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
                     type="number"
                     className="auth-input"
@@ -648,7 +648,7 @@ function EditProfile() {
           <h3 className="section-title">Address</h3>
           <div className="input-grid-2">
             <div className="auth-group">
-              <label className="auth-label">Street Address 1 *</label>
+              <label className="auth-label">Street Address 1<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="headquarters.street1"
@@ -664,7 +664,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Street Address 2 *</label>
+              <label className="auth-label">Street Address 2<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="headquarters.street2"
@@ -676,7 +676,7 @@ function EditProfile() {
           </div>
           <div className="input-grid-4">
             <div className="auth-group">
-              <label className="auth-label">City *</label>
+              <label className="auth-label">City<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="headquarters.city"
@@ -687,7 +687,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">State *</label>
+              <label className="auth-label">State<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="headquarters.state"
@@ -698,7 +698,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Postal Code *</label>
+              <label className="auth-label">Postal Code<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="headquarters.postalCode"
@@ -709,7 +709,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Country *</label>
+              <label className="auth-label">Country<span style={{ color: '#ef4444' }}> *</span></label>
               <select
                 className="auth-input"
                 name="headquarters.country"
@@ -730,7 +730,7 @@ function EditProfile() {
           <h3 className="section-title">Contact Information</h3>
           <div className="input-grid-3">
             <div className="auth-group">
-              <label className="auth-label">Email *</label>
+              <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="contact.email"
@@ -747,7 +747,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Phone *</label>
+              <label className="auth-label">Phone<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="contact.phone"
@@ -758,7 +758,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Linkedin Url *</label>
+              <label className="auth-label">Linkedin Url<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="contact.linkedinUrl"
@@ -775,7 +775,7 @@ function EditProfile() {
           <h3 className="section-title">Additional Information</h3>
           <div className="input-grid-2">
             <div className="auth-group">
-              <label className="auth-label">Job Title *</label>
+              <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="additionalInfo.jobTitle"
@@ -786,7 +786,7 @@ function EditProfile() {
             </div>
 
             <div className="auth-group">
-              <label className="auth-label">Experience *</label>
+              <label className="auth-label">Experience<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 className="auth-input"
                 name="additionalInfo.experience"
@@ -799,7 +799,7 @@ function EditProfile() {
 
           <div className="input-grid-2 mt-3">
             <div className="auth-group">
-              <label className="auth-label">Education *</label>
+              <label className="auth-label">Education<span style={{ color: '#ef4444' }}> *</span></label>
               <select
                 className="auth-input"
                 name="additionalInfo.education"

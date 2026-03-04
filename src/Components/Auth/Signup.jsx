@@ -191,7 +191,7 @@ function SignUp() {
           <form onSubmit={formik.handleSubmit}>
             {/* Full Name */}
             <div className="auth-form-group">
-              <label className="auth-label">Full Name</label>
+              <label className="auth-label">Full Name<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 type="text"
                 {...formik.getFieldProps("fullName")}
@@ -205,7 +205,7 @@ function SignUp() {
 
             {/* Company Name */}
             <div className="auth-form-group">
-              <label className="auth-label">Company Name</label>
+              <label className="auth-label">Company Name<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 type="text"
                 {...formik.getFieldProps("companyName")}
@@ -219,7 +219,7 @@ function SignUp() {
 
             {/* Email */}
             <div className="auth-form-group">
-              <label className="auth-label">Email</label>
+              <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
               <input
                 type="email"
                 {...formik.getFieldProps("email")}
@@ -233,7 +233,7 @@ function SignUp() {
 
             {/* Password */}
             <div className="auth-form-group">
-              <label className="auth-label">Password</label>
+              <label className="auth-label">Password<span style={{ color: '#ef4444' }}> *</span></label>
               <div className="auth-password-wrapper">
                 <input
                   type={isVisible ? "text" : "password"}
@@ -253,7 +253,7 @@ function SignUp() {
 
             {/* Confirm Password */}
             <div className="auth-form-group">
-              <label className="auth-label">Confirm Password</label>
+              <label className="auth-label">Confirm Password<span style={{ color: '#ef4444' }}> *</span></label>
               <div className="auth-password-wrapper">
                 <input
                   type={isConfirmVisible ? "text" : "password"}

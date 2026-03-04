@@ -382,7 +382,7 @@ const PostNewPositions = () => {
     <form onSubmit={formik.handleSubmit} className="post-job-form">
       {/* HEADER */}
       <div className="form-header">
-        <div className="vs-breadcrumbs mb-3 d-flex gap-2">
+        <div className="vs-breadcrumbs mb-2 mt-3 d-flex gap-2">
           <button type="button" className="link-button" onClick={() => navigate("/user/user-dashboard")}>
             <FiArrowLeft /> Back to Dashboard
           </button>
@@ -411,7 +411,7 @@ const PostNewPositions = () => {
 
               <div className="grid-4">
                 <div>
-                  <label className="auth-label">Job Title</label>
+                  <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
                   <JobTitleAutocomplete
                     name="jobTitle"
                     value={formik.values.jobTitle}
@@ -436,14 +436,14 @@ const PostNewPositions = () => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Location</label>
+                  <label className="auth-label">Location<span style={{ color: '#ef4444' }}> *</span></label>
                   <input className="auth-input" name="location" placeholder="City, State"
                     value={formik.values.location} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                   {err("location")}
                 </div>
 
                 <div>
-                  <label className="auth-label">Company</label>
+                  <label className="auth-label">Company<span style={{ color: '#ef4444' }}> *</span></label>
                   <input className="auth-input bg-light" name="companyName" placeholder="Company"
                     value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
                   {err("companyName")}
@@ -452,7 +452,7 @@ const PostNewPositions = () => {
 
               <div className="grid-3">
                 <div>
-                  <label className="auth-label">Employment Type</label>
+                  <label className="auth-label">Employment Type<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="vendor-section">
                     <div className="auth-input" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                       <span>Select Type</span>
@@ -497,7 +497,7 @@ const PostNewPositions = () => {
                   <label className="auth-label">Work Authorization</label>
                   <div className="vendor-section">
                     <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <span>Select Auth</span>
+                      <span>Select Work Autherization</span>
                       <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
                     </div>
                     {isAuthOpen && (
@@ -525,7 +525,7 @@ const PostNewPositions = () => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Salary Range</label>
+                  <label className="auth-label">Salary Range<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="salary-radio-group" style={{ padding: '8px', gap: '8px' }}>
                     <label className="salary-radio-item" style={{ fontSize: '11px' }}>
                       <input type="radio" name="salaryType" value="perHour" checked={formik.values.salaryType === 'perHour'} onChange={formik.handleChange} />
@@ -571,7 +571,7 @@ const PostNewPositions = () => {
 
               <div className="grid-4">
                 <div>
-                  <label className="auth-label">Work Model</label>
+                  <label className="auth-label">Work Model<span style={{ color: '#ef4444' }}> *</span></label>
                   <select className="auth-input" name="workModel" value={formik.values.workModel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select model</option>
                     <option value="Remote">Remote</option>
@@ -582,7 +582,7 @@ const PostNewPositions = () => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Department</label>
+                  <label className="auth-label">Department<span style={{ color: '#ef4444' }}> *</span></label>
                   <select className="auth-input" name="department" value={formik.values.department} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select department</option>
                     <option value="Engineering">Engineering</option>
@@ -593,7 +593,7 @@ const PostNewPositions = () => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Experience</label>
+                  <label className="auth-label">Experience<span style={{ color: '#ef4444' }}> *</span></label>
                   <select className="auth-input" name="experienceLevel" value={formik.values.experienceLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select level</option>
                     <option value="Junior">Junior</option>
@@ -604,7 +604,7 @@ const PostNewPositions = () => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Education</label>
+                  <label className="auth-label">Education<span style={{ color: '#ef4444' }}> *</span></label>
                   <select className="auth-input" name="educationLevel" value={formik.values.educationLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select education</option>
                     <option value="Bachelors">Bachelor's</option>
@@ -616,7 +616,7 @@ const PostNewPositions = () => {
 
               <div className="grid-2">
                 <div>
-                  <label className="auth-label">Years of Experience</label>
+                  <label className="auth-label">Years of Experience<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="auth-password-wrapper">
                     <input
                       className="auth-input"
@@ -663,7 +663,7 @@ const PostNewPositions = () => {
 
               <div className="auth-form-group mt-4">
                 <div className="d-flex align-items-center justify-content-between mb-2">
-                  <label className="auth-label m-0">Job Description</label>
+                  <label className="auth-label m-0">Job Description<span style={{ color: '#ef4444' }}> *</span></label>
                   <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
                     <span className="ai-pill-icon">✦</span>
                     <span className="ai-pill-text">{isAiLoading ? "Generating..." : "Generate with AI"}</span>
