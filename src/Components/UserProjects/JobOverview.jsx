@@ -10,6 +10,7 @@ import {
   FiBookOpen,
   FiClock,
   FiFileText,
+  FiEdit,
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
@@ -84,10 +85,30 @@ const JobOverview = () => {
           <span className="crumb">/ Job Overview</span>
         </div>
 
-        <h2 className="drawer-header">Job Overview</h2>
-        <p className="company-name">
-          A complete summary of the job details and requirements
-        </p>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 className="drawer-header">Job Overview</h2>
+            <p className="company-name">
+              A complete summary of the job details and requirements
+            </p>
+          </div>
+          <button
+            className="btn-premium btn-premium-secondary"
+            onClick={() =>
+              navigate("/user/user-post-new-positions", {
+                state: { jobId: jobId },
+              })
+            }
+            style={{
+              padding: "8px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <FiEdit size={16} /> Edit Job
+          </button>
+        </div>
       </div>
 
       <div className="dashboard-layout">
@@ -117,13 +138,13 @@ const JobOverview = () => {
                 </div>
 
                 <div className="meta-item">
-  <FiDollarSign size={14} />
-  {job?.salaryRange_Min && job?.salaryRange_Max
-    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} USD/hour`
-    : job?.salaryRange_Min
-    ? `${job.salaryRange_Min} USD/hour`
-    : ""}
-</div>
+                  <FiDollarSign size={14} />
+                  {job?.salaryRange_Min && job?.salaryRange_Max
+                    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} USD/hour`
+                    : job?.salaryRange_Min
+                      ? `${job.salaryRange_Min} USD/hour`
+                      : ""}
+                </div>
 
                 <div className="meta-item text-orange">
                   <FiClock size={14} />

@@ -340,51 +340,59 @@ function UploadTalentModal({
                   >
                     Uploaded Files ({uploadedFiles.length})
                   </p>
-                  {uploadedFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "0.75rem",
-                        backgroundColor: "#f9fafb",
-                        borderRadius: "8px",
-                        marginBottom: "0.5rem",
-                        border: "1px solid #e5e7eb",
-                      }}
-                    >
-                      <div style={{ flex: 1 }}>
-                        <p
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: "600",
-                            color: "#111827",
-                            marginBottom: "0.25rem",
-                          }}
-                        >
-                          {file.name}
-                        </p>
-                        <p style={{ fontSize: "12px", color: "#6b7280" }}>
-                          {file.size}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => removeFile(index)}
+                  <div
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      paddingRight: "4px",
+                    }}
+                  >
+                    {uploadedFiles.map((file, index) => (
+                      <div
+                        key={index}
                         style={{
-                          padding: "0.5rem",
-                          backgroundColor: "transparent",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "#dc2626",
                           display: "flex",
                           alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "0.75rem",
+                          backgroundColor: "#f9fafb",
+                          borderRadius: "8px",
+                          marginBottom: "0.5rem",
+                          border: "1px solid #e5e7eb",
                         }}
                       >
-                        <X size={18} />
-                      </button>
-                    </div>
-                  ))}
+                        <div style={{ flex: 1 }}>
+                          <p
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: "600",
+                              color: "#111827",
+                              marginBottom: "0.25rem",
+                            }}
+                          >
+                            {file.name}
+                          </p>
+                          <p style={{ fontSize: "12px", color: "#6b7280" }}>
+                            {file.size}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeFile(index)}
+                          style={{
+                            padding: "0.5rem",
+                            backgroundColor: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#dc2626",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

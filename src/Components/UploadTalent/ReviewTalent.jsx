@@ -1553,7 +1553,7 @@ const ReviewTalent = () => {
             <h4 className="header-title" style={{ fontSize: '18px' }}>Resume Preview</h4>
             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Extracted from Original PDF Document</div>
           </div>
-          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto', padding: "24px" }}>
+          <div style={{ height: 'calc(100vh - 120px)', overflowY: 'auto', padding: "24px" }}>
             <PDFResumePreview data={data} />
           </div>
         </div>
