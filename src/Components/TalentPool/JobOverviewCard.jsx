@@ -252,7 +252,7 @@ const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
 
         <div className={`job-accordion-content ${isExpanded ? "expanded" : ""}`}>
           <div className="job-stats-row">
-            <Stat label="BUDGET" value={`$${job.budget} / hr`} />
+            <Stat label="BUDGET" value={`$${job.budget} ${job?.salaryType}`} />
             <Stat label="EXPERIENCE" value={`${job.experience}+`} />
             <Stat label="TYPE" value={job.type} />
           </div>

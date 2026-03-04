@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
   FileText, X, Building2, Check, ChevronDown
 } from 'lucide-react';
 import { FiArrowLeft } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import JobTitleAutocomplete from './JobTitleAutocomplete';
@@ -52,6 +52,11 @@ const PostNewPositions = () => {
   const [skills, setSkills] = useState([]);
   const [generateAI, { isLoading: isAiLoading }] =
     useGenerateJobDescriptionAIMutation();
+    const location = useLocation();
+const editData = location.state?.jobData;
+const isEdit = location.state?.isEdit;
+const JobID = location.state?.jobId;
+console.log("JobID:",JobID)
 
   // Work Authorization states
   const [workAuthorization, setWorkAuthorization] = useState({
@@ -89,23 +94,23 @@ const PostNewPositions = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      jobTitle: '',
-      companyName: companyname,
-      location: '',
-      employmentType: '',
-      workModel: '',
-      jobDuration: '',
-      salaryMin: '',
-      salaryMax: '',
-      salaryCurrency: 'USD',
-      salaryType: 'perHour',
-      description: '',
-      department: '',
-      experienceLevel: '',
-      educationLevel: '',
-      yearsExperience: '',
-      additionalReqs: '',
-    },
+  jobTitle: editData?.jobTitle || '',
+  companyName: editData?.companyName || companyname,
+  location: editData?.location || '',
+  employmentType: editData?.employeeType || '',
+  workModel: editData?.workModels || '',
+  jobDuration: editData?.jobDuration || '',
+  salaryMin: editData?.salaryRange_Min || '',
+  salaryMax: editData?.salaryRange_Max || '',
+  salaryCurrency: 'USD',
+  salaryType: editData?.salarType || 'perHour',
+  description: editData?.jobDescription || '',
+  department: editData?.department || '',
+  experienceLevel: editData?.experienceLevel || '',
+  educationLevel: editData?.educationLevel || '',
+  yearsExperience: editData?.yearsOfExperience || '',
+  additionalReqs: editData?.additionalRequirements || '',
+},
     validationSchema,
     // ✅ ONLY OPEN PREVIEW
     onSubmit: () => {
@@ -124,7 +129,7 @@ const PostNewPositions = () => {
 
     const fd = new FormData();
 
-    fd.append("JobID", 0);
+    fd.append("JobID", isEdit ? JobID : 0);
     fd.append("userid", user);
 
     fd.append("JobTitle", formik.values.jobTitle);
@@ -227,6 +232,57 @@ const PostNewPositions = () => {
       alert("Failed to save draft");
     }
   };
+
+ useEffect(() => {
+  if (!editData) return;
+
+  /* ======================
+     Skills Binding
+  ====================== */
+  if (editData.requiredSkills) {
+    setSkills(editData.requiredSkills.split(","));
+  }
+
+  /* ======================
+     Employment Type Binding
+  ====================== */
+  if (editData.employeeType) {
+    const types = editData.employeeType.split(",");
+
+    const updatedEmployment = {
+      "Corp-Corp": false,
+      "W2-Permanent": false,
+      "W2-Contract": false,
+      "1099-Contract": false,
+      "Contract to Hire": false
+    };
+
+    types.forEach(type => {
+      const trimmed = type.trim();
+      if (updatedEmployment.hasOwnProperty(trimmed)) {
+        updatedEmployment[trimmed] = true;
+      }
+    });
+
+    setPreferredEmployment(updatedEmployment);
+
+    formik.setFieldValue("employmentType", editData.employeeType);
+  }
+
+  /* ======================
+     Work Authorization Binding
+  ====================== */
+  setWorkAuthorization({
+    Citizenship: editData?.isUSCitizen || false,
+    GC: editData?.isGC || false,
+    H1B: editData?.isH1B || false,
+    EAD: editData?.isEAD || false,
+    OPT: editData?.isOPT || false,
+    CPT: editData?.isCPT || false,
+    H4: editData?.isH4 || false
+  });
+
+}, [editData]);
 
   const handleGenerateAI = async () => {
     const selectedEmpTypes = Object.entries(preferredEmployment)
@@ -334,7 +390,7 @@ const PostNewPositions = () => {
         </div>
 
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' }}>
-          Creating New Job Posting
+          {isEdit ? "Edit Job Posting" : "Creating New Job Posting"}
         </h1>
         <p style={{ color: '#64748b', margin: 0 }}>
           Here's what's happening with your projects today
@@ -912,6 +968,7 @@ const PostNewPositions = () => {
           data={modalData}
           onClose={() => setShowPreview(false)}
           onPostJob={handlePostJob}   // ✅ API CALL HERE
+          isEdit={isEdit}
         />
       )}
     </form>

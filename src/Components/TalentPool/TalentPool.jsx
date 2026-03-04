@@ -603,6 +603,7 @@ const filtersReady = useMemo(() => {
       budget: `${details.salaryRange_Min} - $${details.salaryRange_Max}`,
       experience: details.yearsofExperience || details.experienceLevel,
       type: details.employeeType,
+      salaryType:details.salarType,
       description: details.jobDescription,
       requiredSkills: details.requiredSkills
         ? details.requiredSkills.split(",").map((s) => s.trim())

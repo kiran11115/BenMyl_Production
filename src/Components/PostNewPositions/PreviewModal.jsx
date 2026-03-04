@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { SubmissionErrorModal, SuccessModal } from "./Alterts";
 import "./PostNewPositions.css";
 
-export default function PreviewModal({ onClose, data, onPostJob }) {
+export default function PreviewModal({ onClose, data, onPostJob,isEdit  }) {
   const navigate = useNavigate();
 
   /* =========================
@@ -77,7 +77,7 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
      ALERT SCREENS
   ========================= */
   if (status === "success") {
-    return <SuccessModal onClose={onClose} data={data} />;
+    return <SuccessModal onClose={onClose} data={data} isEdit={isEdit} />;
   }
 
   if (status === "error") {
@@ -290,7 +290,7 @@ export default function PreviewModal({ onClose, data, onPostJob }) {
             onClick={handlePostJob}
             disabled={status === "loading"}
           >
-            Post Job
+             {isEdit ? "Update Job" : "Post Job"}
           </button>
         </div>
       </div>

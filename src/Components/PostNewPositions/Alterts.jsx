@@ -52,7 +52,7 @@ export const SubmissionErrorModal = ({
 /**
  * Success Modal - Replicates the green "Success!" design
  */
-export const SuccessModal = ({ onClose,data }) => {
+export const SuccessModal = ({ onClose,data,isEdit }) => {
     // 1. Initialize the hook
     const navigate = useNavigate();
     window.scrollTo(0, 0);
@@ -71,7 +71,9 @@ export const SuccessModal = ({ onClose,data }) => {
                     </div>
 
                     <p className="alert-message mb-3">
-                        The Job has been posted sucessfully.
+                        {isEdit
+    ? "The Job has been updated successfully."
+    : "The Job has been posted successfully."}
                     </p>
 
                     <div className="alert-actions start">

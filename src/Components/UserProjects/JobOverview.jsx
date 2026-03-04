@@ -95,10 +95,14 @@ const JobOverview = () => {
           <button
             className="btn-premium btn-premium-secondary"
             onClick={() =>
-              navigate("/user/user-post-new-positions", {
-                state: { jobId: jobId },
-              })
-            }
+  navigate("/user/user-post-new-positions", {
+    state: {
+      jobId: job?.jobID,
+      jobData: job,
+      isEdit: true
+    },
+  })
+}
             style={{
               padding: "8px 16px",
               display: "flex",
@@ -140,9 +144,9 @@ const JobOverview = () => {
                 <div className="meta-item">
                   <FiDollarSign size={14} />
                   {job?.salaryRange_Min && job?.salaryRange_Max
-                    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} USD/hour`
+                    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} ${job?.salarType}`
                     : job?.salaryRange_Min
-                      ? `${job.salaryRange_Min} USD/hour`
+                      ? `${job.salaryRange_Min} ${job?.salarType}`
                       : ""}
                 </div>
 
@@ -169,7 +173,7 @@ const JobOverview = () => {
             <div className="drawer-stat-item">
               <span className="label">Experience</span>
               <span className="value">
-                {job?.yearsofExperience || "5"} years
+                {job?.yearsOfExperience || "NA"} years
               </span>
             </div>
 
