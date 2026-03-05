@@ -4,13 +4,8 @@ import Notifications from "./Notifications";
 import "./MobileTopBar.css";
 import { useNavigate } from "react-router-dom";
 
-const MobileTopBar = ({ user, initials }) => {
+const MobileTopBar = ({ user, initials,handleSignOut }) => {
     const navigate = useNavigate();
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/");
-    };
 
     return (
         <div className="mobile-top-bar">
@@ -22,7 +17,7 @@ const MobileTopBar = ({ user, initials }) => {
                     <MessageCircle size={20} />
                 </button>
                 <Notifications />
-                <button className="mobile-action-btn" onClick={handleLogout} style={{ color: '#ef4444' }}>
+                <button className="mobile-action-btn" onClick={handleSignOut} style={{ color: '#ef4444' }}>
                     <LogOut size={20} />
                 </button>
             </div>

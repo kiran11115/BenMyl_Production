@@ -86,7 +86,7 @@ function Header() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <MobileTopBar user={user} initials={getInitials(user)} />
+      <MobileTopBar user={user} initials={getInitials(user)} handleSignOut={handleSignOut}/>
 
       <header className="header-container desktop-header">
         {/* Left Section: Brand & Nav */}
