@@ -28,7 +28,7 @@ export default function PublishTalentModal({
   const [isVendorOpen, setIsVendorOpen] = useState(true);
   const [showHotlist, setShowHotlist] = useState(false);
   const [hotlistLoading, setHotlistLoading] = useState(false);
-  const [postDescription, setPostDescription] = useState("Latest talent hotlist");
+  const [postDescription, setPostDescription] = useState("Latest Talent Hotlist is live! Discover skilled bench talent ready for new opportunities. Connect with top professionals and explore talent available to make an impact.");
   const [postLink, setPostLink] = useState("https://react.benmyl.com/sign-in");
 
 
@@ -208,7 +208,7 @@ export default function PublishTalentModal({
                           <p style={{ color: "#3b82f6", fontSize: "14px" }}>{postLink}</p>
                         </div>
 
-                        <div id="post-capture-area" style={{background: "#ffffff", borderRadius: "8px" }}>
+                        <div id="post-capture-area" style={{ background: "#ffffff", borderRadius: "8px" }}>
                           <table id="hotlist-table" className="hotlist-table" >
                             <thead>
                               <tr>
@@ -330,10 +330,10 @@ export default function PublishTalentModal({
                   <button className="social-btn linkedin" onClick={handleLinkedInShare}>
                     <FiLinkedin className="social-icon" /> Share on LinkedIn
                   </button>
-                  <button className="social-btn facebook">
+                  <button className="social-btn facebook" disabled style={{ opacity: 0.4, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
                     <FiFacebook className="social-icon" /> Share on Facebook
                   </button>
-                  <button className="social-btn email">
+                  <button className="social-btn email" disabled style={{ opacity: 0.4, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
                     <FiMail className="social-icon" /> Share via Email
                   </button>
                 </div>

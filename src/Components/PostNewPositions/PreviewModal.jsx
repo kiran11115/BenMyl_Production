@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { SubmissionErrorModal, SuccessModal } from "./Alterts";
 import "./PostNewPositions.css";
 
-export default function PreviewModal({ onClose, data, onPostJob,isEdit  }) {
+export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   const navigate = useNavigate();
 
   /* =========================
@@ -234,10 +234,10 @@ export default function PreviewModal({ onClose, data, onPostJob,isEdit  }) {
                 <button className="social-btn linkedin">
                   <FiLinkedin /> Share on LinkedIn
                 </button>
-                <button className="social-btn facebook">
+                <button className="social-btn facebook" disabled style={{ opacity: 0.4, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
                   <FiFacebook /> Share on Facebook
                 </button>
-                <button className="social-btn email">
+                <button className="social-btn email" disabled style={{ opacity: 0.4, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
                   <FiMail /> Share via Email
                 </button>
               </div>
@@ -291,7 +291,7 @@ export default function PreviewModal({ onClose, data, onPostJob,isEdit  }) {
             onClick={handlePostJob}
             disabled={status === "loading"}
           >
-             {isEdit ? "Update Job" : "Post Job"}
+            {isEdit ? "Update Job" : "Post Job"}
           </button>
         </div>
       </div>

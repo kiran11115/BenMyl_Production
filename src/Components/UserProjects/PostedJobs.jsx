@@ -20,14 +20,21 @@ const PostedJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-      workModels:job.workModels,
-      salaryType:job.salarType,
+      workModels: job.workModels,
+      salaryType: job.salarType,
       rateText:
-  job.salaryRange_Min && job.salaryRange_Max
-    ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
-    : job.salaryRange_Min
-    ? `$${job.salaryRange_Min}`
-    : "N/A",
+        job.salaryRange_Min && job.salaryRange_Max
+          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+          : job.salaryRange_Min
+            ? `$${job.salaryRange_Min}`
+            : "N/A",
+      budgetLabel: (() => {
+        const t = (job.salarType || "").toLowerCase();
+        if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+        if (t.includes("month")) return "/month";
+        if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+        return "/hr"; // default
+      })(),
       experienceLevel: job.experienceLevel,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
@@ -181,63 +188,66 @@ const PostedJobs = () => {
       {/* JSX */}
       <div className="jobs-wrapper">
         {jobs.length === 0 ? (
-    <NoData text="No posted jobs available yet." />
-  ) : (
-        <div className="jobs-grid">
-          {jobs.map((job) => (
-            <div key={job.id} className="job-card justify-content-between">
-              <div className="d-flex flex-column gap-3">
-                <div className="job-header">
-                  <div className="icon-box">
-                    <BsBuilding size={22} />
-                  </div>
-                  <div>
-                    <h3 className="job-title">{job.title}</h3>
-                    <div className="company">{job.company}</div>
-                    <div className="location">
-                      <FiMapPin size={12} /> {job.location}
+          <NoData text="No posted jobs available yet." />
+        ) : (
+          <div className="jobs-grid">
+            {jobs.map((job) => (
+              <div key={job.id} className="job-card justify-content-between">
+                <div className="d-flex flex-column gap-3">
+                  <div className="job-header">
+                    <div className="icon-box">
+                      <BsBuilding size={22} />
+                    </div>
+                    <div>
+                      <h3 className="job-title">{job.title}</h3>
+                      <div className="company">{job.company}</div>
+                      <div className="location">
+                        <FiMapPin size={12} /> {job.location}
+                      </div>
                     </div>
                   </div>
+
+                  <div className="stats">
+                    <div>
+                      <div className="stat-label1">Budget</div>
+                      <div className="stat-value1">
+                        {job.rateText}
+                        <span style={{ fontSize: 11, color: '#64748b', marginLeft: 3 }}>{job.budgetLabel}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="stat-label1">Exp Level</div>
+                      <div className="stat-value1">{job.experienceLevel}</div>
+                    </div>
+                    <div>
+                      <div className="stat-label1">Work Model</div>
+                      <div className="stat-value1">{job.workModels}</div>
+                    </div>
+                  </div>
+
+                  <div className="skills">
+                    {job.skills.map((skill) => (
+                      <span key={skill} className="status-tag status-progress">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="stats">
-                  <div>
-                    <div className="stat-label1">Budget</div>
-                    <div className="stat-value1">{job.rateText} {job.salaryType || "Per Hour"}</div>
-                  </div>
-                  <div>
-                    <div className="stat-label1">Exp Level</div>
-                    <div className="stat-value1">{job.experienceLevel}</div>
-                  </div>
-                  <div>
-                    <div className="stat-label1">Work Model</div>
-                    <div className="stat-value1">{job.workModels}</div>
-                  </div>
-                </div>
-
-                <div className="skills">
-                  {job.skills.map((skill) => (
-                    <span key={skill} className="status-tag status-progress">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <button
+                  className="btn-primary w-100 d-flex gap-2"
+                  onClick={() =>
+                    navigate("/user/job-overview", {
+                      state: { jobId: job.id }, // ✅ pass jobID
+                    })
+                  }
+                >
+                  <FiEye size={16} /> View Details
+                </button>
               </div>
-
-              <button
-                className="btn-primary w-100 d-flex gap-2"
-                onClick={() =>
-                  navigate("/user/job-overview", {
-                    state: { jobId: job.id }, // ✅ pass jobID
-                  })
-                }
-              >
-                <FiEye size={16} /> View Details
-              </button>
-            </div>
-          ))}
-        </div>
-          )}
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
