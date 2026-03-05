@@ -15,6 +15,7 @@ function UploadTalentModal({
   const [showModal, setShowModal] = useState(show);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileStatuses, setFileStatuses] = useState({}); // { index: 'processing' | 'done' | 'error' }
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
@@ -51,12 +52,14 @@ function UploadTalentModal({
   };
 
   const handleFiles = (files) => {
-    const fileArray = Array.from(files).map((file) => ({
+    const baseIndex = uploadedFiles.length;
+    const fileArray = Array.from(files).map((file, i) => ({
       name: file.name,
       size: (file.size / 1024).toFixed(2) + " KB",
       file: file,
+      index: baseIndex + i,
     }));
-    setUploadedFiles([...uploadedFiles, ...fileArray]);
+    setUploadedFiles(prev => [...prev, ...fileArray]);
   };
 
   const removeFile = (index) => {
@@ -73,6 +76,11 @@ function UploadTalentModal({
 
     setIsProcessing(true);
 
+    // Set all files to 'processing'
+    const initialStatuses = {};
+    uploadedFiles.forEach((_, i) => { initialStatuses[i] = 'processing'; });
+    setFileStatuses(initialStatuses);
+
     try {
       const formData = new FormData();
 
@@ -88,19 +96,30 @@ function UploadTalentModal({
       formData.append("sessionid", "hii");
 
       await uploadProfiles(formData).unwrap();
+
+      // Mark all as done
+      const doneStatuses = {};
+      uploadedFiles.forEach((_, i) => { doneStatuses[i] = 'done'; });
+      setFileStatuses(doneStatuses);
+
       onSuccess?.();
       if (onSuccess) {
         onSuccess(`Successfully uploaded ${uploadedFiles.length} resume(s)`);
       }
 
-      handleClose();
-
-      navigate("/user/user-upload-talent", {
-        state: { files: uploadedFiles, activeTab: "Review", },
-      });
+      setTimeout(() => {
+        handleClose();
+        navigate("/user/user-upload-talent", {
+          state: { files: uploadedFiles, activeTab: "Review", },
+        });
+      }, 800);
 
     } catch (error) {
       console.error("Upload failed", error);
+      // Mark all as error
+      const errorStatuses = {};
+      uploadedFiles.forEach((_, i) => { errorStatuses[i] = 'error'; });
+      setFileStatuses(errorStatuses);
       if (onSuccess) {
         onSuccess("Failed to upload resumes");
       }
@@ -113,6 +132,7 @@ function UploadTalentModal({
 
   const handleClose = () => {
     setUploadedFiles([]);
+    setFileStatuses({});
     setDragActive(false);
     setShowModal(false);
     if (onHide) {
@@ -347,51 +367,67 @@ function UploadTalentModal({
                       paddingRight: "4px",
                     }}
                   >
-                    {uploadedFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "0.75rem",
-                          backgroundColor: "#f9fafb",
-                          borderRadius: "8px",
-                          marginBottom: "0.5rem",
-                          border: "1px solid #e5e7eb",
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              fontWeight: "600",
-                              color: "#111827",
-                              marginBottom: "0.25rem",
-                            }}
-                          >
-                            {file.name}
-                          </p>
-                          <p style={{ fontSize: "12px", color: "#6b7280" }}>
-                            {file.size}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => removeFile(index)}
+                    {uploadedFiles.map((file, index) => {
+                      const status = fileStatuses[index];
+                      return (
+                        <div
+                          key={index}
                           style={{
-                            padding: "0.5rem",
-                            backgroundColor: "transparent",
-                            border: "none",
-                            cursor: "pointer",
-                            color: "#dc2626",
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "0.75rem",
+                            backgroundColor: status === 'done' ? '#f0fdf4' : status === 'error' ? '#fef2f2' : "#f9fafb",
+                            borderRadius: "8px",
+                            marginBottom: "0.5rem",
+                            border: `1px solid ${status === 'done' ? '#bbf7d0' : status === 'error' ? '#fee2e2' : '#e5e7eb'}`,
+                            transition: 'all 0.3s'
                           }}
                         >
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ))}
+                          <div style={{ flex: 1 }}>
+                            <p
+                              style={{
+                                fontSize: "13px",
+                                fontWeight: "600",
+                                color: "#111827",
+                                marginBottom: "0.25rem",
+                              }}
+                            >
+                              {file.name}
+                            </p>
+                            <p style={{ fontSize: "12px", color: "#6b7280" }}>
+                              {file.size}
+                            </p>
+                          </div>
+                          {/* Status indicator */}
+                          {status === 'processing' && (
+                            <div style={{ width: 18, height: 18, border: '2px solid #f5810c', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginRight: 8 }} />
+                          )}
+                          {status === 'done' && (
+                            <span style={{ color: '#16a34a', fontWeight: 700, fontSize: 18, marginRight: 8 }}>✓</span>
+                          )}
+                          {status === 'error' && (
+                            <span style={{ color: '#dc2626', fontWeight: 700, fontSize: 18, marginRight: 8 }}>✗</span>
+                          )}
+                          {!status && (
+                            <button
+                              onClick={() => removeFile(index)}
+                              style={{
+                                padding: "0.5rem",
+                                backgroundColor: "transparent",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "#dc2626",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <X size={18} />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -427,7 +463,7 @@ function UploadTalentModal({
                   disabled={uploadedFiles.length === 0 || isProcessing}
                   onMouseEnter={(e) => {
                     if (uploadedFiles.length > 0 && !isProcessing) {
-                      e.currentTarget.style.backgroundColor = "#1e3a8a";
+                      e.currentTarget.style.backgroundColor = "#f18b24ff";
                     }
                   }}
                   onMouseLeave={(e) => {

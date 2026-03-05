@@ -602,35 +602,30 @@ const ReviewTalent = () => {
     useDraftProfileEmployeeMutation();
   const [isReviewed, setIsReviewed] = useState(false);
 
-  // SINGLE OPEN ACCORDION
-  const [openAccordion, setOpenAccordion] = useState("basicInfo");
-  const [animatingAccordion, setAnimatingAccordion] = useState(null);
+  // MULTI OPEN ACCORDIONS
+  const [openAccordions, setOpenAccordions] = useState(["basicInfo"]);
 
   const toggleAccordion = (key) => {
-    setAnimatingAccordion(key);
-    setTimeout(() => {
-      setOpenAccordion(prev => prev === key ? null : key);
-      setAnimatingAccordion(null);
-    }, 150);
+    setOpenAccordions(prev =>
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
   };
 
-  const [editingSection, setEditingSection] = useState(null);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingSections, setEditingSections] = useState([]);
   const [basicInfoErrors, setBasicInfoErrors] = useState(null);
   const [personalInfoErrors, setPersonalInfoErrors] = useState(null);
   const [educationErrors, setEducationErrors] = useState(null);
   const [experienceErrors, setExperienceErrors] = useState(null);
   const [projectsErrors, setProjectsErrors] = useState(null);
 
-  const beginEdit = (s, i = null) => { setEditingSection(s); setEditingIndex(i); };
-  const cancelEdit = () => {
-    setEditingSection(null);
-    setEditingIndex(null);
-    setBasicInfoErrors(null);
-    setPersonalInfoErrors(null);
-    setEducationErrors(null);
-    setExperienceErrors(null);
-    setProjectsErrors(null);
+  const beginEdit = (s) => setEditingSections(prev => [...new Set([...prev, s])]);
+  const cancelEdit = (s) => {
+    setEditingSections(prev => prev.filter(k => k !== s));
+    if (s === "basicInfo") setBasicInfoErrors(null);
+    if (s === "personalInfo") setPersonalInfoErrors(null);
+    if (s === "education") setEducationErrors(null);
+    if (s === "experience") setExperienceErrors(null);
+    if (s === "projects") setProjectsErrors(null);
   };
 
   const saveBasicInfo = () => {
@@ -640,7 +635,7 @@ const ReviewTalent = () => {
       return;
     }
     setBasicInfoErrors(null);
-    cancelEdit();
+    cancelEdit("basicInfo");
   };
 
   const savePersonalInfo = () => {
@@ -650,7 +645,7 @@ const ReviewTalent = () => {
       return;
     }
     setPersonalInfoErrors(null);
-    cancelEdit();
+    cancelEdit("personalInfo");
   };
 
   const saveEducation = () => {
@@ -660,7 +655,7 @@ const ReviewTalent = () => {
       return;
     }
     setEducationErrors(null);
-    cancelEdit();
+    cancelEdit("education");
   };
 
   const saveExperience = () => {
@@ -670,7 +665,7 @@ const ReviewTalent = () => {
       return;
     }
     setExperienceErrors(null);
-    cancelEdit();
+    cancelEdit("experience");
   };
 
   const saveProjects = () => {
@@ -680,7 +675,7 @@ const ReviewTalent = () => {
       return;
     }
     setProjectsErrors(null);
-    cancelEdit();
+    cancelEdit("projects");
   };
 
   const [talent, setTalent] = useState(null);
@@ -777,23 +772,16 @@ const ReviewTalent = () => {
     if (allErrors.length > 0) {
       setValidationErrorsState(allErrors);
 
-      // Auto-expand and enter edit mode for the first failing section
-      if (validationErrors.length > 0) {
-        setOpenAccordion("basicInfo");
-        beginEdit("basicInfo");
-      } else if (personalErrors.length > 0) {
-        setOpenAccordion("personalInfo");
-        beginEdit("personalInfo");
-      } else if (educationErrors.length > 0) {
-        setOpenAccordion("education");
-        beginEdit("education", "all");
-      } else if (experienceErrors.length > 0) {
-        setOpenAccordion("experience");
-        beginEdit("experience", "all");
-      } else if (projectErrors.length > 0) {
-        setOpenAccordion("projects");
-        beginEdit("projects", "all");
-      }
+      // Auto-expand and enter edit mode for ALL failing sections
+      const sectionsToOpen = [];
+      const sectionsToEdit = [];
+      if (validationErrors.length > 0) { sectionsToOpen.push("basicInfo"); sectionsToEdit.push("basicInfo"); }
+      if (personalErrors.length > 0) { sectionsToOpen.push("personalInfo"); sectionsToEdit.push("personalInfo"); }
+      if (educationErrors.length > 0) { sectionsToOpen.push("education"); sectionsToEdit.push("education"); }
+      if (experienceErrors.length > 0) { sectionsToOpen.push("experience"); sectionsToEdit.push("experience"); }
+      if (projectErrors.length > 0) { sectionsToOpen.push("projects"); sectionsToEdit.push("projects"); }
+      setOpenAccordions(prev => [...new Set([...prev, ...sectionsToOpen])]);
+      setEditingSections(prev => [...new Set([...prev, ...sectionsToEdit])]);
 
       return;
     }
@@ -928,23 +916,16 @@ const ReviewTalent = () => {
     if (allErrors.length > 0) {
       setValidationErrorsState(allErrors);
 
-      // Auto-expand and enter edit mode for the first failing section
-      if (validationErrors.length > 0) {
-        setOpenAccordion("basicInfo");
-        beginEdit("basicInfo");
-      } else if (personalErrors.length > 0) {
-        setOpenAccordion("personalInfo");
-        beginEdit("personalInfo");
-      } else if (educationErrors.length > 0) {
-        setOpenAccordion("education");
-        beginEdit("education", "all");
-      } else if (experienceErrors.length > 0) {
-        setOpenAccordion("experience");
-        beginEdit("experience", "all");
-      } else if (projectErrors.length > 0) {
-        setOpenAccordion("projects");
-        beginEdit("projects", "all");
-      }
+      // Auto-expand and enter edit mode for ALL failing sections
+      const sectionsToOpen = [];
+      const sectionsToEdit = [];
+      if (validationErrors.length > 0) { sectionsToOpen.push("basicInfo"); sectionsToEdit.push("basicInfo"); }
+      if (personalErrors.length > 0) { sectionsToOpen.push("personalInfo"); sectionsToEdit.push("personalInfo"); }
+      if (educationErrors.length > 0) { sectionsToOpen.push("education"); sectionsToEdit.push("education"); }
+      if (experienceErrors.length > 0) { sectionsToOpen.push("experience"); sectionsToEdit.push("experience"); }
+      if (projectErrors.length > 0) { sectionsToOpen.push("projects"); sectionsToEdit.push("projects"); }
+      setOpenAccordions(prev => [...new Set([...prev, ...sectionsToOpen])]);
+      setEditingSections(prev => [...new Set([...prev, ...sectionsToEdit])]);
 
       return;
     }
@@ -1189,7 +1170,7 @@ const ReviewTalent = () => {
           <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
 
             {/* ===== BASIC INFORMATION ===== */}
-            <div className={`accordion-item ${openAccordion === "basicInfo" ? 'active' : ''}`}>
+            <div className={`accordion-item ${openAccordions.includes("basicInfo") ? 'active' : ''}`}>
               <div className="accordion-header" onClick={() => toggleAccordion("basicInfo")}>
                 <div className="header-content">
                   <div className="header-icon-wrapper">
@@ -1198,24 +1179,24 @@ const ReviewTalent = () => {
                   <h5 className="header-title">Basic Information</h5>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {editingSection !== "basicInfo" && openAccordion === "basicInfo" && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("basicInfo", "all"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
+                  {!editingSections.includes("basicInfo") && openAccordions.includes("basicInfo") && (
+                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("basicInfo"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
                       <Edit2 size={13} /> Edit
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "basicInfo" ? '#f5810c' : '#94a3b8',
-                    transform: openAccordion === "basicInfo" ? 'rotate(180deg)' : 'rotate(0deg)',
+                    color: openAccordions.includes("basicInfo") ? '#f5810c' : '#94a3b8',
+                    transform: openAccordions.includes("basicInfo") ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
                 </div>
               </div>
-              {openAccordion === "basicInfo" && (
+              {openAccordions.includes("basicInfo") && (
                 <div className="accordion-content">
                   <div className="review-form-grid" style={{ marginTop: 16 }}>
                     {["firstName", "lastName", "position", "phone", "email"].map(f => (
                       <EditableField key={f} label={f} value={talent.basicInfo[f]}
-                        editing={editingSection === "basicInfo"}
+                        editing={editingSections.includes("basicInfo")}
                         onSave={val => setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, [f]: val } }))}
                         section="basicInfo"
                         required={["firstName", "position", "email"].includes(f)}
@@ -1225,17 +1206,17 @@ const ReviewTalent = () => {
                   <EditableTags
                     label="Extracted Skills"
                     values={talent.basicInfo.skills}
-                    editing={editingSection === "basicInfo"}
+                    editing={editingSections.includes("basicInfo")}
                     onSave={val => setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, skills: val } }))}
                   />
-                  {basicInfoErrors && editingSection === "basicInfo" && (
+                  {basicInfoErrors && editingSections.includes("basicInfo") && (
                     <div style={{ color: '#ef4444', fontSize: 13, marginTop: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
                       {basicInfoErrors}
                     </div>
                   )}
-                  {editingSection === "basicInfo" && (
+                  {editingSections.includes("basicInfo") && (
                     <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                      <button className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                      <button className="btn-secondary" onClick={() => cancelEdit("basicInfo")}>Cancel</button>
                       <button className="btn-primary" onClick={saveBasicInfo}>Save Changes</button>
                     </div>
                   )}
@@ -1244,7 +1225,7 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== PERSONAL INFORMATION ===== */}
-            <div className={`accordion-item ${openAccordion === "personalInfo" ? 'active' : ''}`}>
+            <div className={`accordion-item ${openAccordions.includes("personalInfo") ? 'active' : ''}`}>
               <div className="accordion-header" onClick={() => toggleAccordion("personalInfo")}>
                 <div className="header-content">
                   <div className="header-icon-wrapper">
@@ -1253,26 +1234,26 @@ const ReviewTalent = () => {
                   <h5 className="header-title">Personal Information</h5>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {editingSection !== "personalInfo" && openAccordion === "personalInfo" && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("personalInfo", "all"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
+                  {!editingSections.includes("personalInfo") && openAccordions.includes("personalInfo") && (
+                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("personalInfo"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
                       <Edit2 size={13} /> Edit
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "personalInfo" ? '#f5810c' : '#94a3b8',
-                    transform: openAccordion === "personalInfo" ? 'rotate(180deg)' : 'rotate(0deg)',
+                    color: openAccordions.includes("personalInfo") ? '#f5810c' : '#94a3b8',
+                    transform: openAccordions.includes("personalInfo") ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
                 </div>
               </div>
-              {openAccordion === "personalInfo" && (
+              {openAccordions.includes("personalInfo") && (
                 <div className="accordion-content">
                   <div className="review-form-grid" style={{ marginTop: 16 }}>
                     {Object.keys(talent.personalInfo).map(field => {
                       const isTxt = field === "bio";
                       return isTxt ? null : (
                         <EditableField key={field} label={field} value={talent.personalInfo[field]}
-                          editing={editingSection === "personalInfo"}
+                          editing={editingSections.includes("personalInfo")}
                           onSave={val => setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } }))}
                           section="personalInfo"
                           required={field === "address"}
@@ -1284,19 +1265,19 @@ const ReviewTalent = () => {
                     <EditableTextarea
                       label="Professional Bio"
                       value={talent.personalInfo.bio}
-                      editing={editingSection === "personalInfo"}
+                      editing={editingSections.includes("personalInfo")}
                       onSave={val => setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, bio: val } }))}
                       section="personalInfo"
                     />
                   )}
-                  {personalInfoErrors && editingSection === "personalInfo" && (
+                  {personalInfoErrors && editingSections.includes("personalInfo") && (
                     <div style={{ color: '#ef4444', fontSize: 13, marginTop: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
                       {personalInfoErrors}
                     </div>
                   )}
-                  {editingSection === "personalInfo" && (
+                  {editingSections.includes("personalInfo") && (
                     <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                      <button className="btn-premium btn-premium-secondary" onClick={cancelEdit}>Cancel</button>
+                      <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("personalInfo")}>Cancel</button>
                       <button className="btn-primary" onClick={savePersonalInfo}>Save Changes</button>
                     </div>
                   )}
@@ -1305,7 +1286,7 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== EDUCATION ===== */}
-            <div className={`accordion-item ${openAccordion === "education" ? 'active' : ''}`}>
+            <div className={`accordion-item ${openAccordions.includes("education") ? 'active' : ''}`}>
               <div className="accordion-header" onClick={() => toggleAccordion("education")}>
                 <div className="header-content">
                   <div className="header-icon-wrapper">
@@ -1314,26 +1295,26 @@ const ReviewTalent = () => {
                   <h5 className="header-title">Education</h5>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {editingSection !== "education" && openAccordion === "education" && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("education", "all"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
+                  {!editingSections.includes("education") && openAccordions.includes("education") && (
+                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("education"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
                       <Edit2 size={13} /> Edit
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "education" ? '#f5810c' : '#94a3b8',
-                    transform: openAccordion === "education" ? 'rotate(180deg)' : 'rotate(0deg)',
+                    color: openAccordions.includes("education") ? '#f5810c' : '#94a3b8',
+                    transform: openAccordions.includes("education") ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
                 </div>
               </div>
-              {openAccordion === "education" && (
+              {openAccordions.includes("education") && (
                 <div className="accordion-content">
                   {talent.education.map((ed, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
                       <div className="review-form-grid">
                         {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
                           <EditableField key={field} label={field} value={ed[field]} section="education"
-                            editing={editingSection === "education"}
+                            editing={editingSections.includes("education")}
                             onSave={val => {
                               const arr = [...talent.education]; arr[i][field] = val;
                               setTalent(p => ({ ...p, education: arr }));
@@ -1343,13 +1324,13 @@ const ReviewTalent = () => {
                         ))}
                       </div>
                       <EditableTags label="Certifications" section="education" values={ed.certifications}
-                        editing={editingSection === "education"}
+                        editing={editingSections.includes("education")}
                         onSave={val => {
                           const arr = [...talent.education]; arr[i].certifications = val;
                           setTalent(p => ({ ...p, education: arr }));
                         }}
                       />
-                      {!editingSection && (
+                      {!editingSections.includes("education") && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
                           <button className="btn-secondary" onClick={() => deleteEducation(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
                             <Trash2 size={12} /> Remove
@@ -1360,7 +1341,7 @@ const ReviewTalent = () => {
                   ))}
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
-                    {editingSection !== "education" ? (
+                    {!editingSections.includes("education") ? (
                       <button className="btn-premium btn-premium-secondary" onClick={addEducation}>
                         <Plus size={14} /> Add Education
                       </button>
@@ -1372,7 +1353,7 @@ const ReviewTalent = () => {
                           </div>
                         )}
                         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={cancelEdit}>Cancel</button>
+                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("education")}>Cancel</button>
                           <button className="btn-primary" onClick={saveEducation}>Save Changes</button>
                         </div>
                       </div>
@@ -1383,7 +1364,7 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== EXPERIENCE ===== */}
-            <div className={`accordion-item ${openAccordion === "experience" ? 'active' : ''}`}>
+            <div className={`accordion-item ${openAccordions.includes("experience") ? 'active' : ''}`}>
               <div className="accordion-header" onClick={() => toggleAccordion("experience")}>
                 <div className="header-content">
                   <div className="header-icon-wrapper">
@@ -1392,26 +1373,26 @@ const ReviewTalent = () => {
                   <h5 className="header-title">Experience</h5>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {editingSection !== "experience" && openAccordion === "experience" && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("experience", "all"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
+                  {!editingSections.includes("experience") && openAccordions.includes("experience") && (
+                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("experience"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
                       <Edit2 size={13} /> Edit
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "experience" ? '#f5810c' : '#94a3b8',
-                    transform: openAccordion === "experience" ? 'rotate(180deg)' : 'rotate(0deg)',
+                    color: openAccordions.includes("experience") ? '#f5810c' : '#94a3b8',
+                    transform: openAccordions.includes("experience") ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
                 </div>
               </div>
-              {openAccordion === "experience" && (
+              {openAccordions.includes("experience") && (
                 <div className="accordion-content">
                   {talent.experience.map((ex, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
                       <div className="review-form-grid">
                         {["company", "position", "startDate", "endDate"].map(field => (
                           <EditableField key={field} label={field} value={ex[field]} section="experience"
-                            editing={editingSection === "experience"}
+                            editing={editingSections.includes("experience")}
                             onSave={val => {
                               const arr = [...talent.experience]; arr[i][field] = val;
                               setTalent(p => ({ ...p, experience: arr }));
@@ -1421,20 +1402,20 @@ const ReviewTalent = () => {
                         ))}
                       </div>
                       <EditableTags label="Skills Used" section="experience" values={ex.skills}
-                        editing={editingSection === "experience"}
+                        editing={editingSections.includes("experience")}
                         onSave={val => {
                           const arr = [...talent.experience]; arr[i].skills = val;
                           setTalent(p => ({ ...p, experience: arr }));
                         }}
                       />
                       <EditableTextarea label="Responsibilities" section="experience" value={ex.description}
-                        editing={editingSection === "experience"}
+                        editing={editingSections.includes("experience")}
                         onSave={val => {
                           const arr = [...talent.experience]; arr[i].description = val;
                           setTalent(p => ({ ...p, experience: arr }));
                         }}
                       />
-                      {!editingSection && (
+                      {!editingSections.includes("experience") && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
                           <button className="btn-secondary" onClick={() => deleteExperience(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
                             <Trash2 size={12} /> Remove
@@ -1444,7 +1425,7 @@ const ReviewTalent = () => {
                     </div>
                   ))}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
-                    {editingSection !== "experience" ? (
+                    {!editingSections.includes("experience") ? (
                       <button className="btn-premium btn-premium-secondary" onClick={addExperience}>
                         <Plus size={14} /> Add Experience
                       </button>
@@ -1456,7 +1437,7 @@ const ReviewTalent = () => {
                           </div>
                         )}
                         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={cancelEdit}>Cancel</button>
+                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("experience")}>Cancel</button>
                           <button className="btn-primary" onClick={saveExperience}>Save Changes</button>
                         </div>
                       </div>
@@ -1467,7 +1448,7 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== PROJECTS ===== */}
-            <div className={`accordion-item ${openAccordion === "projects" ? 'active' : ''}`}>
+            <div className={`accordion-item ${openAccordions.includes("projects") ? 'active' : ''}`}>
               <div className="accordion-header" onClick={() => toggleAccordion("projects")}>
                 <div className="header-content">
                   <div className="header-icon-wrapper">
@@ -1476,26 +1457,26 @@ const ReviewTalent = () => {
                   <h5 className="header-title">Projects</h5>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {editingSection !== "projects" && openAccordion === "projects" && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("projects", "all"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
+                  {!editingSections.includes("projects") && openAccordions.includes("projects") && (
+                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("projects"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
                       <Edit2 size={13} /> Edit
                     </button>
                   )}
                   <ChevronDown size={20} style={{
-                    color: openAccordion === "projects" ? '#f5810c' : '#94a3b8',
-                    transform: openAccordion === "projects" ? 'rotate(180deg)' : 'rotate(0deg)',
+                    color: openAccordions.includes("projects") ? '#f5810c' : '#94a3b8',
+                    transform: openAccordions.includes("projects") ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease'
                   }} />
                 </div>
               </div>
-              {openAccordion === "projects" && (
+              {openAccordions.includes("projects") && (
                 <div className="accordion-content">
                   {talent.projects.map((pr, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
                       <div className="review-form-grid">
                         {["name", "role", "startDate", "endDate"].map(field => (
                           <EditableField key={field} label={field} value={pr[field]} section="projects"
-                            editing={editingSection === "projects"}
+                            editing={editingSections.includes("projects")}
                             onSave={val => {
                               const arr = [...talent.projects]; arr[i][field] = val;
                               setTalent(p => ({ ...p, projects: arr }));
@@ -1504,20 +1485,20 @@ const ReviewTalent = () => {
                         ))}
                       </div>
                       <EditableTags label="Key Tech/Skills" section="projects" values={pr.skills}
-                        editing={editingSection === "projects"}
+                        editing={editingSections.includes("projects")}
                         onSave={val => {
                           const arr = [...talent.projects]; arr[i].skills = val;
                           setTalent(p => ({ ...p, projects: arr }));
                         }}
                       />
                       <EditableTextarea label="Project Highlights" section="projects" value={pr.description}
-                        editing={editingSection === "projects"}
+                        editing={editingSections.includes("projects")}
                         onSave={val => {
                           const arr = [...talent.projects]; arr[i].description = val;
                           setTalent(p => ({ ...p, projects: arr }));
                         }}
                       />
-                      {!editingSection && (
+                      {!editingSections.includes("projects") && (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
                           <button className="btn-secondary" onClick={() => deleteProjects(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
                             <Trash2 size={12} /> Remove
@@ -1527,7 +1508,7 @@ const ReviewTalent = () => {
                     </div>
                   ))}
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
-                    {editingSection !== "projects" ? (
+                    {!editingSections.includes("projects") ? (
                       <button className="btn-premium btn-premium-secondary" onClick={addProjects}>
                         <Plus size={14} /> Add Project
                       </button>
@@ -1539,7 +1520,7 @@ const ReviewTalent = () => {
                           </div>
                         )}
                         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={cancelEdit}>Cancel</button>
+                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("projects")}>Cancel</button>
                           <button className="btn-primary" onClick={saveProjects}>Save Changes</button>
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import UploadTalentTable from "./UploadTalentTable";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
@@ -30,6 +30,9 @@ const UploadTalent = () => {
     const [showUploadError, setShowUploadError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
     const [waitingForRefresh, setWaitingForRefresh] = useState(false);
+    const [uploadCount, setUploadCount] = useState(0);
+    const [countdown, setCountdown] = useState(0);
+    const countdownRef = useRef(null);
 
     const handleUploadSuccess = (message) => {
         if (message && String(message).toLowerCase().includes("fail")) {
@@ -39,16 +42,37 @@ const UploadTalent = () => {
             return;
         }
 
+        // Extract count from message like "Successfully uploaded N resume(s)"
+        const match = message && String(message).match(/(\d+)/);
+        const count = match ? parseInt(match[1], 10) : 1;
+        setUploadCount(count);
+
         setShowUploadedSuccess(true);
         setTimeout(() => setShowUploadedSuccess(false), 10000);
 
         // 🔥 Start showing loading in table
         setWaitingForRefresh(true);
 
-        // ⏳ Wait 20 seconds
+        // Start countdown
+        const totalSeconds = 20;
+        setCountdown(totalSeconds);
+        if (countdownRef.current) clearInterval(countdownRef.current);
+        countdownRef.current = setInterval(() => {
+            setCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(countdownRef.current);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        // ⏳ Wait 20 seconds then refresh
         setTimeout(() => {
             setRefreshKey((prev) => prev + 1);
-            setWaitingForRefresh(false); // stop loading after refresh starts
+            setWaitingForRefresh(false);
+            setUploadCount(0);
+            setCountdown(0);
         }, 20000);
     };
 
@@ -147,6 +171,58 @@ const UploadTalent = () => {
                     {/* REVIEW TAB */}
                     {view === "Review" && (
                         <div className="upload-main mt-3">
+                            {/* AI Analysis Banner */}
+                            {waitingForRefresh && (
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 16,
+                                    padding: '16px 20px',
+                                    marginBottom: 16,
+                                    background: 'linear-gradient(135deg, #fff7ed, #fff)',
+                                    border: '1.5px solid #f5810c',
+                                    borderRadius: 12,
+                                    boxShadow: '0 4px 16px rgba(245,129,12,0.08)',
+                                }}>
+                                    {/* Spinner */}
+                                    <div style={{
+                                        flexShrink: 0,
+                                        width: 40, height: 40,
+                                        borderRadius: '50%',
+                                        border: '3px solid #fde8cc',
+                                        borderTopColor: '#f5810c',
+                                        animation: 'spin 0.9s linear infinite',
+                                    }} />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 700, fontSize: 14, color: '#c2410c', marginBottom: 2 }}>
+                                            ✦ AI is analysing the resume{uploadCount > 1 ? 's' : ''}…
+                                        </div>
+                                        <div style={{ fontSize: 13, color: '#78350f' }}>
+                                            Processing <strong>{uploadCount}</strong> file{uploadCount !== 1 ? 's' : ''}.
+                                            {countdown > 0 && (
+                                                <> Estimated time remaining: <strong>{countdown}s</strong></>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Countdown ring */}
+                                    <div style={{
+                                        flexShrink: 0,
+                                        width: 46, height: 46,
+                                        borderRadius: '50%',
+                                        background: '#fff7ed',
+                                        border: '2px solid #f5810c',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 700,
+                                        fontSize: 15,
+                                        color: '#f5810c',
+                                    }}>
+                                        {countdown}s
+                                    </div>
+                                    <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+                                </div>
+                            )}
                             {talentsData && talentsData.length > 0 ? (
                                 <UploadTalentTable
                                     talents={talentsData}
