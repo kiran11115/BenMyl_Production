@@ -20,6 +20,21 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+@media (max-width: 768px) {
+  .desktop-header {
+    display: none !important;
+  }
+
+  .main-content-wrapper {
+    padding-bottom: 70px;
+    /* Room for bottom nav */
+  }
+
+  .cust-main {
+    padding: 1rem !important;
+  }
+}
+
 /* Notifications page start */
 
 

@@ -336,7 +336,7 @@ const UploadTalentProfile = () => {
   const [skillInput, setSkillInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
   const [addEmployeeProfessionalDetails, { isLoading: isSaving }] =
-  useAddEmployeeProfessionalDetailsMutation();
+    useAddEmployeeProfessionalDetailsMutation();
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter") {
@@ -371,17 +371,17 @@ const UploadTalentProfile = () => {
     "Contract",
   ];
 
- const [editFormData, setEditFormData] = useState({
-  expectedSalaryMin: "",
-  expectedSalaryMax: "",
-  salaryCurrency: "USD",   // ✅ add this
-  noticePeriod: "",
-  workPreference: "",
-  languages: [],
-  workAuthorization: [],
-  preferredEmployment: [],
-  skills: [],
-});
+  const [editFormData, setEditFormData] = useState({
+    expectedSalaryMin: "",
+    expectedSalaryMax: "",
+    salaryCurrency: "USD",   // ✅ add this
+    noticePeriod: "",
+    workPreference: "",
+    languages: [],
+    workAuthorization: [],
+    preferredEmployment: [],
+    skills: [],
+  });
 
 
   const employeeId = location.state?.employeeId;
@@ -390,9 +390,9 @@ const UploadTalentProfile = () => {
     useLazyGetEmployeeTalentProfileQuery();
 
   const {
-  data: professionalData,
-  isLoading: isProfessionalLoading,
-} = useGetEmployeeProfessionalDetailsQuery(employeeId,{refetchOnMountOrArgChange: true});
+    data: professionalData,
+    isLoading: isProfessionalLoading,
+  } = useGetEmployeeProfessionalDetailsQuery(employeeId, { refetchOnMountOrArgChange: true });
 
   useEffect(() => {
     if (employeeId) {
@@ -401,37 +401,37 @@ const UploadTalentProfile = () => {
   }, [employeeId, getEmployeeProfile]);
 
   useEffect(() => {
-  if (professionalData) {
-    setEditFormData({
-      expectedSalaryMin: professionalData.expectedSalaryMin || "",
-      expectedSalaryMax: professionalData.expectedSalaryMax || "",
-      salaryCurrency: professionalData.salaryCurrency || "USD",
+    if (professionalData) {
+      setEditFormData({
+        expectedSalaryMin: professionalData.expectedSalaryMin || "",
+        expectedSalaryMax: professionalData.expectedSalaryMax || "",
+        salaryCurrency: professionalData.salaryCurrency || "USD",
 
-      workPreference: professionalData.workPreference || "",
+        workPreference: professionalData.workPreference || "",
 
-      languages: professionalData.languages
-        ? professionalData.languages.split(",")
-        : [],
+        languages: professionalData.languages
+          ? professionalData.languages.split(",")
+          : [],
 
-      workAuthorization: [
-        professionalData.isUSCitizen && "US Citizen",
-        professionalData.isGreenCard && "GC",
-        professionalData.isH1B && "H1B",
-        professionalData.isEAD && "EAD",
-      ].filter(Boolean),
+        workAuthorization: [
+          professionalData.isUSCitizen && "US Citizen",
+          professionalData.isGreenCard && "GC",
+          professionalData.isH1B && "H1B",
+          professionalData.isEAD && "EAD",
+        ].filter(Boolean),
 
-      preferredEmployment: [
-        professionalData.isCorpCorp && "Corp-Corp",
-        professionalData.isW2Permanent && "W2-Permanent",
-        professionalData.isW2Contract && "W2-Contract",
-        professionalData.is1099Contract && "1099-Contract",
-        professionalData.isContractToHire && "Contract to Hire",
-      ].filter(Boolean),
+        preferredEmployment: [
+          professionalData.isCorpCorp && "Corp-Corp",
+          professionalData.isW2Permanent && "W2-Permanent",
+          professionalData.isW2Contract && "W2-Contract",
+          professionalData.is1099Contract && "1099-Contract",
+          professionalData.isContractToHire && "Contract to Hire",
+        ].filter(Boolean),
 
-      skills: [],
-    });
-  }
-}, [professionalData]);
+        skills: [],
+      });
+    }
+  }, [professionalData]);
 
 
   // Delay showing content to prevent flash of NoData components
@@ -487,9 +487,8 @@ const UploadTalentProfile = () => {
         apiData?.workexperiences?.map((w) => ({
           role: w.position || "N/A",
           company: w.companyName || "N/A",
-          period: `${w.startDate?.slice(0, 4) || "N/A"} - ${
-            w.endDate ? w.endDate.slice(0, 4) : "Present"
-          }`,
+          period: `${w.startDate?.slice(0, 4) || "N/A"} - ${w.endDate ? w.endDate.slice(0, 4) : "Present"
+            }`,
           location: w.city || apiData?.city || "N/A",
           desc: w.description || "N/A",
         })) || [],
@@ -499,9 +498,8 @@ const UploadTalentProfile = () => {
           title: p.projectName || "N/A",
           role: p.role || "N/A",
           description: p.description || "N/A",
-          period: `${p.startDate?.slice(0, 10) || "N/A"} - ${
-            p.endDate ? p.endDate.slice(0, 10) : "Present"
-          }`,
+          period: `${p.startDate?.slice(0, 10) || "N/A"} - ${p.endDate ? p.endDate.slice(0, 10) : "Present"
+            }`,
           tags: p.skills ? p.skills.split(",") : [],
         })) || [],
 
@@ -510,9 +508,8 @@ const UploadTalentProfile = () => {
           degree: edu.highestQualification || "N/A",
           school: edu.university || "N/A",
           field: edu.fieldofstudy || "N/A",
-          year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${
-            edu.endDate ? edu.endDate.slice(0, 4) : "Present"
-          }`,
+          year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate ? edu.endDate.slice(0, 4) : "Present"
+            }`,
           certifications: edu.certifications || "N/A",
           percentage: edu.percentage || "N/A",
         })) || [],
@@ -620,47 +617,47 @@ const UploadTalentProfile = () => {
   };
 
   const handleSave = async () => {
-  try {
-    const payload = {
-      employeeId: employeeId,
+    try {
+      const payload = {
+        employeeId: employeeId,
 
-      expectedSalaryMin: Number(editFormData.expectedSalaryMin) || 0,
-      expectedSalaryMax: Number(editFormData.expectedSalaryMax) || 0,
-      salaryCurrency: editFormData.salaryCurrency || "USD",
+        expectedSalaryMin: Number(editFormData.expectedSalaryMin) || 0,
+        expectedSalaryMax: Number(editFormData.expectedSalaryMax) || 0,
+        salaryCurrency: editFormData.salaryCurrency || "USD",
 
-      workPreference: editFormData.workPreference || "",
+        workPreference: editFormData.workPreference || "",
 
-      languages: editFormData.languages.join(","),
+        languages: editFormData.languages.join(","),
 
-      // Work Authorization
-      isUSCitizen: editFormData.workAuthorization.includes("US Citizen"),
-      isGreenCard: editFormData.workAuthorization.includes("GC"),
-      isH1B: editFormData.workAuthorization.includes("H1B"),
-      isEAD: editFormData.workAuthorization.includes("EAD"),
+        // Work Authorization
+        isUSCitizen: editFormData.workAuthorization.includes("US Citizen"),
+        isGreenCard: editFormData.workAuthorization.includes("GC"),
+        isH1B: editFormData.workAuthorization.includes("H1B"),
+        isEAD: editFormData.workAuthorization.includes("EAD"),
 
-      // Employment Type
-      isCorpCorp: editFormData.preferredEmployment.includes("Corp-Corp"),
-      isW2Permanent: editFormData.preferredEmployment.includes("W2-Permanent"),
-      isW2Contract: editFormData.preferredEmployment.includes("W2-Contract"),
-      is1099Contract: editFormData.preferredEmployment.includes("1099-Contract"),
-      isContractToHire:
-        editFormData.preferredEmployment.includes("Contract to Hire"),
+        // Employment Type
+        isCorpCorp: editFormData.preferredEmployment.includes("Corp-Corp"),
+        isW2Permanent: editFormData.preferredEmployment.includes("W2-Permanent"),
+        isW2Contract: editFormData.preferredEmployment.includes("W2-Contract"),
+        is1099Contract: editFormData.preferredEmployment.includes("1099-Contract"),
+        isContractToHire:
+          editFormData.preferredEmployment.includes("Contract to Hire"),
 
-      rating: 0,
-      isShortlisted: false,
-    };
+        rating: 0,
+        isShortlisted: false,
+      };
 
-    await addEmployeeProfessionalDetails(payload).unwrap();
+      await addEmployeeProfessionalDetails(payload).unwrap();
 
-    alert("Profile updated successfully!");
+      alert("Profile updated successfully!");
 
-    setShowEditModal(false);
+      setShowEditModal(false);
 
-  } catch (error) {
-    console.error("Save failed:", error);
-    alert("Failed to update profile");
-  }
-};
+    } catch (error) {
+      console.error("Save failed:", error);
+      alert("Failed to update profile");
+    }
+  };
 
 
   const formatSalary = (min, max) => {
@@ -891,6 +888,9 @@ const UploadTalentProfile = () => {
     @media (max-width: 768px) {
       .edit-form-grid {
         grid-template-columns: 1fr;
+      }
+      .project-card1 {
+        height: auto !important;
       }
     }
   `;
@@ -1359,7 +1359,7 @@ const UploadTalentProfile = () => {
                 {/* Salary Range */}
                 <div className="form-group">
                   <label htmlFor="expectedSalaryMin" className="auth-label">
-                  Salary Range
+                    Salary Range
                   </label>
                   <div className="salary-inputs">
                     <input
@@ -1461,55 +1461,55 @@ const UploadTalentProfile = () => {
                   </div>
                 </div>
 
-<div className="row">
-  <div className="col-6">
-      {/* Work Authorization - Full Width */}
-                <div className="form-group full-width">
-                  <label className="auth-label">Work Authorization</label>
-                  <div className="checkbox-group">
-                    {workAuthOptions.map((option) => (
-                      <div key={option.value} className="checkbox-item">
-                        <input
-                          type="checkbox"
-                          id={`auth-${option.value}`}
-                          checked={editFormData.workAuthorization.includes(
-                            option.value,
-                          )}
-                          onChange={() => handleWorkAuthChange(option.value)}
-                        />
-                        <label htmlFor={`auth-${option.value}`}>
-                          {option.label}
-                        </label>
+                <div className="row">
+                  <div className="col-6">
+                    {/* Work Authorization - Full Width */}
+                    <div className="form-group full-width">
+                      <label className="auth-label">Work Authorization</label>
+                      <div className="checkbox-group">
+                        {workAuthOptions.map((option) => (
+                          <div key={option.value} className="checkbox-item">
+                            <input
+                              type="checkbox"
+                              id={`auth-${option.value}`}
+                              checked={editFormData.workAuthorization.includes(
+                                option.value,
+                              )}
+                              onChange={() => handleWorkAuthChange(option.value)}
+                            />
+                            <label htmlFor={`auth-${option.value}`}>
+                              {option.label}
+                            </label>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    {/* Preferred Employment - Full Width */}
+                    <div className="form-group full-width">
+                      <label className="auth-label">Preferred Employment</label>
+                      <div className="checkbox-group">
+                        {employmentOptions.map((option) => (
+                          <div key={option.value} className="checkbox-item">
+                            <input
+                              type="checkbox"
+                              id={`emp-${option.value}`}
+                              checked={editFormData.preferredEmployment.includes(
+                                option.value,
+                              )}
+                              onChange={() => handleEmploymentChange(option.value)}
+                            />
+                            <label htmlFor={`emp-${option.value}`}>
+                              {option.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-  </div>
-  <div className="col-6">
-    {/* Preferred Employment - Full Width */}
-                <div className="form-group full-width">
-                  <label className="auth-label">Preferred Employment</label>
-                  <div className="checkbox-group">
-                    {employmentOptions.map((option) => (
-                      <div key={option.value} className="checkbox-item">
-                        <input
-                          type="checkbox"
-                          id={`emp-${option.value}`}
-                          checked={editFormData.preferredEmployment.includes(
-                            option.value,
-                          )}
-                          onChange={() => handleEmploymentChange(option.value)}
-                        />
-                        <label htmlFor={`emp-${option.value}`}>
-                          {option.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-  </div>
-</div>
-           
+
               </div>
             </div>
 
@@ -1732,15 +1732,15 @@ const UploadTalentProfile = () => {
                   ))
                 ) : (
                   <div
-              style={{
-                gridColumn: "1 / -1",
-                minHeight: "320px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-                  <NoData text="No projects added yet" />
+                    style={{
+                      gridColumn: "1 / -1",
+                      minHeight: "320px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text="No projects added yet" />
                   </div>
                 )}
               </div>
@@ -1767,15 +1767,15 @@ const UploadTalentProfile = () => {
             {/* Action Buttons */}
             <div className="sidebar-actions">
               <button
-  className="btn-primary w-100"
-  onClick={() =>
-    navigate("/user/user-jobs", {
-      state: { role: profileData?.role },
-    })
-  }
->
-  Find Jobs
-</button>
+                className="btn-primary w-100"
+                onClick={() =>
+                  navigate("/user/user-jobs", {
+                    state: { role: profileData?.role },
+                  })
+                }
+              >
+                Find Jobs
+              </button>
               {/* <button className="btn-secondary w-100">Preview Resume</button>
 
               <div className="sidebar-links">
@@ -1789,124 +1789,124 @@ const UploadTalentProfile = () => {
             </div>
 
             {/* Quick Information with Edit Button */}
-          <div className="table-card sidebar-card">
-  <div className="d-flex justify-content-between align-items-center mb-3">
-    <h3 className="card-title mb-0">Quick Information</h3>
-    <button
-      className="btn-secondary w-25 gap-2"
-      onClick={handleEditClick}
-      style={{ padding: "4px 8px", fontSize: "12px" }}
-    >
-      <FiEdit2 size={12} /> Edit
-    </button>
-  </div>
+            <div className="table-card sidebar-card">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="card-title mb-0">Quick Information</h3>
+                <button
+                  className="btn-secondary w-25 gap-2"
+                  onClick={handleEditClick}
+                  style={{ padding: "4px 8px", fontSize: "12px" }}
+                >
+                  <FiEdit2 size={12} /> Edit
+                </button>
+              </div>
 
-  {/* Expected Salary */}
-  <div className="quick-info-item">
-    <div className="stat-label">Expected Salary</div>
-    <div className="info-value">
-      {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
-        ? `$${professionalData.expectedSalaryMin.toLocaleString()} - $${professionalData.expectedSalaryMax.toLocaleString()} / year`
-        : "Not specified"}
-    </div>
-  </div>
+              {/* Expected Salary */}
+              <div className="quick-info-item">
+                <div className="stat-label">Expected Salary</div>
+                <div className="info-value">
+                  {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
+                    ? `$${professionalData.expectedSalaryMin.toLocaleString()} - $${professionalData.expectedSalaryMax.toLocaleString()} / year`
+                    : "Not specified"}
+                </div>
+              </div>
 
-  {/* Work Preference */}
-  <div className="quick-info-item">
-    <div className="stat-label">Work Preference</div>
-    <div className="info-value">
-      {professionalData?.workPreference || "Not specified"}
-    </div>
-  </div>
+              {/* Work Preference */}
+              <div className="quick-info-item">
+                <div className="stat-label">Work Preference</div>
+                <div className="info-value">
+                  {professionalData?.workPreference || "Not specified"}
+                </div>
+              </div>
 
-  {/* Work Authorization */}
-  <div className="quick-info-item">
-    <div className="stat-label">Work Authorization</div>
-    <div className="info-value">
-      {[
-        professionalData?.isUSCitizen && "US Citizen",
-        professionalData?.isGreenCard && "Green Card",
-        professionalData?.isH1B && "H1B",
-        professionalData?.isEAD && "EAD",
-      ]
-        .filter(Boolean)
-        .length > 0 ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-          {[
-            professionalData?.isUSCitizen && "US Citizen",
-            professionalData?.isGreenCard && "Green Card",
-            professionalData?.isH1B && "H1B",
-            professionalData?.isEAD && "EAD",
-          ]
-            .filter(Boolean)
-            .map((auth, index) => (
-              <span
-                key={index}
-                className="status-tag status-pending"
-                style={{ fontSize: "11px", padding: "2px 6px" }}
-              >
-                {auth}
-              </span>
-            ))}
-        </div>
-      ) : (
-        <span className="text-muted">Not specified</span>
-      )}
-    </div>
-  </div>
+              {/* Work Authorization */}
+              <div className="quick-info-item">
+                <div className="stat-label">Work Authorization</div>
+                <div className="info-value">
+                  {[
+                    professionalData?.isUSCitizen && "US Citizen",
+                    professionalData?.isGreenCard && "Green Card",
+                    professionalData?.isH1B && "H1B",
+                    professionalData?.isEAD && "EAD",
+                  ]
+                    .filter(Boolean)
+                    .length > 0 ? (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {[
+                        professionalData?.isUSCitizen && "US Citizen",
+                        professionalData?.isGreenCard && "Green Card",
+                        professionalData?.isH1B && "H1B",
+                        professionalData?.isEAD && "EAD",
+                      ]
+                        .filter(Boolean)
+                        .map((auth, index) => (
+                          <span
+                            key={index}
+                            className="status-tag status-pending"
+                            style={{ fontSize: "11px", padding: "2px 6px" }}
+                          >
+                            {auth}
+                          </span>
+                        ))}
+                    </div>
+                  ) : (
+                    <span className="text-muted">Not specified</span>
+                  )}
+                </div>
+              </div>
 
-  {/* Preferred Employment */}
-  <div className="quick-info-item">
-    <div className="stat-label">Preferred Employment</div>
-    <div className="info-value">
-      {[
-        professionalData?.isCorpCorp && "Corp-Corp",
-        professionalData?.isW2Permanent && "W2 Permanent",
-        professionalData?.isW2Contract && "W2 Contract",
-        professionalData?.is1099Contract && "1099 Contract",
-        professionalData?.isContractToHire && "Contract to Hire",
-      ]
-        .filter(Boolean)
-        .length > 0 ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-          {[
-            professionalData?.isCorpCorp && "Corp-Corp",
-            professionalData?.isW2Permanent && "W2 Permanent",
-            professionalData?.isW2Contract && "W2 Contract",
-            professionalData?.is1099Contract && "1099 Contract",
-            professionalData?.isContractToHire && "Contract to Hire",
-          ]
-            .filter(Boolean)
-            .map((emp, index) => (
-              <span
-                key={index}
-                className="status-tag status-progress"
-                style={{ fontSize: "11px", padding: "2px 6px" }}
-              >
-                {emp}
-              </span>
-            ))}
-        </div>
-      ) : (
-        <span className="text-muted">Not specified</span>
-      )}
-    </div>
-  </div>
+              {/* Preferred Employment */}
+              <div className="quick-info-item">
+                <div className="stat-label">Preferred Employment</div>
+                <div className="info-value">
+                  {[
+                    professionalData?.isCorpCorp && "Corp-Corp",
+                    professionalData?.isW2Permanent && "W2 Permanent",
+                    professionalData?.isW2Contract && "W2 Contract",
+                    professionalData?.is1099Contract && "1099 Contract",
+                    professionalData?.isContractToHire && "Contract to Hire",
+                  ]
+                    .filter(Boolean)
+                    .length > 0 ? (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                      {[
+                        professionalData?.isCorpCorp && "Corp-Corp",
+                        professionalData?.isW2Permanent && "W2 Permanent",
+                        professionalData?.isW2Contract && "W2 Contract",
+                        professionalData?.is1099Contract && "1099 Contract",
+                        professionalData?.isContractToHire && "Contract to Hire",
+                      ]
+                        .filter(Boolean)
+                        .map((emp, index) => (
+                          <span
+                            key={index}
+                            className="status-tag status-progress"
+                            style={{ fontSize: "11px", padding: "2px 6px" }}
+                          >
+                            {emp}
+                          </span>
+                        ))}
+                    </div>
+                  ) : (
+                    <span className="text-muted">Not specified</span>
+                  )}
+                </div>
+              </div>
 
-  {/* Languages */}
-  <div className="quick-info-item">
-    <div className="stat-label">Languages</div>
-    <div className="languages-list">
-      {professionalData?.languages
-        ? professionalData.languages.split(",").map((lang, index) => (
-            <span key={index} className="status-tag status-pending">
-              {lang.trim()}
-            </span>
-          ))
-        : <span className="text-muted">Not specified</span>}
-    </div>
-  </div>
-</div>
+              {/* Languages */}
+              <div className="quick-info-item">
+                <div className="stat-label">Languages</div>
+                <div className="languages-list">
+                  {professionalData?.languages
+                    ? professionalData.languages.split(",").map((lang, index) => (
+                      <span key={index} className="status-tag status-pending">
+                        {lang.trim()}
+                      </span>
+                    ))
+                    : <span className="text-muted">Not specified</span>}
+                </div>
+              </div>
+            </div>
 
 
             {/* Contact Information */}

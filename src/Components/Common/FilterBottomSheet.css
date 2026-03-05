@@ -1,0 +1,91 @@
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.bottom-sheet-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bottom-sheet-content {
+    width: 100%;
+    background-color: #ffffff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.bottom-sheet-content.slide-up {
+    transform: translateY(0);
+}
+
+.bottom-sheet-content.slide-down {
+    transform: translateY(100%);
+}
+
+.bottom-sheet-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.bottom-sheet-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.bottom-sheet-close {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.bottom-sheet-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Adjustments for TalentFilters and JobFilters inside BottomSheet */
+.bottom-sheet-body .filter-sidebar {
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    width: 100%;
+}
+
+.bottom-sheet-body .filter-header {
+    display: none;
+    /* Hide internal header since we have bottom sheet header */
+}
+
+.bottom-sheet-body .apply-btn {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 20px;
+    padding: 14px;
+    font-size: 16px;
+}

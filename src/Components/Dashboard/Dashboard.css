@@ -6,6 +6,38 @@
   color: #334155;
 }
 
+@media (max-width: 768px) {
+  .projects-container {
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-column-side {
+    display: none !important;
+  }
+
+  .projects-header-row {
+    flex-direction: column-reverse;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+
+  .projects-actions-wrap {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .projects-actions-wrap .btn-upload {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
 .dashboard-layout {
   display: grid;
   grid-template-columns: 1fr 350px;
@@ -23,12 +55,16 @@
   gap: 24px;
 }
 
-
-
 @media (max-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.projects-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* =========================================
@@ -39,6 +75,32 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .stat-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
 }
 
 /* Base Stat Card Styles - Standardized Borders */

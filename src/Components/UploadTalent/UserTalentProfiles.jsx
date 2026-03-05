@@ -200,36 +200,17 @@ const UserTalentProfiles = () => {
       <div className="vs-page">
         <div className="projects-container d-flex flex-column gap-3 p-0">
           {/* Heading Section */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "16px",
-            }}
-          >
-            <div>
-              <h1
-                className="section-title"
-                style={{ fontSize: "24px", marginBottom: "8px" }}
-              >
+          <div className="ut-header-row">
+            <div className="ut-title-group">
+              <h1 className="section-title">
                 Talent Profiles
               </h1>
-              <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
+              <p className="section-subtitle">
                 Search and manage your Talent network.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-                flex: 1,
-                maxWidth: "680px",
-                justifyContent: "flex-end",
-              }}
-            >
+            <div className="ut-actions-group">
               {/* SORT DROPDOWN */}
               <div className="sort-wrapper">
                 <select
@@ -248,35 +229,18 @@ const UserTalentProfiles = () => {
               </div>
 
               {/* SEARCH */}
-              <div style={{ position: "relative", flex: 1 }}>
-                <FiSearch
-                  style={{
-                    position: "absolute",
-                    left: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#94a3b8",
-                  }}
-                />
+              <div className="ut-search-wrapper">
+                <FiSearch className="ut-search-icon" />
                 <input
                   type="text"
                   placeholder="Search by Talent Name..."
-                  style={{
-                    width: "100%",
-                    padding: "7px 10px 7px 40px",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    outline: "none",
-                    fontSize: "14px",
-                    color: "#334155",
-                  }}
+                  className="ut-search-input"
                 />
               </div>
 
               {/* PUBLISH BUTTON */}
               <button
-                className="add-project-btn"
-                style={{ width: "auto", padding: "6px 20px" }}
+                className="add-project-btn ut-publish-btn"
                 onClick={() => setIsPublishModalOpen(true)}
                 disabled={selectedIds.size === 0}
               >
@@ -287,7 +251,7 @@ const UserTalentProfiles = () => {
               </button>
 
               {/* VIEW TOGGLE */}
-              <div className="vs-results-right">
+              <div className="vs-results-right ut-view-toggle">
                 <div className="view-toggle1">
                   <button
                     className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}

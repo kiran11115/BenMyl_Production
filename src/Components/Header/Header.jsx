@@ -6,6 +6,8 @@ import Notifications from "./Notifications";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MobileBottomNav from "./MobileBottomNav";
+import MobileTopBar from "./MobileTopBar";
 
 
 function Header() {
@@ -83,11 +85,13 @@ function Header() {
 
   return (
     <>
-      <header className="header-container">
+      {/* Mobile Top Bar */}
+      <MobileTopBar user={user} initials={getInitials(user)} />
+
+      <header className="header-container desktop-header">
         {/* Left Section: Brand & Nav */}
         <div className="header-left">
-
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Toggle Button (kept for tablet if needed, but we used bottom nav) */}
           <button className="menu-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -126,15 +130,6 @@ function Header() {
 
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
-          {/* Search Bar */}
-          {/* <div className="header-search-container">
-            <Search size={16} className="header-search-icon" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="header-search-input"
-            />
-          </div> */}
           <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
             <span className="ai-pill-icon">✦</span>
             <span className="ai-pill-text">AI</span>
@@ -147,16 +142,6 @@ function Header() {
 
           {/* Notification Bell */}
           <Notifications />
-
-          {/* <button
-            onClick={() => navigate("/User/notifications-page")}
-            className="header-action-btn"
-            aria-label="Notifications"
-            type="button"
-          >
-            <Bell size={20} />
-            <span className="notification-badge">5</span>
-          </button> */}
 
           {/* User Profile Dropdown */}
           <div className="header-profile-wrapper" ref={profileRef}>
@@ -193,7 +178,6 @@ function Header() {
             {isProfileOpen && (
               <div className="profile-popover">
                 <div className="popover-header">
-                  {/* <p className="popover-name">John Smith</p> */}
                   <p className="popover-email">{email}</p>
                 </div>
                 <div className="popover-menu">
@@ -205,10 +189,6 @@ function Header() {
                     <File size={16} />
                     Analytics
                   </button>
-                  {/* <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
-                    <Settings size={16} />
-                    Account Settings
-                  </button> */}
                   <div className="popover-divider"></div>
                   <button className="popover-item text-red" onClick={handleSignOut}>
                     <LogOut size={16} />
@@ -221,12 +201,16 @@ function Header() {
         </div>
       </header>
 
-      <div class="app-zoom">
+      <div className="app-zoom main-content-wrapper">
         <main className="cust-main">
           <Outlet />
         </main>
       </div>
-    <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }

@@ -85,6 +85,7 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
         <button
           className="btn-primary flex-grow-1"
           onClick={handleProfileClick}
+          style={{ padding: "10px 12px", fontSize: "14px" }}
         >
           View Profile
         </button>
@@ -94,13 +95,25 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
           className={`btn-secondary ${isSelected ? "btn-selected" : ""}`}
           onClick={() => onToggle(candidate.id)}
           title={isSelected ? "Remove from selection" : "Add to selection"}
-          style={{ minWidth: "100px", transition: "all 0.2s ease" }}
+          style={{ minWidth: "90px", padding: "10px 12px", fontSize: "14px", transition: "all 0.2s ease" }}
         >
           <span>{isSelected ? "Selected" : "Select"}</span>
         </button>
       </div>
 
       <style jsx>{`
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .candidate-sub {
+            font-size: 13px;
+            color: #64748b;
+        }
+
         /* Override styles for the selected state */
         .btn-selected {
           background-color: #10b981 !important; /* Green */
@@ -120,8 +133,8 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
           cursor: default;
         }
         .initial-avatar {
-          width: 42px;
-          height: 42px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           background-color: #e5e7eb; /* light grey */
           color: #374151; /* dark text */
@@ -132,6 +145,16 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
           justify-content: center;
           text-transform: uppercase;
           flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            .card-title {
+                font-size: 15px;
+            }
+            .card-actions button {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
         }
       `}</style>
     </div>

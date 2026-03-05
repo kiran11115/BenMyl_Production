@@ -11,6 +11,7 @@ import { FaSort } from "react-icons/fa";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
 import NoData from "./NoData"; // adjust path if needed
 import { useNavigate } from "react-router-dom";
+import UserMobileTalentCard from "./UserMobileTalentCard";
 
 /* ---------------- HELPER: INITIALS ---------------- */
 const getInitials = (name = "") => {
@@ -36,7 +37,7 @@ const SortIcon = ({ active, direction }) => {
 /* ---------------- TABLE ROW ---------------- */
 const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
   const navigate = useNavigate();
-   const handleProfileClick = () => {
+  const handleProfileClick = () => {
     navigate("/user/talent-profile", {
       state: {
         employeeId: candidate.id,
@@ -114,7 +115,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
 
       {/* Action */}
       <td className="tt-td action">
-        <button className="tt-action-btn"  onClick={handleProfileClick}>
+        <button className="tt-action-btn" onClick={handleProfileClick}>
           <FiEye size={16} />
         </button>
       </td>
@@ -176,99 +177,113 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
 
   return (
     <div className="tt-wrapper">
-      <table className="tt-table">
-        <thead>
-          <tr className="tt-thead-tr">
-            <th className="tt-th" style={{ width: "40px" }}></th>
+      {/* Mobile View */}
+      <div className="mobile-talent-list d-md-none">
+        {sortedCandidates.map((c) => (
+          <UserMobileTalentCard
+            key={c.id}
+            candidate={c}
+            isSelected={selectedIds.has(c.id)}
+            onToggle={onToggleSelect}
+          />
+        ))}
+      </div>
 
-            <th className="tt-th sortable" onClick={() => requestSort("name")}>
-              <div className="tt-th-content">
-                Candidate
-                <SortIcon
-                  active={sortConfig.key === "name"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
+      {/* Desktop View */}
+      <div className="d-none d-md-block">
+        <table className="tt-table">
+          <thead>
+            <tr className="tt-thead-tr">
+              <th className="tt-th" style={{ width: "40px" }}></th>
 
-            <th className="tt-th sortable" onClick={() => requestSort("role")}>
-              <div className="tt-th-content">
-                Role & Experience
-                <SortIcon
-                  active={sortConfig.key === "role"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            <th className="tt-th sortable" onClick={() => requestSort("skills")}>
-              <div className="tt-th-content">
-                Skills
-                <SortIcon
-                  active={sortConfig.key === "skills"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            <th className="tt-th sortable" onClick={() => requestSort("location")}>
-              <div className="tt-th-content">
-                Location
-                <SortIcon
-                  active={sortConfig.key === "location"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            <th
-              className="tt-th sortable"
-              onClick={() => requestSort("availability")}
-            >
-              <div className="tt-th-content">
-                Availability
-                <SortIcon
-                  active={sortConfig.key === "availability"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            <th className="tt-th" style={{ textAlign: "right" }}>
-              Action
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {sortedCandidates.length === 0 ? (
-            <tr>
-              <td colSpan={7}>
-                <div
-                  style={{
-                    minHeight: "260px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <NoData text="No professional summary added yet" />
+              <th className="tt-th sortable" onClick={() => requestSort("name")}>
+                <div className="tt-th-content">
+                  Candidate
+                  <SortIcon
+                    active={sortConfig.key === "name"}
+                    direction={sortConfig.direction}
+                  />
                 </div>
-              </td>
-            </tr>
-          ) : (
-            sortedCandidates.map((c) => (
-              <CandidateRow
-                key={c.id}
-                candidate={c}
-                isSelected={selectedIds.has(c.id)}
-                onToggle={onToggleSelect}
-              />
-            ))
-          )}
-        </tbody>
+              </th>
 
-      </table>
+              <th className="tt-th sortable" onClick={() => requestSort("role")}>
+                <div className="tt-th-content">
+                  Role & Experience
+                  <SortIcon
+                    active={sortConfig.key === "role"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("skills")}>
+                <div className="tt-th-content">
+                  Skills
+                  <SortIcon
+                    active={sortConfig.key === "skills"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("location")}>
+                <div className="tt-th-content">
+                  Location
+                  <SortIcon
+                    active={sortConfig.key === "location"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th
+                className="tt-th sortable"
+                onClick={() => requestSort("availability")}
+              >
+                <div className="tt-th-content">
+                  Availability
+                  <SortIcon
+                    active={sortConfig.key === "availability"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th" style={{ textAlign: "right" }}>
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {sortedCandidates.length === 0 ? (
+              <tr>
+                <td colSpan={7}>
+                  <div
+                    style={{
+                      minHeight: "260px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text="No professional summary added yet" />
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              sortedCandidates.map((c) => (
+                <CandidateRow
+                  key={c.id}
+                  candidate={c}
+                  isSelected={selectedIds.has(c.id)}
+                  onToggle={onToggleSelect}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

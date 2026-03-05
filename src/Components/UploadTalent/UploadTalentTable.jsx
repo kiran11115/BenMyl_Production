@@ -4,6 +4,7 @@ import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import MobileTalentCard from "./MobileTalentCard";
 import "./UploadTalent.css";
 
 const PAGE_SIZE = 10;
@@ -159,7 +160,33 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
 
   return (
     <div className="upload-table-panel">
-      <div className="table-scroll" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 600 }}>
+      {/* Mobile View */}
+      <div className="mobile-talent-list d-md-none">
+        {(isLoading || externalLoading) && (
+          <div className="text-center py-5">
+            <span className="text-muted">Loading resumes...</span>
+          </div>
+        )}
+        {!isLoading && sortedTalents.length === 0 && (
+          <div className="text-center py-5">
+            <span className="text-muted">No resumes uploaded</span>
+          </div>
+        )}
+        {sortedTalents.map((talent, i) => (
+          <MobileTalentCard
+            key={i}
+            talent={talent}
+            onView={() =>
+              navigate("/user/review-talent", {
+                state: { employeeID: talent.employeeID },
+              })
+            }
+          />
+        ))}
+      </div>
+
+      {/* Desktop View */}
+      <div className="table-scroll d-none d-md-block" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 600 }}>
         <table className="custom-table">
           <thead>
             <tr>

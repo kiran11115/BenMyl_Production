@@ -215,13 +215,98 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .upload-talent-layout {
     padding: 16px;
   }
 
+  /* Review Talent Panels */
+  .review-talent-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .review-header-top {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+
+  .review-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .review-left-panel,
+  .review-right-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    position: static !important;
+    margin-bottom: 24px;
+    padding: 20px !important;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-premium,
+  .action-buttons .btn-primary,
+  .action-buttons .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .verification-checkbox {
+    align-items: flex-start;
+  }
+
+  .verification-checkbox input {
+    margin-top: 2px;
+  }
+
+  .premium-resume-card {
+    padding: 2rem 1rem !important;
+  }
+
+  .resume-name {
+    font-size: 1.5rem !important;
+  }
+
+  .resume-contact {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
   .custom-table {
     min-width: 600px;
+  }
+
+  .view-toggle1 {
+    display: flex;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .view-toggle1 .toggle {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .upload-talent-layout .d-flex.align-items-center.justify-content-between {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px;
+  }
+
+  .upload-talent-layout .d-flex.align-items-center.justify-content-between>div {
+    width: 100%;
+  }
+
+  /* Make Upload Resumes button full width on mobile if needed */
+  .upload-talent-layout .btn {
+    width: 100%;
   }
 }
 
@@ -231,6 +316,25 @@
 
 .review-talent-container {
   padding: 24px;
+}
+
+.review-talent-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.review-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
 }
 
 .review-left-panel {
@@ -633,4 +737,115 @@
 .error-border:focus {
   border-color: #ef4444 !important;
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+}
+
+/* ============================= */
+/* USER TALENT PROFILES HEADER */
+/* ============================= */
+
+.ut-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ut-title-group .section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #1e293b;
+}
+
+.ut-title-group .section-subtitle {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.ut-actions-group {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  max-width: 720px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.ut-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 150px;
+}
+
+.ut-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.ut-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 40px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  outline: none;
+  font-size: 14px;
+  color: #334155;
+  background: #ffffff;
+}
+
+.ut-publish-btn {
+  width: auto !important;
+  padding: 8px 20px !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .ut-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ut-actions-group {
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .ut-search-wrapper {
+    order: 1;
+    width: 100%;
+  }
+
+  .sort-wrapper {
+    order: 2;
+    flex: 1;
+  }
+
+  .ut-view-toggle {
+    order: 3;
+    display: none !important;
+  }
+
+  .ut-publish-btn {
+    order: 4;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ut-title-group .section-title {
+    font-size: 20px;
+  }
+
+  .sort-select {
+    min-width: 140px;
+    font-size: 12px;
+  }
 }

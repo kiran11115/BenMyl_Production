@@ -126,7 +126,8 @@
 
 @media (max-width: 640px) {
   .analytics-stats-grid-analytics {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .analytics-charts-row-analytics {

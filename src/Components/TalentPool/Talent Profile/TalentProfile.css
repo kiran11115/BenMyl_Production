@@ -568,6 +568,29 @@
 
 /* Mobile (Matches dashboard layout shift at 768px) */
 @media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column !important;
+    /* Force stack */
+  }
+
+  .dashboard-column-main,
+  .dashboard-column-side {
+    width: 100% !important;
+  }
+
+  .row {
+    flex-direction: column;
+    margin: 0 !important;
+  }
+
+  .col-3,
+  .col-9,
+  .col-8,
+  .col-4 {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 16px;
+  }
 
   /* Force vertical layout on header */
   .profile-header-card {
@@ -595,7 +618,7 @@
 
   .profile-meta-row {
     justify-content: center;
-    gap: 0px,
+    gap: 12px;
   }
 
   /* Stack Summary Stats Vertically on Mobile */
@@ -617,6 +640,28 @@
   .sidebar-actions {
     position: static;
     margin-bottom: 24px;
+    order: -1;
+    /* Move actions to top on mobile for better UX? Or bottom? Plan says stack. Default is top if side is after main. */
+  }
+
+  .dashboard-column-side {
+    order: -1;
+    /* Put actions and quick info first on mobile */
+  }
+
+  .experience-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .experience-list::before {
+    display: none;
+    /* Hide line on mobile for cleaner look */
+  }
+
+  .experience-icon-box {
+    margin-bottom: 8px;
   }
 
   /* Adjust Experience Line position if icon size shifts */

@@ -1172,11 +1172,11 @@ const ReviewTalent = () => {
         <span className="auth-subtitle" style={{ color: '#94a3b8' }}>/ Review Talent</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(0, 1fr)', gap: 32, alignItems: 'flex-start' }}>
+      <div className="review-talent-layout">
 
         {/* LEFT: INFORMATION REVIEW */}
         <div className="review-left-panel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+          <div className="review-header-top mb-4">
             <div>
               <h2 className="header-title" style={{ fontSize: '24px', fontWeight: 700 }}>Review & Edit</h2>
               <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>Please verify the extracted information before saving.</p>
@@ -1212,7 +1212,7 @@ const ReviewTalent = () => {
               </div>
               {openAccordion === "basicInfo" && (
                 <div className="accordion-content">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px', marginTop: 16 }}>
+                  <div className="review-form-grid" style={{ marginTop: 16 }}>
                     {["firstName", "lastName", "position", "phone", "email"].map(f => (
                       <EditableField key={f} label={f} value={talent.basicInfo[f]}
                         editing={editingSection === "basicInfo"}
@@ -1267,7 +1267,7 @@ const ReviewTalent = () => {
               </div>
               {openAccordion === "personalInfo" && (
                 <div className="accordion-content">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px', marginTop: 16 }}>
+                  <div className="review-form-grid" style={{ marginTop: 16 }}>
                     {Object.keys(talent.personalInfo).map(field => {
                       const isTxt = field === "bio";
                       return isTxt ? null : (
@@ -1330,7 +1330,7 @@ const ReviewTalent = () => {
                 <div className="accordion-content">
                   {talent.education.map((ed, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+                      <div className="review-form-grid">
                         {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
                           <EditableField key={field} label={field} value={ed[field]} section="education"
                             editing={editingSection === "education"}
@@ -1408,7 +1408,7 @@ const ReviewTalent = () => {
                 <div className="accordion-content">
                   {talent.experience.map((ex, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+                      <div className="review-form-grid">
                         {["company", "position", "startDate", "endDate"].map(field => (
                           <EditableField key={field} label={field} value={ex[field]} section="experience"
                             editing={editingSection === "experience"}
@@ -1492,7 +1492,7 @@ const ReviewTalent = () => {
                 <div className="accordion-content">
                   {talent.projects.map((pr, i) => (
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+                      <div className="review-form-grid">
                         {["name", "role", "startDate", "endDate"].map(field => (
                           <EditableField key={field} label={field} value={pr[field]} section="projects"
                             editing={editingSection === "projects"}

@@ -17,22 +17,15 @@ const ProjectsSection = ({ projects }) => {
   return (
     <>
       {/* Header Section */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem"
-        }}
-      >
-        <div className="d-flex gap-3">
+      <div className="projects-header-row mb-3">
+        <div className="d-flex gap-3 align-items-center projects-title-wrap">
           <h3 className="section-title" style={{ margin: 0 }}>
             Ongoing Projects
           </h3>
-          <button className="border-0" style={{ textDecoration: "underline", background: "none", color: "#3b82f6 ", fontSize: "13px" }}>View all</button>
+          <button className="border-0" style={{ textDecoration: "underline", background: "none", color: "#3b82f6", fontSize: "13px" }}>View all</button>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 projects-actions-wrap">
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}

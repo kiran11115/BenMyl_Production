@@ -9,6 +9,7 @@ import {
   FiLoader,
   FiCheck,
   FiChevronDown,
+  FiFilter,
 } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
@@ -18,6 +19,7 @@ import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
 import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
+import FilterBottomSheet from "../Common/FilterBottomSheet";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import NoData from "../UploadTalent/NoData";
 
@@ -306,6 +308,7 @@ const TalentPool = () => {
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedJobId, setSelectedJobId] = useState(null);
 
@@ -323,118 +326,118 @@ const TalentPool = () => {
   const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
   const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
   const [isInitialLoading, setIsInitialLoading] = useState(false);
-const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
 
-    const PAGE_SIZE = 50;
+  const PAGE_SIZE = 50;
 
   const fetchTalents = async () => {
 
-     try {
-    if (pageNumber === 1) {
-      setIsInitialLoading(true);   // first load
-    } else {
-      setIsFetchingMore(true);     // scroll load
-    }
+    try {
+      if (pageNumber === 1) {
+        setIsInitialLoading(true);   // first load
+      } else {
+        setIsFetchingMore(true);     // scroll load
+      }
 
-    const filtersArray = [];
+      const filtersArray = [];
 
-    if (appliedFilters) {
+      if (appliedFilters) {
 
-      // Title
-      if (appliedFilters.selectedJobs?.length) {
-        const selectedTitles = appliedFilters.selectedJobs
-          .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
-          .filter(Boolean);
+        // Title
+        if (appliedFilters.selectedJobs?.length) {
+          const selectedTitles = appliedFilters.selectedJobs
+            .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+            .filter(Boolean);
 
-        if (selectedTitles.length > 0) {
+          if (selectedTitles.length > 0) {
+            filtersArray.push({
+              filterName: "Title",
+              filterOperator: "Equals",
+              filterValue: selectedTitles,
+            });
+          }
+        }
+
+        // Skills
+        if (appliedFilters.skills?.length) {
           filtersArray.push({
-            filterName: "Title",
+            filterName: "skills",
             filterOperator: "Equals",
-            filterValue: selectedTitles,
+            filterValue: appliedFilters.skills,
+          });
+        }
+
+        // Location
+        if (appliedFilters.location) {
+          filtersArray.push({
+            filterName: "Location",
+            filterOperator: "Equals",
+            filterValue: [appliedFilters.location],
+          });
+        }
+
+        // Salary Range
+        if (appliedFilters.minSalary && appliedFilters.maxSalary) {
+          filtersArray.push({
+            filterName: "Salary Range",
+            filterOperator: "Equals",
+            filterValue: [
+              `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
+            ],
+          });
+        }
+
+        // Years of Experience
+        if (appliedFilters.minExperience && appliedFilters.maxExperience) {
+          filtersArray.push({
+            filterName: "Years of Experience",
+            filterOperator: "Equals",
+            filterValue: [
+              `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
+            ],
+          });
+        }
+
+        // Employment Type
+        if (appliedFilters.availability?.length) {
+          filtersArray.push({
+            filterName: "Employment Type",
+            filterOperator: "Equals",
+            filterValue: appliedFilters.availability,
           });
         }
       }
 
-      // Skills
-      if (appliedFilters.skills?.length) {
-        filtersArray.push({
-          filterName: "skills",
-          filterOperator: "Equals",
-          filterValue: appliedFilters.skills,
-        });
+      const payload = {
+        companyid: Number(companyId),
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        filters: filtersArray,
+      };
+
+      const res = await getFindTalent(payload).unwrap();
+
+      // 🔥 API returns array directly
+      if (!Array.isArray(res) || res.length === 0) {
+        setHasMore(false);
+        return;
       }
 
-      // Location
-      if (appliedFilters.location) {
-        filtersArray.push({
-          filterName: "Location",
-          filterOperator: "Equals",
-          filterValue: [appliedFilters.location],
-        });
+      if (res.length < PAGE_SIZE) {
+        setHasMore(false);   // no more pages
       }
 
-      // Salary Range
-      if (appliedFilters.minSalary && appliedFilters.maxSalary) {
-        filtersArray.push({
-          filterName: "Salary Range",
-          filterOperator: "Equals",
-          filterValue: [
-            `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
-          ],
-        });
-      }
+      setAllCandidates((prev) =>
+        pageNumber === 1 ? res : [...prev, ...res]
+      );
 
-      // Years of Experience
-      if (appliedFilters.minExperience && appliedFilters.maxExperience) {
-        filtersArray.push({
-          filterName: "Years of Experience",
-          filterOperator: "Equals",
-          filterValue: [
-            `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
-          ],
-        });
-      }
-
-      // Employment Type
-      if (appliedFilters.availability?.length) {
-        filtersArray.push({
-          filterName: "Employment Type",
-          filterOperator: "Equals",
-          filterValue: appliedFilters.availability,
-        });
-      }
+    } finally {
+      setIsInitialLoading(false);
+      setIsFetchingMore(false);
     }
-
-    const payload = {
-      companyid: Number(companyId),
-      pageNumber,
-      pageSize: PAGE_SIZE,
-      filters: filtersArray,
-    };
-
-    const res = await getFindTalent(payload).unwrap();
-
-    // 🔥 API returns array directly
-    if (!Array.isArray(res) || res.length === 0) {
-      setHasMore(false);
-      return;
-    }
-
-    if (res.length < PAGE_SIZE) {
-  setHasMore(false);   // no more pages
-}
-
-    setAllCandidates((prev) =>
-      pageNumber === 1 ? res : [...prev, ...res]
-    );
-
-     } finally {
-    setIsInitialLoading(false);
-    setIsFetchingMore(false);
-  }
   };
 
 
@@ -509,43 +512,43 @@ const [isFetchingMore, setIsFetchingMore] = useState(false);
 
 
   useEffect(() => {
-  if (!preselectedJobTitle || jobs.length === 0) return;
+    if (!preselectedJobTitle || jobs.length === 0) return;
 
-  const matchedJob = jobs.find(
-    (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
-  );
+    const matchedJob = jobs.find(
+      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+    );
 
-  if (!matchedJob) return;
+    if (!matchedJob) return;
 
-  const filters = {
-    selectedJobs: [matchedJob.id],
-    skills: [],
-    location: "",
-    minExperience: "",
-    maxExperience: "",
-    minSalary: "",
-    maxSalary: "",
-    availability: [],
-  };
+    const filters = {
+      selectedJobs: [matchedJob.id],
+      skills: [],
+      location: "",
+      minExperience: "",
+      maxExperience: "",
+      minSalary: "",
+      maxSalary: "",
+      availability: [],
+    };
 
-  setSelectedJobId(matchedJob.id);
-  setAppliedFilters(filters);
+    setSelectedJobId(matchedJob.id);
+    setAppliedFilters(filters);
 
-  // 🔥 VERY IMPORTANT → sync to URL
-  setSearchParams({ jobId: matchedJob.id });
+    // 🔥 VERY IMPORTANT → sync to URL
+    setSearchParams({ jobId: matchedJob.id });
 
-}, [preselectedJobTitle, jobs]);
+  }, [preselectedJobTitle, jobs]);
 
-const filtersReady = useMemo(() => {
-  const hasURLParams = searchParams.toString().length > 0;
+  const filtersReady = useMemo(() => {
+    const hasURLParams = searchParams.toString().length > 0;
 
-  // If URL has filters but appliedFilters not restored yet → wait
-  if (hasURLParams && appliedFilters === null) {
-    return false;
-  }
+    // If URL has filters but appliedFilters not restored yet → wait
+    if (hasURLParams && appliedFilters === null) {
+      return false;
+    }
 
-  return true;
-}, [searchParams, appliedFilters]);
+    return true;
+  }, [searchParams, appliedFilters]);
 
   useEffect(() => {
     if (selectedJobId !== null) {
@@ -560,31 +563,31 @@ const filtersReady = useMemo(() => {
   }, [activeJobId]);
 
   useEffect(() => {
-  if (!filtersReady) return;
+    if (!filtersReady) return;
 
-  fetchTalents();
-}, [pageNumber, appliedFilters, activeJobId, filtersReady]);
+    fetchTalents();
+  }, [pageNumber, appliedFilters, activeJobId, filtersReady]);
 
 
 
   useEffect(() => {
-  const el = resultsRef.current;
-  if (!el) return;
+    const el = resultsRef.current;
+    if (!el) return;
 
-  const onScroll = () => {
-    if (
-      el.scrollHeight > el.clientHeight &&
-      el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
-      hasMore &&
-      !isFetchingMore
-    ) {
-      setPageNumber((prev) => prev + 1);
-    }
-  };
+    const onScroll = () => {
+      if (
+        el.scrollHeight > el.clientHeight &&
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+        hasMore &&
+        !isFetchingMore
+      ) {
+        setPageNumber((prev) => prev + 1);
+      }
+    };
 
-  el.addEventListener("scroll", onScroll);
-  return () => el.removeEventListener("scroll", onScroll);
-}, [hasMore, isFetchingMore]);
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [hasMore, isFetchingMore]);
 
 
   const activeJob = useMemo(() => {
@@ -601,12 +604,12 @@ const filtersReady = useMemo(() => {
       company: details.companyName,
       location: details.location,
       budget:
-  details.salaryRange_Min && details.salaryRange_Max
-    ? `${details.salaryRange_Min} - ${details.salaryRange_Max}`
-    : `${details.salaryRange_Min || ""}`,
+        details.salaryRange_Min && details.salaryRange_Max
+          ? `${details.salaryRange_Min} - ${details.salaryRange_Max}`
+          : `${details.salaryRange_Min || ""}`,
       experience: details.yearsofExperience || details.experienceLevel,
       type: details.employeeType,
-      salaryType:details.salarType,
+      salaryType: details.salarType,
       description: details.jobDescription,
       requiredSkills: details.requiredSkills
         ? details.requiredSkills.split(",").map((s) => s.trim())
@@ -855,6 +858,13 @@ const filtersReady = useMemo(() => {
             </div>
 
             <button
+              className="filters-applied"
+              onClick={() => setIsMobileFilterOpen(true)}
+            >
+              <FiFilter /> Filters
+            </button>
+
+            <button
               className="add-project-btn"
               onClick={() => setIsDrawerOpen(true)}
               style={{ display: "flex", alignItems: "center", gap: "8px" }}
@@ -888,11 +898,28 @@ const filtersReady = useMemo(() => {
           gap: "16px",
           height: "calc(100vh - 10px)", // SAME HEIGHT for both
         }}>
-          <aside className="hide-scrollbar" style={{
+          <aside className="vs-filters-sidebar hide-scrollbar" style={{
             overflowY: "auto",
           }}>
             <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
           </aside>
+
+          <FilterBottomSheet
+            isOpen={isMobileFilterOpen}
+            onClose={() => setIsMobileFilterOpen(false)}
+            title="Filters"
+          >
+            <TalentFilters
+              onApplyFilters={(filters) => {
+                handleApplyFilter(filters);
+                setIsMobileFilterOpen(false);
+              }}
+              skillsList={allSkills}
+              jobs={jobs}
+              selectedJobId={selectedJobId}
+              appliedFilters={appliedFilters}
+            />
+          </FilterBottomSheet>
 
           <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
             height: "calc(100vh - 0px)", // adjust if header height differs

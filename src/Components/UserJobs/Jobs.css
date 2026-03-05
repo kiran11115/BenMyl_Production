@@ -45,10 +45,35 @@
     grid-template-columns: 1fr;
   }
 
-  .filters-sidebar {
+  .vs-filters-sidebar {
     display: none;
-    /* Hidden on mobile for simplicity in this demo */
+    /* Hidden on mobile */
   }
+
+  .filters-applied {
+    display: flex !important;
+  }
+}
+
+/* Mobile Filter Toggle */
+.filters-applied {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #d1d5db;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.filters-applied:hover {
+  background: #f9fafb;
 }
 
 /* --- Sidebar Filters --- */
@@ -472,6 +497,22 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .search-box-wrapper {
+    display: none !important;
+  }
+
+  .search-input-container {
+    max-width: none !important;
+    width: 100%;
+  }
+
+  .filters-applied {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .drawer-footer {

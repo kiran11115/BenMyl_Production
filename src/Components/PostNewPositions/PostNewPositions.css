@@ -1310,6 +1310,52 @@ p.muted {
   }
 }
 
+.search-icon-wrapper {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  display: flex;
+}
+
+/* =========================================
+   7. Mobile Responsiveness Additions
+   ========================================= */
+@media (max-width: 1024px) {
+
+  .dashboard-layout,
+  .job-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-column-side,
+  .sticky-preview {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .post-job-form {
+    padding: 16px;
+  }
+
+  .premium-card {
+    padding: 20px;
+  }
+
+  .grid-4,
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-header h1 {
+    font-size: 22px;
+  }
+}
+
 /* --- Alert Specifics --- */
 .alert-close-icon {
   position: absolute;
