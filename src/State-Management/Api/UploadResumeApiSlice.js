@@ -66,7 +66,15 @@ getMyBench: builder.mutation({
       }),
     }),
 
+    updateEmployeeResume: builder.mutation({
+  query: (data) => ({
+    url: "/api/uatcompany/update_employee",
+    method: "POST",
+    body: data,
+  }),
+}),
+
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery  } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery,useUpdateEmployeeResumeMutation   } = UploadResumeApiSlice;
