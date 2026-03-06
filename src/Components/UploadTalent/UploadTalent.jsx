@@ -134,7 +134,6 @@ const UploadTalent = () => {
                         >
                             Review Profiles
                         </button>
-
                     </div>
 
                     <UploadTalentModal
