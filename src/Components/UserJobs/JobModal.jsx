@@ -9,11 +9,11 @@ import { useNavigate } from "react-router-dom";
 const JobModal = ({ candidate, job, onClose }) => {
   const title = job?.title;
 
-const {
-  data: talents = [],
-  isLoading,
-  isError,
-} = useGetEmployeesByTitleQuery(title);
+  const {
+    data: talents = [],
+    isLoading,
+    isError,
+  } = useGetEmployeesByTitleQuery(title);
 
   const [selectedTalents, setSelectedTalents] = useState([]);
   const [customNote, setCustomNote] = useState("");
@@ -26,7 +26,7 @@ const {
       prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id],
     );
   };
-  
+
 
   const handleDone = async () => {
     if (isSubmitting) return;
@@ -40,9 +40,9 @@ const {
     onClose();
   };
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-   const handleProfileClick = () => {
+  const handleProfileClick = () => {
     navigate("/user/talent-profile", {
       state: {
         employeeId: job?.id,
@@ -50,38 +50,38 @@ const {
     });
   };
 
-   const formatMarkdownToHtml = (text) => {
-  if (!text) return "";
+  const formatMarkdownToHtml = (text) => {
+    if (!text) return "";
 
-  let formatted = text;
+    let formatted = text;
 
-  // Remove first line completely
-  formatted = formatted.replace(/^[^\n]*\n?/, "");
+    // Remove first line completely
+    formatted = formatted.replace(/^[^\n]*\n?/, "");
 
-  // Convert bold
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    // Convert bold
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  // Convert bullet points
-  formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+    // Convert bullet points
+    formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
 
-  if (formatted.includes("<li>")) {
-    formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
-  }
+    if (formatted.includes("<li>")) {
+      formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+    }
 
-  formatted = formatted.replace(/\n/g, "<br/>");
+    formatted = formatted.replace(/\n/g, "<br/>");
 
-  return formatted;
-};
-  
+    return formatted;
+  };
+
   const normalizedTalents = talents.map((t) => ({
-  id: t.employeeID,
-  name: `${t.firstName} ${t.lastName}`,
-  role: title,
-  email: t.emailAddress,
-  resume: t.resumeFilePath,
-  status: t.status,
-  avatar: `https://ui-avatars.com/api/?name=${t.firstName}+${t.lastName}`,
-}));
+    id: t.employeeID,
+    name: `${t.firstName} ${t.lastName}`,
+    role: title,
+    email: t.emailAddress,
+    resume: t.resumeFilePath,
+    status: t.status,
+    avatar: `https://ui-avatars.com/api/?name=${t.firstName}+${t.lastName}`,
+  }));
 
   return (
     <div
@@ -260,7 +260,7 @@ const {
                             color: "#0f172a",
                           }}
                         >
-                          {job.rateText}
+                          {job.rateText} {job.salaryType}
                         </span>
                       </div>
 
@@ -377,17 +377,17 @@ const {
                       margin: "0 0 20px 0",
                     }}
                   >
-                   {job?.description ? (
-  <div
-    dangerouslySetInnerHTML={{
-      __html: formatMarkdownToHtml(job.description),
-    }}
-  />
-) : (
-  <p style={{ color: "#64748b" }}>
-    No description available for this job.
-  </p>
-)}
+                    {job?.description ? (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: formatMarkdownToHtml(job.description),
+                        }}
+                      />
+                    ) : (
+                      <p style={{ color: "#64748b" }}>
+                        No description available for this job.
+                      </p>
+                    )}
                   </p>
                   <h5
                     style={{
@@ -517,98 +517,98 @@ const {
                   minHeight: 0,
                 }}
               >
-              {isLoading ? (
-  <div style={{ padding: "20px", textAlign: "center" }}>
-    Loading talents...
-  </div>
-) : isError ? (
-  <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
-    Failed to load talents
-  </div>
-) : normalizedTalents.length === 0 ? (
-  <div style={{ padding: "20px", textAlign: "center" }}>
-    No talents found for this role
-  </div>
-) : (
-  normalizedTalents.map((profile) => {
-    const isSelected = selectedTalents.includes(profile.id);
+                {isLoading ? (
+                  <div style={{ padding: "20px", textAlign: "center" }}>
+                    Loading talents...
+                  </div>
+                ) : isError ? (
+                  <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
+                    Failed to load talents
+                  </div>
+                ) : normalizedTalents.length === 0 ? (
+                  <div style={{ padding: "20px", textAlign: "center" }}>
+                    No talents found for this role
+                  </div>
+                ) : (
+                  normalizedTalents.map((profile) => {
+                    const isSelected = selectedTalents.includes(profile.id);
 
-    return (
-      <div
-        key={profile.id}
-        onClick={() => handleToggleTalent(profile.id)}
-        className="talent-row"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px",
-          borderBottom: "1px solid #f1f5f9",
-          cursor: isSubmitting ? "not-allowed" : "pointer",
-          background: isSelected ? "#f0f9ff" : "transparent",
-        }}
-      >
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "4px",
-              border: isSelected ? "none" : "2px solid #cbd5e1",
-              background: isSelected ? "#3b82f6" : "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {isSelected && <FiCheck size={14} color="#fff" />}
-          </div>
-
-          <img
-            src={profile.avatar}
-            alt={profile.name}
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              border: "1px solid #e2e8f0",
-            }}
-          />
-
-          <div>
-            <div style={{ fontSize: "14px", fontWeight: 600 }}>
-              {profile.name}
-            </div>
-            <div style={{ fontSize: "12px", color: "#64748b" }}>
-              {profile.role}
-            </div>
-          </div>
-        </div>
-
-        <button
-          className="btn-primary"
-          // onClick={(e) => {
-          //   e.stopPropagation();
-          //   alert(`Viewing profile of ${profile.name}`);
-          // }}
-          onClick={()=>navigate("/user/talent-profile", {
-      state: {
-        employeeId: profile?.id,
-      },
-    })}
-         style={{
-                          padding: "6px 12px",
-                          fontSize: "12px",
-                          opacity: isSubmitting ? 0.6 : 1,
-                          width: "8rem",
+                    return (
+                      <div
+                        key={profile.id}
+                        onClick={() => handleToggleTalent(profile.id)}
+                        className="talent-row"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "16px",
+                          borderBottom: "1px solid #f1f5f9",
+                          cursor: isSubmitting ? "not-allowed" : "pointer",
+                          background: isSelected ? "#f0f9ff" : "transparent",
                         }}
-        >
-          View Profile
-        </button>
-      </div>
-    );
-  })
-)}
+                      >
+                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                          <div
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              borderRadius: "4px",
+                              border: isSelected ? "none" : "2px solid #cbd5e1",
+                              background: isSelected ? "#3b82f6" : "#fff",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {isSelected && <FiCheck size={14} color="#fff" />}
+                          </div>
+
+                          <img
+                            src={profile.avatar}
+                            alt={profile.name}
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              border: "1px solid #e2e8f0",
+                            }}
+                          />
+
+                          <div>
+                            <div style={{ fontSize: "14px", fontWeight: 600 }}>
+                              {profile.name}
+                            </div>
+                            <div style={{ fontSize: "12px", color: "#64748b" }}>
+                              {profile.role}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          className="btn-primary"
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          //   alert(`Viewing profile of ${profile.name}`);
+                          // }}
+                          onClick={() => navigate("/user/talent-profile", {
+                            state: {
+                              employeeId: profile?.id,
+                            },
+                          })}
+                          style={{
+                            padding: "6px 12px",
+                            fontSize: "12px",
+                            opacity: isSubmitting ? 0.6 : 1,
+                            width: "8rem",
+                          }}
+                        >
+                          View Profile
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
 
               </div>
             </div>

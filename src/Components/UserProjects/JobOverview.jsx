@@ -68,6 +68,16 @@ const JobOverview = () => {
     return formatted;
   };
 
+  const salaryType = (() => {
+  const t = (job?.salarType || "").toLowerCase();
+
+  if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+  if (t.includes("month")) return "/month";
+  if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+
+  return "/hr"; // default
+})();
+
 
 
   return (
@@ -144,10 +154,10 @@ const JobOverview = () => {
                 <div className="meta-item">
                   <FiDollarSign size={14} />
                   {job?.salaryRange_Min && job?.salaryRange_Max
-                    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} ${job?.salarType}`
-                    : job?.salaryRange_Min
-                      ? `${job.salaryRange_Min} ${job?.salarType}`
-                      : ""}
+  ? `${job.salaryRange_Min} - ${job.salaryRange_Max} ${salaryType}`
+  : job?.salaryRange_Min
+  ? `${job.salaryRange_Min} ${salaryType}`
+  : ""}
                 </div>
 
                 <div className="meta-item text-orange">

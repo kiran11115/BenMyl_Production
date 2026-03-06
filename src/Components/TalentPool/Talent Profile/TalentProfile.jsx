@@ -17,35 +17,36 @@ import { BsDribbble } from "react-icons/bs";
 import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
+import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-const query = new URLSearchParams(location.search);
-const from = query.get("from");
+  const query = new URLSearchParams(location.search);
+  const from = query.get("from");
 
-const handleBack = () => {
-  if (from) {
-    navigate(decodeURIComponent(from));
-  } else {
-    navigate(-1);
-  }
-};
+  const handleBack = () => {
+    if (from) {
+      navigate(decodeURIComponent(from));
+    } else {
+      navigate(-1);
+    }
+  };
   const { state } = useLocation();
   const employeeId = state?.employeeID;
   console.log("EmpId:", employeeId);
   const jobId = state?.jobId;
 
-const [isShortlisted, setIsShortlisted] = React.useState(false);
+  const [isShortlisted, setIsShortlisted] = React.useState(false);
 
-useEffect(() => {
-  if (!jobId || !employeeId) return;
+  useEffect(() => {
+    if (!jobId || !employeeId) return;
 
-  const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
-  const exists = stored[jobId]?.some(c => c.id === employeeId);
-  setIsShortlisted(!!exists);
-}, [jobId, employeeId]);
+    const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+    const exists = stored[jobId]?.some(c => c.id === employeeId);
+    setIsShortlisted(!!exists);
+  }, [jobId, employeeId]);
 
   const [triggerGetProfile, { data: employee, isLoading, isError }] =
     useLazyGetEmployeeTalentProfileQuery();
@@ -60,12 +61,12 @@ useEffect(() => {
     name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`.trim() || "N/A",
     role: employee?.title ?? "N/A",
     avatar:
-    employee?.profilePicture ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`
-    )}`,
+      employee?.profilePicture ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`
+      )}`,
     location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
-    experience: employee?.noofExperience ? `${employee.noofExperience} yrs experience` : "N/A",
+    experience: calculateTotalExperience(employee?.workexperiences),
     status: employee?.status ?? "N/A",
     summary: employee?.bio ?? "N/A",
     stats: [
@@ -103,37 +104,37 @@ useEffect(() => {
   };
 
   const projectsData =
-  employee?.employeeprojects?.map((proj) => ({
-    projectName: proj.projectName || "N/A",
-    role: proj.role || "N/A",
-    startDate: proj.startDate
-      ? proj.startDate.slice(0, 10)
-      : "N/A",
-    endDate: proj.endDate
-      ? proj.endDate.slice(0, 10)
-      : "Present",
-    skills: proj.skills
-      ? proj.skills.split(",").map((s) => s.trim())
-      : [],
-    description: proj.description || "N/A",
-  })) || [];
+    employee?.employeeprojects?.map((proj) => ({
+      projectName: proj.projectName || "N/A",
+      role: proj.role || "N/A",
+      startDate: proj.startDate
+        ? proj.startDate.slice(0, 10)
+        : "N/A",
+      endDate: proj.endDate
+        ? proj.endDate.slice(0, 10)
+        : "Present",
+      skills: proj.skills
+        ? proj.skills.split(",").map((s) => s.trim())
+        : [],
+      description: proj.description || "N/A",
+    })) || [];
 
   const handleShortlistFromProfile = () => {
-  if (!jobId || !employeeId) {
-    alert("Select a job before shortlisting");
-    return;
-  }
+    if (!jobId || !employeeId) {
+      alert("Select a job before shortlisting");
+      return;
+    }
 
-  const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
-  const currentList = stored[jobId] || [];
+    const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+    const currentList = stored[jobId] || [];
 
-  const exists = currentList.some(c => c.id === employeeId);
+    const exists = currentList.some(c => c.id === employeeId);
 
-  const updated = {
-    ...stored,
-    [jobId]: exists
-      ? currentList.filter(c => c.id !== employeeId)
-      : [
+    const updated = {
+      ...stored,
+      [jobId]: exists
+        ? currentList.filter(c => c.id !== employeeId)
+        : [
           ...currentList,
           {
             id: employeeId,
@@ -143,11 +144,11 @@ useEffect(() => {
             inviteUserId: employee?.insertBy,
           },
         ],
-  };
+    };
 
-  localStorage.setItem("shortlistedMap", JSON.stringify(updated));
-  setIsShortlisted(!exists); // 🔥 update UI instantly
-};
+    localStorage.setItem("shortlistedMap", JSON.stringify(updated));
+    setIsShortlisted(!exists); // 🔥 update UI instantly
+  };
 
 
   return (
@@ -291,7 +292,7 @@ useEffect(() => {
                     {profileData.skills.length > 0 ? (
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                         {profileData.skills.map((skill, idx) => (
-                          <span key={idx} className="status-tag status-progress" style={{height: "25px"}}>
+                          <span key={idx} className="status-tag status-progress" style={{ height: "25px" }}>
                             {skill}
                           </span>
                         ))}
@@ -388,75 +389,75 @@ useEffect(() => {
             </div>
 
             <div className="premium-portfolio-grid">
-  {projectsData.length > 0 ? (
-    projectsData.map((data, index) => (
-      <div key={index} className="project-card mb-3">
-        <div className="card-top">
-          <div>
-            <h3 className="card-title">{data.projectName}</h3>
-            <p className="card-subtitle">{data.role}</p>
-          </div>
-        </div>
+              {projectsData.length > 0 ? (
+                projectsData.map((data, index) => (
+                  <div key={index} className="project-card mb-3">
+                    <div className="card-top">
+                      <div>
+                        <h3 className="card-title">{data.projectName}</h3>
+                        <p className="card-subtitle">{data.role}</p>
+                      </div>
+                    </div>
 
-        <div className="d-flex justify-content-between">
-          <div>
-            <span style={{ fontSize: "14px" }}>Start Date</span>
-            <div className="card-date">
-              <FiCalendar />
-              {data.startDate}
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <span style={{ fontSize: "14px" }}>Start Date</span>
+                        <div className="card-date">
+                          <FiCalendar />
+                          {data.startDate}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: "14px" }}>End Date</span>
+                        <div className="card-date">
+                          <FiCalendar />
+                          {data.endDate}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-skills">
+                      {data.skills.map((skill, i) => (
+                        <span key={i} className="status-tag status-progress">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+
+                    <p className="card-description">{data.description}</p>
+                  </div>
+                ))
+              ) : (
+                <div
+                  style={{
+                    color: "#94a3b8",
+                    fontSize: "14px",
+                    textAlign: "center",
+                    padding: "30px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  No projects added yet
+
+                  <img
+                    src="../Images/no data.svg"
+                    alt="No data"
+                    style={{
+                      width: "100%",
+                      maxWidth: "200px",
+                      height: "auto",
+                      marginTop: "12px",
+                      objectFit: "contain",
+                      opacity: "50%",
+                    }}
+                  />
+                </div>
+              )}
             </div>
-          </div>
-
-          <div>
-            <span style={{ fontSize: "14px" }}>End Date</span>
-            <div className="card-date">
-              <FiCalendar />
-              {data.endDate}
-            </div>
-          </div>
-        </div>
-
-        <div className="card-skills">
-          {data.skills.map((skill, i) => (
-            <span key={i} className="status-tag status-progress">
-              {skill}
-            </span>
-          ))}
-        </div>
-
-        <p className="card-description">{data.description}</p>
-      </div>
-    ))
-  ) : (
-  <div
-    style={{
-      color: "#94a3b8",
-      fontSize: "14px",
-      textAlign: "center",
-      padding: "30px",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    No projects added yet
-
-    <img
-      src="../Images/no data.svg"
-      alt="No data"
-      style={{
-        width: "100%",
-        maxWidth: "200px",
-        height: "auto",
-        marginTop: "12px",
-        objectFit: "contain",
-        opacity: "50%",
-      }}
-    />
-  </div>
-)}
-</div>
           </div>
         </div>
 
@@ -471,16 +472,16 @@ useEffect(() => {
               Schedule Interview
             </button>
             <button
-  className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
-  onClick={handleShortlistFromProfile}
-  style={{
-    backgroundColor: isShortlisted ? "#3B82F6" : "",
-    color: isShortlisted ? "#fff" : ""
-  }}
->
-  {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
+              className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
+              onClick={handleShortlistFromProfile}
+              style={{
+                backgroundColor: isShortlisted ? "#3B82F6" : "",
+                color: isShortlisted ? "#fff" : ""
+              }}
+            >
+              {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
 
-</button>
+            </button>
 
 
             <div className="sidebar-links">

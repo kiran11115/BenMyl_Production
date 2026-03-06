@@ -25,8 +25,10 @@ import {
   useLazyGetEmployeeTalentProfileQuery,
 } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
+import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
+import EditTalentProfile from "./EditTalentProfile";
 
 // ===========================
 // RecommendedJobs Component (Simplified for inline use)
@@ -333,6 +335,7 @@ const UploadTalentProfile = () => {
   const location = useLocation();
   const [showContent, setShowContent] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [skillInput, setSkillInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
   const [addEmployeeProfessionalDetails, { isLoading: isSaving }] =
@@ -463,9 +466,7 @@ const UploadTalentProfile = () => {
         /, $/,
         "",
       ),
-      experience: apiData?.noofExperience
-        ? `${apiData.noofExperience}+ years experience`
-        : "N/A",
+      experience: calculateTotalExperience(apiData?.workexperiences),
       status: apiData?.status || "N/A",
 
       summary: apiData?.bio || "N/A",
@@ -474,9 +475,7 @@ const UploadTalentProfile = () => {
       stats: [
         {
           label: "Experience",
-          value: apiData?.noofExperience
-            ? `${apiData.noofExperience}+ yrs`
-            : "N/A",
+          value: calculateTotalExperience(apiData?.workexperiences),
         },
         { label: "Projects", value: apiData?.employeeprojects?.length || 0 },
       ],
@@ -1336,6 +1335,19 @@ const UploadTalentProfile = () => {
     );
   }
 
+  if (isEditing) {
+    return (
+      <EditTalentProfile
+        initialData={apiData}
+        onCancel={() => setIsEditing(false)}
+        onSuccess={() => {
+          setIsEditing(false);
+          getEmployeeProfile(employeeId); // refetch
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <style>{styleCards}</style>
@@ -1776,16 +1788,12 @@ const UploadTalentProfile = () => {
               >
                 Find Jobs
               </button>
-              {/* <button className="btn-secondary w-100">Preview Resume</button>
-
-              <div className="sidebar-links">
-                <button className="link-btn">
-                  <FiDownload /> Download Resume
-                </button>
-                <button className="link-btn">
-                  <FiShare2 /> Share Profile
-                </button>
-              </div>  */}
+              <button
+                className="btn-secondary w-100 mt-2"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </button>
             </div>
 
             {/* Quick Information with Edit Button */}

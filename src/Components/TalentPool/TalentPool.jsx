@@ -562,11 +562,14 @@ const TalentPool = () => {
     setAllCandidates([]);
   }, [activeJobId]);
 
-  useEffect(() => {
-    if (!filtersReady) return;
+ useEffect(() => {
+  if (!filtersReady) return;
 
-    fetchTalents();
-  }, [pageNumber, appliedFilters, activeJobId, filtersReady]);
+  // prevent first empty filter call
+  if (appliedFilters === null) return;
+
+  fetchTalents();
+}, [pageNumber, appliedFilters, activeJobId, filtersReady]);
 
 
 

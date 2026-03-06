@@ -173,11 +173,21 @@ const UserJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-      rateText: job.salaryRange_Min
-        ? `$${job.salaryRange_Min}-${job.salaryRange_Max}/hr`
-        : "N/A",
+     rateText:
+  job.salaryRange_Min && job.salaryRange_Max
+    ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+    : job.salaryRange_Min
+    ? `$${job.salaryRange_Min}`
+    : "N/A",
       experienceText: job.experienceLevel,
       description: job.jobDescription,
+      salaryType: (() => {
+        const t = (job.salarType || "").toLowerCase();
+        if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+        if (t.includes("month")) return "/month";
+        if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+        return "/hr"; // default
+      })(),
       educationLevel: job.educationLevel,
       yearsOfExperience: job.yearsOfExperience,
       skills: job.requiredSkills
@@ -353,7 +363,7 @@ const UserJobs = () => {
                   >
                     <div className="drawer-stat-item">
                       <span className="label">Budget</span>
-                      <span className="value">{job.rateText}</span>
+                      <span className="value">{job.rateText} {job.salaryType || "/hr"}</span>
                     </div>
                     <div className="drawer-stat-item">
                       <span className="label">Experience</span>
