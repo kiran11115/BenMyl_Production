@@ -152,7 +152,7 @@ const Dashboard = () => {
     <div className="projects-container">
       {/* Dashboard Header with Guide Trigger */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="section-title m-0">Dashboard Overview</h2>
+        <h2 className="section-title m-0">Dashboard</h2>
         <button
           className="btn d-flex align-items-center gap-2"
           onClick={() => guideRef.current?.startTour()}
