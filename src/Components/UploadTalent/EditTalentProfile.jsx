@@ -14,7 +14,7 @@ import { useFormik, FieldArray, FormikProvider } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useApprovedEmployeeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useApprovedEmployeeMutation, useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
@@ -48,7 +48,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
-    const [approveEmployee, { isLoading: isSaving }] = useApprovedEmployeeMutation();
+    const [updateEmployee, { isLoading: isSaving }] = useUpdateEmployeeResumeMutation();
     const [skillInput, setSkillInput] = useState("");
 
     const formik = useFormik({
@@ -67,47 +67,81 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
         },
         validationSchema,
         onSubmit: async (values) => {
-            const formData = new FormData();
+  const formData = new FormData();
 
-            // Basic Info
-            formData.append("EmployeeID", initialData.employeeID);
-            formData.append("CompanyID", initialData.companyID);
-            formData.append("FirstName", initialData.firstName);
-            formData.append("LastName", initialData.lastName);
-            formData.append("Title", values.title);
-            formData.append("Bio", values.bio);
-            formData.append("Skills", values.skills);
+  formData.append("EmployeeID", initialData.employeeID);
+  formData.append("CompanyID", initialData.companyID);
+  formData.append("BranchID", initialData.branchID || 0);
 
-            // Personal & Contact Info
-            formData.append("EmailAddress", initialData.emailAddress || "");
-            formData.append("PhoneNo", values.phoneNo);
-            formData.append("Address", values.address);
-            formData.append("City", values.city);
-            formData.append("State", values.state);
-            formData.append("Country", values.country);
-            formData.append("Status", "Approved");
+  formData.append("FirstName", initialData.firstName);
+  formData.append("LastName", initialData.lastName);
 
-            // Complex objects as strings
-            formData.append("workexperiences", JSON.stringify(values.workexperiences.map(exp => ({
-                ...exp,
-                ExperienceID: exp.experienceID || 0,
-                EndDate: exp.endDate || new Date().toISOString().split('T')[0]
-            }))));
+  formData.append("Title", values.title);
+  formData.append("PhoneNo", values.phoneNo);
+  formData.append("EmailAddress", initialData.emailAddress || "");
 
-            formData.append("project", JSON.stringify(values.employeeprojects.map(proj => ({
-                ...proj,
-                ExperienceID: proj.experienceID || 0,
-                EndDate: proj.endDate || new Date().toISOString().split('T')[0]
-            }))));
+  formData.append("Address", values.address);
+  formData.append("City", values.city);
+  formData.append("State", values.state);
+  formData.append("Country", values.country);
 
-            formData.append("employee_Heighers", JSON.stringify(values.employee_Heighers.map(edu => ({
-                ...edu,
-                _EductionhigherId: edu._EductionhigherId || 0,
-                EndDate: edu.endDate || new Date().toISOString().split('T')[0]
-            }))));
+  formData.append("Bio", values.bio);
+  formData.append("Skills", values.skills || "");
+
+  formData.append("Status", "Approved");
+
+  formData.append(
+    "NoofExperience",
+    values.workexperiences.length || 0
+  );
+
+  // Work Experience
+  formData.append(
+    "workexperiences",
+    JSON.stringify(
+      values.workexperiences.map((exp) => ({
+        ExperienceID: exp.experienceID || 0,
+        CompanyName: exp.companyName,
+        Position: exp.position,
+        StartDate: exp.startDate,
+        EndDate: exp.endDate,
+        Description: exp.description,
+      }))
+    )
+  );
+
+  // Projects
+  formData.append(
+    "project",
+    JSON.stringify(
+      values.employeeprojects.map((proj) => ({
+        ExperienceID: proj.experienceID || 0,
+        ProjectName: proj.projectName,
+        Role: proj.role,
+        StartDate: proj.startDate,
+        EndDate: proj.endDate,
+        Description: proj.description,
+      }))
+    )
+  );
+
+  // Education
+  formData.append(
+    "employee_Heighers",
+    JSON.stringify(
+      values.employee_Heighers.map((edu) => ({
+        _EductionhigherId: edu._EductionhigherId || 0,
+        University: edu.university,
+        HighestQualification: edu.highestQualification,
+        Fieldofstudy: edu.fieldofstudy,
+        StartDate: edu.startDate,
+        EndDate: edu.endDate,
+      }))
+    )
+  );
 
             try {
-                await approveEmployee(formData).unwrap();
+                await updateEmployee(formData).unwrap();
                 onSuccess();
             } catch (err) {
                 console.error("Failed to save profile:", err);
@@ -142,6 +176,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
 
     return (
         <FormikProvider value={formik}>
+            <form onSubmit={formik.handleSubmit}>
             <style>{`
                 .auth-password-wrapper {
                     position: relative;
@@ -569,9 +604,9 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <button type="button" className="btn-secondary" onClick={onCancel}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="btn-primary" onClick={formik.handleSubmit} disabled={isSaving}>
-                                    {isSaving ? "Saving..." : "Save Changes"}
-                                </button>
+                                <button type="submit" className="btn-primary" disabled={isSaving}>
+    {isSaving ? "Saving..." : "Save Changes"}
+  </button>
                             </div>
                         </div>
                     </div>
@@ -618,6 +653,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                     </div>
                 </div>
             </div>
+            </form>
         </FormikProvider>
     );
 };
