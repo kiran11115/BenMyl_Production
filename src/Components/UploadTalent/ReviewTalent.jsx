@@ -371,24 +371,18 @@ const validateProjectRole = (val) => {
 };
 
 const validateProjectStartDate = (val) => {
-  if (!val || String(val).trim() === "")
-    return "Project start date is required";
-
+  // Start date optional — only validate when provided
+  if (!val || String(val).trim() === "") return null;
   const d = new Date(val);
-  if (isNaN(d))
-    return "Please enter a valid project start date";
-
+  if (isNaN(d)) return "Please enter a valid project start date";
   return null;
 };
 
 const validateProjectEndDate = (val) => {
-  if (!val || String(val).trim() === "")
-    return "Project end date is required";
-
+  // End date optional — only validate when provided
+  if (!val || String(val).trim() === "") return null;
   const d = new Date(val);
-  if (isNaN(d))
-    return "Please enter a valid project end date";
-
+  if (isNaN(d)) return "Please enter a valid project end date";
   return null;
 };
 
@@ -754,7 +748,22 @@ const ReviewTalent = () => {
 
   // ===== VALIDATE ALL PROJECTS ENTRIES =====
   const validateAllProjects = (projectsArr) => {
-    return []; // No validations for projects as per requirement
+    const errors = [];
+    if (!Array.isArray(projectsArr)) return errors;
+    projectsArr.forEach((proj, idx) => {
+      // Only validate dates if any info is entered in this project entry
+      const hasData = proj.projectName?.trim() || proj.role?.trim() || proj.description?.trim();
+
+      if (hasData) {
+        if (!proj.startDate || String(proj.startDate).trim() === "") {
+          errors.push(`Project[${idx + 1}]: Start Date is required`);
+        }
+        if (!proj.endDate || String(proj.endDate).trim() === "") {
+          errors.push(`Project[${idx + 1}]: End Date is required`);
+        }
+      }
+    });
+    return errors;
   };
 
 
@@ -1475,12 +1484,13 @@ const ReviewTalent = () => {
                     <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
                       <div className="review-form-grid">
                         {["name", "role", "startDate", "endDate"].map(field => (
-                          <EditableField key={field} label={field} value={pr[field]} section="projects"
+                          <EditableField key={field} label={field === "startDate" ? "Start Date" : field === "endDate" ? "End Date" : field} value={pr[field]} section="projects"
                             editing={editingSections.includes("projects")}
                             onSave={val => {
                               const arr = [...talent.projects]; arr[i][field] = val;
                               setTalent(p => ({ ...p, projects: arr }));
                             }}
+                            required={["startDate", "endDate"].includes(field)}
                           />
                         ))}
                       </div>
