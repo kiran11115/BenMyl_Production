@@ -186,7 +186,7 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
       </div>
 
       {/* Desktop View */}
-      <div className="table-scroll d-none d-md-block" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 600 }}>
+      <div className="table-scroll d-none d-md-block" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 700 }}>
         <table className="custom-table">
           <thead>
             <tr>

@@ -41,7 +41,7 @@ const BudgetChart = ({ data, totalBudget, tooltipTheme }) => {
               Total
             </span>
             <span style={{ fontSize: "18px", fontWeight: "700", color: "#1e293b" }}>
-              ${(totalBudget / 1000).toFixed(0)}k
+              {/* ${(totalBudget / 1000).toFixed(0)} k */} $0
             </span>
           </div>
         </div>
@@ -51,17 +51,17 @@ const BudgetChart = ({ data, totalBudget, tooltipTheme }) => {
         <div className="legend-item">
           <span className="dot" style={{ background: "#3b82f6" }}></span>
           <span style={{ marginRight: "4px" }}>Recruit</span>
-          <span style={{ fontWeight: "600", color: "#3b82f6" }}>45%</span>
+          <span style={{ fontWeight: "600", color: "#3b82f6" }}>0%</span>
         </div>
         <div className="legend-item">
           <span className="dot" style={{ background: "#10b981" }}></span>
           <span style={{ marginRight: "4px" }}>Train</span>
-          <span style={{ fontWeight: "600", color: "#10b981" }}>30%</span>
+          <span style={{ fontWeight: "600", color: "#10b981" }}>0%</span>
         </div>
         <div className="legend-item">
           <span className="dot" style={{ background: "#f59e0b" }}></span>
           <span style={{ marginRight: "4px" }}>Ben.</span>
-          <span style={{ fontWeight: "600", color: "#f59e0b" }}>25%</span>
+          <span style={{ fontWeight: "600", color: "#f59e0b" }}>0%</span>
         </div>
       </div>
     </div>

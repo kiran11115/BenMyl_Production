@@ -45,12 +45,12 @@ const projects = [
 ];
 
 const interviews = [
-  { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Final" },
-  { name: "Michael Chen", role: "Project Manager", time: "2:00 PM", tag: "Final" },
-  { name: "David Kim", role: "Backend Engineer", time: "11:30 AM", tag: "Coding" },
-  { name: "Jessica Wong", role: "Product Designer", time: "1:15 PM", tag: "Portfolio" },
-  { name: "Robert Fox", role: "DevOps Specialist", time: "3:45 PM", tag: "System Design" },
-  { name: "Amanda Smith", role: "QA Lead", time: "9:00 AM", tag: "Screening" },
+  // { name: "Sarah Johnson", role: "Senior Developer", time: "10:00 AM", tag: "Final" },
+  // { name: "Michael Chen", role: "Project Manager", time: "2:00 PM", tag: "Final" },
+  // { name: "David Kim", role: "Backend Engineer", time: "11:30 AM", tag: "Coding" },
+  // { name: "Jessica Wong", role: "Product Designer", time: "1:15 PM", tag: "Portfolio" },
+  // { name: "Robert Fox", role: "DevOps Specialist", time: "3:45 PM", tag: "System Design" },
+  // { name: "Amanda Smith", role: "QA Lead", time: "9:00 AM", tag: "Screening" },
 ];
 
 const tooltipTheme = {
@@ -116,8 +116,8 @@ const Dashboard = () => {
   const kpiCards = [
     { label: "Posted Jobs", value: String(postedJobsCount), change: "+8%", icon: Briefcase, cardType: "card-blue", bubbleColor: "#3b82f6" },
     { label: "Pending Review Profiles", value: String(pendingReviewCount), change: "+15%", icon: Users, cardType: "card-purple", bubbleColor: "#6366f1" },
-    { label: "Ongoing Contracts", value: "18", change: "+12%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a" },
-    { label: "Total Spend", value: "$125K", change: "+18%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981" },
+    { label: "Ongoing Contracts", value: "0", change: "0%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a" },
+    { label: "Total Spend", value: "$0", change: "0%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981" },
   ];
 
   useEffect(() => {
