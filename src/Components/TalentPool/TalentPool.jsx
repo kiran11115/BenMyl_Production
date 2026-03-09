@@ -22,6 +22,7 @@ import JobOverviewCard from "./JobOverviewCard";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import NoData from "../UploadTalent/NoData";
+import { calculateTotalExperience } from "../../Utils/experienceUtils";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -450,7 +451,7 @@ const TalentPool = () => {
 
       role: item.title || "—",
 
-      experience: `${item.noofExperience || 0} yrs`,
+      experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
 
       location: item.city || "—",
 
