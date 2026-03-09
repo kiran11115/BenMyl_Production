@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { MoreVertical, Clock, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
 
-const ProjectsSection = ({ projects }) => {
+const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
   const navigate = useNavigate();
 
   // Helper to generate a consistent random avatar based on the name
@@ -13,7 +13,6 @@ const ProjectsSection = ({ projects }) => {
     const seed = name.replace(/[^a-zA-Z0-9]/g, "");
     return `https://i.pravatar.cc/150?u=${seed}`;
   };
-
   return (
     <>
       {/* Header Section */}
@@ -32,7 +31,10 @@ const ProjectsSection = ({ projects }) => {
           >
             + Create Job
           </button>
-          <UploadTalentModal />
+          <UploadTalentModal
+  onSuccess={onUploadSuccess}
+  onUploading={onUploading}
+/>
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-upcoming-interview")}

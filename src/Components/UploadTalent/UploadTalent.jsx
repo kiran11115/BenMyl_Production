@@ -104,6 +104,37 @@ const UploadTalent = () => {
         }
     }, []);
 
+    useEffect(() => {
+  if (location.state?.fromDashboardUpload) {
+
+    const totalSeconds = 20;
+
+    setUploadCount(location.state?.uploadCount || 1);
+    setWaitingForRefresh(true);
+    setCountdown(totalSeconds);
+
+    if (countdownRef.current) clearInterval(countdownRef.current);
+
+    countdownRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    setTimeout(() => {
+      setRefreshKey(prev => prev + 1);
+      setWaitingForRefresh(false);
+      setUploadCount(0);
+      setCountdown(0);
+    }, 20000);
+
+  }
+}, [location.state]);
+
     return (
         <>
             {/* <div className="d-flex align-items-center justify-content-between" style={{ padding: "24px 24px 0px 24px" }}>

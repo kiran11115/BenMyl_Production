@@ -109,9 +109,14 @@ function UploadTalentModal({
 
       setTimeout(() => {
         handleClose();
-        navigate("/user/user-upload-talent", {
-          state: { files: uploadedFiles, activeTab: "Review", },
-        });
+       navigate("/user/user-upload-talent", {
+  state: {
+    files: uploadedFiles,
+    activeTab: "Review",
+    fromDashboardUpload: true,
+    uploadCount: uploadedFiles.length
+  },
+});
       }, 800);
 
     } catch (error) {
