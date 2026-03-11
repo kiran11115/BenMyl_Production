@@ -225,9 +225,27 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
   };
 
 
-  const resetFilters = () => {
-    setFilterInputs(initialFilters);
+ const resetFilters = () => {
+  const resetValues = {
+    keyword: "",
+    locationType: "Any Type",
+    roles: [],
+    skills: [],
+    availability: [],
+    location: "",
+    minExperience: "",
+    maxExperience: "",
+    minSalary: "",
+    maxSalary: "",
   };
+
+  setFilterInputs(resetValues);
+
+  // notify parent
+  if (onApplyFilters) {
+    onApplyFilters(resetValues);
+  }
+};
 
   const SectionHeader = ({ id, title, isExpanded, summary }) => (
     <div
