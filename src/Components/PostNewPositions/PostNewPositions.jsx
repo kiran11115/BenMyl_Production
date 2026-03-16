@@ -661,23 +661,35 @@ useEffect(() => {
                 </div>
 
                 <div className="auth-form-group" style={{ marginBottom: 0 }}>
-                  <label className="auth-label">Required Skills</label>
-                  <input
-                    className="auth-input"
-                    placeholder="Add skills (Enter)"
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={handleAddSkill}
-                  />
-                  <div className="modal-tags-row mt-2">
-                    {skills.map((skill) => (
-                      <span key={skill} className="status-tag status-progress">
-                        {skill}
-                        <X size={12} className="ms-1" style={{ cursor: 'pointer' }} onClick={() => removeSkill(skill)} />
-                      </span>
-                    ))}
-                  </div>
-                </div>
+  <label className="auth-label">Required Skills</label>
+
+  <input
+    className="auth-input"
+    placeholder="Add skills (Press Enter)"
+    value={skillInput}
+    onChange={(e) => setSkillInput(e.target.value)}
+    onKeyDown={handleAddSkill}
+  />
+
+  {/* Instruction note */}
+  <p style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
+    Type a skill and press <b>Enter</b> to add it. Repeat to add multiple skills.
+  </p>
+
+  <div className="modal-tags-row mt-2">
+    {skills.map((skill) => (
+      <span key={skill} className="status-tag status-progress">
+        {skill}
+        <X
+          size={12}
+          className="ms-1"
+          style={{ cursor: "pointer" }}
+          onClick={() => removeSkill(skill)}
+        />
+      </span>
+    ))}
+  </div>
+</div>
               </div>
 
               <div className="auth-form-group mt-4">

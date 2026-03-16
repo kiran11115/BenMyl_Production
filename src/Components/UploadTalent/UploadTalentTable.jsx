@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import MobileTalentCard from "./MobileTalentCard";
 import "./UploadTalent.css";
+import NoData from "./NoData";
 
 const PAGE_SIZE = 10;
 const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false }) => {
@@ -241,9 +242,16 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
             {!isLoading && sortedTalents.length === 0 && (
               <tr>
                 <td colSpan={isDashboard ? 6 : 9} style={{ textAlign: "center", padding: "40px" }}>
-                  <span style={{ color: "#64748b", fontSize: "14px" }}>
-                    No resumes uploaded
-                  </span>
+                  <div
+                    style={{
+                      minHeight: "320px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text="No resumes uploaded" />
+                  </div>
                 </td>
               </tr>
             )}
