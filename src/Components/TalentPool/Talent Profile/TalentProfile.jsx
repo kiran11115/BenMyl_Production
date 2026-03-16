@@ -18,6 +18,7 @@ import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
+import { toast } from "react-toastify";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
@@ -121,7 +122,7 @@ const TalentProfile = () => {
 
   const handleShortlistFromProfile = () => {
     if (!jobId || !employeeId) {
-      alert("Select a job before shortlisting");
+      toast.error("Please select a Job from the filters first to shortlist.");
       return;
     }
 
