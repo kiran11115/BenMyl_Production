@@ -341,13 +341,13 @@ function UploadTalentModal({
                   or click to browse
                 </p>
                 <p style={{ fontSize: "12px", color: "#9ca3af" }}>
-                  Supports PDF, DOC, DOCX (Max 10MB each)
+                  Supports PDF, ZIP, RAR (Max 10MB each)
                 </p>
                 <input
                   id="bulkUploadFileInput"
                   type="file"
                   multiple
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.zip,.rar"
                   style={{ display: "none" }}
                   onChange={handleFileChange}
                 />
