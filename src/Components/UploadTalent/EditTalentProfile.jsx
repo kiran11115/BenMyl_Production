@@ -14,7 +14,8 @@ import { useFormik, FieldArray, FormikProvider } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useApprovedEmployeeMutation, useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { ValidationErrorModal } from "./SaveTalentAlert";
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required("Title is required"),
@@ -50,6 +51,7 @@ const validationSchema = Yup.object().shape({
 const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
     const [updateEmployee, { isLoading: isSaving }] = useUpdateEmployeeResumeMutation();
     const [skillInput, setSkillInput] = useState("");
+    const [validationErrorsState, setValidationErrorsState] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -174,9 +176,73 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
         return (first + last).toUpperCase() || "??";
     };
 
+    const handleSaveClick = async (e) => {
+        if (e) e.preventDefault();
+        const errors = await formik.validateForm();
+        if (Object.keys(errors).length > 0) {
+            formik.setTouched(
+                Object.keys(formik.values).reduce((acc, key) => {
+                    acc[key] = true;
+                    return acc;
+                }, {})
+            );
+            
+            const errorMessages = [];
+            let firstErrorPath = null;
+            
+            const flattenErrors = (errObj, prefix = "", pathPrefix = "") => {
+                for (const key in errObj) {
+                    const currentPath = pathPrefix ? `${pathPrefix}.${key}` : key;
+                    if (Array.isArray(errObj[key])) {
+                        errObj[key].forEach((item, index) => {
+                            const itemPath = `${currentPath}.${index}`;
+                            if (typeof item === 'object' && item !== null) {
+                                const sectionName = key === 'workexperiences' ? 'Experience' : 
+                                                  key === 'employeeprojects' ? 'Project' : 
+                                                  key === 'employee_Heighers' ? 'Education' : key;
+                                flattenErrors(item, `${sectionName}[${index + 1}]: `, itemPath);
+                            } else if (item) {
+                                if (!firstErrorPath) firstErrorPath = itemPath;
+                                errorMessages.push(`${prefix}${key}[${index + 1}]: ${item}`);
+                            }
+                        });
+                    } else if (typeof errObj[key] === "object" && errObj[key] !== null) {
+                        flattenErrors(errObj[key], `${key} `, currentPath);
+                    } else if (errObj[key]) {
+                        if (!firstErrorPath) firstErrorPath = currentPath;
+                        errorMessages.push(`${prefix}${errObj[key]}`);
+                    }
+                }
+            };
+
+            flattenErrors(errors);
+            setValidationErrorsState(errorMessages);
+            
+            // Scroll to the first missing validation field
+            if (firstErrorPath) {
+                setTimeout(() => {
+                    const errorElement = document.querySelector(`[name="${firstErrorPath}"]`);
+                    if (errorElement) {
+                        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        errorElement.focus({ preventScroll: true });
+                        // Add a temporary highlight effect
+                        const originalBorder = errorElement.style.border;
+                        errorElement.style.border = '1px solid #ef4444';
+                        setTimeout(() => {
+                            errorElement.style.border = originalBorder;
+                        }, 2000);
+                    }
+                }, 100);
+            }
+
+            return;
+        }
+        formik.handleSubmit(e);
+    };
+
     return (
         <FormikProvider value={formik}>
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={handleSaveClick}>
             <style>{`
                 .auth-password-wrapper {
                     position: relative;
@@ -604,9 +670,9 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <button type="button" className="btn-secondary" onClick={onCancel}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="btn-primary" disabled={isSaving}>
-    {isSaving ? "Saving..." : "Save Changes"}
-  </button>
+                                <button type="button" className="btn-primary" onClick={handleSaveClick} disabled={isSaving}>
+                                    {isSaving ? "Saving..." : "Save Changes"}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -653,6 +719,14 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                     </div>
                 </div>
             </div>
+            {validationErrorsState && (
+                <ValidationErrorModal 
+                    errors={validationErrorsState} 
+                    onClose={() => setValidationErrorsState(null)} 
+                    onRetry={() => setValidationErrorsState(null)} 
+                    onContactSupport={() => setValidationErrorsState(null)} 
+                />
+            )}
             </form>
         </FormikProvider>
     );
