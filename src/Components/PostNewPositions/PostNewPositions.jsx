@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
   FileText, X, Building2, Check, ChevronDown
@@ -27,13 +27,13 @@ const validationSchema = Yup.object().shape({
   companyName: Yup.string().required("Company Name is required"),
   location: Yup.string().required("Location is required"),
   employmentType: Yup.string().required("Employment Type is required"),
-  salaryMin: Yup.number().typeError("Enter valid amount").required("Required"),
+  salaryMin: Yup.number().typeError("Enter valid amount").required("Min Salary is Required"),
   salaryMax: Yup.number()
     .typeError("Enter valid amount")
     .when('salaryType', {
       is: (val) => val !== 'entireBudget',
       then: (schema) => schema
-        .required("Required")
+        .required("Max Salary is Required")
         .moreThan(Yup.ref("salaryMin"), "Must be greater than Min"),
       otherwise: (schema) => schema.notRequired()
     }),
@@ -81,7 +81,26 @@ const PostNewPositions = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isEmpOpen, setIsEmpOpen] = useState(false);
 
+const authRef = useRef(null);
+const empRef = useRef(null);
 
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (authRef.current && !authRef.current.contains(event.target)) {
+      setIsAuthOpen(false);
+    }
+
+    if (empRef.current && !empRef.current.contains(event.target)) {
+      setIsEmpOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   const [postJob] = usePostJobMutation();
   const [saveJobDraft] = useSaveJobDraftMutation();
@@ -453,7 +472,7 @@ const PostNewPositions = () => {
               <div className="grid-3">
                 <div>
                   <label className="auth-label">Employment Type<span style={{ color: '#ef4444' }}> *</span></label>
-                  <div className="vendor-section">
+                  <div className="vendor-section" ref={empRef}>
                     <div className="auth-input" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                       <span>Select Type</span>
                       <ChevronDown size={16} className={`chevron ${isEmpOpen ? 'rotate' : ''}`} />
@@ -495,7 +514,7 @@ const PostNewPositions = () => {
 
                 <div>
                   <label className="auth-label">Work Authorization</label>
-                  <div className="vendor-section">
+                  <div className="vendor-section" ref={authRef}>
                     <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
                       <span>Select Work Autherization</span>
                       <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />

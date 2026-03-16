@@ -78,9 +78,16 @@ const RecommendedJobs = ({ navigate, role, skills }) => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-      rateText: job.salaryRange_min
-        ? `$${job.salaryRange_min}-${job.salaryRange_max}/hr`
+      rateText: job.salaryRange_Min
+        ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
         : "N/A",
+        budgetLabel: (() => {
+        const t = (job.salarType || "").toLowerCase();
+        if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+        if (t.includes("month")) return "/month";
+        if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+        return "/hr"; // default
+      })(),
       experienceText: job.experienceLevel,
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
@@ -160,7 +167,7 @@ const RecommendedJobs = ({ navigate, role, skills }) => {
                   >
                     <div className="drawer-stat-item">
                       <span className="label">Budget</span>
-                      <span className="value">{job.rateText}</span>
+                      <span className="value">{job.rateText}{job.budgetLabel}</span>
                     </div>
                     <div className="drawer-stat-item">
                       <span className="label">Experience</span>
