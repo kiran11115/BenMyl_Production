@@ -60,8 +60,6 @@ export const SuccessModal = ({ onClose,data,isEdit }) => {
     return (
         <div className="modal-overlay">
             <div className="alert-card success-theme">
-                <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-
                 <div className="alert-content left-align">
                     <div className="d-flex align-items-center gap-2 mb-3">
                         <div className="icon-circle success-icon-bg">

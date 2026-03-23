@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Edit2, Plus, ChevronDown, ChevronUp, Trash2, User, Info, GraduationCap, Briefcase, Layers, CheckCircle } from "lucide-react";
+import {
+  Edit2,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  User,
+  Info,
+  GraduationCap,
+  Briefcase,
+  Layers,
+  CheckCircle,
+} from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
-import { useApprovedEmployeeMutation, useDraftProfileEmployeeMutation, useGetEmployeeResumeQuery } from "../../State-Management/Api/UploadResumeApiSlice";
-import { ValidationErrorModal, ConfirmSaveModal, SaveSuccessModal, SaveErrorModal } from "./SaveTalentAlert";
+import {
+  useApprovedEmployeeMutation,
+  useDraftProfileEmployeeMutation,
+  useGetEmployeeResumeQuery,
+} from "../../State-Management/Api/UploadResumeApiSlice";
+import {
+  ValidationErrorModal,
+  ConfirmSaveModal,
+  SaveSuccessModal,
+  SaveErrorModal,
+} from "./SaveTalentAlert";
 
 // ===== ACCORDION ANIMATIONS =====
 const accordionAnimationStyles = `
@@ -40,11 +61,11 @@ const accordionAnimationStyles = `
 `;
 
 // Inject styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = accordionAnimationStyles;
-  if (!document.head.querySelector('style[data-accordion-animation]')) {
-    style.setAttribute('data-accordion-animation', 'true');
+  if (!document.head.querySelector("style[data-accordion-animation]")) {
+    style.setAttribute("data-accordion-animation", "true");
     document.head.appendChild(style);
   }
 }
@@ -68,7 +89,6 @@ const formatDateToInput = (value) => {
   return date.toISOString().split("T")[0]; // YYYY-MM-DD for input type=date
 };
 
-
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
@@ -83,7 +103,9 @@ const PDFResumePreview = ({ data }) => {
           <span>{data.emailAddress}</span>
           <span>{data.phoneNo}</span>
           {data.city && (
-            <span>{data.city}, {data.state}</span>
+            <span>
+              {data.city}, {data.state}
+            </span>
           )}
         </div>
       </div>
@@ -91,10 +113,15 @@ const PDFResumePreview = ({ data }) => {
       {/* Summary */}
       {data.bio && (
         <div className="resume-section">
-          <h3 className="resume-section-title">
-            Professional Summary
-          </h3>
-          <p className="resume-list" style={{ paddingLeft: 0, textAlign: 'justify', borderBottom: 'none' }}>
+          <h3 className="resume-section-title">Professional Summary</h3>
+          <p
+            className="resume-list"
+            style={{
+              paddingLeft: 0,
+              textAlign: "justify",
+              borderBottom: "none",
+            }}
+          >
             {data.bio}
           </p>
         </div>
@@ -103,20 +130,21 @@ const PDFResumePreview = ({ data }) => {
       {/* Experience */}
       {data.workexperiences && data.workexperiences.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">
-            Professional Experience
-          </h3>
+          <h3 className="resume-section-title">Professional Experience</h3>
           {data.workexperiences.map((e, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
                 <div className="resume-item-main">{e.companyName}</div>
                 <div className="resume-date-badge">
-                  {e.startDate?.slice(0, 7)} — {e.endDate ? e.endDate.slice(0, 7) : "Present"}
+                  {e.startDate?.slice(0, 7)} —{" "}
+                  {e.endDate ? e.endDate.slice(0, 7) : "Present"}
                 </div>
               </div>
               <div className="resume-item-sub">{e.position}</div>
               <ul className="resume-list">
-                {e.description?.split(".").map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
+                {e.description
+                  ?.split(".")
+                  .map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
               </ul>
             </div>
           ))}
@@ -126,9 +154,7 @@ const PDFResumePreview = ({ data }) => {
       {/* Education */}
       {data.employee_Heighers && data.employee_Heighers.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">
-            Education
-          </h3>
+          <h3 className="resume-section-title">Education</h3>
           {data.employee_Heighers.map((e, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
@@ -138,7 +164,9 @@ const PDFResumePreview = ({ data }) => {
                 </div>
               </div>
               <div className="resume-item-sub">
-                {e.highestQualification} {e.fieldofstudy && `• ${e.fieldofstudy}`} {e.percentage && `(${e.percentage})`}
+                {e.highestQualification}{" "}
+                {e.fieldofstudy && `• ${e.fieldofstudy}`}{" "}
+                {e.percentage && `(${e.percentage})`}
               </div>
             </div>
           ))}
@@ -148,21 +176,27 @@ const PDFResumePreview = ({ data }) => {
       {/* Projects */}
       {data.employeeprojects && data.employeeprojects.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">
-            Key Projects
-          </h3>
+          <h3 className="resume-section-title">Key Projects</h3>
           {data.employeeprojects.map((p, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
                 <div className="resume-item-main">{p.projectName}</div>
                 <div className="resume-date-badge">
-                  {p.startDate?.slice(0, 7)} — {p.endDate ? p.endDate.slice(0, 7) : "Present"}
+                  {p.startDate?.slice(0, 7)} —{" "}
+                  {p.endDate ? p.endDate.slice(0, 7) : "Present"}
                 </div>
               </div>
-              <p className="resume-list" style={{ paddingLeft: 0, marginBottom: '12px' }}>{p.description}</p>
+              <p
+                className="resume-list"
+                style={{ paddingLeft: 0, marginBottom: "12px" }}
+              >
+                {p.description}
+              </p>
               <div className="resume-skills-grid">
                 {p.skills?.split(",").map((s, idx) => (
-                  <span key={idx} className="resume-skill-pill">{s.trim()}</span>
+                  <span key={idx} className="resume-skill-pill">
+                    {s.trim()}
+                  </span>
                 ))}
               </div>
             </div>
@@ -173,12 +207,12 @@ const PDFResumePreview = ({ data }) => {
       {/* Skills */}
       {data.skills && (
         <div className="resume-section">
-          <h3 className="resume-section-title">
-            Core Competencies
-          </h3>
+          <h3 className="resume-section-title">Core Competencies</h3>
           <div className="resume-skills-grid">
             {data.skills.split(",").map((s, i) => (
-              <span key={i} className="resume-skill-pill">{s.trim()}</span>
+              <span key={i} className="resume-skill-pill">
+                {s.trim()}
+              </span>
             ))}
           </div>
         </div>
@@ -190,13 +224,15 @@ const PDFResumePreview = ({ data }) => {
 // ===== VALIDATION FUNCTIONS =====
 const validateFirstName = (val) => {
   if (!val || val.trim() === "") return "First name is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "First name should contain only letters";
+  if (!/^[a-zA-Z\s]*$/.test(val))
+    return "First name should contain only letters";
   return null;
 };
 
 const validateLastName = (val) => {
   if (!val || val.trim() === "") return "Last name is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "Last name should contain only letters";
+  if (!/^[a-zA-Z\s]*$/.test(val))
+    return "Last name should contain only letters";
   return null;
 };
 
@@ -207,14 +243,17 @@ const validatePosition = (val) => {
 
 const validatePhone = (val) => {
   if (!val || val.trim() === "") return "Phone number is required";
-  if (!/^\d+$/.test(val.replace(/[\s\-\(\)+]/g, ""))) return "Phone number should contain only numbers";
+  if (!/^\d+$/.test(val.replace(/[\s\-\(\)+]/g, "")))
+    return "Phone number should contain only numbers";
   return null;
 };
 
 const validateEmail = (val) => {
   if (!val || val.trim() === "") return "Email is required";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return "Please enter a valid email address";
-  if (!val.toLowerCase().includes(".com")) return "Email should have .com domain";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))
+    return "Please enter a valid email address";
+  if (!val.toLowerCase().includes(".com"))
+    return "Email should have .com domain";
   return null;
 };
 
@@ -239,13 +278,15 @@ const validateGender = (val) => {
 const validateEmergency = (val) => {
   // Emergency contact is optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
-  if (!/^\d+$/.test(String(val).replace(/[\s\-\(\)+]/g, ""))) return "Emergency contact should contain only numbers";
+  if (!/^\d+$/.test(String(val).replace(/[\s\-\(\)+]/g, "")))
+    return "Emergency contact should contain only numbers";
   return null;
 };
 
 const validateAddress = (val) => {
   if (!val || String(val).trim() === "") return "Address is required";
-  if (String(val).trim().length < 5) return "Address should be more descriptive";
+  if (String(val).trim().length < 5)
+    return "Address should be more descriptive";
   return null;
 };
 
@@ -269,20 +310,23 @@ const validateCity = (val) => {
 
 const validateBio = (val) => {
   if (!val || val.trim() === "") return "Bio is required";
-  if (val.trim().length < 50) return "Bio should contain at least 50 characters";
+  if (val.trim().length < 50)
+    return "Bio should contain at least 50 characters";
   return null;
 };
 
 // ===== EDUCATION VALIDATION FUNCTIONS =====
 const validateUniversity = (val) => {
   if (!val || val.trim() === "") return "University is required";
-  if (!/^[a-zA-Z\s.]*$/.test(val)) return "University should contain only letters";
+  if (!/^[a-zA-Z\s.]*$/.test(val))
+    return "University should contain only letters";
   return null;
 };
 
 const validateQualification = (val) => {
   if (!val || val.trim() === "") return "Qualification is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "Qualification should contain only letters";
+  if (!/^[a-zA-Z\s]*$/.test(val))
+    return "Qualification should contain only letters";
   return null;
 };
 
@@ -311,14 +355,16 @@ const validateEduField = (val) => {
 const validatePercentage = (val) => {
   // Percentage optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
-  if (!/^\d+(?:\.\d+)?$/.test(String(val).trim())) return "Percentage should contain only numbers";
+  if (!/^\d+(?:\.\d+)?$/.test(String(val).trim()))
+    return "Percentage should contain only numbers";
   return null;
 };
 
 const validateCertifications = (val) => {
   // Certifications optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
-  if (!/^[a-zA-Z,\s]*$/.test(String(val))) return "Certifications should contain only letters, commas and spaces";
+  if (!/^[a-zA-Z,\s]*$/.test(String(val)))
+    return "Certifications should contain only letters, commas and spaces";
   return null;
 };
 
@@ -355,7 +401,8 @@ const validateExpSkills = (val) => {
 const validateExpDescription = (val) => {
   // Description optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
-  if (String(val).trim().length < 10) return "Description should be more descriptive";
+  if (String(val).trim().length < 10)
+    return "Description should be more descriptive";
   return null;
 };
 
@@ -394,7 +441,8 @@ const validateProjectSkills = (val) => {
 const validateProjectDescription = (val) => {
   // Description optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
-  if (String(val).trim().length < 10) return "Description should be more descriptive";
+  if (String(val).trim().length < 10)
+    return "Description should be more descriptive";
   return null;
 };
 
@@ -410,7 +458,7 @@ const getValidationForField = (fieldName, section) => {
       startdate: validateExpStartDate,
       enddate: validateExpEndDate,
       skills: validateExpSkills,
-      description: validateExpDescription
+      description: validateExpDescription,
     };
     return expValidations[key] || null;
   }
@@ -423,7 +471,7 @@ const getValidationForField = (fieldName, section) => {
       startdate: validateProjectStartDate,
       enddate: validateProjectEndDate,
       skills: validateProjectSkills,
-      description: validateProjectDescription
+      description: validateProjectDescription,
     };
     return projValidations[key] || null;
   }
@@ -449,19 +497,27 @@ const getValidationForField = (fieldName, section) => {
     enddate: validateEduEndDate,
     field: validateEduField,
     percentage: validatePercentage,
-    certifications: validateCertifications
+    certifications: validateCertifications,
   };
   return validations[key] || null;
 };
 
-const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
-
+const EditableField = ({
+  label,
+  value,
+  editing,
+  onEdit,
+  onSave,
+  onCancel,
+  section,
+  hideEditButton,
+  required,
+}) => {
   const isDateField =
-    label.toLowerCase().includes("date") ||
-    label.toLowerCase().includes("dob");
+    label.toLowerCase().includes("date") || label.toLowerCase().includes("dob");
 
   const [temp, setTemp] = useState(
-    isDateField ? formatDateToInput(value) : (value || "")
+    isDateField ? formatDateToInput(value) : value || "",
   );
 
   const [errorLocal, setErrorLocal] = useState(null);
@@ -479,33 +535,44 @@ const EditableField = ({ label, value, editing, onEdit, onSave, onCancel, sectio
     <div className="field-group">
       <label className="field-label">
         {label}
-        {required && <span style={{ color: '#ef4444' }}> *</span>}
+        {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
 
       {editing ? (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <input
             type={isDateField ? "date" : "text"}
-            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
+            className={`field-input ${hasValidationError ? "error-border" : ""}`}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
+          {errorLocal && (
+            <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>
+              {errorLocal}
+            </div>
+          )}
         </div>
       ) : (
         <div className="field-value">
-          {isDateField
-            ? formatDateToDisplay(value)
-            : (value || "—")}
+          {isDateField ? formatDateToDisplay(value) : value || "—"}
         </div>
       )}
     </div>
   );
 };
 
-
-const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
+const EditableTextarea = ({
+  label,
+  value,
+  editing,
+  onEdit,
+  onSave,
+  onCancel,
+  section,
+  hideEditButton,
+  required,
+}) => {
   const [temp, setTemp] = useState(value || "");
   const [errorLocal, setErrorLocal] = useState(null);
 
@@ -522,21 +589,33 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, sec
     <div className="field-group">
       <label className="field-label">
         {label}
-        {required && <span style={{ color: '#ef4444' }}> *</span>}
+        {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
       {editing ? (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <textarea
-            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
+            className={`field-input ${hasValidationError ? "error-border" : ""}`}
             style={{ minHeight: 120 }}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
+          {errorLocal && (
+            <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>
+              {errorLocal}
+            </div>
+          )}
         </div>
       ) : (
-        <div className="field-value" style={{ display: 'block', height: 'auto', minHeight: '80px', lineHeight: '1.6' }}>
+        <div
+          className="field-value"
+          style={{
+            display: "block",
+            height: "auto",
+            minHeight: "80px",
+            lineHeight: "1.6",
+          }}
+        >
           {value || "—"}
         </div>
       )}
@@ -544,7 +623,17 @@ const EditableTextarea = ({ label, value, editing, onEdit, onSave, onCancel, sec
   );
 };
 
-const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, section, hideEditButton, required }) => {
+const EditableTags = ({
+  label,
+  values,
+  editing,
+  onEdit,
+  onSave,
+  onCancel,
+  section,
+  hideEditButton,
+  required,
+}) => {
   const [temp, setTemp] = useState(values.join(", "));
   const [errorLocal, setErrorLocal] = useState(null);
 
@@ -552,7 +641,12 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, sectio
     const newVal = e.target.value;
     setTemp(newVal);
     setErrorLocal(null);
-    onSave(newVal.split(",").map(t => t.trim()).filter(Boolean));
+    onSave(
+      newVal
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    );
   };
 
   const hasValidationError = required && (!temp || temp.length === 0);
@@ -561,23 +655,34 @@ const EditableTags = ({ label, values, editing, onEdit, onSave, onCancel, sectio
     <div className="field-group">
       <label className="field-label">
         {label}
-        {required && <span style={{ color: '#ef4444' }}> *</span>}
+        {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
       {editing ? (
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: "relative" }}>
           <textarea
-            className={`field-input ${hasValidationError ? 'error-border' : ''}`}
+            className={`field-input ${hasValidationError ? "error-border" : ""}`}
             style={{ minHeight: 100 }}
             value={temp}
             onChange={handleChange}
             autoFocus
           />
-          {errorLocal && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{errorLocal}</div>}
+          {errorLocal && (
+            <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>
+              {errorLocal}
+            </div>
+          )}
         </div>
       ) : (
         <div className="tag-container">
-          {values.length === 0 ? <span className="auth-subtitle">No items</span> :
-            values.map((v, i) => <span key={i} className="status-tag status-progress">{v}</span>)}
+          {values.length === 0 ? (
+            <span className="auth-subtitle">No items</span>
+          ) : (
+            values.map((v, i) => (
+              <span key={i} className="status-tag status-progress">
+                {v}
+              </span>
+            ))
+          )}
         </div>
       )}
     </div>
@@ -600,8 +705,8 @@ const ReviewTalent = () => {
   const [openAccordions, setOpenAccordions] = useState(["basicInfo"]);
 
   const toggleAccordion = (key) => {
-    setOpenAccordions(prev =>
-      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    setOpenAccordions((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
 
@@ -612,9 +717,10 @@ const ReviewTalent = () => {
   const [experienceErrors, setExperienceErrors] = useState(null);
   const [projectsErrors, setProjectsErrors] = useState(null);
 
-  const beginEdit = (s) => setEditingSections(prev => [...new Set([...prev, s])]);
+  const beginEdit = (s) =>
+    setEditingSections((prev) => [...new Set([...prev, s])]);
   const cancelEdit = (s) => {
-    setEditingSections(prev => prev.filter(k => k !== s));
+    setEditingSections((prev) => prev.filter((k) => k !== s));
     if (s === "basicInfo") setBasicInfoErrors(null);
     if (s === "personalInfo") setPersonalInfoErrors(null);
     if (s === "education") setEducationErrors(null);
@@ -711,7 +817,10 @@ const ReviewTalent = () => {
     if (!Array.isArray(educationArr)) return errors;
     educationArr.forEach((edu, idx) => {
       // Only validate dates if any info is entered in this education entry
-      const hasData = edu.university?.trim() || edu.qualification?.trim() || edu.field?.trim();
+      const hasData =
+        edu.university?.trim() ||
+        edu.qualification?.trim() ||
+        edu.field?.trim();
 
       if (hasData) {
         if (!edu.startDate || String(edu.startDate).trim() === "") {
@@ -745,14 +854,16 @@ const ReviewTalent = () => {
     return errors;
   };
 
-
   // ===== VALIDATE ALL PROJECTS ENTRIES =====
   const validateAllProjects = (projectsArr) => {
     const errors = [];
     if (!Array.isArray(projectsArr)) return errors;
     projectsArr.forEach((proj, idx) => {
       // Only validate dates if any info is entered in this project entry
-      const hasData = proj.projectName?.trim() || proj.role?.trim() || proj.description?.trim();
+      const hasData =
+        proj.projectName?.trim() ||
+        proj.role?.trim() ||
+        proj.description?.trim();
 
       if (hasData) {
         if (!proj.startDate || String(proj.startDate).trim() === "") {
@@ -766,7 +877,6 @@ const ReviewTalent = () => {
     return errors;
   };
 
-
   const handleSaveTalent = async () => {
     if (!isReviewed) return;
 
@@ -777,20 +887,41 @@ const ReviewTalent = () => {
     const experienceErrors = validateAllExperience(talent.experience);
     const projectErrors = validateAllProjects(talent.projects);
 
-    const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
+    const allErrors = [
+      ...validationErrors,
+      ...personalErrors,
+      ...educationErrors,
+      ...experienceErrors,
+      ...projectErrors,
+    ];
     if (allErrors.length > 0) {
       setValidationErrorsState(allErrors);
 
       // Auto-expand and enter edit mode for ALL failing sections
       const sectionsToOpen = [];
       const sectionsToEdit = [];
-      if (validationErrors.length > 0) { sectionsToOpen.push("basicInfo"); sectionsToEdit.push("basicInfo"); }
-      if (personalErrors.length > 0) { sectionsToOpen.push("personalInfo"); sectionsToEdit.push("personalInfo"); }
-      if (educationErrors.length > 0) { sectionsToOpen.push("education"); sectionsToEdit.push("education"); }
-      if (experienceErrors.length > 0) { sectionsToOpen.push("experience"); sectionsToEdit.push("experience"); }
-      if (projectErrors.length > 0) { sectionsToOpen.push("projects"); sectionsToEdit.push("projects"); }
-      setOpenAccordions(prev => [...new Set([...prev, ...sectionsToOpen])]);
-      setEditingSections(prev => [...new Set([...prev, ...sectionsToEdit])]);
+      if (validationErrors.length > 0) {
+        sectionsToOpen.push("basicInfo");
+        sectionsToEdit.push("basicInfo");
+      }
+      if (personalErrors.length > 0) {
+        sectionsToOpen.push("personalInfo");
+        sectionsToEdit.push("personalInfo");
+      }
+      if (educationErrors.length > 0) {
+        sectionsToOpen.push("education");
+        sectionsToEdit.push("education");
+      }
+      if (experienceErrors.length > 0) {
+        sectionsToOpen.push("experience");
+        sectionsToEdit.push("experience");
+      }
+      if (projectErrors.length > 0) {
+        sectionsToOpen.push("projects");
+        sectionsToEdit.push("projects");
+      }
+      setOpenAccordions((prev) => [...new Set([...prev, ...sectionsToOpen])]);
+      setEditingSections((prev) => [...new Set([...prev, ...sectionsToEdit])]);
 
       return;
     }
@@ -814,7 +945,10 @@ const ReviewTalent = () => {
     /* ===== PERSONAL INFO ===== */
     formData.append("DOB", talent.personalInfo.dob ?? "");
     formData.append("Gender", talent.personalInfo.gender ?? "");
-    formData.append("EmergencyContactNumber", talent.personalInfo.emergency ?? "");
+    formData.append(
+      "EmergencyContactNumber",
+      talent.personalInfo.emergency ?? "",
+    );
 
     formData.append("Country", talent.personalInfo.country ?? "");
     formData.append("State", talent.personalInfo.state ?? "");
@@ -861,10 +995,9 @@ const ReviewTalent = () => {
           EndDate: exp.endDate || getToday(),
           Skills: exp.skills ?? [],
           Description: exp.description ?? "",
-        }))
-      )
+        })),
+      ),
     );
-
 
     /* ===== PROJECTS (STRING — CRITICAL) ===== */
     formData.append(
@@ -876,13 +1009,12 @@ const ReviewTalent = () => {
           projectName: proj.name ?? "",
           Role: proj.role ?? "",
           StartDate: proj.startDate ?? "",
-          EndDate: proj.endDate || getToday(),  // ✅ current date fallback
+          EndDate: proj.endDate || getToday(), // ✅ current date fallback
           Skills: proj.skills ?? [],
           Description: proj.description ?? "",
-        }))
-      )
+        })),
+      ),
     );
-
 
     /* ===== EDUCATION (STRING) ===== */
     formData.append(
@@ -897,9 +1029,9 @@ const ReviewTalent = () => {
           Certifications: (edu.certifications ?? []).join(","),
           Percentage: edu.percentage ?? "",
           StartDate: edu.startDate ?? "",
-          EndDate: edu.endDate || getToday(),   // ✅ current date fallback
-        }))
-      )
+          EndDate: edu.endDate || getToday(), // ✅ current date fallback
+        })),
+      ),
     );
 
     try {
@@ -921,20 +1053,41 @@ const ReviewTalent = () => {
     const experienceErrors = validateAllExperience(talent.experience);
     const projectErrors = validateAllProjects(talent.projects);
 
-    const allErrors = [...validationErrors, ...personalErrors, ...educationErrors, ...experienceErrors, ...projectErrors];
+    const allErrors = [
+      ...validationErrors,
+      ...personalErrors,
+      ...educationErrors,
+      ...experienceErrors,
+      ...projectErrors,
+    ];
     if (allErrors.length > 0) {
       setValidationErrorsState(allErrors);
 
       // Auto-expand and enter edit mode for ALL failing sections
       const sectionsToOpen = [];
       const sectionsToEdit = [];
-      if (validationErrors.length > 0) { sectionsToOpen.push("basicInfo"); sectionsToEdit.push("basicInfo"); }
-      if (personalErrors.length > 0) { sectionsToOpen.push("personalInfo"); sectionsToEdit.push("personalInfo"); }
-      if (educationErrors.length > 0) { sectionsToOpen.push("education"); sectionsToEdit.push("education"); }
-      if (experienceErrors.length > 0) { sectionsToOpen.push("experience"); sectionsToEdit.push("experience"); }
-      if (projectErrors.length > 0) { sectionsToOpen.push("projects"); sectionsToEdit.push("projects"); }
-      setOpenAccordions(prev => [...new Set([...prev, ...sectionsToOpen])]);
-      setEditingSections(prev => [...new Set([...prev, ...sectionsToEdit])]);
+      if (validationErrors.length > 0) {
+        sectionsToOpen.push("basicInfo");
+        sectionsToEdit.push("basicInfo");
+      }
+      if (personalErrors.length > 0) {
+        sectionsToOpen.push("personalInfo");
+        sectionsToEdit.push("personalInfo");
+      }
+      if (educationErrors.length > 0) {
+        sectionsToOpen.push("education");
+        sectionsToEdit.push("education");
+      }
+      if (experienceErrors.length > 0) {
+        sectionsToOpen.push("experience");
+        sectionsToEdit.push("experience");
+      }
+      if (projectErrors.length > 0) {
+        sectionsToOpen.push("projects");
+        sectionsToEdit.push("projects");
+      }
+      setOpenAccordions((prev) => [...new Set([...prev, ...sectionsToOpen])]);
+      setEditingSections((prev) => [...new Set([...prev, ...sectionsToEdit])]);
 
       return;
     }
@@ -958,7 +1111,10 @@ const ReviewTalent = () => {
     /* ===== PERSONAL INFO ===== */
     formData.append("DOB", talent.personalInfo.dob ?? "");
     formData.append("Gender", talent.personalInfo.gender ?? "");
-    formData.append("EmergencyContactNumber", talent.personalInfo.emergency ?? "");
+    formData.append(
+      "EmergencyContactNumber",
+      talent.personalInfo.emergency ?? "",
+    );
 
     formData.append("Country", talent.personalInfo.country ?? "");
     formData.append("State", talent.personalInfo.state ?? "");
@@ -1005,10 +1161,9 @@ const ReviewTalent = () => {
           EndDate: exp.endDate || getToday(),
           Skills: exp.skills ?? [],
           Description: exp.description ?? "",
-        }))
-      )
+        })),
+      ),
     );
-
 
     /* ===== PROJECTS (STRING — CRITICAL) ===== */
     formData.append(
@@ -1020,13 +1175,12 @@ const ReviewTalent = () => {
           projectName: proj.name ?? "",
           Role: proj.role ?? "",
           StartDate: proj.startDate ?? "",
-          EndDate: proj.endDate || getToday(),  // ✅ current date fallback
+          EndDate: proj.endDate || getToday(), // ✅ current date fallback
           Skills: proj.skills ?? [],
           Description: proj.description ?? "",
-        }))
-      )
+        })),
+      ),
     );
-
 
     /* ===== EDUCATION (STRING) ===== */
     formData.append(
@@ -1041,9 +1195,9 @@ const ReviewTalent = () => {
           Certifications: (edu.certifications ?? []).join(","),
           Percentage: edu.percentage ?? "",
           StartDate: edu.startDate ?? "",
-          EndDate: edu.endDate || getToday(),   // ✅ current date fallback
-        }))
-      )
+          EndDate: edu.endDate || getToday(), // ✅ current date fallback
+        })),
+      ),
     );
 
     try {
@@ -1054,7 +1208,6 @@ const ReviewTalent = () => {
       alert("Failed to save talent");
     }
   };
-
 
   /* ===== MAP API → LOCAL STATE (NO DESIGN CHANGE) ===== */
   useEffect(() => {
@@ -1067,7 +1220,7 @@ const ReviewTalent = () => {
         position: data.title,
         phone: data.phoneNo,
         email: data.emailAddress,
-        skills: data.skills?.split(",") || []
+        skills: data.skills?.split(",") || [],
       },
       personalInfo: {
         dob: data.dob || "",
@@ -1077,77 +1230,136 @@ const ReviewTalent = () => {
         state: data.state,
         city: data.city,
         address: data.address,
-        bio: data.bio
+        bio: data.bio,
       },
-      education: data.employee_Heighers?.map(e => ({
-        university: e.university,
-        qualification: e.highestQualification || "",
-        startDate: e.startDate?.slice(0, 10),
-        endDate: e.endDate?.slice(0, 10),
-        field: e.fieldofstudy || "",
-        percentage: e.percentage,
-        certifications: e.certifications ? e.certifications.split(",") : []
-      })) || [],
-      experience: data.workexperiences?.map(e => ({
-        company: e.companyName,
-        position: e.position,
-        startDate: e.startDate?.slice(0, 10),
-        endDate: e.endDate?.slice(0, 10),
-        skills: e.skills?.split(",") || [],
-        description: e.description
-      })) || [],
-      projects: data.employeeprojects?.map(p => ({
-        name: p.projectName,
-        role: p.role || "",
-        startDate: p.startDate?.slice(0, 10),
-        endDate: p.endDate?.slice(0, 10),
-        skills: p.skills?.split(",") || [],
-        description: p.description
-      })) || []
+      education:
+        data.employee_Heighers?.map((e) => ({
+          university: e.university,
+          qualification: e.highestQualification || "",
+          startDate: e.startDate?.slice(0, 10),
+          endDate: e.endDate?.slice(0, 10),
+          field: e.fieldofstudy || "",
+          percentage: e.percentage,
+          certifications: e.certifications ? e.certifications.split(",") : [],
+        })) || [],
+      experience:
+        data.workexperiences?.map((e) => ({
+          company: e.companyName,
+          position: e.position,
+          startDate: e.startDate?.slice(0, 10),
+          endDate: e.endDate?.slice(0, 10),
+          skills: e.skills?.split(",") || [],
+          description: e.description,
+        })) || [],
+      projects:
+        data.employeeprojects?.map((p) => ({
+          name: p.projectName,
+          role: p.role || "",
+          startDate: p.startDate?.slice(0, 10),
+          endDate: p.endDate?.slice(0, 10),
+          skills: p.skills?.split(",") || [],
+          description: p.description,
+        })) || [],
     });
   }, [data]);
 
-  if (isLoading || !talent) return <div style={{ padding: 40 }}>Loading profile…</div>;
+  if (isLoading || !talent)
+    return <div style={{ padding: 40 }}>Loading profile…</div>;
 
-  const addEducation = () => setTalent(p => ({ ...p, education: [...p.education, { university: "", qualification: "", startDate: "", endDate: "", field: "", percentage: "", certifications: [] }] }));
-  const addExperience = () => setTalent(p => ({ ...p, experience: [...p.experience, { company: "", position: "", startDate: "", endDate: "", skills: [], description: "" }] }));
-  const addProjects = () => setTalent(p => ({ ...p, projects: [...p.projects, { name: "", role: "", startDate: "", endDate: "", skills: [], description: "" }] }));
+  const addEducation = () =>
+    setTalent((p) => ({
+      ...p,
+      education: [
+        ...p.education,
+        {
+          university: "",
+          qualification: "",
+          startDate: "",
+          endDate: "",
+          field: "",
+          percentage: "",
+          certifications: [],
+        },
+      ],
+    }));
+  const addExperience = () =>
+    setTalent((p) => ({
+      ...p,
+      experience: [
+        ...p.experience,
+        {
+          company: "",
+          position: "",
+          startDate: "",
+          endDate: "",
+          skills: [],
+          description: "",
+        },
+      ],
+    }));
+  const addProjects = () =>
+    setTalent((p) => ({
+      ...p,
+      projects: [
+        ...p.projects,
+        {
+          name: "",
+          role: "",
+          startDate: "",
+          endDate: "",
+          skills: [],
+          description: "",
+        },
+      ],
+    }));
 
   const deleteExperience = (index) => {
-    if (window.confirm("Are you sure you want to delete this experience entry?")) {
-      setTalent(p => ({ ...p, experience: p.experience.filter((_, i) => i !== index) }));
+    if (
+      window.confirm("Are you sure you want to delete this experience entry?")
+    ) {
+      setTalent((p) => ({
+        ...p,
+        experience: p.experience.filter((_, i) => i !== index),
+      }));
     }
   };
 
   const deleteProjects = (index) => {
     if (window.confirm("Are you sure you want to delete this project entry?")) {
-      setTalent(p => ({ ...p, projects: p.projects.filter((_, i) => i !== index) }));
+      setTalent((p) => ({
+        ...p,
+        projects: p.projects.filter((_, i) => i !== index),
+      }));
     }
   };
 
   const deleteEducation = (index) => {
-    if (window.confirm("Are you sure you want to delete this education entry?")) {
-      setTalent(p => ({ ...p, education: p.education.filter((_, i) => i !== index) }));
+    if (
+      window.confirm("Are you sure you want to delete this education entry?")
+    ) {
+      setTalent((p) => ({
+        ...p,
+        education: p.education.filter((_, i) => i !== index),
+      }));
     }
   };
 
   const smoothStyle = (open) => ({
     maxHeight: open ? 1000 : 0,
-    overflow: 'auto',
-    transition: 'max-height .3s ease',
+    overflow: "auto",
+    transition: "max-height .3s ease",
 
     /* Hide scrollbar — Chrome/Safari/Edge */
-    '::-webkit-scrollbar': {
-      display: 'none'
+    "::-webkit-scrollbar": {
+      display: "none",
     },
 
     /* Firefox */
-    scrollbarWidth: 'none',
+    scrollbarWidth: "none",
 
     /* IE/old Edge */
-    msOverflowStyle: 'none'
+    msOverflowStyle: "none",
   });
-
 
   return (
     <div className="review-talent-container">
@@ -1155,60 +1367,122 @@ const ReviewTalent = () => {
         <button
           className="auth-link"
           onClick={() => navigate("/user/user-upload-talent")}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontWeight: 600,
+          }}
         >
           <FiArrowLeft /> Talent Management
         </button>
-        <span className="auth-subtitle" style={{ color: '#94a3b8' }}>/ Review Talent</span>
+        <span className="auth-subtitle" style={{ color: "#94a3b8" }}>
+          / Review Talent
+        </span>
       </div>
 
       <div className="review-talent-layout">
-
         {/* LEFT: INFORMATION REVIEW */}
         <div className="review-left-panel">
           <div className="review-header-top mb-4">
             <div>
-              <h2 className="header-title" style={{ fontSize: '24px', fontWeight: 700 }}>Review & Edit</h2>
-              <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>Please verify the extracted information before saving.</p>
+              <h2
+                className="header-title"
+                style={{ fontSize: "24px", fontWeight: 700 }}
+              >
+                Review & Edit
+              </h2>
+              <p
+                style={{ color: "#64748b", fontSize: "14px", marginTop: "4px" }}
+              >
+                Please verify the extracted information before saving.
+              </p>
             </div>
-            <div style={{ background: '#f4f0ff', color: '#f5810c', padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div
+              style={{
+                background: "#f4f0ff",
+                color: "#f5810c",
+                padding: "8px 16px",
+                borderRadius: "100px",
+                fontSize: "12px",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
               <CheckCircle size={14} /> AI Processing Complete
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
-
+          <div style={{ flex: 1, overflowY: "auto", paddingRight: "4px" }}>
             {/* ===== BASIC INFORMATION ===== */}
-            <div className={`accordion-item ${openAccordions.includes("basicInfo") ? 'active' : ''}`}>
-              <div className="accordion-header" onClick={() => toggleAccordion("basicInfo")}>
+            <div
+              className={`accordion-item ${openAccordions.includes("basicInfo") ? "active" : ""}`}
+            >
+              <div
+                className="accordion-header"
+                onClick={() => toggleAccordion("basicInfo")}
+              >
                 <div className="header-content">
                   <div className="header-icon-wrapper">
                     <User size={18} />
                   </div>
                   <h5 className="header-title">Basic Information</h5>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {!editingSections.includes("basicInfo") && openAccordions.includes("basicInfo") && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("basicInfo"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
-                      <Edit2 size={13} /> Edit
-                    </button>
-                  )}
-                  <ChevronDown size={20} style={{
-                    color: openAccordions.includes("basicInfo") ? '#f5810c' : '#94a3b8',
-                    transform: openAccordions.includes("basicInfo") ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                  }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {!editingSections.includes("basicInfo") &&
+                    openAccordions.includes("basicInfo") && (
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          beginEdit("basicInfo");
+                        }}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                      >
+                        <Edit2 size={13} /> Edit
+                      </button>
+                    )}
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: openAccordions.includes("basicInfo")
+                        ? "#f5810c"
+                        : "#94a3b8",
+                      transform: openAccordions.includes("basicInfo")
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
                 </div>
               </div>
               {openAccordions.includes("basicInfo") && (
                 <div className="accordion-content">
                   <div className="review-form-grid" style={{ marginTop: 16 }}>
-                    {["firstName", "lastName", "position", "phone", "email"].map(f => (
-                      <EditableField key={f} label={f} value={talent.basicInfo[f]}
+                    {[
+                      "firstName",
+                      "lastName",
+                      "position",
+                      "phone",
+                      "email",
+                    ].map((f) => (
+                      <EditableField
+                        key={f}
+                        label={f}
+                        value={talent.basicInfo[f]}
                         editing={editingSections.includes("basicInfo")}
-                        onSave={val => setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, [f]: val } }))}
+                        onSave={(val) =>
+                          setTalent((p) => ({
+                            ...p,
+                            basicInfo: { ...p.basicInfo, [f]: val },
+                          }))
+                        }
                         section="basicInfo"
-                        required={["firstName", "position", "email"].includes(f)}
+                        required={["firstName", "position", "email"].includes(
+                          f,
+                        )}
                       />
                     ))}
                   </div>
@@ -1216,17 +1490,48 @@ const ReviewTalent = () => {
                     label="Extracted Skills"
                     values={talent.basicInfo.skills}
                     editing={editingSections.includes("basicInfo")}
-                    onSave={val => setTalent(p => ({ ...p, basicInfo: { ...p.basicInfo, skills: val } }))}
+                    onSave={(val) =>
+                      setTalent((p) => ({
+                        ...p,
+                        basicInfo: { ...p.basicInfo, skills: val },
+                      }))
+                    }
                   />
                   {basicInfoErrors && editingSections.includes("basicInfo") && (
-                    <div style={{ color: '#ef4444', fontSize: 13, marginTop: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
+                    <div
+                      style={{
+                        color: "#ef4444",
+                        fontSize: 13,
+                        marginTop: 16,
+                        padding: 12,
+                        backgroundColor: "#fef2f2",
+                        borderRadius: 10,
+                        border: "1px solid #fee2e2",
+                      }}
+                    >
                       {basicInfoErrors}
                     </div>
                   )}
                   {editingSections.includes("basicInfo") && (
-                    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                      <button className="btn-secondary" onClick={() => cancelEdit("basicInfo")}>Cancel</button>
-                      <button className="btn-primary" onClick={saveBasicInfo}>Save Changes</button>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 12,
+                        justifyContent: "flex-end",
+                        marginTop: 24,
+                        paddingTop: 16,
+                        borderTop: "1px solid #f1f5f9",
+                      }}
+                    >
+                      <button
+                        className="btn-secondary"
+                        onClick={() => cancelEdit("basicInfo")}
+                      >
+                        Cancel
+                      </button>
+                      <button className="btn-primary" onClick={saveBasicInfo}>
+                        Save Changes
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1234,36 +1539,64 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== PERSONAL INFORMATION ===== */}
-            <div className={`accordion-item ${openAccordions.includes("personalInfo") ? 'active' : ''}`}>
-              <div className="accordion-header" onClick={() => toggleAccordion("personalInfo")}>
+            <div
+              className={`accordion-item ${openAccordions.includes("personalInfo") ? "active" : ""}`}
+            >
+              <div
+                className="accordion-header"
+                onClick={() => toggleAccordion("personalInfo")}
+              >
                 <div className="header-content">
                   <div className="header-icon-wrapper">
                     <Info size={18} />
                   </div>
                   <h5 className="header-title">Personal Information</h5>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {!editingSections.includes("personalInfo") && openAccordions.includes("personalInfo") && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("personalInfo"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
-                      <Edit2 size={13} /> Edit
-                    </button>
-                  )}
-                  <ChevronDown size={20} style={{
-                    color: openAccordions.includes("personalInfo") ? '#f5810c' : '#94a3b8',
-                    transform: openAccordions.includes("personalInfo") ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                  }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {!editingSections.includes("personalInfo") &&
+                    openAccordions.includes("personalInfo") && (
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          beginEdit("personalInfo");
+                        }}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                      >
+                        <Edit2 size={13} /> Edit
+                      </button>
+                    )}
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: openAccordions.includes("personalInfo")
+                        ? "#f5810c"
+                        : "#94a3b8",
+                      transform: openAccordions.includes("personalInfo")
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
                 </div>
               </div>
               {openAccordions.includes("personalInfo") && (
                 <div className="accordion-content">
                   <div className="review-form-grid" style={{ marginTop: 16 }}>
-                    {Object.keys(talent.personalInfo).map(field => {
+                    {Object.keys(talent.personalInfo).map((field) => {
                       const isTxt = field === "bio";
                       return isTxt ? null : (
-                        <EditableField key={field} label={field} value={talent.personalInfo[field]}
+                        <EditableField
+                          key={field}
+                          label={field}
+                          value={talent.personalInfo[field]}
                           editing={editingSections.includes("personalInfo")}
-                          onSave={val => setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, [field]: val } }))}
+                          onSave={(val) =>
+                            setTalent((p) => ({
+                              ...p,
+                              personalInfo: { ...p.personalInfo, [field]: val },
+                            }))
+                          }
                           section="personalInfo"
                           required={field === "address"}
                         />
@@ -1275,19 +1608,54 @@ const ReviewTalent = () => {
                       label="Professional Bio"
                       value={talent.personalInfo.bio}
                       editing={editingSections.includes("personalInfo")}
-                      onSave={val => setTalent(p => ({ ...p, personalInfo: { ...p.personalInfo, bio: val } }))}
+                      onSave={(val) =>
+                        setTalent((p) => ({
+                          ...p,
+                          personalInfo: { ...p.personalInfo, bio: val },
+                        }))
+                      }
                       section="personalInfo"
                     />
                   )}
-                  {personalInfoErrors && editingSections.includes("personalInfo") && (
-                    <div style={{ color: '#ef4444', fontSize: 13, marginTop: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
-                      {personalInfoErrors}
-                    </div>
-                  )}
+                  {personalInfoErrors &&
+                    editingSections.includes("personalInfo") && (
+                      <div
+                        style={{
+                          color: "#ef4444",
+                          fontSize: 13,
+                          marginTop: 16,
+                          padding: 12,
+                          backgroundColor: "#fef2f2",
+                          borderRadius: 10,
+                          border: "1px solid #fee2e2",
+                        }}
+                      >
+                        {personalInfoErrors}
+                      </div>
+                    )}
                   {editingSections.includes("personalInfo") && (
-                    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                      <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("personalInfo")}>Cancel</button>
-                      <button className="btn-primary" onClick={savePersonalInfo}>Save Changes</button>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 12,
+                        justifyContent: "flex-end",
+                        marginTop: 24,
+                        paddingTop: 16,
+                        borderTop: "1px solid #f1f5f9",
+                      }}
+                    >
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={() => cancelEdit("personalInfo")}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="btn-primary"
+                        onClick={savePersonalInfo}
+                      >
+                        Save Changes
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1295,53 +1663,114 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== EDUCATION ===== */}
-            <div className={`accordion-item ${openAccordions.includes("education") ? 'active' : ''}`}>
-              <div className="accordion-header" onClick={() => toggleAccordion("education")}>
+            <div
+              className={`accordion-item ${openAccordions.includes("education") ? "active" : ""}`}
+            >
+              <div
+                className="accordion-header"
+                onClick={() => toggleAccordion("education")}
+              >
                 <div className="header-content">
                   <div className="header-icon-wrapper">
                     <GraduationCap size={18} />
                   </div>
                   <h5 className="header-title">Education</h5>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {!editingSections.includes("education") && openAccordions.includes("education") && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("education"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
-                      <Edit2 size={13} /> Edit
-                    </button>
-                  )}
-                  <ChevronDown size={20} style={{
-                    color: openAccordions.includes("education") ? '#f5810c' : '#94a3b8',
-                    transform: openAccordions.includes("education") ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                  }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {!editingSections.includes("education") &&
+                    openAccordions.includes("education") && (
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          beginEdit("education");
+                        }}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                      >
+                        <Edit2 size={13} /> Edit
+                      </button>
+                    )}
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: openAccordions.includes("education")
+                        ? "#f5810c"
+                        : "#94a3b8",
+                      transform: openAccordions.includes("education")
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
                 </div>
               </div>
               {openAccordions.includes("education") && (
                 <div className="accordion-content">
                   {talent.education.map((ed, i) => (
-                    <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
+                    <div
+                      key={i}
+                      style={{
+                        border: "1px solid #f1f5f9",
+                        padding: "24px 20px",
+                        borderRadius: 16,
+                        marginTop: 16,
+                        marginBottom: 20,
+                        background: "#fcfdfe",
+                      }}
+                    >
                       <div className="review-form-grid">
-                        {["university", "qualification", "startDate", "endDate", "field", "percentage"].map(field => (
-                          <EditableField key={field} label={field} value={ed[field]} section="education"
+                        {[
+                          "university",
+                          "qualification",
+                          "startDate",
+                          "endDate",
+                          "field",
+                          "percentage",
+                        ].map((field) => (
+                          <EditableField
+                            key={field}
+                            label={field}
+                            value={ed[field]}
+                            section="education"
                             editing={editingSections.includes("education")}
-                            onSave={val => {
-                              const arr = [...talent.education]; arr[i][field] = val;
-                              setTalent(p => ({ ...p, education: arr }));
+                            onSave={(val) => {
+                              const arr = [...talent.education];
+                              arr[i][field] = val;
+                              setTalent((p) => ({ ...p, education: arr }));
                             }}
                             required={["startDate", "endDate"].includes(field)}
                           />
                         ))}
                       </div>
-                      <EditableTags label="Certifications" section="education" values={ed.certifications}
+                      <EditableTags
+                        label="Certifications"
+                        section="education"
+                        values={ed.certifications}
                         editing={editingSections.includes("education")}
-                        onSave={val => {
-                          const arr = [...talent.education]; arr[i].certifications = val;
-                          setTalent(p => ({ ...p, education: arr }));
+                        onSave={(val) => {
+                          const arr = [...talent.education];
+                          arr[i].certifications = val;
+                          setTalent((p) => ({ ...p, education: arr }));
                         }}
                       />
                       {!editingSections.includes("education") && (
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                          <button className="btn-secondary" onClick={() => deleteEducation(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            marginTop: 16,
+                          }}
+                        >
+                          <button
+                            className="btn-secondary"
+                            onClick={() => deleteEducation(i)}
+                            style={{
+                              color: "#ef4444",
+                              borderColor: "#fee2e2",
+                              fontSize: "12px",
+                              gap: "6px",
+                            }}
+                          >
                             <Trash2 size={12} /> Remove
                           </button>
                         </div>
@@ -1349,21 +1778,65 @@ const ReviewTalent = () => {
                     </div>
                   ))}
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 12,
+                      marginTop: 12,
+                    }}
+                  >
                     {!editingSections.includes("education") ? (
-                      <button className="btn-premium btn-premium-secondary" onClick={addEducation}>
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={addEducation}
+                      >
                         <Plus size={14} /> Add Education
                       </button>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "100%",
+                        }}
+                      >
                         {educationErrors && (
-                          <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
+                          <div
+                            style={{
+                              color: "#ef4444",
+                              fontSize: 13,
+                              marginBottom: 16,
+                              padding: 12,
+                              backgroundColor: "#fef2f2",
+                              borderRadius: 10,
+                              border: "1px solid #fee2e2",
+                            }}
+                          >
                             {educationErrors}
                           </div>
                         )}
-                        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("education")}>Cancel</button>
-                          <button className="btn-primary" onClick={saveEducation}>Save Changes</button>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 12,
+                            justifyContent: "flex-end",
+                            paddingTop: 16,
+                            borderTop: "1px solid #f1f5f9",
+                          }}
+                        >
+                          <button
+                            className="btn-premium btn-premium-secondary"
+                            onClick={() => cancelEdit("education")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="btn-primary"
+                            onClick={saveEducation}
+                          >
+                            Save Changes
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1373,81 +1846,209 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== EXPERIENCE ===== */}
-            <div className={`accordion-item ${openAccordions.includes("experience") ? 'active' : ''}`}>
-              <div className="accordion-header" onClick={() => toggleAccordion("experience")}>
+            <div
+              className={`accordion-item ${openAccordions.includes("experience") ? "active" : ""}`}
+            >
+              <div
+                className="accordion-header"
+                onClick={() => toggleAccordion("experience")}
+              >
                 <div className="header-content">
                   <div className="header-icon-wrapper">
                     <Briefcase size={18} />
                   </div>
                   <h5 className="header-title">Experience</h5>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {!editingSections.includes("experience") && openAccordions.includes("experience") && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("experience"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
-                      <Edit2 size={13} /> Edit
-                    </button>
-                  )}
-                  <ChevronDown size={20} style={{
-                    color: openAccordions.includes("experience") ? '#f5810c' : '#94a3b8',
-                    transform: openAccordions.includes("experience") ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                  }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {!editingSections.includes("experience") &&
+                    openAccordions.includes("experience") && (
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          beginEdit("experience");
+                        }}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                      >
+                        <Edit2 size={13} /> Edit
+                      </button>
+                    )}
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: openAccordions.includes("experience")
+                        ? "#f5810c"
+                        : "#94a3b8",
+                      transform: openAccordions.includes("experience")
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
                 </div>
               </div>
               {openAccordions.includes("experience") && (
                 <div className="accordion-content">
                   {talent.experience.map((ex, i) => (
-                    <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
+                    <div
+                      key={i}
+                      style={{
+                        border: "1px solid #f1f5f9",
+                        padding: "24px 20px",
+                        borderRadius: 16,
+                        marginTop: 16,
+                        marginBottom: 20,
+                        background: "#fcfdfe",
+                      }}
+                    >
                       <div className="review-form-grid">
-                        {["company", "position", "startDate", "endDate"].map(field => (
-                          <EditableField key={field} label={field} value={ex[field]} section="experience"
-                            editing={editingSections.includes("experience")}
-                            onSave={val => {
-                              const arr = [...talent.experience]; arr[i][field] = val;
-                              setTalent(p => ({ ...p, experience: arr }));
-                            }}
-                            required={["startDate", "endDate"].includes(field)}
-                          />
-                        ))}
+                        {["company", "position", "startDate", "endDate"].map(
+                          (field) => (
+                            <div key={field}>
+                              <EditableField
+                                label={
+                                  field === "startDate"
+                                    ? "Start Date"
+                                    : field === "endDate"
+                                      ? "End Date"
+                                      : field
+                                }
+                                value={ex[field]}
+                                section="experience"
+                                editing={editingSections.includes("experience")}
+                                onSave={(val) => {
+                                  const arr = [...talent.experience];
+                                  arr[i][field] = val;
+                                  setTalent((p) => ({ ...p, experience: arr }));
+                                }}
+                                required={["startDate", "endDate"].includes(
+                                  field,
+                                )}
+                              />
+
+                              {/* ✅ ADD NOTE ONLY FOR END DATE */}
+                              {field === "endDate" && editingSections.includes("experience") && (
+                                <p
+                                  style={{
+                                    fontSize: "12px",
+                                    color: "#64748b",
+                                    marginTop: "4px",
+                                  }}
+                                >
+                                  Note: If the selected or entered date is
+                                  today’s date, it will automatically be
+                                  displayed as <strong>“Present”</strong>.
+                                </p>
+                              )}
+                            </div>
+                          ),
+                        )}
                       </div>
-                      <EditableTags label="Skills Used" section="experience" values={ex.skills}
+                      <EditableTags
+                        label="Skills Used"
+                        section="experience"
+                        values={ex.skills}
                         editing={editingSections.includes("experience")}
-                        onSave={val => {
-                          const arr = [...talent.experience]; arr[i].skills = val;
-                          setTalent(p => ({ ...p, experience: arr }));
+                        onSave={(val) => {
+                          const arr = [...talent.experience];
+                          arr[i].skills = val;
+                          setTalent((p) => ({ ...p, experience: arr }));
                         }}
                       />
-                      <EditableTextarea label="Responsibilities" section="experience" value={ex.description}
+                      <EditableTextarea
+                        label="Responsibilities"
+                        section="experience"
+                        value={ex.description}
                         editing={editingSections.includes("experience")}
-                        onSave={val => {
-                          const arr = [...talent.experience]; arr[i].description = val;
-                          setTalent(p => ({ ...p, experience: arr }));
+                        onSave={(val) => {
+                          const arr = [...talent.experience];
+                          arr[i].description = val;
+                          setTalent((p) => ({ ...p, experience: arr }));
                         }}
                       />
                       {!editingSections.includes("experience") && (
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                          <button className="btn-secondary" onClick={() => deleteExperience(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            marginTop: 16,
+                          }}
+                        >
+                          <button
+                            className="btn-secondary"
+                            onClick={() => deleteExperience(i)}
+                            style={{
+                              color: "#ef4444",
+                              borderColor: "#fee2e2",
+                              fontSize: "12px",
+                              gap: "6px",
+                            }}
+                          >
                             <Trash2 size={12} /> Remove
                           </button>
                         </div>
                       )}
                     </div>
                   ))}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 12,
+                      marginTop: 12,
+                    }}
+                  >
                     {!editingSections.includes("experience") ? (
-                      <button className="btn-premium btn-premium-secondary" onClick={addExperience}>
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={addExperience}
+                      >
                         <Plus size={14} /> Add Experience
                       </button>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "100%",
+                        }}
+                      >
                         {experienceErrors && (
-                          <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
+                          <div
+                            style={{
+                              color: "#ef4444",
+                              fontSize: 13,
+                              marginBottom: 16,
+                              padding: 12,
+                              backgroundColor: "#fef2f2",
+                              borderRadius: 10,
+                              border: "1px solid #fee2e2",
+                            }}
+                          >
                             {experienceErrors}
                           </div>
                         )}
-                        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("experience")}>Cancel</button>
-                          <button className="btn-primary" onClick={saveExperience}>Save Changes</button>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 12,
+                            justifyContent: "flex-end",
+                            paddingTop: 16,
+                            borderTop: "1px solid #f1f5f9",
+                          }}
+                        >
+                          <button
+                            className="btn-premium btn-premium-secondary"
+                            onClick={() => cancelEdit("experience")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="btn-primary"
+                            onClick={saveExperience}
+                          >
+                            Save Changes
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1457,81 +2058,193 @@ const ReviewTalent = () => {
             </div>
 
             {/* ===== PROJECTS ===== */}
-            <div className={`accordion-item ${openAccordions.includes("projects") ? 'active' : ''}`}>
-              <div className="accordion-header" onClick={() => toggleAccordion("projects")}>
+            <div
+              className={`accordion-item ${openAccordions.includes("projects") ? "active" : ""}`}
+            >
+              <div
+                className="accordion-header"
+                onClick={() => toggleAccordion("projects")}
+              >
                 <div className="header-content">
                   <div className="header-icon-wrapper">
                     <Layers size={18} />
                   </div>
                   <h5 className="header-title">Projects</h5>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  {!editingSections.includes("projects") && openAccordions.includes("projects") && (
-                    <button className="btn-premium btn-premium-secondary" onClick={(e) => { e.stopPropagation(); beginEdit("projects"); }} style={{ padding: '6px 14px', fontSize: '13px' }}>
-                      <Edit2 size={13} /> Edit
-                    </button>
-                  )}
-                  <ChevronDown size={20} style={{
-                    color: openAccordions.includes("projects") ? '#f5810c' : '#94a3b8',
-                    transform: openAccordions.includes("projects") ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease'
-                  }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {!editingSections.includes("projects") &&
+                    openAccordions.includes("projects") && (
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          beginEdit("projects");
+                        }}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                      >
+                        <Edit2 size={13} /> Edit
+                      </button>
+                    )}
+                  <ChevronDown
+                    size={20}
+                    style={{
+                      color: openAccordions.includes("projects")
+                        ? "#f5810c"
+                        : "#94a3b8",
+                      transform: openAccordions.includes("projects")
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
                 </div>
               </div>
               {openAccordions.includes("projects") && (
                 <div className="accordion-content">
                   {talent.projects.map((pr, i) => (
-                    <div key={i} style={{ border: '1px solid #f1f5f9', padding: '24px 20px', borderRadius: 16, marginTop: 16, marginBottom: 20, background: '#fcfdfe' }}>
+                    <div
+                      key={i}
+                      style={{
+                        border: "1px solid #f1f5f9",
+                        padding: "24px 20px",
+                        borderRadius: 16,
+                        marginTop: 16,
+                        marginBottom: 20,
+                        background: "#fcfdfe",
+                      }}
+                    >
                       <div className="review-form-grid">
-                        {["name", "role", "startDate", "endDate"].map(field => (
-                          <EditableField key={field} label={field === "startDate" ? "Start Date" : field === "endDate" ? "End Date" : field} value={pr[field]} section="projects"
-                            editing={editingSections.includes("projects")}
-                            onSave={val => {
-                              const arr = [...talent.projects]; arr[i][field] = val;
-                              setTalent(p => ({ ...p, projects: arr }));
-                            }}
-                            required={["startDate", "endDate"].includes(field)}
-                          />
-                        ))}
+                        {["name", "role", "startDate", "endDate"].map(
+                          (field) => (
+                            <EditableField
+                              key={field}
+                              label={
+                                field === "startDate"
+                                  ? "Start Date"
+                                  : field === "endDate"
+                                    ? "End Date"
+                                    : field
+                              }
+                              value={pr[field]}
+                              section="projects"
+                              editing={editingSections.includes("projects")}
+                              onSave={(val) => {
+                                const arr = [...talent.projects];
+                                arr[i][field] = val;
+                                setTalent((p) => ({ ...p, projects: arr }));
+                              }}
+                              required={["startDate", "endDate"].includes(
+                                field,
+                              )}
+                            />
+                          ),
+                        )}
                       </div>
-                      <EditableTags label="Key Tech/Skills" section="projects" values={pr.skills}
+                      <EditableTags
+                        label="Key Tech/Skills"
+                        section="projects"
+                        values={pr.skills}
                         editing={editingSections.includes("projects")}
-                        onSave={val => {
-                          const arr = [...talent.projects]; arr[i].skills = val;
-                          setTalent(p => ({ ...p, projects: arr }));
+                        onSave={(val) => {
+                          const arr = [...talent.projects];
+                          arr[i].skills = val;
+                          setTalent((p) => ({ ...p, projects: arr }));
                         }}
                       />
-                      <EditableTextarea label="Project Highlights" section="projects" value={pr.description}
+                      <EditableTextarea
+                        label="Project Highlights"
+                        section="projects"
+                        value={pr.description}
                         editing={editingSections.includes("projects")}
-                        onSave={val => {
-                          const arr = [...talent.projects]; arr[i].description = val;
-                          setTalent(p => ({ ...p, projects: arr }));
+                        onSave={(val) => {
+                          const arr = [...talent.projects];
+                          arr[i].description = val;
+                          setTalent((p) => ({ ...p, projects: arr }));
                         }}
                       />
                       {!editingSections.includes("projects") && (
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                          <button className="btn-secondary" onClick={() => deleteProjects(i)} style={{ color: '#ef4444', borderColor: '#fee2e2', fontSize: '12px', gap: '6px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            marginTop: 16,
+                          }}
+                        >
+                          <button
+                            className="btn-secondary"
+                            onClick={() => deleteProjects(i)}
+                            style={{
+                              color: "#ef4444",
+                              borderColor: "#fee2e2",
+                              fontSize: "12px",
+                              gap: "6px",
+                            }}
+                          >
                             <Trash2 size={12} /> Remove
                           </button>
                         </div>
                       )}
                     </div>
                   ))}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 12 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 12,
+                      marginTop: 12,
+                    }}
+                  >
                     {!editingSections.includes("projects") ? (
-                      <button className="btn-premium btn-premium-secondary" onClick={addProjects}>
+                      <button
+                        className="btn-premium btn-premium-secondary"
+                        onClick={addProjects}
+                      >
                         <Plus size={14} /> Add Project
                       </button>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "100%",
+                        }}
+                      >
                         {projectsErrors && (
-                          <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 16, padding: 12, backgroundColor: '#fef2f2', borderRadius: 10, border: '1px solid #fee2e2' }}>
+                          <div
+                            style={{
+                              color: "#ef4444",
+                              fontSize: 13,
+                              marginBottom: 16,
+                              padding: 12,
+                              backgroundColor: "#fef2f2",
+                              borderRadius: 10,
+                              border: "1px solid #fee2e2",
+                            }}
+                          >
                             {projectsErrors}
                           </div>
                         )}
-                        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-                          <button className="btn-premium btn-premium-secondary" onClick={() => cancelEdit("projects")}>Cancel</button>
-                          <button className="btn-primary" onClick={saveProjects}>Save Changes</button>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 12,
+                            justifyContent: "flex-end",
+                            paddingTop: 16,
+                            borderTop: "1px solid #f1f5f9",
+                          }}
+                        >
+                          <button
+                            className="btn-premium btn-premium-secondary"
+                            onClick={() => cancelEdit("projects")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="btn-primary"
+                            onClick={saveProjects}
+                          >
+                            Save Changes
+                          </button>
                         </div>
                       </div>
                     )}
@@ -1544,14 +2257,29 @@ const ReviewTalent = () => {
           {/* ACTION AREA */}
           <div className="review-actions">
             <label className="verification-checkbox">
-              <input type="checkbox" checked={isReviewed} onChange={e => setIsReviewed(e.target.checked)} />
-              <span className="verification-text">I confirm that I have reviewed all extracted data and it is correct.</span>
+              <input
+                type="checkbox"
+                checked={isReviewed}
+                onChange={(e) => setIsReviewed(e.target.checked)}
+              />
+              <span className="verification-text">
+                I confirm that I have reviewed all extracted data and it is
+                correct.
+              </span>
             </label>
             <div className="action-buttons">
-              <button className="btn-secondary" disabled={!isReviewed || isSaving || draft} onClick={handleDraftTalent}>
+              <button
+                className="btn-secondary"
+                disabled={!isReviewed || isSaving || draft}
+                onClick={handleDraftTalent}
+              >
                 {draft ? "Saving..." : "Save as Draft"}
               </button>
-              <button className="btn-primary" disabled={!isReviewed || isSaving || draft} onClick={handleSaveTalent}>
+              <button
+                className="btn-primary"
+                disabled={!isReviewed || isSaving || draft}
+                onClick={handleSaveTalent}
+              >
                 {isSaving ? "Finalizing..." : "Approve & Save Talent"}
               </button>
             </div>
@@ -1560,11 +2288,32 @@ const ReviewTalent = () => {
 
         {/* RIGHT: RESUME PREVIEW */}
         <div className="review-right-panel">
-          <div style={{ padding: '24px 32px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fcfdfe' }}>
-            <h4 className="header-title" style={{ fontSize: '18px' }}>Resume Preview</h4>
-            <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Extracted from Original PDF Document</div>
+          <div
+            style={{
+              padding: "24px 32px",
+              borderBottom: "1px solid #f1f5f9",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "#fcfdfe",
+            }}
+          >
+            <h4 className="header-title" style={{ fontSize: "18px" }}>
+              Resume Preview
+            </h4>
+            <div
+              style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}
+            >
+              Extracted from Original PDF Document
+            </div>
           </div>
-          <div style={{ height: 'calc(100vh - 120px)', overflowY: 'auto', padding: "24px" }}>
+          <div
+            style={{
+              height: "calc(100vh - 120px)",
+              overflowY: "auto",
+              padding: "24px",
+            }}
+          >
             <PDFResumePreview data={data} />
           </div>
         </div>
@@ -1574,7 +2323,10 @@ const ReviewTalent = () => {
           errors={validationErrorsState}
           onClose={() => setValidationErrorsState(null)}
           onRetry={() => setValidationErrorsState(null)}
-          onContactSupport={() => { setValidationErrorsState(null); navigate('/support'); }}
+          onContactSupport={() => {
+            setValidationErrorsState(null);
+            navigate("/support");
+          }}
         />
       )}
 

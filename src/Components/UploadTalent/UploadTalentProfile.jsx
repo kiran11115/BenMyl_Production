@@ -457,6 +457,22 @@ const UploadTalentProfile = () => {
     return () => clearTimeout(timer);
   }, [apiData, isLoading]);
 
+  const formatPeriod = (startDate, endDate) => {
+  const start = startDate ? startDate.slice(0, 4) : "N/A";
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (
+    !endDate ||
+    endDate === "" ||
+    endDate === "0001-01-01" ||
+    endDate.slice(0, 10) === today
+  ) {
+    return `${start} - Present`;
+  }
+
+  return `${start} - ${endDate.slice(0, 4)}`;
+};
+
   const getInitials = (firstName = "", lastName = "") => {
     const first = firstName?.trim().charAt(0) || "";
     const last = lastName?.trim().charAt(0) || "";
@@ -493,8 +509,7 @@ const UploadTalentProfile = () => {
         apiData?.workexperiences?.map((w) => ({
           role: w.position || "N/A",
           company: w.companyName || "N/A",
-          period: `${w.startDate?.slice(0, 4) || "N/A"} - ${w.endDate ? w.endDate.slice(0, 4) : "Present"
-            }`,
+          period: formatPeriod(w.startDate, w.endDate),
           location: w.city || apiData?.city || "N/A",
           desc: w.description || "N/A",
         })) || [],

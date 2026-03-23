@@ -480,13 +480,16 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                                                 <DatePicker
                                                                     className="auth-input w-100"
                                                                     selected={exp.endDate ? new Date(exp.endDate) : null}
-                                                                    onChange={(date) => formik.setFieldValue(`workexperiences.${index}.endDate`, date ? date.toISOString() : "")}
+                                                                    onChange={(date) => formik.setFieldValue(`workexperiences.${index}.endDate`, date ? date.toLocaleDateString("en-CA") : "")}
                                                                     dateFormat="dd-MMM-yyyy"
                                                                     placeholderText="DD-MMM-YYYY"
                                                                     style={{ paddingLeft: '2.5rem' }}
                                                                 />
                                                                 <FiCalendar size={16} className="auth-icon-left" />
                                                             </div>
+                                                             <p style={{ fontSize: "12px", color: "#64748b", marginTop: "4px" }}>
+    Note: If the selected or entered date is today’s date, it will automatically be displayed as <strong>“Present”</strong>.
+  </p>
                                                         </div>
                                                     </div>
                                                     <textarea
