@@ -456,7 +456,6 @@ const getValidationForField = (fieldName, section) => {
       company: validateCompany,
       position: validateExpPosition,
       startdate: validateExpStartDate,
-      enddate: validateExpEndDate,
       skills: validateExpSkills,
       description: validateExpDescription,
     };
@@ -846,9 +845,9 @@ const ReviewTalent = () => {
         if (!exp.startDate || String(exp.startDate).trim() === "") {
           errors.push(`Experience[${idx + 1}]: Start Date is required`);
         }
-        if (!exp.endDate || String(exp.endDate).trim() === "") {
-          errors.push(`Experience[${idx + 1}]: End Date is required`);
-        }
+        // if (!exp.endDate || String(exp.endDate).trim() === "") {
+        //   errors.push(`Experience[${idx + 1}]: End Date is required`);
+        // }
       }
     });
     return errors;
@@ -992,7 +991,7 @@ const ReviewTalent = () => {
           CompanyName: exp.company ?? "",
           Position: exp.position ?? "",
           StartDate: exp.startDate ?? "",
-          EndDate: exp.endDate || getToday(),
+          EndDate: exp.endDate ? exp.endDate : null,
           Skills: exp.skills ?? [],
           Description: exp.description ?? "",
         })),
@@ -1158,7 +1157,7 @@ const ReviewTalent = () => {
           CompanyName: exp.company ?? "",
           Position: exp.position ?? "",
           StartDate: exp.startDate ?? "",
-          EndDate: exp.endDate || getToday(),
+          EndDate: exp.endDate ? exp.endDate : null,
           Skills: exp.skills ?? [],
           Description: exp.description ?? "",
         })),
@@ -1935,9 +1934,7 @@ const ReviewTalent = () => {
                                     marginTop: "4px",
                                   }}
                                 >
-                                  Note: If the selected or entered date is
-                                  today’s date, it will automatically be
-                                  displayed as <strong>“Present”</strong>.
+                                  Note: If you are currently working, please leave the End Date field empty.
                                 </p>
                               )}
                             </div>
