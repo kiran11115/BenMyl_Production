@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import UploadTalentTable from "./UploadTalentTable";
+import { FiSearch } from "react-icons/fi";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
@@ -17,6 +18,7 @@ const UploadTalent = () => {
     const [view, setView] = useState(
         location.state?.activeTab || "Talent"
     );
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         if (location.state?.activeTab) {
@@ -167,13 +169,29 @@ const UploadTalent = () => {
                         </button>
                     </div>
 
-                    <UploadTalentModal
-                        show={showModal}
-                        onHide={handleCloseModal}
-                        onShow={handleShowModal}
-                        onSuccess={handleUploadSuccess}
-                        onUploading={(isUploading) => setShowUploading(!!isUploading)}
-                    />
+                    <div className="d-flex align-items-center gap-2">
+                        {/* SEARCH BAR - Only for Review Profiles */}
+                        {view === "Review" && (
+                            <div className="ut-search-wrapper" style={{ minWidth: "300px" }}>
+                                <FiSearch className="ut-search-icon" />
+                                <input
+                                    type="text"
+                                    className="ut-search-input"
+                                    placeholder="Search by Resume Name..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        )}
+
+                        <UploadTalentModal
+                            show={showModal}
+                            onHide={handleCloseModal}
+                            onShow={handleShowModal}
+                            onSuccess={handleUploadSuccess}
+                            onUploading={(isUploading) => setShowUploading(!!isUploading)}
+                        />
+                    </div>
                 </div>
 
                 {/* CONTENT */}
@@ -182,7 +200,7 @@ const UploadTalent = () => {
                     {view === "Talent" && (
                         <div className="upload-main mt-3">
                             {talentsData && talentsData.length > 0 ? (
-                                <UserTalentProfiles />
+                                <UserTalentProfiles searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                             ) : (
                                 <div
                                     style={{
@@ -260,6 +278,7 @@ const UploadTalent = () => {
                                     onToggleSelect={toggleSelect}
                                     refreshKey={refreshKey}
                                     externalLoading={waitingForRefresh}
+                                    searchQuery={searchQuery}
                                 />
                             ) : (
                                 <div

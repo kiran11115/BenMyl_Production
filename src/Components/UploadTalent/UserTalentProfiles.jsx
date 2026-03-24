@@ -53,7 +53,7 @@ const sortCandidates = (candidates, sortBy) => {
 };
 
 // --- MAIN COMPONENT ---
-const UserTalentProfiles = () => {
+const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => {
   const PAGE_SIZE = 50;
 
   const [viewMode, setViewMode] = useState("grid");
@@ -166,9 +166,21 @@ const UserTalentProfiles = () => {
   }, [hasMore, isLoading, candidatesMock.length]);
 
   /* ================= MEMOS ================= */
+  const filteredCandidates = useMemo(() => {
+    if (!searchQuery.trim()) return candidatesMock;
+    const query = searchQuery.toLowerCase();
+    return candidatesMock.filter((c) =>
+      c.name?.toLowerCase().includes(query) ||
+      c.email?.toLowerCase().includes(query) ||
+      c.role?.toLowerCase().includes(query) ||
+      c.skills?.some(skill => skill.toLowerCase().includes(query)) ||
+      c.location?.toLowerCase().includes(query)
+    );
+  }, [candidatesMock, searchQuery]);
+
   const sortedCandidates = useMemo(() => {
-    return sortCandidates(candidatesMock, sortBy);
-  }, [candidatesMock, sortBy]);
+    return sortCandidates(filteredCandidates, sortBy);
+  }, [filteredCandidates, sortBy]);
 
   const selectedCandidates = useMemo(() => {
     return candidatesMock.filter((c) => selectedIds.has(c.id));
@@ -235,6 +247,8 @@ const UserTalentProfiles = () => {
                   type="text"
                   placeholder="Search by Talent Name..."
                   className="ut-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
@@ -295,7 +309,7 @@ const UserTalentProfiles = () => {
                     fontSize: "14px",
                   }}
                 >
-                  No Talent Profiles found
+                  {searchQuery ? "No Talent Profiles matching your search" : "No Talent Profiles found"}
                 </div>
               )}
               {viewMode === "grid" ? (

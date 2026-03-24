@@ -9,7 +9,7 @@ import "./UploadTalent.css";
 import NoData from "./NoData";
 
 const PAGE_SIZE = 10;
-const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false }) => {
+const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "" }) => {
   const navigate = useNavigate();
 
   const [talents, setTalents] = useState([]);
@@ -118,8 +118,20 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
     return colors[name.length % colors.length];
   };
 
+  const filteredTalents = useMemo(() => {
+    if (!searchQuery.trim()) return talents;
+    const query = searchQuery.toLowerCase();
+    return talents.filter((t) =>
+      t.fileName?.toLowerCase().includes(query) ||
+      t.email?.toLowerCase().includes(query) ||
+      t.uploadedBy?.toLowerCase().includes(query) ||
+      t.extractStatus?.toLowerCase().includes(query) ||
+      t.batchFormat?.toLowerCase().includes(query)
+    );
+  }, [talents, searchQuery]);
+
   const sortedTalents = useMemo(() => {
-    const items = [...talents];
+    const items = [...filteredTalents];
     if (sortConfig.key) {
       items.sort((a, b) => {
         const A = String(a[sortConfig.key] ?? "").toLowerCase();
@@ -130,7 +142,7 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
       });
     }
     return items;
-  }, [talents, sortConfig]);
+  }, [filteredTalents, sortConfig]);
 
   const requestSort = (key) => {
     let direction = "ascending";
@@ -250,7 +262,7 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false })
                       justifyContent: "center",
                     }}
                   >
-                    <NoData text="No resumes uploaded" />
+                    <NoData text={searchQuery ? "No matching resumes found" : "No resumes uploaded"} />
                   </div>
                 </td>
               </tr>
