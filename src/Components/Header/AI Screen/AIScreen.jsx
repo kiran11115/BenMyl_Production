@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
 import { FiSend, FiX, FiPaperclip, FiSearch, FiClock, FiSave, FiEdit, FiHome } from "react-icons/fi";
+import "./AIScreen.css";
 
 /** -----------------------------
  * Data
@@ -66,60 +67,28 @@ const ALL_IT_ROLES = Object.keys(FULL_IT_ROLES_SKILLS);
 
 const SUGGESTED_PROMPTS = [
   {
-    id: "frontend-react",
-    name: "Frontend React",
-    role: "Frontend Developer",
-    data: {
-      role: "Frontend Developer",
-      skills: ["HTML", "CSS", "JavaScript", "React/Angular/Vue"],
-      qualifications: "Any graduate with strong frontend skills",
-      experience: "2-4 years",
-      location: "Bangalore",
-      salary: "8 LPA",
-      workType: "Hybrid",
-    },
+    id: "optimize-bench",
+    name: "Optimize my bench",
+    role: "Identify low-performing resumes",
+    data: { action: "optimize" },
   },
   {
-    id: "fullstack-node",
-    name: "Full Stack Node",
-    role: "Full Stack Developer",
-    data: {
-      role: "Full Stack Developer",
-      skills: ["React/Angular/Vue", "Node.js/Java/.NET", "SQL/NoSQL Databases"],
-      qualifications: "Graduate in Computer Science",
-      experience: "3-5 years",
-      location: "Hyderabad",
-      salary: "12 LPA",
-      workType: "Remote",
-    },
+    id: "low-activity",
+    name: "Low activity resumes",
+    role: "See who is not getting responses",
+    data: { action: "low_activity" },
   },
   {
-    id: "devops-aws",
-    name: "DevOps AWS",
-    role: "DevOps Engineer",
-    data: {
-      role: "DevOps Engineer",
-      skills: ["Linux", "CI/CD (Jenkins/GitHub Actions)", "Docker", "Kubernetes", "Cloud (AWS/Azure/GCP)"],
-      qualifications: "B.Tech/MCA or equivalent",
-      experience: "3-5 years",
-      location: "Remote",
-      salary: "15 LPA",
-      workType: "Remote",
-    },
+    id: "match-req",
+    name: "Match Requirement",
+    role: "Find best matches for a job",
+    data: { action: "match" },
   },
   {
-    id: "data-scientist",
-    name: "Data Scientist",
-    role: "Data Scientist",
-    data: {
-      role: "Data Scientist",
-      skills: ["Python/R", "Machine Learning", "Statistics & Probability", "SQL"],
-      qualifications: "B.Tech/M.Tech in CS or related field",
-      experience: "2-4 years",
-      location: "Bangalore",
-      salary: "10 LPA",
-      workType: "Hybrid",
-    },
+    id: "market-demand",
+    name: "Market Insights",
+    role: "What skills are in demand?",
+    data: { action: "insights" },
   },
 ];
 
@@ -149,21 +118,21 @@ const formReducer = (state, action) => {
  * Theme + styles (inline only)
  * ---------------------------- */
 const UI = {
-  bg: "#0b1020",
-  panelA: "rgba(255,255,255,0.06)",
-  panelB: "rgba(255,255,255,0.04)",
-  border: "rgba(255,255,255,0.10)",
-  border2: "rgba(255,255,255,0.14)",
-  text: "rgba(255,255,255,0.92)",
-  muted: "rgba(255,255,255,0.62)",
-  muted2: "rgba(255,255,255,0.48)",
-  primary: "#7c5cff",
-  primary2: "#9b7bff",
-  danger: "#ff4d4f",
-  shadow: "0 8px 30px rgba(0,0,0,0.35)",
-  shadow2: "0 16px 50px rgba(0,0,0,0.45)",
-  radiusLg: 18,
-  radiusMd: 14,
+  bg: "#0f172a",
+  panelA: "rgba(30, 41, 59, 0.7)",
+  panelB: "rgba(30, 41, 59, 0.4)",
+  border: "rgba(51, 65, 85, 0.6)",
+  border2: "rgba(71, 85, 105, 0.8)",
+  text: "#f8fafc",
+  muted: "#94a3b8",
+  muted2: "#64748b",
+  primary: "#3b82f6",
+  primary2: "#60a5fa",
+  danger: "#ef4444",
+  shadow: "0 4px 15px rgba(0,0,0,0.25)",
+  shadow2: "0 10px 30px rgba(0,0,0,0.35)",
+  radiusLg: 16,
+  radiusMd: 12,
 };
 
 const S = {
@@ -171,7 +140,7 @@ const S = {
     minHeight: "92vh",
     padding: 22,
     background:
-      "radial-gradient(900px 500px at 20% 0%, rgba(124, 92, 255, 0.22), transparent 60%), radial-gradient(700px 450px at 80% 10%, rgba(0, 209, 255, 0.18), transparent 55%), radial-gradient(900px 600px at 60% 120%, rgba(255, 0, 128, 0.10), transparent 55%), " +
+      "radial-gradient(800px 500px at 20% 0%, rgba(59, 130, 246, 0.08), transparent 60%), radial-gradient(700px 450px at 80% 10%, rgba(99, 102, 241, 0.06), transparent 55%), radial-gradient(900px 600px at 60% 120%, rgba(14, 165, 233, 0.05), transparent 55%), " +
       UI.bg,
     color: UI.text,
   },
@@ -212,7 +181,7 @@ const S = {
     color: UI.text,
     background: "transparent",
   },
-  btnPrimary: { background: `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})`, boxShadow: "0 10px 28px rgba(124, 92, 255, 0.25)" },
+  btnPrimary: { background: `linear-gradient(135deg, ${UI.primary}, ${UI.primary2})`, boxShadow: "0 10px 28px rgba(59, 130, 246, 0.25)" },
   btnSecondary: { background: "rgba(255,255,255,0.06)", border: `1px solid ${UI.border}` },
   btnDisabled: { opacity: 0.55, cursor: "not-allowed" },
 
@@ -304,7 +273,7 @@ const S = {
   optionRow: { display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.06)" },
 
   pillRow: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 10 },
-  pill: { display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, border: "1px solid rgba(124,92,255,0.35)", background: "rgba(124,92,255,0.12)", padding: "8px 10px", fontSize: 12 },
+  pill: { display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, border: "1px solid rgba(59, 130, 246, 0.35)", background: "rgba(59, 130, 246, 0.12)", padding: "8px 10px", fontSize: 12 },
   pillX: { border: "none", background: "transparent", color: UI.text, cursor: "pointer", opacity: 0.8 },
 
   benchCard: { borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14, transition: "transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease" },
@@ -322,7 +291,7 @@ const Button = React.memo(function Button({ onClick, disabled, children, variant
   const hoverStyle =
     !disabled && hover
       ? variant === "primary"
-        ? { transform: "translateY(-1px)", boxShadow: "0 14px 36px rgba(124, 92, 255, 0.32)" }
+        ? { transform: "translateY(-1px)", boxShadow: "0 14px 36px rgba(59, 130, 246, 0.32)" }
         : { transform: "translateY(-1px)", background: "rgba(255,255,255,0.085)", borderColor: UI.border2 }
       : null;
 
@@ -591,7 +560,13 @@ const TalentForm = React.memo(function TalentForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <div style={{ fontWeight: 950, margin: "0 0 10px", color: UI.text }}>Search Filters</div>
+      <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
+        <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+        <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
+          <strong>Let's find the absolute best talent out there!</strong><br/>
+          I need a few details to get started. Can you fill out what role and skills you are looking to hire for?
+        </div>
+      </div>
 
       {/* className enables media-query single-column on small screens */}
       <div style={S.formGrid} className="modal-form-grid">
@@ -882,8 +857,8 @@ const SuggestedBenchCard = React.memo(function SuggestedBenchCard({ bench }) {
       onMouseLeave={() => setHover(false)}
       style={{
         ...S.benchCard,
-        borderColor: hover ? "rgba(124,92,255,0.40)" : UI.border,
-        background: hover ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
+        borderColor: hover ? "rgba(59, 130, 246, 0.40)" : UI.border,
+        background: hover ? "rgba(30, 41, 59, 0.7)" : "rgba(30, 41, 59, 0.4)",
         transform: hover ? "translateY(-2px)" : "translateY(0)",
         boxShadow: hover ? UI.shadow2 : "none",
       }}
@@ -914,9 +889,10 @@ function AIScreen() {
   const [showSavedPrompts, setShowSavedPrompts] = useState(false);
 
   const [recentSearches, setRecentSearches] = useState([
-    { text: "Find React Developers", type: "job" },
-    { text: "E-commerce Platform Project", type: "project" },
-    { text: "UI/UX Design Position", type: "job" },
+    { text: "Optimize my bench", type: "job" },
+    { text: "Which resumes are not getting responses?", type: "project" },
+    { text: "Find best matches for this requirement: React developer 3 years", type: "job" },
+    { text: "What skills are in demand?", type: "job" },
   ]);
   const [filteredSearches, setFilteredSearches] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -1021,7 +997,28 @@ function AIScreen() {
       setIsLoading(true);
 
       setTimeout(() => {
-        const aiMessage = { id: `msg-${messages.length + 2}`, type: "ai", content: "Here are some suggested Bench based on your query.", timestamp: new Date() };
+        let responseContent = "";
+        const lowerQuery = textToSubmit.toLowerCase();
+        
+        if (lowerQuery.includes("optimize") || lowerQuery.includes("low-performing") || lowerQuery.includes("score") || lowerQuery.includes("improve")) {
+          responseContent = "**Summary**\nI've analyzed and scored the selected resumes based on skill relevance, completeness, and market demand. 2 resumes scored below 60/100 and need immediate attention.\n\n**Key Insights**\n• Rahul Mehta (Score: 55/100) - Missing modern React keywords (Hooks, Context); completeness is low.\n• Priya Sharma (Score: 82/100) - Strong skills, but \"Cloud basics\" is too vague for current market demand.\n• QA Profiles (Avg Score: 65/100) - Omitting specific automation tool experience lowers the completeness score.\n\n**Suggested Actions**\n• Update Rahul's resume with specific React keywords to improve his relevance score.\n• Quantify Priya's cloud experience (e.g., \"AWS EC2/S3\") to boost market demand score.\n• Add details on Selenium/Cypress for the QA profiles.";
+        } else if (lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")) {
+          responseContent = "**Summary**\nI found 4 strong matches for this requirement. Top candidates have an average 85% match rate based on skills and experience.\n\n**Key Insights**\n• Match rate is primarily driven by exact React and TypeScript experience.\n• Location preferences align closely with the requirement.\n• Aditya Patel (88% Match) - Best fit due to recent overlapping project experience.\n\n**Suggested Actions**\n• Review the top matches below and share their profiles with the client.\n• Consider highlighting Aditya's specific related project experience in your pitch.";
+        } else if (lowerQuery.includes("in demand") || lowerQuery.includes("market") || lowerQuery.includes("skills")) {
+          responseContent = "**Summary**\nCloud and AI skills are seeing a 35% MoM increase in search queries on the platform.\n\n**Key Insights**\n• High Demand Profiles: DevOps (AWS/Azure), React, Python (AI/ML).\n• Low Demand Profiles: Legacy Java (pre-Java 8), Manual QA.\n• Fastest growing skill request: TypeScript and Kubernetes.\n\n**Suggested Actions**\n• Encourage your bench to upskill in basic cloud deployments to increase marketability.\n• Update older Java profiles to highlight microservices if applicable.\n• Tag relevant candidates with \"TypeScript\" if they possess the skill but haven't listed it.";
+        } else if (lowerQuery.includes("response") || lowerQuery.includes("activity") || lowerQuery.includes("ignored") || lowerQuery.includes("not getting") || lowerQuery.includes("not responded")) {
+          responseContent = "**Summary**\nI identified 3 resumes that have had no views or responses in the last 14 days.\n\n**Key Insights**\n• Missing key high-volume search skills: \"DevOps Basics\", \"Docker\".\n• Project descriptions are too generic (e.g., \"Worked on software\").\n• Formatting lacks clear skill highlights, making them easy to ignore in quick scans.\n\n**Suggested Actions**\n• Improve the descriptions to use action verbs and impact metrics.\n• Add any missing relevant certifications to bump their search ranking.\n• Re-upload with a prioritized skills section at the top.";
+        } else {
+          responseContent = "**Summary**\nRequest processed successfully based on current platform data.\n\n**Key Insights**\n• Resume visibility can always be optimized by aligning with current job post keywords.\n• Regular profile updates signal active availability to the matching engine.\n\n**Suggested Actions**\n• Please provide a specific requirement (e.g., \"Find match for React developer\") or ask about a particular resume to get detailed actionable steps.";
+        }
+
+        const aiMessage = { 
+          id: `msg-${Date.now()}`, 
+          type: "ai", 
+          content: responseContent, 
+          timestamp: new Date(),
+          isMatch: lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")
+        };
         setMessages((prev) => [...prev, aiMessage]);
         setIsLoading(false);
       }, 1200);
@@ -1146,12 +1143,16 @@ function AIScreen() {
   const handleSearchSelect = useCallback((searchItem) => handleSubmit(searchItem.text), [handleSubmit]);
 
   const handleSuggestedPromptClick = useCallback((prompt) => {
-    talentDispatch({ type: "RESET", payload: prompt.data });
-    setTalentRoleInputDisplay(prompt.data.role);
-    setRoleSuggestionsOpen(false);
-    setTalentPromptDirty(false);
-    setIsTalentModalOpen(true);
-  }, []);
+    if (prompt.data && prompt.data.action) {
+      handleSubmit(prompt.name);
+    } else {
+      talentDispatch({ type: "RESET", payload: prompt.data });
+      setTalentRoleInputDisplay(prompt.data.role);
+      setRoleSuggestionsOpen(false);
+      setTalentPromptDirty(false);
+      setIsTalentModalOpen(true);
+    }
+  }, [handleSubmit, talentDispatch]);
 
   const openEditPromptModal = useCallback((p) => {
     setEditingSavedPromptId(p.id);
@@ -1173,266 +1174,325 @@ function AIScreen() {
     closeEditPromptModal();
   }, [editingSavedPromptId, editingSavedPromptName, editingSavedPromptText, closeEditPromptModal]);
 
+  // Derived state to represent the current dashboard view easily
+  const latestAiMessage = [...messages].reverse().find(m => m.type === "ai");
+  const showResults = !!latestAiMessage;
+  const [activeQuestionnaire, setActiveQuestionnaire] = useState(null);
+
+  // Extremely simple parsing of our mock AI responses
+  const parseAIContent = (content) => {
+    if (!content) return { summary: "", insights: [], actions: [] };
+    const parts = content.split(/\*\*(Summary|Key Insights|Suggested Actions)\*\*/g);
+    
+    let summary = "";
+    let insights = [];
+    let actions = [];
+
+    for (let i = 0; i < parts.length; i++) {
+        if (parts[i] === "Summary") summary = parts[i+1]?.trim() || "";
+        if (parts[i] === "Key Insights") {
+            insights = parts[i+1]?.trim().split('\n').map(l => l.replace(/^- /,"").trim()).filter(Boolean) || [];
+        }
+        if (parts[i] === "Suggested Actions") {
+            actions = parts[i+1]?.trim().split('\n').map(l => l.replace(/^[-\d.] /,"").trim()).filter(Boolean) || [];
+        }
+    }
+    
+    if (!summary && content) summary = content;
+    return { summary, insights, actions };
+  };
+
+  const aiParsed = latestAiMessage ? parseAIContent(latestAiMessage.content) : null;
+
   return (
-    <div style={S.page}>
-      <div style={S.container}>
-        <div style={S.header}>
-          <h1 style={S.title}>AI</h1>
-
-          <div style={S.rowGap8}>
-            <Button onClick={() => setShowSavedPrompts((prev) => !prev)} variant="secondary" type="button">
-              Saved Prompts ({savedPrompts.length})
-            </Button>
-
-            <Button
-              onClick={() => {
-                setTalentPromptDirty(false);
-                setTalentRoleInputDisplay(talentForm.role);
-                setRoleSuggestionsOpen(false);
-                setIsTalentModalOpen(true);
-              }}
-              type="button"
-            >
-              Find Talent
-            </Button>
-
-            <Button
-              onClick={() => {
-                setProjectsPromptDirty(false);
-                setIsProjectsModalOpen(true);
-              }}
-              variant="secondary"
-              type="button"
-            >
-              Find Projects
-            </Button>
-          </div>
+    <div className="ai-dashboard">
+      
+      {/* 1. LEFT SIDEBAR */}
+      <div className="ai-sidebar">
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+           <div style={{ width: 32, height: 32, background: "var(--accent)", borderRadius: 8, display: "grid", placeItems: "center", fontWeight: "bold", color: "#fff" }}>
+             AI
+           </div>
+           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)" }}>Workspace</span>
         </div>
 
-        <div style={S.panel}>
-          {showSavedPrompts ? (
-            <>
-              <h3 style={{ margin: "0 0 14px", fontSize: 18, fontWeight: 950, color: UI.text }}>Saved Prompts</h3>
-              {savedPrompts.length === 0 ? (
-                <p style={{ margin: 0, color: UI.muted }}>No saved prompts yet.</p>
-              ) : (
-                <div style={S.grid2}>
-                  {savedPrompts.map((savedPrompt) => (
-                    <div key={savedPrompt.id} style={{ borderRadius: 16, border: `1px solid ${UI.border}`, background: "rgba(255,255,255,0.05)", padding: 14 }}>
-                      <div style={{ fontWeight: 950, marginBottom: 6 }}>{savedPrompt.name}</div>
-                      <div style={{ color: UI.muted, fontSize: 12, lineHeight: 1.55 }}>{savedPrompt.prompt}</div>
+        <div className="sidebar-title">Quick Actions</div>
+        
+        <button className="sidebar-btn" onClick={() => { setActiveQuestionnaire(null); }}>
+          <FiSearch size={16} /> New
+        </button>
 
-                      <div style={{ ...S.rowGap8, marginTop: 10 }}>
-                        <Button onClick={() => handleLoadSavedPrompt(savedPrompt)} style={{ flex: 1, height: 34, fontSize: 12 }} type="button">
-                          Use
-                        </Button>
-                        <Button onClick={() => openEditPromptModal(savedPrompt)} variant="secondary" style={{ height: 34, fontSize: 12 }} type="button">
-                          Edit
-                        </Button>
-                        <Button onClick={() => handleDeleteSavedPrompt(savedPrompt.id)} variant="secondary" style={{ height: 34, fontSize: 12 }} type="button">
-                          Delete
-                        </Button>
-                      </div>
+        {SUGGESTED_PROMPTS.map((prompt) => (
+          <button 
+            key={prompt.id}
+            className="sidebar-btn"
+            onClick={() => { setActiveQuestionnaire(prompt.id); }}
+          >
+            <FiSearch size={16} />
+            {prompt.name}
+          </button>
+        ))}
+
+        <button className="sidebar-btn" style={{ marginTop: "auto" }}>
+          <FiSave size={16} /> Saved Prompts
+        </button>
+        <button className="sidebar-btn" onClick={goHome}>
+          <FiHome size={16} /> Home
+        </button>
+      </div>
+
+      {/* 2. MAIN CONTENT AREA */}
+      <div className="ai-main">
+        <div className="main-header">
+          <h1 className="main-title">
+             {activeQuestionnaire ? SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name || "Questionnaire" : "AI Assistant Dashboard"}
+          </h1>
+          {activeQuestionnaire && (
+            <p className="main-subtitle">Complete the parameters to generate a guided prompt.</p>
+          )}
+        </div>
+
+        {/* INLINE QUESTIONNAIRE AREA */}
+        {activeQuestionnaire ? (
+          <div style={{ background: "var(--bg-card)", borderRadius: 16, border: "1px solid var(--border-color)", padding: 24 }}>
+             
+             {activeQuestionnaire === "match-req" ? (
+               <TalentForm
+                  talentForm={talentForm}
+                  talentRoleInputDisplay={talentRoleInputDisplay}
+                  setTalentRoleInputDisplay={setTalentRoleInputDisplay}
+                  dispatch={talentDispatch}
+                  filteredRoleSuggestions={filteredRoleSuggestions}
+                  roleSuggestionsOpen={roleSuggestionsOpen}
+                  setRoleSuggestionsOpen={setRoleSuggestionsOpen}
+                  skillsDropdownOpen={skillsDropdownOpen}
+                  setSkillsDropdownOpen={setSkillsDropdownOpen}
+                  computedSkillOptions={computedSkillOptions}
+                  talentPrompt={talentPrompt}
+                  isEditingTalentPrompt={isEditingTalentPrompt}
+                  setIsEditingTalentPrompt={setIsEditingTalentPrompt}
+                  setTalentPrompt={setTalentPrompt}
+                  setTalentPromptDirty={setTalentPromptDirty}
+                  skillsDropdownRef={skillsDropdownRef}
+                  onSavePrompt={handleSavePrompt}
+                  onSubmit={(e) => {
+                     setActiveQuestionnaire(null);
+                     handleTalentSubmit(e);
+                  }}
+               />
+             ) : (
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    setInputValue(`Execute analysis for: ${SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name}`);
+                    setActiveQuestionnaire(null);
+                    setTimeout(() => handleSubmit(), 100);
+                }}>
+                   <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
+                     <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+                     <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
+                       <strong>I can help you {SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name.toLowerCase()}!</strong><br/>
+                       To get the best results, what specific role or target audience should I focus my analysis around?
+                     </div>
+                   </div>
+
+                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Target Audience & Focus Areas</span>
+                     <input autoFocus type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="E.g., Senior iOS Developers with Swift experience..." />
+                   </div>
+                   
+                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 25 }}>
+                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Any additional instructions for me? <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>(Optional)</span></span>
+                     <input type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="List any specific checks or constraints..." />
+                   </div>
+
+                   <div style={{ display: "flex", gap: 12 }}>
+                      <button type="submit" style={{ flex: 1, background: "var(--accent)", color: "#fff", border: "none", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 0.9} onMouseLeave={e => e.currentTarget.style.opacity = 1}>
+                        Execute Prompt Request
+                      </button>
+                      <button type="button" onClick={() => setActiveQuestionnaire(null)} style={{ padding: "0 24px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
+                        Cancel
+                      </button>
+                   </div>
+                </form>
+             )}
+
+          </div>
+        ) : (
+          <>
+            {/* CARDS SELECTION OVERVIEW */}
+            {!showResults && !isLoading && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
+                  <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+                  <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
+                    <strong>Hello! I'm your AI Workspace assistant.</strong><br/>
+                    I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. What would you like to do today?
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0", paddingLeft: 60 }}>Guided Workflows</h3>
+                <div className="results-grid">
+                  {SUGGESTED_PROMPTS.map((prompt) => (
+                    <div 
+                      key={prompt.id} 
+                      className="resume-card" 
+                      onClick={() => setActiveQuestionnaire(prompt.id)}
+                      style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
+                    >
+                      <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
+                      <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
                     </div>
                   ))}
                 </div>
-              )}
-            </>
-          ) : messages.length === 0 ? (
-            <>
-              <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 950 }}>Looking for suggestions...</h3>
-              <p style={{ margin: "0 0 14px", color: UI.muted, fontSize: 13 }}>
-                Start by asking for talent or projects, or use a quick template to generate a search prompt.
-              </p>
-
-              <div style={S.grid4}>
-                {SUGGESTED_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt.id}
-                    onClick={() => handleSuggestedPromptClick(prompt)}
-                    style={S.card}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = UI.shadow2;
-                      e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                      e.currentTarget.style.borderColor = UI.border;
-                      e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                    }}
-                  >
-                    <div style={{ fontWeight: 950, fontSize: 14, color: UI.primary, marginBottom: 2 }}>{prompt.name}</div>
-                    <div style={{ fontSize: 11, color: UI.muted, fontWeight: 900 }}>{prompt.role}</div>
-                    <div style={{ fontSize: 12, color: UI.muted2, marginTop: 8 }}>
-                      {prompt.data.salary} • {prompt.data.experience}
-                    </div>
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => alert("More templates coming soon!")}
-                  style={{
-                    ...S.card,
-                    border: `1px dashed ${UI.border2}`,
-                    background: "transparent",
-                    color: UI.muted,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    justifyContent: "center",
-                    fontWeight: 950,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = UI.text;
-                    e.currentTarget.style.borderColor = "rgba(124,92,255,0.45)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = UI.muted;
-                    e.currentTarget.style.borderColor = UI.border2;
-                  }}
-                >
-                  <span>View More Templates</span>
-                </button>
               </div>
+            )}
 
-              {recentSearches.length > 0 && (
-                <div style={{ marginTop: 16 }}>
-                  <h4 style={{ margin: "0 0 10px", fontSize: 13, fontWeight: 950, color: UI.text }}>Recent Searches</h4>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                    {recentSearches.slice(0, 6).map((search, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSearchSelect(search)}
-                        style={{
-                          borderRadius: 999,
-                          border: `1px solid ${UI.border}`,
-                          background: "rgba(255,255,255,0.05)",
-                          color: UI.text,
-                          padding: "8px 12px",
-                          fontSize: 12,
-                          cursor: "pointer",
-                          fontWeight: 900,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = UI.border2;
-                          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = UI.border;
-                          e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-                        }}
-                      >
-                        {search.text}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 16 }}>
-                {messages.map((message) => (
-                  <div key={message.id} style={S.messageRow}>
-                    <div
-                      style={{
-                        ...S.avatar,
-                        background: message.type === "user" ? "rgba(124, 92, 255, 0.18)" : "rgba(0, 209, 255, 0.12)",
-                        borderColor: message.type === "user" ? "rgba(124, 92, 255, 0.35)" : "rgba(0, 209, 255, 0.25)",
-                      }}
-                    >
-                      {message.type === "user" ? "U" : "AI"}
-                    </div>
+            {/* SMART INPUT BAR */}
+            <div className="smart-input-container">
+              <textarea
+                className="smart-input"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder='Ask anything manually... e.g., "Find best resumes for React developer"'
+                rows={1}
+              />
+              <button 
+                onClick={handleSubmit} 
+                disabled={!inputValue.trim() || isLoading}
+                className="smart-submit"
+                title="Ask AI"
+              >
+                {isLoading ? <FiClock size={20} className="spinning" /> : <FiSend size={20} />}
+              </button>
+            </div>
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={S.bubble}>{message.content}</div>
+            {isLoading && (
+              <div style={{ color: "var(--accent)", fontSize: 14, fontWeight: "bold", display: "flex", gap: 8, alignItems: "center", marginTop: 12 }}>
+                <FiClock className="spinning" /> Analyzing Request...
+              </div>
+            )}
 
-                      {message.files && message.files.length > 0 && (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-                          {message.files.map((file) => (
-                            <div key={file.id} style={S.chip}>
-                              <FiPaperclip size={12} />
-                              <span>{file.name}</span>
+            {/* Dynamic RESULTS */}
+            {showResults && (
+                <>
+                  {latestAiMessage.isMatch && suggestedBench.length > 0 && (
+                    <div style={{ marginTop: 10 }}>
+                      <h3 style={{ fontSize: 18, color: "var(--text-primary)", fontWeight: 800, margin: "0 0 16px 0" }}>Analysis Results ({suggestedBench.length})</h3>
+                      <div className="results-grid">
+                        {suggestedBench.map((bench, idx) => (
+                          <div className="resume-card" key={idx}>
+                            <div className="r-card-header">
+                              <div>
+                                <h4 className="r-card-name">{bench.name}</h4>
+                                <div className="r-card-role">{bench.role}</div>
+                              </div>
+                              {bench.score >= 90 ? (
+                                <div className="status-tag high">High Match</div>
+                              ) : bench.score >= 70 ? (
+                                <div className="status-tag medium">Needs Work</div>
+                              ) : (
+                                <div className="status-tag low">Low Vis</div>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      )}
 
-                      {message.type === "ai" && (
-                        <div style={{ ...S.grid4, marginTop: 12 }}>
-                          {suggestedBench.map((bench) => (
-                            <SuggestedBenchCard key={bench.name} bench={bench} />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                            <div className="scores-row">
+                              <div className="score-box">
+                                <span className="score-label">Match</span>
+                                <span className="score-value">{bench.score}%</span>
+                              </div>
+                              <div className="score-box">
+                                <span className="score-label">Resume</span>
+                                <span className="score-value">{bench.marketScore}/100</span>
+                              </div>
+                            </div>
 
-                {isLoading && (
-                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                    <div style={{ ...S.avatar, background: "rgba(0, 209, 255, 0.12)", borderColor: "rgba(0, 209, 255, 0.25)" }}>AI</div>
-                    <div style={{ color: UI.muted, fontSize: 13 }}>Thinking…</div>
-                  </div>
-                )}
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                              {bench.skills.map(s => (
+                                <div className="status-tag" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: 10 }} key={s}>{s}</div>
+                              ))}
+                            </div>
 
-                <div ref={messagesEndRef} />
-              </div>
-
-              <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
-                <div style={{ flex: 1 }}>
-                  {attachedFiles.length > 0 && (
-                    <div style={{ marginBottom: 10, display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {attachedFiles.map((file) => (
-                        <div key={file.id} style={S.chip}>
-                          <FiPaperclip size={14} />
-                          <span>{file.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(file.id)}
-                            style={{ border: "none", background: "transparent", color: UI.muted, cursor: "pointer" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.color = UI.danger)}
-                            onMouseLeave={(e) => (e.currentTarget.style.color = UI.muted)}
-                          >
-                            <FiX />
-                          </button>
-                        </div>
-                      ))}
+                            <div className="r-card-expand">
+                              <strong style={{ color: "var(--text-primary)" }}>AI Insight:</strong> {bench.aiInsight}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  <SearchBar
-                    inputValue={inputValue}
-                    setInputValue={setInputValue}
-                    attachedFiles={attachedFiles}
-                    isLoading={isLoading}
-                    tokenCount={tokenCount}
-                    showDropdown={showDropdown}
-                    setShowDropdown={setShowDropdown}
-                    searchLoading={searchLoading}
-                    filteredSearches={filteredSearches}
-                    handleKeyDown={handleKeyDown}
-                    handleSubmit={() => handleSubmit()}
-                    handleSearchSelect={handleSearchSelect}
-                    deleteRecentSearch={deleteRecentSearch}
-                    clearAllRecentSearches={clearAllRecentSearches}
-                    fileInputRef={fileInputRef}
-                    searchContainerRef={searchContainerRef}
-                  />
-                </div>
+                  {/* AI RESPONSE BLOCK */}
+                  <div className="ai-response-block">
+                    <div className="ai-resp-summary">
+                      {aiParsed.summary || "Complete process analysis and outcomes shown above."}
+                    </div>
+                    
+                    {aiParsed.insights.length > 0 && (
+                    <div className="ai-resp-insights">
+                      <div className="ai-resp-title">Key Insights</div>
+                      <ul className="ai-resp-list">
+                        {aiParsed.insights.map((ins, i) => <li key={i}>{ins}</li>)}
+                      </ul>
+                    </div>
+                    )}
 
-                <Button onClick={goHome} variant="secondary" style={{ height: 56, borderRadius: 14, padding: "0 16px" }} type="button">
-                  <FiHome size={18} />
-                </Button>
-              </div>
-            </>
-          )}
+                    {aiParsed.actions.length > 0 && (
+                    <div className="ai-resp-actions">
+                      <div className="ai-resp-title">Suggested Actions</div>
+                      <ul className="ai-resp-list" style={{ listStyleType: "decimal" }}>
+                        {aiParsed.actions.map((act, i) => <li key={i}>{act}</li>)}
+                      </ul>
+                    </div>
+                    )}
+                  </div>
+                </>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* 3. RIGHT INSIGHTS PANEL */}
+      <div className="ai-right-panel">
+        <div className="panel-title">
+          <FiClock size={16} color="var(--accent)" /> System Insights
+        </div>
+
+        <div className="insight-card">
+           <div className="insight-header">
+              <span className="insight-metric">14</span>
+              <div className="status-tag low">Needs Attention</div>
+           </div>
+           <div className="insight-desc">
+              <strong>Low Activity Resumes</strong><br/>
+              Candidates with less than 2 profile views in 30 days.
+           </div>
+        </div>
+
+        <div className="insight-card">
+           <div className="insight-header">
+              <span className="insight-metric">3</span>
+              <div className="status-tag accent">Trending</div>
+           </div>
+           <div className="insight-desc">
+              <strong>High Demand Skills</strong><br/>
+              React, AWS, Node.js have seen a 45% spike in searches this week.
+           </div>
+        </div>
+
+        <div className="insight-card">
+           <div className="insight-header">
+              <span className="insight-metric">8</span>
+              <div className="status-tag medium">Review</div>
+           </div>
+           <div className="insight-desc">
+              <strong>Weak Profiles</strong><br/>
+              Resumes missing key summary blocks or project specifics.
+           </div>
         </div>
       </div>
 
+      {/* Keep invisible inputs & Modals */}
       <input ref={fileInputRef} type="file" multiple onChange={handleFileAttach} style={{ display: "none" }} aria-label="File upload" />
 
       <Modal title="Find Talent" isOpen={isTalentModalOpen} onClose={() => setIsTalentModalOpen(false)}>
@@ -1487,6 +1547,7 @@ function AIScreen() {
           </Button>
         </div>
       </Modal>
+
     </div>
   );
 }

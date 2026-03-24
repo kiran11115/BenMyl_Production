@@ -55,12 +55,13 @@ const JobOverview = () => {
         },
 
         card: {
-            background: "#ffffff",
+            background: "#1e293b",
             borderRadius: "1rem",
             padding: "24px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 4px 12px -1px rgba(15, 23, 42, 0.05)",
-            marginBottom: "24px"
+            border: "1px solid rgba(71, 85, 105, 0.8)",
+            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
+            marginBottom: "24px",
+            color: "#f8fafc"
         },
 
         left: { width: isMobile ? "100%" : isTablet ? "65%" : "75%" },
@@ -71,10 +72,10 @@ const JobOverview = () => {
             top: "24px",
         },
 
-        title: { fontSize: "22px", fontWeight: 600 },
-        subtitle: { color: "#6b7280", marginTop: "4px" },
+        title: { fontSize: "22px", fontWeight: 600, color: "#f8fafc" },
+        subtitle: { color: "#94a3b8", marginTop: "4px" },
         section: { marginBottom: "22px" },
-        value: { fontSize: "15px", fontWeight: 500 },
+        value: { fontSize: "15px", fontWeight: 500, color: "#f8fafc" },
 
         grid: {
             display: "grid",
@@ -84,7 +85,7 @@ const JobOverview = () => {
 
         divider: {
             height: "1px",
-            background: "#e5e7eb",
+            background: "rgba(51, 65, 85, 0.6)",
             margin: "22px 0",
         },
 
@@ -92,37 +93,38 @@ const JobOverview = () => {
             display: "inline-block",
             padding: "6px 10px",
             borderRadius: "6px",
-            background: "#f3e8ff",
-            color: "#6d28d9",
+            background: "rgba(59, 130, 246, 0.15)",
+            color: "#60a5fa",
             fontSize: "13px",
             fontWeight: 500,
             marginRight: "8px",
             marginTop: "6px",
+            border: "1px solid rgba(59, 130, 246, 0.35)"
         },
     };
 
     const Label = ({ icon: Icon, text }) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#64748b", fontSize: "13px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#94a3b8", fontSize: "13px" }}>
             <Icon size={14} />
             <span>{text}</span>
         </div>
     );
 
     return (
-        <>
+        <div style={{ background: "#0f172a", minHeight: "100vh", color: "#f8fafc" }}>
             {/* HEADER */}
             <div style={{ padding: "24px 24px 0" }} className="mb-4">
                 <div className="vs-breadcrumbs mb-3 d-flex gap-2">
-                    <button type="button" className="link-button" onClick={() => navigate("/user/user-projects")}>
+                    <button type="button" className="link-button" onClick={() => navigate("/user/user-projects")} style={{ color: "#60a5fa", background: "none", border: "none", display: "flex", alignItems: "center", gap: "4px", padding: 0 }}>
                         <FiArrowLeft /> Back to Projects
                     </button>
-                    <span className="crumb">/ Job Overview</span>
+                    <span className="crumb" style={{ color: "#64748b" }}>/ Job Overview</span>
                 </div>
 
-                <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "12px 0 4px" }}>
+                <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "12px 0 4px", color: "#f8fafc" }}>
                     Job Overview
                 </h1>
-                <p style={{ color: "#64748b", margin: 0 }}>
+                <p style={{ color: "#94a3b8", margin: 0 }}>
                     A complete summary of the job details and requirements
                 </p>
             </div>
@@ -136,13 +138,14 @@ const JobOverview = () => {
                                 width: "52px",
                                 height: "52px",
                                 borderRadius: "10px",
-                                background: "#f1f5f9",
+                                background: "rgba(51, 65, 85, 0.5)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                border: "1px solid rgba(71, 85, 105, 0.8)"
                             }}
                         >
-                            <FiFileText size={22} color="#475569" />
+                            <FiFileText size={22} color="#94a3b8" />
                         </div>
 
                         <div>
@@ -163,13 +166,13 @@ const JobOverview = () => {
                     <div style={styles.divider} />
 
                     <Label icon={FiFileText} text="Job Description" />
-                    <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job.description}</p>
+                    <p style={{ fontSize: "14px", lineHeight: 1.6, color: "#cbd5e1" }}>{job.description}</p>
 
                     <div style={styles.section}>
                         <Label icon={FiLayers} text="Required Skills" />
                         <div className="d-flex gap-2">
                             {job.skills.map(skill => (
-                                <span key={skill} className="status-tag status-progress" >{skill}</span>
+                                <span key={skill} style={styles.badge}>{skill}</span>
                             ))}
                         </div>
                     </div>
@@ -183,7 +186,7 @@ const JobOverview = () => {
 
                     <div style={styles.section} className="mt-3">
                         <Label icon={FiFileText} text="Additional Requirements" />
-                        <p style={{ fontSize: "14px", lineHeight: 1.6 }}>{job.additionalRequirements}</p>
+                        <p style={{ fontSize: "14px", lineHeight: 1.6, color: "#cbd5e1" }}>{job.additionalRequirements}</p>
                     </div>
                 </div>
 
@@ -193,7 +196,7 @@ const JobOverview = () => {
                 </div>
 
             </div>
-        </>
+        </div>
     );
 };
 

@@ -104,7 +104,7 @@ function Header() {
           </div> */}
           <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
             <span className="ai-pill-icon">✦</span>
-            <span className="ai-pill-text">AI</span>
+            <span className="ai-pill-text">AI Workspace</span>
           </button>
 
           {/* Messages Icon */}

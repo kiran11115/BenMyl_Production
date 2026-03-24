@@ -18,23 +18,23 @@ const ShareJobCard = () => {
 
   const styles = {
     card: {
-      background: "#ffffff",
+      background: "#1e293b",
       borderRadius: "14px",
       padding: "20px",
-      border: "1px solid #e2e8f0",
-      boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)",
+      border: "1px solid rgba(71, 85, 105, 0.8)",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
     },
 
     title: {
       fontSize: "16px",
       fontWeight: 600,
-      color: "#0f172a",
+      color: "#f8fafc",
       marginBottom: "14px",
     },
 
     label: {
       fontSize: "13px",
-      color: "#64748b",
+      color: "#94a3b8",
       marginBottom: "6px",
     },
 
@@ -48,17 +48,17 @@ const ShareJobCard = () => {
       flex: 1,
       padding: "10px 12px",
       borderRadius: "8px",
-      border: "1px solid #e2e8f0",
+      border: "1px solid rgba(71, 85, 105, 0.8)",
       fontSize: "14px",
-      color: "#334155",
-      background: "#f8fafc",
+      color: "#f8fafc",
+      background: "rgba(15, 23, 42, 0.5)",
     },
 
     copyBtn: {
       padding: "0 14px",
       borderRadius: "8px",
       border: "none",
-      background: "#2563eb",
+      background: "#3b82f6",
       color: "#fff",
       fontSize: "14px",
       display: "flex",
@@ -74,13 +74,14 @@ const ShareJobCard = () => {
       gap: "12px",
       padding: "10px 14px",
       borderRadius: "10px",
-      background: "#eff6ff",
-      color: "#1e40af",
+      background: "rgba(59, 130, 246, 0.1)",
+      color: "#60a5fa",
       fontSize: "14px",
       fontWeight: 500,
       border: "none",
       cursor: "pointer",
       marginBottom: "10px",
+      width: "100%",
     },
 
     leftShare: {
@@ -90,7 +91,7 @@ const ShareJobCard = () => {
     },
 
     tick: {
-      color: "#16a34a",
+      color: "#34d399",
       display: "flex",
       alignItems: "center",
       gap: "4px",
@@ -99,7 +100,7 @@ const ShareJobCard = () => {
 
     divider: {
       height: "1px",
-      background: "#e5e7eb",
+      background: "rgba(51, 65, 85, 0.6)",
       margin: "16px 0",
     },
 
@@ -108,7 +109,7 @@ const ShareJobCard = () => {
       alignItems: "center",
       gap: "8px",
       fontSize: "14px",
-      color: "#475569",
+      color: "#94a3b8",
     },
   };
 
