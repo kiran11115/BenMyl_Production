@@ -1,10 +1,10 @@
 import React from "react";
-import { Bell, MessageCircle, LogOut } from "lucide-react";
+import { Bell, MessageCircle, LogOut, Play } from "lucide-react";
 import Notifications from "./Notifications";
 import "./MobileTopBar.css";
 import { useNavigate } from "react-router-dom";
 
-const MobileTopBar = ({ user, initials,handleSignOut }) => {
+const MobileTopBar = ({ user, initials, handleSignOut, setOpenVideoGuide }) => {
     const navigate = useNavigate();
 
     return (
@@ -15,6 +15,9 @@ const MobileTopBar = ({ user, initials,handleSignOut }) => {
             <div className="mobile-actions">
                 <button className="mobile-action-btn" onClick={() => navigate("/user/user-messages")}>
                     <MessageCircle size={20} />
+                </button>
+                <button className="mobile-action-btn" onClick={() => setOpenVideoGuide(true)} style={{ color: "#f5810c" }}>
+                    <Play size={20} fill="currentColor" />
                 </button>
                 <Notifications />
                 <button className="mobile-action-btn" onClick={handleSignOut} style={{ color: '#ef4444' }}>

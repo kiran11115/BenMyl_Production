@@ -11,7 +11,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Briefcase, Users, FileText, DollarSign, Info } from "lucide-react";
+import { Briefcase, Users, FileText, DollarSign, Info, Play } from "lucide-react";
 import StatsGrid from "./StatsGrid";
 import ProjectsSection from "./ProjectsSection";
 import UploadTalentTable from "../UploadTalent/UploadTalentTable";
@@ -217,28 +217,30 @@ const Dashboard = () => {
       {/* Dashboard Header with Guide Trigger */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="section-title m-0">Dashboard</h2>
-        <button
-          className="btn d-flex align-items-center gap-2"
-          onClick={() => guideRef.current?.startTour()}
-          style={{
-            background: "#eff6ff",
-            color: "#313131",
-            borderRadius: "10px",
-            padding: "8px 16px",
-            fontWeight: "600",
-            fontSize: "14px",
-            transition: "all 0.2s"
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = "translateY(-1px)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-          }}
-        >
-          <Info size={18} />
-          Help Guide
-        </button>
+        <div className="d-flex align-items-center gap-2">
+          <button
+            className="btn d-flex align-items-center gap-2"
+            onClick={() => guideRef.current?.startTour()}
+            style={{
+              background: "#eff6ff",
+              color: "#313131",
+              borderRadius: "10px",
+              padding: "8px 16px",
+              fontWeight: "600",
+              fontSize: "14px",
+              transition: "all 0.2s"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <Info size={18} />
+            Help Guide
+          </button>
+        </div>
       </div>
 
       {/* Workflow Guide */}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play } from "lucide-react";
+import VideoGuidePopover from "../Guide/VideoGuidePopover";
+import { videoGuides } from "../Guide/guideData";
 import "./Header.css";
 import Notifications from "./Notifications";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
@@ -13,6 +15,7 @@ import MobileTopBar from "./MobileTopBar";
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
   const profileRef = useRef(null);
 
   const user = localStorage.getItem("UserName");
@@ -86,7 +89,12 @@ function Header() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <MobileTopBar user={user} initials={getInitials(user)} handleSignOut={handleSignOut}/>
+      <MobileTopBar 
+        user={user} 
+        initials={getInitials(user)} 
+        handleSignOut={handleSignOut} 
+        setOpenVideoGuide={setIsVideoGuideOpen}
+      />
 
       <header className="header-container desktop-header">
         {/* Left Section: Brand & Nav */}
@@ -133,6 +141,17 @@ function Header() {
           <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
             <span className="ai-pill-icon">✦</span>
             <span className="ai-pill-text">AI</span>
+          </button>
+
+          {/* Video Guide Icon */}
+          <button 
+            onClick={() => setIsVideoGuideOpen(true)} 
+            type="button" 
+            className="header-action-btn"
+            title="Video Guide"
+            style={{ color: "#f5810c" }}
+          >
+            <Play size={20} fill="currentColor" />
           </button>
 
           {/* Messages Icon */}
@@ -211,6 +230,13 @@ function Header() {
       <MobileBottomNav />
 
       <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* Video Guide Popover */}
+      <VideoGuidePopover 
+        isOpen={isVideoGuideOpen} 
+        onClose={() => setIsVideoGuideOpen(false)} 
+        videoGuides={videoGuides}
+      />
     </>
   );
 }

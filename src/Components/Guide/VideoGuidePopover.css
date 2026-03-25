@@ -1,0 +1,344 @@
+.video-popover-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 11000;
+    animation: popoverOverlayFadeIn 0.3s ease-out;
+}
+
+@keyframes popoverOverlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.video-popover-content {
+    background: #ffffff;
+    width: 95%;
+    max-width: 1100px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: popoverContentScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes popoverContentScaleUp {
+    from { 
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.video-popover-header {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    background: #ffffff;
+}
+
+.video-popover-icon {
+    background: #eff6ff;
+    color: #f5810c;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-popover-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.video-popover-close {
+    background: #f1f5f9;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-popover-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: rotate(90deg);
+}
+
+.video-popover-main {
+    display: flex;
+    height: 500px;
+    background: #000;
+}
+
+.video-popover-sidebar {
+    width: 260px;
+    background: #ffffff;
+    border-right: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+}
+
+.sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 20px 12px 20px;
+}
+
+.video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 8px;
+}
+
+.video-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.video-item:hover {
+    background: #f8fafc;
+}
+
+.video-item.active {
+    background: #eff6ff;
+    color: #f5810c;
+}
+
+.video-item-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.video-item.active .video-item-title {
+    color: #f5810c;
+}
+
+.video-item .chevron {
+    color: #cbd5e1;
+    transition: transform 0.2s;
+}
+
+.video-item.active .chevron {
+    color: #f5810c;
+    transform: translateX(2px);
+}
+
+.video-popover-body {
+    flex: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+}
+
+/* --- Improved Player concealment --- */
+
+.video-viewport-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-iframe-container {
+    width: 100%;
+    height: 130%; /* Make it taller to clip top and bottom */
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+}
+
+.video-iframe-container iframe {
+    position: absolute;
+    top: -15%; /* Clip the "Share" and "Title" overlay at the top */
+    left: 0;
+    width: 100%;
+    height: 130%; 
+    border: none;
+}
+
+.video-player-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.video-player-shield:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.shield-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    animation: shieldFadeIn 0.4s ease-out;
+}
+
+@keyframes shieldFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.shield-play-btn.mini {
+    width: 60px;
+    height: 60px;
+}
+
+.shield-play-btn.mini svg {
+    width: 24px;
+    height: 24px;
+}
+
+.shield-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.seek-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.seek-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.seek-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    margin-top: -2px;
+}
+
+.shield-text {
+    text-align: center;
+}
+
+.shield-text h4 {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* --- Footer and Mobile --- */
+
+.video-popover-footer {
+    padding: 12px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+}
+
+.video-popover-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .video-popover-main {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .video-popover-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #f1f5f9;
+        height: 120px;
+        overflow-y: auto;
+        padding: 12px 0;
+    }
+
+    .video-viewport-wrapper {
+        aspect-ratio: 16/9;
+        height: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .video-popover-content {
+        width: 98%;
+        border-radius: 16px;
+    }
+    
+    .video-popover-header {
+        padding: 12px 16px;
+    }
+
+    .shield-play-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .shield-play-btn svg {
+        width: 30px;
+        height: 30px;
+    }
+}
