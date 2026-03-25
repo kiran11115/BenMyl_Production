@@ -13,6 +13,9 @@ const MobileTopBar = ({ user, initials, handleSignOut, setOpenVideoGuide }) => {
                 <img src="/Images/Benmyl White logo.svg" alt="BenMyl" className="mobile-logo" />
             </div>
             <div className="mobile-actions">
+                <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn" style={{ scale: '0.8', marginRight: '-8px', padding: '4px' }}>
+                    <span className="ai-pill-icon" style={{ margin: 0 }}>✦</span>
+                </button>
                 <button className="mobile-action-btn" onClick={() => navigate("/user/user-messages")}>
                     <MessageCircle size={20} />
                 </button>

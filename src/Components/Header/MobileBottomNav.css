@@ -14,6 +14,27 @@
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* AI Navigation Bubble */
+.mobile-nav-ai-bubble {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #1ed5fb, #6f87ec);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -24px;
+    box-shadow: 0 4px 12px rgba(111, 135, 236, 0.4);
+    border: 3px solid #ffffff;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-item.active .mobile-nav-ai-bubble {
+    background: #e90fd8; /* Matches AI gradient */
+    box-shadow: 0 4px 12px rgba(233, 15, 216, 0.4);
+    transform: scale(1.1) translateY(-2px);
+}
+
 .mobile-nav-item {
     display: flex;
     flex-direction: column;

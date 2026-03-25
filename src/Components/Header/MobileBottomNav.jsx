@@ -21,6 +21,15 @@ const MobileBottomNav = () => {
                 <span>Pool</span>
             </NavLink>
             <NavLink
+                to="/user/AI-screen"
+                className={({ isActive }) => `mobile-nav-item ${isActive ? "active" : ""}`}
+            >
+                <div className="mobile-nav-ai-bubble">
+                    <span style={{ color: "#fff", fontSize: "16px" }}>✦</span>
+                </div>
+                <span>AI</span>
+            </NavLink>
+            <NavLink
                 to="/user/user-upload-talent"
                 className={({ isActive }) => `mobile-nav-item ${isActive ? "active" : ""}`}
             >
