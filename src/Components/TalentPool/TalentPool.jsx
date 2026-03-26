@@ -566,9 +566,6 @@ const TalentPool = () => {
  useEffect(() => {
   if (!filtersReady) return;
 
-  // prevent first empty filter call
-  if (appliedFilters === null) return;
-
   fetchTalents();
 }, [pageNumber, appliedFilters, activeJobId, filtersReady]);
 
