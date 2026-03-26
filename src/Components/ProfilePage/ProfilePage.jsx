@@ -21,6 +21,7 @@ import { useGetRecruiterProfileQuery } from "../../State-Management/Api/Recruite
 const ProfilePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
+  const adminName = localStorage.getItem("adminFirstName");
 
   const { data: apiData, isLoading } = useGetRecruiterProfileQuery(
     Number(userId),
@@ -69,7 +70,7 @@ const ProfilePage = () => {
         languagesSpoken: apiData.languagesSpoken
           ? apiData.languagesSpoken.split(",")
           : [],
-        referredBy: apiData.referedBy,
+        referredBy: adminName,
 
         profilePhoto: apiData.profilePhoto,
       }
