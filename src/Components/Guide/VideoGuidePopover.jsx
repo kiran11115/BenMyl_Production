@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { X, Play, ChevronRight, RotateCcw, RotateCw } from "lucide-react";
+import { X, Play, ChevronRight, RotateCcw, RotateCw, Maximize, Minimize } from "lucide-react";
 import "./VideoGuidePopover.css";
 
 const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
     const [activeVideo, setActiveVideo] = useState(videoGuides[0]);
     const [isPaused, setIsPaused] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
     const iframeRef = useRef(null);
+    const videoContainerRef = useRef(null);
 
     // Listen for YouTube state changes via postMessage
     useEffect(() => {
@@ -28,8 +30,17 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
             }
         };
 
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
         window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+        
+        return () => {
+            window.removeEventListener("message", handleMessage);
+            document.removeEventListener("fullscreenchange", handleFullscreenChange);
+        };
     }, [isOpen]);
 
     // Reset pause state when video changes
@@ -60,6 +71,18 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
         // Actually, let's see if the user is happy with just the native YouTube seek bar.
     };
 
+    const toggleFullscreen = () => {
+        if (!videoContainerRef.current) return;
+
+        if (!document.fullscreenElement) {
+            videoContainerRef.current.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    };
+
     if (!isOpen) return null;
 
     // Build URL with enablejsapi=1 for postMessage support
@@ -67,8 +90,8 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
     const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=0&rel=0&modestbranding=1&iv_load_policy=3&controls=1&disablekb=1&origin=${window.location.origin}`;
 
     return (
-        <div className="video-popover-overlay" onClick={onClose}>
-            <div className="video-popover-content" onClick={(e) => e.stopPropagation()}>
+        <div className="video-popover-overlay">
+            <div className="video-popover-content">
                 <div className="video-popover-header">
                     <div className="d-flex align-items-center gap-2">
                         <div className="video-popover-icon">
@@ -76,9 +99,18 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
                         </div>
                         <h3 className="video-popover-title">BenMyl Guide: {activeVideo.title}</h3>
                     </div>
-                    <button className="video-popover-close" onClick={onClose}>
-                        <X size={20} />
-                    </button>
+                    <div className="video-popover-header-actions">
+                        <button 
+                            className="video-popover-fullscreen" 
+                            onClick={toggleFullscreen}
+                            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                        >
+                            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                        </button>
+                        <button className="video-popover-close" onClick={onClose} title="Close">
+                            <X size={20} />
+                        </button>
+                    </div>
                 </div>
                 
                 <div className="video-popover-main">
@@ -101,7 +133,7 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
                     </div>
 
                     <div className="video-popover-body">
-                        <div className="video-viewport-wrapper">
+                        <div className="video-viewport-wrapper" ref={videoContainerRef}>
                             <div className="video-iframe-container">
                                 <iframe
                                     ref={iframeRef}
@@ -135,7 +167,7 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
 
                 <div className="video-popover-footer">
                     <p className="video-popover-hint">
-                        Choose a guide from the left or click outside to exit.
+                        Choose a guide from the left or click the close button to exit.
                     </p>
                 </div>
             </div>

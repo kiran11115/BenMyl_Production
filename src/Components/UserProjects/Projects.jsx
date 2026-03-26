@@ -160,7 +160,8 @@ export default function Projects() {
     return [
       {
         label: "Total Earnings",
-        value: `$ ${totalEarnings.toLocaleString()}`,
+        // value: `$ ${totalEarnings.toLocaleString()}`,
+         value: `$ 0`,
         trend: "+12.5%",
         isPositive: true,
         icon: DollarSign,
@@ -169,7 +170,8 @@ export default function Projects() {
       },
       {
         label: "Active Projects",
-        value: activeProjects.length,
+        // value: activeProjects.length,
+        value: `0`,
         trend: "+2 new",
         isPositive: true,
         icon: Activity,
@@ -178,7 +180,8 @@ export default function Projects() {
       },
       {
         label: "Pending Review",
-        value: reviewProjects.length,
+        // value: reviewProjects.length,
+        value: `0`,
         trend: "Needs attn",
         isPositive: false,
         icon: Clock,
@@ -187,7 +190,8 @@ export default function Projects() {
       },
       {
         label: "Completed",
-        value: completedProjects.length,
+        // value: completedProjects.length,
+        value: `0`,
         trend: "All time",
         isPositive: true,
         icon: CheckCircle,

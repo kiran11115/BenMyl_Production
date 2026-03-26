@@ -446,7 +446,8 @@ function EditProfile() {
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
-                className="auth-input"
+                className="auth-input text-muted"
+                disabled
               />
 
               <FormError
@@ -462,7 +463,8 @@ function EditProfile() {
                 value={formData.companyname}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
-                className="auth-input"
+                className="auth-input text-muted"
+                disabled
               />
 
               <FormError
@@ -732,11 +734,12 @@ function EditProfile() {
             <div className="auth-group">
               <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
               <input
-                className="auth-input"
+                className="auth-input text-muted"
                 name="contact.email"
                 value={formData.contact.email}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
+                disabled
               />
 
               <FormError
@@ -896,6 +899,7 @@ function EditProfile() {
                   {formik.errors.additionalInfo.languages}
                 </small>
               )}
+              <p style={{ color: "#6b7280", fontSize: "12px" }}>Note: you can select multiple languages</p>
           </div>
         </div>
 

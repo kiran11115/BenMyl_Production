@@ -87,6 +87,31 @@
     transform: rotate(90deg);
 }
 
+.video-popover-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.video-popover-fullscreen {
+    background: #f1f5f9;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-popover-fullscreen:hover {
+    background: #e2e8f0;
+    color: #f5810c;
+    transform: scale(1.1);
+}
+
 .video-popover-main {
     display: flex;
     height: 500px;
