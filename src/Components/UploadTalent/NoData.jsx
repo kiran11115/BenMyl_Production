@@ -2,7 +2,7 @@ import React from "react";
 
 const NoData = ({
   text = "No data available",
-  image = "../Images/no data.svg",
+  image = "/Images/no data.svg",
   maxWidth = "300px",
 }) => {
   return (

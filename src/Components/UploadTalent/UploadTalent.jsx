@@ -208,6 +208,7 @@ const UploadTalent = () => {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
+                                        width: "100%"
                                     }}
                                 >
                                     <NoData text="No talent profiles available" />

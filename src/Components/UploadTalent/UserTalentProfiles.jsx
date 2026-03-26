@@ -8,6 +8,7 @@ import UserTalentGrid from "./UserTalentGrid";
 import UserTalentTable from "./UserTalentTable";
 import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
 import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import NoData from "./NoData";
 
 // --- SORTING FUNCTION ---
 const sortCandidates = (candidates, sortBy) => {
@@ -304,12 +305,10 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
                 <div
                   style={{
                     padding: "40px",
-                    textAlign: "center",
-                    color: "#64748b",
-                    fontSize: "14px",
+                    width: "100%",
                   }}
                 >
-                  {searchQuery ? "No Talent Profiles matching your search" : "No Talent Profiles found"}
+                  <NoData text={searchQuery ? "No Talent Profiles matching your search" : "No Talent Profiles found"} />
                 </div>
               )}
               {viewMode === "grid" ? (

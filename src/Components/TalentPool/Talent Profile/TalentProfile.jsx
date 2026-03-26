@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
+import NoData from "../../UploadTalent/NoData";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
@@ -253,33 +254,7 @@ const TalentProfile = () => {
                         </div>
                       ))
                     ) : (
-                      <div
-                        style={{
-                          color: "#94a3b8",
-                          fontSize: "14px",
-                          textAlign: "center",
-                          flex: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: "100%",
-                        }}
-                      >
-                        No work experience added yet
-                        <img
-                          src="../Images/no data.svg"
-                          alt="No data"
-                          style={{
-                            width: "100%",
-                            maxWidth: "300px",
-                            height: "auto",
-                            marginTop: "12px",
-                            objectFit: "contain",
-                            opacity: "50%"
-                          }}
-                        />
-                      </div>
+                      <NoData text="No work experience added yet" />
                     )}
                   </div>
                 </div>
@@ -299,34 +274,7 @@ const TalentProfile = () => {
                         ))}
                       </div>
                     ) : (
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          color: "#94a3b8",
-                          padding: "8px 0",
-                          width: "100%",
-                          flex: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          textAlign: "center",
-                        }}
-                      >
-                        No skills added yet
-                        <img
-                          src="../Images/no data.svg"
-                          alt="No data"
-                          style={{
-                            width: "100%",
-                            maxWidth: "110px",
-                            height: "auto",
-                            marginTop: "12px",
-                            objectFit: "contain",
-                            opacity: "50%"
-                          }}
-                        />
-                      </div>
+                      <NoData text="No skills added yet" maxWidth="110px" />
                     )}
                   </div>
                 </div>
@@ -349,33 +297,7 @@ const TalentProfile = () => {
                         </div>
                       ))
                     ) : (
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          color: "#94a3b8",
-                          padding: "8px 0",
-                          flex: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          textAlign: "center",
-                        }}
-                      >
-                        No education details added yet
-                        <img
-                          src="../Images/no data.svg"
-                          alt="No data"
-                          style={{
-                            width: "100%",
-                            maxWidth: "110px",
-                            height: "auto",
-                            marginTop: "12px",
-                            objectFit: "contain",
-                            opacity: "50%"
-                          }}
-                        />
-                      </div>
+                      <NoData text="No education details added yet" maxWidth="110px" />
                     )}
                   </div>
                 </div>
@@ -430,32 +352,8 @@ const TalentProfile = () => {
                   </div>
                 ))
               ) : (
-                <div
-                  style={{
-                    color: "#94a3b8",
-                    fontSize: "14px",
-                    textAlign: "center",
-                    padding: "30px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  No projects added yet
-
-                  <img
-                    src="../Images/no data.svg"
-                    alt="No data"
-                    style={{
-                      width: "100%",
-                      maxWidth: "200px",
-                      height: "auto",
-                      marginTop: "12px",
-                      objectFit: "contain",
-                      opacity: "50%",
-                    }}
-                  />
+                <div style={{ width: "100%", gridColumn: "1 / -1" }}>
+                  <NoData text="No projects added yet" maxWidth="200px" />
                 </div>
               )}
             </div>
