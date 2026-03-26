@@ -1,149 +1,155 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useGetUserNotificationsQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
 
 const Notifications = () => {
-    const [showPopover, setShowPopover] = useState(false);
-    const containerRef = useRef(null);
+  const [showPopover, setShowPopover] = useState(false);
+  const containerRef = useRef(null);
 
-    const notifications = [
-        {
-            id: 1,
-            avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face",
-            name: "Priya Sharma",
-            message: "sent you a new connection request",
-            action: "HR Recruiter",
-            time: "2 min ago"
-        },
-        {
-            id: 2,
-            avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
-            name: "Rahul Patel",
-            message: "posted a new job opening for",
-            action: "Senior React Developer",
-            time: "18 min ago"
-        },
-        {
-            id: 3,
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face",
-            name: "Anita Desai",
-            message: "approved your timesheet for this week",
-            time: "45 min ago",
-            hasActions: true
-        },
-        {
-            id: 5,
-            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=32&h=32&fit=crop&crop=face",
-            name: "Micheal",
-            message: "scheduled interview for tomorrow at",
-            action: "10:30 AM - Tech Round",
-            time: "2 hrs ago"
-        }
-    ];
+  const formatNotificationTime = (dateString) => {
+  if (!dateString) return "";
 
-    const togglePopover = () => setShowPopover(!showPopover);
+  const createdTime = new Date(dateString);
+  const now = new Date();
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (containerRef.current && !containerRef.current.contains(event.target)) {
-                setShowPopover(false);
-            }
-        };
-        if (showPopover) document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [showPopover]);
+  const diffMs = now - createdTime;
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-    useEffect(() => {
-        const handleEscape = (event) => {
-            if (event.key === "Escape") setShowPopover(false);
-        };
-        if (showPopover) document.addEventListener("keydown", handleEscape);
-        return () => document.removeEventListener("keydown", handleEscape);
-    }, [showPopover]);
+  if (diffHours < 24) {
+    if (diffHours <= 0) return "Just now";
+    return `${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
+  }
 
-    const handleClose = () => setShowPopover(false);
-    const markAllRead = () => console.log("Mark all as read");
+  return createdTime.toLocaleDateString("en-IN");
+};
 
-    return (
-        <>
-            {/* Full page backdrop */}
-            {showPopover && (
-                <div className="notification-backdrop" onClick={handleClose} />
-            )}
 
-            <div ref={containerRef} className="notification-container">
-                <button
-                    className={`header-action-btn ${showPopover ? 'active' : ''}`}
-                    onClick={togglePopover}
-                    aria-expanded={showPopover}
-                    aria-label="Notifications"
-                    type="button"
-                >
-                    <Bell size={20} />
-                    <span className="notification-badge">5</span>
-                </button>
+  const userId = localStorage.getItem("CompanyId");
 
-                {showPopover && (
-                    <div className="notification-popover-wrapper">
-                        <div className="notification-popover">
-                            <div className="popover-header" style={{ background: "#fff" }}>
-                                <h4>Notifications</h4>
-                                <button className="mark-all-btn" onClick={markAllRead} type="button">
-                                    Mark all as read
-                                </button>
-                            </div>
+  const { data: apiNotifications = [], isLoading } =
+    useGetUserNotificationsQuery(userId, {
+  pollingInterval: 5000,
+});
 
-                            <div className="popover-body">
-                                {notifications.map((notif) => (
-                                    <div key={notif.id} className="notification-item">
-                                        <div className="d-flex w-100">
-                                            <div className="notification-avatar">
-                                                <img src={notif.avatar} alt={notif.name} />
-                                            </div>
+  const notifications = apiNotifications
+    .map((item, index) => ({
+      id: item.Id || index,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        item.Username || "User",
+      )}`,
+      name: item.Username || "System",
+      message: item.Message,
+     time: formatNotificationTime(item.CreatedAt),
+    }))
+    .slice(0, 4); // Limit to 4 notifications
 
-                                            <div className="notification-main-content">
-                                                <div className="notification-text">
-                                                    <span className="notification-name">{notif.name}</span>
-                                                    <span className="notification-message">{notif.message}</span>
-                                                    {notif.action && (
-                                                        <span className="notification-action">{notif.action}</span>
-                                                    )}
-                                                </div>
-                                                <div className="notification-time">{notif.time}</div>
-                                            </div>
-                                        </div>
+  const togglePopover = () => setShowPopover(!showPopover);
 
-                                        {notif.hasActions && (
-                                            <div className="notification-actions gap-3">
-                                                <button className="btn-primary" aria-label="Accept" type="button">
-                                                    Accept
-                                                </button>
-                                                <button className="btn-secondary" aria-label="Decline" type="button">
-                                                    Decline
-                                                </button>
-                                            </div>
-                                        )}
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setShowPopover(false);
+      }
+    };
+    if (showPopover) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPopover]);
 
-                                        {notif.file && (
-                                            <div className="notification-file">
-                                                <FileText size={14} />
-                                                <span>{notif.file}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setShowPopover(false);
+    };
+    if (showPopover) document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showPopover]);
 
-                            <div className="popover-footer">
-                                <button className="btn-link" onClick={handleClose} type="button">
-                                    View all notifications
-                                </button>
-                            </div>
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    setShowPopover(false); // close popover
+    navigate("/User/notifications-page"); // navigate
+  };
+
+  return (
+    <>
+      {/* Full page backdrop */}
+      {showPopover && (
+        <div className="notification-backdrop" onClick={() => setShowPopover(false)} />
+      )}
+
+      <div ref={containerRef} className="notification-container">
+        <button
+          className={`header-action-btn ${showPopover ? "active" : ""}`}
+          onClick={togglePopover}
+          aria-expanded={showPopover}
+          aria-label="Notifications"
+          type="button"
+        >
+          <Bell size={20} />
+          <span className="notification-badge">{notifications.length}</span>
+        </button>
+
+        {showPopover && (
+          <div className="notification-popover-wrapper">
+            <div className="notification-popover">
+              <div className="popover-header" style={{ background: "#fff" }}>
+                <h4>Notifications</h4>
+              </div>
+
+              <div className="popover-body">
+                {isLoading ? (
+                  <div className="text-center p-3">
+                    Loading notifications...
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="text-center p-3">No notifications</div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div key={notif.id} className="notification-item">
+                      <div className="d-flex w-100">
+                        <div className="notification-avatar">
+                          <img src={notif.avatar} alt={notif.name} />
                         </div>
+
+                        <div className="notification-main-content">
+                          <div className="notification-text">
+                            <span className="notification-name">
+                              {notif.name}
+                            </span>
+                            <span className="notification-message">
+                              {notif.message}
+                            </span>
+                          </div>
+                          <div className="notification-time">{notif.time}</div>
+                        </div>
+                      </div>
                     </div>
+                  ))
                 )}
+              </div>
+
+              {/* Only show footer if there are notifications */}
+              {notifications.length > 0 && (
+                <div className="popover-footer">
+                  <button
+                    className="btn-link"
+                    onClick={handleClose}
+                    type="button"
+                  >
+                    View all notifications
+                  </button>
+                </div>
+              )}
             </div>
-        </>
-    );
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default Notifications;

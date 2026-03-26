@@ -1,26 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircle, Play } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play } from "lucide-react";
+import VideoGuidePopover from "../Guide/VideoGuidePopover";
+import { videoGuides } from "../Guide/guideData";
 import "./Header.css";
 import Notifications from "./Notifications";
-import MobileTopBar from "./MobileTopBar";
-import MobileBottomNav from "./MobileBottomNav";
-import VideoGuidePopover from "../Guide/VideoGuidePopover";
+import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MobileBottomNav from "./MobileBottomNav";
+import MobileTopBar from "./MobileTopBar";
+
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
   const profileRef = useRef(null);
+
+  const user = localStorage.getItem("UserName");
+  const role = localStorage.getItem("Role");
+  const email = localStorage.getItem("Email");
+  const userId = localStorage.getItem("CompanyId");
+
+  const { data: apiData, isLoading } =
+    useGetRecruiterProfileQuery(Number(userId), {
+      skip: !userId,
+    });
+
+  const companyData = apiData
+    ? {
+      id: apiData.authInfoID,
+      slug: "",
+      profilePhoto: apiData.profilePhoto
+
+    }
+    : null;
 
   // Initialize navigation hook
   const navigate = useNavigate();
-  const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
-
-  const videoGuides = [
-    { id: "v1", title: "AI Search Guide", url: "https://www.youtube.com/embed/5UqW8bKqE9k?autoplay=1&rel=0&modestbranding=1&hd=1" },
-  ];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -39,6 +57,7 @@ function Header() {
 
   const handleSignOut = () => {
     setIsProfileOpen(false); // Close menu
+    localStorage.removeItem("shortlistedMap");
     // Add your actual sign-out logic here (clearing tokens, context, etc.)
     console.log("User signed out");
     navigate("/sign-in"); // Redirect to login
@@ -58,17 +77,29 @@ function Header() {
     };
   }, []);
 
+  const getInitials = (name = "") => {
+    return name
+      .trim()
+      .split(" ")
+      .slice(0, 2)
+      .map(word => word[0]?.toUpperCase())
+      .join("");
+  };
+
   return (
     <>
+      {/* Mobile Top Bar */}
       <MobileTopBar 
+        user={user} 
+        initials={getInitials(user)} 
         handleSignOut={handleSignOut} 
         setOpenVideoGuide={setIsVideoGuideOpen}
       />
-      <header className="header-container">
+
+      <header className="header-container desktop-header">
         {/* Left Section: Brand & Nav */}
         <div className="header-left">
-
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Toggle Button (kept for tablet if needed, but we used bottom nav) */}
           <button className="menu-toggle" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -107,23 +138,9 @@ function Header() {
 
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
-          {/* Search Bar */}
-          {/* <div className="header-search-container">
-            <Search size={16} className="header-search-icon" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="header-search-input"
-            />
-          </div> */}
           <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
             <span className="ai-pill-icon">✦</span>
             <span className="ai-pill-text">AI Workspace</span>
-          </button>
-
-          {/* Messages Icon */}
-          <button onClick={() => navigate("/user/user-messages")} type="button" className="header-action-btn">
-            <MessageCircle size={20} />
           </button>
 
           {/* Video Guide Icon */}
@@ -137,6 +154,11 @@ function Header() {
             <Play size={20} fill="currentColor" />
           </button>
 
+          {/* Messages Icon */}
+          <button onClick={() => navigate("/user/user-messages")} type="button" className="header-action-btn">
+            <MessageCircleIcon size={20} />
+          </button>
+
           {/* Notification Bell */}
           <Notifications />
 
@@ -148,14 +170,25 @@ function Header() {
               role="button"
               tabIndex={0}
             >
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="User Avatar"
-                className="profile-avatar"
-              />
+              {companyData?.profilePhoto ? (
+                <img
+                  src={
+                    companyData.profilePhoto.startsWith("http")
+                      ? `${companyData.profilePhoto}?t=${Date.now()}`
+                      : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
+                  }
+                  alt="Profile"
+                  className="profile-avatar"
+                />
+              ) : (
+                <div className="profile-avatar initials-avatar fs-5">
+                  {getInitials(user)}
+                </div>
+              )}
+
               <div className="profile-info">
-                <span className="profile-name">John Smith</span>
-                <span className="profile-role">HR Manager</span>
+                <span className="profile-name">{user}</span>
+                <span className="profile-role">{role}</span>
               </div>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
             </div>
@@ -164,8 +197,7 @@ function Header() {
             {isProfileOpen && (
               <div className="profile-popover">
                 <div className="popover-header">
-                  {/* <p className="popover-name">John Smith</p> */}
-                  <p className="popover-email">john.smith@benchsales.com</p>
+                  <p className="popover-email">{email}</p>
                 </div>
                 <div className="popover-menu">
                   <button className="popover-item" onClick={handleViewProfile}>
@@ -188,11 +220,11 @@ function Header() {
         </div>
       </header>
 
-      <div className="app-zoom">
-         <main className="cust-main">
+      <div className="app-zoom main-content-wrapper">
+        <main className="cust-main">
           <Outlet />
-         </main>
-       </div>
+        </main>
+      </div>
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />
