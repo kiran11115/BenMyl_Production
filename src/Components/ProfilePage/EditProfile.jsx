@@ -21,6 +21,7 @@ function EditProfile() {
 
 
   const userId = localStorage.getItem("CompanyId"); // stores authInfoID = 315
+  const adminName = localStorage.getItem("adminFirstName");
 
   const {
     data: recruiterData,
@@ -194,7 +195,7 @@ function EditProfile() {
         experience: "",
         education: "",
         languages: [],
-        referredBy: "",
+        referredBy: adminName,
       },
     },
 
@@ -287,7 +288,7 @@ function EditProfile() {
         languages: recruiterData.languagesSpoken
           ? recruiterData.languagesSpoken.split(",")
           : [],
-        referredBy: recruiterData.referedBy || "",
+        referredBy: adminName || "",
       },
     });
   }, [recruiterData]);
@@ -820,12 +821,12 @@ function EditProfile() {
             <div className="auth-group">
               <label className="auth-label">Referred By *</label>
               <input
-                className="auth-input"
-                name="additionalInfo.referredBy"
-                value={formData.additionalInfo.referredBy}
-                onChange={handleChange}
-                placeholder="Referred By"
-              />
+  className="auth-input text-muted"
+  name="additionalInfo.referredBy"
+  value={formData.additionalInfo.referredBy}
+  disabled
+  placeholder="Referred By"
+/>
             </div>
           </div>
 
