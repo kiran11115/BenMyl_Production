@@ -53,7 +53,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         userIds,
         usernames,
         employeeIds,
-        message: "You have been shortlisted. Please check your dashboard.",
+        message: "Your talent has been shortlisted. Please check your mailbox.",
         uatUserId: Number(userId),
       };
 

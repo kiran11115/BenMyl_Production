@@ -20,6 +20,25 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+@media (max-width: 768px) {
+  .desktop-header {
+    display: none !important;
+  }
+
+  .main-content-wrapper {
+    padding-bottom: 70px;
+    /* Room for bottom nav */
+  }
+
+  .cust-main {
+    padding: 1rem !important;
+  }
+}
+
+/* Notifications page start */
+
+
+
 /* --- Left Section: Brand & Logo --- */
 .header-left {
   display: flex;
@@ -89,7 +108,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #3b82f6;
+  background-color: #f5810c;
   border-radius: 2px;
 }
 
@@ -134,7 +153,7 @@
 .header-search-input:focus {
   background-color: #fff;
   border-color: #e2e8f0;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(245, 129, 12, 0.1);
   width: 240px;
   /* Expand on focus */
 }
@@ -210,6 +229,28 @@
   font-weight: 600;
   color: #ffffff;
 }
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Initials fallback */
+.initials-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5810c, #d17519);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 
 .profile-role {
   font-size: 0.75rem;
@@ -303,7 +344,7 @@
   /* Add a left border indicator instead for mobile */
   .header-nav.mobile-active .header-nav-link.active {
     padding-left: 12px;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid #f5810c;
   }
 }
 
@@ -386,6 +427,8 @@
   font-size: 12px;
   color: #64748b;
   margin: 2px 0 0 0;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .popover-menu {
@@ -682,7 +725,7 @@
 
 .notification-action {
   display: block;
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 500;
   font-size: 14px;
   line-height: 1.4;
@@ -721,7 +764,7 @@
 }
 
 .action-btn.accept {
-  background: #6843C7;
+  background: #f5810c;
   color: #fff;
 }
 
@@ -732,8 +775,8 @@
 
 .action-btn.decline {
   background: none;
-  color: #6843C7;
-  border: 1px solid #6843C7;
+  color: #f5810c;
+  border: 1px solid #f5810c;
 }
 
 .action-btn.decline:hover {
@@ -771,7 +814,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 500;
   cursor: pointer;
   width: 100%;
@@ -839,60 +882,4 @@
     width: calc(100vw - 48px);
     right: 12px;
   }
-}
-
-/* AI Pill Button for Header */
-.ai-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 2px solid transparent;
-
-  background:
-    linear-gradient(#1e293b, #1e293b) padding-box,
-    linear-gradient(90deg,
-      #1ed5fb,
-      #6f87ec,
-      #e90fd8,
-      #f5c542,
-      #1ed5fb) border-box;
-
-  background-size: 100% 100%, 400% 400%;
-  background-position: 0 0, 0 50%;
-
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #ffffff;
-}
-
-.ai-pill-btn:hover {
-  animation: ai-border-flow 2.5s linear infinite !important;
-  box-shadow: 0 0 14px rgba(111, 135, 236, 0.45);
-  transform: translateY(-1px);
-}
-
-@keyframes ai-border-flow {
-  0% { background-position: 0 0, 0% 50%; }
-  100% { background-position: 0 0, 100% 50%; }
-}
-
-.ai-pill-text {
-  font-size: 13px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.ai-pill-icon {
-  font-size: 14px;
-  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
