@@ -1,29 +1,25 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  MoreVertical,
-  Clock,
-  DollarSign,
-  UploadCloud,
-  CheckCircle,
-  MessageSquare,
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  Briefcase,
-  Globe,
-  Users,
-  Zap
-} from "lucide-react";
+  FiMoreVertical,
+  FiClock,
+  FiDollarSign,
+  FiUploadCloud,
+  FiCheckCircle,
+  FiMessageSquare,
+  FiActivity,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiAlertCircle,
+} from "react-icons/fi";
 import "./Projects.css";
 import StatsRow from "./StatsRow";
 import ProjectsTimeline from "./ProjectsTimeline";
 import ProjectsHeader from "./ProjectsHeader";
 import ProjectsGrid from "./ProjectsGrid";
 import PostedJobs from "./PostedJobs";
-import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 
-// --- Initial Mock Data ---
+// ... (Constants remained same)
 const INITIAL_DATA = [
   {
     id: 1,
@@ -82,70 +78,14 @@ const INITIAL_DATA = [
   },
 ];
 
-// timeline data just for the colored bars
-// timeline data for status bars per project
-const TIMELINE_DATA = [
-  {
-    id: 1,
-    title: "E-commerce Website Redesign",
-    totalHours: "68h",
-    active: 65,
-    review: 20,
-    done: 15,
-  },
-  {
-    id: 2,
-    title: "Mobile App Development",
-    totalHours: "54h",
-    active: 50,
-    review: 30,
-    done: 20,
-  },
-  {
-    id: 3,
-    title: "Brand Identity Design",
-    totalHours: "40h",
-    active: 30,
-    review: 10,
-    done: 60,
-  },
-  {
-    id: 4,
-    title: "Marketing Campaign",
-    totalHours: "72h",
-    active: 70,
-    review: 15,
-    done: 15,
-  },
-  // {
-  //   id: 5,
-  //   title: "SEO Optimization",
-  //   totalHours: "36h",
-  //   active: 55,
-  //   review: 25,
-  //   done: 20,
-  // },
-  // {
-  //   id: 6,
-  //   title: "Landing Page A/B Test",
-  //   totalHours: "24h",
-  //   active: 40,
-  //   review: 35,
-  //   done: 25,
-  // },
-];
-
-
 export default function Projects() {
+  const navigate = useNavigate();
   const [view, setView] = useState("ongoingprojects");
   const [projects, setProjects] = useState(INITIAL_DATA);
   const [activeFilter, setActiveFilter] = useState("All Projects");
 
-  const userId = localStorage.getItem("CompanyId");
-  const { data: apiJobs = [] } = useGetGroupedJobTitlesQuery(userId);
-
   // --- Dynamic Stats Calculation ---
-  const projectStats = useMemo(() => {
+  const stats = useMemo(() => {
     const completedProjects = projects.filter((p) => p.status === "Completed");
     const activeProjects = projects.filter((p) => p.status === "In Progress");
     const reviewProjects = projects.filter(
@@ -160,92 +100,38 @@ export default function Projects() {
     return [
       {
         label: "Total Earnings",
-        // value: `$ ${totalEarnings.toLocaleString()}`,
-         value: `$ 0`,
+        value: `$ ${totalEarnings.toLocaleString()}`,
         trend: "+12.5%",
         isPositive: true,
-        icon: DollarSign,
-        cardType: "card-blue",
-        bubbleColor: "#3b82f6",
+        icon: FiDollarSign,
+        colorClass: "blue",
       },
       {
         label: "Active Projects",
-        // value: activeProjects.length,
-        value: `0`,
+        value: activeProjects.length,
         trend: "+2 new",
         isPositive: true,
-        icon: Activity,
-        cardType: "card-purple",
-        bubbleColor: "#a855f7",
+        icon: FiActivity,
+        colorClass: "indigo",
       },
       {
         label: "Pending Review",
-        // value: reviewProjects.length,
-        value: `0`,
+        value: reviewProjects.length,
         trend: "Needs attn",
         isPositive: false,
-        icon: Clock,
-        cardType: "card-yellow",
-        bubbleColor: "#f59f0a",
+        icon: FiClock,
+        colorClass: "amber",
       },
       {
         label: "Completed",
-        // value: completedProjects.length,
-        value: `0`,
+        value: completedProjects.length,
         trend: "All time",
         isPositive: true,
-        icon: CheckCircle,
-        cardType: "card-green",
-        bubbleColor: "#22c55e",
+        icon: FiCheckCircle,
+        colorClass: "emerald",
       },
     ];
   }, [projects]);
-
-  const jobStats = useMemo(() => {
-    const remoteJobs = apiJobs.filter(j => j.workModels === "Remote").length;
-    const fullTimeJobs = apiJobs.filter(j => j.employeeType?.includes("Full-time")).length;
-
-    return [
-      {
-        label: "Total Postings",
-        value: apiJobs.length,
-        trend: "Total active",
-        isPositive: true,
-        icon: Briefcase,
-        cardType: "card-cyan",
-        bubbleColor: "#0ea5e9",
-      },
-      {
-        label: "Remote Roles",
-        value: remoteJobs,
-        trend: "Work from home",
-        isPositive: true,
-        icon: Globe,
-        cardType: "card-purple",
-        bubbleColor: "#a855f7",
-      },
-      {
-        label: "Full-Time Roles",
-        value: fullTimeJobs,
-        trend: "Growth roles",
-        isPositive: true,
-        icon: Users,
-        cardType: "card-blue",
-        bubbleColor: "#3b82f6",
-      },
-      {
-        label: "Active Listings",
-        value: apiJobs.length,
-        trend: "Live now",
-        isPositive: true,
-        icon: Zap,
-        cardType: "card-yellow",
-        bubbleColor: "#f59f0a",
-      },
-    ];
-  }, [apiJobs]);
-
-  const stats = view === "ongoingprojects" ? projectStats : jobStats;
 
   // --- filter for dropdown ---
   const filteredProjects = useMemo(() => {
@@ -260,27 +146,14 @@ export default function Projects() {
   }, [projects, activeFilter]);
 
   // --- Event Handlers ---
-  const handleUpload = (id) => {
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: "Awaiting Review", progress: 95 } : p
-      )
-    );
-  };
-
-  const handleReview = (id) => {
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: "Completed", progress: 100 } : p
-      )
-    );
+  const handleViewProgress = (project) => {
+    navigate(`/User/project-progress/${project.id}`, { state: { project } });
   };
 
   return (
     <div className="projects-page-wrapper">
       <div className="projects-container">
         <StatsRow stats={stats} />
-        {/* <ProjectsTimeline data={TIMELINE_DATA} /> */}
 
         <div className="view-toggle1">
           <button
@@ -295,39 +168,25 @@ export default function Projects() {
           >
             Posted jobs
           </button>
-
         </div>
-        {/* 
-        <PostedJobs /> */}
-
-        {/* <ProjectsGrid
-          projects={filteredProjects}
-          onUpload={handleUpload}
-          onReview={handleReview}
-        /> */}
 
         <div className="view-content">
           {view === "ongoingprojects" &&
-            <>
-              <div className="upload-main mt-3">
-                <ProjectsHeader
-                  activeFilter={activeFilter}
-                  onFilterChange={setActiveFilter}
-                />
-                <ProjectsGrid
-                  projects={filteredProjects}
-                  onUpload={handleUpload}
-                  onReview={handleReview}
-                />
-              </div>
-            </>
+            <div className="upload-main mt-3">
+              <ProjectsHeader
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+              />
+              <ProjectsGrid
+                projects={filteredProjects}
+                onViewProgress={handleViewProgress}
+              />
+            </div>
           }
           {view === "postedjobs" &&
-            <>
-              <div className="upload-main mt-3">
-                <PostedJobs />
-              </div >
-            </>
+            <div className="upload-main mt-3">
+              <PostedJobs />
+            </div >
           }
         </div>
       </div>
