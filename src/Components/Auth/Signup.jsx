@@ -197,6 +197,7 @@ function SignUp() {
                 {...formik.getFieldProps("fullName")}
                 className="auth-input"
                 placeholder="User Name"
+                readOnly={!!invitedFullName}
               />
               {formik.touched.fullName && formik.errors.fullName && (
                 <p className="auth-error-msg">{formik.errors.fullName}</p>
@@ -211,6 +212,7 @@ function SignUp() {
                 {...formik.getFieldProps("companyName")}
                 className="auth-input"
                 placeholder="Company Name"
+                readOnly={!!invitedCompanyName}
               />
               {formik.touched.companyName && formik.errors.companyName && (
                 <p className="auth-error-msg">{formik.errors.companyName}</p>
@@ -225,6 +227,7 @@ function SignUp() {
                 {...formik.getFieldProps("email")}
                 className="auth-input"
                 placeholder="Enter email"
+                readOnly={!!invitedEmail}
               />
               {formik.touched.email && formik.errors.email && (
                 <p className="auth-error-msg">{formik.errors.email}</p>
