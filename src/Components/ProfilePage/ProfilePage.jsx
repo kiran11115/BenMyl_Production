@@ -26,6 +26,9 @@ const ProfilePage = () => {
     { skip: !userId }
   );
 
+
+  
+
   const companyData = apiData
     ? {
         id: apiData.authInfoID,
