@@ -232,7 +232,7 @@ const ProfilePage = () => {
                       <div>
                         <p className="pp-exp-title">{exp.title}</p>
                         <span className="pp-exp-sub">
-                          {exp.company} &bull; {exp.start} — {exp.end}
+                          {exp.company} &bull; {exp.start} - {exp.end}
                         </span>
                       </div>
                     </div>
