@@ -32,9 +32,9 @@ export default function InviteTeamMemberModal({ show, onHide, user }) {
     formDataPayload.append("inviterusername", username);
     formDataPayload.append("FullName", formData.fullName);
 
-    await inviteUser(formDataPayload).unwrap();
+    const res = await inviteUser(formDataPayload).unwrap();
 
-    alert("Invitation sent successfully");
+    alert(res.result_Message);
     onHide();
   } catch (err) {
     console.error(err);
