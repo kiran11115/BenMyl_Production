@@ -1,13 +1,24 @@
 import React from "react";
-import NoData from "../UploadTalent/NoData";
+import { FiAlertCircle } from "react-icons/fi";
 import ProjectCard from "./ProjectCard";
 
-export default function ProjectsGrid({ projects, onUpload, onReview }) {
+export default function ProjectsGrid({ projects, onViewProgress }) {
   if (projects.length === 0) {
     return (
       <div className="jobs-grid">
-        <div style={{ gridColumn: "1 / -1", width: "100%" }}>
-          <NoData text="No projects found in this category." />
+        <div
+          style={{
+            gridColumn: "1 / -1",
+            textAlign: "center",
+            padding: "40px",
+            color: "#64748b",
+          }}
+        >
+          <FiAlertCircle
+            size={48}
+            style={{ margin: "0 auto 16px", opacity: 0.5 }}
+          />
+          <p>No projects found in this category.</p>
         </div>
       </div>
     );
@@ -19,8 +30,7 @@ export default function ProjectsGrid({ projects, onUpload, onReview }) {
         <ProjectCard
           key={project.id}
           project={project}
-          onUpload={onUpload}
-          onReview={onReview}
+          onViewProgress={onViewProgress}
         />
       ))}
     </div>
