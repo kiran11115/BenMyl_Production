@@ -86,10 +86,11 @@ const ProfilePage = () => {
     : [];
 
   /* token math (placeholder) */
-  const totalTokens = 1500;
-  const usedTokens  = 850;
+  const totalTokens = 0;
+  const usedTokens  = 0;
   const leftTokens  = totalTokens - usedTokens;
-  const usedPct     = Math.round((usedTokens / totalTokens) * 100);
+  // const usedPct     = Math.round((usedTokens / totalTokens) * 100);
+  const usedPct     = 0;
 
   return (
     <div className="projects-container">
@@ -276,7 +277,7 @@ const ProfilePage = () => {
                   <div className="pp-lang-chips">
                     {companyData.languagesSpoken?.length > 0
                       ? companyData.languagesSpoken.map((lang, i) => (
-                          <span className="status-tag border border-primary" key={i}>{lang.trim()}</span>
+                          <span className="status-tag status-progress d-flex gap-3" key={i}>{lang.trim()}</span>
                         ))
                       : <span className="pp-info-val">—</span>}
                   </div>

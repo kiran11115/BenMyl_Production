@@ -22,7 +22,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 24px;
-  font-size: 13px;
+  font-size: 12px;
   animation: ppFadeInUp 0.4s ease-out forwards;
 }
 
@@ -32,7 +32,7 @@
   gap: 5px;
   background: none;
   border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #f5810c;
   cursor: pointer;
@@ -46,7 +46,7 @@
 
 .profile-breadcrumb .crumb {
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -76,10 +76,9 @@
 
 .pp-section-header-text {
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   letter-spacing: 0.2px;
-  text-transform: uppercase;
 }
 
 /* .pp-section-header-line {
@@ -299,10 +298,6 @@
 .pp-company {
   font-size: 14px;
   font-weight: 700;
-  background: linear-gradient(90deg, #f5810c, #ea580c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
   margin-bottom: 12px;
   display: inline-block;
 }
@@ -319,7 +314,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #64748b;
   background: #f8fafc;
@@ -397,7 +392,7 @@
 .pp-token-badge {
   padding: 4px 14px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -476,7 +471,7 @@
 } */
 
 .pp-notif-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #334155;
 }
@@ -523,8 +518,8 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: #dbf5fa;
-  border: 1px solid #fed7aa;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -555,7 +550,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -731,11 +726,11 @@
   background: #6fffff;
 } */
 
-.pp-contact-item a {
+/* .pp-contact-item a {
   color: #0ca3f5;
   text-decoration: none;
   font-weight: 500;
-}
+} */
 
 .pp-contact-item a:hover {
   text-decoration: underline;
