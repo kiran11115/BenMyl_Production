@@ -35,6 +35,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
   const [offerStatus, setOfferStatus] = useState({});
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
+  const companyname = localStorage.getItem("CompanyName");
+   const username = localStorage.getItem("UserName");
+
   const handleSendInvite = async (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
 
@@ -55,6 +58,8 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         employeeIds,
         message: "Your talent has been shortlisted. Please check your mailbox.",
         uatUserId: Number(userId),
+        uatfirstName:username,
+        companyName:companyname
       };
 
       await sendInviteNotification(payload).unwrap();
