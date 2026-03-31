@@ -9,6 +9,9 @@ import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
 import { toast } from "react-toastify";
+import StatsGrid from "../Dashboard/StatsGrid";
+import { Users, Briefcase } from "lucide-react";
+import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 
 const UploadTalent = () => {
@@ -19,13 +22,8 @@ const UploadTalent = () => {
         location.state?.activeTab || "Talent"
     );
     const [searchQuery, setSearchQuery] = useState("");
-
-    useEffect(() => {
-        if (location.state?.activeTab) {
-            setView(location.state.activeTab);
-        }
-    }, [location.state]);
-
+    const [pendingReviewCount, setPendingReviewCount] = useState(0);
+    const [totalTalentCount, setTotalTalentCount] = useState(0);
     const [refreshKey, setRefreshKey] = useState(0);
     const [showUploading, setShowUploading] = useState(false);
     const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
@@ -35,6 +33,55 @@ const UploadTalent = () => {
     const [uploadCount, setUploadCount] = useState(0);
     const [countdown, setCountdown] = useState(0);
     const countdownRef = useRef(null);
+
+    const [getQueueManagement] = useGetQueueManagementMutation();
+    const [getMyBench] = useGetMyBenchMutation();
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            try {
+                const companyId = Number(localStorage.getItem("logincompanyid"));
+                
+                // Fetch Pending Review Count
+                const queueRes = await getQueueManagement({
+                    companyid: companyId,
+                    pageNumber: 1,
+                    pageSize: 1000,
+                    filters: [],
+                }).unwrap();
+                const pendingCount = Array.isArray(queueRes)
+                    ? queueRes.filter(item => item.status === "Pending For Review").length
+                    : 0;
+                setPendingReviewCount(pendingCount);
+
+                // Fetch Total Talent Count
+                const benchRes = await getMyBench({
+                    companyid: companyId,
+                    pageNumber: 1,
+                    pageSize: 1000,
+                    filters: [],
+                }).unwrap();
+                const totalCount = Array.isArray(benchRes) ? benchRes.length : 0;
+                setTotalTalentCount(totalCount);
+            } catch (err) {
+                console.error("Failed to fetch talent counts", err);
+            }
+        };
+
+        fetchCounts();
+    }, [getQueueManagement, getMyBench, refreshKey]);
+
+    const kpiCards = [
+        { label: "Total Talent Profiles", value: String(totalTalentCount), change: "0%", icon: Briefcase, cardType: "card-blue", bubbleColor: "#3b82f6" },
+        { label: "Pending Review Profiles", value: String(pendingReviewCount), change: "0%", icon: Users, cardType: "card-purple", bubbleColor: "#6366f1" },
+    ];
+
+    useEffect(() => {
+        if (location.state?.activeTab) {
+            setView(location.state.activeTab);
+        }
+    }, [location.state]);
+
 
     const handleUploadSuccess = (message) => {
         if (message && String(message).toLowerCase().includes("fail")) {
@@ -152,6 +199,11 @@ const UploadTalent = () => {
 
             </div> */}
             <div className="upload-talent-layout">
+                {/* 1. KPI Stats Grid */}
+                <div id="upload-talent-stats-grid" style={{ marginBottom: "24px" }}>
+                    <StatsGrid data={kpiCards} />
+                </div>
+
                 <div className="d-flex align-items-center gap-2 justify-content-between">
                     {/* TOGGLE BUTTONS */}
                     <div className="view-toggle1">

@@ -11,6 +11,7 @@ import {
   Briefcase,
   Layers,
   CheckCircle,
+  Users,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
@@ -19,7 +20,11 @@ import {
   useApprovedEmployeeMutation,
   useDraftProfileEmployeeMutation,
   useGetEmployeeResumeQuery,
+  useGetQueueManagementMutation,
 } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice"; // assuming it's in the same slice or similar
+import StatsGrid from "../Dashboard/StatsGrid";
+// lucide-react imports consolidated above
 import {
   ValidationErrorModal,
   ConfirmSaveModal,
@@ -699,6 +704,65 @@ const ReviewTalent = () => {
   const [draftProfile, { isLoading: draft }] =
     useDraftProfileEmployeeMutation();
   const [isReviewed, setIsReviewed] = useState(false);
+
+  const [pendingReviewCount, setPendingReviewCount] = useState(0);
+  const [totalTalentCount, setTotalTalentCount] = useState(0);
+
+  const [getQueueManagement] = useGetQueueManagementMutation();
+  const [getMyBench] = useGetMyBenchMutation();
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const companyId = Number(localStorage.getItem("logincompanyid"));
+
+        // Fetch Pending Review Count
+        const queueRes = await getQueueManagement({
+          companyid: companyId,
+          pageNumber: 1,
+          pageSize: 1000,
+          filters: [],
+        }).unwrap();
+        const pendingCount = Array.isArray(queueRes)
+          ? queueRes.filter((item) => item.status === "Pending For Review").length
+          : 0;
+        setPendingReviewCount(pendingCount);
+
+        // Fetch Total Talent Count
+        const benchRes = await getMyBench({
+          companyid: companyId,
+          pageNumber: 1,
+          pageSize: 1000,
+          filters: [],
+        }).unwrap();
+        const totalCount = Array.isArray(benchRes) ? benchRes.length : 0;
+        setTotalTalentCount(totalCount);
+      } catch (err) {
+        console.error("Failed to fetch talent counts", err);
+      }
+    };
+
+    fetchCounts();
+  }, [getQueueManagement, getMyBench]);
+
+  const kpiCards = [
+    {
+      label: "Total Talent Profiles",
+      value: String(totalTalentCount),
+      change: "0%",
+      icon: Briefcase,
+      cardType: "card-blue",
+      bubbleColor: "#3b82f6",
+    },
+    {
+      label: "Pending Review Profiles",
+      value: String(pendingReviewCount),
+      change: "0%",
+      icon: Users,
+      cardType: "card-purple",
+      bubbleColor: "#6366f1",
+    },
+  ];
 
   // MULTI OPEN ACCORDIONS
   const [openAccordions, setOpenAccordions] = useState(["basicInfo"]);
@@ -1381,6 +1445,10 @@ const ReviewTalent = () => {
       </div>
 
       <div className="review-talent-layout">
+        {/* KPI Stats Grid */}
+        <div id="review-stats-grid" style={{ marginBottom: "24px" }}>
+          <StatsGrid data={kpiCards} />
+        </div>
         {/* LEFT: INFORMATION REVIEW */}
         <div className="review-left-panel">
           <div className="review-header-top mb-4">

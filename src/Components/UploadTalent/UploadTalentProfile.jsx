@@ -29,6 +29,9 @@ import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
 import EditTalentProfile from "./EditTalentProfile";
+import StatsGrid from "../Dashboard/StatsGrid";
+import { Users, Briefcase } from "lucide-react";
+import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 // ===========================
 // RecommendedJobs Component (Simplified for inline use)
@@ -347,6 +350,65 @@ const UploadTalentProfile = () => {
   const [languageInput, setLanguageInput] = useState("");
   const [addEmployeeProfessionalDetails, { isLoading: isSaving }] =
     useAddEmployeeProfessionalDetailsMutation();
+
+  const [pendingReviewCount, setPendingReviewCount] = useState(0);
+  const [totalTalentCount, setTotalTalentCount] = useState(0);
+
+  const [getQueueManagement] = useGetQueueManagementMutation();
+  const [getMyBench] = useGetMyBenchMutation();
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const companyId = Number(localStorage.getItem("logincompanyid"));
+
+        // Fetch Pending Review Count
+        const queueRes = await getQueueManagement({
+          companyid: companyId,
+          pageNumber: 1,
+          pageSize: 1000,
+          filters: [],
+        }).unwrap();
+        const pendingCount = Array.isArray(queueRes)
+          ? queueRes.filter((item) => item.status === "Pending For Review").length
+          : 0;
+        setPendingReviewCount(pendingCount);
+
+        // Fetch Total Talent Count
+        const benchRes = await getMyBench({
+          companyid: companyId,
+          pageNumber: 1,
+          pageSize: 1000,
+          filters: [],
+        }).unwrap();
+        const totalCount = Array.isArray(benchRes) ? benchRes.length : 0;
+        setTotalTalentCount(totalCount);
+      } catch (err) {
+        console.error("Failed to fetch talent counts", err);
+      }
+    };
+
+    fetchCounts();
+  }, [getQueueManagement, getMyBench]);
+
+  const kpiCards = [
+    {
+      label: "Total Talent Profiles",
+      value: String(totalTalentCount),
+      change: "0%",
+      icon: Briefcase,
+      cardType: "card-blue",
+      bubbleColor: "#3b82f6",
+    },
+    {
+      label: "Pending Review Profiles",
+      value: String(pendingReviewCount),
+      change: "0%",
+      icon: Users,
+      cardType: "card-purple",
+      bubbleColor: "#6366f1",
+    },
+  ];
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter") {
@@ -704,6 +766,107 @@ const UploadTalentProfile = () => {
   ];
 
   const styleCards = `
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      border-radius: 0.75rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-purple {
+      background-image: radial-gradient(circle 250px at 0% 0%, rgba(168, 85, 247, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    .card-purple .stat-icon-box { background-color: #a855f7; color: #ffffff; }
+
+    .card-blue {
+      background-image: radial-gradient(circle 250px at 0% 0%, rgba(59, 130, 246, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    .card-blue .stat-icon-box { background-color: #3b82f6; color: #ffffff; }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .stat-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 2;
+    }
+
+    .bubbles-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(20px);
+      opacity: 0.1;
+      background-color: currentColor;
+      animation: floatPremium 10s infinite ease-in-out;
+    }
+
+    .bubble-1 { width: 80px; height: 80px; top: -30px; right: -20px; }
+    .bubble-2 { width: 60px; height: 60px; bottom: -15px; right: 20%; opacity: 0.06; }
+    .bubble-3 { width: 30px; height: 30px; top: 30%; right: 10%; opacity: 0.08; }
+
+    @keyframes floatPremium {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(8px, -8px) scale(1.05); }
+      66% { transform: translate(-5px, 5px) scale(0.98); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
     .project-card1{
       background: #ffffff;
       border-radius: 1rem;
@@ -1569,6 +1732,11 @@ const UploadTalentProfile = () => {
             <FiArrowLeft /> Talent Profile
           </button>
           <span className="crumb">/ Profile Page</span>
+        </div>
+
+        {/* 1. KPI Stats Grid */}
+        <div id="profile-stats-grid" style={{ marginTop: "12px", marginBottom: "24px" }}>
+          <StatsGrid data={kpiCards} />
         </div>
 
         <div className="dashboard-layout">
