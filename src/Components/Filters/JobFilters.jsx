@@ -105,18 +105,31 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 
       {isOpen && (
         <div className="custom-dropdown-menu">
-          {options.map(option => (
-            <div
-              key={option}
-              className="custom-option"
-              onClick={() => toggleOption(option)}
-            >
-              <div className={`custom-checkbox ${selectedValues.includes(option) ? 'checked' : ''}`}>
-                {selectedValues.includes(option) && <FiCheck size={10} color="white" />}
-              </div>
-              <span>{option}</span>
-            </div>
-          ))}
+          {options && options.length > 0 ? (
+  options.map(option => (
+    <div
+      key={option}
+      className="custom-option"
+      onClick={() => toggleOption(option)}
+    >
+      <div className={`custom-checkbox ${selectedValues.includes(option) ? 'checked' : ''}`}>
+        {selectedValues.includes(option) && <FiCheck size={10} color="white" />}
+      </div>
+      <span>{option}</span>
+    </div>
+  ))
+) : (
+  <div
+    style={{
+      padding: "12px",
+      textAlign: "center",
+      color: "#94a3b8",
+      fontSize: "13px"
+    }}
+  >
+    No data found
+  </div>
+)}
         </div>
       )}
     </div>
