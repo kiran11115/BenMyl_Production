@@ -8,7 +8,7 @@ import MobileTalentCard from "./MobileTalentCard";
 import "./UploadTalent.css";
 import NoData from "./NoData";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 50;
 const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "" }) => {
   const navigate = useNavigate();
 

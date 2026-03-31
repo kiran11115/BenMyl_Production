@@ -960,7 +960,7 @@ const ReviewTalent = () => {
 
     /* ===== META ===== */
     formData.append("InsertBy", data.uploadedBy ?? "");
-    formData.append("NoofExperience", data.noofExperience ?? 0);
+    formData.append("NoofExperience", talent.basicInfo.noofExperience  ?? 0);
     formData.append("EmpDetailID", 0);
     formData.append("EmpID", 0);
     formData.append("EmployeeCode", data.employeeCode ?? "");
@@ -1208,9 +1208,39 @@ const ReviewTalent = () => {
     }
   };
 
+  const calculateExperience = (experiences) => {
+  if (!experiences || experiences.length === 0) return 0;
+
+  let totalMonths = 0;
+
+  experiences.forEach((exp) => {
+    if (!exp.startDate) return;
+
+    const start = new Date(exp.startDate);
+    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+
+    if (months > 0) totalMonths += months;
+  });
+
+  return Math.floor(totalMonths / 12); // convert to years
+};
+
   /* ===== MAP API → LOCAL STATE (NO DESIGN CHANGE) ===== */
   useEffect(() => {
     if (!data) return;
+    const mappedExperience =
+  data.workexperiences?.map((e) => ({
+    company: e.companyName,
+    position: e.position,
+    startDate: e.startDate?.slice(0, 10),
+    endDate: e.endDate?.slice(0, 10),
+    skills: e.skills?.split(",") || [],
+    description: e.description,
+  })) || [];
 
     setTalent({
       basicInfo: {
@@ -1219,6 +1249,7 @@ const ReviewTalent = () => {
         position: data.title,
         phone: data.phoneNo,
         email: data.emailAddress,
+        noofExperience: calculateExperience(mappedExperience),
         skills: data.skills?.split(",") || [],
       },
       personalInfo: {
@@ -1466,6 +1497,7 @@ const ReviewTalent = () => {
                       "position",
                       "phone",
                       "email",
+                      "noofExperience"
                     ].map((f) => (
                       <EditableField
                         key={f}

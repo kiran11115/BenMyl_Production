@@ -71,13 +71,19 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
           </div>
         </div>
 
-        <div className="candidate-badges m-0">
-          {candidate.availability.map((a) => (
-            <span key={a} className="status-tag status-completed">
-              {a}
-            </span>
-          ))}
-        </div>
+        <div className="candidate-badges m-0 d-flex gap-2 flex-wrap">
+  {/* Availability */}
+  {candidate.availability?.map((a) => (
+    <span key={a} className="status-tag status-completed">
+      {a}
+    </span>
+  ))}
+
+  {/* Approved By */}
+  <span className="status-tag status-completed">
+    Approved By {candidate.uploadedByName || "—"}
+  </span>
+</div>
       </div>
 
       {/* --- ACTION BUTTONS --- */}

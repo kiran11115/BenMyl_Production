@@ -116,6 +116,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
             : [],
           location: item.city || "NA",
           availability: item.status ? [item.status] : [],
+          uploadedByName: item.uploadedByName,
           status: item.status?.toUpperCase() || "NEW",
           rating: 4.5,
           avatar:

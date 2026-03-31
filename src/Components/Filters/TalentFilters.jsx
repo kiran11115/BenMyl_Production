@@ -307,33 +307,37 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
               </div>
               {isJobDropdownOpen && (
                 <div className="custom-dropdown-menu">
-                  {jobs.map((job) => (
-                    <div
-                      key={job.id}
-                      className="custom-option"
-                      onClick={() => toggleJobSelection(job.id)}
-                    >
-                      <div
-                        className={`custom-checkbox ${filterInputs.selectedJobs.includes(job.id)
-                          ? "checked"
-                          : ""
-                          }`}
-                        style={
-                          filterInputs.selectedJobs.includes(job.id)
-                            ? {
-                              borderColor: job.color,
-                              backgroundColor: job.color,
-                            }
-                            : {}
-                        }
-                      >
-                        {filterInputs.selectedJobs.includes(job.id) && (
-                          <FiCheck size={10} color="white" />
-                        )}
-                      </div>
-                      <span className="truncate-text">{job.title}</span>
-                    </div>
-                  ))}
+                  {jobs && jobs.length > 0 ? (
+  jobs.map((job) => (
+    <div
+      key={job.id}
+      className="custom-option"
+      onClick={() => toggleJobSelection(job.id)}
+    >
+      <div
+        className={`custom-checkbox ${
+          filterInputs.selectedJobs.includes(job.id) ? "checked" : ""
+        }`}
+      >
+        {filterInputs.selectedJobs.includes(job.id) && (
+          <FiCheck size={10} color="white" />
+        )}
+      </div>
+      <span className="truncate-text">{job.title}</span>
+    </div>
+  ))
+) : (
+  <div
+    style={{
+      padding: "6px",
+      textAlign: "center",
+      color: "#94a3b8",
+      fontSize: "13px",
+    }}
+  >
+    No data found
+  </div>
+)}
                 </div>
               )}
             </div>
