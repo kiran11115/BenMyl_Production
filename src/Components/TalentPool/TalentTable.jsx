@@ -177,7 +177,7 @@ const TalentTableView = ({
   };
 
   return (
-    <div className="tt-wrapper">
+    <div className="tt-wrapper" style={{ overflowY: "auto", maxHeight: "600px" }}>
       <table className="tt-table">
         <thead>
           <tr className="tt-thead-tr">

@@ -190,7 +190,7 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
       </div>
 
       {/* Desktop View */}
-      <div className="d-none d-md-block">
+      <div className="d-none d-md-block" style={{ overflowY: "auto", maxHeight: "600px" }}>
         <table className="tt-table">
           <thead>
             <tr className="tt-thead-tr">
