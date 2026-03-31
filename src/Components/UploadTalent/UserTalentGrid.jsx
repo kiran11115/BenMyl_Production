@@ -80,7 +80,7 @@ const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
   ))}
 
   {/* Approved By */}
-  <span className="status-tag status-completed">
+  <span className="status-tag status-approved">
     Approved By {candidate.uploadedByName || "—"}
   </span>
 </div>

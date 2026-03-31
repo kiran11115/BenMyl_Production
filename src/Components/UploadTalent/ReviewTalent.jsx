@@ -745,25 +745,6 @@ const ReviewTalent = () => {
     fetchCounts();
   }, [getQueueManagement, getMyBench]);
 
-  const kpiCards = [
-    {
-      label: "Total Talent Profiles",
-      value: String(totalTalentCount),
-      change: "0%",
-      icon: Briefcase,
-      cardType: "card-blue",
-      bubbleColor: "#3b82f6",
-    },
-    {
-      label: "Pending Review Profiles",
-      value: String(pendingReviewCount),
-      change: "0%",
-      icon: Users,
-      cardType: "card-purple",
-      bubbleColor: "#6366f1",
-    },
-  ];
-
   // MULTI OPEN ACCORDIONS
   const [openAccordions, setOpenAccordions] = useState(["basicInfo"]);
 
@@ -1476,10 +1457,6 @@ const ReviewTalent = () => {
       </div>
 
       <div className="review-talent-layout">
-        {/* KPI Stats Grid */}
-        <div id="review-stats-grid" style={{ marginBottom: "24px" }}>
-          <StatsGrid data={kpiCards} />
-        </div>
         {/* LEFT: INFORMATION REVIEW */}
         <div className="review-left-panel">
           <div className="review-header-top mb-4">

@@ -391,24 +391,6 @@ const UploadTalentProfile = () => {
     fetchCounts();
   }, [getQueueManagement, getMyBench]);
 
-  const kpiCards = [
-    {
-      label: "Total Talent Profiles",
-      value: String(totalTalentCount),
-      change: "0%",
-      icon: Briefcase,
-      cardType: "card-blue",
-      bubbleColor: "#3b82f6",
-    },
-    {
-      label: "Pending Review Profiles",
-      value: String(pendingReviewCount),
-      change: "0%",
-      icon: Users,
-      cardType: "card-purple",
-      bubbleColor: "#6366f1",
-    },
-  ];
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter") {
@@ -1734,10 +1716,6 @@ const UploadTalentProfile = () => {
           <span className="crumb">/ Profile Page</span>
         </div>
 
-        {/* 1. KPI Stats Grid */}
-        <div id="profile-stats-grid" style={{ marginTop: "12px", marginBottom: "24px" }}>
-          <StatsGrid data={kpiCards} />
-        </div>
 
         <div className="dashboard-layout">
           {/* === LEFT MAIN COLUMN === */}
