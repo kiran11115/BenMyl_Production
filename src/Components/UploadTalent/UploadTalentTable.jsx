@@ -1,11 +1,9 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { FiChevronUp, FiChevronDown, FiLock } from "react-icons/fi";
+import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
-import { useResumeLock } from "../../hooks/useResumeLock";
-import { toast } from "react-toastify";
 import MobileTalentCard from "./MobileTalentCard";
 import "./UploadTalent.css";
 import NoData from "./NoData";
@@ -13,7 +11,6 @@ import NoData from "./NoData";
 const PAGE_SIZE = 50;
 const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "" }) => {
   const navigate = useNavigate();
-  const { isMuted, getLock } = useResumeLock();
 
   const [talents, setTalents] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -188,28 +185,17 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
             <span className="text-muted">No resumes uploaded</span>
           </div>
         )}
-        {sortedTalents.map((talent, i) => {
-          const lock = getLock(talent.employeeID);
-          const muted = isMuted(talent.employeeID);
-          
-          return (
-            <MobileTalentCard
-              key={i}
-              talent={talent}
-              isMuted={muted}
-              lock={lock}
-              onView={() => {
-                if (muted) {
-                  toast.warning(`This resume is currently being reviewed by ${lock?.user}`);
-                  return;
-                }
-                navigate("/user/review-talent", {
-                  state: { employeeID: talent.employeeID },
-                })
-              }}
-            />
-          );
-        })}
+        {sortedTalents.map((talent, i) => (
+          <MobileTalentCard
+            key={i}
+            talent={talent}
+            onView={() =>
+              navigate("/user/review-talent", {
+                state: { employeeID: talent.employeeID },
+              })
+            }
+          />
+        ))}
       </div>
 
       {/* Desktop View */}
@@ -283,11 +269,8 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
             )}
             {sortedTalents.map((talent, i) => {
               const isSelected = selectedEmails.has(talent.email);
-              const lock = getLock(talent.employeeID);
-              const muted = isMuted(talent.employeeID);
-
               return (
-                <tr key={i} className={`${isSelected ? "row-selected" : ""} ${muted ? "row-muted" : ""}`}>
+                <tr key={i} className={isSelected ? "row-selected" : ""}>
                   {!isDashboard && (
                     <td>
                       <input
@@ -354,27 +337,17 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
 
                   {/* ACTIONS */}
                   <td>
-                    <div className="d-flex align-items-center gap-2">
-                       <button
-                        className={`border-0 ${muted ? 'cursor-not-allowed opacity-50' : ''}`}
-                        style={{ background: "none", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                        title={muted ? `Reviewing by: ${lock?.user}` : "Review Resume"}
-                        onClick={() => {
-                          if (muted) {
-                            toast.warning(`This resume is currently being reviewed by ${lock?.user}`);
-                            return;
-                          }
-                          navigate("/user/review-talent", {
-                            state: { employeeID: talent.employeeID },
-                          })
-                        }}
-                      >
-                        {muted ? <FiLock size={16} color="#ef4444" /> : <IoEyeOutline size={16} />}
-                      </button>
-                      {muted && (
-                        <span className="review-pulse-indicator" title={`Reviewing by: ${lock?.user}`}></span>
-                      )}
-                    </div>
+                    <button
+                      className="border-0 w-50"
+                      style={{ background: "none" }}
+                      onClick={() =>
+                        navigate("/user/review-talent", {
+                          state: { employeeID: talent.employeeID },
+                        })
+                      }
+                    >
+                      <IoEyeOutline size={16} />
+                    </button>
                   </td>
                 </tr>
               );
