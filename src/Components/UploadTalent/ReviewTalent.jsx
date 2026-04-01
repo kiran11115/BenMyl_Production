@@ -16,13 +16,8 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./UploadTalent.css";
-import {
-  useApprovedEmployeeMutation,
-  useDraftProfileEmployeeMutation,
-  useGetEmployeeResumeQuery,
-  useGetQueueManagementMutation,
-} from "../../State-Management/Api/UploadResumeApiSlice";
-import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice"; // assuming it's in the same slice or similar
+import { useApprovedEmployeeMutation, useDraftProfileEmployeeMutation, useGetEmployeeResumeQuery, useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useResumeLock } from "../../hooks/useResumeLock";
 import StatsGrid from "../Dashboard/StatsGrid";
 // lucide-react imports consolidated above
 import {
@@ -710,6 +705,18 @@ const ReviewTalent = () => {
 
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
+  const { startViewing, stopViewing } = useResumeLock();
+
+  useEffect(() => {
+    if (employeeID) {
+      startViewing(employeeID);
+      
+      // Cleanup: Unlock when leaving
+      return () => {
+        stopViewing(employeeID);
+      };
+    }
+  }, [employeeID, startViewing, stopViewing]);
 
   useEffect(() => {
     const fetchCounts = async () => {

@@ -994,3 +994,62 @@
     font-size: 12px;
   }
 }
+/* ============================= */
+/* RESUME LOCKING STYLES */
+/* ============================= */
+
+.row-muted td {
+  opacity: 0.6;
+  filter: grayscale(0.4);
+  transition: all 0.3s ease;
+}
+
+.row-muted:hover td {
+  opacity: 0.8;
+  filter: grayscale(0.2);
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+.review-pulse-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+  animation: pulse-red 2s infinite;
+  border: 1px solid white;
+}
+
+.review-pulse-indicator-small {
+  width: 6px;
+  height: 6px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.muted-btn {
+  border-color: #fecaca !important;
+  background-color: #fef2f2 !important;
+}

@@ -1,8 +1,9 @@
 import React from "react";
 import { IoEyeOutline } from "react-icons/io5";
-import { FileText, Calendar, User, CheckCircle, Clock } from "lucide-react";
+import { FiLock } from "react-icons/fi";
+import { FileText, Calendar, User, CheckCircle, Clock, Lock } from "lucide-react";
 
-const MobileTalentCard = ({ talent, onView }) => {
+const MobileTalentCard = ({ talent, onView, isMuted, lock }) => {
   const getAvatarColor = (name = "") => {
     const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#f97316"];
     return colors[name.length % colors.length];
@@ -31,10 +32,29 @@ const MobileTalentCard = ({ talent, onView }) => {
             <p className="candidate-email">{talent.email}</p>
           </div>
         </div>
-        <button className="view-btn" onClick={onView}>
-          <IoEyeOutline size={20} />
+        <button 
+          className={`view-btn ${isMuted ? 'muted-btn' : ''}`} 
+          onClick={onView}
+          style={isMuted ? { borderColor: '#fecaca', background: '#fef2f2' } : {}}
+        >
+          {isMuted ? <FiLock size={20} color="#ef4444" /> : <IoEyeOutline size={20} />}
         </button>
       </div>
+
+      {isMuted && (
+        <div style={{ 
+          margin: '-8px 0 12px 0', 
+          fontSize: '11px', 
+          color: '#ef4444', 
+          fontWeight: '600',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}>
+          <span className="review-pulse-indicator-small"></span>
+          Reviewing by: {lock?.user}
+        </div>
+      )}
 
       <div className="card-details-grid">
         <div className="detail-item">
