@@ -68,18 +68,24 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
   const [getMyBench, { isLoading }] = useGetMyBenchMutation();
-  const hasUserScrolled = useRef(false);
+
+  // Refs to always hold latest values inside scroll/async callbacks
+  const hasMoreRef = useRef(true);
+  const isLoadingRef = useRef(false);
+  const pageNumberRef = useRef(1);
 
   useEffect(() => {
     setCandidatesMock([]);
     setPageNumber(1);
     setHasMore(true);
-    hasUserScrolled.current = false;
+    hasMoreRef.current = true;
+    pageNumberRef.current = 1;
   }, []);
 
   /* ================= FETCH ================= */
   useEffect(() => {
     let isMounted = true;
+    isLoadingRef.current = true;
 
     const fetchBench = async () => {
       try {
@@ -129,43 +135,52 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
           pageNumber === 1 ? mappedData : [...prev, ...mappedData],
         );
 
-        // ✅ Stop further calls
-        if (mappedData.length < PAGE_SIZE) {
-          setHasMore(false);
-        }
+        // ✅ Stop further calls if we got fewer than a full page
+        const moreAvailable = mappedData.length >= PAGE_SIZE;
+        setHasMore(moreAvailable);
+        hasMoreRef.current = moreAvailable;
       } catch (err) {
         console.error("GET MY BENCH FAILED 👉", err);
+      } finally {
+        if (isMounted) isLoadingRef.current = false;
       }
     };
 
-    if (hasMore) fetchBench();
+    fetchBench();
 
     return () => {
       isMounted = false;
     };
-  }, [pageNumber, getMyBench, hasMore]);
+    // Only re-run when pageNumber changes — hasMore is tracked via ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageNumber]);
 
   /* ================= WINDOW SCROLL ================= */
   useEffect(() => {
     const handleScroll = () => {
-      if (!hasMore || isLoading) return;
+      // Use refs so we always read the latest value — no stale closures
+      if (!hasMoreRef.current || isLoadingRef.current) return;
 
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
       const fullHeight = document.documentElement.scrollHeight;
 
-      if (
-        scrollTop + windowHeight >= fullHeight - 100 &&
-        candidatesMock.length >= PAGE_SIZE
-      ) {
-        setPageNumber((prev) => prev + 1);
+      if (scrollTop + windowHeight >= fullHeight - 100) {
+        isLoadingRef.current = true; // Debounce: prevent duplicate increments
+        setPageNumber((prev) => {
+          const next = prev + 1;
+          pageNumberRef.current = next;
+          return next;
+        });
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore, isLoading, candidatesMock.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Registered once — refs carry the live values
+
 
   /* ================= MEMOS ================= */
   const filteredCandidates = useMemo(() => {

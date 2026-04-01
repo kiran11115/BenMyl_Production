@@ -693,6 +693,31 @@ const EditableTags = ({
   );
 };
 
+const fieldLabels = {
+  noofExperience: "NO OF EXPERIENCE",
+  firstName: "First Name",
+  lastName: "Last Name",
+  position: "Position",
+  phone: "Phone",
+  email: "Email",
+  dob: "Date of Birth",
+  gender: "Gender",
+  emergency: "Emergency Contact",
+  country: "Country",
+  state: "State",
+  city: "City",
+  address: "Address",
+  university: "University",
+  qualification: "Qualification",
+  startDate: "Start Date",
+  endDate: "End Date",
+  field: "Field of Study",
+  percentage: "Percentage",
+  company: "Company",
+  name: "Project Name",
+  role: "Role",
+};
+
 const ReviewTalent = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -1546,7 +1571,7 @@ const ReviewTalent = () => {
                     ].map((f) => (
                       <EditableField
                         key={f}
-                        label={f}
+                        label={fieldLabels[f] || f}
                         value={talent.basicInfo[f]}
                         editing={editingSections.includes("basicInfo")}
                         onSave={(val) =>
@@ -1664,7 +1689,7 @@ const ReviewTalent = () => {
                       return isTxt ? null : (
                         <EditableField
                           key={field}
-                          label={field}
+                          label={fieldLabels[field] || field}
                           value={talent.personalInfo[field]}
                           editing={editingSections.includes("personalInfo")}
                           onSave={(val) =>
@@ -1805,7 +1830,7 @@ const ReviewTalent = () => {
                         ].map((field) => (
                           <EditableField
                             key={field}
-                            label={field}
+                            label={fieldLabels[field] || field}
                             value={ed[field]}
                             section="education"
                             editing={editingSections.includes("education")}
@@ -1982,13 +2007,7 @@ const ReviewTalent = () => {
                           (field) => (
                             <div key={field}>
                               <EditableField
-                                label={
-                                  field === "startDate"
-                                    ? "Start Date"
-                                    : field === "endDate"
-                                      ? "End Date"
-                                      : field
-                                }
+                                label={fieldLabels[field] || field}
                                 value={ex[field]}
                                 section="experience"
                                 editing={editingSections.includes("experience")}
@@ -2192,13 +2211,7 @@ const ReviewTalent = () => {
                           (field) => (
                             <EditableField
                               key={field}
-                              label={
-                                field === "startDate"
-                                  ? "Start Date"
-                                  : field === "endDate"
-                                    ? "End Date"
-                                    : field
-                              }
+                              label={fieldLabels[field] || field}
                               value={pr[field]}
                               section="projects"
                               editing={editingSections.includes("projects")}
