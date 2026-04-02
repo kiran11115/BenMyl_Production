@@ -82,6 +82,11 @@ const UploadTalent = () => {
         }
     }, [location.state]);
 
+    // Reset search query when switching tabs
+    useEffect(() => {
+        setSearchQuery("");
+    }, [view]);
+
 
     const handleUploadSuccess = (message) => {
         if (message && String(message).toLowerCase().includes("fail")) {

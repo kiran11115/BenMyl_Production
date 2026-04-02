@@ -44,9 +44,6 @@ const sortCandidates = (candidates, sortBy) => {
       case "rate_low":
         return Math.random() - 0.5;
 
-      case "name_asc":
-        return a.name.localeCompare(b.name);
-
       default:
         return 0;
     }
@@ -252,7 +249,6 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
                   <option value="exp_high">Experience: High to Low</option>
                   <option value="exp_low">Experience: Low to High</option>
                   <option value="rate_low">Hourly Rate: Low to High</option>
-                  <option value="name_asc">Name: A - Z</option>
                 </select>
                 <FiChevronDown className="sort-icon" />
               </div>
