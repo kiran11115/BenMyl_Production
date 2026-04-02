@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
@@ -16,86 +16,106 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [tableLoading, setTableLoading] = useState(false);
+  const hasMoreRef = useRef(true);
+const isLoadingRef = useRef(false);
+const pageNumberRef = useRef(1);
+
+
+useEffect(() => {
+  hasMoreRef.current = hasMore;
+}, [hasMore]);
+
+useEffect(() => {
+  pageNumberRef.current = pageNumber;
+}, [pageNumber]);
 
   const [getQueueManagement, { isLoading }] =
     useGetQueueManagementMutation();
 
   /* ================= FETCH ================= */
-  useEffect(() => {
-    let isMounted = true;
+ useEffect(() => {
+  let isMounted = true;
+  isLoadingRef.current = true;
 
-    const fetchQueue = async () => {
-      try {
+  const fetchQueue = async () => {
+    try {
+      const payload = {
+        companyid: Number(localStorage.getItem("logincompanyid")),
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        filters: [],
+      };
 
-        const payload = {
-          companyid: Number(localStorage.getItem("logincompanyid")),
-          pageNumber,
-          pageSize: PAGE_SIZE,
-          filters: [],
-        };
+      const res = await getQueueManagement(payload).unwrap();
 
-        const res = await getQueueManagement(payload).unwrap();
+      if (!isMounted) return;
 
-        if (!isMounted) return;
+      const mapped = res.map((item) => ({
+        employeeID: item.employeeID,
+        fileName: item.resumeFileName,
+        batchFormat: item.resumeFileName?.split(".").pop(),
+        extractStatus: item.status,
+        statusClass:
+          item.status === "Pending For Review"
+            ? "status-yellow"
+            : "status-green",
+        created: item.status === "Completed" ? "Yes" : "No",
+        createdClass:
+          item.status === "Completed"
+            ? "status-green"
+            : "status-red",
+        uploadedBy: item.uploadedByName,
+        uploadDate: item.insertDate?.split(" ")[0] ?? "-",
+        confidence: "N/A",
+        confidenceClass: "status-blue",
+        email: `${item.firstName} ${item.lastName}`,
+      }));
 
-        const mapped = res.map((item) => ({
-          employeeID: item.employeeID,
-          fileName: item.resumeFileName,
-          batchFormat: item.resumeFileName?.split(".").pop(),
-          extractStatus: item.status,
-          statusClass:
-            item.status === "Pending For Review"
-              ? "status-yellow"
-              : "status-green",
-          created: item.status === "Completed" ? "Yes" : "No",
-          createdClass:
-            item.status === "Completed"
-              ? "status-green"
-              : "status-red",
-          uploadedBy: item.uploadedByName,
-          uploadDate: item.insertDate?.split(" ")[0] ?? "-",
-          confidence: "N/A",
-          confidenceClass: "status-blue",
-          email: `${item.firstName} ${item.lastName}`,
-        }));
+      setTalents((prev) =>
+        pageNumber === 1 ? mapped : [...prev, ...mapped]
+      );
 
-        // ✅ Page 1 replaces, Page 2+ appends
-        setTalents((prev) =>
-          pageNumber === 1 ? mapped : [...prev, ...mapped]
-        );
+      const moreAvailable = mapped.length >= PAGE_SIZE;
+      setHasMore(moreAvailable);
+      hasMoreRef.current = moreAvailable;
+    } catch (err) {
+      console.error("Queue fetch failed", err);
+    } finally {
+      if (isMounted) isLoadingRef.current = false;
+    }
+  };
 
-        if (mapped.length < PAGE_SIZE) {
-          setHasMore(false);
-        }
-      } catch (err) {
-        console.error("Queue fetch failed", err);
-      }
-    };
+  fetchQueue();
 
-    fetchQueue();
+  return () => {
+    isMounted = false;
+  };
+}, [pageNumber, getQueueManagement, refreshKey]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [pageNumber, getQueueManagement, refreshKey]);
-
-  useEffect(() => {
-    setPageNumber(1);
-    setHasMore(true);
-  }, [refreshKey]);
+ useEffect(() => {
+  setPageNumber(1);
+  setHasMore(true);
+  setTalents([]); // 🔥 important
+  hasMoreRef.current = true;
+  pageNumberRef.current = 1;
+}, [refreshKey]);
 
   /* ================= SCROLL ================= */
   const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
+  if (!hasMoreRef.current || isLoadingRef.current) return;
 
-    if (
-      scrollHeight - scrollTop <= clientHeight + 50 &&
-      hasMore &&
-      !isLoading
-    ) {
-      setPageNumber((prev) => prev + 1);
-    }
-  };
+  const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+  if (scrollHeight - scrollTop <= clientHeight + 50) {
+    isLoadingRef.current = true;
+
+    setPageNumber((prev) => {
+      const next = prev + 1;
+      pageNumberRef.current = next;
+      return next;
+    });
+  }
+};
 
 
 

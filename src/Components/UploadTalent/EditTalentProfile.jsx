@@ -56,6 +56,27 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
   const [skillInput, setSkillInput] = useState("");
   const [validationErrorsState, setValidationErrorsState] = useState(null);
 
+   const calculateExperience = (experiences) => {
+  if (!experiences || experiences.length === 0) return 0;
+
+  let totalMonths = 0;
+
+  experiences.forEach((exp) => {
+    if (!exp.startDate) return;
+
+    const start = new Date(exp.startDate);
+    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+
+    if (months > 0) totalMonths += months;
+  });
+
+  return Math.floor(totalMonths / 12); // convert to years
+};
+
   const formik = useFormik({
     initialValues: {
       title: initialData?.title || "",
@@ -95,7 +116,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
 
       formData.append("Status", "Approved");
 
-      formData.append("NoofExperience", values.workexperiences.length || 0);
+      formData.append("NoofExperience", calculateExperience(values.workexperiences) || 0);
 
       // Work Experience
       formData.append(
