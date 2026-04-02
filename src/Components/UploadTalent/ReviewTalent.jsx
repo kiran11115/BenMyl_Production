@@ -263,10 +263,22 @@ const validateEmail = (val) => {
   return null;
 };
 
+// ===== SHARED VALIDATION HELPERS =====
+const validateYearDigitCount = (val) => {
+  if (!val || String(val).trim() === "") return null;
+  const year = Number(String(val).split("-")[0]);
+  if (year > 2099) return "Year cannot exceed 2099";
+  return null;
+};
+
 // ===== PERSONAL INFO VALIDATION FUNCTIONS =====
 const validateDOB = (val) => {
   // DOB is optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const date = new Date(val);
   if (isNaN(date)) return "Please enter a valid date of birth";
   const today = new Date();
@@ -339,6 +351,10 @@ const validateQualification = (val) => {
 const validateEduStartDate = (val) => {
   // Start date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
   if (isNaN(d)) return "Please enter a valid start date";
   return null;
@@ -347,6 +363,10 @@ const validateEduStartDate = (val) => {
 const validateEduEndDate = (val) => {
   // End date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
   if (isNaN(d)) return "Please enter a valid end date";
   return null;
@@ -388,15 +408,25 @@ const validateExpPosition = (val) => {
 const validateExpStartDate = (val) => {
   // Start date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
-  if (isNaN(d)) return null;
+  if (isNaN(d)) return "Please enter a valid start date";
+  return null;
 };
 
 const validateExpEndDate = (val) => {
   // End date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
-  if (isNaN(d)) return null;
+  if (isNaN(d)) return "Please enter a valid end date";
+  return null;
 };
 
 const validateExpSkills = (val) => {
@@ -426,6 +456,10 @@ const validateProjectRole = (val) => {
 const validateProjectStartDate = (val) => {
   // Start date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
   if (isNaN(d)) return "Please enter a valid project start date";
   return null;
@@ -434,6 +468,10 @@ const validateProjectStartDate = (val) => {
 const validateProjectEndDate = (val) => {
   // End date optional — only validate when provided
   if (!val || String(val).trim() === "") return null;
+
+  const yearError = validateYearDigitCount(val);
+  if (yearError) return yearError;
+
   const d = new Date(val);
   if (isNaN(d)) return "Please enter a valid project end date";
   return null;
@@ -528,7 +566,16 @@ const EditableField = ({
   const [errorLocal, setErrorLocal] = useState(null);
 
   const handleChange = (e) => {
-    const newVal = e.target.value;
+    let newVal = e.target.value;
+
+    // Reject if date year exceeds 2099
+    if (isDateField && newVal) {
+      const yearPart = Number(newVal.split("-")[0]);
+      if (yearPart > 2099) {
+        return;
+      }
+    }
+
     setTemp(newVal);
     setErrorLocal(null);
     onSave(newVal);
@@ -547,6 +594,7 @@ const EditableField = ({
         <div style={{ position: "relative" }}>
           <input
             type={isDateField ? "date" : "text"}
+            max={isDateField ? "2099-12-31" : undefined}
             className={`field-input ${hasValidationError ? "error-border" : ""}`}
             value={temp}
             onChange={handleChange}

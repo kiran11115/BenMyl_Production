@@ -17,6 +17,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { ValidationErrorModal } from "./SaveTalentAlert";
 
+const yearLimit = 2099;
+const dateValidation = Yup.string().test("year-limit", "Year cannot exceed 2099", (value) => {
+  if (!value) return true;
+  const d = new Date(value);
+  return !isNaN(d) && d.getFullYear() <= yearLimit;
+});
+
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   bio: Yup.string()
@@ -31,21 +38,24 @@ const validationSchema = Yup.object().shape({
     Yup.object().shape({
       companyName: Yup.string().required("Company name is required"),
       position: Yup.string().required("Position is required"),
-      startDate: Yup.string().required("Start date is required"),
+      startDate: dateValidation.required("Start date is required"),
+      endDate: dateValidation.nullable(),
     }),
   ),
   employeeprojects: Yup.array().of(
     Yup.object().shape({
       projectName: Yup.string().required("Project name is required"),
       role: Yup.string().required("Role is required"),
-      startDate: Yup.string().required("Start date is required"),
+      startDate: dateValidation.required("Start date is required"),
+      endDate: dateValidation.nullable(),
     }),
   ),
   employee_Heighers: Yup.array().of(
     Yup.object().shape({
       university: Yup.string().required("University is required"),
       highestQualification: Yup.string().required("Qualification is required"),
-      startDate: Yup.string().required("Start date is required"),
+      startDate: dateValidation.required("Start date is required"),
+      endDate: dateValidation.nullable(),
     }),
   ),
 });
@@ -574,6 +584,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       exp.startDate
                                         ? new Date(exp.startDate)
@@ -602,6 +613,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       exp.endDate ? new Date(exp.endDate) : null
                                     }
@@ -716,6 +728,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       proj.startDate
                                         ? new Date(proj.startDate)
@@ -744,6 +757,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       proj.endDate
                                         ? new Date(proj.endDate)
@@ -847,6 +861,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       edu.startDate
                                         ? new Date(edu.startDate)
@@ -875,6 +890,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
                                 <div className="auth-password-wrapper">
                                   <DatePicker
                                     className="auth-input w-100"
+                                    maxDate={new Date("2099-12-31")}
                                     selected={
                                       edu.endDate ? new Date(edu.endDate) : null
                                     }
