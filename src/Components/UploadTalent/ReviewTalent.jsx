@@ -30,6 +30,7 @@ import {
   ConfirmSaveModal,
   SaveSuccessModal,
   SaveErrorModal,
+  AlreadyExistModal,
 } from "./SaveTalentAlert";
 
 // ===== ACCORDION ANIMATIONS =====
@@ -729,6 +730,8 @@ const ReviewTalent = () => {
   const [draftProfile, { isLoading: draft }] =
     useDraftProfileEmployeeMutation();
   const [isReviewed, setIsReviewed] = useState(false);
+  const [showAlreadyExistModal, setShowAlreadyExistModal] = useState(false);
+const [apiErrorMessage, setApiErrorMessage] = useState("");
 
   const [pendingReviewCount, setPendingReviewCount] = useState(0);
   const [totalTalentCount, setTotalTalentCount] = useState(0);
@@ -1104,12 +1107,22 @@ const ReviewTalent = () => {
     );
 
     try {
-      await approveEmployee(formData).unwrap();
-      setShowSuccessModal(true);
-    } catch (err) {
-      console.error("Approve failed", err);
-      alert("Failed to save talent");
-    }
+  const res = await approveEmployee(formData);
+
+  console.log("API RESPONSE:", res); // 👈 add this once
+
+if (res?.data?.result_Code === -1) {
+  setApiErrorMessage(res.data.result_Message); // store message
+  setShowAlreadyExistModal(true); // open modal
+  return;
+}
+
+setShowSuccessModal(true);
+
+} catch (err) {
+  console.error("Approve failed", err);
+  alert("Failed to save talent");
+}
   };
 
   const handleDraftTalent = async () => {
@@ -2420,6 +2433,13 @@ const ReviewTalent = () => {
       {showSuccessModal && (
         <SaveSuccessModal onClose={() => setShowSuccessModal(false)} />
       )}
+
+      {showAlreadyExistModal && (
+  <AlreadyExistModal
+    message={apiErrorMessage}
+    onClose={() => setShowAlreadyExistModal(false)}
+  />
+)}
     </div>
   );
 };
