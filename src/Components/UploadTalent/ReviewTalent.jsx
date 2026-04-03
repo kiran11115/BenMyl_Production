@@ -1049,6 +1049,26 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
       return;
     }
 
+    const calculateExperience = (experiences) => {
+  if (!experiences || experiences.length === 0) return 0;
+
+  let totalMonths = 0;
+
+  experiences.forEach((exp) => {
+    if (!exp.startDate) return;
+
+    const start = new Date(exp.startDate);
+    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+
+    if (months > 0) totalMonths += months;
+  });
+
+  return Math.floor(totalMonths / 12);
+};
     const formData = new FormData();
 
     /* ===== BASIC INFO ===== */
@@ -1084,7 +1104,7 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
 
     /* ===== META ===== */
     formData.append("InsertBy", data.uploadedBy ?? "");
-    formData.append("NoofExperience", talent.basicInfo.noofExperience  ?? 0);
+    formData.append("NoofExperience", calculateExperience(talent.experience) ?? 0);
     formData.append("EmpDetailID", 0);
     formData.append("EmpID", 0);
     formData.append("EmployeeCode", data.employeeCode ?? "");
@@ -1631,7 +1651,6 @@ setShowSuccessModal(true);
                       "position",
                       "phone",
                       "email",
-                      "noofExperience"
                     ].map((f) => (
                       <EditableField
                         key={f}

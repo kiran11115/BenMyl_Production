@@ -355,22 +355,22 @@ useEffect(() => {
                     </td>
                   )}
 
-                  {/* ACTIONS Already Approved */}
+                  {/* ACTIONS */}
                   <td>
   <button
     className="border-0 w-50"
     style={{
       background: "none",
       cursor:
-        talent.extractStatus === "Already Approved"
+        talent.extractStatus === "Already Resume Exits"
           ? "not-allowed"
           : "pointer",
       opacity:
-        talent.extractStatus === "Already Approved" ? 0.8 : 1,
+        talent.extractStatus === "Already Resume Exits" ? 0.8 : 1,
     }}
-    disabled={talent.extractStatus === "Already Approved"}
+    disabled={talent.extractStatus === "Already Resume Exits"}
     onClick={() => {
-      if (talent.extractStatus === "Already Approved") return;
+      if (talent.extractStatus === "Already Resume Exits") return;
 
       navigate("/user/review-talent", {
         state: { employeeID: talent.employeeID },

@@ -21,7 +21,12 @@ export const ValidationErrorModal = ({
           <h3 className="alert-title">Submission Error</h3>
         </div>
 
-        <div className="alert-body">
+        <div className="alert-body"
+        style={{
+    maxHeight: "300px",   // 👈 control height
+    overflowY: "auto",    // 👈 enable scroll
+    paddingRight: "6px"
+  }}>
           <div className="alert-message">
             {Array.isArray(errors) ? (
               <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
