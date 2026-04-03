@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
 /* AI Workspace Modern Dashboard Theme */
 :root {
   --bg-main: #020617;
@@ -11,8 +13,15 @@
   --warning: #f59e0b;
   --danger: #ef4444;
 
+  --gradient-rainbow: linear-gradient(to right, #f59e0b, #ef4444, #ec4899, #8b5cf6, #3b82f6, #0ea5e9);
+  --companion-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #f59e0b);
+
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.font-premium {
+  font-family: 'Inter', 'Outfit', sans-serif;
 }
 
 .ai-dashboard {
@@ -22,9 +31,43 @@
   background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
                     radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
   color: var(--text-primary);
-  font-family: inherit;
+  font-family: 'Inter', 'Outfit', sans-serif;
   overflow: hidden;
   animation: ambientShift 15s ease-in-out infinite alternate;
+}
+
+.gradient-text-companion {
+  background: var(--companion-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  font-family: 'Caveat Brush', cursive;
+  font-weight: 400;
+  font-size: 1.55em; /* Script fonts often look smaller */
+  letter-spacing: 0.5px;
+}
+
+.companion-subtitle {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.gradient-border-wrapper {
+  position: relative;
+  padding: 1.5px; /* Border thickness */
+  background: var(--gradient-rainbow);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.gradient-border-inner {
+  background: var(--bg-main);
+  border-radius: 19px;
+  height: 100%;
 }
 
 /* --- Left Sidebar --- */
@@ -229,9 +272,29 @@
   padding: 20px;
   box-shadow: var(--shadow-soft);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+  position: relative;
   cursor: pointer;
   opacity: 0;
   animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.resume-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  padding: 1px;
+  background: var(--gradient-rainbow);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.resume-card:hover::before {
+  opacity: 1;
 }
 
 /* Stagger card animations */
@@ -344,8 +407,23 @@
   border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 16px;
+  position: relative;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.insight-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 15px;
+  padding: 1px;
+  background: var(--gradient-rainbow);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.2;
 }
 .insight-card:hover {
   background: rgba(99, 102, 241, 0.08);
@@ -430,7 +508,14 @@
 }
 
 .ai-avatar-pulse {
-  animation: breathePulse 3s infinite ease-in-out;
+  background-size: 200% 200% !important;
+  animation: bg-flow 3s ease infinite, breathePulse 3s infinite ease-in-out;
+}
+
+@keyframes bg-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .smart-submit:not(:disabled) {

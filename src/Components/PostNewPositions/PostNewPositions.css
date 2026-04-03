@@ -649,27 +649,34 @@ p.muted {
 .ai-pill-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 8px;
+  padding: 6px 14px;
   border-radius: 999px;
-  border: 2px solid transparent;
-
-  background:
-    linear-gradient(#ffffff, #ffffff) padding-box,
-    linear-gradient(90deg,
-      #1ed5fb,
-      #6f87ec,
-      #e90fd8,
-      #f5c542,
-      #1ed5fb) border-box;
-
-  background-size: 100% 100%, 400% 400%;
-  background-position: 0 0, 0 50%;
-
+  border: none;
+  position: relative;
+  background: white;
+  color: #1e293b;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: box-shadow 3s ease-in, transform 3s ease-in;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(111, 135, 236, 0.2);
+  overflow: hidden;
+}
+
+.ai-pill-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8, #f5c542, #1ed5fb);
+  background-size: 400% 400%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-border-flow 3s linear infinite;
 }
 
 .auth-error {
@@ -679,10 +686,8 @@ p.muted {
 
 /* 🔥 Hover = Continuous border animation */
 .ai-pill-btn:hover {
-  animation: ai-border-flow 2.5s linear infinite;
-  box-shadow: 0 0 14px rgba(111, 135, 236, 0.45);
-  transform: translateY(-1px);
-  border: 2px solid transparent;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(111, 135, 236, 0.4);
 }
 
 /* Border animation */

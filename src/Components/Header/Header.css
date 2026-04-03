@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+
 /* Header.css - Matches T-Wind Dashboard Style */
 
 .header-container {
@@ -882,4 +884,72 @@
     width: calc(100vw - 48px);
     right: 12px;
   }
+}
+
+/* AI Pill Button - Premium Styling */
+.ai-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  position: relative;
+  background: white;
+  color: #1e293b;
+  font-size: 18px; /* Caveat Brush looks better slightly larger */
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(111, 135, 236, 0.2);
+  overflow: hidden;
+  margin-left: 10px;
+  font-family: 'Caveat Brush', cursive;
+}
+
+.ai-pill-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8, #f5c542, #1ed5fb);
+  background-size: 400% 400%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-border-flow 3s linear infinite;
+  z-index: 1;
+}
+
+.ai-pill-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(111, 135, 236, 0.4);
+}
+
+.ai-pill-text {
+  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+  font-family: 'Caveat Brush', cursive;
+}
+
+.ai-pill-icon {
+  font-size: 14px;
+  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes ai-border-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }

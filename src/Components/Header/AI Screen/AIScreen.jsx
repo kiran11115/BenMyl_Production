@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
 import { FiSend, FiX, FiPaperclip, FiSearch, FiClock, FiSave, FiEdit, FiHome } from "react-icons/fi";
+import { Sparkles } from "lucide-react";
 import { useTalentPoolMutation } from "../../../State-Management/Api/TalentPoolApiSlice";
 import "./AIScreen.css";
 
@@ -1233,12 +1234,23 @@ function AIScreen() {
       
       {/* 1. LEFT SIDEBAR */}
       <div className="ai-sidebar">
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-           <div style={{ width: 32, height: 32, background: "var(--accent)", borderRadius: 8, display: "grid", placeItems: "center", fontWeight: "bold", color: "#fff" }}>
+        {/* <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+           <div className="ai-avatar-pulse" style={{ 
+             width: 32, 
+             height: 32, 
+             background: "var(--gradient-rainbow)", 
+             backgroundSize: "200% 200%",
+             borderRadius: 8, 
+             display: "grid", 
+             placeItems: "center", 
+             fontWeight: "900", 
+             color: "#fff",
+             boxShadow: "0 0 10px rgba(99, 102, 241, 0.4)"
+           }}>
              AI
            </div>
-           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)" }}>Workspace</span>
-        </div>
+           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)" }}>Companion</span>
+        </div> */}
 
         <div className="sidebar-title">Quick Actions</div>
         
@@ -1269,7 +1281,21 @@ function AIScreen() {
       <div className="ai-main">
         <div className="main-header">
           <h1 className="main-title">
-             {activeQuestionnaire ? SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name || "Questionnaire" : "AI Assistant Dashboard"}
+             {activeQuestionnaire ? (
+               SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name || "Questionnaire"
+             ) : (
+               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                 <Sparkles className="gradient-text-companion" size={32} style={{ fill: "url(#companion-grad)" }} />
+                 <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Companion</span>
+                 <svg width="0" height="0">
+                   <linearGradient id="companion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                     <stop offset="0%" stopColor="#3b82f6" />
+                     <stop offset="50%" stopColor="#8b5cf6" />
+                     <stop offset="100%" stopColor="#f59e0b" />
+                   </linearGradient>
+                 </svg>
+               </div>
+             )}
           </h1>
           {activeQuestionnaire && (
             <p className="main-subtitle">Complete the parameters to generate a guided prompt.</p>
@@ -1312,7 +1338,7 @@ function AIScreen() {
                     setTimeout(() => handleSubmit(), 100);
                 }}>
                    <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
-                     <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+                     <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--gradient-rainbow)", backgroundSize: "200% 200%", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
                      <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
                        <strong>I can help you {SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name.toLowerCase()}!</strong><br/>
                        To get the best results, what specific role or target audience should I focus my analysis around?
@@ -1349,24 +1375,29 @@ function AIScreen() {
                 <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
                   <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
                   <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-                    <strong>Hello! I'm your AI Workspace assistant.</strong><br/>
-                    I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. What would you like to do today?
+                    <span className="companion-subtitle">Get more done with</span>
+                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Companion</strong>
+                    I'm AI Companion, your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
                   </div>
                 </div>
 
-                <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0", paddingLeft: 60 }}>Guided Workflows</h3>
-                <div className="results-grid">
-                  {SUGGESTED_PROMPTS.map((prompt) => (
-                    <div 
-                      key={prompt.id} 
-                      className="resume-card" 
-                      onClick={() => setActiveQuestionnaire(prompt.id)}
-                      style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
-                    >
-                      <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
-                      <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
+                <div className="gradient-border-wrapper">
+                  <div className="gradient-border-inner" style={{ padding: "20px" }}>
+                    <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0" }}>Guided Workflows</h3>
+                    <div className="results-grid">
+                      {SUGGESTED_PROMPTS.map((prompt) => (
+                        <div 
+                          key={prompt.id} 
+                          className="resume-card" 
+                          onClick={() => setActiveQuestionnaire(prompt.id)}
+                          style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
+                        >
+                          <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
+                          <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             )}
