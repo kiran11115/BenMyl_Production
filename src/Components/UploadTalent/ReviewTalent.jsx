@@ -928,6 +928,9 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
     const addressError = validateAddress(personalInfo.address);
     if (addressError) errors.push(addressError);
 
+    const cityError = validateCity(personalInfo.city);
+    if (cityError) errors.push(cityError);
+
     return errors;
   };
 
@@ -1760,7 +1763,7 @@ setShowSuccessModal(true);
                             }))
                           }
                           section="personalInfo"
-                          required={field === "address"}
+                          required={field === "address" || field === "city"}
                         />
                       );
                     })}
