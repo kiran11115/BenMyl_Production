@@ -53,6 +53,7 @@ function Signin() {
           localStorage.setItem("logincompanyid", response?.compabnyId);
           localStorage.setItem("Role", response?.roleID);
           localStorage.setItem("adminFirstName", response?.adminFirstName);
+          localStorage.setItem("Industry", response?.industry);
           const role = response?.roleID;
 
           if (formik.values.rememberMe) {

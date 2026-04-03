@@ -20,6 +20,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
    const adminName = localStorage.getItem("adminFirstName");
+   const industryname = localStorage.getItem("Industry");
 
   const { data: apiData, isLoading } = useGetRecruiterProfileQuery(
     Number(userId),
@@ -313,7 +314,7 @@ const ProfilePage = () => {
               </div>
               <div className="pp-contact-item">
                 <span className="pp-contact-icon"><FiBriefcase size={13} /></span>
-                Industry: {companyData.industry || "—"}
+                Industry: {industryname || "—"}
               </div>
               <div className="pp-contact-item">
                 <span className="pp-contact-icon"><FiMapPin size={13} /></span>
