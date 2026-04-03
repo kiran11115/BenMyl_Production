@@ -1,8 +1,9 @@
 import React from "react";
 import { IoEyeOutline } from "react-icons/io5";
+import { FiTrash2 } from "react-icons/fi";
 import { FileText, Calendar, User, CheckCircle, Clock } from "lucide-react";
 
-const MobileTalentCard = ({ talent, onView }) => {
+const MobileTalentCard = ({ talent, onView, onDelete }) => {
   const getAvatarColor = (name = "") => {
     const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#f97316"];
     return colors[name.length % colors.length];
@@ -31,9 +32,19 @@ const MobileTalentCard = ({ talent, onView }) => {
             <p className="candidate-email">{talent.email}</p>
           </div>
         </div>
-        <button className="view-btn" onClick={onView}>
-          <IoEyeOutline size={20} />
-        </button>
+        {talent.extractStatus === "Already Resume Exits" ? (
+          <button
+            className="view-btn"
+            style={{ borderColor: "#fee2e2", color: "#ef4444" }}
+            onClick={onDelete}
+          >
+            <FiTrash2 size={20} />
+          </button>
+        ) : (
+          <button className="view-btn" onClick={onView}>
+            <IoEyeOutline size={20} />
+          </button>
+        )}
       </div>
 
       <div className="card-details-grid">

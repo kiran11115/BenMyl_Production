@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiCheck, FiAlertTriangle, FiFileText } from "react-icons/fi";
+import { FiX, FiCheck, FiAlertTriangle, FiFileText, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 export const ValidationErrorModal = ({
@@ -192,6 +192,60 @@ export const SaveErrorModal = ({ onClose, onRetry }) => {
             onClick={onRetry}
           >
             Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const DeleteConfirmModal = ({ onClose, onConfirm }) => {
+  return (
+    <div className="modal-overlay">
+      <div className="alert-card error-theme">
+        <button className="alert-close-icon" onClick={onClose}>
+          <FiX size={20} />
+        </button>
+
+        <div className="alert-header">
+          <div className="alert-icon-wrapper" style={{ background: "#fee2e2", color: "#ef4444" }}>
+            <FiTrash2 />
+          </div>
+          <h3 className="alert-title">Delete Draft</h3>
+        </div>
+
+        <div className="alert-body">
+          <p className="alert-message">
+            Are you sure you want to delete this draft employee?
+          </p>
+          <div
+            style={{
+              marginTop: "16px",
+              padding: "12px",
+              background: "#fff1f2",
+              borderLeft: "4px solid #f43f5e",
+              borderRadius: "4px",
+              fontSize: "13px",
+              color: "#9f1239",
+              lineHeight: "1.5",
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <FiAlertTriangle size={14} /> NOTE:
+            </div>
+            This action is permanent and will remove the draft record from the system. It cannot be undone.
+          </div>
+        </div>
+
+        <div className="alert-footer">
+          <button className="btn-alert-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="btn-alert-primary btn-alert-error"
+            onClick={onConfirm}
+          >
+            Yes, Delete
           </button>
         </div>
       </div>

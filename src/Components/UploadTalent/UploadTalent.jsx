@@ -130,6 +130,11 @@ const UploadTalent = () => {
         }, 20000);
     };
 
+    const handleDeleteSuccess = () => {
+        setRefreshKey(prev => prev + 1);
+        toast.info("Draft deleted successfully");
+    };
+
     // Handler to close the modal
     const handleCloseModal = () => setShowModal(false);
 
@@ -185,6 +190,8 @@ const UploadTalent = () => {
       setUploadCount(0);
       setCountdown(0);
     }, 20000);
+
+    window.history.replaceState({}, document.title);
 
   }
 }, [location.state]);
@@ -337,6 +344,7 @@ const UploadTalent = () => {
                                     refreshKey={refreshKey}
                                     externalLoading={waitingForRefresh}
                                     searchQuery={searchQuery}
+                                    onDeleted={handleDeleteSuccess}
                                 />
                             ) : (
                                 <div

@@ -74,7 +74,14 @@ getMyBench: builder.mutation({
   }),
 }),
 
+    deleteDraftEmployee: builder.mutation({
+      query: (employeeId) => ({
+        url: `/api/uatcompany/DeletedraftEmployee/${employeeId}`,
+        method: "DELETE",
+      }),
+    }),
+
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery,useUpdateEmployeeResumeMutation   } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery,useUpdateEmployeeResumeMutation,useDeleteDraftEmployeeMutation   } = UploadResumeApiSlice;

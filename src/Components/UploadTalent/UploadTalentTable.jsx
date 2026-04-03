@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import { FiChevronUp, FiChevronDown, FiTrash2 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { useGetQueueManagementMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useGetQueueManagementMutation, useDeleteDraftEmployeeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import MobileTalentCard from "./MobileTalentCard";
 import "./UploadTalent.css";
 import NoData from "./NoData";
+import { DeleteConfirmModal } from "./SaveTalentAlert";
 
 const PAGE_SIZE = 50;
-const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "" }) => {
+const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "", onDeleted }) => {
   const navigate = useNavigate();
 
   const [talents, setTalents] = useState([]);
@@ -19,6 +20,9 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
   const hasMoreRef = useRef(true);
 const isLoadingRef = useRef(false);
 const pageNumberRef = useRef(1);
+
+const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [deletingId, setDeletingId] = useState(null);
 
 
 useEffect(() => {
@@ -31,6 +35,24 @@ useEffect(() => {
 
   const [getQueueManagement, { isLoading }] =
     useGetQueueManagementMutation();
+  const [deleteDraftEmployee] = useDeleteDraftEmployeeMutation();
+
+  const handleDelete = (employeeID) => {
+    setDeletingId(employeeID);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    try {
+      await deleteDraftEmployee(deletingId).unwrap();
+      setShowDeleteModal(false);
+      setDeletingId(null);
+      if (onDeleted) onDeleted();
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
 
   /* ================= FETCH ================= */
  useEffect(() => {
@@ -214,6 +236,7 @@ useEffect(() => {
                 state: { employeeID: talent.employeeID },
               })
             }
+            onDelete={() => handleDelete(talent.employeeID)}
           />
         ))}
       </div>
@@ -357,35 +380,53 @@ useEffect(() => {
 
                   {/* ACTIONS */}
                   <td>
-  <button
-    className="border-0 w-50"
-    style={{
-      background: "none",
-      cursor:
-        talent.extractStatus === "Already Resume Exits"
-          ? "not-allowed"
-          : "pointer",
-      opacity:
-        talent.extractStatus === "Already Resume Exits" ? 0.8 : 1,
-    }}
-    disabled={talent.extractStatus === "Already Resume Exits"}
-    onClick={() => {
-      if (talent.extractStatus === "Already Resume Exits") return;
-
-      navigate("/user/review-talent", {
-        state: { employeeID: talent.employeeID },
-      });
-    }}
-  >
-    <IoEyeOutline size={16} />
-  </button>
-</td>
+                    {talent.extractStatus === "Already Resume Exits" ? (
+                      <button
+                        className="border-0 w-50"
+                        style={{
+                          background: "none",
+                          cursor: "pointer",
+                          color: "#ef4444",
+                        }}
+                        onClick={() => handleDelete(talent.employeeID)}
+                        title="Delete Duplicate Draft"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        className="border-0 w-50"
+                        style={{
+                          background: "none",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          navigate("/user/review-talent", {
+                            state: { employeeID: talent.employeeID },
+                          });
+                        }}
+                        title="View Resume"
+                      >
+                        <IoEyeOutline size={16} />
+                      </button>
+                    )}
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
+
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          onClose={() => {
+            setShowDeleteModal(false);
+            setDeletingId(null);
+          }}
+          onConfirm={confirmDelete}
+        />
+      )}
 
       <style jsx>{`
         /* --- Selected Row Style (Green background) --- */
