@@ -355,20 +355,31 @@ useEffect(() => {
                     </td>
                   )}
 
-                  {/* ACTIONS */}
+                  {/* ACTIONS Already Approved */}
                   <td>
-                    <button
-                      className="border-0 w-50"
-                      style={{ background: "none" }}
-                      onClick={() =>
-                        navigate("/user/review-talent", {
-                          state: { employeeID: talent.employeeID },
-                        })
-                      }
-                    >
-                      <IoEyeOutline size={16} />
-                    </button>
-                  </td>
+  <button
+    className="border-0 w-50"
+    style={{
+      background: "none",
+      cursor:
+        talent.extractStatus === "Already Approved"
+          ? "not-allowed"
+          : "pointer",
+      opacity:
+        talent.extractStatus === "Already Approved" ? 0.8 : 1,
+    }}
+    disabled={talent.extractStatus === "Already Approved"}
+    onClick={() => {
+      if (talent.extractStatus === "Already Approved") return;
+
+      navigate("/user/review-talent", {
+        state: { employeeID: talent.employeeID },
+      });
+    }}
+  >
+    <IoEyeOutline size={16} />
+  </button>
+</td>
                 </tr>
               );
             })}
