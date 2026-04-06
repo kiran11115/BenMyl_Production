@@ -1,457 +1,293 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
-  FiChevronLeft, FiChevronRight, FiMail, FiPhone, FiMapPin, FiArrowLeft,
-  FiCheckSquare, FiSquare, FiCalendar, FiClock, FiChevronDown,
-  FiX, FiCheck, FiFileText
+  FiMapPin, FiArrowLeft, FiCheckSquare, FiSquare, FiCalendar, 
+  FiClock, FiChevronDown, FiCheck, FiBriefcase, FiMail, FiPhone, FiStar
 } from 'react-icons/fi';
+import { GiCheckMark } from "react-icons/gi";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import './ScheduleInterview.css';
 
-// --- Alert Components (Integrated) ---
+// --- Mock Data ---
 
-/**
- * Error Modal - Replicates the red "Submission Error" design
- */
-const SubmissionErrorModal = ({ onClose, onRetry, onContactSupport }) => {
-  return (
-    <div className="modal-overlay fade-in">
-      <div className="alert-card error-theme">
-        <button className="alert-close-icon" onClick={onClose}><FiX /></button>
+const mockJobs = [
+  {
+    id: 1,
+    title: "Senior Frontend Developer",
+    company: "BenMyl Technologies",
+    location: "Hyderabad",
+    candidates: [
+      { id: 1, firstName: "Michael", lastName: "Chen", name: "Michael Chen", role: "Frontend Expert", email: "michael.c@tech.com", phone: "+1 (555) 101-1234", avatar: "", experience: "8 Years Exp", skills: ["React", "TypeScript", "Node.js"], rating: 4.8, verified: true, availability: ["Full-time"] },
+      { id: 2, firstName: "Sophia", lastName: "Rodriguez", name: "Sophia Rodriguez", role: "React Architect", email: "sophia.r@dev.io", phone: "+1 (555) 202-5678", avatar: "", experience: "6 Years Exp", skills: ["Next.js", "Redux", "Tailwind"], rating: 4.7, verified: true, availability: ["Contract"] }
+    ]
+  },
+  {
+    id: 2,
+    title: "UI/UX Designer",
+    company: "Creative Studio",
+    location: "Bangalore",
+    candidates: [
+      { id: 3, firstName: "James", lastName: "Wilson", name: "James Wilson", role: "Product Designer", email: "j.wilson@design.io", phone: "+1 (555) 303-9988", avatar: "", experience: "5 Years Exp", skills: ["Figma", "Adobe XD", "Prototyping"], rating: 4.9, verified: false, availability: ["Full-time"] },
+      { id: 4, firstName: "Emma", lastName: "Watson", name: "Emma Watson", role: "UX Strategist", email: "emma.w@agency.com", phone: "+1 (555) 404-7766", avatar: "", experience: "7 Years Exp", skills: ["User Research", "Wireframing", "A/B Testing"], rating: 4.6, verified: true, availability: ["Remote"] }
+    ]
+  }
+];
 
-        <div className="alert-content">
-          <div className="icon-circle error-icon-bg">
-            <FiX className="icon-main" />
-          </div>
+const getNDaysFromDate = (baseDate, n) => {
+    const dates = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-          <h3 className="alert-title">Submission Error</h3>
-          <p className="alert-message">
-            The interview could not be scheduled at this time.
-            Please review the details or try a different time slot.
-          </p>
-
-          <div className="error-list-container">
-            <span className="error-list-label">Common issues:</span>
-            <ul className="error-list">
-              <li><span className="bullet-icon"><FiFileText /></span> Selected slot is no longer available</li>
-              <li><span className="bullet-icon"><FiFileText /></span> Network connection timed out</li>
-              <li><span className="bullet-icon"><FiFileText /></span> Interviewer calendar conflict</li>
-            </ul>
-          </div>
-
-          <div className="link-button">
-            <button className="btn-alert-primary error-btn" onClick={onRetry}>
-              Try Again
-            </button>
-            <button className="btn-alert-text error-text-btn" onClick={onContactSupport}>
-              Contact Support
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    for (let i = 0; i < n; i++) {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() + i);
+        d.setHours(0, 0, 0, 0);
+        if (d >= today) dates.push(d);
+    }
+    return dates;
 };
-
-/**
- * Success Modal - Replicates the green "Success!" design
- */
-const SuccessModal = ({ onClose, scheduledDate, scheduledTime }) => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  return (
-    <div className="modal-overlay fade-in">
-      <div className="alert-card success-theme">
-        <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-
-        <div className="alert-content left-align">
-          <div className="d-flex align-items-center gap-3 mb-3">
-            <div className="icon-circle success-icon-bg">
-              <FiCheck className="icon-main" />
-            </div>
-            <h3 className="alert-title m-0">Interview Scheduled!</h3>
-          </div>
-
-          <p className="alert-message mb-2">
-            The interview has been confirmed for <strong>{scheduledDate}</strong> at <strong>{scheduledTime}</strong>.
-          </p>
-
-          <div className="alert-actions start">
-            <button
-              className="link-button"
-              onClick={() => navigate("/user/user-upcoming-interview")}
-            >
-              <FiArrowLeft /> Back to Interviews
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Main Component ---
 
 const ScheduleInterview = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  // --- Global Form State ---
-  const [formData, setFormData] = useState({
-    email: '',
-    duration: '45 minutes',
-    meetingLink: 'https://meet.company.com/interview-123',
-    interviewerId: 'david',
-    priority: 'Medium',
-    selectedDate: new Date(2025, 2, 15), // Default to March 15, 2025
-    timeSlotId: '09:00',
-    sendReminder: true
-  });
+    // --- User Info ---
+    const userName = localStorage.getItem("UserName") || "Current User";
+    const userRole = localStorage.getItem("Role") || "Recruiter";
+    const userId = localStorage.getItem("CompanyId");
 
-  // State Machine: 'idle' | 'loading' | 'success' | 'error'
-  const [status, setStatus] = useState('idle');
-  const [view, setView] = useState('Month');
+    const { data: apiData } = useGetRecruiterProfileQuery(Number(userId), { skip: !userId });
+    const profilePhoto = apiData?.profilePhoto;
 
-  // --- Dynamic Calendar Logic ---
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1));
+    const [selectedJob, setSelectedJob] = useState(mockJobs[0]);
+    const [selectedCandidate, setSelectedCandidate] = useState(mockJobs[0].candidates[0]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [viewDate, setViewDate] = useState(new Date());
+    const [timeSlotId, setTimeSlotId] = useState('09:00');
+    const [sendReminder, setSendReminder] = useState(true);
+    const [status, setStatus] = useState('idle');
 
-  // Helper: Generate calendar grid for currentMonth
-  const generateCalendar = (baseDate) => {
-    const year = baseDate.getFullYear();
-    const month = baseDate.getMonth();
+    useEffect(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (viewDate < today) setViewDate(today);
+    }, [viewDate]);
 
-    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 (Sun) - 6 (Sat)
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const upcomingDates = useMemo(() => getNDaysFromDate(viewDate, 28), [viewDate]);
 
-    const days = [];
+    const handlePickerChange = (date) => {
+        setSelectedDate(date);
+        setViewDate(date);
+    };
 
-    // Padding days
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push({ day: null });
-    }
+    const timeSlots = [
+        { id: '09:00', time: '9:00 AM' },
+        { id: '10:00', time: '10:00 AM' },
+        { id: '11:00', time: '11:00 AM' },
+        { id: '12:00', time: '12:00 PM' },
+        { id: '14:00', time: '2:00 PM' },
+        { id: '15:00', time: '3:00 PM' },
+        { id: '16:00', time: '4:00 PM' },
+        { id: '17:00', time: '5:00 PM' }
+    ];
 
-    // Actual days
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dateObj = new Date(year, month, i);
-      const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-      const slotsAvailable = isWeekend ? 0 : Math.floor(Math.random() * 5);
+    const getInitials = (name = "") => {
+        return name.trim().split(" ").slice(0, 2).map(word => word[0]?.toUpperCase()).join("");
+    };
 
-      days.push({
-        day: i,
-        fullDate: dateObj,
-        available: !isWeekend && slotsAvailable > 0,
-        slots: slotsAvailable
-      });
-    }
-    return days;
-  };
+    const handleJobSelect = (jobId) => {
+        const job = mockJobs.find(j => j.id === Number(jobId));
+        setSelectedJob(job);
+        setSelectedCandidate(job.candidates[0]);
+    };
 
-  const calendarGrid = generateCalendar(currentMonth);
+    const handleConfirm = () => {
+        setStatus('loading');
+        setTimeout(() => {
+            setStatus('idle');
+            toast.success(`Interview scheduled for ${selectedCandidate.name}!`, { theme: "colored" });
+        }, 1000);
+    };
 
-  const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  };
+    const isSameDay = (d1, d2) => d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
-  const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-  };
-
-  const isSameDay = (d1, d2) => {
-    return d1.getDate() === d2.getDate() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getFullYear() === d2.getFullYear();
-  };
-
-  // --- Email & Dropdown Logic ---
-  const [emailInput, setEmailInput] = useState('');
-  const [showEmailOptions, setShowEmailOptions] = useState(false);
-  const emailWrapperRef = useRef(null);
-  const emailSuggestions = ['michael.chen@email.com', 'm.chen@dev-hiring.com', 'candidate.michael@gmail.com'];
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (emailWrapperRef.current && !emailWrapperRef.current.contains(event.target)) {
-        setShowEmailOptions(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [emailWrapperRef]);
-
-  const handleEmailSelect = (email) => {
-    setFormData(prev => ({ ...prev, email }));
-    setEmailInput(email);
-    setShowEmailOptions(false);
-  };
-
-  // --- Interviewer Data ---
-  const interviewers = [
-    { id: 'david', name: 'David Kim', role: 'Technical Lead', img: 'https://i.pravatar.cc/150?u=david' },
-    { id: 'sarah', name: 'Sarah Jenkins', role: 'Senior Architect', img: 'https://i.pravatar.cc/150?u=sarah' }
-  ];
-  const selectedInterviewer = interviewers.find(i => i.id === formData.interviewerId);
-
-  // --- Time Slots ---
-  const timeSlots = [
-    { id: '09:00', time: '9:00 AM - 9:45 AM', label: formData.selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), sub: 'Indian Time (IST)' },
-    { id: '10:00', time: '10:00 AM - 10:45 AM', label: formData.selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), sub: 'Indian Time (IST)' },
-    { id: '14:00', time: '2:00 PM - 2:45 PM', label: formData.selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), sub: 'Indian Time (IST)' }
-  ];
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // --- Submission Handler ---
-  const handleConfirm = () => {
-    setStatus('loading');
-
-    // Simulate API Call
-    setTimeout(() => {
-      // Toggle this variable to test the Error State
-      const simulateError = false;
-
-      if (simulateError) {
-        setStatus('error');
-      } else {
-        console.log("Submitting Payload:", {
-          ...formData,
-          formattedDate: formData.selectedDate.toISOString()
-        });
-        setStatus('success');
-      }
-    }, 1500);
-  };
-
-  // --- Render Conditional Modals ---
-  if (status === 'success') {
-    const timeLabel = timeSlots.find(t => t.id === formData.timeSlotId)?.time || "Selected Time";
     return (
-      <SuccessModal
-        onClose={() => setStatus('idle')}
-        scheduledDate={formData.selectedDate.toDateString()}
-        scheduledTime={timeLabel}
-      />
+        <div className="jobs-container no-effects">
+            <ToastContainer />
+            
+            <div className="profile-breadcrumb">
+                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Dashboard </button>
+                <span className="crumb">/ Schedule Interview</span>
+            </div>
+
+            <div className="search-header-row d-flex justify-content-between align-items-center">
+                <div className="header-text">
+                    <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 4px 0", color: "var(--slate-800)" }}>Schedule Interview</h1>
+                    <p style={{ margin: 0, color: "var(--slate-500)", fontSize: "14px" }}>Schedule and manage candidate interviews.</p>
+                </div>
+                <div className="search-input-container d-flex flex-column" style={{ maxWidth: "350px", flex: 1 }}>
+                    <label className="fg-title mb-2">Select Posted Job</label>
+                    <div className="dropdown-wrapper">
+                        <select 
+                          className="sort-select" 
+                          style={{ width: "100%", padding: "10px 14px" }}
+                          value={selectedJob.id} 
+                          onChange={(e) => handleJobSelect(e.target.value)}
+                        >
+                            {mockJobs.map(job => <option key={job.id} value={job.id}>{job.title}</option>)}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className="three-column-schedule">
+                
+                {/* COLUMN 1: Profiles */}
+                <section className="col-candidates">
+                    <h3 className="fg-title">Shortlisted Profiles <span className="count-badge">{selectedJob.candidates.length}</span></h3>
+                    <div className="profiles-stack">
+                        {selectedJob.candidates.map(candidate => (
+                            <div 
+                              key={candidate.id} 
+                              className={`project-card ${selectedCandidate.id === candidate.id ? 'active-card' : ''}`}
+                              onClick={() => setSelectedCandidate(candidate)}
+                              style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
+                            >
+                                <div className="card-header">
+                                    {candidate.avatar ? (
+                                        <img src={candidate.avatar} alt={candidate.name} className="avatar" />
+                                    ) : (
+                                        <div className="avatar initials-bg-profile">
+                                            {getInitials(candidate.name)}
+                                        </div>
+                                    )}
+                                    <div className="header-info">
+                                        <div className="name-row">
+                                            <h4 className="name">
+                                                {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
+                                            </h4>
+                                            <div className="rating">
+                                                <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
+                                                <span style={{ color: "#f59e0b" }}>{candidate.rating}</span>
+                                            </div>
+                                        </div>
+                                        <div className="role">{candidate.role}</div>
+                                    </div>
+                                </div>
+                                <div className="meta-grid">
+                                    <div className="meta-item"><FiBriefcase size={14} /> <span>{candidate.experience}</span></div>
+                                    <div className="meta-item"><FiMapPin size={14} /> <span>{selectedJob.location}</span></div>
+                                </div>
+                                <div className="skills-row">
+                                    {candidate.skills.slice(0, 2).map(skill => (
+                                        <span key={skill} className="status-tag">{skill}</span>
+                                    ))}
+                                    {candidate.skills.length > 2 && <span className="status-tag count">+{candidate.skills.length - 2}</span>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* COLUMN 2: Dates Grid */}
+                <section className="col-dates">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
+                        <div className="date-picker-popup">
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={handlePickerChange}
+                                minDate={new Date()}
+                                todayButton="Go to Today"
+                                customInput={<button className="icon-btn-picker"><FiCalendar /></button>}
+                                popperPlacement="bottom-end"
+                            />
+                        </div>
+                    </div>
+                    <div className="date-cards-grid">
+                        {upcomingDates.map((date, idx) => (
+                            <div 
+                              key={idx} 
+                              className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''}`}
+                              onClick={() => setSelectedDate(date)}
+                            >
+                                <span className="m-name">{date.toLocaleDateString('en-US', { month: 'short' })}</span>
+                                <span className="d-num">{date.getDate()}</span>
+                                <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* COLUMN 3: Times */}
+                <section className="col-times">
+                    <h3 className="fg-title"><FiClock /> Select Time</h3>
+                    <div className="times-stack">
+                        {timeSlots.map(slot => (
+                            <button 
+                              key={slot.id} 
+                              className={`time-mini-btn ${timeSlotId === slot.id ? 'active' : ''}`}
+                              onClick={() => setTimeSlotId(slot.id)}
+                            >
+                                <FiClock /> {slot.time}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+
+            </div>
+
+             {/* Floating Sticky Footer Summary */}
+             <div className="floating-footer-ui">
+                <div className="d-flex align-items-center gap-3">
+                    <div className="recruiter-pill">
+                        {profilePhoto ? (
+                            <img src={profilePhoto} alt="Recruiter" className="recruiter-avatar" />
+                        ) : (
+                            <div className="recruiter-avatar initials-bg">
+                                {getInitials(userName)}
+                            </div>
+                        )}
+                        <div className="recruiter-meta">
+                            <h4 className="rec-name">{userName}</h4>
+                            <span className="rec-role">{userRole}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="d-flex align-items-center">
+                    <div className="divider-v"></div>
+                    <div className="selection-summary-ui">
+                        <p style={{ margin: 0, fontSize: "14px", fontWeight: 500 }}>
+                            Candidate: <span style={{color: "var(--f5810c)", fontWeight: 700}}>{selectedCandidate.name}</span>
+                        </p>
+                        <p style={{ margin: 0, fontSize: "13px", color: "var(--slate-500)" }}>
+                            On <strong>{selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' })}</strong> at <strong>{timeSlots.find(t => t.id === timeSlotId)?.time}</strong>
+                        </p>
+                    </div>
+                    <div className="divider-v"></div>
+                    
+                    <div className="d-flex align-items-center gap-4">
+                        <div className="reminder-check-ui" onClick={() => setSendReminder(!sendReminder)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px", color: "var(--slate-600)" }}>
+                            {sendReminder ? <FiCheckSquare color="#f5810c" size={20} /> : <FiSquare size={20} />}
+                            <span style={{ fontSize: "12px", fontWeight: 600 }}>Automation Reminders</span>
+                        </div>
+                        <button 
+                            className="btn-alert-primary" 
+                            onClick={handleConfirm} 
+                            disabled={status === 'loading'}
+                        >
+                            {status === 'loading' ? 'Scheduling...' : 'Finalize Interview'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     );
-  }
-
-  if (status === 'error') {
-    return (
-      <SubmissionErrorModal
-        onClose={() => setStatus('idle')}
-        onRetry={() => {
-          setStatus('idle');
-          // Optional: immediately trigger retry logic here if desired
-        }}
-        onContactSupport={() => alert("Redirecting to support...")}
-      />
-    );
-  }
-
-  // --- Main Render ---
-  return (
-    <div className="projects-container fade-in">
-      <div className="breadcrumb-nav">
-        <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
-        <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}><FiArrowLeft /> Upcoming Interviews</button>
-        <span className="crumb">/ Schedule Interview</span>
-      </div>
-
-      <div className="dashboard-layout" style={{ gridTemplateColumns: '350px 1fr', position: 'relative' }}>
-
-        {/* Loading Overlay within container */}
-        {status === 'loading' && (
-          <div className="loading-overlay" style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="spinner"></div>
-          </div>
-        )}
-
-        {/* LEFT COLUMN: Form Inputs */}
-        <aside className="dashboard-column-side">
-          <div className="form-group-float" ref={emailWrapperRef}>
-            <label className="section-label">Email ID</label>
-            <div className="dropdown-input-wrapper">
-              <input
-                type="text"
-                className="std-input"
-                placeholder="Enter or select email..."
-                value={emailInput}
-                onChange={(e) => {
-                  setEmailInput(e.target.value);
-                  setShowEmailOptions(true);
-                  setFormData(prev => ({ ...prev, email: e.target.value }));
-                }}
-                onFocus={() => setShowEmailOptions(true)}
-              />
-              <FiChevronDown className="input-icon-right" />
-              {showEmailOptions && (
-                <div className="custom-dropdown-menu">
-                  {emailSuggestions
-                    .filter(email => email.toLowerCase().includes(emailInput.toLowerCase()))
-                    .map((email, idx) => (
-                      <div key={idx} className="dropdown-item" onClick={() => handleEmailSelect(email)}>{email}</div>
-                    ))}
-                  {emailInput && !emailSuggestions.includes(emailInput) && (
-                    <div className="dropdown-item new-item" onClick={() => handleEmailSelect(emailInput)}>Use "{emailInput}"</div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="table-card card-compact">
-            <div className="candidate-header-row">
-              <img src="https://i.pravatar.cc/150?u=michael" alt="Michael" className="avatar-lg" />
-              <div>
-                <h3 className="card-title lg">Michael Chen</h3>
-                <p className="role-text">Senior Frontend Developer</p>
-                <span className="status-tag status-progress">Remote Interview</span>
-              </div>
-            </div>
-            <div className="contact-list">
-              <div className="contact-item"><FiMail className="icon-muted" /> {formData.email || "Select email above"}</div>
-              <div className="contact-item"><FiPhone className="icon-muted" /> +1 (555) 123-4567</div>
-              <div className="contact-item"><FiMapPin className="icon-muted" /> Hyderabad, Telangana</div>
-            </div>
-            <div className="notes-wrapper">
-              <label className="section-label">Interview Notes</label>
-              <div className="notes-box">Technical interview for senior frontend position. Focus on React expertise.</div>
-            </div>
-          </div>
-
-          <div className="table-card card-compact">
-            <h4 className="section-title text-sm">Interview Details</h4>
-            <div className="detail-row">
-              <label className="section-label">Duration</label>
-              <select name="duration" className="std-select" value={formData.duration} onChange={handleInputChange}>
-                <option value="30 minutes">30 minutes</option>
-                <option value="45 minutes">45 minutes</option>
-                <option value="60 minutes">60 minutes</option>
-              </select>
-            </div>
-            <div className="detail-row">
-              <label className="section-label">Meeting Link</label>
-              <input type="text" name="meetingLink" className="std-input link-style" value={formData.meetingLink} onChange={handleInputChange} />
-            </div>
-            <div className="detail-row">
-              <label className="section-label">Interviewer</label>
-              <div className="interviewer-select-wrapper">
-                <select name="interviewerId" className="std-select-hidden" value={formData.interviewerId} onChange={handleInputChange}>
-                  {interviewers.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
-                </select>
-                <div className="interviewer-box pointer-events-none">
-                  <img src={selectedInterviewer.img} alt="Avatar" className="avatar-sm" />
-                  <div>
-                    <div className="name-sm">{selectedInterviewer.name}</div>
-                    <div className="role-xs">{selectedInterviewer.role}</div>
-                  </div>
-                  <FiChevronDown className="ml-auto text-muted" />
-                </div>
-              </div>
-            </div>
-            <div className="detail-row">
-              <label className="section-label">Priority</label>
-              <select name="priority" className="std-select" value={formData.priority} onChange={handleInputChange}>
-                <option value="Low">Low Priority</option>
-                <option value="Medium">Medium Priority</option>
-                <option value="High">High Priority</option>
-              </select>
-            </div>
-          </div>
-        </aside>
-
-        {/* RIGHT COLUMN: Functional Calendar */}
-        <main className="dashboard-column-main">
-          <div className="table-card" style={{ minHeight: '600px' }}>
-
-            {/* Calendar Header */}
-            <div className="cal-header-flex">
-              <div className="cal-controls">
-                <h2 className="section-title">Select Date & Time</h2>
-                <div className="toggle-group">
-                  <button className={`toggle-pill ${view === 'Month' ? 'active' : ''}`} onClick={() => setView('Month')}>Month</button>
-                  <button className={`toggle-pill ${view === 'Week' ? 'active' : ''}`} onClick={() => setView('Week')}>Week</button>
-                </div>
-              </div>
-              <div className="cal-month-nav">
-                <button className="nav-arrow" onClick={handlePrevMonth}><FiChevronLeft /></button>
-                <span className="month-title">
-                  <FiCalendar className="mr-2" />
-                  {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                </span>
-                <button className="nav-arrow" onClick={handleNextMonth}><FiChevronRight /></button>
-              </div>
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="custom-cal-grid">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-                <div key={d} className="cal-day-head">{d}</div>
-              ))}
-
-              {calendarGrid.map((d, i) => (
-                <div
-                  key={i}
-                  className={`cal-day-cell 
-                    ${!d.day ? 'empty' : ''} 
-                    ${d.day && isSameDay(formData.selectedDate, d.fullDate) ? 'selected' : ''}
-                    ${d.available ? 'available' : 'disabled'}
-                  `}
-                  onClick={() => d.available && setFormData(prev => ({ ...prev, selectedDate: d.fullDate }))}
-                >
-                  {d.day && <span className="day-num">{d.day}</span>}
-                  {d.available && d.slots > 0 && (
-                    <span className="slots-tag">{d.slots} slots</span>
-                  )}
-                  {d.day && !d.available && (
-                    <span className="unavailable-dot"></span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Time Slots */}
-            <h3 className="section-title mt-6">Available Time Slots</h3>
-            <div className="slots-container">
-              {timeSlots.map(slot => (
-                <button
-                  key={slot.id}
-                  className={`slot-card ${formData.timeSlotId === slot.id ? 'active' : ''}`}
-                  onClick={() => setFormData(prev => ({ ...prev, timeSlotId: slot.id }))}
-                >
-                  <div className="slot-time">{slot.time}</div>
-                  <div className="slot-meta">{slot.label}</div>
-                  <div className="slot-meta-sub">{slot.sub}</div>
-                </button>
-              ))}
-            </div>
-
-            {/* Confirm Section */}
-            <div className="confirm-footer">
-              <div className="confirm-info">
-                <h4 className="confirm-title">Confirm Schedule</h4>
-                <div className="confirm-row">
-                  <span><FiCalendar /> {formData.selectedDate.toDateString()}</span>
-                  <span><FiClock /> {timeSlots.find(t => t.id === formData.timeSlotId)?.time}</span>
-                </div>
-                <div className="checkbox-wrap" onClick={() => setFormData(prev => ({ ...prev, sendReminder: !prev.sendReminder }))}>
-                  {formData.sendReminder ? <FiCheckSquare className="cb-icon active" /> : <FiSquare className="cb-icon" />}
-                  <span>Send email reminders</span>
-                </div>
-              </div>
-
-              <button className="btn-primary" onClick={handleConfirm} disabled={status === 'loading'}>
-                {status === 'loading' ? 'Scheduling...' : 'Confirm Schedule'}
-              </button>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
 };
 
 export default ScheduleInterview;
