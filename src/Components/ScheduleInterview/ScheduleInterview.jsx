@@ -300,9 +300,39 @@ const ScheduleInterview = () => {
                 </section>
 
                 {/* COLUMN 2: Select Date (Middle - 1fr) */}
-                <section className="col-times">
+                <section className="col-dates">
+                    <div className="project-card flex-grow-1 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
+                        <div className="d-flex justify-content-between align-items-center p-3">
+                            <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
+                            <div className="date-picker-popup">
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={handlePickerChange}
+                                    minDate={new Date()}
+                                    todayButton="Go to Today"
+                                    customInput={<button className="icon-btn-picker" title="Select custom date"><FiCalendar /></button>}
+                                    popperPlacement="bottom-end"
+                                    portalId="root"
+                                />
+                            </div>
+                        </div>
+                        <div className="date-cards-grid hide-scrollbar p-3">
+                            {upcomingDates.map((date, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''}`}
+                                    onClick={() => setSelectedDate(date)}
+                                >
+                                    <span className="m-name">{date.toLocaleDateString('en-US', { month: 'short' })}</span>
+                                    <span className="d-num">{date.getDate()}</span>
+                                    <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Compact Job Card (Minor Details) with View Icon */}
-                    <div className="mb-4" style={{ position: 'relative' }}>
+                    <div style={{ position: 'relative' }}>
                         <JobOverviewCard 
                             job={selectedJob} 
                             isExpanded={false} 
@@ -332,42 +362,10 @@ const ScheduleInterview = () => {
                             <FiEye size={16} />
                         </button>
                     </div>
-
-                    <div className="project-card flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
-                        <div className="d-flex justify-content-between align-items-center p-3">
-                            <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
-                            <div className="date-picker-popup">
-                                <DatePicker
-                                    selected={selectedDate}
-                                    onChange={handlePickerChange}
-                                    minDate={new Date()}
-                                    todayButton="Go to Today"
-                                    customInput={<button className="icon-btn-picker"><FiCalendar /></button>}
-                                    popperPlacement="top-end"
-                                    popperProps={{
-    strategy: "fixed"   // 🔥 IMPORTANT FIX
-  }}
-                                />
-                            </div>
-                        </div>
-                        <div className="date-cards-grid hide-scrollbar p-3">
-                            {upcomingDates.map((date, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''}`}
-                                    onClick={() => setSelectedDate(date)}
-                                >
-                                    <span className="m-name">{date.toLocaleDateString('en-US', { month: 'short' })}</span>
-                                    <span className="d-num">{date.getDate()}</span>
-                                    <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
                 </section>
 
                 {/* COLUMN 3: Select Time (Right - 350px) */}
-                <section className="col-dates">
+                <section className="col-times">
                     <div className="project-card flex-grow-1 d-flex flex-column" style={{ minHeight: 0, height: '100%' }}>
                         <h3 className="fg-title p-3 m-0"><FiClock /> Select Time</h3>
                         

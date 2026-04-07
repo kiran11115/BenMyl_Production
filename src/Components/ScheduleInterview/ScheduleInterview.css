@@ -360,6 +360,10 @@
     min-height: auto;
   }
 
+  .col-dates {
+    order: -1; /* Date selection on top for mobile */
+  }
+
   .profiles-stack {
     max-height: 400px;
     overflow-y: auto;
