@@ -343,7 +343,10 @@ const ScheduleInterview = () => {
                                     minDate={new Date()}
                                     todayButton="Go to Today"
                                     customInput={<button className="icon-btn-picker"><FiCalendar /></button>}
-                                    popperPlacement="bottom-end"
+                                    popperPlacement="top-end"
+                                    popperProps={{
+    strategy: "fixed"   // 🔥 IMPORTANT FIX
+  }}
                                 />
                             </div>
                         </div>
