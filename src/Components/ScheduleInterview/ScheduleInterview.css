@@ -29,6 +29,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin: 0 auto;
+  position: relative;
 }
 
 .no-effects {
@@ -77,6 +79,13 @@
   flex: 1;
   min-height: 0;
   padding-bottom: 120px;
+}
+
+@media (max-width: 1280px) {
+  .three-column-schedule {
+    grid-template-columns: 300px 1fr 300px;
+    gap: 16px;
+  }
 }
 
 .fg-title {
@@ -324,3 +333,171 @@
 .divider-v { width: 1px; height: 40px; background: #e2e8f0; margin: 0 24px; }
 .btn-alert-primary { padding: 12px 36px; background-color: #f5810c; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
 .btn-alert-primary:hover { background-color: #ea580c; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245, 129, 12, 0.3); }
+/* --- MOBILE UI DESIGN --- */
+@media (max-width: 768px) {
+  .jobs-container {
+    padding: 16px;
+    height: auto;
+    overflow: visible;
+    max-width: 100%;
+  }
+
+  .three-column-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 250px; /* More space for sticky footer */
+  }
+
+  .col-candidates, .col-times, .col-dates {
+    height: auto;
+    min-height: auto;
+  }
+
+  .profiles-stack {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .floating-footer-ui {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 16px;
+    flex-direction: column;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -15px 35px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    margin: 0;
+  }
+
+  .divider-v {
+    display: none;
+  }
+
+  .selection-summary-ui {
+    text-align: center;
+    width: 100%;
+  }
+
+  .floating-footer-ui .d-flex {
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-alert-primary {
+    width: 100%;
+    order: -1; /* Place button above reminder check on mobile */
+  }
+
+  .reminder-check-ui {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+
+  .search-input-container {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .date-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .success-popover-modal {
+    padding: 24px;
+    margin: 16px;
+    max-width: calc(100% - 32px);
+  }
+}
+
+.search-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.ui-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--slate-800);
+}
+.sub-title {
+  margin: 0;
+  color: var(--slate-500);
+  font-size: 14px;
+}
+.search-input-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 350px;
+  flex: 1;
+}
+.sort-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--slate-800);
+  outline: none;
+  transition: border 0.2s;
+}
+.sort-select:focus {
+  border-color: var(--f5810c);
+}
+
+.empty-candidates-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--slate-500);
+  font-size: 14px;
+  gap: 16px;
+  height: 200px;
+  border: 1px dashed var(--slate-200);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+.empty-candidates-msg p {
+  margin: 0;
+  font-weight: 500;
+}
+.btn-find-talent-ui {
+  padding: 8px 24px;
+  background: var(--f5810c);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.2);
+}
+.btn-find-talent-ui:hover {
+  background: #ea580c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px -1px rgba(245, 129, 12, 0.3);
+}
+

@@ -8,17 +8,12 @@ import {
 } from 'react-icons/fi';
 import { GiCheckMark } from "react-icons/gi";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
-import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
+import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import './ScheduleInterview.css';
 
-// --- Mock Candidates ---
-const mockCandidates = [
-    { id: 1, firstName: "Michael", lastName: "Chen", name: "Michael Chen", role: "Frontend Expert", email: "michael.c@tech.com", phone: "+1 (555) 101-1234", avatar: "", experience: "8 Years Exp", skills: ["React", "TypeScript", "Node.js"], rating: 4.8, verified: true, availability: ["Full-time"] },
-    { id: 2, firstName: "Sophia", lastName: "Rodriguez", name: "Sophia Rodriguez", role: "React Architect", email: "sophia.r@dev.io", phone: "+1 (555) 202-5678", avatar: "", experience: "6 Years Exp", skills: ["Next.js", "Redux", "Tailwind"], rating: 4.7, verified: true, availability: ["Contract"] },
-    { id: 3, firstName: "James", lastName: "Wilson", name: "James Wilson", role: "Product Designer", email: "j.wilson@design.io", phone: "+1 (555) 303-9988", avatar: "", experience: "5 Years Exp", skills: ["Figma", "Adobe XD", "Prototyping"], rating: 4.9, verified: false, availability: ["Full-time"] },
-    { id: 4, firstName: "Emma", lastName: "Watson", name: "Emma Watson", role: "UX Strategist", email: "emma.w@agency.com", phone: "+1 (555) 404-7766", avatar: "", experience: "7 Years Exp", skills: ["User Research", "Wireframing", "A/B Testing"], rating: 4.6, verified: true, availability: ["Remote"] }
-];
+// Removed mock candidates
 
 const getNDaysFromDate = (baseDate, n) => {
     const dates = [];
@@ -66,7 +61,12 @@ const ScheduleInterview = () => {
     }, [fetchedJobs]);
 
     const [selectedJob, setSelectedJob] = useState(null);
-    const [selectedCandidate, setSelectedCandidate] = useState(mockCandidates[0]);
+    const [candidates, setCandidates] = useState([]);
+    const [selectedCandidate, setSelectedCandidate] = useState(null);
+    const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
+    
+    const [getFindTalent] = useTalentPoolMutation();
+    const companyId = localStorage.getItem("logincompanyid");
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewDate, setViewDate] = useState(new Date());
 
@@ -87,6 +87,61 @@ const ScheduleInterview = () => {
             setSelectedJob(jobs[0]);
         }
     }, [jobs, selectedJob]);
+
+    // Fetch Candidates when Job changes
+    useEffect(() => {
+        if (!selectedJob || !companyId) return;
+
+        const fetchShortlisted = async () => {
+            setIsCandidatesLoading(true);
+            try {
+                const payload = {
+                    companyid: Number(companyId),
+                    pageNumber: 1,
+                    pageSize: 100, // Reasonable limit for shortlisted
+                    filters: [
+                        {
+                            filterName: "Title",
+                            filterOperator: "Equals",
+                            filterValue: [selectedJob.title],
+                        }
+                    ],
+                };
+
+                const res = await getFindTalent(payload).unwrap();
+                
+                if (Array.isArray(res)) {
+                    // Filter for isshortlisted
+                    const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
+                        id: item.employeeID,
+                        name: `${item.firstName} ${item.lastName}`,
+                        role: item.title || "—",
+                        experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
+                        email: item.emailaddress,
+                        phone: item.phoneNumber || "—",
+                        avatar: item.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.firstName)}`,
+                        skills: item.skills ? item.skills.split(",").map(s => s.trim()) : [],
+                        rating: 4.5,
+                        verified: true,
+                        availability: item.status ? [item.status] : ["Available"]
+                    }));
+                    
+                    setCandidates(shortlisted);
+                    if (shortlisted.length > 0) {
+                        setSelectedCandidate(shortlisted[0]);
+                    } else {
+                        setSelectedCandidate(null);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch shortlisted candidates:", err);
+            } finally {
+                setIsCandidatesLoading(false);
+            }
+        };
+
+        fetchShortlisted();
+    }, [selectedJob, companyId, getFindTalent]);
 
     useEffect(() => {
         const today = new Date();
@@ -160,19 +215,18 @@ const ScheduleInterview = () => {
                 <span className="crumb">/ Schedule Interview</span>
             </div>
 
-            <div className="search-header-row d-flex justify-content-between align-items-center">
+            <div className="search-header-row">
                 <div className="header-text">
-                    <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "0 0 4px 0", color: "var(--slate-800)" }}>Schedule Interview</h1>
-                    <p style={{ margin: 0, color: "var(--slate-500)", fontSize: "14px" }}>Manage and finalize candidate interviews efficiently.</p>
+                    <h1 className="ui-title">Schedule Interview</h1>
+                    <p className="sub-title">Manage and finalize candidate interviews efficiently.</p>
                 </div>
-                <div className="search-input-container d-flex flex-column" style={{ maxWidth: "350px", flex: 1 }}>
+                <div className="search-input-container">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                         <label className="fg-title m-0">Select Posted Job</label>
                     </div>
                     <div className="dropdown-wrapper">
                         <select
                             className="sort-select"
-                            style={{ width: "100%", padding: "10px 14px" }}
                             value={selectedJob?.id || ""}
                             onChange={(e) => handleJobSelect(e.target.value)}
                         >
@@ -186,15 +240,28 @@ const ScheduleInterview = () => {
 
                 {/* COLUMN 1: Profiles */}
                 <section className="col-candidates">
-                    <h3 className="fg-title">Shortlisted Profiles ({mockCandidates.length})</h3>
+                    <h3 className="fg-title">Shortlisted Profiles ({candidates.length})</h3>
                     <div className="profiles-stack hide-scrollbar">
-                        {mockCandidates.map(candidate => (
-                            <div
-                                key={candidate.id}
-                                className={`project-card ${selectedCandidate.id === candidate.id ? 'active-card' : ''}`}
-                                onClick={() => setSelectedCandidate(candidate)}
-                                style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
-                            >
+                        {isCandidatesLoading ? (
+                            <div className="d-flex justify-content-center p-4">Loading...</div>
+                        ) : candidates.length === 0 ? (
+                            <div className="empty-candidates-msg p-4">
+                                <p>No shortlisted profiles found.</p>
+                                <button
+                                    className="btn-find-talent-ui"
+                                    onClick={() => navigate("/user/user-talentpool", { state: { jobTitle: selectedJob?.title } })}
+                                >
+                                    Find Talent
+                                </button>
+                            </div>
+                        ) : (
+                            candidates.map(candidate => (
+                                <div
+                                    key={candidate.id}
+                                    className={`project-card ${selectedCandidate?.id === candidate.id ? 'active-card' : ''}`}
+                                    onClick={() => setSelectedCandidate(candidate)}
+                                    style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
+                                >
                                 <div className="card-header">
                                     {candidate.avatar ? (
                                         <img src={candidate.avatar} alt={candidate.name} className="avatar" />
@@ -226,8 +293,9 @@ const ScheduleInterview = () => {
                                     ))}
                                     {candidate.skills.length > 2 && <span className="status-tag count">+{candidate.skills.length - 2}</span>}
                                 </div>
-                            </div>
-                        ))}
+                                </div>
+                            ))
+                        )}
                     </div>
                 </section>
 
@@ -381,7 +449,7 @@ const ScheduleInterview = () => {
                     <div className="divider-v"></div>
                     <div className="selection-summary-ui">
                         <p style={{ margin: 0, fontSize: "14px", fontWeight: 500 }}>
-                            Candidate: <span style={{ color: "var(--f5810c)", fontWeight: 700 }}>{selectedCandidate.name}</span>
+                            Candidate: <span style={{ color: "var(--f5810c)", fontWeight: 700 }}>{selectedCandidate?.name || "None Selection"}</span>
                         </p>
                         <p style={{ margin: 0, fontSize: "13px", color: "var(--slate-500)" }}>
                             On <strong>{selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' })}</strong> | <strong>{formattedRange}</strong>
@@ -484,7 +552,7 @@ const ScheduleInterview = () => {
                         <div className="success-summary-box">
                             <div className="summary-item">
                                 <span className="s-label">Candidate</span>
-                                <span className="s-value">{selectedCandidate.name}</span>
+                                <span className="s-value">{selectedCandidate?.name}</span>
                             </div>
                             <div className="summary-divider"></div>
                             <div className="summary-item">
