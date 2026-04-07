@@ -8,6 +8,7 @@ import {
   FiTrash2,
   FiLoader,
   FiCheck,
+  FiCheckCircle,
   FiChevronDown,
   FiFilter,
 } from "react-icons/fi";
@@ -31,7 +32,7 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob, onInviteSuccess }) => {
   const [offerStatus, setOfferStatus] = useState({});
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
@@ -68,6 +69,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
       clearShortlistForJob(jobId);
       await refreshTalents();
       onClose();
+      if (onInviteSuccess) onInviteSuccess(jobId);
     } catch (err) {
       console.error("Invite failed", err);
       setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
@@ -314,6 +316,7 @@ const TalentPool = () => {
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [successJobId, setSuccessJobId] = useState(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
   const [selectedJobId, setSelectedJobId] = useState(null);
@@ -999,8 +1002,41 @@ const TalentPool = () => {
           userId={userId}
           refreshTalents={fetchTalents}
           clearShortlistForJob={clearShortlistForJob}
+          onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
         />
       ) : null}
+
+      {successJobId && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => {}}>
+            <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+                <div style={{ marginBottom: '24px' }}>
+                    <FiCheckCircle size={60} color="#059669" />
+                </div>
+                <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
+
+                <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
+                        <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
+                    </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <button 
+                        style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} 
+                        onClick={() => navigate("/user/user-schedule-interview", { state: { preSelectedJobId: successJobId } })}
+                    >
+                        Schedule Interview
+                    </button>
+                    <button 
+                        style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} 
+                        onClick={() => setSuccessJobId(null)}
+                    >
+                        Continue to Talentpool
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
 
       <style jsx>{`
         .sort-wrapper {

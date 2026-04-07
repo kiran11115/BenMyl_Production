@@ -124,8 +124,19 @@ function AdminHeader() {
             />
           </div> */}
                     <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
-                        <span className="ai-pill-icon">✦</span>
-                        <span className="ai-pill-text">AI Companion</span>
+                        <span className="ai-pill-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient-admin)" />
+                                <defs>
+                                    <linearGradient id="gemini-gradient-admin" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stopColor="#3b82f6" />
+                                        <stop offset="50%" stopColor="#8b5cf6" />
+                                        <stop offset="100%" stopColor="#f59e0b" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </span>
+                        <span className="ai-pill-text">AI COMPANION</span>
                     </button>
 
                     {/* Messages Icon */}

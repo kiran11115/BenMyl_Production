@@ -646,95 +646,98 @@ p.muted {
     linear-gradient(90deg, #1ED5FB, #6F87EC, #E90FD8) border-box;
 }
 
+/* PREMIUM 3D AI COMPANION BUTTON - Refractive Floating Style */
 .ai-pill-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: none;
-  position: relative;
-  background: white;
-  color: #1e293b;
-  font-size: 13px;
-  font-weight: 700;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(111, 135, 236, 0.2);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: 'Caveat Brush', cursive;
+  
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.06), 
+    0 2px 4px rgba(0,0,0,0.06),
+    inset 0 1px 1px rgba(255,255,255,1),
+    inset 0 -2px 0 rgba(15, 23, 42, 0.05);
+
   overflow: hidden;
 }
 
-.ai-pill-btn::before {
+/* Subtle holographic glow element */
+.ai-pill-btn::after {
   content: "";
   position: absolute;
-  inset: 0;
-  padding: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #1ed5fb, #6f87ec, #e90fd8, #f5c542, #1ed5fb);
-  background-size: 400% 400%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: ai-border-flow 3s linear infinite;
+  inset: -2px;
+  background: linear-gradient(90deg, #4e82ee, #e94435, #fabb06, #34a853, #4e82ee);
+  background-size: 300% 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  filter: blur(8px);
+}
+
+.ai-pill-btn:hover {
+  transform: translateY(-5px) scale(1.03);
+  border-color: rgba(78, 130, 238, 0.4);
+  color: #000;
+  box-shadow: 
+    0 20px 40px -10px rgba(15, 23, 42, 0.15),
+    0 15px 20px -15px rgba(15, 23, 42, 0.1);
+}
+
+.ai-pill-btn:hover::after {
+  opacity: 0.15;
+  animation: bg-shift 4s linear infinite;
+}
+
+@keyframes bg-shift {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
+}
+
+.ai-pill-btn:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ai-pill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
+  transition: transform 0.4s ease;
+}
+
+.ai-pill-btn:hover .ai-pill-icon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.ai-pill-text {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: 0.5px;
+  font-family: 'Caveat Brush', cursive;
 }
 
 .auth-error {
   color: red;
   font-size: 12px;
 }
-
-/* 🔥 Hover = Continuous border animation */
-.ai-pill-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(111, 135, 236, 0.4);
-}
-
-/* Border animation */
-@keyframes ai-border-flow {
-  0% {
-    background-position: 0 0, 0% 50%;
-  }
-
-  100% {
-    background-position: 0 0, 100% 50%;
-  }
-}
-
-
-/* AI text – gradient */
-.ai-pill-text {
-  font-size: 13px;
-  font-weight: 600;
-
-  background: linear-gradient(90deg,
-      #1ed5fb,
-      #6f87ec,
-      #e90fd8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-
-/* Sparkle Icon */
-.ai-pill-icon {
-  font-size: 14px;
-  background: linear-gradient(90deg,
-      #1ed5fb,
-      #6f87ec,
-      #e90fd8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Hover Effect */
-.ai-pill-btn:hover {
-  box-shadow: 0 0 10px rgba(111, 135, 236, 0.35);
-  transform: translateY(-1px);
-}
-
 
 .gradient-icon {
   font-size: 18px;

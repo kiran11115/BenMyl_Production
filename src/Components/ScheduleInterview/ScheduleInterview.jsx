@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -31,6 +31,8 @@ const getNDaysFromDate = (baseDate, n) => {
 
 const ScheduleInterview = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const preSelectedJobId = location.state?.preSelectedJobId;
 
     // --- User Info ---
     const userName = localStorage.getItem("UserName") || "Current User";
@@ -80,13 +82,20 @@ const ScheduleInterview = () => {
     const [status, setStatus] = useState('idle');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
+    const [timeMode, setTimeMode] = useState('quick'); // 'quick' or 'custom'
 
     // Initial state setup for jobs
     useEffect(() => {
         if (jobs.length > 0 && !selectedJob) {
-            setSelectedJob(jobs[0]);
+            if (preSelectedJobId) {
+                const job = jobs.find(j => String(j.id) === String(preSelectedJobId));
+                if (job) setSelectedJob(job);
+                else setSelectedJob(jobs[0]);
+            } else {
+                setSelectedJob(jobs[0]);
+            }
         }
-    }, [jobs, selectedJob]);
+    }, [jobs, selectedJob, preSelectedJobId]);
 
     // Fetch Candidates when Job changes
     useEffect(() => {
@@ -224,15 +233,28 @@ const ScheduleInterview = () => {
                     <div className="d-flex justify-content-between align-items-center mb-2">
                         <label className="fg-title m-0">Select Posted Job</label>
                     </div>
-                    <div className="dropdown-wrapper">
-                        <select
-                            className="sort-select"
-                            value={selectedJob?.id || ""}
-                            onChange={(e) => handleJobSelect(e.target.value)}
-                        >
-                            {jobs.map(job => <option key={job.id} value={job.id}>{job.title}</option>)}
-                        </select>
-                    </div>
+                    {jobs.length > 0 ? (
+                        <div className="dropdown-wrapper">
+                            <select
+                                className="sort-select"
+                                value={selectedJob?.id || ""}
+                                onChange={(e) => handleJobSelect(e.target.value)}
+                            >
+                                {jobs.map(job => <option key={job.id} value={job.id}>{job.title}</option>)}
+                            </select>
+                        </div>
+                    ) : (
+                        <div className="d-flex align-items-center gap-2">
+                            <span style={{ color: "var(--slate-500)", fontSize: "14px", fontWeight: 500 }}>No projects created</span>
+                            <button 
+                                className="btn-find-talent-ui" 
+                                style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
+                                onClick={() => navigate("/user/user-post-new-positions")}
+                            >
+                                + create job
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -247,12 +269,14 @@ const ScheduleInterview = () => {
                         ) : candidates.length === 0 ? (
                             <div className="empty-candidates-msg p-4">
                                 <p>No shortlisted profiles found.</p>
-                                <button
-                                    className="btn-find-talent-ui"
-                                    onClick={() => navigate("/user/user-talentpool", { state: { jobTitle: selectedJob?.title } })}
-                                >
-                                    Find Talent
-                                </button>
+                                {jobs.length > 0 && (
+                                    <button
+                                        className="btn-find-talent-ui"
+                                        onClick={() => navigate("/user/user-talentpool", { state: { jobTitle: selectedJob?.title } })}
+                                    >
+                                        Find Talent
+                                    </button>
+                                )}
                             </div>
                         ) : (
                             candidates.map(candidate => (
@@ -331,37 +355,42 @@ const ScheduleInterview = () => {
                         </div>
                     </div>
 
-                    {/* Compact Job Card (Minor Details) with View Icon */}
-                    <div style={{ position: 'relative' }}>
-                        <JobOverviewCard 
-                            job={selectedJob} 
-                            isExpanded={false} 
-                            onToggle={() => {}} 
-                        />
-                        <button 
-                            style={{
-                                position: 'absolute',
-                                top: '16px',
-                                right: '16px',
-                                background: '#f8fafc',
-                                border: '1px solid #e2e8f0',
-                                color: '#1e293b',
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                            }}
-                            onClick={() => setShowJobModal(true)}
-                            title="View Full Details"
-                        >
-                            <FiEye size={16} />
-                        </button>
-                    </div>
+                    {selectedJob ? (
+                        <div style={{ position: 'relative' }}>
+                            <JobOverviewCard 
+                                job={selectedJob} 
+                                isExpanded={false} 
+                                onToggle={() => {}} 
+                            />
+                            <button 
+                                style={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #e2e8f0',
+                                    color: '#1e293b',
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                }}
+                                onClick={() => setShowJobModal(true)}
+                                title="View Full Details"
+                            >
+                                <FiEye size={16} />
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="empty-candidates-msg" style={{ height: '140px' }}>
+                            <p>Select a job to see overview</p>
+                        </div>
+                    )}
                 </section>
 
                 {/* COLUMN 3: Select Time (Right - 350px) */}
@@ -369,59 +398,75 @@ const ScheduleInterview = () => {
                     <div className="project-card flex-grow-1 d-flex flex-column" style={{ minHeight: 0, height: '100%' }}>
                         <h3 className="fg-title p-3 m-0"><FiClock /> Select Time</h3>
                         
-                        <div className="times-stack hide-scrollbar p-3">
+                        <div className="time-tabs-wrapper mb-3">
+                            <button 
+                                className={`time-tab-btn ${timeMode === 'quick' ? 'active' : ''}`}
+                                onClick={() => setTimeMode('quick')}
+                            >
+                                Quick
+                            </button>
+                            <button 
+                                className={`time-tab-btn ${timeMode === 'custom' ? 'active' : ''}`}
+                                onClick={() => setTimeMode('custom')}
+                            >
+                                Custom
+                            </button>
+                        </div>
+
+                        <div className="times-stack hide-scrollbar p-3 pt-0">
                              {/* QUICK SLOTS */}
-                            <div className="quick-slots-container mb-4">
-                                <label className="sub-title-ui mb-3 d-block">Quick Slots</label>
-                                <div className="slots-grid">
-                                    {timeSlots.map(slot => (
-                                        <button
-                                            key={slot.id}
-                                            className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
-                                            onClick={() => handleQuickSlotClick(slot)}
-                                        >
-                                            {slot.time}
-                                        </button>
-                                    ))}
+                            {timeMode === 'quick' && (
+                                <div className="quick-slots-container mb-4">
+                                    <div className="slots-grid">
+                                        {timeSlots.map(slot => (
+                                            <button
+                                                key={slot.id}
+                                                className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
+                                                onClick={() => handleQuickSlotClick(slot)}
+                                            >
+                                                {slot.time}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* CUSTOM RANGE */}
-                            <div className="custom-range-container">
-                                <label className="sub-title-ui mb-3 d-block w-100">Custom Range</label>
+                            {timeMode === 'custom' && (
+                                <div className="custom-range-container">
+                                    <div className="time-select-block mb-3">
+                                        <span className="range-label">From:</span>
+                                        <div className="h-m-picker">
+                                            <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                            </select>
+                                            <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                            <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                                <div className="time-select-block mb-3">
-                                    <span className="range-label">From:</span>
-                                    <div className="h-m-picker">
-                                        <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                            {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                        </select>
-                                        <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                            {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                        </select>
-                                        <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                        </select>
+                                    <div className="time-select-block">
+                                        <span className="range-label">To:</span>
+                                        <div className="h-m-picker">
+                                            <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                            </select>
+                                            <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                            </select>
+                                            <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                <option value="AM">AM</option>
+                                                <option value="PM">PM</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="time-select-block">
-                                    <span className="range-label">To:</span>
-                                    <div className="h-m-picker">
-                                        <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                            {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                        </select>
-                                        <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                            {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                        </select>
-                                        <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </section>
