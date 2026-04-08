@@ -336,7 +336,7 @@ const ScheduleInterview = () => {
                 {/* COLUMN 2: Select Date (Middle - 1fr) */}
                 <section className="col-dates">
                     <div className="project-card flex-grow-1 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
-                        <div className="d-flex justify-content-between align-items-center p-3">
+                        <div className="d-flex justify-content-between align-items-center">
                             <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
                             <div className="date-picker-popup">
                                 <DatePicker
