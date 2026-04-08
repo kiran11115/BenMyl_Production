@@ -336,21 +336,26 @@ const ScheduleInterview = () => {
                 {/* COLUMN 2: Select Date (Middle - 1fr) */}
                 <section className="col-dates">
                     <div className="project-card flex-grow-1 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
-                        <div className="d-flex justify-content-between align-items-center p-3">
+                        <div className="d-flex justify-content-between align-items-center p-3 pb-0">
                             <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
-                            <div className="date-picker-popup">
-                                <DatePicker
-                                    selected={selectedDate}
-                                    onChange={handlePickerChange}
-                                    minDate={new Date()}
-                                    todayButton="Go to Today"
-                                    customInput={<button className="icon-btn-picker" title="Select custom date"><FiCalendar /></button>}
-                                    popperPlacement="bottom-end"
-                                    portalId="root"
-                                />
+                            <div className="d-flex align-items-center gap-3">
+                                <div className="weekend-legend-inline">
+                                    <span className="dot"></span> Weekends
+                                </div>
+                                <div className="date-picker-popup">
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={handlePickerChange}
+                                        minDate={new Date()}
+                                        todayButton="Go to Today"
+                                        customInput={<button className="icon-btn-picker" title="Select custom date"><FiCalendar /></button>}
+                                        popperPlacement="bottom-end"
+                                        portalId="root"
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className="month-selection-header">
+                        <div className="month-selection-header mt-3">
                             <button className="month-nav-btn" onClick={() => handleMonthChange(-1)} title="Previous Month">
                                 <FiChevronLeft size={18} />
                             </button>
@@ -372,9 +377,6 @@ const ScheduleInterview = () => {
                                     <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                                 </div>
                             ))}
-                        </div>
-                        <div className="weekend-legend">
-                            <span className="dot"></span> Weekends are bordered red
                         </div>
                     </div>
 
