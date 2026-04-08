@@ -287,7 +287,7 @@ export default function AccountSettings() {
                 disabled
                 className="role-select btn-secondary"
               >
-                <option>{m.role}</option>
+                <option>{m.role === "Recruiter" ? "Hiring Manager" : m.role}</option>
               </select>
 
               <span

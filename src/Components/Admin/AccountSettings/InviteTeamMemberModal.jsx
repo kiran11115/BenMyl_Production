@@ -83,7 +83,8 @@ export default function InviteTeamMemberModal({ show, onHide, user }) {
               onChange={handleChange}
             >
               <option value="Admin">Admin</option>
-              <option value="Recruiter">Recruiter</option>
+              <option value="Recruiter">Hiring Manager</option>
+              <option value="Benchsales">Bench Sales</option>
             </Form.Select>
           </Form.Group>
         </Form>
