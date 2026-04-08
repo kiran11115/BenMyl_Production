@@ -76,6 +76,11 @@ function Signin() {
             return;
           }
 
+           if (role === "Benchsales") {
+            navigate("/user/user-dashboard");
+            return;
+          }
+
         }
 
         // ERROR IF isvalid is false

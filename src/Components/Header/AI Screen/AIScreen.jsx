@@ -565,7 +565,7 @@ const TalentForm = React.memo(function TalentForm({
       <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
         <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
         <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-          <strong>Let's find the absolute best talent out there!</strong><br/>
+          <strong>Let's find the absolute best talent out there!</strong><br />
           I need a few details to get started. Can you fill out what role and skills you are looking to hire for?
         </div>
       </div>
@@ -1001,7 +1001,7 @@ function AIScreen() {
       setTimeout(() => {
         let responseContent = "";
         const lowerQuery = textToSubmit.toLowerCase();
-        
+
         if (lowerQuery.includes("optimize") || lowerQuery.includes("low-performing") || lowerQuery.includes("score") || lowerQuery.includes("improve")) {
           responseContent = "**Summary**\nI've analyzed and scored the selected resumes based on skill relevance, completeness, and market demand. 2 resumes scored below 60/100 and need immediate attention.\n\n**Key Insights**\n Rahul Mehta (Score: 55/100) - Missing modern React keywords (Hooks, Context); completeness is low.\n Priya Sharma (Score: 82/100) - Strong skills, but \"Cloud basics\" is too vague for current market demand.\n QA Profiles (Avg Score: 65/100) - Omitting specific automation tool experience lowers the completeness score.\n\n**Suggested Actions**\n Update Rahul's resume with specific React keywords to improve his relevance score.\n Quantify Priya's cloud experience (e.g., \"AWS EC2/S3\") to boost market demand score.\n Add details on Selenium/Cypress for the QA profiles.";
         } else if (lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")) {
@@ -1014,10 +1014,10 @@ function AIScreen() {
           responseContent = "**Summary**\nRequest processed successfully based on current platform data.\n\n**Key Insights**\n Resume visibility can always be optimized by aligning with current job post keywords.\n Regular profile updates signal active availability to the matching engine.\n\n**Suggested Actions**\n Please provide a specific requirement (e.g., \"Find match for React developer\") or ask about a particular resume to get detailed actionable steps.";
         }
 
-        const aiMessage = { 
-          id: `msg-${Date.now()}`, 
-          type: "ai", 
-          content: responseContent, 
+        const aiMessage = {
+          id: `msg-${Date.now()}`,
+          type: "ai",
+          content: responseContent,
           timestamp: new Date(),
           isMatch: lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")
         };
@@ -1208,21 +1208,21 @@ function AIScreen() {
   const parseAIContent = (content) => {
     if (!content) return { summary: "", insights: [], actions: [] };
     const parts = content.split(/\*\*(Summary|Key Insights|Suggested Actions)\*\*/g);
-    
+
     let summary = "";
     let insights = [];
     let actions = [];
 
     for (let i = 0; i < parts.length; i++) {
-        if (parts[i] === "Summary") summary = parts[i+1]?.trim() || "";
-        if (parts[i] === "Key Insights") {
-            insights = parts[i+1]?.trim().split('\n').map(l => l.replace(/^- /,"").trim()).filter(Boolean) || [];
-        }
-        if (parts[i] === "Suggested Actions") {
-            actions = parts[i+1]?.trim().split('\n').map(l => l.replace(/^[-\d.] /,"").trim()).filter(Boolean) || [];
-        }
+      if (parts[i] === "Summary") summary = parts[i + 1]?.trim() || "";
+      if (parts[i] === "Key Insights") {
+        insights = parts[i + 1]?.trim().split('\n').map(l => l.replace(/^- /, "").trim()).filter(Boolean) || [];
+      }
+      if (parts[i] === "Suggested Actions") {
+        actions = parts[i + 1]?.trim().split('\n').map(l => l.replace(/^[-\d.] /, "").trim()).filter(Boolean) || [];
+      }
     }
-    
+
     if (!summary && content) summary = content;
     return { summary, insights, actions };
   };
@@ -1231,7 +1231,7 @@ function AIScreen() {
 
   return (
     <div className="ai-dashboard">
-      
+
       {/* 1. LEFT SIDEBAR */}
       <div className="ai-sidebar">
         {/* <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
@@ -1253,13 +1253,13 @@ function AIScreen() {
         </div> */}
 
         <div className="sidebar-title">Quick Actions</div>
-        
+
         <button className="sidebar-btn" onClick={() => { setActiveQuestionnaire(null); }}>
           <FiSearch size={16} /> New
         </button>
 
         {SUGGESTED_PROMPTS.map((prompt) => (
-          <button 
+          <button
             key={prompt.id}
             className="sidebar-btn"
             onClick={() => { setActiveQuestionnaire(prompt.id); }}
@@ -1281,21 +1281,21 @@ function AIScreen() {
       <div className="ai-main">
         <div className="main-header">
           <h1 className="main-title">
-             {activeQuestionnaire ? (
-               SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name || "Questionnaire"
-             ) : (
-               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                 <Sparkles className="gradient-text-companion" size={32} style={{ fill: "url(#companion-grad)" }} />
-                 <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Companion</span>
-                 <svg width="0" height="0">
-                   <linearGradient id="companion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                     <stop offset="0%" stopColor="#3b82f6" />
-                     <stop offset="50%" stopColor="#8b5cf6" />
-                     <stop offset="100%" stopColor="#f59e0b" />
-                   </linearGradient>
-                 </svg>
-               </div>
-             )}
+            {activeQuestionnaire ? (
+              SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name || "Questionnaire"
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <Sparkles className="gradient-text-companion" size={32} style={{ fill: "url(#companion-grad)" }} />
+                <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Assist</span>
+                <svg width="0" height="0">
+                  <linearGradient id="companion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="50%" stopColor="#8b5cf6" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                  </linearGradient>
+                </svg>
+              </div>
+            )}
           </h1>
           {activeQuestionnaire && (
             <p className="main-subtitle">Complete the parameters to generate a guided prompt.</p>
@@ -1305,66 +1305,66 @@ function AIScreen() {
         {/* INLINE QUESTIONNAIRE AREA */}
         {activeQuestionnaire ? (
           <div style={{ background: "var(--bg-card)", borderRadius: 16, border: "1px solid var(--border-color)", padding: 24 }}>
-             
-             {activeQuestionnaire === "match-req" ? (
-               <TalentForm
-                  talentForm={talentForm}
-                  talentRoleInputDisplay={talentRoleInputDisplay}
-                  setTalentRoleInputDisplay={setTalentRoleInputDisplay}
-                  dispatch={talentDispatch}
-                  filteredRoleSuggestions={filteredRoleSuggestions}
-                  roleSuggestionsOpen={roleSuggestionsOpen}
-                  setRoleSuggestionsOpen={setRoleSuggestionsOpen}
-                  skillsDropdownOpen={skillsDropdownOpen}
-                  setSkillsDropdownOpen={setSkillsDropdownOpen}
-                  computedSkillOptions={computedSkillOptions}
-                  talentPrompt={talentPrompt}
-                  isEditingTalentPrompt={isEditingTalentPrompt}
-                  setIsEditingTalentPrompt={setIsEditingTalentPrompt}
-                  setTalentPrompt={setTalentPrompt}
-                  setTalentPromptDirty={setTalentPromptDirty}
-                  skillsDropdownRef={skillsDropdownRef}
-                  onSavePrompt={handleSavePrompt}
-                  onSubmit={(e) => {
-                     setActiveQuestionnaire(null);
-                     handleTalentSubmit(e);
-                  }}
-               />
-             ) : (
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    setInputValue(`Execute analysis for: ${SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name}`);
-                    setActiveQuestionnaire(null);
-                    setTimeout(() => handleSubmit(), 100);
-                }}>
-                   <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
-                     <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--gradient-rainbow)", backgroundSize: "200% 200%", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
-                     <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-                       <strong>I can help you {SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name.toLowerCase()}!</strong><br/>
-                       To get the best results, what specific role or target audience should I focus my analysis around?
-                     </div>
-                   </div>
 
-                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Target Audience & Focus Areas</span>
-                     <input autoFocus type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="E.g., Senior iOS Developers with Swift experience..." />
-                   </div>
-                   
-                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 25 }}>
-                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Any additional instructions for me? <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>(Optional)</span></span>
-                     <input type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="List any specific checks or constraints..." />
-                   </div>
+            {activeQuestionnaire === "match-req" ? (
+              <TalentForm
+                talentForm={talentForm}
+                talentRoleInputDisplay={talentRoleInputDisplay}
+                setTalentRoleInputDisplay={setTalentRoleInputDisplay}
+                dispatch={talentDispatch}
+                filteredRoleSuggestions={filteredRoleSuggestions}
+                roleSuggestionsOpen={roleSuggestionsOpen}
+                setRoleSuggestionsOpen={setRoleSuggestionsOpen}
+                skillsDropdownOpen={skillsDropdownOpen}
+                setSkillsDropdownOpen={setSkillsDropdownOpen}
+                computedSkillOptions={computedSkillOptions}
+                talentPrompt={talentPrompt}
+                isEditingTalentPrompt={isEditingTalentPrompt}
+                setIsEditingTalentPrompt={setIsEditingTalentPrompt}
+                setTalentPrompt={setTalentPrompt}
+                setTalentPromptDirty={setTalentPromptDirty}
+                skillsDropdownRef={skillsDropdownRef}
+                onSavePrompt={handleSavePrompt}
+                onSubmit={(e) => {
+                  setActiveQuestionnaire(null);
+                  handleTalentSubmit(e);
+                }}
+              />
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                setInputValue(`Execute analysis for: ${SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name}`);
+                setActiveQuestionnaire(null);
+                setTimeout(() => handleSubmit(), 100);
+              }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
+                  <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--gradient-rainbow)", backgroundSize: "200% 200%", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+                  <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
+                    <strong>I can help you {SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name.toLowerCase()}!</strong><br />
+                    To get the best results, what specific role or target audience should I focus my analysis around?
+                  </div>
+                </div>
 
-                   <div style={{ display: "flex", gap: 12 }}>
-                      <button type="submit" style={{ flex: 1, background: "var(--accent)", color: "#fff", border: "none", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 0.9} onMouseLeave={e => e.currentTarget.style.opacity = 1}>
-                        Execute Prompt Request
-                      </button>
-                      <button type="button" onClick={() => setActiveQuestionnaire(null)} style={{ padding: "0 24px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
-                        Cancel
-                      </button>
-                   </div>
-                </form>
-             )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Target Audience & Focus Areas</span>
+                  <input autoFocus type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="E.g., Senior iOS Developers with Swift experience..." />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 25 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Any additional instructions for me? <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>(Optional)</span></span>
+                  <input type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="List any specific checks or constraints..." />
+                </div>
+
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button type="submit" style={{ flex: 1, background: "var(--accent)", color: "#fff", border: "none", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 0.9} onMouseLeave={e => e.currentTarget.style.opacity = 1}>
+                    Execute Prompt Request
+                  </button>
+                  <button type="button" onClick={() => setActiveQuestionnaire(null)} style={{ padding: "0 24px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
 
           </div>
         ) : (
@@ -1376,8 +1376,8 @@ function AIScreen() {
                   <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
                   <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
                     <span className="companion-subtitle">Get more done with</span>
-                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Companion</strong>
-                    I'm AI Companion, your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
+                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Assist</strong>
+                    I'm AI Assist, your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
                   </div>
                 </div>
 
@@ -1386,9 +1386,9 @@ function AIScreen() {
                     <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0" }}>Guided Workflows</h3>
                     <div className="results-grid">
                       {SUGGESTED_PROMPTS.map((prompt) => (
-                        <div 
-                          key={prompt.id} 
-                          className="resume-card" 
+                        <div
+                          key={prompt.id}
+                          className="resume-card"
                           onClick={() => setActiveQuestionnaire(prompt.id)}
                           style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
                         >
@@ -1412,8 +1412,8 @@ function AIScreen() {
                 placeholder='Ask anything manually... e.g., "Find best resumes for React developer"'
                 rows={1}
               />
-              <button 
-                onClick={handleSubmit} 
+              <button
+                onClick={handleSubmit}
                 disabled={!inputValue.trim() || isLoading}
                 className="smart-submit"
                 title="Ask AI"
@@ -1430,78 +1430,78 @@ function AIScreen() {
 
             {/* Dynamic RESULTS */}
             {showResults && (
-                <>
-                  {latestAiMessage.isMatch && suggestedBench.length > 0 && (
-                    <div style={{ marginTop: 10 }}>
-                      <h3 style={{ fontSize: 18, color: "var(--text-primary)", fontWeight: 800, margin: "0 0 16px 0" }}>Analysis Results ({suggestedBench.length})</h3>
-                      <div className="results-grid">
-                        {suggestedBench.map((bench, idx) => (
-                          <div className="resume-card" key={idx}>
-                            <div className="r-card-header">
-                              <div>
-                                <h4 className="r-card-name">{bench.name}</h4>
-                                <div className="r-card-role">{bench.role}</div>
-                              </div>
-                              {bench.score >= 90 ? (
-                                <div className="status-tag high">High Match</div>
-                              ) : bench.score >= 70 ? (
-                                <div className="status-tag medium">Needs Work</div>
-                              ) : (
-                                <div className="status-tag low">Low Vis</div>
-                              )}
+              <>
+                {latestAiMessage.isMatch && suggestedBench.length > 0 && (
+                  <div style={{ marginTop: 10 }}>
+                    <h3 style={{ fontSize: 18, color: "var(--text-primary)", fontWeight: 800, margin: "0 0 16px 0" }}>Analysis Results ({suggestedBench.length})</h3>
+                    <div className="results-grid">
+                      {suggestedBench.map((bench, idx) => (
+                        <div className="resume-card" key={idx}>
+                          <div className="r-card-header">
+                            <div>
+                              <h4 className="r-card-name">{bench.name}</h4>
+                              <div className="r-card-role">{bench.role}</div>
                             </div>
+                            {bench.score >= 90 ? (
+                              <div className="status-tag high">High Match</div>
+                            ) : bench.score >= 70 ? (
+                              <div className="status-tag medium">Needs Work</div>
+                            ) : (
+                              <div className="status-tag low">Low Vis</div>
+                            )}
+                          </div>
 
-                            <div className="scores-row">
-                              <div className="score-box">
-                                <span className="score-label">Match</span>
-                                <span className="score-value">{bench.score}%</span>
-                              </div>
-                              <div className="score-box">
-                                <span className="score-label">Resume</span>
-                                <span className="score-value">{bench.marketScore}/100</span>
-                              </div>
+                          <div className="scores-row">
+                            <div className="score-box">
+                              <span className="score-label">Match</span>
+                              <span className="score-value">{bench.score}%</span>
                             </div>
-
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                              {bench.skills.map(s => (
-                                <div className="status-tag" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: 10 }} key={s}>{s}</div>
-                              ))}
-                            </div>
-
-                            <div className="r-card-expand">
-                              <strong style={{ color: "var(--text-primary)" }}>AI Insight:</strong> {bench.aiInsight}
+                            <div className="score-box">
+                              <span className="score-label">Resume</span>
+                              <span className="score-value">{bench.marketScore}/100</span>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* AI RESPONSE BLOCK */}
-                  <div className="ai-response-block">
-                    <div className="ai-resp-summary">
-                      {aiParsed.summary || "Complete process analysis and outcomes shown above."}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {bench.skills.map(s => (
+                              <div className="status-tag" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: 10 }} key={s}>{s}</div>
+                            ))}
+                          </div>
+
+                          <div className="r-card-expand">
+                            <strong style={{ color: "var(--text-primary)" }}>AI Insight:</strong> {bench.aiInsight}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    
-                    {aiParsed.insights.length > 0 && (
+                  </div>
+                )}
+
+                {/* AI RESPONSE BLOCK */}
+                <div className="ai-response-block">
+                  <div className="ai-resp-summary">
+                    {aiParsed.summary || "Complete process analysis and outcomes shown above."}
+                  </div>
+
+                  {aiParsed.insights.length > 0 && (
                     <div className="ai-resp-insights">
                       <div className="ai-resp-title">Key Insights</div>
                       <ul className="ai-resp-list">
                         {aiParsed.insights.map((ins, i) => <li key={i}>{ins}</li>)}
                       </ul>
                     </div>
-                    )}
+                  )}
 
-                    {aiParsed.actions.length > 0 && (
+                  {aiParsed.actions.length > 0 && (
                     <div className="ai-resp-actions">
                       <div className="ai-resp-title">Suggested Actions</div>
                       <ul className="ai-resp-list" style={{ listStyleType: "decimal" }}>
                         {aiParsed.actions.map((act, i) => <li key={i}>{act}</li>)}
                       </ul>
                     </div>
-                    )}
-                  </div>
-                </>
+                  )}
+                </div>
+              </>
             )}
           </>
         )}
@@ -1514,36 +1514,36 @@ function AIScreen() {
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">14</span>
-              <div className="status-tag low">Needs Attention</div>
-           </div>
-           <div className="insight-desc">
-              <strong>Low Activity Resumes</strong><br/>
-              Candidates with less than 2 profile views in 30 days.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">14</span>
+            <div className="status-tag low">Needs Attention</div>
+          </div>
+          <div className="insight-desc">
+            <strong>Low Activity Resumes</strong><br />
+            Candidates with less than 2 profile views in 30 days.
+          </div>
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">3</span>
-              <div className="status-tag accent">Trending</div>
-           </div>
-           <div className="insight-desc">
-              <strong>High Demand Skills</strong><br/>
-              React, AWS, Node.js have seen a 45% spike in searches this week.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">3</span>
+            <div className="status-tag accent">Trending</div>
+          </div>
+          <div className="insight-desc">
+            <strong>High Demand Skills</strong><br />
+            React, AWS, Node.js have seen a 45% spike in searches this week.
+          </div>
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">8</span>
-              <div className="status-tag medium">Review</div>
-           </div>
-           <div className="insight-desc">
-              <strong>Weak Profiles</strong><br/>
-              Resumes missing key summary blocks or project specifics.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">8</span>
+            <div className="status-tag medium">Review</div>
+          </div>
+          <div className="insight-desc">
+            <strong>Weak Profiles</strong><br />
+            Resumes missing key summary blocks or project specifics.
+          </div>
         </div>
       </div>
 

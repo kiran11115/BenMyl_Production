@@ -4,7 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
     FiMapPin, FiArrowLeft, FiCheckSquare, FiSquare, FiCalendar,
-    FiClock, FiStar, FiCheckCircle, FiEye, FiX, FiBriefcase
+    FiClock, FiStar, FiCheckCircle, FiEye, FiX, FiBriefcase,
+    FiChevronLeft, FiChevronRight
 } from 'react-icons/fi';
 import { GiCheckMark } from "react-icons/gi";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
@@ -200,6 +201,15 @@ const ScheduleInterview = () => {
         setEndTime({ hr: endHr, min: slot.min, ampm: endAmpm });
     };
 
+    const handleMonthChange = (direction) => {
+        const newDate = new Date(viewDate);
+        newDate.setMonth(newDate.getMonth() + direction);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (newDate < today) setViewDate(today);
+        else setViewDate(newDate);
+    };
+
     const handleConfirm = () => {
         setStatus('loading');
         setTimeout(() => {
@@ -251,7 +261,7 @@ const ScheduleInterview = () => {
                                 style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
                                 onClick={() => navigate("/user/user-post-new-positions")}
                             >
-                                + create job
+                                + Create Job
                             </button>
                         </div>
                     )}
@@ -340,18 +350,31 @@ const ScheduleInterview = () => {
                                 />
                             </div>
                         </div>
+                        <div className="month-selection-header">
+                            <button className="month-nav-btn" onClick={() => handleMonthChange(-1)} title="Previous Month">
+                                <FiChevronLeft size={18} />
+                            </button>
+                            <span className="month-label">
+                                {viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                            </span>
+                            <button className="month-nav-btn" onClick={() => handleMonthChange(1)} title="Next Month">
+                                <FiChevronRight size={18} />
+                            </button>
+                        </div>
                         <div className="date-cards-grid hide-scrollbar p-3">
                             {upcomingDates.map((date, idx) => (
                                 <div
                                     key={idx}
-                                    className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''}`}
+                                    className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'is-weekend' : ''}`}
                                     onClick={() => setSelectedDate(date)}
                                 >
-                                    <span className="m-name">{date.toLocaleDateString('en-US', { month: 'short' })}</span>
                                     <span className="d-num">{date.getDate()}</span>
                                     <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                                 </div>
                             ))}
+                        </div>
+                        <div className="weekend-legend">
+                            <span className="dot"></span> Weekends are bordered red
                         </div>
                     </div>
 

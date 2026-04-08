@@ -646,7 +646,7 @@ p.muted {
     linear-gradient(90deg, #1ED5FB, #6F87EC, #E90FD8) border-box;
 }
 
-/* PREMIUM 3D AI COMPANION BUTTON - Refractive Floating Style */
+/* PREMIUM 3D AI Assist BUTTON - Refractive Floating Style */
 .ai-pill-btn {
   display: inline-flex;
   align-items: center;
@@ -664,11 +664,11 @@ p.muted {
   position: relative;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   font-family: 'Caveat Brush', cursive;
-  
-  box-shadow: 
-    0 1px 2px rgba(0,0,0,0.06), 
-    0 2px 4px rgba(0,0,0,0.06),
-    inset 0 1px 1px rgba(255,255,255,1),
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 1),
     inset 0 -2px 0 rgba(15, 23, 42, 0.05);
 
   overflow: hidden;
@@ -691,7 +691,7 @@ p.muted {
   transform: translateY(-5px) scale(1.03);
   border-color: rgba(78, 130, 238, 0.4);
   color: #000;
-  box-shadow: 
+  box-shadow:
     0 20px 40px -10px rgba(15, 23, 42, 0.15),
     0 15px 20px -15px rgba(15, 23, 42, 0.1);
 }
@@ -702,20 +702,25 @@ p.muted {
 }
 
 @keyframes bg-shift {
-  from { background-position: 0% 50%; }
-  to { background-position: 300% 50%; }
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 300% 50%;
+  }
 }
 
 .ai-pill-btn:active {
   transform: translateY(2px) scale(0.97);
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .ai-pill-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
   transition: transform 0.4s ease;
 }
 

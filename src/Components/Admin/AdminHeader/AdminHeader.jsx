@@ -136,7 +136,7 @@ function AdminHeader() {
                                 </defs>
                             </svg>
                         </span>
-                        <span className="ai-pill-text">AI COMPANION</span>
+                        <span className="ai-pill-text">AI Assist</span>
                     </button>
 
                     {/* Messages Icon */}

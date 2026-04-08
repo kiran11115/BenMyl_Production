@@ -151,7 +151,7 @@ function Header() {
                 </defs>
               </svg>
             </span>
-            <span className="ai-pill-text">AI COMPANION</span>
+            <span className="ai-pill-text">AI Assist</span>
           </button>
 
           {/* Video Guide Icon */}
