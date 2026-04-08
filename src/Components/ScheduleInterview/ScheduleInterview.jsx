@@ -67,7 +67,7 @@ const ScheduleInterview = () => {
     const [candidates, setCandidates] = useState([]);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
-    
+
     const [getFindTalent] = useTalentPoolMutation();
     const companyId = localStorage.getItem("logincompanyid");
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -119,7 +119,7 @@ const ScheduleInterview = () => {
                 };
 
                 const res = await getFindTalent(payload).unwrap();
-                
+
                 if (Array.isArray(res)) {
                     // Filter for isshortlisted
                     const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
@@ -135,7 +135,7 @@ const ScheduleInterview = () => {
                         verified: true,
                         availability: item.status ? [item.status] : ["Available"]
                     }));
-                    
+
                     setCandidates(shortlisted);
                     if (shortlisted.length > 0) {
                         setSelectedCandidate(shortlisted[0]);
@@ -256,8 +256,8 @@ const ScheduleInterview = () => {
                     ) : (
                         <div className="d-flex align-items-center gap-2">
                             <span style={{ color: "var(--slate-500)", fontSize: "14px", fontWeight: 500 }}>No projects created</span>
-                            <button 
-                                className="btn-find-talent-ui" 
+                            <button
+                                className="btn-find-talent-ui"
                                 style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
                                 onClick={() => navigate("/user/user-post-new-positions")}
                             >
@@ -296,37 +296,37 @@ const ScheduleInterview = () => {
                                     onClick={() => setSelectedCandidate(candidate)}
                                     style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
                                 >
-                                <div className="card-header">
-                                    {candidate.avatar ? (
-                                        <img src={candidate.avatar} alt={candidate.name} className="avatar" />
-                                    ) : (
-                                        <div className="avatar initials-bg-profile">
-                                            {getInitials(candidate.name)}
-                                        </div>
-                                    )}
-                                    <div className="header-info">
-                                        <div className="name-row">
-                                            <h4 className="name">
-                                                {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
-                                            </h4>
-                                            <div className="rating">
-                                                <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
-                                                <span style={{ color: "#f59e0b" }}>{candidate.rating}</span>
+                                    <div className="card-header">
+                                        {candidate.avatar ? (
+                                            <img src={candidate.avatar} alt={candidate.name} className="avatar" />
+                                        ) : (
+                                            <div className="avatar initials-bg-profile">
+                                                {getInitials(candidate.name)}
                                             </div>
+                                        )}
+                                        <div className="header-info">
+                                            <div className="name-row">
+                                                <h4 className="name">
+                                                    {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
+                                                </h4>
+                                                <div className="rating">
+                                                    <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
+                                                    <span style={{ color: "#f59e0b" }}>{candidate.rating}</span>
+                                                </div>
+                                            </div>
+                                            <div className="role">{candidate.role}</div>
                                         </div>
-                                        <div className="role">{candidate.role}</div>
                                     </div>
-                                </div>
-                                <div className="meta-grid">
-                                    <div className="meta-item"><FiBriefcase size={14} /> <span>{candidate.experience}</span></div>
-                                    <div className="meta-item"><FiMapPin size={14} /> <span>{selectedJob?.location || "Remote"}</span></div>
-                                </div>
-                                <div className="skills-row">
-                                    {candidate.skills.slice(0, 2).map(skill => (
-                                        <span key={skill} className="status-tag">{skill}</span>
-                                    ))}
-                                    {candidate.skills.length > 2 && <span className="status-tag count">+{candidate.skills.length - 2}</span>}
-                                </div>
+                                    <div className="meta-grid">
+                                        <div className="meta-item"><FiBriefcase size={14} /> <span>{candidate.experience}</span></div>
+                                        <div className="meta-item"><FiMapPin size={14} /> <span>{selectedJob?.location || "Remote"}</span></div>
+                                    </div>
+                                    <div className="skills-row">
+                                        {candidate.skills.slice(0, 2).map(skill => (
+                                            <span key={skill} className="status-tag">{skill}</span>
+                                        ))}
+                                        {candidate.skills.length > 2 && <span className="status-tag count">+{candidate.skills.length - 2}</span>}
+                                    </div>
                                 </div>
                             ))
                         )}
@@ -335,7 +335,7 @@ const ScheduleInterview = () => {
 
                 {/* COLUMN 2: Select Date (Middle - 1fr) */}
                 <section className="col-dates">
-                    <div className="project-card flex-grow-1 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
+                    <div className="project-card flex-grow-1 gap-0 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
                         <div className="d-flex justify-content-between align-items-center p-3 pb-0">
                             <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
                             <div className="d-flex align-items-center gap-3">
@@ -366,7 +366,7 @@ const ScheduleInterview = () => {
                                 <FiChevronRight size={18} />
                             </button>
                         </div>
-                        <div className="date-cards-grid hide-scrollbar p-3">
+                        <div className="date-cards-grid overflow-y-auto p-3">
                             {upcomingDates.map((date, idx) => (
                                 <div
                                     key={idx}
@@ -382,12 +382,12 @@ const ScheduleInterview = () => {
 
                     {selectedJob ? (
                         <div style={{ position: 'relative' }}>
-                            <JobOverviewCard 
-                                job={selectedJob} 
-                                isExpanded={false} 
-                                onToggle={() => {}} 
+                            <JobOverviewCard
+                                job={selectedJob}
+                                isExpanded={false}
+                                onToggle={() => { }}
                             />
-                            <button 
+                            <button
                                 style={{
                                     position: 'absolute',
                                     top: '16px',
@@ -422,15 +422,15 @@ const ScheduleInterview = () => {
                 <section className="col-times">
                     <div className="project-card flex-grow-1 d-flex flex-column" style={{ minHeight: 0, height: '100%' }}>
                         <h3 className="fg-title p-3 m-0"><FiClock /> Select Time</h3>
-                        
+
                         <div className="time-tabs-wrapper mb-3">
-                            <button 
+                            <button
                                 className={`time-tab-btn ${timeMode === 'quick' ? 'active' : ''}`}
                                 onClick={() => setTimeMode('quick')}
                             >
                                 Quick
                             </button>
-                            <button 
+                            <button
                                 className={`time-tab-btn ${timeMode === 'custom' ? 'active' : ''}`}
                                 onClick={() => setTimeMode('custom')}
                             >
@@ -439,7 +439,7 @@ const ScheduleInterview = () => {
                         </div>
 
                         <div className="times-stack hide-scrollbar p-3 pt-0">
-                             {/* QUICK SLOTS */}
+                            {/* QUICK SLOTS */}
                             {timeMode === 'quick' && (
                                 <div className="quick-slots-container mb-4">
                                     <div className="slots-grid">
@@ -546,7 +546,7 @@ const ScheduleInterview = () => {
 
             {/* Job Full Overview Modal (Implemented with Inline Styles) */}
             {showJobModal && (
-                <div 
+                <div
                     style={{
                         position: 'fixed',
                         top: 0, left: 0, width: '100%', height: '100%',
@@ -559,7 +559,7 @@ const ScheduleInterview = () => {
                     }}
                     onClick={() => setShowJobModal(false)}
                 >
-                    <div 
+                    <div
                         style={{
                             background: 'white',
                             width: '90%',
@@ -601,10 +601,10 @@ const ScheduleInterview = () => {
                             </button> */}
                         </div>
                         <div style={{ padding: '24px', overflowY: 'auto' }} className="hide-scrollbar">
-                            <JobOverviewCard 
-                                job={selectedJob} 
-                                isExpanded={true} 
-                                onToggle={() => {}} 
+                            <JobOverviewCard
+                                job={selectedJob}
+                                isExpanded={true}
+                                onToggle={() => { }}
                             />
                         </div>
                     </div>
