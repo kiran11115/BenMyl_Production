@@ -257,7 +257,7 @@ const ScheduleInterview = () => {
                         <div className="d-flex align-items-center gap-2">
                             <span style={{ color: "var(--slate-500)", fontSize: "14px", fontWeight: 500 }}>No projects created</span>
                             <button
-                                className="btn-find-talent-ui"
+                                className="btn-upload"
                                 style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
                                 onClick={() => navigate("/user/user-post-new-positions")}
                             >
@@ -281,7 +281,7 @@ const ScheduleInterview = () => {
                                 <p>No shortlisted profiles found.</p>
                                 {jobs.length > 0 && (
                                     <button
-                                        className="btn-find-talent-ui"
+                                        className="btn-upload"
                                         onClick={() => navigate("/user/user-talentpool", { state: { jobTitle: selectedJob?.title } })}
                                     >
                                         Find Talent
@@ -292,7 +292,7 @@ const ScheduleInterview = () => {
                             candidates.map(candidate => (
                                 <div
                                     key={candidate.id}
-                                    className={`project-card ${selectedCandidate?.id === candidate.id ? 'active-card' : ''}`}
+                                    className={`project-card mt-2 ${selectedCandidate?.id === candidate.id ? 'active-card' : ''}`}
                                     onClick={() => setSelectedCandidate(candidate)}
                                     style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
                                 >

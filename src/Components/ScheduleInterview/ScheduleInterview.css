@@ -781,25 +781,6 @@
   font-weight: 500;
 }
 
-.btn-find-talent-ui {
-  padding: 8px 24px;
-  background: var(--f5810c);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.2);
-}
-
-.btn-find-talent-ui:hover {
-  background: #ea580c;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 10px -1px rgba(245, 129, 12, 0.3);
-}
-
 .react-datepicker-popper {
   z-index: 9999 !important;
 }

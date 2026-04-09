@@ -850,7 +850,7 @@ const TalentPool = () => {
               flex: 1,
               maxWidth: "700px",
               justifyContent: "flex-end",
-              alignItems: "center",
+              alignItems: "start",
             }}
           >
             {/* Sort */}

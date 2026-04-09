@@ -36,6 +36,7 @@ import EditProfile from "./ProfilePage/EditProfile";
 import AdminProfileEdit from "./Admin/AdminProfile/AdminProfileEdit";
 import JobOverview from "./UserProjects/JobOverview";
 import NotificationsPage from "./Header/NotificationsPage";
+import InterviewDetails from "./UpcomingInterview/InterviewDetails";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -89,6 +90,7 @@ const routes = createBrowserRouter(
           <Route path="create-new-contract" element={<CreateNewContract />} />
           <Route path="review-talent" element={<ReviewTalent />} />
           <Route path="job-overview" element={<JobOverview />} />
+          <Route path="user-interview-details" element={<InterviewDetails />} />
         </Route>
       </Route>
     </Route>,

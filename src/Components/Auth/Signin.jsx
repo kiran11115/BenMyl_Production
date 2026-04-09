@@ -84,12 +84,12 @@ function Signin() {
         }
 
         // ERROR IF isvalid is false
-        setLoginErrorMsg("Invalid credentials");
+        setLoginErrorMsg(response?.result_Message || "Incorrect Email or Password");
         setShowError(true);
 
       } catch (err) {
         console.error("Login failed:", err);
-        setLoginErrorMsg("Invalid email or password");
+        setLoginErrorMsg(err?.data?.result_Message || "Incorrect Email or Password");
         setShowError(true);
       } finally {
         setSubmitting(false);

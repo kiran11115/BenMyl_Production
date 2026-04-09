@@ -25,7 +25,7 @@ export default function ProjectsHeader({ activeFilter, onFilterChange }) {
           <option>Completed</option>
         </select>
 
-        <button onClick={() => navigate("/user/user-post-new-positions")} className="btn-primary  w-50">+ Create Job</button>
+        <button onClick={() => navigate("/user/user-post-new-positions")} className="btn-upload w-50">+ Create Job</button>
       </div>
     </div>
   );

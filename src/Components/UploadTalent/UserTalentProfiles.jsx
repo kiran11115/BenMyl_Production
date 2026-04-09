@@ -236,7 +236,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
               </p>
             </div>
 
-            <div className="ut-actions-group">
+            <div className="ut-actions-group d-flex align-items-start">
               {/* SORT DROPDOWN */}
               <div className="sort-wrapper">
                 <select
