@@ -374,6 +374,17 @@ label {
   /* green-800 */
 }
 
+.link-button {
+  color: "#f5810c !important";
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.2s;
+}
+
 /* Example Status Colors (can be extended) */
 .status-tag.New {
   background: #dbeafe;
@@ -533,19 +544,28 @@ label {
 }
 
 /* Themes with familiar vibrant colors */
-.success-theme { color: #10b981; }
+.success-theme {
+  color: #10b981;
+}
+
 .success-theme .alert-icon-wrapper {
   background: linear-gradient(135deg, #10b981, #059669);
   color: #ffffff;
 }
 
-.error-theme { color: #ef4444; }
+.error-theme {
+  color: #ef4444;
+}
+
 .error-theme .alert-icon-wrapper {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #ffffff;
 }
 
-.info-theme { color: #3b82f6; }
+.info-theme {
+  color: #3b82f6;
+}
+
 .info-theme .alert-icon-wrapper {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: #ffffff;
@@ -623,11 +643,23 @@ label {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
