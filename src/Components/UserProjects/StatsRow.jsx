@@ -9,7 +9,9 @@ const StatsRow = ({ stats }) => {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className={`stat-card ${stat.cardType || ""}`}
+          className={`stat-card ${stat.cardType || ""} ${
+            stat.isNonFunctional ? "non-functional" : ""
+          }`}
         >
           {/* Bubbles Decoration */}
           <div

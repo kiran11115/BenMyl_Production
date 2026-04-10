@@ -89,10 +89,10 @@ function Header() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <MobileTopBar 
-        user={user} 
-        initials={getInitials(user)} 
-        handleSignOut={handleSignOut} 
+      <MobileTopBar
+        user={user}
+        initials={getInitials(user)}
+        handleSignOut={handleSignOut}
         setOpenVideoGuide={setIsVideoGuideOpen}
       />
 
@@ -151,13 +151,13 @@ function Header() {
                 </defs>
               </svg>
             </span>
-            <span className="ai-pill-text">AI Assist</span>
+            <span className="ai-pill-text">AI Assistant</span>
           </button>
 
           {/* Video Guide Icon */}
-          <button 
-            onClick={() => setIsVideoGuideOpen(true)} 
-            type="button" 
+          <button
+            onClick={() => setIsVideoGuideOpen(true)}
+            type="button"
             className="header-action-btn"
             title="Video Guide"
             style={{ color: "#f5810c" }}
@@ -243,9 +243,9 @@ function Header() {
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* Video Guide Popover */}
-      <VideoGuidePopover 
-        isOpen={isVideoGuideOpen} 
-        onClose={() => setIsVideoGuideOpen(false)} 
+      <VideoGuidePopover
+        isOpen={isVideoGuideOpen}
+        onClose={() => setIsVideoGuideOpen(false)}
         videoGuides={videoGuides}
       />
     </>

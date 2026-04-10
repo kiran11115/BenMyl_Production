@@ -434,13 +434,13 @@
 }
 
 .status-progress {
-  background-color: #eff6ff;
-  color: #3b3b3b;
+  background-color: #eff6ff !important;
+  color: #3b3b3b !important;
 }
 
 .status-review {
-  background-color: #fff7ed;
-  color: #f97316;
+  background-color: #fff7ed !important;
+  color: #f97316 !important;
 }
 
 .status-completed {
@@ -453,10 +453,6 @@
   color: #2256c5 !important;
 }
 
-.status-pending {
-  background-color: #f1f5f9 !important;
-  color: #64748b !important;
-}
 
 /* 🖥️ Big screens – 4 cards */
 @media (min-width: 1557px) {

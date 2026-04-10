@@ -167,6 +167,7 @@ export default function Projects() {
         icon: DollarSign,
         cardType: "card-blue",
         bubbleColor: "#3b82f6",
+        isNonFunctional: true,
       },
       {
         label: "Active Projects",
@@ -177,6 +178,7 @@ export default function Projects() {
         icon: Activity,
         cardType: "card-purple",
         bubbleColor: "#a855f7",
+        isNonFunctional: true,
       },
       {
         label: "Pending Review",
@@ -187,6 +189,7 @@ export default function Projects() {
         icon: Clock,
         cardType: "card-yellow",
         bubbleColor: "#f59f0a",
+        isNonFunctional: true,
       },
       {
         label: "Completed",
@@ -197,6 +200,7 @@ export default function Projects() {
         icon: CheckCircle,
         cardType: "card-green",
         bubbleColor: "#22c55e",
+        isNonFunctional: true,
       },
     ];
   }, [projects]);

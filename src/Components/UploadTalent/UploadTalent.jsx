@@ -29,6 +29,7 @@ const UploadTalent = () => {
     const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
     const [showUploadError, setShowUploadError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
+    const [toastMessage, setToastMessage] = useState("");
     const [waitingForRefresh, setWaitingForRefresh] = useState(false);
     const [uploadCount, setUploadCount] = useState(0);
     const [countdown, setCountdown] = useState(0);
@@ -101,8 +102,9 @@ const UploadTalent = () => {
         const count = match ? parseInt(match[1], 10) : 1;
         setUploadCount(count);
 
+        setToastMessage("Resume(s) uploaded successfully");
         setShowUploadedSuccess(true);
-        setTimeout(() => setShowUploadedSuccess(false), 10000);
+        setTimeout(() => setShowUploadedSuccess(false), 5000);
 
         // 🔥 Start showing loading in table
         setWaitingForRefresh(true);
@@ -379,7 +381,7 @@ const UploadTalent = () => {
             {showUploadedSuccess && (
                 <div aria-live="polite" style={{ position: 'fixed', top: 24, right: 24, zIndex: 20001 }}>
                     <div style={{ background: '#10b981', color: 'white', padding: '12px 16px', borderRadius: 8, boxShadow: '0 6px 18px rgba(16,185,129,0.12)', display: 'flex', alignItems: 'center', gap: 12, minWidth: 280 }}>
-                        <div style={{ flex: 1, fontWeight: 700, textAlign: 'left' }}>Resume(s) uploaded successfully</div>
+                        <div style={{ flex: 1, fontWeight: 700, textAlign: 'left' }}>{toastMessage}</div>
                         <button onClick={() => setShowUploadedSuccess(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: 16, cursor: 'pointer' }} aria-label="Close success">×</button>
                     </div>
                 </div>

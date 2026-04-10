@@ -24,6 +24,7 @@ import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPo
 // Component Imports
 import Guide from "../Guide/Guide";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // Register ChartJS
 ChartJS.register(
@@ -117,8 +118,8 @@ const Dashboard = () => {
   const kpiCards = [
     { label: "Posted Jobs", value: String(postedJobsCount), change: "+8%", icon: Briefcase, cardType: "card-blue", bubbleColor: "#3b82f6" },
     { label: "Pending Review Profiles", value: String(pendingReviewCount), change: "+15%", icon: Users, cardType: "card-purple", bubbleColor: "#6366f1" },
-    { label: "Ongoing Contracts", value: "0", change: "0%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a" },
-    { label: "Total Spend", value: "$0", change: "0%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981" },
+    { label: "Ongoing Contracts", value: "0", change: "0%", icon: FileText, cardType: "card-yellow", bubbleColor: "#f59f0a", isNonFunctional: true },
+    { label: "Total Spend", value: "$0", change: "0%", icon: DollarSign, cardType: "card-green", bubbleColor: "#10b981", isNonFunctional: true },
   ];
 
   useEffect(() => {
@@ -155,6 +156,7 @@ const Dashboard = () => {
       const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
       const [showUploadError, setShowUploadError] = useState(false);
       const [uploadErrorMessage, setUploadErrorMessage] = useState("");
+      const [toastMessage, setToastMessage] = useState("");
       const [waitingForRefresh, setWaitingForRefresh] = useState(false);
       const [uploadCount, setUploadCount] = useState(0);
       const [countdown, setCountdown] = useState(0);
@@ -173,8 +175,9 @@ const Dashboard = () => {
           const count = match ? parseInt(match[1], 10) : 1;
           setUploadCount(count);
   
+          setToastMessage("Resume(s) uploaded successfully");
           setShowUploadedSuccess(true);
-          setTimeout(() => setShowUploadedSuccess(false), 10000);
+          setTimeout(() => setShowUploadedSuccess(false), 5000);
   
           // 🔥 Start showing loading in table
           setWaitingForRefresh(true);
@@ -206,13 +209,18 @@ const Dashboard = () => {
       const [selectedEmails, setSelectedEmails] = useState(new Set());
       const navigate = useNavigate();
   
-      const toggleSelect = (email) => {
-          const updated = new Set(selectedEmails);
-          updated.has(email) ? updated.delete(email) : updated.add(email);
-          setSelectedEmails(updated);
-      };
+    const toggleSelect = (email) => {
+        const updated = new Set(selectedEmails);
+        updated.has(email) ? updated.delete(email) : updated.add(email);
+        setSelectedEmails(updated);
+    };
 
-  return (
+    const handleDeleteSuccess = () => {
+        setRefreshKey(prev => prev + 1);
+        toast.info("Draft deleted successfully");
+    };
+
+    return (
     <div className="projects-container">
       {/* Dashboard Header with Guide Trigger */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -266,13 +274,17 @@ const Dashboard = () => {
             <h3 className="section-title">Review Profiles</h3>
           </div>
           <div id="dashboard-talent-table">
-            <UploadTalentTable isDashboard={true} />
+            <UploadTalentTable 
+              isDashboard={true} 
+              onDeleted={handleDeleteSuccess} 
+              refreshKey={refreshKey}
+            />
           </div>
         </div>
 
         {/* RIGHT COLUMN: Charts & Interviews */}
         <div className="dashboard-column-side">
-          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column">
+          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column non-functional">
             <HiringPipelineChart
               data={pipelineLineData}
               tooltipTheme={tooltipTheme}
@@ -300,6 +312,26 @@ const Dashboard = () => {
                     <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
                 </div>
             )}
+
+      {/* Success toast/modal (top centered) */}
+      {showUploadedSuccess && (
+          <div aria-live="polite" style={{ position: 'fixed', top: 24, right: 24, zIndex: 20001 }}>
+              <div style={{ background: '#10b981', color: 'white', padding: '12px 16px', borderRadius: 8, boxShadow: '0 6px 18px rgba(16,185,129,0.12)', display: 'flex', alignItems: 'center', gap: 12, minWidth: 280 }}>
+                  <div style={{ flex: 1, fontWeight: 700, textAlign: 'left' }}>{toastMessage}</div>
+                  <button onClick={() => setShowUploadedSuccess(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: 16, cursor: 'pointer' }} aria-label="Close success">×</button>
+              </div>
+          </div>
+      )}
+
+      {showUploadError && (
+          <div aria-live="assertive" style={{ position: 'fixed', top: 24, right: 24, zIndex: 20001 }}>
+              <div style={{ background: '#dc2626', color: 'white', padding: '12px 16px', borderRadius: 8, boxShadow: '0 6px 18px rgba(220,38,38,0.12)', display: 'flex', alignItems: 'center', gap: 12, minWidth: 320 }}>
+                  <div style={{ flex: 1, fontWeight: 700, textAlign: 'left' }}>Upload failed</div>
+                  <div style={{ fontSize: 13, opacity: 0.95 }}>{uploadErrorMessage}</div>
+                  <button onClick={() => setShowUploadError(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: 16, cursor: 'pointer' }} aria-label="Close error">×</button>
+              </div>
+          </div>
+      )}
     </div>
   );
 };

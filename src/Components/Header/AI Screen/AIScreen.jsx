@@ -1286,7 +1286,7 @@ function AIScreen() {
             ) : (
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <Sparkles className="gradient-text-companion" size={32} style={{ fill: "url(#companion-grad)" }} />
-                <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Assist</span>
+                <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Assistant</span>
                 <svg width="0" height="0">
                   <linearGradient id="companion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#3b82f6" />
@@ -1376,8 +1376,8 @@ function AIScreen() {
                   <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
                   <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
                     <span className="companion-subtitle">Get more done with</span>
-                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Assist</strong>
-                    I'm AI Assist, your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
+                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Assistant</strong>
+                    Your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
                   </div>
                 </div>
 
