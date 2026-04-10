@@ -312,7 +312,7 @@ export default function UpcomingInterview() {
                 </div>
             </div>
 
-            {activeTab === "scheduled" && nextInterview && !selectedDate && (
+            {nextInterview && !selectedDate && (
                 <div className="hero-next-interview mb-4">
                     <div className="hero-content">
                         <div className="hero-label">

@@ -444,18 +444,18 @@
 }
 
 .status-completed {
-  background-color: #f0fdf4;
-  color: #22c55e;
+  background-color: #f0fdf4 !important;
+  color: #22c55e !important;
 }
 
 .status-approved {
-  background-color: #e8f0ff;
-  color: #2256c5;
+  background-color: #e8f0ff !important;
+  color: #2256c5 !important;
 }
 
 .status-pending {
-  background-color: #f1f5f9;
-  color: #64748b;
+  background-color: #f1f5f9 !important;
+  color: #64748b !important;
 }
 
 /* 🖥️ Big screens – 4 cards */
