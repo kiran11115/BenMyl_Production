@@ -237,7 +237,7 @@ const UserJobs = () => {
               style={{
                 position: "absolute",
                 left: "12px",
-                top: "35%",
+                top: "50%",
                 transform: "translateY(-50%)",
                 color: "#94a3b8",
               }}
