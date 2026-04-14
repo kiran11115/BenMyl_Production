@@ -74,10 +74,10 @@ export default function InterviewDetails() {
         <div className="ui-page">
             <div className="profile-breadcrumb d-flex gap-1 mb-4">
                 <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
-                   Dashboard
+                    Dashboard
                 </button>
                 <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}>
-                   / Upcoming Interviews
+                    / Upcoming Interviews
                 </button>
                 <span className="crumb">/ Interview Details</span>
             </div>
@@ -90,8 +90,8 @@ export default function InterviewDetails() {
                             <p className="ui-sub">View and manage interview information</p>
                         </div>
                         <div className="detail-actions">
-                            <button 
-                                className="btn-secondary d-flex align-items-center gap-2 w-100" 
+                            <button
+                                className="btn-secondary d-flex align-items-center gap-2 w-100"
                                 style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid var(--slate-200)', background: 'white', color: 'var(--slate-800)', fontWeight: 600, fontSize: '14px' }}
                                 onClick={() => navigate("/user/user-schedule-interview", { state: { interview, mode: 'reschedule' } })}
                             >
@@ -153,9 +153,9 @@ export default function InterviewDetails() {
 
                         {/* Prep Checklist */}
                         <div className="checklist-container">
-                           
+
                             <div className="link-section-card h-100" style={{ borderRadius: '12px', border: '1px solid var(--slate-200)' }}>
-                                 <h3 className="section-title">B2B Prep Checklist</h3>
+                                <h3 className="section-title">B2B Prep Checklist</h3>
                                 <div className="prep-checklist">
                                     {[
                                         "Resume shared?",
@@ -175,14 +175,14 @@ export default function InterviewDetails() {
 
                         <div className="interviewer-column-side">
                             <div className="link-section-card h-100" style={{ borderRadius: '12px', border: '1px solid var(--slate-200)', padding: '16px' }}>
-                                 <h3 className="section-title">Interviewer & Link</h3>
+                                <h3 className="section-title">Interviewer & Link</h3>
                                 <div className="d-flex align-items-center gap-3 mb-3">
                                     {recruiterData.profilePhoto ? (
-                                        <img 
-                                            className="int-avatar-small" 
+                                        <img
+                                            className="int-avatar-small"
                                             style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-                                            src={recruiterData.profilePhoto.startsWith("http") ? recruiterData.profilePhoto : `https://webapidev.benmyl.com/${recruiterData.profilePhoto}`} 
-                                            alt={recruiterData.name} 
+                                            src={recruiterData.profilePhoto.startsWith("http") ? recruiterData.profilePhoto : `https://webapidev.benmyl.com/${recruiterData.profilePhoto}`}
+                                            alt={recruiterData.name}
                                         />
                                     ) : (
                                         <div className="int-avatar-small initials-avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', fontSize: '14px' }}>
@@ -197,11 +197,11 @@ export default function InterviewDetails() {
 
                                 <div className="link-section-mini">
                                     <div className="input-wrapper-ui mb-2">
-                                        <input 
-                                            type="text" 
-                                            className="meeting-input w-100" 
+                                        <input
+                                            type="text"
+                                            className="meeting-input w-100"
                                             style={{ padding: '8px 12px', fontSize: '13px', borderRadius: '8px' }}
-                                            placeholder="Meeting link..." 
+                                            placeholder="Meeting link..."
                                             value={meetingLinkInput}
                                             onChange={(e) => setMeetingLinkInput(e.target.value)}
                                         />
@@ -218,10 +218,10 @@ export default function InterviewDetails() {
                     <div className="detail-grid-bottom">
                         <div className="job-overview-column">
                             <h3 className="section-title">Job Overview</h3>
-                            <JobOverviewCard 
-                                job={interview.jobData} 
-                                isExpanded={isJobExpanded} 
-                                onToggle={() => setIsJobExpanded(!isJobExpanded)} 
+                            <JobOverviewCard
+                                job={interview.jobData}
+                                isExpanded={isJobExpanded}
+                                onToggle={() => setIsJobExpanded(!isJobExpanded)}
                             />
                         </div>
 

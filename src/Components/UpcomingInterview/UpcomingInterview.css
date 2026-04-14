@@ -218,9 +218,20 @@
 }
 
 @keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 
@@ -368,22 +379,29 @@
     font-size: 10px;
     padding: 2px 8px;
     border-radius: 4px;
+    font-weight: 700;
 }
 
 .link-status-badge.yes {
-    background-color: #f0fdf4;
+    background-color: #effff3;
+    width: fit-content;
 }
 
 .link-status-badge.yes span {
     color: #22c55e;
+    text-transform: uppercase !important;
+    font-weight: 700;
 }
 
 .link-status-badge.no {
-    background-color: #fef2f2;
+    background-color: #fff0ef;
+    width: fit-content;
 }
 
 .link-status-badge.no span {
     color: #ef4444;
+    text-transform: uppercase !important;
+    font-weight: 700;
 }
 
 .skills-row.small-skills {
@@ -533,7 +551,7 @@
 }
 
 .profile-breadcrumb .link-button {
-    
+
     background: none;
     border: none;
     cursor: pointer;
@@ -582,8 +600,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .detail-card {
@@ -661,7 +686,7 @@
     border-radius: 999px;
     object-fit: cover;
     border: 2px solid var(--white);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .int-name-large {
@@ -747,9 +772,11 @@
     .ui-main-content {
         grid-template-columns: 1fr;
     }
+
     .calendar-column {
         display: none;
     }
+
     .detail-grid {
         grid-template-columns: 1fr;
     }
@@ -759,9 +786,11 @@
     .interviews-list {
         grid-template-columns: 1fr;
     }
+
     .link-input-group {
         flex-direction: column;
     }
+
     .detail-card {
         padding: 20px;
     }
@@ -852,7 +881,7 @@
     height: 64px;
     border-radius: 16px;
     border: 3px solid var(--white);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .role-large {
@@ -899,9 +928,11 @@
     .detail-grid-v2 {
         grid-template-columns: 1fr;
     }
+
     .candidate-full-card {
         grid-column: span 1;
     }
+
     .detailed-meta {
         grid-template-columns: 1fr 1fr;
     }
@@ -917,7 +948,8 @@
 }
 
 .b2b-grid {
-    display: contents; /* Repurposing container */
+    display: contents;
+    /* Repurposing container */
 }
 
 .checklist-item {
@@ -998,8 +1030,15 @@
 }
 
 @keyframes modalSlideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -1007,11 +1046,14 @@
         flex-direction: column;
         align-items: flex-start;
     }
+
     .hero-actions {
         width: 100%;
         margin-top: 16px;
     }
-    .hero-join-btn, .hero-details-btn {
+
+    .hero-join-btn,
+    .hero-details-btn {
         flex: 1;
         text-align: center;
     }

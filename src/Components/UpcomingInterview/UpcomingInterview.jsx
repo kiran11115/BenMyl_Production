@@ -10,6 +10,7 @@ import {
     FiMapPin,
     FiStar,
     FiX
+
 } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
@@ -187,7 +188,7 @@ const MOCK = [
             experience: 10,
             type: "Full-time",
             description: "Managing large scale construction and tech projects.",
-        requiredSkills: ["PMP", "Agile"]
+            requiredSkills: ["PMP", "Agile"]
         }
     },
     {
@@ -223,7 +224,7 @@ const MOCK = [
 
 export default function UpcomingInterview() {
     const navigate = useNavigate();
-    const [navDate, setNavDate] = useState(new Date()); 
+    const [navDate, setNavDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedInterview, setSelectedInterview] = useState(null);
     const [view, setView] = useState("list"); // list | detail
@@ -240,13 +241,13 @@ export default function UpcomingInterview() {
 
     const filteredInterviews = useMemo(() => {
         let list = MOCK;
-        
+
         // Filter by Tab
         list = list.filter(it => it.status === activeTab);
 
         // Filter by Calendar Date
         if (!selectedDate) return list;
-        return list.filter(it => 
+        return list.filter(it =>
             it.date.getDate() === selectedDate.getDate() &&
             it.date.getMonth() === selectedDate.getMonth() &&
             it.date.getFullYear() === selectedDate.getFullYear()
@@ -275,9 +276,9 @@ export default function UpcomingInterview() {
     };
 
     const isInterviewDate = (day, month, year) => {
-        return MOCK.some(it => 
-            it.date.getDate() === day && 
-            it.date.getMonth() === month && 
+        return MOCK.some(it =>
+            it.date.getDate() === day &&
+            it.date.getMonth() === month &&
             it.date.getFullYear() === year
         );
     };
@@ -294,7 +295,7 @@ export default function UpcomingInterview() {
         <div className="ui-page">
             <div className="profile-breadcrumb d-flex gap-1 mb-4">
                 <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
-                   <FiArrowLeft /> Back to Dashboard
+                    <FiArrowLeft /> Back to Dashboard
                 </button>
                 <span className="crumb">/ Upcoming Interviews</span>
             </div>
@@ -329,8 +330,8 @@ export default function UpcomingInterview() {
                             </div>
                             <div className="hero-actions">
                                 {nextInterview.meetingLink ? (
-                                    <button 
-                                        onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")} 
+                                    <button
+                                        onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")}
                                         className="hero-join-btn"
                                     >
                                         Join Meeting
@@ -351,25 +352,25 @@ export default function UpcomingInterview() {
             )}
 
             <div className="view-toggle1 mb-4">
-                <button 
+                <button
                     className={`toggle ${activeTab === "scheduled" ? "active" : ""}`}
                     onClick={() => setActiveTab("scheduled")}
                 >
                     Scheduled
                 </button>
-                <button 
+                <button
                     className={`toggle ${activeTab === "completed" ? "active" : ""}`}
                     onClick={() => setActiveTab("completed")}
                 >
                     Interviews Done
                 </button>
-                <button 
+                <button
                     className={`toggle ${activeTab === "cancelled" ? "active" : ""}`}
                     onClick={() => setActiveTab("cancelled")}
                 >
                     Cancelled
                 </button>
-                <button 
+                <button
                     className={`toggle ${activeTab === "rescheduled" ? "active" : ""}`}
                     onClick={() => setActiveTab("rescheduled")}
                 >
@@ -381,15 +382,15 @@ export default function UpcomingInterview() {
                 <div className="interviews-column">
                     <div className="column-header">
                         <h2 className="section-title">
-                            {selectedDate 
-                                ? `Interviews for ${selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` 
+                            {selectedDate
+                                ? `Interviews for ${selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
                                 : `All ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Interviews`}
                         </h2>
                         {selectedDate && (
                             <button className="clear-filter" onClick={() => setSelectedDate(null)}>Show All</button>
                         )}
                     </div>
-                    
+
                     <div className="interviews-stack hide-scrollbar">
                         <div className="interviews-list">
                             {filteredInterviews.length > 0 ? (
@@ -442,8 +443,8 @@ export default function UpcomingInterview() {
 
                                             {/* Meeting Link Status row */}
                                             <div className="badges-row">
-                                                <div className={`link-status-badge small-badge ${it.meetingLink ? "yes" : "no"}`}>
-                                                    Link: <span>{it.meetingLink ? "Yes" : "No"}</span>
+                                                <div className={`link-status-badge small-badge w-[fit-content] d-flex align-items-center gap-2 ${it.meetingLink ? "yes" : "no"}`}>
+                                                    Meeting Link: <span>{it.meetingLink ? "Provided" : "Not Provided"}</span>
                                                 </div>
                                             </div>
 
@@ -461,9 +462,9 @@ export default function UpcomingInterview() {
                                                 Details
                                             </button>
                                             {it.meetingLink ? (
-                                                <button 
-                                                    onClick={() => window.open(it.meetingLink, "_blank", "noopener,noreferrer")} 
-                                                    className="hero-join-btn flex-1 d-flex align-items-center justify-content-center" 
+                                                <button
+                                                    onClick={() => window.open(it.meetingLink, "_blank", "noopener,noreferrer")}
+                                                    className="hero-join-btn flex-1 d-flex align-items-center justify-content-center"
                                                     style={{ padding: '8px', fontSize: '12px', borderRadius: '8px', boxShadow: 'none', border: 'none', cursor: 'pointer' }}
                                                 >
                                                     Join Meeting
@@ -485,9 +486,9 @@ export default function UpcomingInterview() {
 
                 <aside className="calendar-column">
                     <div className="calendar-container">
-                        <Calendar 
-                            navDate={navDate} 
-                            selectedDate={selectedDate} 
+                        <Calendar
+                            navDate={navDate}
+                            selectedDate={selectedDate}
                             onDateSelect={setSelectedDate}
                             isInterviewDate={isInterviewDate}
                             onPrev={handlePrevMonth}
@@ -503,12 +504,12 @@ export default function UpcomingInterview() {
 function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev, onNext }) {
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
-    
+
     const month = navDate.getMonth();
     const year = navDate.getFullYear();
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = daysInMonth(month, year);
-    
+
     const blanks = Array(firstDay).fill(null);
     const days = Array.from({ length: totalDays }, (_, i) => i + 1);
 
@@ -530,10 +531,10 @@ function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev
                     const isToday = new Date().toDateString() === new Date(year, month, d).toDateString();
                     const isSelected = selectedDate && selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
                     const hasInterview = isInterviewDate(d, month, year);
-                    
+
                     return (
-                        <div 
-                            key={d} 
+                        <div
+                            key={d}
                             className={`day ${isSelected ? "selected" : ""} ${hasInterview ? "has-interview" : ""} ${isToday ? "today" : ""}`}
                             onClick={() => onDateSelect(new Date(year, month, d))}
                         >

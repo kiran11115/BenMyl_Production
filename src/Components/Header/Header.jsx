@@ -16,7 +16,9 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
+  const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
   const profileRef = useRef(null);
+  const aiPopoverRef = useRef(null);
 
   const user = localStorage.getItem("UserName");
   const role = localStorage.getItem("Role");
@@ -68,6 +70,9 @@ function Header() {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
+      }
+      if (aiPopoverRef.current && !aiPopoverRef.current.contains(event.target)) {
+        setIsAiPopoverOpen(false);
       }
     };
 
@@ -138,21 +143,49 @@ function Header() {
 
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
-          <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
-            <span className="ai-pill-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient)" />
-                <defs>
-                  <linearGradient id="gemini-gradient" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="50%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#f59e0b" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-            <span className="ai-pill-text">AI Assistant</span>
-          </button>
+          {/* AI Assistant Pill with Coming Soon Popover */}
+          <div className="ai-pill-wrapper" ref={aiPopoverRef}>
+            <button
+              className="ai-pill-btn"
+              onClick={() => setIsAiPopoverOpen((prev) => !prev)}
+            >
+              <span className="ai-pill-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient)" />
+                  <defs>
+                    <linearGradient id="gemini-gradient" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="50%" stopColor="#8b5cf6" />
+                      <stop offset="100%" stopColor="#f59e0b" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              <span className="ai-pill-text">AI Assistant</span>
+            </button>
+
+            {isAiPopoverOpen && (
+              <div className="ai-coming-soon-popover">
+                <div className="ai-cs-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#cs-gradient)" />
+                    <defs>
+                      <linearGradient id="cs-gradient" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#3b82f6" />
+                        <stop offset="50%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#f59e0b" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+                <div className="ai-cs-content">
+                  <span className="ai-cs-badge">Coming Soon</span>
+                  <p className="ai-cs-title">AI Assistant</p>
+                  <p className="ai-cs-desc">We're putting the finishing touches on your intelligent hiring companion. Stay tuned!</p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Video Guide Icon */}
           <button
