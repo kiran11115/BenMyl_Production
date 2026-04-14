@@ -13,6 +13,7 @@ import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import './ScheduleInterview.css';
+import { useScheduleInterviewMutation } from '../../State-Management/Api/ScheduleInterviewApiSlice';
 
 // Removed mock candidates
 
@@ -34,6 +35,7 @@ const ScheduleInterview = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const preSelectedJobId = location.state?.preSelectedJobId;
+    const [scheduleInterview] = useScheduleInterviewMutation();
 
     // --- User Info ---
     const userName = localStorage.getItem("UserName") || "Current User";
@@ -127,7 +129,8 @@ const ScheduleInterview = () => {
                         name: `${item.firstName} ${item.lastName}`,
                         role: item.title || "—",
                         experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
-                        email: item.emailaddress,
+                        email: item.emailAddress,
+                        city: item.city || "—",
                         phone: item.phoneNumber || "—",
                         avatar: item.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.firstName)}`,
                         skills: item.skills ? item.skills.split(",").map(s => s.trim()) : [],
@@ -210,17 +213,53 @@ const ScheduleInterview = () => {
         else setViewDate(newDate);
     };
 
-    const handleConfirm = () => {
-        setStatus('loading');
-        setTimeout(() => {
-            setStatus('idle');
-            setShowSuccessModal(true);
-        }, 1200);
-    };
-
     const isSameDay = (d1, d2) => d1.getDate() === d2.getDate() && d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear();
 
     const formattedRange = `${startTime.hr}:${startTime.min} ${startTime.ampm} ${isRangeMode ? `to ${endTime.hr}:${endTime.min} ${endTime.ampm}` : ''}`;
+
+    const handleConfirm = async () => {
+        if (!selectedCandidate || !selectedJob) {
+            alert("Please select candidate and job");
+            return;
+        }
+
+        setStatus("loading");
+
+        try {
+            // Format date
+            const interviewDate = selectedDate.toLocaleDateString('en-CA');
+
+            // Format time (example: "09:00 AM to 10:00 AM")
+            const interviewTime = formattedRange;
+
+            const formData = new FormData();
+
+            formData.append("InterviewId", 0);
+            formData.append("RecruiterID", Number(userId));
+            formData.append("RecruiterName", userName);
+            formData.append("CompanyName", selectedJob.company);
+            formData.append("JobTitle", selectedJob.title);
+            formData.append("CandidateName", selectedCandidate.name);
+            formData.append("InterviewDate", interviewDate);
+            formData.append("InterviewTime", interviewTime);
+            formData.append("InterviewMode", "Online");
+            formData.append("InterviewLocation", selectedJob.location);
+            formData.append("InterviewerName", userName);
+            formData.append("InterviewLink", "Google.com");
+            formData.append("CandidateID", selectedCandidate.id);
+            formData.append("CandidateEmailid", selectedCandidate.email);
+
+            await scheduleInterview(formData).unwrap();
+
+            setStatus("idle");
+            setShowSuccessModal(true);
+
+        } catch (error) {
+            console.error("Interview scheduling failed:", error);
+            setStatus("idle");
+            alert("Failed to schedule interview");
+        }
+    };
 
     if (isJobsLoading) {
         return <div className="jobs-container d-flex align-items-center justify-content-center">Loading Jobs...</div>;
@@ -320,7 +359,7 @@ const ScheduleInterview = () => {
                                     </div>
                                     <div className="meta-grid">
                                         <div className="meta-item"><FiBriefcase size={14} /> <span>{candidate.experience}</span></div>
-                                        <div className="meta-item"><FiMapPin size={14} /> <span>{selectedJob?.location || "Remote"}</span></div>
+                                        <div className="meta-item"><FiMapPin size={14} /> <span>{candidate.city || "Remote"}</span></div>
                                     </div>
                                     <div className="skills-row">
                                         {candidate.skills.slice(0, 2).map(skill => (
