@@ -115,7 +115,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
     salaryType === "entireBudget"
       ? `${salaryMin} ${currency} (Fixed)`
       : (salaryMin || salaryMax)
-        ? `${salaryMin || "—"} - ${salaryMax || "—"} ${currency}`
+        ? `${salaryMin || "-"} - ${salaryMax || "-"} ${currency}`
         : "Salary Range Not Specified";
 
   /* =========================

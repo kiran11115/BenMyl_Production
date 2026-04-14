@@ -51,7 +51,7 @@ const sortCandidates = (candidates, sortBy) => {
 };
 
 // --- MAIN COMPONENT ---
-const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => {
+const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) => {
   const PAGE_SIZE = 50;
 
   const [viewMode, setViewMode] = useState("grid");
@@ -148,14 +148,14 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
     return () => {
       isMounted = false;
     };
-    // Only re-run when pageNumber changes — hasMore is tracked via ref
+    // Only re-run when pageNumber changes - hasMore is tracked via ref
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber]);
 
   /* ================= WINDOW SCROLL ================= */
   useEffect(() => {
     const handleScroll = () => {
-      // Use refs so we always read the latest value — no stale closures
+      // Use refs so we always read the latest value - no stale closures
       if (!hasMoreRef.current || isLoadingRef.current) return;
 
       const scrollTop =
@@ -176,7 +176,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => {} }) => 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Registered once — refs carry the live values
+  }, []); // Registered once - refs carry the live values
 
 
   /* ================= MEMOS ================= */

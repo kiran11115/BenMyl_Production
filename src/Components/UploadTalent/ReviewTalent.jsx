@@ -98,19 +98,40 @@ const formatDateToInput = (value) => {
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
+  const initials = `${data.firstName?.[0] ?? ""}${data.lastName?.[0] ?? ""}`.toUpperCase();
+
   return (
     <div className="premium-resume-card">
       {/* Header Section */}
       <div className="resume-header-section">
-        <h1 className="resume-name">
-          {data.firstName} {data.lastName}
-        </h1>
-        <div className="resume-contact">
-          <span>{data.emailAddress}</span>
-          <span>{data.phoneNo}</span>
+        <div className="resume-avatar-row">
+          <div className="resume-avatar">{initials}</div>
+          <div>
+            <h1 className="resume-name">
+              {data.firstName} {data.lastName}
+            </h1>
+            {data.position && (
+              <p className="resume-position">{data.position}</p>
+            )}
+          </div>
+        </div>
+        <div className="resume-contact-bar">
+          {data.emailAddress && (
+            <span className="resume-contact-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+              {data.emailAddress}
+            </span>
+          )}
+          {data.phoneNo && (
+            <span className="resume-contact-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 4.18 2 2 0 012.18 2h3.07a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9.14a16 16 0 006.95 6.95l1.5-1.5a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" /></svg>
+              {data.phoneNo}
+            </span>
+          )}
           {data.city && (
-            <span>
-              {data.city}, {data.state}
+            <span className="resume-contact-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+              {data.city}{data.state ? `, ${data.state}` : ""}
             </span>
           )}
         </div>
@@ -119,31 +140,27 @@ const PDFResumePreview = ({ data }) => {
       {/* Summary */}
       {data.bio && (
         <div className="resume-section">
-          <h3 className="resume-section-title">Professional Summary</h3>
-          <p
-            className="resume-list"
-            style={{
-              paddingLeft: 0,
-              textAlign: "justify",
-              borderBottom: "none",
-            }}
-          >
-            {data.bio}
-          </p>
+          <h3 className="resume-section-title">
+            <span className="resume-section-dot" />
+            Professional Summary
+          </h3>
+          <p className="resume-summary-text">{data.bio}</p>
         </div>
       )}
 
       {/* Experience */}
       {data.workexperiences && data.workexperiences.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">Professional Experience</h3>
+          <h3 className="resume-section-title">
+            <span className="resume-section-dot" />
+            Professional Experience
+          </h3>
           {data.workexperiences.map((e, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
                 <div className="resume-item-main">{e.companyName}</div>
                 <div className="resume-date-badge">
-                  {e.startDate?.slice(0, 7)} —{" "}
-                  {e.endDate ? e.endDate.slice(0, 7) : "Present"}
+                  {e.startDate?.slice(0, 7)} - {e.endDate ? e.endDate.slice(0, 7) : "Present"}
                 </div>
               </div>
               <div className="resume-item-sub">{e.position}</div>
@@ -160,19 +177,20 @@ const PDFResumePreview = ({ data }) => {
       {/* Education */}
       {data.employee_Heighers && data.employee_Heighers.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">Education</h3>
+          <h3 className="resume-section-title">
+            <span className="resume-section-dot" />
+            Education
+          </h3>
           {data.employee_Heighers.map((e, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
                 <div className="resume-item-main">{e.university}</div>
                 <div className="resume-date-badge">
-                  {e.startDate?.slice(0, 4)} — {e.endDate?.slice(0, 4)}
+                  {e.startDate?.slice(0, 4)} - {e.endDate?.slice(0, 4)}
                 </div>
               </div>
               <div className="resume-item-sub">
-                {e.highestQualification}{" "}
-                {e.fieldofstudy && `• ${e.fieldofstudy}`}{" "}
-                {e.percentage && `(${e.percentage})`}
+                {e.highestQualification}{e.fieldofstudy && ` • ${e.fieldofstudy}`}{e.percentage && ` (${e.percentage})`}
               </div>
             </div>
           ))}
@@ -182,27 +200,22 @@ const PDFResumePreview = ({ data }) => {
       {/* Projects */}
       {data.employeeprojects && data.employeeprojects.length > 0 && (
         <div className="resume-section">
-          <h3 className="resume-section-title">Key Projects</h3>
+          <h3 className="resume-section-title">
+            <span className="resume-section-dot" />
+            Key Projects
+          </h3>
           {data.employeeprojects.map((p, i) => (
             <div key={i} className="resume-item">
               <div className="resume-item-header">
                 <div className="resume-item-main">{p.projectName}</div>
                 <div className="resume-date-badge">
-                  {p.startDate?.slice(0, 7)} —{" "}
-                  {p.endDate ? p.endDate.slice(0, 7) : "Present"}
+                  {p.startDate?.slice(0, 7)} - {p.endDate ? p.endDate.slice(0, 7) : "Present"}
                 </div>
               </div>
-              <p
-                className="resume-list"
-                style={{ paddingLeft: 0, marginBottom: "12px" }}
-              >
-                {p.description}
-              </p>
+              <p className="resume-summary-text" style={{ marginBottom: "10px" }}>{p.description}</p>
               <div className="resume-skills-grid">
                 {p.skills?.split(",").map((s, idx) => (
-                  <span key={idx} className="resume-skill-pill">
-                    {s.trim()}
-                  </span>
+                  <span key={idx} className="resume-skill-pill">{s.trim()}</span>
                 ))}
               </div>
             </div>
@@ -213,12 +226,13 @@ const PDFResumePreview = ({ data }) => {
       {/* Skills */}
       {data.skills && (
         <div className="resume-section">
-          <h3 className="resume-section-title">Core Competencies</h3>
+          <h3 className="resume-section-title">
+            <span className="resume-section-dot" />
+            Core Competencies
+          </h3>
           <div className="resume-skills-grid">
             {data.skills.split(",").map((s, i) => (
-              <span key={i} className="resume-skill-pill">
-                {s.trim()}
-              </span>
+              <span key={i} className="resume-skill-pill">{s.trim()}</span>
             ))}
           </div>
         </div>
@@ -273,7 +287,7 @@ const validateYearDigitCount = (val) => {
 
 // ===== PERSONAL INFO VALIDATION FUNCTIONS =====
 const validateDOB = (val) => {
-  // DOB is optional — only validate when provided
+  // DOB is optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -287,14 +301,14 @@ const validateDOB = (val) => {
 };
 
 const validateGender = (val) => {
-  // Gender is optional — only validate when provided
+  // Gender is optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (!/^[a-zA-Z\s]*$/.test(val)) return "Gender should contain only letters";
   return null;
 };
 
 const validateEmergency = (val) => {
-  // Emergency contact is optional — only validate when provided
+  // Emergency contact is optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (!/^\d+$/.test(String(val).replace(/[\s\-\(\)+]/g, "")))
     return "Emergency contact should contain only numbers";
@@ -349,7 +363,7 @@ const validateQualification = (val) => {
 };
 
 const validateEduStartDate = (val) => {
-  // Start date optional — only validate when provided
+  // Start date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -361,7 +375,7 @@ const validateEduStartDate = (val) => {
 };
 
 const validateEduEndDate = (val) => {
-  // End date optional — only validate when provided
+  // End date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -379,7 +393,7 @@ const validateEduField = (val) => {
 };
 
 const validatePercentage = (val) => {
-  // Percentage optional — only validate when provided
+  // Percentage optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (!/^\d+(?:\.\d+)?$/.test(String(val).trim()))
     return "Percentage should contain only numbers";
@@ -387,7 +401,7 @@ const validatePercentage = (val) => {
 };
 
 const validateCertifications = (val) => {
-  // Certifications optional — only validate when provided
+  // Certifications optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (!/^[a-zA-Z,\s]*$/.test(String(val)))
     return "Certifications should contain only letters, commas and spaces";
@@ -406,7 +420,7 @@ const validateExpPosition = (val) => {
 };
 
 const validateExpStartDate = (val) => {
-  // Start date optional — only validate when provided
+  // Start date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -418,7 +432,7 @@ const validateExpStartDate = (val) => {
 };
 
 const validateExpEndDate = (val) => {
-  // End date optional — only validate when provided
+  // End date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -435,7 +449,7 @@ const validateExpSkills = (val) => {
 };
 
 const validateExpDescription = (val) => {
-  // Description optional — only validate when provided
+  // Description optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (String(val).trim().length < 10)
     return "Description should be more descriptive";
@@ -454,7 +468,7 @@ const validateProjectRole = (val) => {
 };
 
 const validateProjectStartDate = (val) => {
-  // Start date optional — only validate when provided
+  // Start date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -466,7 +480,7 @@ const validateProjectStartDate = (val) => {
 };
 
 const validateProjectEndDate = (val) => {
-  // End date optional — only validate when provided
+  // End date optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
 
   const yearError = validateYearDigitCount(val);
@@ -483,7 +497,7 @@ const validateProjectSkills = (val) => {
 };
 
 const validateProjectDescription = (val) => {
-  // Description optional — only validate when provided
+  // Description optional - only validate when provided
   if (!val || String(val).trim() === "") return null;
   if (String(val).trim().length < 10)
     return "Description should be more descriptive";
@@ -608,7 +622,7 @@ const EditableField = ({
         </div>
       ) : (
         <div className="field-value">
-          {isDateField ? formatDateToDisplay(value) : value || "—"}
+          {isDateField ? formatDateToDisplay(value) : value || "-"}
         </div>
       )}
     </div>
@@ -669,7 +683,7 @@ const EditableTextarea = ({
             lineHeight: "1.6",
           }}
         >
-          {value || "—"}
+          {value || "-"}
         </div>
       )}
     </div>
@@ -779,7 +793,7 @@ const ReviewTalent = () => {
     useDraftProfileEmployeeMutation();
   const [isReviewed, setIsReviewed] = useState(false);
   const [showAlreadyExistModal, setShowAlreadyExistModal] = useState(false);
-const [apiErrorMessage, setApiErrorMessage] = useState("");
+  const [apiErrorMessage, setApiErrorMessage] = useState("");
 
   const [pendingReviewCount, setPendingReviewCount] = useState(0);
   const [totalTalentCount, setTotalTalentCount] = useState(0);
@@ -1050,25 +1064,25 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
     }
 
     const calculateExperience = (experiences) => {
-  if (!experiences || experiences.length === 0) return 0;
+      if (!experiences || experiences.length === 0) return 0;
 
-  let totalMonths = 0;
+      let totalMonths = 0;
 
-  experiences.forEach((exp) => {
-    if (!exp.startDate) return;
+      experiences.forEach((exp) => {
+        if (!exp.startDate) return;
 
-    const start = new Date(exp.startDate);
-    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+        const start = new Date(exp.startDate);
+        const end = exp.endDate ? new Date(exp.endDate) : new Date();
 
-    const months =
-      (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth());
+        const months =
+          (end.getFullYear() - start.getFullYear()) * 12 +
+          (end.getMonth() - start.getMonth());
 
-    if (months > 0) totalMonths += months;
-  });
+        if (months > 0) totalMonths += months;
+      });
 
-  return Math.floor(totalMonths / 12);
-};
+      return Math.floor(totalMonths / 12);
+    };
     const formData = new FormData();
 
     /* ===== BASIC INFO ===== */
@@ -1142,7 +1156,7 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
       ),
     );
 
-    /* ===== PROJECTS (STRING — CRITICAL) ===== */
+    /* ===== PROJECTS (STRING - CRITICAL) ===== */
     formData.append(
       "project",
       JSON.stringify(
@@ -1178,22 +1192,22 @@ const [apiErrorMessage, setApiErrorMessage] = useState("");
     );
 
     try {
-  const res = await approveEmployee(formData);
+      const res = await approveEmployee(formData);
 
-  console.log("API RESPONSE:", res); // 👈 add this once
+      console.log("API RESPONSE:", res); // 👈 add this once
 
-if (res?.data?.result_Code === -1) {
-  setApiErrorMessage(res.data.result_Message); // store message
-  setShowAlreadyExistModal(true); // open modal
-  return;
-}
+      if (res?.data?.result_Code === -1) {
+        setApiErrorMessage(res.data.result_Message); // store message
+        setShowAlreadyExistModal(true); // open modal
+        return;
+      }
 
-setShowSuccessModal(true);
+      setShowSuccessModal(true);
 
-} catch (err) {
-  console.error("Approve failed", err);
-  alert("Failed to save talent");
-}
+    } catch (err) {
+      console.error("Approve failed", err);
+      alert("Failed to save talent");
+    }
   };
 
   const handleDraftTalent = async () => {
@@ -1318,7 +1332,7 @@ setShowSuccessModal(true);
       ),
     );
 
-    /* ===== PROJECTS (STRING — CRITICAL) ===== */
+    /* ===== PROJECTS (STRING - CRITICAL) ===== */
     formData.append(
       "project",
       JSON.stringify(
@@ -1363,38 +1377,38 @@ setShowSuccessModal(true);
   };
 
   const calculateExperience = (experiences) => {
-  if (!experiences || experiences.length === 0) return 0;
+    if (!experiences || experiences.length === 0) return 0;
 
-  let totalMonths = 0;
+    let totalMonths = 0;
 
-  experiences.forEach((exp) => {
-    if (!exp.startDate) return;
+    experiences.forEach((exp) => {
+      if (!exp.startDate) return;
 
-    const start = new Date(exp.startDate);
-    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+      const start = new Date(exp.startDate);
+      const end = exp.endDate ? new Date(exp.endDate) : new Date();
 
-    const months =
-      (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth());
+      const months =
+        (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth());
 
-    if (months > 0) totalMonths += months;
-  });
+      if (months > 0) totalMonths += months;
+    });
 
-  return Math.floor(totalMonths / 12); // convert to years
-};
+    return Math.floor(totalMonths / 12); // convert to years
+  };
 
   /* ===== MAP API → LOCAL STATE (NO DESIGN CHANGE) ===== */
   useEffect(() => {
     if (!data) return;
     const mappedExperience =
-  data.workexperiences?.map((e) => ({
-    company: e.companyName,
-    position: e.position,
-    startDate: e.startDate?.slice(0, 10),
-    endDate: e.endDate?.slice(0, 10),
-    skills: e.skills?.split(",") || [],
-    description: e.description,
-  })) || [];
+      data.workexperiences?.map((e) => ({
+        company: e.companyName,
+        position: e.position,
+        startDate: e.startDate?.slice(0, 10),
+        endDate: e.endDate?.slice(0, 10),
+        skills: e.skills?.split(",") || [],
+        description: e.description,
+      })) || [];
 
     setTalent({
       basicInfo: {
@@ -1533,7 +1547,7 @@ setShowSuccessModal(true);
     overflow: "auto",
     transition: "max-height .3s ease",
 
-    /* Hide scrollbar — Chrome/Safari/Edge */
+    /* Hide scrollbar - Chrome/Safari/Edge */
     "::-webkit-scrollbar": {
       display: "none",
     },
@@ -2458,32 +2472,16 @@ setShowSuccessModal(true);
 
         {/* RIGHT: RESUME PREVIEW */}
         <div className="review-right-panel">
-          <div
-            style={{
-              padding: "24px 32px",
-              borderBottom: "1px solid #f1f5f9",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              background: "#fcfdfe",
-            }}
-          >
-            <h4 className="header-title" style={{ fontSize: "18px" }}>
-              Resume Preview
-            </h4>
-            <div
-              style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}
-            >
-              Extracted from Original PDF Document
+          <div className="resume-preview-header">
+            <div className="resume-preview-header-left">
+              <span className="resume-preview-badge">Preview</span>
+              <h4 className="resume-preview-title">Resume Preview</h4>
+            </div>
+            <div className="resume-preview-subtitle">
+              Extracted from Original PDF
             </div>
           </div>
-          <div
-            style={{
-              height: "calc(100vh - 120px)",
-              overflowY: "auto",
-              padding: "24px",
-            }}
-          >
+          <div className="resume-scroll-area">
             <PDFResumePreview data={data} />
           </div>
         </div>
@@ -2505,11 +2503,11 @@ setShowSuccessModal(true);
       )}
 
       {showAlreadyExistModal && (
-  <AlreadyExistModal
-    message={apiErrorMessage}
-    onClose={() => setShowAlreadyExistModal(false)}
-  />
-)}
+        <AlreadyExistModal
+          message={apiErrorMessage}
+          onClose={() => setShowAlreadyExistModal(false)}
+        />
+      )}
     </div>
   );
 };

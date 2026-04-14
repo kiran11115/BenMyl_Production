@@ -42,7 +42,7 @@ const UploadTalent = () => {
         const fetchCounts = async () => {
             try {
                 const companyId = Number(localStorage.getItem("logincompanyid"));
-                
+
                 // Fetch Pending Review Count
                 const queueRes = await getQueueManagement({
                     companyid: companyId,
@@ -166,37 +166,37 @@ const UploadTalent = () => {
     }, []);
 
     useEffect(() => {
-  if (location.state?.fromDashboardUpload) {
+        if (location.state?.fromDashboardUpload) {
 
-    const totalSeconds = 20;
+            const totalSeconds = 20;
 
-    setUploadCount(location.state?.uploadCount || 1);
-    setWaitingForRefresh(true);
-    setCountdown(totalSeconds);
+            setUploadCount(location.state?.uploadCount || 1);
+            setWaitingForRefresh(true);
+            setCountdown(totalSeconds);
 
-    if (countdownRef.current) clearInterval(countdownRef.current);
+            if (countdownRef.current) clearInterval(countdownRef.current);
 
-    countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(countdownRef.current);
-          return 0;
+            countdownRef.current = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(countdownRef.current);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            setTimeout(() => {
+                setRefreshKey(prev => prev + 1);
+                setWaitingForRefresh(false);
+                setUploadCount(0);
+                setCountdown(0);
+            }, 20000);
+
+            window.history.replaceState({}, document.title);
+
         }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setTimeout(() => {
-      setRefreshKey(prev => prev + 1);
-      setWaitingForRefresh(false);
-      setUploadCount(0);
-      setCountdown(0);
-    }, 20000);
-
-    window.history.replaceState({}, document.title);
-
-  }
-}, [location.state]);
+    }, [location.state]);
 
     return (
         <>
@@ -370,7 +370,7 @@ const UploadTalent = () => {
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000 }}>
                     <div style={{ background: 'white', padding: 24, borderRadius: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, minWidth: 280 }}>
                         <div style={{ width: 36, height: 36, border: '4px solid #f5810c', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                        <div style={{ fontWeight: 700 }}>Uploading — please wait</div>
+                        <div style={{ fontWeight: 700 }}>Uploading - please wait</div>
                         <div style={{ color: '#6b7280', fontSize: 13 }}>Processing resumes. This may take a moment.</div>
                     </div>
                     <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>

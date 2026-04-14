@@ -37,7 +37,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
   const companyname = localStorage.getItem("CompanyName");
-   const username = localStorage.getItem("UserName");
+  const username = localStorage.getItem("UserName");
 
   const handleSendInvite = async (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
@@ -59,8 +59,8 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         employeeIds,
         message: "Your talent has been shortlisted. Please check your mailbox.",
         uatUserId: Number(userId),
-        uatfirstName:username,
-        companyName:companyname
+        uatfirstName: username,
+        companyName: companyname
       };
 
       await sendInviteNotification(payload).unwrap();
@@ -457,11 +457,11 @@ const TalentPool = () => {
       name: `${item.firstName} ${item.lastName}`,
       inviteUserId: Number(item.insertBy),
 
-      role: item.title || "—",
+      role: item.title || "-",
 
       experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
 
-      location: item.city || "—",
+      location: item.city || "-",
 
       skills: item.skills
         ? item.skills.split(",").map((s) => s.trim())
@@ -571,11 +571,11 @@ const TalentPool = () => {
     setAllCandidates([]);
   }, [activeJobId]);
 
- useEffect(() => {
-  if (!filtersReady) return;
+  useEffect(() => {
+    if (!filtersReady) return;
 
-  fetchTalents();
-}, [pageNumber, appliedFilters, activeJobId, filtersReady]);
+    fetchTalents();
+  }, [pageNumber, appliedFilters, activeJobId, filtersReady]);
 
 
 
@@ -1007,34 +1007,34 @@ const TalentPool = () => {
       ) : null}
 
       {successJobId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => {}}>
-            <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
-                <div style={{ marginBottom: '24px' }}>
-                    <FiCheckCircle size={60} color="#059669" />
-                </div>
-                <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
-
-                <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
-                        <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
-                    </p>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <button 
-                        style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} 
-                        onClick={() => navigate("/user/user-schedule-interview", { state: { preSelectedJobId: successJobId } })}
-                    >
-                        Schedule Interview
-                    </button>
-                    <button 
-                        style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} 
-                        onClick={() => setSuccessJobId(null)}
-                    >
-                        Continue to Talentpool
-                    </button>
-                </div>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => { }}>
+          <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+            <div style={{ marginBottom: '24px' }}>
+              <FiCheckCircle size={60} color="#059669" />
             </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
+
+            <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
+              <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
+                <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                onClick={() => navigate("/user/user-schedule-interview", { state: { preSelectedJobId: successJobId } })}
+              >
+                Schedule Interview
+              </button>
+              <button
+                style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                onClick={() => setSuccessJobId(null)}
+              >
+                Continue to Talentpool
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

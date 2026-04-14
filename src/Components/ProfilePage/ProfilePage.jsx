@@ -19,8 +19,8 @@ import "./ProfilePage.css";
 const ProfilePage = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
-   const adminName = localStorage.getItem("adminFirstName");
-   const industryname = localStorage.getItem("Industry");
+  const adminName = localStorage.getItem("adminFirstName");
+  const industryname = localStorage.getItem("Industry");
 
   const { data: apiData, isLoading } = useGetRecruiterProfileQuery(
     Number(userId),
@@ -28,47 +28,47 @@ const ProfilePage = () => {
   );
 
 
-  
+
 
   const companyData = apiData
     ? {
-        id: apiData.authInfoID,
-        name: apiData.fullName,
-        companyname: apiData.companyName,
-        size: "100-200",
-        status: "Active",
-        industry: apiData.role,
-        foundedYear: apiData.createdate,
-        websiteUrl: "",
-        domain: "",
-        headquarters: {
-          city: apiData.city,
-          state: apiData.state,
-          country: apiData.country,
-          postalCode: apiData.postalCode,
-          street1: apiData.streetAddress1,
-          street2: apiData.streetAddress2,
-        },
-        description: apiData.description,
-        contact: {
-          email: apiData.emailid,
-          phone: apiData.phone,
-          linkedinUrl: apiData.linkedinURL,
-        },
-        role: apiData.role,
-        company: apiData.company,
-        startYear: apiData.startYear,
-        endYear: apiData.endYear,
-        experience: apiData.experience,
-        jobtitle: apiData.jobtitle,
-        education: apiData.education,
-        languagesSpoken: apiData.languagesSpoken
-          ? apiData.languagesSpoken.split(",")
-          : [],
-        referredBy: apiData.referedBy,
-        referredBy: adminName,
-        profilePhoto: apiData.profilePhoto,
-      }
+      id: apiData.authInfoID,
+      name: apiData.fullName,
+      companyname: apiData.companyName,
+      size: "100-200",
+      status: "Active",
+      industry: apiData.role,
+      foundedYear: apiData.createdate,
+      websiteUrl: "",
+      domain: "",
+      headquarters: {
+        city: apiData.city,
+        state: apiData.state,
+        country: apiData.country,
+        postalCode: apiData.postalCode,
+        street1: apiData.streetAddress1,
+        street2: apiData.streetAddress2,
+      },
+      description: apiData.description,
+      contact: {
+        email: apiData.emailid,
+        phone: apiData.phone,
+        linkedinUrl: apiData.linkedinURL,
+      },
+      role: apiData.role,
+      company: apiData.company,
+      startYear: apiData.startYear,
+      endYear: apiData.endYear,
+      experience: apiData.experience,
+      jobtitle: apiData.jobtitle,
+      education: apiData.education,
+      languagesSpoken: apiData.languagesSpoken
+        ? apiData.languagesSpoken.split(",")
+        : [],
+      referredBy: apiData.referedBy,
+      referredBy: adminName,
+      profilePhoto: apiData.profilePhoto,
+    }
     : null;
 
   if (isLoading || !companyData) return null;
@@ -77,21 +77,21 @@ const ProfilePage = () => {
 
   const workExperiences = companyData.jobtitle
     ? [
-        {
-          title: companyData.jobtitle,
-          company: companyData.company,
-          start: companyData.startYear,
-          end: companyData.endYear || "Present",
-        },
-      ]
+      {
+        title: companyData.jobtitle,
+        company: companyData.company,
+        start: companyData.startYear,
+        end: companyData.endYear || "Present",
+      },
+    ]
     : [];
 
   /* token math (placeholder) */
   const totalTokens = 0;
-  const usedTokens  = 0;
-  const leftTokens  = totalTokens - usedTokens;
+  const usedTokens = 0;
+  const leftTokens = totalTokens - usedTokens;
   // const usedPct     = Math.round((usedTokens / totalTokens) * 100);
-  const usedPct     = 0;
+  const usedPct = 0;
 
   return (
     <div className="projects-container">
@@ -239,7 +239,7 @@ const ProfilePage = () => {
                     </div>
                   ))
                 ) : (
-                  <span style={{ fontSize: "13px", color: "#94a3b8" }}>—</span>
+                  <span style={{ fontSize: "13px", color: "#94a3b8" }}>-</span>
                 )}
               </div>
 
@@ -247,7 +247,7 @@ const ProfilePage = () => {
               <div className="pp-exp-total">
                 <span className="pp-exp-total-label">Total Experience</span>
                 <span className="pp-exp-total-val">
-                  {companyData.experience ? `${companyData.experience} Years` : "—"}
+                  {companyData.experience ? `${companyData.experience} Years` : "-"}
                 </span>
               </div>
             </div>
@@ -261,31 +261,31 @@ const ProfilePage = () => {
               <div className="pp-info-list">
                 <div className="pp-info-row">
                   <span className="pp-info-key">Job Title</span>
-                  <span className="pp-info-val">{companyData.jobtitle || "—"}</span>
+                  <span className="pp-info-val">{companyData.jobtitle || "-"}</span>
                 </div>
                 <div className="pp-info-row">
                   <span className="pp-info-key">Experience</span>
                   <span className="pp-info-val">
-                    {companyData.experience ? `${companyData.experience} Years` : "—"}
+                    {companyData.experience ? `${companyData.experience} Years` : "-"}
                   </span>
                 </div>
                 <div className="pp-info-row">
                   <span className="pp-info-key">Education</span>
-                  <span className="pp-info-val">{companyData.education || "—"}</span>
+                  <span className="pp-info-val">{companyData.education || "-"}</span>
                 </div>
                 <div className="pp-info-row">
                   <span className="pp-info-key">Languages</span>
                   <div className="pp-lang-chips">
                     {companyData.languagesSpoken?.length > 0
                       ? companyData.languagesSpoken.map((lang, i) => (
-                          <span className="status-tag status-progress d-flex gap-3" key={i}>{lang.trim()}</span>
-                        ))
-                      : <span className="pp-info-val">—</span>}
+                        <span className="status-tag status-progress d-flex gap-3" key={i}>{lang.trim()}</span>
+                      ))
+                      : <span className="pp-info-val">-</span>}
                   </div>
                 </div>
                 <div className="pp-info-row">
                   <span className="pp-info-key">Referred By</span>
-                  <span className="pp-info-val">{companyData.referredBy || "—"}</span>
+                  <span className="pp-info-val">{companyData.referredBy || "-"}</span>
                 </div>
               </div>
             </div>
@@ -298,7 +298,7 @@ const ProfilePage = () => {
 
           {/* Edit button */}
           <button className="btn-secondary w-100 d-flex gap-2" onClick={onEdit}>
-            <FiEdit size={15} /> <span>Edit Profile</span> 
+            <FiEdit size={15} /> <span>Edit Profile</span>
           </button>
 
           {/* Company Information */}
@@ -310,11 +310,11 @@ const ProfilePage = () => {
             <div className="pp-contact-list">
               <div className="pp-contact-item">
                 <span className="pp-contact-icon"><FiBriefcase size={13} /></span>
-                Company: {companyData.companyname || "—"}
+                Company: {companyData.companyname || "-"}
               </div>
               <div className="pp-contact-item">
                 <span className="pp-contact-icon"><FiBriefcase size={13} /></span>
-                Industry: {industryname || "—"}
+                Industry: {industryname || "-"}
               </div>
               <div className="pp-contact-item">
                 <span className="pp-contact-icon"><FiMapPin size={13} /></span>

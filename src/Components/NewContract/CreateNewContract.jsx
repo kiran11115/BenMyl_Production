@@ -251,7 +251,7 @@ export default function CreateNewContract() {
                   </label>
                 </div>
 
-                {/* external name + external email — both expand */}
+                {/* external name + external email - both expand */}
                 <div className="cc-row two">
                   <label className="cc-field">
                     <div className="cc-label">External Party Name</div>
