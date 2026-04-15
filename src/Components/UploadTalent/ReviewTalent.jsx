@@ -1127,7 +1127,7 @@ const ReviewTalent = () => {
     formData.append("Supervisor", "");
     formData.append("startdate", data.startDate ?? "");
     formData.append("lastdate", data.endDate ?? "");
-    formData.append("Status", "Approved");
+    formData.append("Status", "Available");
 
     /* ===== SALARY ===== */
     formData.append("Salary", data.salary ?? "");
