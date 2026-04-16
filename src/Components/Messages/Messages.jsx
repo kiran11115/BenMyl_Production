@@ -37,6 +37,7 @@ const conversations = [
     time: "25:02",
     unread: 0,
     online: true,
+    domain: "sameDomain",
   },
   {
     id: 2,
@@ -48,6 +49,7 @@ const conversations = [
     unread: 1,
     online: false,
     special: true,
+    domain: "sameDomain",
   },
   {
     id: 3,
@@ -58,6 +60,7 @@ const conversations = [
     time: "24:02",
     unread: 0,
     online: false,
+    domain: "sameDomain",
   },
   {
     id: 4,
@@ -68,6 +71,7 @@ const conversations = [
     time: "11:02",
     unread: 0,
     online: true,
+    domain: "nonDomain",
   },
   {
     id: 5,
@@ -78,6 +82,7 @@ const conversations = [
     time: "02-12-2025",
     unread: 0,
     online: false,
+    domain: "sameDomain",
   },
   {
     id: 6,
@@ -88,6 +93,7 @@ const conversations = [
     time: "14-11-2025",
     unread: 0,
     online: false,
+    domain: "nonDomain",
   },
   {
     id: 7,
@@ -98,6 +104,7 @@ const conversations = [
     time: "14-11-2025",
     unread: 0,
     online: false,
+    domain: "sameDomain",
   },
   {
     id: 8,
@@ -108,6 +115,7 @@ const conversations = [
     time: "11-11-2025",
     unread: 0,
     online: false,
+    domain: "nonDomain",
   },
   {
     id: 9,
@@ -118,6 +126,7 @@ const conversations = [
     time: "04-10-2025",
     unread: 0,
     online: false,
+    domain: "sameDomain",
   },
   {
     id: 10,
@@ -128,6 +137,7 @@ const conversations = [
     time: "29-08-2025",
     unread: 0,
     online: false,
+    domain: "sameDomain",
   },
   {
     id: 11,
@@ -138,6 +148,7 @@ const conversations = [
     time: "12-08-2025",
     unread: 0,
     online: false,
+    domain: "nonDomain",
   },
 ];
 
@@ -239,16 +250,19 @@ const Messages = () => {
   );
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
+  const [domainTab, setDomainTab] = useState("sameDomain"); // Tab state
   const chatBodyRef = useRef(null);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
   const currentMessages = messagesByConversation[selectedId] || [];
 
-  const filtered = conversations.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.preview.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = conversations
+    .filter((c) => c.domain === domainTab) // Filter by domain tab
+    .filter(
+      (c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.preview.toLowerCase().includes(search.toLowerCase())
+    );
 
   useEffect(() => {
     if (chatBodyRef.current)
@@ -283,18 +297,36 @@ const Messages = () => {
         {/* ══════════════ SIDEBAR ══════════════ */}
         <aside className="tms-sidebar">
 
-          {/* Sidebar Header */}
-          <div className="tms-sidebar-header">
-            <span className="tms-sidebar-title">Chat</span>
-            <div className="tms-sidebar-header-btns">
-              <button className="tms-icon-btn" title="New chat">
-                <FiEdit size={16} />
+          {/* Sidebar Header with Tabs */}
+          <div className="tms-sidebar-header-wrapper">
+            <div className="tms-sidebar-header">
+              <span className="tms-sidebar-title">Chat</span>
+              <div className="tms-sidebar-header-btns">
+                <button className="tms-icon-btn" title="New chat">
+                  <FiEdit size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Domain Tabs */}
+            <div className="tms-domain-tabs">
+              <button
+                className={`tms-domain-tab ${domainTab === "sameDomain" ? "tms-tab-active" : ""}`}
+                onClick={() => setDomainTab("sameDomain")}
+              >
+                Same Domain
+              </button>
+              <button
+                className={`tms-domain-tab ${domainTab === "nonDomain" ? "tms-tab-active" : ""}`}
+                onClick={() => setDomainTab("nonDomain")}
+              >
+                Non Domain
               </button>
             </div>
           </div>
 
           {/* Search */}
-          <div className="tms-search-wrap">
+          <div className="tms-search-wrap mt-2">
             <FiSearch className="tms-search-icon" size={14} />
             <input
               className="tms-search-input"

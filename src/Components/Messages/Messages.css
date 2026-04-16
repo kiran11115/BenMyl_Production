@@ -37,6 +37,11 @@
 }
 
 /* Sidebar Header */
+.tms-sidebar-header-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .tms-sidebar-header {
   padding: 16px 16px 10px;
   display: flex;
@@ -76,6 +81,50 @@
   background: #fff7ed;
   border-color: #f5810c;
   color: #f5810c;
+}
+
+/* Domain Tabs */
+.tms-domain-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 8px 8px 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tms-domain-tab {
+  flex: 1;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  transition: all 0.2s;
+  position: relative;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+}
+
+.tms-domain-tab:hover {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.tms-domain-tab.tms-tab-active {
+  color: #f5810c;
+  background: #fff7ed;
+}
+
+.tms-domain-tab.tms-tab-active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #f5810c;
+  border-radius: 2px 2px 0 0;
 }
 
 /* Search */
