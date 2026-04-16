@@ -4,15 +4,9 @@ import {
   FiEdit,
   FiMoreHorizontal,
   FiSend,
-  FiFileText,
-  FiDownload,
-  FiImage,
   FiPaperclip,
-  FiSmile,
-  FiPhone,
-  FiVideo,
   FiAtSign,
-  FiUsers,
+  FiMessageSquare,
 } from "react-icons/fi";
 import "./Messages.css";
 
@@ -29,29 +23,6 @@ if (!document.getElementById("msg-inter-font")) {
 /* ── Data ── */
 const conversations = [
   {
-    id: 1,
-    name: "Sai Lokesh (You)",
-    avatar: "SL",
-    avatarColor: "#f5810c",
-    preview: "You: http://apps.envato.com/video-templates/12dc2fc9...",
-    time: "25:02",
-    unread: 0,
-    online: true,
-    domain: "sameDomain",
-  },
-  {
-    id: 2,
-    name: "1 request",
-    avatar: "1",
-    avatarColor: "#e8a838",
-    preview: "You: GIF",
-    time: "",
-    unread: 1,
-    online: false,
-    special: true,
-    domain: "sameDomain",
-  },
-  {
     id: 3,
     name: "Venugopal Nallana",
     avatar: "VN",
@@ -61,6 +32,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "sameDomain",
+    role: "Bench Sales",
   },
   {
     id: 4,
@@ -72,6 +44,7 @@ const conversations = [
     unread: 0,
     online: true,
     domain: "nonDomain",
+    role: "Recruiter",
   },
   {
     id: 5,
@@ -83,6 +56,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "sameDomain",
+    role: "Team Lead",
   },
   {
     id: 6,
@@ -94,6 +68,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "nonDomain",
+    role: "Hiring Manager",
   },
   {
     id: 7,
@@ -105,6 +80,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "sameDomain",
+    role: "Bench Sales",
   },
   {
     id: 8,
@@ -116,6 +92,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "nonDomain",
+    role: "Recruiter",
   },
   {
     id: 9,
@@ -127,6 +104,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "sameDomain",
+    role: "Account Manager",
   },
   {
     id: 10,
@@ -138,6 +116,7 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "sameDomain",
+    role: "Delivery Lead",
   },
   {
     id: 11,
@@ -149,125 +128,58 @@ const conversations = [
     unread: 0,
     online: false,
     domain: "nonDomain",
+    role: "Bench Sales",
   },
 ];
 
-const initialMessagesByConversation = {
-  1: [
-    {
-      id: 1,
-      from: "me",
-      date: "09 January 10:00",
-      text: "my practice",
-    },
-    {
-      id: 2,
-      from: "me",
-      date: "09 January 10:00",
-      text: "AI voice",
-      showDate: true,
-      dateLabel: "09 January 10:00",
-    },
-    {
-      id: 3,
-      from: "me",
-      date: "12 January 17:30",
-      showDate: true,
-      dateLabel: "12 January 17:30",
-      isLink: true,
-      text: "https://docs.google.com/document/d/1zPBgZAdWNa6WVa7UIFLbW_7Fco9Y60Y743RgFull_3o/edit?tab=t.0",
-    },
-    {
-      id: 4,
-      from: "me",
-      date: "20 January 19:00",
-      showDate: true,
-      dateLabel: "20 January 19:00",
-      isLink: true,
-      text: "https://www.canva.com/design/DAG-7n8FuQ/q2tMmBzNkzl68mFZlF-eqw/edit?utm_content=DAG-7n8FuQ&utm...",
-    },
-    {
-      id: 5,
-      from: "me",
-      date: "18 February 14:01",
-      showDate: true,
-      dateLabel: "18 February 14:01",
-      isCredentials: true,
-      emails: [
-        "mylastech104@gmail.com",
-        "mylastech105@gmail.com",
-        "mylastech106@gmail.com",
-        "mylastech107@gmail.com",
-        "mylastech108@gmail.com",
-        "mylastech109@gmail.com",
-        "mylastech110@gmail.com",
-      ],
-      pwd: "mylas@0987",
-    },
-    {
-      id: 6,
-      from: "me",
-      date: "23 February 16:01",
-      showDate: true,
-      dateLabel: "23 February 16:01",
-      isLink: true,
-      text: "https://app.envato.com/video-templates/12dc2c9-c9f8-48d7-b1fa-a85786a314b0",
-    },
-  ],
-  3: [
-    {
-      id: 1,
-      from: "them",
-      date: "Today",
-      text: "Hi, are you available for a call?",
-    },
-    {
-      id: 2,
-      from: "me",
-      date: "Today",
-      text: "Yes, give me 5 minutes!",
-    },
-  ],
-  4: [
-    {
-      id: 1,
-      from: "them",
-      date: "Today",
-      text: "ok ok",
-    },
-  ],
-};
+const initialMessagesByConversation = {};
 
-/* ── Helpers ── */
-const initials = (name) =>
-  name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+const EMPTY_MESSAGES = [];
 
 /* ── Component ── */
 const Messages = () => {
-  const [selectedId, setSelectedId] = useState(1);
+  const [selectedId, setSelectedId] = useState(3);
   const [messagesByConversation, setMessagesByConversation] = useState(
     initialMessagesByConversation
   );
+  const [acceptedPublicChats, setAcceptedPublicChats] = useState({});
+  const [declinedPublicChats, setDeclinedPublicChats] = useState({});
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
-  const [domainTab, setDomainTab] = useState("sameDomain"); // Tab state
+  const [domainTab, setDomainTab] = useState("sameDomain");
   const chatBodyRef = useRef(null);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
-  const currentMessages = messagesByConversation[selectedId] || [];
+  const currentMessages = messagesByConversation[selectedId] || EMPTY_MESSAGES;
+  const isPublicTab = domainTab === "nonDomain";
+  const isAcceptedPublicChat = Boolean(acceptedPublicChats[selectedId]);
 
   const filtered = conversations
-    .filter((c) => c.domain === domainTab) // Filter by domain tab
+    .filter((c) => c.domain === domainTab)
+    .filter((c) => !(c.domain === "nonDomain" && declinedPublicChats[c.id]))
     .filter(
       (c) =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
-        c.preview.toLowerCase().includes(search.toLowerCase())
+        c.role.toLowerCase().includes(search.toLowerCase())
     );
 
   useEffect(() => {
     if (chatBodyRef.current)
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
   }, [currentMessages, selectedId]);
+
+  useEffect(() => {
+    const firstConversation = conversations.find((c) => c.domain === domainTab);
+    if (firstConversation) {
+      setSelectedId(firstConversation.id);
+    }
+  }, [domainTab]);
+
+  useEffect(() => {
+    if (filtered.length > 0 && !filtered.some((c) => c.id === selectedId)) {
+      setSelectedId(filtered[0].id);
+    }
+  }, [filtered, selectedId]);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -288,6 +200,25 @@ const Messages = () => {
       ],
     }));
     setInputValue("");
+  };
+
+  const handleAcceptPublicChat = () => {
+    setAcceptedPublicChats((prev) => ({
+      ...prev,
+      [selectedId]: true,
+    }));
+  };
+
+  const handleDeclinePublicChat = () => {
+    setDeclinedPublicChats((prev) => ({
+      ...prev,
+      [selectedId]: true,
+    }));
+    setAcceptedPublicChats((prev) => {
+      const next = { ...prev };
+      delete next[selectedId];
+      return next;
+    });
   };
 
   return (
@@ -314,13 +245,13 @@ const Messages = () => {
                 className={`tms-domain-tab ${domainTab === "sameDomain" ? "tms-tab-active" : ""}`}
                 onClick={() => setDomainTab("sameDomain")}
               >
-                Same Domain
+                Team
               </button>
               <button
                 className={`tms-domain-tab ${domainTab === "nonDomain" ? "tms-tab-active" : ""}`}
                 onClick={() => setDomainTab("nonDomain")}
               >
-                Non Domain
+                Public
               </button>
             </div>
           </div>
@@ -341,34 +272,40 @@ const Messages = () => {
             {filtered.map((c) => {
               const active = selectedId === c.id;
               return (
-                <button
+                <div
                   key={c.id}
-                  className={"tms-contact-item" + (active ? " tms-contact-active" : "")}
-                  onClick={() => setSelectedId(c.id)}
+                  className={
+                    "tms-contact-card" +
+                    (isPublicTab ? " tms-contact-card-public" : "") +
+                    (active ? " tms-contact-card-active" : "")
+                  }
                 >
-                  {/* Avatar */}
-                  <div
-                    className="tms-avatar"
-                    style={{ background: c.avatarColor }}
+                  <button
+                    className={"tms-contact-item" + (active ? " tms-contact-active" : "")}
+                    onClick={() => setSelectedId(c.id)}
                   >
-                    {c.avatar}
-                    {c.online && <span className="tms-online-dot" />}
-                  </div>
-
-                  {/* Text */}
-                  <div className="tms-contact-text">
-                    <div className="tms-contact-top">
-                      <span className="tms-contact-name">{c.name}</span>
-                      {c.time && <span className="tms-contact-time">{c.time}</span>}
+                    <div
+                      className="tms-avatar"
+                      style={{ background: c.avatarColor }}
+                    >
+                      {c.avatar}
+                      {c.online && <span className="tms-online-dot" />}
                     </div>
-                    <span className="tms-contact-preview">{c.preview}</span>
-                  </div>
 
-                  {/* Unread */}
-                  {c.unread > 0 && (
-                    <span className="tms-unread-badge">{c.unread}</span>
-                  )}
-                </button>
+                    <div className="tms-contact-text">
+                      <div className="tms-contact-top">
+                        <span className="tms-contact-name">{c.name}</span>
+                        {c.time && <span className="tms-contact-time">{c.time}</span>}
+                      </div>
+                      <span className="tms-contact-role">{c.role}</span>
+                    </div>
+
+                    {c.unread > 0 && (
+                      <span className="tms-unread-badge">{c.unread}</span>
+                    )}
+                  </button>
+
+                </div>
               );
             })}
 
@@ -378,11 +315,6 @@ const Messages = () => {
           </div>
 
           {/* Bottom invite */}
-          <div className="tms-invite-bar">
-            <FiUsers size={16} className="tms-invite-icon" />
-            <span className="tms-invite-label">Invite</span>
-          </div>
-
         </aside>
 
         {/* ══════════════ CHAT PANEL ══════════════ */}
@@ -400,19 +332,58 @@ const Messages = () => {
                   <span className="tms-header-online" />
                 )}
               </div>
-              <span className="tms-chat-header-name">
-                {currentConversation?.name}
-              </span>
+              <div className="tms-chat-header-meta">
+                <span className="tms-chat-header-name">
+                  {currentConversation?.name}
+                </span>
+                <span className="tms-chat-header-role">
+                  {currentConversation?.role}
+                </span>
+              </div>
             </div>
             <div className="tms-chat-header-actions">
-              <button className="tms-hdr-btn" title="Video call"><FiVideo size={18} /></button>
-              <button className="tms-hdr-btn" title="Audio call"><FiPhone size={18} /></button>
               <button className="tms-hdr-btn" title="More options"><FiMoreHorizontal size={18} /></button>
             </div>
           </header>
 
           {/* Chat Body */}
-          <div className="tms-chat-body" ref={chatBodyRef}>
+          <div
+            className={
+              "tms-chat-body" +
+              (isPublicTab && !isAcceptedPublicChat && currentMessages.length === 0
+                ? " tms-chat-body-public-empty"
+                : "")
+            }
+            ref={chatBodyRef}
+          >
+            {isPublicTab && currentConversation && !isAcceptedPublicChat && (
+              <div className="tms-public-request-card">
+                <div className="tms-public-request-icon">
+                  <FiMessageSquare size={24} />
+                </div>
+                <p className="tms-public-request-title">Public chat request</p>
+                <p className="tms-public-request-text">
+                  {currentConversation.name} wants to connect with you as a{" "}
+                  {currentConversation.role}.
+                </p>
+                <div className="tms-chat-request-actions">
+                  <button
+                    type="button"
+                    className="tms-action-btn tms-action-accept"
+                    onClick={handleAcceptPublicChat}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    type="button"
+                    className="tms-action-btn tms-action-decline"
+                    onClick={handleDeclinePublicChat}
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
+            )}
 
             {currentMessages.map((msg, index) => {
               const isMe = msg.from === "me";
@@ -469,16 +440,17 @@ const Messages = () => {
               );
             })}
 
-            {currentMessages.length === 0 && (
+            {currentMessages.length === 0 && (!isPublicTab || isAcceptedPublicChat) && (
               <div className="tms-no-messages">
-                <div
-                  className="tms-empty-avatar"
-                  style={{ background: currentConversation?.avatarColor || "#6264a7" }}
-                >
-                  {currentConversation?.avatar}
+                <div className="tms-empty-illustration">
+                  <FiMessageSquare size={34} />
                 </div>
-                <p className="tms-empty-name">{currentConversation?.name}</p>
-                <p className="tms-empty-hint">Send a message to start a conversation</p>
+                <p className="tms-empty-name">Start conversation</p>
+                <p className="tms-empty-hint">
+                  {isPublicTab
+                    ? `You can now start chatting with ${currentConversation?.name}.`
+                    : "Team chats will appear here once a message is sent."}
+                </p>
               </div>
             )}
           </div>
@@ -493,8 +465,6 @@ const Messages = () => {
                 onChange={(e) => setInputValue(e.target.value)}
               />
               <div className="tms-input-actions">
-                <button type="button" className="tms-act-btn" title="Emoji"><FiSmile size={18} /></button>
-                <button type="button" className="tms-act-btn" title="Meet"><FiVideo size={18} /></button>
                 <button type="button" className="tms-act-btn" title="Attach"><FiPaperclip size={18} /></button>
                 <button type="button" className="tms-act-btn" title="Mention"><FiAtSign size={18} /></button>
                 <button

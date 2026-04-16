@@ -183,6 +183,18 @@
   border-radius: 99px;
 }
 
+.tms-contact-card {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tms-contact-card-public {
+  padding: 0;
+}
+
+.tms-contact-card-active {
+  background: #fffaf5;
+}
+
 /* Contact item */
 .tms-contact-item {
   width: 100%;
@@ -278,13 +290,44 @@
   white-space: nowrap;
 }
 
-.tms-contact-preview {
+.tms-contact-role {
   display: block;
-  font-size: 12px;
-  color: #94a3b8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 600;
+  color: #f5810c;
+  text-transform: capitalize;
+}
+
+.tms-action-btn {
+  min-width: 112px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tms-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.tms-action-accept {
+  background: #f5810c;
+  border-color: #f5810c;
+  color: #ffffff;
+}
+
+.tms-action-accept:hover {
+  background: #ea7009;
+}
+
+.tms-action-decline:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
 /* Unread badge */
@@ -301,31 +344,6 @@
   justify-content: center;
   padding: 0 4px;
   flex-shrink: 0;
-}
-
-/* Invite bar at bottom of sidebar */
-.tms-invite-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-top: 1px solid #f1f5f9;
-  cursor: pointer;
-  transition: background 0.12s;
-}
-
-.tms-invite-bar:hover {
-  background: #f8fafc;
-}
-
-.tms-invite-icon {
-  font-size: 16px;
-}
-
-.tms-invite-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #f5810c;
 }
 
 /* Empty */
@@ -364,6 +382,12 @@
   gap: 12px;
 }
 
+.tms-chat-header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .tms-header-avatar {
   width: 36px;
   height: 36px;
@@ -393,6 +417,12 @@
   font-size: 15px;
   font-weight: 700;
   color: #1e293b;
+}
+
+.tms-chat-header-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5810c;
 }
 
 .tms-chat-header-actions {
@@ -429,6 +459,59 @@
   flex-direction: column;
   gap: 6px;
   background: #f8fafc;
+}
+
+.tms-chat-request-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 4px 0 0;
+}
+
+.tms-chat-body-public-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.tms-public-request-card {
+  width: min(420px, 100%);
+  padding: 28px 24px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.tms-public-request-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5810c;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fed7aa;
+}
+
+.tms-public-request-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b !important;
+}
+
+.tms-public-request-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b !important;
+  max-width: 320px;
 }
 
 .tms-chat-body::-webkit-scrollbar {
@@ -610,21 +693,21 @@
   padding: 40px;
 }
 
-.tms-empty-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  color: #ffffff !important;
+.tms-empty-illustration {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  color: #f5810c !important;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fed7aa;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
 }
 
 .tms-empty-name {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #1e293b !important;
   margin: 0;
 }
@@ -633,6 +716,8 @@
   font-size: 13px;
   color: #94a3b8 !important;
   margin: 0;
+  text-align: center;
+  max-width: 320px;
 }
 
 /* ════════════════════════════════════════
@@ -678,7 +763,7 @@
 .tms-input-actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   padding: 4px 8px 6px;
   border-top: 1px solid #f1f5f9;
 }
@@ -745,4 +830,5 @@
   .tms-bubble {
     max-width: 85%;
   }
+
 }
