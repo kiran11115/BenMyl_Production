@@ -17,7 +17,71 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow:
+    0 14px 32px rgba(15, 23, 42, 0.10),
+    0 3px 10px rgba(15, 23, 42, 0.06);
+}
+
+.analytics-page-analytics .non-functional {
+  filter: grayscale(1) opacity(0.62);
+}
+
+.analytics-page-analytics .non-functional::after {
+  top: 12px;
+  right: 14px;
+  bottom: auto;
+  left: auto;
+  width: auto;
+  height: auto;
+  content: "Coming Soon";
+  background: #1e293b;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.analytics-stat-card-analytics.non-functional {
+  padding-top: 38px;
+  min-height: 128px;
+}
+
+.analytics-stat-card-analytics.non-functional::after {
+  top: 12px;
+  right: 14px;
+  left: auto;
+  transform: none;
+}
+
+.analytics-charts-row-analytics .project-card.non-functional,
+.analytics-full-width-analytics.non-functional {
+  padding-top: 18px;
+}
+
+.analytics-charts-row-analytics .project-card.non-functional::after,
+.analytics-full-width-analytics.non-functional::after {
+  top: 14px;
+  right: 16px;
+  bottom: auto;
+  left: auto;
+  width: auto;
+  height: auto;
+  opacity: 0.92;
+  background: #1e293b;
+  transform: none;
+}
+
+.analytics-charts-row-analytics .project-card.non-functional:hover::after,
+.analytics-full-width-analytics.non-functional:hover::after {
+  opacity: 0.92;
+}
+
+.analytics-page-analytics .project-card.non-functional .analytics-title-analytics {
+  padding-right: 112px;
+  min-height: 18px;
 }
 
 .analytics-stat-icon-analytics {
@@ -53,11 +117,21 @@
   background: #ffffff;
   border-radius: 14px;
   padding: 18px;
-  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow:
+    0 14px 32px rgba(15, 23, 42, 0.10),
+    0 3px 10px rgba(15, 23, 42, 0.06);
   margin-top: 16px;
   min-width: 0;
   /* 🔑 critical */
   overflow: hidden;
+}
+
+.analytics-page-analytics .project-card {
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow:
+    0 14px 32px rgba(15, 23, 42, 0.10),
+    0 3px 10px rgba(15, 23, 42, 0.06);
 }
 
 .analytics-title-analytics {

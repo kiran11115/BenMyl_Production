@@ -91,7 +91,6 @@
     padding: 20px
 }
 
-
 .card-header h2 {
     margin: 0;
     font-size: 16px;
@@ -578,4 +577,5 @@
     .integrations-grid {
         grid-template-columns: 1fr
     }
+
 }

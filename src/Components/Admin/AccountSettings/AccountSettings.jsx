@@ -3,7 +3,6 @@ import {
   FiArrowLeft,
   FiShield,
   FiBell,
-  FiUsers,
   FiPlus,
   FiMoreHorizontal,
   FiCheckCircle,
@@ -14,47 +13,19 @@ import BillingHistoryTable from "./BillingHistoryTable";
 import InviteTeamMemberModal from "./InviteTeamMemberModal";
 import { useGetTeamMembersQuery } from "../../../State-Management/Api/AdminDetailsApiSlice";
 
-// Import your existing FormWizard component
-// Make sure FormWizard is in the same directory or adjust the path
-
-
-const BillingRow = ({ date, desc, amount, status }) => (
-  <tr>
-    <td>{date}</td>
-    <td>{desc}</td>
-    <td>{amount}</td>
-    <td>
-      <span className={`pill pill-${status.toLowerCase()}`}>{status}</span>
-    </td>
-    <td>
-      <a className="link-action" href="#download">Download</a>
-    </td>
-  </tr>
-);
-
 export default function AccountSettings() {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const emailID = localStorage.getItem("Email");
   const {
-  data: teamMembers = [],
-  isLoading,
-  isError,
-} = useGetTeamMembersQuery(emailID, {
-  skip: !emailID,
-});
+    data: teamMembers = [],
+    isLoading,
+    isError,
+  } = useGetTeamMembersQuery(emailID, {
+    skip: !emailID,
+  });
 
-
-  // State to control active tab
   const [activeTab, setActiveTab] = useState("billing");
-
-  // Mock Data (moved out of render for cleaner code)
-  // const teamMembers = [
-  //   { name: "John Smith", email: "john.smith@company.com", role: "Admin", tag: "Owner" },
-  //   { name: "Sarah Johnson", email: "sarah.johnson@company.com", role: "HR Manager", tag: "Active" },
-  //   { name: "Michael Chen", email: "michael.chen@company.com", role: "Recruiter", tag: "Active" },
-  //   { name: "Emily Davis", email: "emily.davis@company.com", role: "Hiring Manager", tag: "Pending" },
-  // ];
 
   const integrations = [
     { name: "Google Workspace", desc: "Connect your Google account to import contacts and schedule interviews", connected: true },
@@ -66,21 +37,18 @@ export default function AccountSettings() {
   return (
     <div className="settings-page">
       <div className="">
-
-        {/* Header Section */}
-        <div className="back-row d-flex gap-1">
+        {/* <div className="back-row d-flex gap-1">
           <button className="link-button" onClick={() => navigate("/admin/admin-profile")}>
             <FiArrowLeft /> Back to Profile
           </button>
           <span className="crumb">/ Account Settings</span>
-        </div>
+        </div> */}
 
         <div className="page-title-wrapper mt-3">
           <h1 className="page-title">Account Settings</h1>
           <p className="page-sub">Manage your account details and preferences</p>
         </div>
 
-        {/* Tab Navigation */}
         <div className="view-toggle1 mt-3 mb-3">
           <button
             className={`toggle ${activeTab === "billing" ? "active" : ""}`}
@@ -92,7 +60,7 @@ export default function AccountSettings() {
             className={`toggle ${activeTab === "security" ? "active" : ""}`}
             onClick={() => setActiveTab("security")}
           >
-            Security & Notif.
+            Security & Info
           </button>
           <button
             className={`toggle ${activeTab === "team" ? "active" : ""}`}
@@ -108,10 +76,9 @@ export default function AccountSettings() {
           </button>
         </div>
 
-        {/* --- TAB CONTENT: BILLING --- */}
         {activeTab === "billing" && (
           <div className="animate-fade-in">
-            <section className="card large">
+            <section className="card large non-functional">
               <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
                 <h2>Billing Information</h2>
                 <a className="view-history fw-semibold" href="#history">View History</a>
@@ -152,7 +119,6 @@ export default function AccountSettings() {
                         <button className="more"><FiMoreHorizontal /></button>
                       </div>
                     </div>
-                    {/* Add more payment methods here if needed */}
                   </div>
                 </div>
 
@@ -165,9 +131,8 @@ export default function AccountSettings() {
           </div>
         )}
 
-        {/* --- TAB CONTENT: SECURITY + NOTIFICATIONS --- */}
         {activeTab === "security" && (
-          <div className="grid-2 animate-fade-in">
+          <div className="grid-2 animate-fade-in non-functional">
             <section className="card">
               <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
                 <h2>Security</h2>
@@ -206,7 +171,7 @@ export default function AccountSettings() {
 
             <section className="card">
               <div className="card-header mb-3" style={{ padding: "16px 12px" }}>
-                <h2>Notification Preferences</h2>
+                <h2>Info & Notifications</h2>
                 <a className="manage-link" href="#edit">Edit All</a>
               </div>
               <div className="settings-list">
@@ -225,7 +190,6 @@ export default function AccountSettings() {
                     </label>
                   </div>
                 </div>
-                {/* Notification Types checkboxes */}
                 <div className="notification-types">
                   <div className="notif-title">Notification Types</div>
                   <label className="chk"><input type="checkbox" defaultChecked /> New application received</label>
@@ -236,79 +200,73 @@ export default function AccountSettings() {
           </div>
         )}
 
-        {/* --- TAB CONTENT: TEAM --- */}
         {activeTab === "team" && (
-  <div className="animate-fade-in">
-    <section className="card">
-      <div className="card-header d-flex align-items-center mb-3">
-        <h2>Team Management</h2>
-
-        <button
-          className="btn-primary"
-          type="button"
-          onClick={() => setShow(true)}
-        >
-          Invite Team Member
-        </button>
-
-        <InviteTeamMemberModal show={show} onHide={() => setShow(false)} />
-      </div>
-
-      {/* Loading */}
-      {isLoading && <p className="muted">Loading team members...</p>}
-
-      {/* Error */}
-      {isError && <p className="error-text">Failed to load team members</p>}
-
-      {/* Team List */}
-      {!isLoading && teamMembers.length === 0 && (
-        <p className="muted">No team members found</p>
-      )}
-
-      <div className="team-list">
-        {teamMembers.map((m) => (
-          <div key={m.emailID} className="team-item">
-            <div className="team-left">
-              <div className="avatar-sm">
-                {(m.name || m.emailID)[0].toUpperCase()}
-              </div>
-
-              <div>
-                <div className="team-name">
-                  {m.name || "Invited User"}
-                </div>
-                <div className="team-email">{m.emailID}</div>
-              </div>
-            </div>
-
-            <div className="team-right">
-              <select
-                value={m.role}
-                disabled
-                className="role-select btn-secondary"
-              >
-                <option>{m.role === "Recruiter" ? "Hiring Manager" : m.role}</option>
-              </select>
-
-              <span
-                className={`status-tag ${
-                  m.accepted ? "status-active" : "status-pending"
-                }`}
-              >
-                {m.accepted ? "Active" : "Pending"}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  </div>
-)}
-
-        {/* --- TAB CONTENT: INTEGRATIONS --- */}
-        {activeTab === "integrations" && (
           <div className="animate-fade-in">
             <section className="card">
+              <div className="card-header d-flex align-items-center mb-3">
+                <h2>Team Management</h2>
+
+                <button
+                  className="btn-primary"
+                  type="button"
+                  onClick={() => setShow(true)}
+                >
+                  Invite Team Member
+                </button>
+
+                <InviteTeamMemberModal show={show} onHide={() => setShow(false)} />
+              </div>
+
+              {isLoading && <p className="muted">Loading team members...</p>}
+              {isError && <p className="error-text">Failed to load team members</p>}
+
+              {!isLoading && teamMembers.length === 0 && (
+                <p className="muted">No team members found</p>
+              )}
+
+              <div className="team-list">
+                {teamMembers.map((m) => (
+                  <div key={m.emailID} className="team-item">
+                    <div className="team-left">
+                      <div className="avatar-sm">
+                        {(m.name || m.emailID)[0].toUpperCase()}
+                      </div>
+
+                      <div>
+                        <div className="team-name">
+                          {m.name || "Invited User"}
+                        </div>
+                        <div className="team-email">{m.emailID}</div>
+                      </div>
+                    </div>
+
+                    <div className="team-right">
+                      <select
+                        value={m.role}
+                        disabled
+                        className="role-select btn-secondary"
+                      >
+                        <option>{m.role === "Recruiter" ? "Hiring Manager" : m.role}</option>
+                      </select>
+
+                      <span
+                        className={`status-tag ${
+                          m.accepted ? "status-active" : "status-pending"
+                        }`}
+                      >
+                        {m.accepted ? "Active" : "Pending"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === "integrations" && (
+          <div className="animate-fade-in">
+            <section className="card non-functional">
               <div className="card-header" style={{ padding: "16px 12px" }}>
                 <h2>Integrations</h2>
                 <a className="manage-link fw-semibold" href="#browse">Browse More</a>
@@ -339,7 +297,6 @@ export default function AccountSettings() {
           <div>Need help? <a href="#support">Contact Support</a></div>
           <div className="muted">Account created on May 15, 2025</div>
         </footer>
-
       </div>
     </div>
   );

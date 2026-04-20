@@ -53,6 +53,7 @@ const routes = createBrowserRouter(
           <Route path="admin-profile" element={<AdminProfile />} />
           <Route path="account-settings" element={<AccountSettings />} />
           <Route path="edit-profile" element={<AdminProfileEdit />} />
+          <Route path="admin-analytics" element={<Analytics />} />
         </Route>
 
         <Route path="User" element={<Header />}>

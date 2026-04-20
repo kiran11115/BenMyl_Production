@@ -15,21 +15,21 @@ export default function Analytics() {
 
       {/* CHARTS */}
       <div className="analytics-charts-row-analytics">
-        <div className="project-card mt-3 mb-3">
+        <div className="project-card mt-3 mb-3 non-functional">
           <h4 className="analytics-title-analytics">Hiring Pipeline</h4>
           <div className="analytics-chart-box-analytics">
             <HiringLineChart />
           </div>
         </div>
 
-        <div className="project-card mt-3 mb-3">
+        <div className="project-card mt-3 mb-3 non-functional">
           <h4 className="analytics-title-analytics">Budget Distribution</h4>
           <div className="analytics-chart-box-analytics">
             <BudgetPieChart />
           </div>
         </div>
 
-        <div className="project-card mt-3 mb-3">
+        <div className="project-card mt-3 mb-3 non-functional">
           <h4 className="analytics-title-analytics">
             Monthly Spend by Department
           </h4>
@@ -40,7 +40,7 @@ export default function Analytics() {
       </div>
 
       {/* TABLE */}
-      <div className="project-card mt-3 mb-3 analytics-full-width-analytics">
+      <div className="project-card mt-3 mb-3 analytics-full-width-analytics non-functional">
         <h4 className="analytics-title-analytics">Department Metrics</h4>
         <DepartmentTable />
       </div>
