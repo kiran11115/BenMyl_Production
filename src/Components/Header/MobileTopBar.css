@@ -37,3 +37,23 @@
         display: flex;
     }
 }
+
+@media (max-width: 480px) {
+    .mobile-top-bar {
+        padding: 0 0.75rem;
+    }
+    .mobile-actions {
+        gap: 0.5rem;
+    }
+    .mobile-logo {
+        height: 20px;
+    }
+    .mobile-action-btn, 
+    .ai-pill-btn {
+        padding: 4px;
+        min-width: unset !important;
+    }
+    .ai-pill-btn span {
+        margin: 0 !important;
+    }
+}

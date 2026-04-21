@@ -818,17 +818,77 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  .tms-root {
+    height: calc(100vh - 140px); /* Adjust for header/footer */
+    padding: 0;
+  }
+
   .tms-shell {
-    margin: 8px;
-    border-radius: 8px;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    position: relative;
+    width: 100%;
   }
 
   .tms-sidebar {
-    width: 220px;
+    width: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    transition: transform 0.3s ease;
+  }
+
+  .tms-chat {
+    width: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    transition: transform 0.3s ease;
+    transform: translateX(100%);
+  }
+
+  /* When mobile chat is active, slide chat in and sidebar out */
+  .tms-mobile-chat-active .tms-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .tms-mobile-chat-active .tms-chat {
+    transform: translateX(0);
+    z-index: 15;
+  }
+
+  .tms-back-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #64748b;
+    padding: 8px;
+    margin-right: 4px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .tms-back-btn:hover {
+    background: #f1f5f9;
+  }
+
+  .tms-chat-header {
+    padding: 8px 12px;
   }
 
   .tms-bubble {
-    max-width: 85%;
+    max-width: 90%;
   }
 
+  .tms-input-bar {
+    padding: 8px 12px 10px;
+  }
+}
+
+/* Base style for back button (hidden on desktop) */
+.tms-back-btn {
+  display: none;
 }

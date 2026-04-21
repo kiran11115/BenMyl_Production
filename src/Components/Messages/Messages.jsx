@@ -7,6 +7,7 @@ import {
   FiPaperclip,
   FiAtSign,
   FiMessageSquare,
+  FiChevronLeft,
 } from "react-icons/fi";
 import "./Messages.css";
 
@@ -147,6 +148,7 @@ const Messages = () => {
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
   const [domainTab, setDomainTab] = useState("sameDomain");
+  const [mobileView, setMobileView] = useState("list"); // "list" or "chat"
   const chatBodyRef = useRef(null);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
@@ -223,7 +225,7 @@ const Messages = () => {
 
   return (
     <div className="tms-root">
-      <div className="tms-shell">
+      <div className={`tms-shell ${mobileView === "chat" ? "tms-mobile-chat-active" : ""}`}>
 
         {/* ══════════════ SIDEBAR ══════════════ */}
         <aside className="tms-sidebar">
@@ -282,7 +284,10 @@ const Messages = () => {
                 >
                   <button
                     className={"tms-contact-item" + (active ? " tms-contact-active" : "")}
-                    onClick={() => setSelectedId(c.id)}
+                    onClick={() => {
+                      setSelectedId(c.id);
+                      setMobileView("chat");
+                    }}
                   >
                     <div
                       className="tms-avatar"
@@ -323,6 +328,13 @@ const Messages = () => {
           {/* Chat Header */}
           <header className="tms-chat-header">
             <div className="tms-chat-header-left">
+              <button 
+                className="tms-back-btn" 
+                onClick={() => setMobileView("list")}
+                title="Back to list"
+              >
+                <FiChevronLeft size={24} />
+              </button>
               <div
                 className="tms-header-avatar"
                 style={{ background: currentConversation?.avatarColor || "#6264a7" }}

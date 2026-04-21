@@ -95,7 +95,7 @@ const teamMembers = useMemo(() => {
   return (
     <div className="projects-container">
       {/* Breadcrumb */}
-      <div className="profile-breadcrumb d-flex gap-1">
+      {/* <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
           onClick={() => navigate("/admin/admin-dashboard")}
@@ -103,7 +103,7 @@ const teamMembers = useMemo(() => {
           <FiArrowLeft /> Back to Dashboard
         </button>
         <span className="crumb">/ Company Profile</span>
-      </div>
+      </div> */}
 
       <div className="dashboard-layout">
         {/* === LEFT MAIN COLUMN === */}
