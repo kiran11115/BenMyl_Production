@@ -5,15 +5,28 @@ import {
   FiMoreVertical,
   FiChevronUp,
   FiChevronDown,
+  FiEye,
 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
+import NoData from "./NoData"; // adjust path if needed
+import { useNavigate } from "react-router-dom";
+import UserMobileTalentCard from "./UserMobileTalentCard";
 
-// --- Sub-component: Sort Icon Helper ---
+/* ---------------- HELPER: INITIALS ---------------- */
+const getInitials = (name = "") => {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0].toUpperCase())
+    .join("");
+};
+
+/* ---------------- SORT ICON ---------------- */
 const SortIcon = ({ active, direction }) => {
-  if (!active) {
-    return <FaSort className="tt-sort-icon" />;
-  }
+  if (!active) return <FaSort className="tt-sort-icon" />;
+
   return direction === "ascending" ? (
     <FiChevronUp className="tt-sort-icon active" />
   ) : (
@@ -21,105 +34,141 @@ const SortIcon = ({ active, direction }) => {
   );
 };
 
-// --- Sub-component: Table Row ---
-const CandidateRow = memo(({ candidate }) => (
-  <tr className="tt-row">
-    <td className="tt-td">
-      <input type="checkbox" className="row-checkbox" />
-    </td>
-    <td className="tt-td">
-      <div className="tt-candidate-flex">
-        <img src={candidate.avatar} alt="" className="tt-avatar" />
-        <div className="tt-info-col">
-          <span className="tt-name">{candidate.name}</span>
-          <span className="tt-email">{candidate.email}</span>
-        </div>
-      </div>
-    </td>
-    <td className="tt-td">
-      <div className="tt-role-flex">
-        <span className="tt-role">{candidate.role}</span>
-        <span className="tt-exp">
-          <FiBriefcase size={12} /> {candidate.experience}
-        </span>
-      </div>
-    </td>
-    <td className="tt-td">
-      <div className="tt-skills-flex">
-        {candidate.skills.slice(0, 2).map((skill) => (
-          <span key={skill} className="status-tag status-progress">
-            {skill}
-          </span>
-        ))}
-        {candidate.skills.length > 2 && (
-          <span className="tt-skill-more">+{candidate.skills.length - 2}</span>
-        )}
-      </div>
-    </td>
-    <td className="tt-td">
-      <div className="tt-location">
-        <FiMapPin size={14} color="#9ca3af" /> {candidate.location}
-      </div>
-    </td>
-    <td className="tt-td">
-      <div className="tt-role-flex">
-        {candidate.availability.map((avail) => (
-          <TalentAvailabilityBadge key={avail} text={avail} />
-        ))}
-      </div>
-    </td>
-    <td className="tt-td action">
-      <button className="tt-action-btn">
-        <FiMoreVertical size={18} />
-      </button>
-    </td>
-  </tr>
-));
+/* ---------------- TABLE ROW ---------------- */
+const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
+  const navigate = useNavigate();
+  const handleProfileClick = () => {
+    navigate("/user/talent-profile", {
+      state: {
+        employeeId: candidate.id,
+      },
+    });
+  };
+  return (
+    <tr className="tt-row">
+      {/* Checkbox */}
+      <td className="tt-td">
+        <input
+          type="checkbox"
+          className="row-checkbox"
+          checked={isSelected}
+          onChange={() => onToggle(candidate.id)}
+        />
+      </td>
 
-// --- Main Component ---
-const UserTalentTable = ({ candidates }) => {
+      {/* Candidate */}
+      <td className="tt-td">
+        <div className="tt-candidate-flex">
+          {/* Initial Avatar */}
+          <div className="initial-avatar">
+            {getInitials(candidate.name)}
+          </div>
+
+          <div className="tt-info-col">
+            <span className="tt-name">{candidate.name}</span>
+            <span className="tt-email">{candidate.email}</span>
+          </div>
+        </div>
+      </td>
+
+      {/* Role & Experience */}
+      <td className="tt-td">
+        <div className="tt-role-flex">
+          <span className="tt-role">{candidate.role}</span>
+          <span className="tt-exp">
+            <FiBriefcase size={12} /> {candidate.experience}
+          </span>
+        </div>
+      </td>
+
+      {/* Skills */}
+      <td className="tt-td">
+        <div className="tt-skills-flex">
+          {candidate.skills.slice(0, 2).map((skill) => (
+            <span key={skill} className="status-tag status-progress">
+              {skill}
+            </span>
+          ))}
+          {candidate.skills.length > 2 && (
+            <span className="tt-skill-more">
+              +{candidate.skills.length - 2}
+            </span>
+          )}
+        </div>
+      </td>
+
+      {/* Location */}
+      <td className="tt-td">
+        <div className="tt-location">
+          <FiMapPin size={14} color="#9ca3af" /> {candidate.location}
+        </div>
+      </td>
+
+      {/* Availability */}
+      <td className="tt-td">
+        <div className="tt-role-flex">
+          {candidate.availability.map((avail) => (
+            <TalentAvailabilityBadge key={avail} text={avail} />
+          ))}
+        </div>
+      </td>
+
+      {/* Action */}
+      <td className="tt-td action">
+        <button className="tt-action-btn" onClick={handleProfileClick}>
+          <FiEye size={16} />
+        </button>
+      </td>
+    </tr>
+  );
+});
+
+/* ---------------- MAIN TABLE ---------------- */
+const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
+  const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
   });
 
-  // Universal Sorting Logic
+  /* ---------- SORTING ---------- */
   const sortedCandidates = useMemo(() => {
-    let sortableItems = [...candidates];
+    const items = [...candidates];
 
-    if (sortConfig.key !== null) {
-      sortableItems.sort((a, b) => {
-        // Use optional chaining to safely access properties
-        let aValue = a[sortConfig.key] ?? "";
-        let bValue = b[sortConfig.key] ?? "";
+    if (sortConfig.key) {
+      items.sort((a, b) => {
+        let aVal = a[sortConfig.key] ?? "";
+        let bVal = b[sortConfig.key] ?? "";
 
-        // 1. Handle Arrays (Skills, Availability)
-        if (Array.isArray(aValue)) {
-          aValue = aValue.join(", ").toLowerCase();
-          bValue = bValue.join(", ").toLowerCase();
-        }
-        // 2. Handle Strings
-        else if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
+        if (Array.isArray(aVal)) {
+          aVal = aVal.join(", ").toLowerCase();
+          bVal = bVal.join(", ").toLowerCase();
+        } else if (typeof aVal === "string") {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
         }
 
-        // 3. Comparison
-        if (aValue < bValue) {
-          return sortConfig.direction === "ascending" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "ascending" ? 1 : -1;
-        }
+        if (aVal < bVal) return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
     }
-    return sortableItems;
+
+    return items;
   }, [candidates, sortConfig]);
+
+
+  // ✅ PLACE IT HERE (IMMEDIATELY AFTER STATE)
+  if (!candidates || candidates.length === 0) {
+    return (
+      <div className="d-flex justify-content-center align-items-center w-100">
+        <NoData text="No professional summary added yet" />
+      </div>
+    );
+  }
 
   const requestSort = (key) => {
     let direction = "ascending";
-    // If clicking the same header, toggle direction
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
@@ -128,77 +177,113 @@ const UserTalentTable = ({ candidates }) => {
 
   return (
     <div className="tt-wrapper">
-      <table className="tt-table">
-        <thead>
-          <tr className="tt-thead-tr">
-            <th className="tt-th" style={{ width: "40px" }}></th>
+      {/* Mobile View */}
+      <div className="mobile-talent-list d-md-none">
+        {sortedCandidates.map((c) => (
+          <UserMobileTalentCard
+            key={c.id}
+            candidate={c}
+            isSelected={selectedIds.has(c.id)}
+            onToggle={onToggleSelect}
+          />
+        ))}
+      </div>
 
-            {/* 1. Name */}
-            <th className="tt-th sortable" onClick={() => requestSort("name")}>
-              <div className="tt-th-content">
-                Candidate
-                <SortIcon
-                  active={sortConfig.key === "name"}
-                  direction={sortConfig.direction}
+      {/* Desktop View */}
+      <div className="d-none d-md-block" style={{ overflowY: "auto", maxHeight: "600px" }}>
+        <table className="tt-table">
+          <thead>
+            <tr className="tt-thead-tr">
+              <th className="tt-th" style={{ width: "40px" }}></th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("name")}>
+                <div className="tt-th-content">
+                  Candidate
+                  <SortIcon
+                    active={sortConfig.key === "name"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("role")}>
+                <div className="tt-th-content">
+                  Role & Experience
+                  <SortIcon
+                    active={sortConfig.key === "role"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("skills")}>
+                <div className="tt-th-content">
+                  Skills
+                  <SortIcon
+                    active={sortConfig.key === "skills"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th sortable" onClick={() => requestSort("location")}>
+                <div className="tt-th-content">
+                  Location
+                  <SortIcon
+                    active={sortConfig.key === "location"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th
+                className="tt-th sortable"
+                onClick={() => requestSort("availability")}
+              >
+                <div className="tt-th-content">
+                  Availability
+                  <SortIcon
+                    active={sortConfig.key === "availability"}
+                    direction={sortConfig.direction}
+                  />
+                </div>
+              </th>
+
+              <th className="tt-th" style={{ textAlign: "right" }}>
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {sortedCandidates.length === 0 ? (
+              <tr>
+                <td colSpan={7}>
+                  <div
+                    style={{
+                      minHeight: "260px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text="No professional summary added yet" />
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              sortedCandidates.map((c) => (
+                <CandidateRow
+                  key={c.id}
+                  candidate={c}
+                  isSelected={selectedIds.has(c.id)}
+                  onToggle={onToggleSelect}
                 />
-              </div>
-            </th>
-
-            {/* 2. Role */}
-            <th className="tt-th sortable" onClick={() => requestSort("role")}>
-              <div className="tt-th-content">
-                Role & Experience
-                <SortIcon
-                  active={sortConfig.key === "role"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            {/* 3. Skills */}
-            <th className="tt-th sortable" onClick={() => requestSort("skills")}>
-              <div className="tt-th-content">
-                Skills
-                <SortIcon
-                  active={sortConfig.key === "skills"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            {/* 4. Location */}
-            <th className="tt-th sortable" onClick={() => requestSort("location")}>
-              <div className="tt-th-content">
-                Location
-                <SortIcon
-                  active={sortConfig.key === "location"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            {/* 5. Availability */}
-            <th className="tt-th sortable" onClick={() => requestSort("availability")}>
-              <div className="tt-th-content">
-                Availability
-                <SortIcon
-                  active={sortConfig.key === "availability"}
-                  direction={sortConfig.direction}
-                />
-              </div>
-            </th>
-
-            <th className="tt-th" style={{ textAlign: "right" }}>
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedCandidates.map((c) => (
-            <CandidateRow key={c.id} candidate={c} />
-          ))}
-        </tbody>
-      </table>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

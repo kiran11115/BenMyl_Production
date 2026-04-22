@@ -1,19 +1,34 @@
 import React, { memo } from "react";
-import { FiMapPin } from "react-icons/fi"; 
+import { FiMapPin } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle }) => (
-  <div className="project-card justify-content-between h-100">
+const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
+  const navigate = useNavigate();
+  const handleProfileClick = () => {
+    navigate("/user/talent-profile", {
+      state: {
+        employeeId: candidate.id,
+      },
+    });
+  };
+  const visibleSkills = candidate.skills.slice(0, 3);
+  const remainingCount = candidate.skills.length - visibleSkills.length;
+  const getInitials = (name = "") => {
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0].toUpperCase())
+      .join("");
+  };
+  return (
+    <div className="project-card justify-content-between h-100">
       <div className="d-flex flex-column gap-3">
         {/* --- Header Section --- */}
         <div className="card-header">
           <div className="card-header gap-2">
-            <img
-              src={candidate.avatar}
-              alt={candidate.name}
-              className="v-avatar"
-              loading="lazy"
-            />
+            <div className="initial-avatar">{getInitials(candidate.name)}</div>
             <div>
               <div className="candidate-name-row">
                 <div className="d-flex align-items-center gap-2">
@@ -35,11 +50,17 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
 
         {/* --- Skills Tags --- */}
         <div className="v-tags">
-          {candidate.skills.slice(0, 3).map((s) => (
+          {visibleSkills.map((s) => (
             <span className="status-tag status-progress" key={s}>
               {s}
             </span>
           ))}
+
+          {remainingCount > 0 && (
+            <span className="status-tag status-muted">
+              +{remainingCount} more
+            </span>
+          )}
         </div>
 
         {/* --- Meta Info --- */}
@@ -49,57 +70,110 @@ const CandidateCard = memo(({ candidate, onProfileClick, isSelected, onToggle })
             <span>{candidate.location}</span>
           </div>
         </div>
-        
-        <div className="candidate-badges m-0">
-          {candidate.availability.map((a) => (
+
+        <div className="candidate-badges m-0 d-flex gap-2 flex-wrap">
+          {/* Availability */}
+          {candidate.availability?.map((a) => (
             <span key={a} className="status-tag status-completed">
               {a}
             </span>
           ))}
+
+          {/* Approved By */}
+          <span className="status-tag status-approved">
+            Approved By {candidate.uploadedByName || "-"}
+          </span>
         </div>
       </div>
 
       {/* --- ACTION BUTTONS --- */}
       <div className="card-actions d-flex gap-2">
-        <button className="btn-primary flex-grow-1" onClick={onProfileClick}>
+        <button
+          className="btn-primary flex-grow-1"
+          onClick={handleProfileClick}
+          style={{ padding: "10px 12px", fontSize: "14px" }}
+        >
           View Profile
         </button>
 
-          <button 
-            // Append 'btn-selected' class if isSelected is true
-            className={`btn-secondary ${isSelected ? 'btn-selected' : ''}`} 
-            onClick={() => onToggle(candidate.id)}
-            title={isSelected ? "Remove from selection" : "Add to selection"}
-            style={{ minWidth: "100px", transition: "all 0.2s ease" }}
+        <button
+          // Append 'btn-selected' class if isSelected is true
+          className={`btn-secondary ${isSelected ? "btn-selected" : ""}`}
+          onClick={() => onToggle(candidate.id)}
+          title={isSelected ? "Remove from selection" : "Add to selection"}
+          style={{ minWidth: "90px", padding: "10px 12px", fontSize: "14px", transition: "all 0.2s ease" }}
         >
-            <span>{isSelected ? "Selected" : "Select"}</span>
+          <span>{isSelected ? "Selected" : "Select"}</span>
         </button>
       </div>
 
       <style jsx>{`
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .candidate-sub {
+            font-size: 13px;
+            color: #64748b;
+        }
+
         /* Override styles for the selected state */
         .btn-selected {
-            background-color: #10b981 !important; /* Green */
-            border-color: #10b981 !important;
-            color: white !important;
+          background-color: #10b981 !important; /* Green */
+          border-color: #10b981 !important;
+          color: white !important;
         }
-        
+
         .btn-selected:hover {
-            background-color: #059669 !important; /* Darker Green on hover */
-            border-color: #059669 !important;
+          background-color: #059669 !important; /* Darker Green on hover */
+          border-color: #059669 !important;
+        }
+
+        .status-muted {
+          background-color: #f1f5f9;
+          color: #475569;
+          font-weight: 500;
+          cursor: default;
+        }
+        .initial-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background-color: #e5e7eb; /* light grey */
+          color: #374151; /* dark text */
+          font-size: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            .card-title {
+                font-size: 15px;
+            }
+            .card-actions button {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
         }
       `}</style>
-  </div>
-));
+    </div>
+  );
+});
 
-const UserTalentGrid = ({ candidates, onProfileClick, selectedIds, onToggleSelect }) => {
+const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
   return (
     <div className="jobs-grid">
       {candidates.map((c) => (
         <CandidateCard
           key={c.id}
           candidate={c}
-          onProfileClick={onProfileClick}
           isSelected={selectedIds.has(c.id)}
           onToggle={onToggleSelect}
         />

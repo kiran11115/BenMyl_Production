@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./TalentProfile.css";
 import {
   FiMapPin,
@@ -9,89 +9,149 @@ import {
   FiPhone,
   FiLinkedin,
   FiFileText,
-  FiEye,
-  FiExternalLink,
   FiArrowLeft,
+  FiCalendar,
+  FiUser,
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
 import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
+import { calculateTotalExperience } from "../../../Utils/experienceUtils";
+import { toast } from "react-toastify";
+import NoData from "../../UploadTalent/NoData";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const query = new URLSearchParams(location.search);
+  const from = query.get("from");
+
+  const handleBack = () => {
+    if (from) {
+      navigate(decodeURIComponent(from));
+    } else {
+      navigate(-1);
+    }
+  };
+  const { state } = useLocation();
+  const employeeId = state?.employeeID;
+  console.log("EmpId:", employeeId);
+  const jobId = state?.jobId;
+
+  const [isShortlisted, setIsShortlisted] = React.useState(false);
+
+  useEffect(() => {
+    if (!jobId || !employeeId) return;
+
+    const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+    const exists = stored[jobId]?.some(c => c.id === employeeId);
+    setIsShortlisted(!!exists);
+  }, [jobId, employeeId]);
+
+  const [triggerGetProfile, { data: employee, isLoading, isError }] =
+    useLazyGetEmployeeTalentProfileQuery();
+
+  useEffect(() => {
+    if (employeeId) {
+      triggerGetProfile(employeeId);
+    }
+  }, [employeeId, triggerGetProfile]);
 
   const profileData = {
-    name: "Sarah Anderson",
-    role: "Senior UX Designer",
-    location: "San Francisco, CA",
-    experience: "8+ years experience",
-    status: "Available for hire",
-    summary:
-      "Experienced UX Designer with 8+ years of creating user-centered digital experiences for various industries. Specialized in product design, user research, and design systems. Currently leading design initiatives at TechCorp, focusing on enterprise software solutions.",
+    name: `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`.trim() || "N/A",
+    role: employee?.title ?? "N/A",
+    avatar:
+      employee?.profilePicture ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        `${employee?.firstName ?? ""} ${employee?.lastName ?? ""}`
+      )}`,
+    location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
+    experience: calculateTotalExperience(employee?.workexperiences),
+    status: employee?.status ?? "N/A",
+    summary: employee?.bio ?? "N/A",
     stats: [
       { label: "Projects Completed", value: "150+" },
       { label: "Client Satisfaction", value: "98%" },
     ],
-    skills: [
-      "UI/UX Design",
-      "User Research",
-      "Figma",
-      "Adobe XD",
-      "Sketch",
-      "Prototyping",
-      "Design Systems",
-      "Wireframing",
-      "User Testing",
-      "Information Architecture",
-      "Design Thinking",
-      "Team Leadership",
-    ],
-    workExperience: [
-      {
-        role: "Lead UX Designer",
-        company: "TechCorp",
-        period: "2020 - Present",
-        location: "San Francisco, CA",
-        desc: "Leading a team of designers, developing design systems, and managing enterprise projects.",
-      },
-      {
-        role: "Senior UX Designer",
-        company: "Design Studio",
-        period: "2018 - 2020",
-        location: "New York, NY",
-        desc: "Designed user interfaces for various clients in fintech and healthcare sectors.",
-      },
-      {
-        role: "UX Designer",
-        company: "StartupHub",
-        period: "2015 - 2018",
-        location: "Boston, MA",
-        desc: "Created user experiences for early-stage startups and conducted user research.",
-      },
-    ],
-    portfolio: [
-      {
-        title: "E-commerce Dashboard",
-        tags: ["React", "Redux", "TailwindCSS"],
-        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Travel App UI",
-        tags: ["React Native", "Firebase"],
-        img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Financial Analytics Platform",
-        tags: ["TypeScript", "D3.js", "Node.js"],
-        img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500",
-      },
-      {
-        title: "Health Tracker",
-        tags: ["React", "GraphQL", "MongoDB"],
-        img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500",
-      },
-    ],
+    skills: employee?.skills
+      ? employee?.skills.split(",").map((s) => s.trim())
+      : [],
+
+    workExperience:
+      employee?.workexperiences?.map((exp) => ({
+        role: exp.position || "N/A",
+        company: exp.companyName || "N/A",
+        period: `${exp.startDate?.slice(0, 10) || "N/A"} - ${exp.endDate ? exp.endDate.slice(0, 10) : "Present"
+          }`,
+        location: employee?.city || "N/A",
+        desc: exp.description || "N/A",
+      })) || [],
+
+    education:
+      employee?.employee_Heighers?.map((edu) => ({
+        degree: edu.highestQualification || "N/A",
+        school: edu.university || "N/A",
+        year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate?.slice(0, 4) || "N/A"}`,
+      })) || [],
   };
+
+  const getInitials = (name = "") => {
+    if (name === "N/A") return "N/A";
+    const words = name.trim().split(" ");
+    const first = words[0]?.charAt(0) || "";
+    const second = words[1]?.charAt(0) || "";
+    return (first + second).toUpperCase();
+  };
+
+  const projectsData =
+    employee?.employeeprojects?.map((proj) => ({
+      projectName: proj.projectName || "N/A",
+      role: proj.role || "N/A",
+      startDate: proj.startDate
+        ? proj.startDate.slice(0, 10)
+        : "N/A",
+      endDate: proj.endDate
+        ? proj.endDate.slice(0, 10)
+        : "Present",
+      skills: proj.skills
+        ? proj.skills.split(",").map((s) => s.trim())
+        : [],
+      description: proj.description || "N/A",
+    })) || [];
+
+  const handleShortlistFromProfile = () => {
+    if (!jobId || !employeeId) {
+      toast.error("Please select a Job from the filters first to shortlist.");
+      return;
+    }
+
+    const stored = JSON.parse(localStorage.getItem("shortlistedMap") || "{}");
+    const currentList = stored[jobId] || [];
+
+    const exists = currentList.some(c => c.id === employeeId);
+
+    const updated = {
+      ...stored,
+      [jobId]: exists
+        ? currentList.filter(c => c.id !== employeeId)
+        : [
+          ...currentList,
+          {
+            id: employeeId,
+            name: profileData.name,
+            role: profileData.role,
+            avatar: profileData.avatar,
+            inviteUserId: employee?.insertBy,
+          },
+        ],
+    };
+
+    localStorage.setItem("shortlistedMap", JSON.stringify(updated));
+    setIsShortlisted(!exists); // 🔥 update UI instantly
+  };
+
 
   return (
     <div className="projects-container">
@@ -99,104 +159,147 @@ const TalentProfile = () => {
       <div className="profile-breadcrumb d-flex gap-1">
         <button
           className="link-button"
-          onClick={() => navigate("/user/user-talentpool")}
+          onClick={handleBack}
         >
           <FiArrowLeft /> Talent Pool{" "}
         </button>
         <span className="crumb">/ Profile Page</span>
       </div>
 
-      <div className="dashboard-layout">
+      <div className="dashboard-layout gap-2">
         {/* === LEFT MAIN COLUMN === */}
         <div className="dashboard-column-main">
           <div className="row">
-            <div className="col-3">
-              {/* Profile Header Card */}
-              <div className="project-card">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                  alt="Profile"
-                  className="profile-avatar-lg"
-                />
-                <div className="profile-header-content">
-                  <div className="d-flex gap-3">
-                    <h1 className="mb-2">{profileData.name}</h1>
-                    <FiFileText className="profile-verified-icon" />
+            <div className="row">
+              <div className="col-3">
+                {/* Profile Header Card */}
+                <div className="project-card h-100">
+                  <div className="profile-avatar-lg initials-avatar">
+                    {getInitials(profileData.name)}
                   </div>
-                  <div className="card-title mb-2">{profileData.role}</div>
-
-                  <div className="profile-meta-row">
-                    <span className="meta-item">
-                      <FiMapPin /> {profileData.location}
-                    </span>
-                    <span className="meta-item">
-                      <FiBriefcase /> {profileData.experience}
-                    </span>
-                  </div>
-
-                  <div className="profile-status-wrapper">
-                    <span className="status-tag status-completed">
-                      {profileData.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-9">
-              {/* Professional Summary */}
-              <div className="project-card">
-                <h2 className="card-title">Professional Summary</h2>
-                <p className="summary-text">{profileData.summary}</p>
-
-                <div className="summary-stats-grid">
-                  {profileData.stats.map((stat, idx) => (
-                    <div key={idx} className="summary-stat-box">
-                      <div className="summary-stat-value">{stat.value}</div>
-                      <div className="summary-stat-label">{stat.label}</div>
+                  <div className="profile-header-content">
+                    <div className="d-flex gap-3">
+                      <h1 className="mb-2">{profileData.name}</h1>
+                      <FiFileText className="profile-verified-icon" />
                     </div>
-                  ))}
+                    <div className="card-title mb-2">{profileData.role}</div>
+
+                    <div className="profile-meta-row">
+                      <span className="meta-item">
+                        <FiMapPin /> {profileData.location}
+                      </span>
+                      <span className="meta-item">
+                        <FiBriefcase /> {profileData.experience}
+                      </span>
+                    </div>
+
+                    <div className="profile-status-wrapper">
+                      <span className="status-tag status-completed">
+                        {profileData.status}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <div className="col-9">
+                {/* Professional Summary */}
+
+                <div className="project-card h-100">
+                  <h2 className="card-title">Professional Summary</h2>
+
+                  <div className="summary-text-container" style={{
+                    flex: 1,
+                    overflow: "auto",
+                    marginBottom: "16px"
+                  }}>
+                    <p className="summary-text">{profileData.summary}</p>
+                  </div>
+
+                  <div className="summary-stats-grid" style={{ flexShrink: 0 }}>
+                    {profileData.stats.map((stat, idx) => (
+                      <div key={idx} className="summary-stat-box">
+                        <div className="summary-stat-value">{stat.value}</div>
+                        <div className="summary-stat-label">{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
           <div className="row">
-            <div className="col-8">
-              {/* Work Experience */}
-              <div className="project-card">
-                <h2 className="card-title">Work Experience</h2>
-                <div className="experience-list">
-                  {profileData.workExperience.map((job, idx) => (
-                    <div key={idx} className="experience-item">
-                      <div className="experience-icon-box">
-                        <FiBriefcase />
-                      </div>
-                      <div className="experience-content">
-                        <h3>{job.role}</h3>
-                        <div className="job-meta">
-                          {job.company} • {job.period}
+            <div className="row" style={{ minHeight: "400px" }}>
+              <div className="col-8">
+                {/* Work Experience */}
+                <div className="project-card mb-3 h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title">Work Experience</h2>
+                  <div className="experience-list" style={{ flex: 1, overflow: "auto" }}>
+                    {profileData.workExperience.length > 0 ? (
+                      profileData.workExperience.map((job, idx) => (
+                        <div key={idx} className="experience-item">
+                          <div className="experience-icon-box">
+                            <FiBriefcase />
+                          </div>
+                          <div className="experience-content">
+                            <h3>{job.role}</h3>
+                            <div className="job-meta">
+                              {job.company} • {job.period}
+                            </div>
+                            <div className="job-location">{job.location}</div>
+                            <p className="job-desc">{job.desc}</p>
+                          </div>
                         </div>
-                        <div className="job-location">{job.location}</div>
-                        <p className="job-desc">{job.desc}</p>
-                      </div>
-                    </div>
-                  ))}
+                      ))
+                    ) : (
+                      <NoData text="No work experience added yet" />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="col-4">
-              {/* Skills & Expertise */}
-              <div className="project-card">
-                <h2 className="card-title">Skills & Expertise</h2>
-                <div className="skills-container">
-                  {profileData.skills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="status-tag status-progress"
-                    >
-                      {skill}
-                    </span>
-                  ))}
+
+              <div className="col-4 d-flex flex-column gap-3" style={{ height: "100%" }}>
+                {/* Skills & Expertise */}
+                <div className="project-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h2 className="card-title">Skills & Expertise</h2>
+                  <div className="skills-container">
+                    {profileData.skills.length > 0 ? (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {profileData.skills.map((skill, idx) => (
+                          <span key={idx} className="status-tag status-progress" style={{ height: "25px" }}>
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <NoData text="No skills added yet" maxWidth="110px" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Education */}
+                <div className="project-card sidebar-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                  <h3 className="card-title">Education</h3>
+                  <div className="education-list" style={{ flex: 1, overflow: "auto" }}>
+                    {profileData.education.length > 0 ? (
+                      profileData.education.map((edu, idx) => (
+                        <div key={idx} className="interview-item-premium">
+                          <div className="edu-icon-box">
+                            <FiFileText size={14} />
+                          </div>
+                          <div>
+                            <div className="edu-degree">{edu.degree}</div>
+                            <div className="edu-school">{edu.school}</div>
+                            <div className="edu-year">{edu.year}</div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <NoData text="No education details added yet" maxWidth="110px" />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,44 +308,54 @@ const TalentProfile = () => {
           {/* Portfolio */}
           <div className="portfolio-section">
             <div className="portfolio-header">
-              <h2 className="card-title">Portfolio</h2>
-              <span className="portfolio-count">
-                {profileData.portfolio.length} Projects
-              </span>
+              <h2 className="card-title">Projects</h2>
             </div>
 
-            <div className="projects-grid premium-portfolio-grid">
-              {profileData.portfolio.map((item, idx) => (
-                <div key={idx} className="premium-portfolio-card">
-                  <div className="portfolio-img-wrapper">
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="portfolio-img"
-                    />
-
-                    <div className="portfolio-overlay">
-                      <button className="overlay-btn">
-                        <FiEye /> Preview
-                      </button>
-                      <button className="overlay-btn secondary">
-                        <FiExternalLink /> Open
-                      </button>
+            <div className="premium-portfolio-grid">
+              {projectsData.length > 0 ? (
+                projectsData.map((data, index) => (
+                  <div key={index} className="project-card mb-3">
+                    <div className="card-top">
+                      <div>
+                        <h3 className="card-title">{data.projectName}</h3>
+                        <p className="card-subtitle">{data.role}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="portfolio-content">
-                    <h3 className="portfolio-title">{item.title}</h3>
-                    <div className="portfolio-tags">
-                      {item.tags.map((tag, tIdx) => (
-                        <span key={tIdx} className="portfolio-tag">
-                          {tag}
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <span style={{ fontSize: "14px" }}>Start Date</span>
+                        <div className="card-date">
+                          <FiCalendar />
+                          {data.startDate}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span style={{ fontSize: "14px" }}>End Date</span>
+                        <div className="card-date">
+                          <FiCalendar />
+                          {data.endDate}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-skills">
+                      {data.skills.map((skill, i) => (
+                        <span key={i} className="status-tag status-progress">
+                          {skill}
                         </span>
                       ))}
                     </div>
+
+                    <p className="card-description">{data.description}</p>
                   </div>
+                ))
+              ) : (
+                <div style={{ width: "100%", gridColumn: "1 / -1" }}>
+                  <NoData text="No projects added yet" maxWidth="200px" />
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -257,7 +370,18 @@ const TalentProfile = () => {
             >
               Schedule Interview
             </button>
-            <button className="btn-secondary w-100">Shortlist Candidate</button>
+            <button
+              className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
+              onClick={handleShortlistFromProfile}
+              style={{
+                backgroundColor: isShortlisted ? "#3B82F6" : "",
+                color: isShortlisted ? "#fff" : ""
+              }}
+            >
+              {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
+
+            </button>
+
 
             <div className="sidebar-links">
               <button className="link-btn">
@@ -270,17 +394,12 @@ const TalentProfile = () => {
           </div>
 
           {/* Quick Information */}
-          <div className="table-card sidebar-card">
+          <div className=" sidebar-card project-card">
             <h3 className="card-title">Quick Information</h3>
 
             <div className="quick-info-item">
               <div className="stat-label">Expected Salary</div>
               <div className="info-value">$120,000 - $150,000 / year</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Notice Period</div>
-              <div className="info-value">2 weeks</div>
             </div>
 
             <div className="quick-info-item">
@@ -299,7 +418,7 @@ const TalentProfile = () => {
 
           {/* Contact Information - BLURRED PREMIUM SECTION */}
           <div
-            className="table-card sidebar-card"
+            className="sidebar-card project-card"
             style={{ position: "relative", overflow: "hidden" }}
           >
             <h3 className="card-title">Contact Information</h3>
@@ -346,47 +465,13 @@ const TalentProfile = () => {
                 gap: "12px",
               }}
             >
-              <button
-                className="link-btn"
-              >
+              <button className="link-btn">
                 <FaGem /> Unlock Premium
               </button>
 
-              <button
-                className="btn-primary w-50"
-              >
+              <button className="btn-primary w-50">
                 Contact Hiring Manager
               </button>
-            </div>
-          </div>
-
-          {/* Education */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Education</h3>
-            <div className="education-list">
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">Master in Interaction Design</div>
-                  <div className="edu-school">Carnegie Mellon University</div>
-                  <div className="edu-year">2013 - 2015</div>
-                </div>
-              </div>
-
-              <div className="interview-item-premium">
-                <div className="edu-icon-box">
-                  <FiFileText size={14} />
-                </div>
-                <div>
-                  <div className="edu-degree">BA in Graphic Design</div>
-                  <div className="edu-school">
-                    Rhode Island School of Design
-                  </div>
-                  <div className="edu-year">2009 - 2013</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

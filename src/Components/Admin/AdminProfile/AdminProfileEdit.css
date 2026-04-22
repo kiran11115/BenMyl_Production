@@ -1,188 +1,198 @@
-/* ---------------------------------
-   CLEAN FORM LAYOUT
----------------------------------- */
+/* AdminProfileEdit.css - Premium Form Styles */
 
-
-.profile-header {
-  margin-bottom: 2rem;
+.admin-edit-container {
+  padding: 2.5rem;
+  width: 100%;
+  animation: fadeIn 0.4s ease-out;
 }
 
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  color: #475569;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.edit-header-box {
+  margin-bottom: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
-.back-button:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
+.edit-title-group h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
 }
 
-.profile-form {
+.edit-title-group p {
+  color: #64748b;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* --- Form Layout --- */
+.profile-form-premium {
   background: white;
-  padding: 2rem;
-  border-radius: 20px;
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.form-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #f1f5f9;
+.form-section-premium {
+  margin-bottom: 3.5rem;
+  position: relative;
 }
 
-.form-section:last-child {
-  border-bottom: none;
+.form-section-premium:last-child {
   margin-bottom: 0;
 }
 
-.section-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1.5rem;
+.section-label-premium {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
 }
 
-/* Grid Layouts */
-.input-grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+.section-label-premium svg {
+  color: #f5810c;
+}
+
+/* --- Input Styling --- */
+.auth-group {
   margin-bottom: 1.5rem;
 }
 
-.input-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+.auth-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
 }
 
-.input-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-}
-
-/* upload logo */
-
-.logo-upload-container {
-  padding: 1.5rem;
+.auth-input, .auth-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
   background: #f8fafc;
-  border-radius: 12px;
+  color: #1e293b;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.auth-input:focus, .auth-select:focus {
+  border-color: #f5810c;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1);
+}
+
+.auth-input::placeholder {
+  color: #94a3b8;
+}
+
+/* --- Logo Upload Premium --- */
+.logo-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem;
+  background: #f8fafc;
   border: 2px dashed #e2e8f0;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.logo-upload-container:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+.logo-upload-zone:hover {
+  border-color: #f5810c;
+  background: #fffaf5;
 }
 
-.logo-upload-label {
-  display: contents; /* Makes label cover entire container */
-  cursor: pointer;
+.logo-preview-box {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 1.5rem;
 }
 
-.logo-preview-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.logo-preview {
-  width: 120px;
-  height: 120px;
+.logo-circle-lg {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 12px;
-  border: 3px solid #e2e8f0;
-  pointer-events: none;
+  border-radius: 20px;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.logo-placeholder {
-  width: 120px;
-  height: 120px;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
+.logo-remove-pill {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ef4444;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  gap: 0.5rem;
-  text-align: center;
-  color: #64748b;
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.upload-placeholder-premium {
+  display: flex;
+  flex-direction: column;
   font-size: 14px;
 }
 
-.logo-placeholder-icon {
-  font-size: 2rem;
-  color: #94a3b8;
+.upload-icon-lg {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
 }
 
-.logo-remove-btn {
-  background: #ef4444;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-size: 13px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
+/* --- Grids --- */
+.input-grid-premium {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
-.logo-remove-btn:hover {
-  background: #dc2626;
+.grid-3-col {
+  grid-template-columns: repeat(3, 1fr);
 }
 
-.logo-input {
-  display: none; /* Hidden file input */
+.grid-2-col {
+  grid-template-columns: repeat(2, 1fr);
 }
 
-.logo-info {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-
-/* ---------------------------------
-   INPUTS ONLY
----------------------------------- */
-
-/* Buttons */
-.form-actions {
+/* --- Actions --- */
+.edit-form-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #f1f5f9;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .input-grid-3, .input-grid-2, .input-grid-4 {
+@media (max-width: 768px) {
+  .profile-form-premium {
+    padding: 1.5rem;
+  }
+  .input-grid-premium {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
-  .profile-edit-container {
-    padding: 1rem;
-  }
-  
-  .profile-form {
-    padding: 2rem 1.5rem;
-  }
-}

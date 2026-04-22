@@ -17,7 +17,31 @@ const SignupApiSlice = apiSlice.injectEndpoints({
         body: verificationData,
       }),
     }),
+
+    resendOtp: builder.mutation({
+      query: (emailID) => ({
+        url: "/api/Account/resend-otp",
+        method: "POST",
+        body: `"${emailID}"`, // RAW STRING body
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
+
+    inviteUser: builder.mutation({
+  query: (formData) => ({
+    url: "/api/Account/uatinviteUsers",
+    method: "POST",
+    body: formData, // ✅ FormData
+  }),
+}),
   }),
 });
 
-export const { useRegisterMutation, useOtpVerifyMutation } = SignupApiSlice;
+export const {
+  useRegisterMutation,
+  useOtpVerifyMutation,
+  useResendOtpMutation,
+  useInviteUserMutation
+} = SignupApiSlice;

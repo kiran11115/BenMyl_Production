@@ -1,210 +1,146 @@
-import React, { useState, useMemo } from "react";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { FiChevronUp, FiChevronDown, FiTrash2 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useGetQueueManagementMutation, useDeleteDraftEmployeeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import MobileTalentCard from "./MobileTalentCard";
+import "./UploadTalent.css";
+import NoData from "./NoData";
+import { DeleteConfirmModal } from "./SaveTalentAlert";
 
-const initialTalents = [
-  {
-    fileName: "Johndoe-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "70%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "15-NOV-2025",
-    confidence: "60%",
-    confidenceClass: "status-yellow",
-    email: "john.doe@example.com",
-  },
-  {
-    fileName: "JaneSmith-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "85%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Michael Brown",
-    uploadDate: "14-NOV-2025",
-    confidence: "75%",
-    confidenceClass: "status-blue",
-    email: "jane.smith@example.com",
-  },
-  {
-    fileName: "MichaelJohnson-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "92%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Emily Davis",
-    uploadDate: "16-NOV-2025",
-    confidence: "88%",
-    confidenceClass: "status-teal",
-    email: "michael.johnson@example.com",
-  },
-  {
-    fileName: "AditiSharma-resumes.pdf",
-    batchFormat: "Resumefiles-1/10.zip",
-    extractStatus: "65%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Tobias Whetton",
-    uploadDate: "13-NOV-2025",
-    confidence: "55%",
-    confidenceClass: "status-orange",
-    email: "aditi.sharma@example.com",
-  },
-  {
-    fileName: "RohanMehta-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "78%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "17-NOV-2025",
-    confidence: "70%",
-    confidenceClass: "status-blue",
-    email: "rohan.mehta@example.com",
-  },
-  {
-    fileName: "CarlosDiaz-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "81%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Laura Kim",
-    uploadDate: "12-NOV-2025",
-    confidence: "73%",
-    confidenceClass: "status-blue",
-    email: "carlos.diaz@example.com",
-  },
-  {
-    fileName: "EmilyClark-resume.docx",
-    batchFormat: ".docx",
-    extractStatus: "58%",
-    statusClass: "status-orange",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Mark Allen",
-    uploadDate: "11-NOV-2025",
-    confidence: "48%",
-    confidenceClass: "status-orange",
-    email: "emily.clark@example.com",
-  },
-  {
-    fileName: "SanjayPatel-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "89%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Priya Desai",
-    uploadDate: "10-NOV-2025",
-    confidence: "91%",
-    confidenceClass: "status-teal",
-    email: "sanjay.patel@example.com",
-  },
-  {
-    fileName: "LindaNguyen-resume.zip",
-    batchFormat: "Resumefiles-2/20.zip",
-    extractStatus: "62%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Kevin Wright",
-    uploadDate: "09-NOV-2025",
-    confidence: "57%",
-    confidenceClass: "status-orange",
-    email: "linda.nguyen@example.com",
-  },
-  {
-    fileName: "DavidWilson-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "76%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Emily Davis",
-    uploadDate: "08-NOV-2025",
-    confidence: "69%",
-    confidenceClass: "status-blue",
-    email: "david.wilson@example.com",
-  },
-  {
-    fileName: "FatimaAli-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "94%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Sarah Johnson",
-    uploadDate: "07-NOV-2025",
-    confidence: "96%",
-    confidenceClass: "status-teal",
-    email: "fatima.ali@example.com",
-  },
-  {
-    fileName: "GeorgeMiller-resume.docx",
-    batchFormat: ".docx",
-    extractStatus: "55%",
-    statusClass: "status-orange",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Michael Brown",
-    uploadDate: "06-NOV-2025",
-    confidence: "50%",
-    confidenceClass: "status-orange",
-    email: "george.miller@example.com",
-  },
-  {
-    fileName: "HiroTanaka-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "83%",
-    statusClass: "status-blue",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Naomi Lee",
-    uploadDate: "05-NOV-2025",
-    confidence: "79%",
-    confidenceClass: "status-blue",
-    email: "hiro.tanaka@example.com",
-  },
-  {
-    fileName: "IsabellaRossi-resume.pdf",
-    batchFormat: ".pdf",
-    extractStatus: "88%",
-    statusClass: "status-green",
-    created: "Yes",
-    createdClass: "status-green",
-    uploadedBy: "Tobias Whetton",
-    uploadDate: "04-NOV-2025",
-    confidence: "82%",
-    confidenceClass: "status-teal",
-    email: "isabella.rossi@example.com",
-  },
-  {
-    fileName: "LiamOBrien-resume.zip",
-    batchFormat: "Resumefiles-3/15.zip",
-    extractStatus: "67%",
-    statusClass: "status-yellow",
-    created: "No",
-    createdClass: "status-red",
-    uploadedBy: "Mark Allen",
-    uploadDate: "03-NOV-2025",
-    confidence: "59%",
-    confidenceClass: "status-orange",
-    email: "liam.obrien@example.com",
-  },
-];
-
-const UploadTalentTable = () => {
+const PAGE_SIZE = 50;
+const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, searchQuery = "", onDeleted }) => {
   const navigate = useNavigate();
-  const [talents] = useState(initialTalents);
+
+  const [talents, setTalents] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [tableLoading, setTableLoading] = useState(false);
+  const hasMoreRef = useRef(true);
+const isLoadingRef = useRef(false);
+const pageNumberRef = useRef(1);
+
+const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [deletingId, setDeletingId] = useState(null);
+
+
+useEffect(() => {
+  hasMoreRef.current = hasMore;
+}, [hasMore]);
+
+useEffect(() => {
+  pageNumberRef.current = pageNumber;
+}, [pageNumber]);
+
+  const [getQueueManagement, { isLoading }] =
+    useGetQueueManagementMutation();
+  const [deleteDraftEmployee] = useDeleteDraftEmployeeMutation();
+
+  const handleDelete = (employeeID) => {
+    setDeletingId(employeeID);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    try {
+      await deleteDraftEmployee(deletingId).unwrap();
+      setShowDeleteModal(false);
+      setDeletingId(null);
+      if (onDeleted) onDeleted();
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
+
+  /* ================= FETCH ================= */
+ useEffect(() => {
+  let isMounted = true;
+  isLoadingRef.current = true;
+
+  const fetchQueue = async () => {
+    try {
+      const payload = {
+        companyid: Number(localStorage.getItem("logincompanyid")),
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        filters: [],
+      };
+
+      const res = await getQueueManagement(payload).unwrap();
+
+      if (!isMounted) return;
+
+      const mapped = res.map((item) => ({
+        employeeID: item.employeeID,
+        fileName: item.resumeFileName,
+        batchFormat: item.resumeFileName?.split(".").pop(),
+        extractStatus: item.status,
+        statusClass:
+          item.status === "Pending For Review"
+            ? "status-yellow"
+            : "status-green",
+        created: item.status === "Completed" ? "Yes" : "No",
+        createdClass:
+          item.status === "Completed"
+            ? "status-green"
+            : "status-red",
+        uploadedBy: item.uploadedByName,
+        uploadDate: item.insertDate?.split(" ")[0] ?? "-",
+        confidence: "N/A",
+        confidenceClass: "status-blue",
+        email: `${item.firstName} ${item.lastName}`,
+      }));
+
+      setTalents((prev) =>
+        pageNumber === 1 ? mapped : [...prev, ...mapped]
+      );
+
+      const moreAvailable = mapped.length >= PAGE_SIZE;
+      setHasMore(moreAvailable);
+      hasMoreRef.current = moreAvailable;
+    } catch (err) {
+      console.error("Queue fetch failed", err);
+    } finally {
+      if (isMounted) isLoadingRef.current = false;
+    }
+  };
+
+  fetchQueue();
+
+  return () => {
+    isMounted = false;
+  };
+}, [pageNumber, getQueueManagement, refreshKey]);
+
+ useEffect(() => {
+  setPageNumber(1);
+  setHasMore(true);
+  setTalents([]); // 🔥 important
+  hasMoreRef.current = true;
+  pageNumberRef.current = 1;
+}, [refreshKey]);
+
+  /* ================= SCROLL ================= */
+  const handleScroll = (e) => {
+  if (!hasMoreRef.current || isLoadingRef.current) return;
+
+  const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+  if (scrollHeight - scrollTop <= clientHeight + 50) {
+    isLoadingRef.current = true;
+
+    setPageNumber((prev) => {
+      const next = prev + 1;
+      pageNumberRef.current = next;
+      return next;
+    });
+  }
+};
+
+
+
   const [selectedEmails, setSelectedEmails] = useState(new Set());
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -214,7 +150,7 @@ const UploadTalentTable = () => {
   const getInitials = (name = "") =>
     name
       .split(" ")
-      .slice(0, 2)
+      .slice(0, 1)
       .map((n) => n[0])
       .join("")
       .toUpperCase();
@@ -224,8 +160,20 @@ const UploadTalentTable = () => {
     return colors[name.length % colors.length];
   };
 
+  const filteredTalents = useMemo(() => {
+    if (!searchQuery.trim()) return talents;
+    const query = searchQuery.toLowerCase();
+    return talents.filter((t) =>
+      t.fileName?.toLowerCase().includes(query) ||
+      t.email?.toLowerCase().includes(query) ||
+      t.uploadedBy?.toLowerCase().includes(query) ||
+      t.extractStatus?.toLowerCase().includes(query) ||
+      t.batchFormat?.toLowerCase().includes(query)
+    );
+  }, [talents, searchQuery]);
+
   const sortedTalents = useMemo(() => {
-    const items = [...talents];
+    const items = [...filteredTalents];
     if (sortConfig.key) {
       items.sort((a, b) => {
         const A = String(a[sortConfig.key] ?? "").toLowerCase();
@@ -236,7 +184,7 @@ const UploadTalentTable = () => {
       });
     }
     return items;
-  }, [talents, sortConfig]);
+  }, [filteredTalents, sortConfig]);
 
   const requestSort = (key) => {
     let direction = "ascending";
@@ -267,11 +215,38 @@ const UploadTalentTable = () => {
 
   return (
     <div className="upload-table-panel">
-      <div className="table-scroll">
+      {/* Mobile View */}
+      <div className="mobile-talent-list d-md-none">
+        {(isLoading || externalLoading) && (
+          <div className="text-center py-5">
+            <span className="text-muted">Loading resumes...</span>
+          </div>
+        )}
+        {!isLoading && sortedTalents.length === 0 && (
+          <div className="text-center py-5">
+            <span className="text-muted">No resumes uploaded</span>
+          </div>
+        )}
+        {sortedTalents.map((talent, i) => (
+          <MobileTalentCard
+            key={i}
+            talent={talent}
+            onView={() =>
+              navigate("/user/review-talent", {
+                state: { employeeID: talent.employeeID },
+              })
+            }
+            onDelete={() => handleDelete(talent.employeeID)}
+          />
+        ))}
+      </div>
+
+      {/* Desktop View */}
+      <div className="table-scroll d-none d-md-block" onScroll={handleScroll} style={{ overflowY: "auto", maxHeight: 700 }}>
         <table className="custom-table">
           <thead>
             <tr>
-              <th style={{ width: 40 }}></th>
+              {!isDashboard && <th style={{ width: 40 }}></th>}
 
               <th onClick={() => requestSort("fileName")}>
                 FILE NAME <SortIcon columnKey="fileName" />
@@ -289,34 +264,65 @@ const UploadTalentTable = () => {
                 CREATED <SortIcon columnKey="created" />
               </th>
 
-              <th onClick={() => requestSort("uploadedBy")}>
-                UPLOADED BY <SortIcon columnKey="uploadedBy" />
-              </th>
+              {!isDashboard && (
+                <th onClick={() => requestSort("uploadedBy")}>
+                  UPLOADED BY <SortIcon columnKey="uploadedBy" />
+                </th>
+              )}
 
               <th onClick={() => requestSort("uploadDate")}>
                 UPLOAD DATE <SortIcon columnKey="uploadDate" />
               </th>
 
-              <th onClick={() => requestSort("confidence")}>
-                CONFIDENCE <SortIcon columnKey="confidence" />
-              </th>
+              {!isDashboard && (
+                <th onClick={() => requestSort("confidence")}>
+                  CONFIDENCE <SortIcon columnKey="confidence" />
+                </th>
+              )}
 
               <th>ACTIONS</th>
             </tr>
           </thead>
 
           <tbody>
+            {(isLoading || externalLoading) && (
+              <tr>
+                <td colSpan={isDashboard ? 6 : 9} style={{ textAlign: "center", padding: "40px" }}>
+                  <span style={{ color: "#64748b", fontSize: "14px" }}>
+                    Loading resumes...
+                  </span>
+                </td>
+              </tr>
+            )}
+            {!isLoading && sortedTalents.length === 0 && (
+              <tr>
+                <td colSpan={isDashboard ? 6 : 9} style={{ textAlign: "center", padding: "40px" }}>
+                  <div
+                    style={{
+                      minHeight: "320px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text={searchQuery ? "No matching resumes found" : "No resumes uploaded"} />
+                  </div>
+                </td>
+              </tr>
+            )}
             {sortedTalents.map((talent, i) => {
               const isSelected = selectedEmails.has(talent.email);
               return (
                 <tr key={i} className={isSelected ? "row-selected" : ""}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => onToggleSelect(talent.email)}
-                    />
-                  </td>
+                  {!isDashboard && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect(talent.email)}
+                      />
+                    </td>
+                  )}
 
                   {/* FILE NAME */}
                   <td>
@@ -356,29 +362,54 @@ const UploadTalentTable = () => {
                   </td>
 
                   {/* UPLOADED BY */}
-                  <td>{talent.uploadedBy}</td>
+                  {!isDashboard && <td>{talent.uploadedBy}</td>}
 
                   {/* UPLOAD DATE */}
                   <td>{talent.uploadDate}</td>
 
                   {/* CONFIDENCE */}
-                  <td>
-                    <span
-                      className={`status-tag ${talent.confidenceClass}`}
-                    >
-                      {talent.confidence}
-                    </span>
-                  </td>
+                  {!isDashboard && (
+                    <td>
+                      <span
+                        className={`status-tag ${talent.confidenceClass}`}
+                      >
+                        {talent.confidence}
+                      </span>
+                    </td>
+                  )}
 
                   {/* ACTIONS */}
                   <td>
-                    <button
-                      className="border-0 w-50"
-                      style={{ background: "none" }}
-                      onClick={() => navigate("/user/review-talent")}
-                    >
-                      <IoEyeOutline size={16} />
-                    </button>
+                    {talent.extractStatus === "Already Resume Exits" ? (
+                      <button
+                        className="border-0 w-50"
+                        style={{
+                          background: "none",
+                          cursor: "pointer",
+                          color: "#ef4444",
+                        }}
+                        onClick={() => handleDelete(talent.employeeID)}
+                        title="Delete Duplicate Draft"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        className="border-0 w-50"
+                        style={{
+                          background: "none",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          navigate("/user/review-talent", {
+                            state: { employeeID: talent.employeeID },
+                          });
+                        }}
+                        title="View Resume"
+                      >
+                        <IoEyeOutline size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );
@@ -386,6 +417,16 @@ const UploadTalentTable = () => {
           </tbody>
         </table>
       </div>
+
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          onClose={() => {
+            setShowDeleteModal(false);
+            setDeletingId(null);
+          }}
+          onConfirm={confirmDelete}
+        />
+      )}
 
       <style jsx>{`
         /* --- Selected Row Style (Green background) --- */

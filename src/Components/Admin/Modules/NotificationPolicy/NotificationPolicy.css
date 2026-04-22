@@ -1,0 +1,237 @@
+/* NotificationPolicy.css - Refined Elegant Design */
+
+.notification-containerOne {
+    padding: 1.5rem;
+    min-height: calc(100vh - 80px);
+}
+
+/* Preference Matrix Box - Elegant & Compact */
+.policy-matrix-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.box-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.box-header h3 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.box-header .search-box {
+    position: relative;
+    width: 300px;
+}
+
+.box-header .search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    z-index: 1;
+}
+
+.box-header .search-box input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: var(--text-sm);
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.box-header .search-box input:focus {
+    background-color: white;
+    border-color: #f5810c;
+    outline: none;
+}
+
+/* Table Content Refinement */
+.trigger-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.trigger-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: var(--text-sm);
+}
+
+.trigger-cat {
+    font-size: 10px;
+    color: #f5810c;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+/* Preference Checkboxes - Compact & Elegant */
+.pref-checkbox {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pref-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.check-box {
+    width: 28px;
+    height: 28px;
+    background-color: #f1f5f9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.pref-checkbox:hover .check-box {
+    background-color: #e2e8f0;
+}
+
+.pref-checkbox input:checked ~ .check-box {
+    background-color: #fff7ed;
+    color: #f5810c;
+    border: 1px solid rgba(245, 129, 12, 0.1);
+}
+
+/* Bottom Grid Cards */
+.notification-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.section-title h3 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.rules-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.escalation-card {
+    background-color: white;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.escalation-card:hover {
+    border-color: #cbd5e1;
+}
+
+.escalation-card h5 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.125rem 0;
+}
+
+.escalation-card p {
+    font-size: var(--text-xs);
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.btn-edit-rule {
+    color: #cbd5e1;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-edit-rule:hover { 
+    color: #f5810c; 
+}
+
+.roles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.role-pref-card {
+    background-color: white;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.role-pref-card:hover {
+    border-color: #cbd5e1;
+}
+
+.role-text h4 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.125rem 0;
+}
+
+.role-text p {
+    font-size: var(--text-xs);
+    color: #64748b;
+    margin: 0;
+    font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+    .notification-bottom-grid { grid-template-columns: 1fr; }
+    .roles-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .box-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    .box-header .search-box { width: 100%; }
+}

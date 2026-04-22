@@ -52,7 +52,7 @@ export const SubmissionErrorModal = ({
 /**
  * Success Modal - Replicates the green "Success!" design
  */
-export const SuccessModal = ({ onClose }) => {
+export const SuccessModal = ({ onClose,data,isEdit }) => {
     // 1. Initialize the hook
     const navigate = useNavigate();
     window.scrollTo(0, 0);
@@ -60,8 +60,6 @@ export const SuccessModal = ({ onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="alert-card success-theme">
-                <button className="alert-close-icon" onClick={onClose}><FiX /></button>
-
                 <div className="alert-content left-align">
                     <div className="d-flex align-items-center gap-2 mb-3">
                         <div className="icon-circle success-icon-bg">
@@ -70,20 +68,28 @@ export const SuccessModal = ({ onClose }) => {
                         <h3 className="alert-title mt-0 mb-0">Success!</h3>
                     </div>
 
-                    <p className="alert-message mb-2">
-                        The Job has been posted sucessfully.
+                    <p className="alert-message mb-3">
+                        {isEdit
+    ? "The Job has been updated successfully."
+    : "The Job has been posted successfully."}
                     </p>
 
                     <div className="alert-actions start">
                         {/* 2. Apply navigation on button click */}
                         <button
                             className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-talentpool")}
+                            onClick={() =>
+    navigate("/user/user-talentpool", {
+      state: {
+        jobTitle: data?.jobTitle, // 👈 pass title
+      },
+    })
+  }
                         >
                             Find Talent
                         </button>
 
-                         <button
+                        <button
                             className="btn-primary w-100"
                             onClick={() => navigate("/user/user-dashboard")}
                         >

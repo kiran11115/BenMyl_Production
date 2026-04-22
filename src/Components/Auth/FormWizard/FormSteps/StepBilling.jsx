@@ -3,6 +3,9 @@ import React from "react";
 const StepBilling = ({
   formData,
   handleInputChange,
+  handleBlur,
+  errors,
+  touched,
   cardType,
   setCardType,
   getCardBrand,
@@ -14,18 +17,14 @@ const StepBilling = ({
           <div className="payment-type-toggle">
             <button
               type="button"
-              className={`payment-toggle-btn ${
-                cardType === "credit" ? "active" : ""
-              }`}
+              className={`payment-toggle-btn ${cardType === "credit" ? "active" : ""}`}
               onClick={() => setCardType("credit")}
             >
               Credit Card
             </button>
             <button
               type="button"
-              className={`payment-toggle-btn ${
-                cardType === "debit" ? "active" : ""
-              }`}
+              className={`payment-toggle-btn ${cardType === "debit" ? "active" : ""}`}
               onClick={() => setCardType("debit")}
             >
               Debit Card
@@ -57,6 +56,7 @@ const StepBilling = ({
             </div>
           </div>
         </div>
+
         <div className="col-6">
           <div className="billing-layout">
             <div className="billing-form-fields">
@@ -65,53 +65,74 @@ const StepBilling = ({
                 <input
                   type="text"
                   name="cardNumber"
-                  className="auth-input"
+                  className={`auth-input ${touched.cardNumber && errors.cardNumber ? "is-invalid" : ""}`}
                   placeholder="0000 0000 0000 0000"
                   value={formData.cardNumber}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                   maxLength={19}
                 />
+                {touched.cardNumber && errors.cardNumber && (
+                  <small className="auth-error">{errors.cardNumber}</small>
+                )}
               </div>
+
               <div className="auth-group">
                 <label className="auth-label mt-3 mb-0">Name on Card</label>
                 <input
                   type="text"
                   name="cardName"
-                  className="auth-input"
+                  className={`auth-input ${touched.cardName && errors.cardName ? "is-invalid" : ""}`}
                   placeholder="As written on card"
                   value={formData.cardName}
                   onChange={handleInputChange}
+                  onBlur={handleBlur}
                 />
+                {touched.cardName && errors.cardName && (
+                  <small className="auth-error">{errors.cardName}</small>
+                )}
               </div>
+
               <div className="auth-grid-2">
                 <div className="auth-group">
                   <label className="auth-label mt-3 mb-0">Expiry Date</label>
                   <input
                     type="text"
                     name="cardExpiry"
-                    className="auth-input"
+                    className={`auth-input ${touched.cardExpiry && errors.cardExpiry ? "is-invalid" : ""}`}
                     placeholder="MM/YY"
                     value={formData.cardExpiry}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     maxLength={5}
                   />
+                  {touched.cardExpiry && errors.cardExpiry && (
+                    <small className="auth-error">{errors.cardExpiry}</small>
+                  )}
                 </div>
+
                 <div className="auth-group">
                   <label className="auth-label mt-3 mb-0">CVV / CVC</label>
                   <input
                     type="password"
                     name="cardCvv"
-                    className="auth-input"
+                    className={`auth-input ${touched.cardCvv && errors.cardCvv ? "is-invalid" : ""}`}
                     placeholder="123"
                     value={formData.cardCvv}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     maxLength={4}
                   />
+                  {touched.cardCvv && errors.cardCvv && (
+                    <small className="auth-error">{errors.cardCvv}</small>
+                  )}
                 </div>
               </div>
+
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

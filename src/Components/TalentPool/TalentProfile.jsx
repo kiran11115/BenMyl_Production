@@ -192,6 +192,7 @@ const TalentProfile = () => {
                     <span
                       key={idx}
                       className="status-tag status-progress"
+                      style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
                     >
                       {skill}
                     </span>

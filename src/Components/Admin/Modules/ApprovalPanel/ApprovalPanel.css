@@ -1,0 +1,338 @@
+/* ApprovalPanel.css - Refined Elegant Design */
+
+.approval-panel-container {
+    padding: 1.5rem;
+    background: #f8fafc;
+    min-height: calc(100vh - 80px);
+}
+
+/* Header Stats - Compact & Professional */
+.approval-header-stats-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.header-stats {
+    display: inline-flex;
+    align-items: center;
+    gap: 2rem;
+    background: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.stat-label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #f5810c;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 32px;
+    background-color: #f1f5f9;
+}
+
+/* Navigation Tabs - Recruiter Style */
+.approval-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.25rem;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -1px;
+}
+
+.nav-tab:hover {
+    color: #0f172a;
+}
+
+.nav-tab.active {
+    color: #f5810c;
+    border-bottom-color: #f5810c;
+}
+
+/* Content Area */
+.approval-content {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.content-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.search-box {
+    position: relative;
+    width: 320px;
+}
+
+.search-box svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: var(--text-sm);
+    background-color: #f8fafc;
+}
+
+.search-box input:focus {
+    background-color: white;
+    border-color: #f5810c;
+    outline: none;
+}
+
+/* Approval Cards - Standardized to Recruiter Card Style */
+.approvals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.approval-card {
+    background-color: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    transition: all 0.2s ease;
+}
+
+.approval-card:hover {
+    border-color: #e2e8f0;
+    background-color: #fcfdfe;
+}
+
+.card-indicator {
+    width: 4px;
+    flex-shrink: 0;
+}
+
+.card-main {
+    flex: 1;
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-type {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.card-info h3 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+}
+
+.app-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: var(--text-xs);
+    color: #64748b;
+}
+
+.meta-dot {
+    width: 3px;
+    height: 3px;
+    background-color: #cbd5e1;
+    border-radius: 50%;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-approve, .btn-reject {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.btn-approve {
+    background-color: #10b981;
+    color: white;
+    border: none;
+}
+
+.btn-approve:hover {
+    background-color: #059669;
+}
+
+.btn-reject {
+    background-color: white;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.btn-reject:hover {
+    background-color: #fef2f2;
+}
+
+.btn-more {
+    color: #cbd5e1;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.btn-more:hover {
+    color: #64748b;
+}
+
+/* Approval Chains */
+.chains-section h3 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+}
+
+.chain-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background-color: #f8fafc;
+    margin-bottom: 1rem;
+}
+
+.chain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chain-header h4 {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.chain-steps {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.step-node {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.step-number {
+    width: 20px;
+    height: 20px;
+    background: #0f172a;
+    color: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.step-name {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: #475569;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #f5810c;
+    font-weight: 700;
+    font-size: var(--text-xs);
+    cursor: pointer;
+}
+
+
+/* Reusing Role Configuration Toggle Styles */
+.toggle-switch {
+    width: 36px;
+    height: 20px;
+}
+
+.slider:before {
+    height: 14px;
+    width: 14px;
+}
+
+input:checked + .slider:before {
+    transform: translateX(16px);
+}

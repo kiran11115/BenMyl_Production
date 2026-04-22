@@ -1,36 +1,39 @@
 import React from "react";
-import { FiAlertCircle } from "react-icons/fi";
+import { FiFolder } from "react-icons/fi";
 import ProjectCard from "./ProjectCard";
 
-export default function ProjectsGrid({ projects, onViewProgress }) {
-  if (projects.length === 0) {
+export default function ProjectsGrid({ projects, onUpload, onReview }) {
+  if (!projects || projects.length === 0) {
     return (
-      <div className="jobs-grid">
+      <div className="projects-grid">
         <div
           style={{
             gridColumn: "1 / -1",
             textAlign: "center",
-            padding: "40px",
-            color: "#64748b",
+            padding: "60px 24px",
+            color: "#94a3b8",
           }}
         >
-          <FiAlertCircle
+          <FiFolder
             size={48}
-            style={{ margin: "0 auto 16px", opacity: 0.5 }}
+            style={{ marginBottom: "12px", opacity: 0.35, display: "block", margin: "0 auto 12px" }}
           />
-          <p>No projects found in this category.</p>
+          <p style={{ fontSize: "14px", fontWeight: 500, margin: 0 }}>
+            No projects found in this category.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="jobs-grid">
+    <div className="projects-grid">
       {projects.map((project) => (
         <ProjectCard
           key={project.id}
           project={project}
-          onViewProgress={onViewProgress}
+          onUpload={onUpload}
+          onReview={onReview}
         />
       ))}
     </div>

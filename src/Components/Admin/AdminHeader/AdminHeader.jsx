@@ -1,14 +1,38 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
+import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
 
 
 function AdminHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
+    const [isMessagesPopoverOpen, setIsMessagesPopoverOpen] = useState(false);
     const profileRef = useRef(null);
+    const aiPopoverRef = useRef(null);
+    const messagesPopoverRef = useRef(null);
+    const company = localStorage.getItem("CompanyName");
+    const role = localStorage.getItem("Role");
+
+    const emailid = localStorage.getItem("Email"); // or from auth state
+
+    const {
+        data: apiData,
+        isLoading,
+        isError,
+    } = useGetCompanyProfileEditQuery(emailid);
+
+    const companyData = useMemo(() => {
+        if (!apiData) return null;
+
+        return {
+            logo: apiData.companylogo,
+        };
+    }, [apiData]);
+
 
     // Initialize navigation hook
     const navigate = useNavigate();
@@ -41,6 +65,12 @@ function AdminHeader() {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
                 setIsProfileOpen(false);
             }
+            if (aiPopoverRef.current && !aiPopoverRef.current.contains(event.target)) {
+                setIsAiPopoverOpen(false);
+            }
+            if (messagesPopoverRef.current && !messagesPopoverRef.current.contains(event.target)) {
+                setIsMessagesPopoverOpen(false);
+            }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
@@ -72,11 +102,10 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
                         {[
-                            { path: "/user/user-dashboard", label: "Dashboard" },
-                            { path: "/user/user-talentpool", label: "Talent Pool" },
-                            { path: "/user/user-projects", label: "Projects" },
-                            { path: "/user/user-jobs", label: "Find Jobs" },
-                            { path: "/user/user-upload-talent", label: "Talent Management" },
+                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
+                             { path: "/Admin/control-center", label: "Control Center" },
+                             { path: "/Admin/admin-profile", label: "Profile" },
+                             { path: "/Admin/admin-analytics", label: "Analytics" },
                         ].map((link) => (
                             <NavLink
                                 key={link.path}
@@ -103,15 +132,77 @@ function AdminHeader() {
               className="header-search-input"
             />
           </div> */}
-                    <button onClick={() => navigate("/user/AI-screen")} className="ai-pill-btn">
-                        <span className="ai-pill-icon">✦</span>
-                        <span className="ai-pill-text">AI</span>
-                    </button>
+                    <div className="ai-pill-wrapper" ref={aiPopoverRef}>
+                        <button
+                            onClick={() => setIsAiPopoverOpen((prev) => !prev)}
+                            className="ai-pill-btn"
+                        >
+                            <span className="ai-pill-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient-admin)" />
+                                    <defs>
+                                        <linearGradient id="gemini-gradient-admin" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stopColor="#3b82f6" />
+                                            <stop offset="50%" stopColor="#8b5cf6" />
+                                            <stop offset="100%" stopColor="#f59e0b" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </span>
+                            <span className="ai-pill-text">AI Assistant</span>
+                        </button>
+
+                        {isAiPopoverOpen && (
+                            <div className="ai-coming-soon-popover">
+                                <div className="ai-cs-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#cs-gradient-admin)" />
+                                        <defs>
+                                            <linearGradient id="cs-gradient-admin" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stopColor="#3b82f6" />
+                                                <stop offset="50%" stopColor="#8b5cf6" />
+                                                <stop offset="100%" stopColor="#f59e0b" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div className="ai-cs-content">
+                                    <span className="ai-cs-badge">Coming Soon</span>
+                                    <p className="ai-cs-title">AI Assistant</p>
+                                    <p className="ai-cs-desc">We're putting the finishing touches on your intelligent hiring companion. Stay tuned!</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Messages Icon */}
-                    <button onClick={() => navigate("/user/user-messages")} type="button" className="header-action-btn">
-                        <MessageCircleIcon size={20} />
-                    </button>
+                    <div className="admin-message-popover-wrapper" ref={messagesPopoverRef}>
+                        <button
+                            onClick={() => setIsMessagesPopoverOpen((prev) => !prev)}
+                            type="button"
+                            className={`header-action-btn ${isMessagesPopoverOpen ? "active" : ""}`}
+                            aria-expanded={isMessagesPopoverOpen}
+                            aria-label="Messages"
+                        >
+                            <MessageCircleIcon size={20} />
+                        </button>
+
+                        {/* To restore direct navigation later, use:
+                            onClick={() => navigate("/user/user-messages")}
+                        */}
+                        {isMessagesPopoverOpen && (
+                            <div className="ai-coming-soon-popover">
+                                <div className="ai-cs-icon">
+                                    <MessageCircleIcon size={28} color="#8b5cf6" />
+                                </div>
+                                <div className="ai-cs-content">
+                                    <span className="ai-cs-badge">Coming Soon</span>
+                                    <p className="ai-cs-title">Messages</p>
+                                    <p className="ai-cs-desc">Team conversations and admin message alerts will be available here soon.</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Notification Bell */}
                     <AdminNotifications />
@@ -125,13 +216,13 @@ function AdminHeader() {
                             tabIndex={0}
                         >
                             <img
-                                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
-                                alt="User Avatar"
+                                src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"}
+                                alt="Company Logo"
                                 className="profile-avatar"
                             />
                             <div className="profile-info">
-                                <span className="profile-name">Nimbus Labs</span>
-                                <span className="profile-role">Admin</span>
+                                <span className="profile-name">{company}</span>
+                                <span className="profile-role">{role}</span>
                             </div>
                             <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
                         </div>
@@ -141,21 +232,21 @@ function AdminHeader() {
                             <div className="profile-popover">
                                 <div className="popover-header">
                                     {/* <p className="popover-name">John Smith</p> */}
-                                    <p className="popover-email">nimbuslabs@company.com</p>
+                                    <p className="popover-email">{emailid}</p>
                                 </div>
                                 <div className="popover-menu">
                                     <button className="popover-item" onClick={handleViewProfile}>
                                         <User size={16} />
                                         View Profile
                                     </button>
-                                    <button className="popover-item" onClick={() => navigate("/user/user-analytics")}>
+                                    <button className="popover-item" onClick={() => navigate("/admin/admin-analytics")}>
                                         <File size={16} />
                                         Analytics
                                     </button>
-                                    <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
+                                    {/* <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
                                         <Settings size={16} />
                                         Account Settings
-                                    </button>
+                                    </button> */}
                                     <div className="popover-divider"></div>
                                     <button className="popover-item text-red" onClick={handleSignOut}>
                                         <LogOut size={16} />

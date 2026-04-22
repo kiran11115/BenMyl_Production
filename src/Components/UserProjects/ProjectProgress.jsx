@@ -98,7 +98,7 @@ const seedFeed = () => [
         initials: "MC",
         avatar:
             "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=48&h=48&q=80",
-        text: "Backend API endpoints are 80% complete. Running into a few CORS issues with the auth service — will resolve by tomorrow.",
+        text: "Backend API endpoints are 80% complete. Running into a few CORS issues with the auth service - will resolve by tomorrow.",
         createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
         reactions: { thumbs: 1, heart: 0, fire: 0, check: 0 },
         reactedBy: [],
@@ -156,7 +156,7 @@ export default function ProjectProgress() {
     const [tasks, setTasks] = useState(seedTasks);
     const [feed, setFeed] = useState(seedFeed);
 
-    /* Activity logger — called from TasksTab on every task mutation */
+    /* Activity logger - called from TasksTab on every task mutation */
     const logActivity = (text) => {
         setFeed((prev) => [
             ...prev,
@@ -241,7 +241,7 @@ export default function ProjectProgress() {
                     </div>
                 </div>
 
-                {/* Tab Bar — same view-toggle1 / toggle style */}
+                {/* Tab Bar - same view-toggle1 / toggle style */}
                 <div className="view-toggle1">
                     {TABS.map(({ key, label, Icon }) => (
                         <button

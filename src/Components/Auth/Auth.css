@@ -1,6 +1,17 @@
 /* Auth.css - Layout & Theme Only (Text inherits from App.css) */
 
 /* --- Containers --- */
+
+.auth-container-signup {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
 .auth-container {
   width: 100%;
   display: flex;
@@ -120,10 +131,23 @@
 }
 
 @media (max-width: 768px) {
+
+  .auth-container,
+  .auth-container-signup {
+    padding: 0;
+    height: auto;
+    min-height: 100vh;
+    background: #ffffff;
+  }
+
   .auth-card {
-    max-width: 450px;
-    min-height: auto;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
     flex-direction: column;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
   }
 
   .auth-brand-side {
@@ -132,7 +156,17 @@
 
   .auth-form-side {
     width: 100%;
-    padding: 2rem 1.75rem 2.5rem;
+    padding: 2rem 1.5rem;
+    justify-content: flex-start;
+  }
+
+  .auth-logo {
+    margin-bottom: 2rem;
+  }
+
+  .auth-options-row {
+    flex-wrap: wrap;
+    gap: 12px;
   }
 }
 
@@ -167,7 +201,7 @@
 
 /* Links */
 .auth-link {
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 600;
   text-decoration: none;
   background: none;
@@ -204,8 +238,8 @@
 }
 
 .auth-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #f5810c;
+  box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
 }
 
 .auth-input-error {
@@ -231,16 +265,16 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  background-color: #6843c7;
+  background-color: #f5810c;
   color: #ffffff;
-  border: 1px solid #6843c7;
+  border: 1px solid #f5810c;
   transition: all 0.2s ease;
 }
 
 .auth-btn-primary:hover {
-  background-color: #5735ac;
-  border-color: #5735ac;
-  box-shadow: 0 8px 15px -5px rgba(88, 28, 135, 0.4);
+  background-color: #f5810c;
+  border-color: #f5810c;
+  box-shadow: 0 8px 15px -5px rgba(245, 129, 12, 0.4);
 }
 
 .auth-btn-primary:disabled {
@@ -318,9 +352,20 @@
 .auth-remember {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   color: #64748b;
-  font-weight: 400;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.auth-remember input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #f5810c;
+  margin: 0;
 }
 
 /* Alerts */

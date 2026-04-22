@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   FiMapPin,
   FiBriefcase,
@@ -13,260 +13,247 @@ import {
   FiUsers,
   FiCalendar,
   FiGlobe,
+  FiCheckCircle,
+  FiInfo,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import TeamMembersTable from "./TeamMembersTable";
+import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import { useGetTeamMembersQuery } from "../../../State-Management/Api/AdminDetailsApiSlice";
+import "./AdminProfile.css";
 
 const AdminProfile = () => {
-  const navigate = useNavigate(); // Programmatic navigation with useNavigate(). [web:62]
+  const navigate = useNavigate();
+  const emailId = localStorage.getItem("Email");
 
-  // NOTE: Existing data is unchanged; only plan + teamMembers are added.
-  const companyData = {
-    id: "cmp_10231",
-    slug: "nimbus-labs",
-    name: "Nimbus Labs",
-    tagline: "Design-led product studio",
-    status: "Operating",
-    companyType: "Privately Held",
-    industry: "Software Development",
-    size: "51–200 employees",
-    foundedYear: "2016",
-    websiteUrl: "https://nimbuslabs.com",
-    domain: "nimbuslabs.com",
+  const {
+    data: apiData,
+    isLoading: isProfileLoading,
+    isError: isProfileError,
+  } = useGetCompanyProfileEditQuery(emailId);
 
-    headquarters: {
-      city: "San Francisco",
-      state: "CA",
-      country: "US",
-      postalCode: "94105",
-      street1: "123 Market St",
-      street2: "Suite 500",
-    },
+  const {
+    data: teamApiData = [],
+    isLoading: isTeamLoading,
+    isError: isTeamError,
+  } = useGetTeamMembersQuery(emailId);
 
-    description:
-      "Nimbus Labs builds and improves B2B digital products with UX-first design, fast iteration, and maintainable UI systems. We turn complex workflows into clear, reliable experiences—shipping production-ready interfaces, reducing friction for users, and helping teams scale confidently as requirements evolve, features grow, and timelines stay tight.",
+  const companyData = useMemo(() => {
+    if (!apiData) return null;
 
-    contact: {
-      email: "hello@nimbuslabs.com",
-      phone: "+1 (555) 123-4567",
-      linkedinUrl: "https://linkedin.com/company/nimbuslabs",
-    },
+    return {
+      name: apiData.companyname,
+      tagline: apiData.tagline || "Providing innovative solutions for the future.",
+      industry: apiData.industry || "Technology",
+      size: apiData.companySize || "11-50 employees",
+      foundedYear: apiData.foundedYear || "2020",
+      description: apiData.description,
+      websiteUrl: apiData.websiteURL,
+      domain: apiData.domain || (apiData.websiteURL ? new URL(apiData.websiteURL).hostname : ""),
+      city: apiData.city,
+      state: apiData.state,
+      country: apiData.country,
+      email: apiData.emailid,
+      phone: apiData.phone,
+      linkedinUrl: apiData.linkedInURL,
+      logo: apiData.companylogo,
+      // Mocked subscription for now, can be updated from API later
+      plan: {
+        name: "Enterprise Plan",
+        status: "Active",
+        billingCycle: "Annual",
+        renewsOn: "Oct 12, 2026",
+        seats: 25,
+        seatsUsed: teamApiData.length || 0,
+      },
+    };
+  }, [apiData, teamApiData]);
 
-    // Added: subscription plan
-    plan: {
-      name: "Business",
-      status: "Active",
-      billingCycle: "Monthly",
-      renewsOn: "2026-02-01",
-      seats: 10,
-      seatsUsed: 6,
-    },
-
-    // Added: team members
-    teamMembers: [
-      { username: "nimbus.owner", email: "owner@nimbuslabs.com", role: "Owner" },
-      { username: "sarah.admin", email: "sarah@nimbuslabs.com", role: "Admin" },
-      { username: "arun.member", email: "arun@nimbuslabs.com", role: "Member" },
-    ],
-  };
-
-  const fullAddress = [
-    companyData.headquarters?.street1,
-    companyData.headquarters?.street2,
-    [companyData.headquarters?.city, companyData.headquarters?.state]
-      .filter(Boolean)
-      .join(", "),
-    companyData.headquarters?.postalCode,
-    companyData.headquarters?.country,
-  ]
-    .filter(Boolean)
-    .join(" • ");
+  const teamMembers = useMemo(() => {
+    if (!Array.isArray(teamApiData)) return [];
+    return teamApiData.map((member) => ({
+      username: member.name || member.emailID.split("@")[0],
+      email: member.emailID,
+      role: member.role,
+      status: member.accepted ? "Active" : "Pending",
+      joinedOn: member.dateofjoin,
+    }));
+  }, [teamApiData]);
 
   const onEdit = () => {
-    navigate("/admin/edit-profile");
+    navigate("/Admin/edit-profile");
   };
 
   const onAccountSettings = () => {
-    navigate("/admin/account-settings"); // Navigate by passing a path string. [web:62]
+    navigate("/Admin/account-settings");
   };
 
-  return (
-    <div className="projects-container">
-      {/* Breadcrumb */}
-      <div className="profile-breadcrumb d-flex gap-1">
-        <button
-          className="link-button"
-          onClick={() => navigate("/admin/admin-dashboard")}
-        >
-          <FiArrowLeft /> Back to Dashboard
-        </button>
-        <span className="crumb">/ Company Profile</span>
-      </div>
-
-      <div className="dashboard-layout">
-        {/* === LEFT MAIN COLUMN === */}
-        <div className="dashboard-column-main">
-          <div className="row">
-            <div className="col-8">
-              {/* Company Header Card */}
-              <div className="project-card">
-                <div className="d-flex gap-3 align-items-start">
-                  <img
-                    src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"
-                    alt="Company Logo"
-                    className="profile-avatar-lg"
-                  />
-
-                  <div className="profile-header-content w-100">
-                    <div className="d-flex align-items-center gap-3">
-                      <h1 className="mb-1">{companyData.name}</h1>
-                    </div>
-
-                    <div className="card-title mb-2">{companyData.tagline}</div>
-
-                    {/* Meta row */}
-                    <div className="profile-meta-row">
-                      <span className="meta-item">
-                        <FiBriefcase /> {companyData.industry}
-                      </span>
-                      <span className="meta-item">
-                        <FiMapPin /> {companyData.headquarters.city},{" "}
-                        {companyData.headquarters.state}
-                      </span>
-                      <span className="meta-item">
-                        <FiUsers /> {companyData.size}
-                      </span>
-                      {/* <span className="meta-item">
-                        <FiCalendar /> Founded {companyData.foundedYear}
-                      </span> */}
-                    </div>
-
-                    {/* Status */}
-                    <div className="profile-status-wrapper">
-                      <span className="status-tag status-completed">
-                        {companyData.status}
-                      </span>
-                      <span className="status-tag status-progress">
-                        {companyData.companyType}
-                      </span>
-                    </div>
-
-                    {/* About */}
-                    <div className="mt-3">
-                      <h3 className="card-title mb-2">About</h3>
-                      <div className="small text-muted" style={{height:"40px", overflowY:"scroll"}}>
-                        {companyData.description}
-                      </div>
-                    </div>
-
-                    {/* Headquarters */}
-                    {/* <div className="mt-3">
-                      <h3 className="card-title">Headquarters</h3>
-                      <div className="small text-muted">{fullAddress}</div>
-                    </div> */}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-4">
-            <div className="table-card sidebar-card" style={{height:"220px"}}>
-            <h3 className="card-title">Subscription Plan</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiFileText className="contact-icon" /> {companyData.plan.name} (
-                {companyData.plan.status})
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Billing:{" "}
-                {companyData.plan.billingCycle}
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Renews on:{" "}
-                {companyData.plan.renewsOn}
-              </div>
-              <div className="contact-item">
-                <FiUsers className="contact-icon" /> Seats:{" "}
-                {companyData.plan.seatsUsed}/{companyData.plan.seats}
-              </div>
-            </div>
+  if (isProfileLoading) {
+    return (
+      <div className="admin-profile-container">
+        <div className="text-center p-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
-            </div>
+          <p className="mt-3">Loading organization profile...</p>
+        </div>
+      </div>
+    );
+  }
 
-            {/* Added: Team members table */}
-            <div className="col-12 mt-3">
-              <div className="table-card">
-                <TeamMembersTable />
-              </div>
+  return (
+    <div className="admin-profile-container">
+      {/* --- HERO SECTION --- */}
+      <div className="company-hero-card">
+        <div className="company-logo-wrapper">
+          <img
+            src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=300"}
+            alt="Company Logo"
+            className="company-logo-lg"
+          />
+        </div>
+
+        <div className="company-info-main">
+          <div className="company-name-row">
+            <h1>{companyData?.name}</h1>
+            <span className="status-tag status-completed">
+              <FiCheckCircle size={12} /> Verified
+            </span>
+          </div>
+          <p className="company-tagline">{companyData?.tagline}</p>
+
+          <div className="company-stats-strip">
+            <div className="hero-stat-item">
+              <FiBriefcase /> {companyData?.industry}
+            </div>
+            <div className="hero-stat-item">
+              <FiUsers /> {companyData?.size}
+            </div>
+            <div className="hero-stat-item">
+              <FiMapPin /> {companyData?.city}, {companyData?.country}
+            </div>
+            <div className="hero-stat-item">
+              <FiCalendar /> Founded {companyData?.foundedYear}
             </div>
           </div>
         </div>
 
-        {/* === RIGHT SIDE COLUMN === */}
-        <div className="dashboard-column-side">
-          {/* Actions */}
-          <div className="sidebar-actions">
-            <button className="btn-primary w-100 gap-2" onClick={onEdit}>
-             <FiEdit/> Edit
-            </button>
+        <div className="admin-actions-sidebar">
+          <button className="btn-upload" onClick={onEdit}>
+            <FiEdit /> Edit Profile
+          </button>
+          <button className="btn-upload-secondary" onClick={onAccountSettings}>
+            <FiSettings /> Account Settings
+          </button>
+        </div>
+      </div>
 
-            <button
-              className="btn-secondary w-100 gap-2"
-              onClick={onAccountSettings}
-            >
-             <FiSettings/>  Account Settings
-            </button>
+      <div className="profile-details-grid">
+        {/* --- MAIN COLUMN --- */}
+        <div className="profile-main-content">
+          {/* About Section */}
+          <div className="card-premium mb-4">
+            <h3 className="card-title-premium">
+              <FiInfo /> About Company
+            </h3>
+            <p className="m-0" style={{ lineHeight: "1.7", color: "#475569" }}>
+              {companyData?.description || "No description provided."}
+            </p>
           </div>
 
-          {/* Company Information */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Company information</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiGlobe className="contact-icon" />{" "}
-                <a href={companyData.websiteUrl} target="_blank" rel="noreferrer">
-                  {companyData.domain}
-                </a>
+          {/* Team Members Section */}
+          <div className="card-premium">
+            <TeamMembersTable teammembers={teamMembers} isLoading={isTeamLoading} />
+          </div>
+        </div>
+
+        {/* --- SIDEBAR COLUMN --- */}
+        <div className="profile-side-content">
+          {/* Subscription Summary */}
+          <div className="card-premium subscription-summary-card mb-4">
+            <h3 className="card-title-premium">
+              <FiFileText /> Subscription Summary
+            </h3>
+            <div className="subscription-body">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <span className="plan-badge-premium">{companyData?.plan.name}</span>
+                <span className="status-tag status-green">Active</span>
               </div>
-              <div className="contact-item">
-                <FiBriefcase className="contact-icon" /> Industry:{" "}
-                {companyData.industry}
+
+              <div className="sub-detail-item">
+                <span className="sub-label">Billing Cycle</span>
+                <span className="sub-value">{companyData?.plan.billingCycle}</span>
               </div>
-              <div className="contact-item">
-                <FiUsers className="contact-icon" /> Size: {companyData.size}
+              <div className="sub-detail-item">
+                <span className="sub-label">Renewal Date</span>
+                <span className="sub-value">{companyData?.plan.renewsOn}</span>
               </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Founded:{" "}
-                {companyData.foundedYear}
-              </div>
-              <div className="contact-item">
-                <FiMapPin className="contact-icon" /> HQ:{" "}
-                {companyData.headquarters.city}, {companyData.headquarters.state}
+
+              <div className="seat-usage-container mt-3">
+                <div className="d-flex justify-content-between mb-1">
+                  <span className="sub-label">Seat Usage</span>
+                  <span className="sub-value">
+                    {companyData?.plan.seatsUsed} / {companyData?.plan.seats}
+                  </span>
+                </div>
+                <div className="seat-progress-bg">
+                  <div
+                    className="seat-progress-fill"
+                    style={{
+                      width: `${(companyData?.plan.seatsUsed / companyData?.plan.seats) * 100}%`,
+                    }}
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Contact */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Contact</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiMail className="contact-icon" />{" "}
-                <a href={`mailto:${companyData.contact.email}`}>
-                  {companyData.contact.email}
-                </a>
+          {/* Contact & Presence */}
+          <div className="card-premium mb-4">
+            <h3 className="card-title-premium">
+              <FiGlobe /> Online Presence
+            </h3>
+            <div className="sidebar-info-grid">
+              <div className="info-item-block">
+                <div className="info-icon-box"><FiGlobe /></div>
+                <div className="info-content-box">
+                  <span className="info-label-sm">Website</span>
+                  <a href={companyData?.websiteUrl} target="_blank" rel="noreferrer" className="info-link-md">
+                    {companyData?.domain}
+                  </a>
+                </div>
               </div>
-              <div className="contact-item">
-                <FiPhone className="contact-icon" /> {companyData.contact.phone}
+              <div className="info-item-block">
+                <div className="info-icon-box"><FiLinkedin /></div>
+                <div className="info-content-box">
+                  <span className="info-label-sm">LinkedIn</span>
+                  <a href={companyData?.linkedinUrl} target="_blank" rel="noreferrer" className="info-link-md">
+                    View Company Page
+                  </a>
+                </div>
               </div>
-              <div className="contact-item">
-                <FiLinkedin className="contact-icon" />{" "}
-                <a
-                  href={companyData.contact.linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LinkedIn
-                </a>
+            </div>
+          </div>
+
+          {/* Direct Contact */}
+          <div className="card-premium">
+            <h3 className="card-title-premium">
+              <FiMail /> Contact Details
+            </h3>
+            <div className="sidebar-info-grid">
+              <div className="info-item-block">
+                <div className="info-icon-box"><FiMail /></div>
+                <div className="info-content-box">
+                  <span className="info-label-sm">Email</span>
+                  <span className="info-value-md">{companyData?.email}</span>
+                </div>
+              </div>
+              <div className="info-item-block">
+                <div className="info-icon-box"><FiPhone /></div>
+                <div className="info-content-box">
+                  <span className="info-label-sm">Phone</span>
+                  <span className="info-value-md">{companyData?.phone}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -277,3 +264,4 @@ const AdminProfile = () => {
 };
 
 export default AdminProfile;
+

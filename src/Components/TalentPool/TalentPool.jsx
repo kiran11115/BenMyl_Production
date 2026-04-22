@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 import {
   FiGrid,
   FiList,
@@ -7,170 +8,22 @@ import {
   FiTrash2,
   FiLoader,
   FiCheck,
+  FiCheckCircle,
   FiChevronDown,
+  FiFilter,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
 
 import TalentGridView from "./TalentGrid";
 import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
-import TalentFilters, { USER_CREATED_JOBS } from "../Filters/TalentFilters";
+import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
-
-// --- DATA SOURCE (With Hourly Rates for Sorting) ---
-const candidatesMock = [
-  {
-    id: 101,
-    name: "Sarah Johnson",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Senior Developer",
-    experience: "8 years exp",
-    skills: ["React", "Node.js", "AWS"],
-    location: "San Francisco, CA",
-    availability: ["Available Now", "Remote"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    hourlyRate: 85,
-    avatar:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 102,
-    name: "Michael Chen",
-    verified: "",
-    role: "Project Manager",
-    experience: "12 years exp",
-    skills: ["Agile", "Jira", "Scrum"],
-    location: "New York, NY",
-    availability: ["2 Weeks Notice"],
-    status: "IN REVIEW",
-    rating: 4.7,
-    hourlyRate: 95,
-    avatar:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 103,
-    name: "Emily Davis",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "DevOps Engineer",
-    experience: "5 years exp",
-    skills: ["Docker", "K8s", "CI/CD"],
-    location: "Austin, TX",
-    availability: ["Available Now"],
-    status: "INTERVIEWING",
-    rating: 4.8,
-    hourlyRate: 70,
-    avatar:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 104,
-    name: "David Lee",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Backend Developer",
-    experience: "6 years exp",
-    skills: ["Python", "Django", "SQL"],
-    location: "Chicago, IL",
-    availability: ["1 Month Notice", "Remote"],
-    status: "INTERVIEWING",
-    rating: 4.6,
-    hourlyRate: 65,
-    avatar:
-      "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 105,
-    name: "Maria Garcia",
-    verified: "",
-    role: "QA Engineer",
-    experience: "4 years exp",
-    skills: ["Selenium", "Cypress"],
-    location: "Miami, FL",
-    availability: ["Available Now"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    hourlyRate: 50,
-    avatar:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 106,
-    name: "James Williams",
-    verified: "",
-    role: "Data Scientist",
-    experience: "7 years exp",
-    skills: ["Python", "TF", "SQL"],
-    location: "Seattle, WA",
-    availability: ["Remote Only"],
-    status: "IN REVIEW",
-    rating: 5.0,
-    hourlyRate: 110,
-    avatar:
-      "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 107,
-    name: "Olivia Martinez",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Product Owner",
-    experience: "9 years exp",
-    skills: ["Strategy", "Agile"],
-    location: "Denver, CO",
-    availability: ["Available Now"],
-    status: "OFFER EXTENDED",
-    rating: 4.8,
-    hourlyRate: 90,
-    avatar:
-      "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 108,
-    name: "John Smith",
-    verified: "",
-    role: "UI/UX Designer",
-    experience: "3 years exp",
-    skills: ["Figma", "Sketch"],
-    location: "Boston, MA",
-    availability: ["Part-time"],
-    status: "NEW",
-    rating: 4.5,
-    hourlyRate: 45,
-    avatar:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 109,
-    name: "William Rodriguez",
-    verified: "",
-    role: "SysAdmin",
-    experience: "15 years exp",
-    skills: ["Linux", "Bash", "Net"],
-    location: "Houston, TX",
-    availability: ["Available Now"],
-    status: "REJECTED",
-    rating: 4.4,
-    hourlyRate: 80,
-    avatar:
-      "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 110,
-    name: "Ava Wilson",
-    verified: <GiCheckMark size={14} color="#059669" />,
-    role: "Jr. Frontend Dev",
-    experience: "1 year exp",
-    skills: ["HTML", "CSS", "JS"],
-    location: "Portland, OR",
-    availability: ["Entry Level"],
-    status: "NEW",
-    rating: 4.7,
-    hourlyRate: 30,
-    avatar:
-      "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-];
+import FilterBottomSheet from "../Common/FilterBottomSheet";
+import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import NoData from "../UploadTalent/NoData";
+import { calculateTotalExperience } from "../../Utils/experienceUtils";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -179,15 +32,55 @@ const parseExperience = (expStr) => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob, onInviteSuccess }) => {
   const [offerStatus, setOfferStatus] = useState({});
+  const [sendInviteNotification] = useSendInviteNotificationMutation();
 
-  const handleSendOffer = (jobId) => {
+  const companyname = localStorage.getItem("CompanyName");
+  const username = localStorage.getItem("UserName");
+
+  const handleSendInvite = async (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
-    setTimeout(() => {
+
+    try {
+      const shortlistedCandidates = shortlistedMap[jobId] || [];
+      if (!shortlistedCandidates.length) return;
+
+      const userIds = shortlistedCandidates.map(
+        (c) => Number(c.inviteUserId)
+      );
+
+      const usernames = shortlistedCandidates.map((c) => c.name);
+      const employeeIds = shortlistedCandidates.map((c) => c.id);
+
+      const payload = {
+        userIds,
+        usernames,
+        employeeIds,
+        message: "Your talent has been shortlisted. Please check your mailbox.",
+        uatUserId: Number(userId),
+        uatfirstName: username,
+        companyName: companyname
+      };
+
+      await sendInviteNotification(payload).unwrap();
+
       setOfferStatus((prev) => ({ ...prev, [jobId]: "sent" }));
-    }, 1000);
+      clearShortlistForJob(jobId);
+      await refreshTalents();
+      onClose();
+      if (onInviteSuccess) onInviteSuccess(jobId);
+    } catch (err) {
+      console.error("Invite failed", err);
+      setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
+      alert("Failed to send invite");
+    }
   };
+
+  const hasAnyShortlistedCandidates = Object.values(shortlistedMap).some(
+    (list) => Array.isArray(list) && list.length > 0
+  );
+
 
   return (
     <>
@@ -204,11 +97,11 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
         </div>
 
         <div className="drawer-content">
-          {Object.keys(shortlistedMap).length === 0 ? (
+          {!hasAnyShortlistedCandidates ? (
             <div className="empty-state">No candidates shortlisted yet.</div>
           ) : (
             Object.keys(shortlistedMap).map((jobId) => {
-              const job = USER_CREATED_JOBS.find((j) => j.id === jobId);
+              const job = jobs.find((j) => j.id === jobId);
               const candidates = shortlistedMap[jobId];
               if (!candidates || candidates.length === 0) return null;
 
@@ -244,7 +137,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
                   <div className="job-footer">
                     <button
                       className={`btn-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
-                      onClick={() => handleSendOffer(jobId)}
+                      onClick={() => handleSendInvite(jobId)}
                       disabled={currentStatus !== "idle"}
                     >
                       {currentStatus === "loading" && (
@@ -407,29 +300,366 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove }) => {
 // --- MAIN COMPONENT ---
 const TalentPool = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const preselectedJobTitle = location.state?.jobTitle;
+  const userId = localStorage.getItem("CompanyId");
+  const companyId = localStorage.getItem("logincompanyid");
   const [viewMode, setViewMode] = useState("grid");
-  const candidates = useMemo(() => candidatesMock, []);
-  const [activeFilters, setActiveFilters] = useState(null);
+  const resultsRef = useRef(null);
+  const [shortlistedMap, setShortlistedMap] = useState(() => {
+    try {
+      const stored = localStorage.getItem("shortlistedMap");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
 
-  const [shortlistedMap, setShortlistedMap] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [successJobId, setSuccessJobId] = useState(null);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("recommended");
+  const [selectedJobId, setSelectedJobId] = useState(null);
 
-  const handleApplyFilters = (newFilters) => setActiveFilters(newFilters);
-  const handleProfileClick = () => navigate("/user/user-talent-profile");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [allCandidates, setAllCandidates] = useState([]);
+  const [isInitialised, setIsInitialised] = useState(false);
+  const [allSelectedJobDetails, setAllSelectedJobDetails] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [appliedFilters, setAppliedFilters] = useState(null);
 
-  const activeJobId = activeFilters?.selectedJobs?.[0] || null;
+
+  const activeJobId = selectedJobId;
+
+  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+  const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+  const [getFindTalent, { data, isLoading }] =
+    useTalentPoolMutation();
+
+  const PAGE_SIZE = 50;
+
+  const fetchTalents = async () => {
+
+    try {
+      if (pageNumber === 1) {
+        setIsInitialLoading(true);   // first load
+      } else {
+        setIsFetchingMore(true);     // scroll load
+      }
+
+      const filtersArray = [];
+
+      if (appliedFilters) {
+
+        // Title
+        if (appliedFilters.selectedJobs?.length) {
+          const selectedTitles = appliedFilters.selectedJobs
+            .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+            .filter(Boolean);
+
+          if (selectedTitles.length > 0) {
+            filtersArray.push({
+              filterName: "Title",
+              filterOperator: "Equals",
+              filterValue: selectedTitles,
+            });
+          }
+        }
+
+        // Skills
+        if (appliedFilters.skills?.length) {
+          filtersArray.push({
+            filterName: "skills",
+            filterOperator: "Equals",
+            filterValue: appliedFilters.skills,
+          });
+        }
+
+        // Location
+        if (appliedFilters.location) {
+          filtersArray.push({
+            filterName: "Location",
+            filterOperator: "Equals",
+            filterValue: [appliedFilters.location],
+          });
+        }
+
+        // Salary Range
+        if (appliedFilters.minSalary && appliedFilters.maxSalary) {
+          filtersArray.push({
+            filterName: "Salary Range",
+            filterOperator: "Equals",
+            filterValue: [
+              `${appliedFilters.minSalary} - ${appliedFilters.maxSalary}`
+            ],
+          });
+        }
+
+        // Years of Experience
+        if (appliedFilters.minExperience && appliedFilters.maxExperience) {
+          filtersArray.push({
+            filterName: "Years of Experience",
+            filterOperator: "Equals",
+            filterValue: [
+              `${appliedFilters.minExperience}- ${appliedFilters.maxExperience}`
+            ],
+          });
+        }
+
+        // Employment Type
+        if (appliedFilters.availability?.length) {
+          filtersArray.push({
+            filterName: "Employment Type",
+            filterOperator: "Equals",
+            filterValue: appliedFilters.availability,
+          });
+        }
+      }
+
+      const payload = {
+        companyid: Number(companyId),
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        filters: filtersArray,
+      };
+
+      const res = await getFindTalent(payload).unwrap();
+
+      // 🔥 API returns array directly
+      if (!Array.isArray(res) || res.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      if (res.length < PAGE_SIZE) {
+        setHasMore(false);   // no more pages
+      }
+
+      setAllCandidates((prev) =>
+        pageNumber === 1 ? res : [...prev, ...res]
+      );
+
+    } finally {
+      setIsInitialLoading(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+
+  const candidates = useMemo(() => {
+    return allCandidates.map((item) => ({
+      id: item.employeeID,
+
+      name: `${item.firstName} ${item.lastName}`,
+      inviteUserId: Number(item.insertBy),
+
+      role: item.title || "-",
+
+      experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
+
+      location: item.city || "-",
+
+      skills: item.skills
+        ? item.skills.split(",").map((s) => s.trim())
+        : [],
+
+      avatar:
+        item.profilePicture ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          item.firstName
+        )}`,
+
+      rating: 4.5,
+
+      availability: item.status ? [item.status] : ["Available"],
+
+      verified: true,
+      isshortlisted: item.isshortlisted,
+
+      hourlyRate: item.salary || 0,
+    }));
+  }, [allCandidates]);
+
+  const jobs = useMemo(() => {
+    if (!Array.isArray(jobTitles)) return [];
+
+    const colorPalette = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+
+    return jobTitles.map((job, index) => ({
+      id: `job-${job.jobID}`,      // 🔥 unique per job
+      jobID: job.jobID,            // backend id
+      title: job.jobTitle,
+      companyName: job.companyName,
+      color: colorPalette[index % colorPalette.length],
+    }));
+  }, [jobTitles]);
+
+  const allSkills = useMemo(() => {
+    if (!Array.isArray(jobTitles)) return [];
+
+    const skillSet = new Set();
+
+    jobTitles.forEach((job) => {
+      if (job.requiredSkills) {
+        job.requiredSkills.split(",").forEach((skill) => {
+          const clean = skill.trim().toLowerCase();
+          if (clean) {
+            skillSet.add(clean);
+          }
+        });
+      }
+    });
+
+    return Array.from(skillSet).map(
+      (skill) => skill.charAt(0).toUpperCase() + skill.slice(1)
+    );
+  }, [jobTitles]);
+
+
+  useEffect(() => {
+    if (!preselectedJobTitle || jobs.length === 0) return;
+
+    const matchedJob = jobs.find(
+      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+    );
+
+    if (!matchedJob) return;
+
+    const filters = {
+      selectedJobs: [matchedJob.id],
+      skills: [],
+      location: "",
+      minExperience: "",
+      maxExperience: "",
+      minSalary: "",
+      maxSalary: "",
+      availability: [],
+    };
+
+    setSelectedJobId(matchedJob.id);
+    setAppliedFilters(filters);
+
+    // 🔥 VERY IMPORTANT → sync to URL
+    setSearchParams({ jobId: matchedJob.id });
+
+  }, [preselectedJobTitle, jobs]);
+
+  const filtersReady = useMemo(() => {
+    const hasURLParams = searchParams.toString().length > 0;
+
+    // If URL has filters but appliedFilters not restored yet → wait
+    if (hasURLParams && appliedFilters === null) {
+      return false;
+    }
+
+    return true;
+  }, [searchParams, appliedFilters]);
+
+  useEffect(() => {
+    if (selectedJobId !== null) {
+      setIsInitialised(true);
+    }
+  }, [selectedJobId]);
+
+  useEffect(() => {
+    setPageNumber(1);
+    setHasMore(true);
+    setAllCandidates([]);
+  }, [activeJobId]);
+
+  useEffect(() => {
+    if (!filtersReady) return;
+
+    fetchTalents();
+  }, [pageNumber, appliedFilters, activeJobId, filtersReady]);
+
+
+
+  useEffect(() => {
+    const el = resultsRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      if (
+        el.scrollHeight > el.clientHeight &&
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+        hasMore &&
+        !isFetchingMore
+      ) {
+        setPageNumber((prev) => prev + 1);
+      }
+    };
+
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [hasMore, isFetchingMore]);
+
 
   const activeJob = useMemo(() => {
-    if (!activeJobId) return null;
-    return USER_CREATED_JOBS.find((j) => j.id === activeJobId) || null;
-  }, [activeJobId]);
+    if (!selectedJobId) return null;
+    return jobs.find((j) => j.id === selectedJobId) || null;
+  }, [selectedJobId, jobs]);
 
   const activeJobColor = activeJob?.color || "#4f46e5";
 
+  const allJobOverviewData = useMemo(() => {
+    return allSelectedJobDetails.map((details) => ({
+      id: details.jobID,
+      title: details.jobTitle,
+      company: details.companyName,
+      location: details.location,
+      budget:
+        details.salaryRange_Min && details.salaryRange_Max
+          ? `${details.salaryRange_Min} - ${details.salaryRange_Max}`
+          : `${details.salaryRange_Min || ""}`,
+      experience: details.yearsofExperience || details.experienceLevel,
+      type: details.employeeType,
+      salaryType: details.salarType,
+      description: details.jobDescription,
+      requiredSkills: details.requiredSkills
+        ? details.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    }));
+  }, [allSelectedJobDetails]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const selectedJobIds = appliedFilters?.selectedJobs || [];
+    if (selectedJobIds.length === 0) {
+      setAllSelectedJobDetails([]);
+      return;
+    }
+
+    const fetchDetails = async () => {
+      const detailsPromises = selectedJobIds.map((id) => {
+        const job = jobs.find((j) => j.id === id);
+        if (!job) return null;
+        return getJobById({ jobId: job.jobID, userId }).unwrap();
+      });
+
+      const results = await Promise.all(detailsPromises);
+      if (!isMounted) return;
+
+      const validDetails = results
+        .filter(Boolean)
+        .map((res) => res?.[0])
+        .filter(Boolean);
+      setAllSelectedJobDetails(validDetails);
+    };
+
+    fetchDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, [appliedFilters?.selectedJobs, jobs, userId]);
+
   const handleShortlist = (candidate) => {
     if (!activeJobId) {
-      alert("Please select a Job from the filters first to shortlist.");
+      toast.error("Please select a Job from the filters first to shortlist.");
       return;
     }
 
@@ -443,6 +673,113 @@ const TalentPool = () => {
       return { ...prev, [activeJobId]: [...currentList, candidate] };
     });
   };
+
+  const clearShortlistForJob = (jobId) => {
+    setShortlistedMap((prev) => {
+      const updated = { ...prev };
+      delete updated[jobId];
+      return updated;
+    });
+  };
+
+
+  useEffect(() => {
+    if (jobs.length === 0) return;
+
+    const jobId = searchParams.get("jobId");
+    const jobIdArray = jobId ? jobId.split(",") : [];
+    const skills = searchParams.get("skills");
+    const location = searchParams.get("location");
+    const minExp = searchParams.get("minExp");
+    const maxExp = searchParams.get("maxExp");
+    const minSal = searchParams.get("minSal");
+    const maxSal = searchParams.get("maxSal");
+    const type = searchParams.get("type");
+
+    if (!jobId && preselectedJobTitle) {
+      return; // 🔥 do NOT override
+    }
+
+    const restoredFilters = {
+      selectedJobs: jobIdArray,
+      skills: skills ? skills.split(",") : [],
+      location: location || "",
+      minExperience: minExp || "",
+      maxExperience: maxExp || "",
+      minSalary: minSal || "",
+      maxSalary: maxSal || "",
+      availability: type ? type.split(",") : [],
+    };
+
+    setSelectedJobId(jobIdArray[0] || null);
+    setAppliedFilters(restoredFilters);
+    setIsInitialised(true);
+  }, [jobs, searchParams, preselectedJobTitle]);
+
+
+
+  const handleApplyFilter = (filters) => {
+    setPageNumber(1);          // 🔥 RESET TO PAGE 1
+    setHasMore(true);          // reset infinite scroll
+    setAllCandidates([]);      // clear old data
+    setAppliedFilters(filters);
+
+    const params = {};
+
+    if (filters?.selectedJobs?.length) {
+      params.jobId = filters.selectedJobs.join(",");
+    }
+
+    if (filters?.skills?.length) {
+      params.skills = filters.skills.join(",");
+    }
+
+    if (filters?.location) {
+      params.location = filters.location;
+    }
+
+    if (filters?.minExperience) {
+      params.minExp = filters.minExperience;
+    }
+
+    if (filters?.maxExperience) {
+      params.maxExp = filters.maxExperience;
+    }
+
+    if (filters?.minSalary) {
+      params.minSal = filters.minSalary;
+    }
+
+    if (filters?.maxSalary) {
+      params.maxSal = filters.maxSalary;
+    }
+
+    if (filters?.availability?.length) {
+      params.type = filters.availability.join(",");
+    }
+
+    setSearchParams(params);
+  };
+
+
+
+
+  const handleProfileClick = (candidate) => {
+    const from = location.pathname + location.search;
+
+    navigate(
+      `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
+      {
+        state: {
+          employeeID: candidate.id,
+          jobId: activeJobId, // 🔥 this is critical
+        },
+      }
+    );
+  };
+
+
+
 
   const handleRemoveFromDrawer = (jobId, candId) => {
     setShortlistedMap((prev) => ({
@@ -468,6 +805,20 @@ const TalentPool = () => {
         return sortable;
     }
   }, [candidates, sortBy]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "shortlistedMap",
+      JSON.stringify(shortlistedMap)
+    );
+  }, [shortlistedMap]);
+
+
+  const [expandedCardId, setExpandedCardId] = useState(null);
+
+  const toggleCard = (id) => {
+    setExpandedCardId(prev => (prev === id ? null : id));
+  };
 
   return (
     <div className="vs-page">
@@ -499,7 +850,7 @@ const TalentPool = () => {
               flex: 1,
               maxWidth: "700px",
               justifyContent: "flex-end",
-              alignItems: "center",
+              alignItems: "start",
             }}
           >
             {/* Sort */}
@@ -516,7 +867,14 @@ const TalentPool = () => {
             </div>
 
             <button
-              className="add-project-btn"
+              className="filters-applied"
+              onClick={() => setIsMobileFilterOpen(true)}
+            >
+              <FiFilter /> Filters
+            </button>
+
+            <button
+              className="btn-upload"
               onClick={() => setIsDrawerOpen(true)}
               style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
@@ -544,18 +902,72 @@ const TalentPool = () => {
         </div>
 
         {/* Layout */}
-        <div className="d-flex gap-3">
-          <aside>
-            <TalentFilters onApplyFilters={handleApplyFilters} />
+        <div className="d-flex gap-3" style={{
+          display: "flex",
+          gap: "16px",
+          height: "calc(100vh - 10px)", // SAME HEIGHT for both
+        }}>
+          <aside className="vs-filters-sidebar hide-scrollbar" style={{
+            overflowY: "auto",
+          }}>
+            <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
           </aside>
 
-          <section className="vs-results">
-            {/* ALWAYS render overview card (shows empty state if no job) */}
-            <div style={{ marginBottom: 16 }}>
-              <JobOverviewCard job={activeJob} />
-            </div>
+          <FilterBottomSheet
+            isOpen={isMobileFilterOpen}
+            onClose={() => setIsMobileFilterOpen(false)}
+            title="Filters"
+          >
+            <TalentFilters
+              onApplyFilters={(filters) => {
+                handleApplyFilter(filters);
+                setIsMobileFilterOpen(false);
+              }}
+              skillsList={allSkills}
+              jobs={jobs}
+              selectedJobId={selectedJobId}
+              appliedFilters={appliedFilters}
+            />
+          </FilterBottomSheet>
 
-            {viewMode === "grid" ? (
+          <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
+            height: "calc(100vh - 0px)", // adjust if header height differs
+            overflowY: "auto",
+            overflowX: "hidden",
+            width: "600px"
+          }}>
+            {/* Render overview cards for all selected jobs */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
+              {allJobOverviewData.map((jobData) => (
+                <JobOverviewCard
+                  key={jobData.id}
+                  job={jobData}
+                  isExpanded={expandedCardId === jobData.id}
+                  onToggle={() => toggleCard(jobData.id)}
+                />
+              ))}
+              {allJobOverviewData.length === 0 && (
+                <JobOverviewCard job={null} />
+              )}
+            </div>
+            {isLoading && (
+              <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
+                Loading candidates...
+              </div>
+            )}
+
+            {!isLoading && sortedCandidates.length === 0 ? (
+              <div
+                style={{
+                  minHeight: "320px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <NoData text="No Matching Profiles found" />
+              </div>
+            ) : viewMode === "grid" ? (
               <TalentGridView
                 candidates={sortedCandidates}
                 onShortlist={handleShortlist}
@@ -563,6 +975,7 @@ const TalentPool = () => {
                 activeJobColor={activeJobColor}
                 shortlistedMap={shortlistedMap}
                 onProfileClick={handleProfileClick}
+                hasMore={hasMore}
               />
             ) : (
               <TalentTableView
@@ -571,20 +984,59 @@ const TalentPool = () => {
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}
                 shortlistedMap={shortlistedMap}
+                hasMore={hasMore}
               />
             )}
+
           </section>
         </div>
       </div>
 
-     {isDrawerOpen ? (
-  <ShortlistDrawer
-    isOpen={isDrawerOpen}
-    onClose={() => setIsDrawerOpen(false)}
-    shortlistedMap={shortlistedMap}
-    onRemove={handleRemoveFromDrawer}
-  />
-) : null}
+      {isDrawerOpen ? (
+        <ShortlistDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          shortlistedMap={shortlistedMap}
+          onRemove={handleRemoveFromDrawer}
+          jobs={jobs}
+          userId={userId}
+          refreshTalents={fetchTalents}
+          clearShortlistForJob={clearShortlistForJob}
+          onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
+        />
+      ) : null}
+
+      {successJobId && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => { }}>
+          <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+            <div style={{ marginBottom: '24px' }}>
+              <FiCheckCircle size={60} color="#059669" />
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
+
+            <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
+              <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
+                <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                onClick={() => navigate("/user/user-schedule-interview", { state: { preSelectedJobId: successJobId } })}
+              >
+                Schedule Interview
+              </button>
+              <button
+                style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                onClick={() => setSuccessJobId(null)}
+              >
+                Continue to Talentpool
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .sort-wrapper {
@@ -615,6 +1067,20 @@ const TalentPool = () => {
           color: #64748b;
           pointer-events: none;
         }
+        .hide-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+/* IE / old Edge */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+}
       `}</style>
     </div>
   );

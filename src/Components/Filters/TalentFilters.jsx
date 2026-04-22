@@ -3,61 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 
-// --- DATA CONSTANTS (Exported) ---
-export const USER_CREATED_JOBS = [
-  {
-    id: "job1",
-    title: "Senior Frontend Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
-    budget: "$80-100/hour",
-    experience: "5",
-    type: "Contract",
-    description:
-      "We are looking for a Senior Frontend Developer to join our team. You will be responsible for building and maintaining high-quality web applications using modern technologies...",
-    requiredSkills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"],
-    color: "#3b82f6", // Blue
-  },
-  {
-    id: "job2",
-    title: "Node.js Backend API Setup",
-    company: "TechCorp Inc.",
-    location: "New York, NY",
-    budget: "$60-90/hour",
-    experience: "4",
-    type: "Contract",
-    description:
-      "Set up scalable Node.js APIs including auth, logging, and monitoring for production workloads.",
-    requiredSkills: ["Node.js", "TypeScript", "REST", "PostgreSQL"],
-    color: "#10b981", // Green
-  },
-  {
-    id: "job3",
-    title: "AWS Cloud Infrastructure",
-    company: "TechCorp Inc.",
-    location: "Remote",
-    budget: "$70-110/hour",
-    experience: "6",
-    type: "Contract",
-    description:
-      "Design and implement AWS infrastructure with IaC, security best practices, and CI/CD pipelines.",
-    requiredSkills: ["AWS", "Terraform", "Docker", "CI/CD"],
-    color: "#f59e0b", // Orange
-  },
-  {
-    id: "job4",
-    title: "Full Stack Web App",
-    company: "TechCorp Inc.",
-    location: "Hybrid",
-    budget: "$70-120/hour",
-    experience: "5",
-    type: "Contract",
-    description:
-      "Build a full stack web application with a polished UI, robust APIs, and secure deployment pipeline.",
-    requiredSkills: ["React", "Node.js", "SQL"],
-    color: "#8b5cf6", // Purple
-  },
-];
+
 
 const SKILL_TAGS = [
   "React",
@@ -83,11 +29,9 @@ const EXPERIENCE_LEVELS = [
   "Senior (8+ years)",
 ];
 const AVAILABILITY_OPTIONS = [
-  "Any Time",
-  "Immediate",
-  "1-3 Days",
-  "3-7 Days",
-  "1-2 Weeks",
+  "Part-Time",
+  "Full-Time",
+  "Contract",
 ];
 const LOCATION_TYPES = ["Any Type", "Remote", "On-Site", "Hybrid"];
 
@@ -160,13 +104,16 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
 };
 
 // --- MAIN FILTERS COMPONENT ---
-const TalentFilters = ({ onApplyFilters }) => {
+const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], appliedFilters }) => {
   const initialFilters = {
     selectedJobs: [],
     skills: [],
-    locations: [],
+    location: "",
     availability: [],
-    experience: "Any Experience",
+    minExperience: "",
+    maxExperience: "",
+    minSalary: "",
+    maxSalary: "",
     minRating: 0,
     maxBudget: 50000,
     isVerified: false,
@@ -175,6 +122,40 @@ const TalentFilters = ({ onApplyFilters }) => {
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
   const [isJobDropdownOpen, setIsJobDropdownOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('jobs'); // DEFAULT OPEN
+  const jobDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (jobDropdownRef.current && !jobDropdownRef.current.contains(event.target)) {
+        setIsJobDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleSection = (section) => {
+    setActiveSection(prev => (prev === section ? null : section));
+  };
+
+  const selectJob = (job) => {
+    setSelectedJob(job);
+    setOpen(false);
+    onApplyFilters(job); // 🔥 send job to parent
+  };
+
+  useEffect(() => {
+    if (!selectedJobId) return;
+
+    setFilterInputs((prev) => ({
+      ...prev,
+      selectedJobs: [selectedJobId],
+    }));
+  }, [selectedJobId]);
+
 
   const handleInputChange = (field, value) =>
     setFilterInputs((prev) => ({ ...prev, [field]: value }));
@@ -183,38 +164,91 @@ const TalentFilters = ({ onApplyFilters }) => {
 
   const toggleJobSelection = (jobId) => {
     setFilterInputs((prev) => {
-      const current = prev.selectedJobs[0];
+      const isSelected = prev.selectedJobs.includes(jobId);
+      const newSelectedJobs = isSelected
+        ? prev.selectedJobs.filter((id) => id !== jobId)
+        : [...prev.selectedJobs, jobId];
 
       return {
         ...prev,
-        selectedJobs: current === jobId ? [] : [jobId],
+        selectedJobs: newSelectedJobs,
       };
     });
   };
 
-
   const removeArrayItem = (field, value) => {
-    setFilterInputs((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((item) => item !== value),
-    }));
+    setFilterInputs((prev) => {
+      const updatedFilters = {
+        ...prev,
+        [field]: prev[field].filter((item) => item !== value),
+      };
+      if (onApplyFilters) {
+        onApplyFilters(updatedFilters);
+      }
+      return updatedFilters;
+    });
   };
 
   const removeJobTag = (jobId) => {
-    setFilterInputs((prev) => ({
-      ...prev,
-      selectedJobs: prev.selectedJobs.filter((id) => id !== jobId),
-    }));
+    setFilterInputs((prev) => {
+      const updatedFilters = {
+        ...prev,
+        selectedJobs: prev.selectedJobs.filter((id) => id !== jobId),
+      };
+      if (onApplyFilters) {
+        onApplyFilters(updatedFilters);
+      }
+      return updatedFilters;
+    });
   };
 
   const applyFilters = () => {
-    if (onApplyFilters) onApplyFilters(filterInputs);
+    onApplyFilters(filterInputs);
   };
 
   const resetFilters = () => {
     setFilterInputs(initialFilters);
     if (onApplyFilters) onApplyFilters(initialFilters);
   };
+
+  useEffect(() => {
+    if (!appliedFilters) return;
+
+    setFilterInputs((prev) => ({
+      ...prev,
+      ...appliedFilters,
+    }));
+  }, [appliedFilters]);
+
+  const SectionHeader = ({ id, title, isExpanded, summary }) => (
+    <div
+      className={`filter-section-header ${isExpanded ? 'active' : ''}`}
+      onClick={() => toggleSection(id)}
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: 'pointer',
+        padding: '10px 0',
+        borderBottom: '1px solid #f1f5f9',
+        marginBottom: isExpanded ? '12px' : '0'
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <h4 className="section-title" style={{ margin: 0 }}>{title}</h4>
+        {!isExpanded && summary && (
+          <span className="header-summary" style={{ fontSize: '12px', color: '#f5810c', fontWeight: '600' }}>
+            {summary}
+          </span>
+        )}
+      </div>
+      {isExpanded ? (
+        <FiChevronDown style={{ color: '#0f172a', fontSize: '16px' }} />
+      ) : (
+        <FiPlus style={{ color: '#94a3b8', fontSize: '16px' }} />
+      )}
+    </div>
+  );
 
   return (
     <div className="filter-sidebar">
@@ -227,82 +261,96 @@ const TalentFilters = ({ onApplyFilters }) => {
 
       {/* Jobs */}
       <div className="filter-section">
-        <h4 className="section-title">Find for Jobs</h4>
-        {filterInputs.selectedJobs.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.selectedJobs.map((jobId) => {
-              const job = USER_CREATED_JOBS.find((j) => j.id === jobId);
-              return (
-                <span key={jobId} className="filter-tag">
-                  {job?.title}
-                  <FiX
-                    className="tag-close-icon"
-                    onClick={() => removeJobTag(jobId)}
-                  />
+        <SectionHeader
+          id="jobs"
+          title="Find for Jobs"
+          isExpanded={activeSection === 'jobs'}
+          summary={filterInputs.selectedJobs.map(id => jobs.find(j => j.id === id)?.title).filter(Boolean).join(', ')}
+        />
+        {activeSection === 'jobs' && (
+          <div className="section-content">
+            {filterInputs.selectedJobs.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.selectedJobs.map((jobId) => {
+                  const job = jobs.find((j) => j.id === jobId);
+                  return (
+                    <span key={jobId} className="filter-tag">
+                      {job?.title}
+                      <FiX
+                        className="tag-close-icon"
+                        onClick={() => removeJobTag(jobId)}
+                      />
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+            <div className="select-wrapper" ref={jobDropdownRef} style={{ position: "relative" }}>
+              <div
+                className="filter-select"
+                onClick={() => setIsJobDropdownOpen(!isJobDropdownOpen)}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span style={{ color: "#64748b" }}>
+                  {isJobDropdownOpen ? "Close List" : "Add Job..."}
                 </span>
-              );
-            })}
+                {isJobDropdownOpen ? (
+                  <FiChevronDown style={{ transform: "rotate(180deg)" }} />
+                ) : (
+                  <FiPlus />
+                )}
+              </div>
+              {isJobDropdownOpen && (
+                <div className="custom-dropdown-menu">
+                  {jobs && jobs.length > 0 ? (
+  jobs.map((job) => (
+    <div
+      key={job.id}
+      className="custom-option"
+      onClick={() => toggleJobSelection(job.id)}
+    >
+      <div
+        className={`custom-checkbox ${
+          filterInputs.selectedJobs.includes(job.id) ? "checked" : ""
+        }`}
+      >
+        {filterInputs.selectedJobs.includes(job.id) && (
+          <FiCheck size={10} color="white" />
+        )}
+      </div>
+      <span className="truncate-text">{job.title}</span>
+    </div>
+  ))
+) : (
+  <div
+    style={{
+      padding: "6px",
+      textAlign: "center",
+      color: "#94a3b8",
+      fontSize: "13px",
+    }}
+  >
+    No data found
+  </div>
+)}
+                </div>
+              )}
+            </div>
           </div>
         )}
-        <div className="select-wrapper" style={{ position: "relative" }}>
-          <div
-            className="filter-select"
-            onClick={() => setIsJobDropdownOpen(!isJobDropdownOpen)}
-            style={{
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <span style={{ color: "#64748b" }}>
-              {isJobDropdownOpen ? "Close List" : "Add Job..."}
-            </span>
-            {isJobDropdownOpen ? (
-              <FiChevronDown style={{ transform: "rotate(180deg)" }} />
-            ) : (
-              <FiPlus />
-            )}
-          </div>
-          {isJobDropdownOpen && (
-            <div className="custom-dropdown-menu">
-              {USER_CREATED_JOBS.map((job) => (
-                <div
-                  key={job.id}
-                  className="custom-option"
-                  onClick={() => toggleJobSelection(job.id)}
-                >
-                  <div
-                    className={`custom-checkbox ${filterInputs.selectedJobs.includes(job.id)
-                        ? "checked"
-                        : ""
-                      }`}
-                    style={
-                      filterInputs.selectedJobs.includes(job.id)
-                        ? {
-                          borderColor: job.color,
-                          backgroundColor: job.color,
-                        }
-                        : {}
-                    }
-                  >
-                    {filterInputs.selectedJobs.includes(job.id) && (
-                      <FiCheck size={10} color="white" />
-                    )}
-                  </div>
-                  <span className="truncate-text">{job.title}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
 
+
       {/* Verified */}
-      <div className="filter-section">
+      <div className="filter-section" style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
         <label
           className="checkbox-row"
-          style={{ marginTop: "5px" }}
+          style={{ marginTop: "5px", cursor: 'pointer' }}
         >
           <div className="checkbox-container">
             <input
@@ -316,7 +364,7 @@ const TalentFilters = ({ onApplyFilters }) => {
           </div>
           <span
             className="checkbox-label"
-            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: '14px' }}
           >
             <GiCheckMark size={14} color="#059669" /> Verified Profiles Only
           </span>
@@ -325,172 +373,215 @@ const TalentFilters = ({ onApplyFilters }) => {
 
       {/* Job Type */}
       <div className="filter-section">
-        <h4 className="section-title">Job Type</h4>
-        <div className="select-wrapper">
-          <select
-            className="filter-select"
-            value={filterInputs.locationType}
-            onChange={(e) =>
-              handleInputChange("locationType", e.target.value)
-            }
-          >
-            {LOCATION_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-          <FiChevronDown className="select-icon" />
-        </div>
+        <SectionHeader
+          id="jobType"
+          title="Job Type"
+          isExpanded={activeSection === 'jobType'}
+          summary={filterInputs.locationType !== 'Any Type' ? filterInputs.locationType : ''}
+        />
+        {activeSection === 'jobType' && (
+          <div className="section-content">
+            <div className="select-wrapper">
+              <select
+                className="filter-select"
+                value={filterInputs.locationType}
+                onChange={(e) =>
+                  handleInputChange("locationType", e.target.value)
+                }
+              >
+                {LOCATION_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <FiChevronDown className="select-icon" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Skills */}
       <div className="filter-section">
-        <h4 className="section-title">Skills & Tech</h4>
-        {filterInputs.skills.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.skills.map((s) => (
-              <span key={s} className="filter-tag">
-                {s}
-                <FiX
-                  className="tag-close-icon"
-                  onClick={() => removeArrayItem("skills", s)}
-                />
-              </span>
-            ))}
+        <SectionHeader
+          id="skills"
+          title="Skills & Tech"
+          isExpanded={activeSection === 'skills'}
+          summary={filterInputs.skills.join(', ')}
+        />
+        {activeSection === 'skills' && (
+          <div className="section-content">
+            {filterInputs.skills.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.skills.map((s) => (
+                  <span key={s} className="filter-tag">
+                    {s}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeArrayItem("skills", s)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+            <MultiSelectDropdown
+              label="Add Skills..."
+              options={skillsList}
+              selectedValues={filterInputs.skills}
+              onChange={(v) => handleInputChange("skills", v)}
+            />
           </div>
         )}
-        <MultiSelectDropdown
-          label="Add Skills..."
-          options={SKILL_TAGS}
-          selectedValues={filterInputs.skills}
-          onChange={(v) => handleInputChange("skills", v)}
-        />
       </div>
 
       {/* Availability */}
       <div className="filter-section">
-        <h4 className="section-title">Availability</h4>
-        {filterInputs.availability.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.availability.map((a) => (
-              <span key={a} className="filter-tag">
-                {a}
-                <FiX
-                  className="tag-close-icon"
-                  onClick={() => removeArrayItem("availability", a)}
-                />
-              </span>
-            ))}
+        <SectionHeader
+          id="availability"
+          title="Employment Type"
+          isExpanded={activeSection === 'availability'}
+          summary={filterInputs.availability.join(', ')}
+        />
+        {activeSection === 'availability' && (
+          <div className="section-content">
+            {filterInputs.availability.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.availability.map((a) => (
+                  <span key={a} className="filter-tag">
+                    {a}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeArrayItem("availability", a)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+            <MultiSelectDropdown
+              label="Employement Type..."
+              options={AVAILABILITY_OPTIONS}
+              selectedValues={filterInputs.availability}
+              onChange={(v) => handleInputChange("availability", v)}
+            />
           </div>
         )}
-        <MultiSelectDropdown
-          label="Add Availability..."
-          options={AVAILABILITY_OPTIONS}
-          selectedValues={filterInputs.availability}
-          onChange={(v) => handleInputChange("availability", v)}
-        />
       </div>
 
       {/* Locations */}
       <div className="filter-section">
-        <h4 className="section-title">Locations</h4>
-        {filterInputs.locations.length > 0 && (
-          <div className="tags-container">
-            {filterInputs.locations.map((l) => (
-              <span key={l} className="filter-tag">
-                {l}
-                <FiX
-                  className="tag-close-icon"
-                  onClick={() => removeArrayItem("locations", l)}
-                />
-              </span>
-            ))}
+        <SectionHeader
+          id="location"
+          title="Location"
+          isExpanded={activeSection === 'location'}
+          summary={filterInputs.location}
+        />
+        {activeSection === 'location' && (
+          <div className="section-content">
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="Add Location..."
+              value={filterInputs.location || ""}
+              onChange={(e) =>
+                handleInputChange("location", e.target.value)
+              }
+            />
           </div>
         )}
-        <MultiSelectDropdown
-          label="Add Locations..."
-          options={POPULAR_LOCATIONS}
-          selectedValues={filterInputs.locations}
-          onChange={(v) => handleInputChange("locations", v)}
-        />
       </div>
+
 
       {/* Experience */}
       <div className="filter-section">
-        <h4 className="section-title">Experience Level</h4>
-        <div className="select-wrapper">
-          <select
-            className="filter-select"
-            value={filterInputs.experience}
-            onChange={(e) =>
-              handleInputChange("experience", e.target.value)
-            }
-          >
-            {EXPERIENCE_LEVELS.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <FiChevronDown className="select-icon" />
-        </div>
-      </div>
-
-      {/* Rating */}
-      <div className="filter-section">
-        <h4 className="section-title">Minimum Rating</h4>
-        <div className="rating-container">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              onClick={() => handleInputChange("minRating", star)}
-              type="button"
-              className={`rating-btn ${filterInputs.minRating >= star ? "active" : ""
-                }`}
-            >
-              <FiStar
-                size={16}
-                fill={
-                  filterInputs.minRating >= star ? "#f59f0a" : "none"
-                }
-                color={
-                  filterInputs.minRating >= star
-                    ? "#f59f0a"
-                    : "#94a3b8"
+        <SectionHeader
+          id="experience"
+          title="Years Of Experience"
+          isExpanded={activeSection === 'experience'}
+          summary={filterInputs.minExperience || filterInputs.maxExperience ? `${filterInputs.minExperience || 0}-${filterInputs.maxExperience || '+'} years` : ''}
+        />
+        {activeSection === 'experience' && (
+          <div className="section-content">
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min"
+                value={filterInputs.minExperience || ""}
+                onChange={(e) =>
+                  handleInputChange("minExperience", e.target.value)
                 }
               />
-            </button>
-          ))}
-        </div>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max"
+                value={filterInputs.maxExperience || ""}
+                onChange={(e) =>
+                  handleInputChange("maxExperience", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Budget */}
-      <div className="budget-section">
-        <h4 className="section-title">Max Hourly Rate</h4>
-        <input
-          type="range"
-          className="budget-slider"
-          min="0"
-          max="200"
-          step="5"
-          value={filterInputs.maxBudget}
-          onChange={(e) =>
-            handleInputChange("maxBudget", Number(e.target.value))
-          }
+
+      {/* Salary Range */}
+      <div className="filter-section">
+        <SectionHeader
+          id="salary"
+          title="Salary Range"
+          isExpanded={activeSection === 'salary'}
+          summary={filterInputs.minSalary || filterInputs.maxSalary ? `$${filterInputs.minSalary || 0} - $${filterInputs.maxSalary || '+'}` : ''}
         />
-        <div className="budget-labels">
-          <span>$0</span>
-          <span>${filterInputs.maxBudget}/hr</span>
-        </div>
+        {activeSection === 'salary' && (
+          <div className="section-content">
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Min Salary"
+                value={filterInputs.minSalary}
+                onChange={(e) =>
+                  handleInputChange("minSalary", e.target.value)
+                }
+              />
+              <input
+                type="number"
+                className="filter-input"
+                placeholder="Max Salary"
+                value={filterInputs.maxSalary}
+                onChange={(e) =>
+                  handleInputChange("maxSalary", e.target.value)
+                }
+              />
+            </div>
+          </div>
+        )}
       </div>
 
-      <button onClick={applyFilters} className="apply-btn">
+      <button onClick={applyFilters} className="apply-btn mt-3">
         Apply Filters
       </button>
 
       {/* Styles reused from original snippet */}
       <style jsx>{`
+        .filter-section {
+          margin-bottom: 8px;
+          background: #fff;
+          border-radius: 8px;
+        }
+        .filter-section-header:hover h4 {
+          color: #f5810c;
+        }
+        .section-content {
+          padding-bottom: 12px;
+          animation: slideDown 0.2s ease-out;
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         .tags-container {
           display: flex;
           flex-wrap: wrap;
@@ -498,8 +589,8 @@ const TalentFilters = ({ onApplyFilters }) => {
           margin-bottom: 8px;
         }
         .filter-tag {
-          background: #e0e7ff;
-          color: #4338ca;
+          background: #eff6ff;
+          color: #1e293b;
           padding: 4px 8px;
           border-radius: 4px;
           font-size: 12px;
@@ -599,9 +690,33 @@ const TalentFilters = ({ onApplyFilters }) => {
           background-color: #6366f1;
           border-color: #6366f1;
         }
+        .filter-input {
+          width: 100%;
+          padding: 10px 12px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          background: #fff;
+          color: #334155;
+          outline: none;
+          transition: border 0.2s;
+        }
+        .filter-input:focus {
+          border-color: #3b82f6;
+        }
+        .filter-input::-webkit-outer-spin-button,
+        .filter-input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        .filter-input {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
       `}</style>
     </div>
   );
 };
+
 
 export default TalentFilters;

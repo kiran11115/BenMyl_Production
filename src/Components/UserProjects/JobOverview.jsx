@@ -1,203 +1,262 @@
-import React, { useEffect, useState } from "react";
-import { FiArrowLeft } from "react-icons/fi";
+import React, { useEffect } from "react";
 import {
-    FiMapPin,
-    FiBriefcase,
-    FiHome,
-    FiDollarSign,
-    FiLayers,
-    FiTrendingUp,
-    FiBookOpen,
-    FiClock,
-    FiFileText,
+  FiArrowLeft,
+  FiMapPin,
+  FiBriefcase,
+  FiHome,
+  FiDollarSign,
+  FiLayers,
+  FiTrendingUp,
+  FiBookOpen,
+  FiClock,
+  FiFileText,
+  FiEdit,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
+import { useLazyGetJobByIdQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import WorkAndPreference from "./WorkAndPreference";
 
 const JobOverview = () => {
-    const navigate = useNavigate();
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-    const [isTablet, setIsTablet] = useState(window.innerWidth <= 1024);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-            setIsTablet(window.innerWidth <= 1024);
-        };
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+  const jobId = location.state?.jobId;
+  const userId = localStorage.getItem("CompanyId");
 
-    const job = {
-        jobTitle: "Senior Frontend Developer",
-        companyName: "Bennyl Technologies",
-        location: "Bangalore, India",
-        employmentType: "Full-time",
-        salary: "₹18,00,000 - ₹25,00,000 / year",
-        workModel: "Hybrid",
-        department: "Engineering",
-        experienceLevel: "Senior",
-        skills: ["React", "TypeScript", "Redux", "Tailwind CSS"],
-        education: "Bachelor’s Degree",
-        experience: "5+ Years",
-        description:
-            "We are looking for a Senior Frontend Developer to build scalable, high-performance web applications and lead UI development.",
-        additionalRequirements:
-            "Strong problem-solving skills, experience working in agile teams, and excellent communication skills.",
-    };
+  const [getJobById, { data }] = useLazyGetJobByIdQuery();
 
-    const styles = {
-        page: {
-            padding: "0 24px 24px",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: "24px",
-        },
+  useEffect(() => {
+    if (jobId && userId) {
+      getJobById({ jobId, userId });
+    }
+  }, [jobId, userId, getJobById]);
 
-        card: {
-            background: "#1e293b",
-            borderRadius: "1rem",
-            padding: "24px",
-            border: "1px solid rgba(71, 85, 105, 0.8)",
-            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
-            marginBottom: "24px",
-            color: "#f8fafc"
-        },
+  const job = data?.[0];
 
-        left: { width: isMobile ? "100%" : isTablet ? "65%" : "75%" },
-        right: {
-            width: isMobile ? "100%" : isTablet ? "35%" : "25%",
-            height: "fit-content",
-            position: isMobile ? "static" : "sticky",
-            top: "24px",
-        },
 
-        title: { fontSize: "22px", fontWeight: 600, color: "#f8fafc" },
-        subtitle: { color: "#94a3b8", marginTop: "4px" },
-        section: { marginBottom: "22px" },
-        value: { fontSize: "15px", fontWeight: 500, color: "#f8fafc" },
+  const formatPostedDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-        grid: {
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            gap: "16px",
-        },
+  const formatMarkdownToHtml = (text) => {
+    if (!text) return "";
 
-        divider: {
-            height: "1px",
-            background: "rgba(51, 65, 85, 0.6)",
-            margin: "22px 0",
-        },
+    let formatted = text;
 
-        badge: {
-            display: "inline-block",
-            padding: "6px 10px",
-            borderRadius: "6px",
-            background: "rgba(59, 130, 246, 0.15)",
-            color: "#60a5fa",
-            fontSize: "13px",
-            fontWeight: 500,
-            marginRight: "8px",
-            marginTop: "6px",
-            border: "1px solid rgba(59, 130, 246, 0.35)"
-        },
-    };
+    // Remove first line completely
+    formatted = formatted.replace(/^[^\n]*\n?/, "");
 
-    const Label = ({ icon: Icon, text }) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", color: "#94a3b8", fontSize: "13px" }}>
-            <Icon size={14} />
-            <span>{text}</span>
+    // Convert bold
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+    // Convert bullet points
+    formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
+
+    if (formatted.includes("<li>")) {
+      formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
+    }
+
+    formatted = formatted.replace(/\n/g, "<br/>");
+
+    return formatted;
+  };
+
+  const salaryType = (() => {
+  const t = (job?.salarType || "").toLowerCase();
+
+  if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+  if (t.includes("month")) return "/month";
+  if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+
+  return "/hr"; // default
+})();
+
+
+
+  return (
+    <div className="jobs-container">
+      {/* HEADER */}
+      <div className="mb-4">
+        <div className="profile-breadcrumb d-flex gap-1">
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => navigate("/user/user-projects")}
+          >
+            <FiArrowLeft /> Back to Projects
+          </button>
+          <span className="crumb">/ Job Overview</span>
         </div>
-    );
 
-    return (
-        <div style={{ background: "#0f172a", minHeight: "100vh", color: "#f8fafc" }}>
-            {/* HEADER */}
-            <div style={{ padding: "24px 24px 0" }} className="mb-4">
-                <div className="vs-breadcrumbs mb-3 d-flex gap-2">
-                    <button type="button" className="link-button" onClick={() => navigate("/user/user-projects")} style={{ color: "#60a5fa", background: "none", border: "none", display: "flex", alignItems: "center", gap: "4px", padding: 0 }}>
-                        <FiArrowLeft /> Back to Projects
-                    </button>
-                    <span className="crumb" style={{ color: "#64748b" }}>/ Job Overview</span>
-                </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 className="drawer-header">Job Overview</h2>
+            <p className="company-name">
+              A complete summary of the job details and requirements
+            </p>
+          </div>
+          <button
+            className="btn-premium btn-premium-secondary"
+            onClick={() =>
+  navigate("/user/user-post-new-positions", {
+    state: {
+      jobId: job?.jobID,
+      jobData: job,
+      isEdit: true
+    },
+  })
+}
+            style={{
+              padding: "8px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <FiEdit size={16} /> Edit Job
+          </button>
+        </div>
+      </div>
 
-                <h1 style={{ fontSize: "24px", fontWeight: 700, margin: "12px 0 4px", color: "#f8fafc" }}>
-                    Job Overview
-                </h1>
-                <p style={{ color: "#94a3b8", margin: 0 }}>
-                    A complete summary of the job details and requirements
-                </p>
+      <div className="dashboard-layout">
+        {/* LEFT MAIN CONTENT */}
+        <div
+          className="dashboard-column-main card-base"
+          style={{ padding: "16px" }}
+        >
+          {/* Job Header */}
+          <div className="job-card-top">
+            <div className="company-icon-box large">
+              <FiBriefcase size={24} />
             </div>
 
-            <div style={styles.page}>
-                {/* LEFT */}
-                <div style={{ ...styles.card, ...styles.left }}>
-                    <div style={{ display: "flex", gap: "14px", marginBottom: "22px" }}>
-                        <div
-                            style={{
-                                width: "52px",
-                                height: "52px",
-                                borderRadius: "10px",
-                                background: "rgba(51, 65, 85, 0.5)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                border: "1px solid rgba(71, 85, 105, 0.8)"
-                            }}
-                        >
-                            <FiFileText size={22} color="#94a3b8" />
-                        </div>
+            <div className="job-header-info">
+              <h3 className="job-title">
+                {job?.jobTitle || "Senior Frontend Developer"}
+              </h3>
+              <p className="company-name">
+                {job?.companyName || "Tech Solutions Inc."}
+              </p>
 
-                        <div>
-                            <div style={styles.title}>{job.jobTitle}</div>
-                            <div style={styles.subtitle}>{job.companyName}</div>
-                        </div>
-                    </div>
-
-                    <div style={styles.grid}>
-                        <div><Label icon={FiMapPin} text="Location" /><div style={styles.value}>{job.location}</div></div>
-                        <div><Label icon={FiBriefcase} text="Employment Type" /><div style={styles.value}>{job.employmentType}</div></div>
-                        <div><Label icon={FiHome} text="Work Model" /><div style={styles.value}>{job.workModel}</div></div>
-                        <div><Label icon={FiDollarSign} text="Salary Range" /><div style={styles.value}>{job.salary}</div></div>
-                        <div><Label icon={FiLayers} text="Department" /><div style={styles.value}>{job.department}</div></div>
-                        <div><Label icon={FiTrendingUp} text="Experience Level" /><div style={styles.value}>{job.experienceLevel}</div></div>
-                    </div>
-
-                    <div style={styles.divider} />
-
-                    <Label icon={FiFileText} text="Job Description" />
-                    <p style={{ fontSize: "14px", lineHeight: 1.6, color: "#cbd5e1" }}>{job.description}</p>
-
-                    <div style={styles.section}>
-                        <Label icon={FiLayers} text="Required Skills" />
-                        <div className="d-flex gap-2">
-                            {job.skills.map(skill => (
-                                <span key={skill} style={styles.badge}>{skill}</span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div style={styles.divider} />
-
-                    <div style={styles.grid}>
-                        <div><Label icon={FiBookOpen} text="Education Level" /><div style={styles.value}>{job.education}</div></div>
-                        <div><Label icon={FiClock} text="Years of Experience" /><div style={styles.value}>{job.experience}</div></div>
-                    </div>
-
-                    <div style={styles.section} className="mt-3">
-                        <Label icon={FiFileText} text="Additional Requirements" />
-                        <p style={{ fontSize: "14px", lineHeight: 1.6, color: "#cbd5e1" }}>{job.additionalRequirements}</p>
-                    </div>
+              <div className="d-flex gap-3">
+                <div className="meta-item">
+                  <FiMapPin size={14} />
+                  {job?.location || "Visakhapatnam"}
                 </div>
 
-                {/* RIGHT */}
-                <div style={styles.right}>
-                    <ShareJobCard />
+                <div className="meta-item">
+                  <FiDollarSign size={14} />
+                  {job?.salaryRange_Min && job?.salaryRange_Max
+  ? `${job.salaryRange_Min} - ${job.salaryRange_Max} ${salaryType}`
+  : job?.salaryRange_Min
+  ? `${job.salaryRange_Min} ${salaryType}`
+  : ""}
                 </div>
 
+                <div className="meta-item text-orange">
+                  <FiClock size={14} />
+                  Posted on {formatPostedDate(job?.createdOn || job?.postedDate)}
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Key Info Grid */}
+          <div className="drawer-stats">
+            <div className="drawer-stat-item">
+              <span className="label">Employment Type</span>
+              <span className="value">{job?.employeeType || "Full-time"}</span>
+            </div>
+
+            <div className="drawer-stat-item">
+              <span className="label">Work Model</span>
+              <span className="value">{job?.workModels || "On-site"}</span>
+            </div>
+
+            <div className="drawer-stat-item">
+              <span className="label">Experience</span>
+              <span className="value">
+                {job?.yearsOfExperience || "NA"} years
+              </span>
+            </div>
+
+            <div className="drawer-stat-item">
+              <span className="label">Education</span>
+              <span className="value">{job?.educationLevel || "Masters"}</span>
+            </div>
+          </div>
+
+          {/* Job Description */}
+          <div className="drawer-section">
+            <h4>
+              <FiFileText size={14} /> Job Description
+            </h4>
+            {job?.jobDescription ? (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: formatMarkdownToHtml(job.jobDescription),
+                }}
+              />
+            ) : (
+              <p style={{ color: "#64748b" }}>
+                No description available for this job.
+              </p>
+            )}
+
+          </div>
+
+          {/* Skills */}
+          <div className="drawer-section mt-3">
+            <h4>
+              <FiLayers size={14} /> Required Skills
+            </h4>
+            <div className="skills-cloud">
+              {(
+                job?.requiredSkills?.split(",") || [
+                  "REACT",
+                  "HTML",
+                  "CSS",
+                  "JAVASCRIPT",
+                ]
+              ).map((skill) => (
+                <span key={skill.trim()} className="status-tag status-progress">
+                  {skill.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Education & Experience */}
+          {/* <div className="drawer-stats">
+            <div className="drawer-stat-item">
+              <span className="label">Education</span>
+              <span className="value">{job?.educationLevel || "Masters"}</span>
+            </div>
+
+            <div className="drawer-stat-item">
+              <span className="label">Years of Experience</span>
+              <span className="value">
+                {job?.yearsofExperience || "5"} years
+              </span>
+            </div>
+          </div> */}
         </div>
-    );
+
+        {/* RIGHT SIDEBAR */}
+        <div className="dashboard-column-side card-base filters-sidebar">
+          <ShareJobCard />
+          <WorkAndPreference job={job} />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default JobOverview;

@@ -150,7 +150,7 @@ function TeamMembersTable() {
         </div>
       </div>
 
-      <div className="tt-wrapper">
+      <div className="tt-wrapper" style={{ overflowY: "auto", maxHeight: "400px" }}>
         <table className="tt-table">
           <thead>
             <tr className="tt-thead-tr">

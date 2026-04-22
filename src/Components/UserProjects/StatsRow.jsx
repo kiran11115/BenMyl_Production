@@ -1,4 +1,3 @@
-// StatsRow.jsx
 import React from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import "./Projects.css";
@@ -11,14 +10,14 @@ const StatsRow = ({ stats }) => {
           key={index}
           className={`stat-card ${stat.cardType || ""}`}
         >
-          {/* Bubbles Decoration */}
+          {/* Floating bubble decorations */}
           <div
             className="bubbles-container"
             style={{ color: stat.bubbleColor || "#3b82f6" }}
           >
-            <div className="bubble bubble-1"></div>
-            <div className="bubble bubble-2"></div>
-            <div className="bubble bubble-3"></div>
+            <div className="bubble bubble-1" />
+            <div className="bubble bubble-2" />
+            <div className="bubble bubble-3" />
           </div>
 
           <div className="stat-content">
@@ -26,23 +25,18 @@ const StatsRow = ({ stats }) => {
             <div className="stat-value-row">
               <span className="stat-value">{stat.value}</span>
             </div>
-
-            <div
-              className={`stat-trend ${
-                stat.isPositive ? "trend-up" : "trend-down"
-              }`}
-            >
+            <div className={`stat-trend ${stat.isPositive ? "trend-up" : "trend-down"}`}>
               {stat.isPositive ? (
-                <TrendingUp size={14} />
+                <TrendingUp size={13} />
               ) : (
-                <TrendingDown size={14} />
+                <TrendingDown size={13} />
               )}
               <span>{stat.trend}</span>
             </div>
           </div>
 
           <div className="stat-icon-box">
-            <stat.icon size={24} />
+            <stat.icon size={22} />
           </div>
         </div>
       ))}

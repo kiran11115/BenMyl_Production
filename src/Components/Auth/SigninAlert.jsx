@@ -8,42 +8,50 @@ import { useNavigate } from "react-router-dom";
 export const SubmissionErrorModal = ({
     onClose,
     onRetry,
+    message,
     onContactSupport
 }) => {
     return (
         <div className="modal-overlay">
             <div className="alert-card error-theme">
-                <button className="alert-close-icon" onClick={onClose}><FiX /></button>
+                <button className="alert-close-icon" onClick={onClose}><FiX size={20} /></button>
 
-                <div className="alert-content">
-                    <div className="icon-circle error-icon-bg">
-                        <FiX className="icon-main" />
+                <div className="alert-header">
+                    <div className="alert-icon-wrapper">
+                        <FiX />
                     </div>
-
                     <h3 className="alert-title">Submission Error</h3>
+                </div>
+
+                <div className="alert-body">
                     <p className="alert-message">
-                        Your application could not be submitted at this time.
-                        Please review the form for any errors.
+                        {message || "Your application could not be submitted at this time. Please review the form for any errors."}
                     </p>
 
-                    <div className="error-list-container">
-                        <span className="error-list-label">Common issues to check:</span>
-                        <ul className="error-list">
-                            <li><span className="bullet-icon"><FiFileText /></span> Missing required fields</li>
-                            <li><span className="bullet-icon"><FiFileText /></span> Incorrect file format</li>
-                            <li><span className="bullet-icon"><FiFileText /></span> Server error</li>
+                    <div className="alert-list-container" style={{ marginTop: "16px" }}>
+                        <span className="alert-list-label" style={{ fontWeight: 600, color: "#475569", fontSize: "13px" }}>Common issues to check:</span>
+                        <ul className="alert-list" style={{ listStyle: "none", padding: 0, marginTop: "8px" }}>
+                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
+                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Missing required fields
+                            </li>
+                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
+                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Incorrect file format
+                            </li>
+                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
+                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Server error
+                            </li>
                         </ul>
                     </div>
-
-                    <div className="link-button">
-                        <button className="btn-alert-primary error-btn" onClick={onRetry}>
-                            Try Again
-                        </button>
-                        <button className="btn-alert-text error-text-btn" onClick={onContactSupport}>
-                            Contact Support
-                        </button>
-                    </div>
                 </div>
+
+                {/* <div className="alert-footer">
+                    <button className="btn-secondary" onClick={onContactSupport}>
+                        Contact Support
+                    </button>
+                    <button className="btn-alert-primary btn-alert-error" onClick={onRetry}>
+                        Try Again
+                    </button>
+                </div> */}
             </div>
         </div>
     );
@@ -60,37 +68,38 @@ export const SuccessModal = ({ onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="alert-card success-theme">
-                <button className="alert-close-icon btn-secondary" style={{fontSize: "12px", width: "3rem"}} onClick={onClose}>Skip</button>
+                <button className="alert-close-icon" onClick={onClose}><FiX size={20} /></button>
 
-                <div className="alert-content left-align">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                        <div className="icon-circle success-icon-bg">
-                            <FiCheck className="icon-main" />
-                        </div>
-                        <h3 className="alert-title mt-0 mb-0">Welcome back !</h3>
+                <div className="alert-header">
+                    <div className="alert-icon-wrapper">
+                        <FiCheck />
                     </div>
+                    <h3 className="alert-title">Welcome back!</h3>
+                </div>
 
-                    <h3> What would you like to do today?</h3>
-
-                    <p className="alert-message mb-3">
+                <div className="alert-body">
+                    <h4 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: 600, color: "#0f172a" }}>
+                        What would you like to do today?
+                    </h4>
+                    <p className="alert-message">
                         Choose an option below to continue with your daily tasks quickly and easily.
                     </p>
+                </div>
 
-                    <div className="alert-actions start">
-                        {/* 2. Apply navigation on button click */}
-                        <button
-                            className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-post-new-positions")}
-                        >
-                            Post Project
-                        </button>
-                        <button
-                            className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-upload-talent")}
-                        >
-                            Upload Talent
-                        </button>
-                    </div>
+                <div className="alert-footer" style={{ flexDirection: "column", gap: "10px" }}>
+                    <button
+                        className="btn-alert-primary"
+                        onClick={() => navigate("/user/user-post-new-positions")}
+                    >
+                        Post Project
+                    </button>
+                    <button
+                        className="btn-secondary"
+                        style={{ width: "100%", textAlign: "center", justifyContent: "center" }}
+                        onClick={() => navigate("/user/user-upload-talent")}
+                    >
+                        Upload Talent
+                    </button>
                 </div>
             </div>
         </div>

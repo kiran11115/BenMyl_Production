@@ -30,7 +30,7 @@ function ForgotPassword() {
           <div className="auth-brand-title">
             <h2 className="auth-title">Forgot your password?</h2>
             <p className="auth-subtitle">
-              No worries — reset access to your account in just a few steps.
+              No worries - reset access to your account in just a few steps.
             </p>
 
             <div

@@ -5,7 +5,7 @@ const StatsGrid = ({ data }) => {
   return (
     <div className="stats-grid">
       {data.map((item, index) => (
-        <div key={index} className={`stat-card ${item.cardType}`}>
+        <div key={index} className={`stat-card ${item.cardType} ${item.isNonFunctional ? 'non-functional' : ''}`}>
           {/* Bubbles Decoration */}
           <div className="bubbles-container" style={{ color: item.bubbleColor }}>
             <div className="bubble bubble-1"></div>

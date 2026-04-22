@@ -310,6 +310,124 @@
   font-weight: 600;
 }
 
+.initials-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #1e293b;
+  font-size: 40px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+/* Projects card */
+
+
+
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+
+
+.card-subtitle {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.status-pill {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.status-pill.active {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.card-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-date {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-skills {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skill-pill {
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.card-description {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.card-footer {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 70%;
+  height: 100%;
+  background: #f97316;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #475569;
+}
+
+
+
+
 /* =========================================
    6. Sidebar Buttons (Matches .btn-upload)
    ========================================= */
@@ -450,6 +568,29 @@
 
 /* Mobile (Matches dashboard layout shift at 768px) */
 @media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column !important;
+    /* Force stack */
+  }
+
+  .dashboard-column-main,
+  .dashboard-column-side {
+    width: 100% !important;
+  }
+
+  .row {
+    flex-direction: column;
+    margin: 0 !important;
+  }
+
+  .col-3,
+  .col-9,
+  .col-8,
+  .col-4 {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 16px;
+  }
 
   /* Force vertical layout on header */
   .profile-header-card {
@@ -477,7 +618,7 @@
 
   .profile-meta-row {
     justify-content: center;
-    gap: 0px,
+    gap: 12px;
   }
 
   /* Stack Summary Stats Vertically on Mobile */
@@ -499,6 +640,28 @@
   .sidebar-actions {
     position: static;
     margin-bottom: 24px;
+    order: -1;
+    /* Move actions to top on mobile for better UX? Or bottom? Plan says stack. Default is top if side is after main. */
+  }
+
+  .dashboard-column-side {
+    order: -1;
+    /* Put actions and quick info first on mobile */
+  }
+
+  .experience-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .experience-list::before {
+    display: none;
+    /* Hide line on mobile for cleaner look */
+  }
+
+  .experience-icon-box {
+    margin-bottom: 8px;
   }
 
   /* Adjust Experience Line position if icon size shifts */
@@ -530,7 +693,7 @@
 /* Grid */
 .premium-portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 

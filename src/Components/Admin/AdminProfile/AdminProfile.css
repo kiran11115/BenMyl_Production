@@ -1,0 +1,267 @@
+/* AdminProfile.css - Premium Admin Dashboard Styles */
+
+.admin-profile-container {
+  padding: 2rem;
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* --- Hero Section & Brand Identity --- */
+.company-hero-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  gap: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+
+.company-logo-wrapper {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.company-logo-lg {
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 4px solid white;
+}
+
+.company-info-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.company-name-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.company-name-row h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.company-tagline {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.company-stats-strip {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hero-stat-item svg {
+  color: #f5810c;
+  font-size: 1rem;
+}
+
+.admin-actions-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 240px;
+}
+
+/* --- Subscription & Details Grid --- */
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+}
+
+.card-premium {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.card-title-premium {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card-title-premium svg {
+  color: #f5810c;
+}
+
+/* Subscription Card */
+.subscription-summary-card {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  color: white;
+}
+
+.subscription-summary-card .card-title-premium {
+  color: white;
+}
+
+.plan-badge-premium {
+  background: rgba(245, 129, 12, 0.2);
+  color: #f5810c;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid rgba(245, 129, 12, 0.3);
+}
+
+.sub-detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sub-detail-item:last-child {
+  border-bottom: none;
+}
+
+.sub-label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.sub-value {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+/* Progress bar for seats */
+.seat-usage-container {
+  margin-top: 1rem;
+}
+
+.seat-progress-bg {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.seat-progress-fill {
+  height: 100%;
+  background: #f5810c;
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}
+
+/* --- Sidebar Info Items --- */
+.sidebar-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.info-item-block {
+  display: flex;
+  gap: 1rem;
+}
+
+.info-icon-box {
+  width: 40px;
+  height: 40px;
+  background: #f8fafc;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.info-content-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label-sm {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.info-value-md {
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.info-link-md {
+  color: #f5810c;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.info-link-md:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .company-hero-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .company-name-row {
+    justify-content: center;
+  }
+  
+  .company-stats-strip {
+    justify-content: center;
+  }
+  
+  .profile-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

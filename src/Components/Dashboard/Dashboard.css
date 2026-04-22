@@ -6,6 +6,38 @@
   color: #334155;
 }
 
+@media (max-width: 768px) {
+  .projects-container {
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-column-side {
+    display: none !important;
+  }
+
+  .projects-header-row {
+    flex-direction: column-reverse;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+
+  .projects-actions-wrap {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .projects-actions-wrap .btn-upload {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
 .dashboard-layout {
   display: grid;
   grid-template-columns: 1fr 350px;
@@ -23,12 +55,16 @@
   gap: 24px;
 }
 
-
-
 @media (max-width: 1024px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.projects-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* =========================================
@@ -39,6 +75,32 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .stat-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
 }
 
 /* Base Stat Card Styles - Standardized Borders */
@@ -335,7 +397,7 @@
 
 .progress-fill {
   height: 100%;
-  background-color: #3b82f6;
+  background-color: #f5810c;
   border-radius: 3px;
 }
 
@@ -372,24 +434,25 @@
 }
 
 .status-progress {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: #eff6ff !important;
+  color: #3b3b3b !important;
 }
 
 .status-review {
-  background-color: #fff7ed;
-  color: #f97316;
+  background-color: #fff7ed !important;
+  color: #f97316 !important;
 }
 
 .status-completed {
-  background-color: #f0fdf4;
-  color: #22c55e;
+  background-color: #f0fdf4 !important;
+  color: #22c55e !important;
 }
 
-.status-pending {
-  background-color: #f1f5f9;
-  color: #64748b;
+.status-approved {
+  background-color: #e8f0ff !important;
+  color: #2256c5 !important;
 }
+
 
 /* 🖥️ Big screens – 4 cards */
 @media (min-width: 1557px) {
@@ -573,8 +636,8 @@
   justify-content: center;
   flex-shrink: 0;
   color: white;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+  background: linear-gradient(90deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+  box-shadow: 0 2px 6px rgba(246, 143, 59, 0.25);
 }
 
 .interview-item-premium:hover .icon-box-premium {
@@ -617,7 +680,7 @@
   text-transform: uppercase;
   letter-spacing: 0.2px;
   background-color: #eff6ff;
-  color: #3b82f6;
+  color: #f5810c;
   border: 1px solid rgba(59, 130, 246, 0.1);
 }
 

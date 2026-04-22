@@ -1,6 +1,8 @@
 import React from "react";
 import { FiMapPin, FiStar, FiBriefcase, FiClock } from "react-icons/fi";
+import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
+import NoData from "../UploadTalent/NoData";
 
 const TalentGridView = ({
   candidates = [],
@@ -8,109 +10,135 @@ const TalentGridView = ({
   activeJobId,
   activeJobColor,
   shortlistedMap,
+  onProfileClick,
+  hasMore,
 }) => {
   const navigate = useNavigate();
 
-  const matchingCount = candidates.length;
+  
+  const visibleCandidates = candidates.filter(
+  (candidate) => candidate.isshortlisted  === false
+);
+const matchingCount = visibleCandidates.length;
 
   return (
     <div>
       {/* Matching profiles count */}
       <div className="grid-meta">
-        <div className="grid-count">
-          {matchingCount} matching {matchingCount === 1 ? "profile" : "profiles"}
+        <div className="grid-count text-capitalize">
+          matching {matchingCount === 1 ? "profile" : "profiles"}
         </div>
       </div>
 
+      {visibleCandidates.length === 0 && (
+        <div
+                style={{
+                  minHeight: "320px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <NoData text="No Matching Profiles found" />
+              </div>
+      )}
+
       <div className="jobs-grid">
-        {candidates.map((candidate) => {
+        {visibleCandidates.map((candidate) => {
           const isShortlisted =
             activeJobId &&
             shortlistedMap?.[activeJobId]?.find((c) => c.id === candidate.id);
 
           return (
-            <div key={candidate.id} className="project-card">
-              {/* 1. Header: Avatar, Name, Rating */}
-              <div className="card-header">
-                <img
-                  src={candidate.avatar}
-                  alt={candidate.name}
-                  className="avatar"
-                />
-                <div className="header-info">
-                  <div className="name-row">
-                    <h4 className="name">
-                      {candidate.name} {candidate.verified}
-                    </h4>
-                    <div className="rating">
-                      <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
-                      <span style={{ color: "#f59e0b" }}>
-                        {candidate.rating}
-                      </span>
+            <div key={candidate.id} className="project-card justify-content-between gap-3">
+
+
+                <div className="d-flex flex-column gap-3">
+                  {/* 1. Header: Avatar, Name, Rating */}
+                  <div className="card-header">
+                    <img
+                      src={candidate.avatar}
+                      alt={candidate.name}
+                      className="avatar"
+                    />
+                    <div className="header-info">
+                      <div className="name-row">
+                        <h4 className="name">
+                          {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
+                        </h4>
+                        <div className="rating">
+                          <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
+                          <span style={{ color: "#f59e0b" }}>
+                            {candidate.rating}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="role">{candidate.role}</div>
                     </div>
                   </div>
-                  <div className="role">{candidate.role}</div>
+
+                  {/* 2. Meta Info: Exp, Location */}
+                  <div className="meta-grid">
+                    <div className="meta-item">
+                      <FiBriefcase size={14} /> <span>{candidate.experience}</span>
+                    </div>
+                    <div className="meta-item">
+                      <FiMapPin size={14} /> <span>{candidate.location}</span>
+                    </div>
+                  </div>
+
+                  {/* Availability Badges */}
+                  <div className="badges-row">
+                    {candidate.availability.map((avail, idx) => (
+                      <span key={idx} className="status-tag status-completed">
+                        <FiClock size={12} /> {avail}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Skills Tags */}
+                  <div className="skills-row">
+                    {candidate.skills.slice(0, 3).map((skill) => (
+                      <span key={skill} className="status-tag status-progress">
+                        {skill}
+                      </span>
+                    ))}
+                    {candidate.skills.length > 3 && (
+                      <span className="skill-tag count">
+                        +{candidate.skills.length - 3}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* 2. Meta Info: Exp, Location */}
-              <div className="meta-grid">
-                <div className="meta-item">
-                  <FiBriefcase size={14} /> <span>{candidate.experience}</span>
+                {/* Actions */}
+                <div className="d-flex gap-3">
+                  <button
+                    onClick={() => onProfileClick(candidate)}
+                    className="btn-primary"
+                  >
+                    View Profile
+                  </button>
+
+                  <button
+                    onClick={() => onShortlist(candidate)}
+                    style={{
+                      borderColor: activeJobId ? activeJobColor : "#cbd5e1",
+                      backgroundColor: isShortlisted
+                        ? activeJobColor
+                        : "transparent",
+                      color: isShortlisted
+                        ? "white"
+                        : activeJobId
+                          ? activeJobColor
+                          : "#64748b",
+                    }}
+                    className="btn-secondary"
+                  >
+                    {isShortlisted ? "Shortlisted" : "Shortlist"}
+                  </button>
                 </div>
-                <div className="meta-item">
-                  <FiMapPin size={14} /> <span>{candidate.location}</span>
-                </div>
-              </div>
 
-              {/* Availability Badges */}
-              <div className="badges-row">
-                {candidate.availability.map((avail, idx) => (
-                  <span key={idx} className="status-tag status-completed">
-                    <FiClock size={12} /> {avail}
-                  </span>
-                ))}
-              </div>
-
-              {/* Skills Tags */}
-              <div className="skills-row">
-                {candidate.skills.slice(0, 4).map((skill) => (
-                  <span key={skill} className="status-tag status-progress">
-                    {skill}
-                  </span>
-                ))}
-                {candidate.skills.length > 4 && (
-                  <span className="skill-tag count">
-                    +{candidate.skills.length - 4}
-                  </span>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="d-flex gap-3">
-                <button
-                  onClick={() => navigate("/user/user-talent-profile")}
-                  className="btn-primary"
-                >
-                  View Profile
-                </button>
-
-                <button
-                  onClick={() => onShortlist(candidate)}
-                  style={{
-                    borderColor: activeJobId ? activeJobColor : "#cbd5e1",
-                    backgroundColor: isShortlisted ? activeJobColor : "transparent",
-                    color: isShortlisted
-                      ? "white"
-                      : activeJobId
-                      ? activeJobColor
-                      : "#64748b",
-                  }}
-                  className="btn-secondary"
-                >
-                  {isShortlisted ? "Shortlisted" : "Shortlist"}
-                </button>
-              </div>
 
               {/* Internal CSS */}
               <style jsx>{`

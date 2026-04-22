@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, useReducer } from "react";
 import { FiSend, FiX, FiPaperclip, FiSearch, FiClock, FiSave, FiEdit, FiHome } from "react-icons/fi";
+import { Sparkles } from "lucide-react";
+import { useTalentPoolMutation } from "../../../State-Management/Api/TalentPoolApiSlice";
 import "./AIScreen.css";
 
 /** -----------------------------
@@ -563,7 +565,7 @@ const TalentForm = React.memo(function TalentForm({
       <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
         <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
         <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-          <strong>Let's find the absolute best talent out there!</strong><br/>
+          <strong>Let's find the absolute best talent out there!</strong><br />
           I need a few details to get started. Can you fill out what role and skills you are looking to hire for?
         </div>
       </div>
@@ -903,6 +905,9 @@ function AIScreen() {
   const [talentForm, talentDispatch] = useReducer(formReducer, initialTalentForm);
   const [projectsForm, projectsDispatch] = useReducer(formReducer, initialProjectForm); // reserved
 
+  // API INTEGRATION
+  const [talentPool, { isLoading: isApiLoading }] = useTalentPoolMutation();
+
   const [talentPrompt, setTalentPrompt] = useState("");
   const [projectsPrompt, setProjectsPrompt] = useState(""); // reserved
 
@@ -950,15 +955,12 @@ function AIScreen() {
     return ALL_IT_ROLES.filter((r) => r.toLowerCase().includes(text));
   }, [talentRoleInputDisplay]);
 
-  const suggestedBench = useMemo(
-    () => [
-      { name: "Alice Johnson", role: "UI/UX Designer", experience: "5 years", skills: ["Figma", "Sketch", "Adobe XD"], location: "Bangalore" },
-      { name: "Rahul Mehta", role: "Frontend Developer", experience: "4 years", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Hyderabad" },
-      { name: "Priya Sharma", role: "Backend Developer", experience: "6 years", skills: ["Node.js", "MongoDB", "AWS"], location: "Bangalore" },
-      { name: "Aditya Patel", role: "DevOps Engineer", experience: "3 years", skills: ["Docker", "Kubernetes", "CI/CD"], location: "Remote" },
-    ],
-    []
-  );
+  const [suggestedBench, setSuggestedBench] = useState([
+    { name: "Alice Johnson", role: "UI/UX Designer", experience: "5 years", skills: ["Figma", "Sketch", "Adobe XD"], location: "Bangalore", score: 92, marketScore: 88, aiInsight: "Perfect match for product design lead roles." },
+    { name: "Rahul Mehta", role: "Frontend Developer", experience: "4 years", skills: ["React", "TypeScript", "Tailwind CSS"], location: "Hyderabad", score: 85, marketScore: 82, aiInsight: "Strong technical foundations, but lacking depth in cloud deployments." },
+    { name: "Priya Sharma", role: "Backend Developer", experience: "6 years", skills: ["Node.js", "MongoDB", "AWS"], location: "Bangalore", score: 78, marketScore: 75, aiInsight: "Extensive API experience, though recent frequency is low." },
+    { name: "Aditya Patel", role: "DevOps Engineer", experience: "3 years", skills: ["Docker", "Kubernetes", "CI/CD"], location: "Remote", score: 94, marketScore: 90, aiInsight: "Exceptional containerization knowledge and automation skills." },
+  ]);
 
   const generateTalentPrompt = useCallback((form) => {
     if (!form.role) return "";
@@ -999,31 +1001,54 @@ function AIScreen() {
       setTimeout(() => {
         let responseContent = "";
         const lowerQuery = textToSubmit.toLowerCase();
-        
+
         if (lowerQuery.includes("optimize") || lowerQuery.includes("low-performing") || lowerQuery.includes("score") || lowerQuery.includes("improve")) {
-          responseContent = "**Summary**\nI've analyzed and scored the selected resumes based on skill relevance, completeness, and market demand. 2 resumes scored below 60/100 and need immediate attention.\n\n**Key Insights**\n• Rahul Mehta (Score: 55/100) - Missing modern React keywords (Hooks, Context); completeness is low.\n• Priya Sharma (Score: 82/100) - Strong skills, but \"Cloud basics\" is too vague for current market demand.\n• QA Profiles (Avg Score: 65/100) - Omitting specific automation tool experience lowers the completeness score.\n\n**Suggested Actions**\n• Update Rahul's resume with specific React keywords to improve his relevance score.\n• Quantify Priya's cloud experience (e.g., \"AWS EC2/S3\") to boost market demand score.\n• Add details on Selenium/Cypress for the QA profiles.";
+          responseContent = "**Summary**\nI've analyzed and scored the selected resumes based on skill relevance, completeness, and market demand. 2 resumes scored below 60/100 and need immediate attention.\n\n**Key Insights**\n Rahul Mehta (Score: 55/100) - Missing modern React keywords (Hooks, Context); completeness is low.\n Priya Sharma (Score: 82/100) - Strong skills, but \"Cloud basics\" is too vague for current market demand.\n QA Profiles (Avg Score: 65/100) - Omitting specific automation tool experience lowers the completeness score.\n\n**Suggested Actions**\n Update Rahul's resume with specific React keywords to improve his relevance score.\n Quantify Priya's cloud experience (e.g., \"AWS EC2/S3\") to boost market demand score.\n Add details on Selenium/Cypress for the QA profiles.";
         } else if (lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")) {
-          responseContent = "**Summary**\nI found 4 strong matches for this requirement. Top candidates have an average 85% match rate based on skills and experience.\n\n**Key Insights**\n• Match rate is primarily driven by exact React and TypeScript experience.\n• Location preferences align closely with the requirement.\n• Aditya Patel (88% Match) - Best fit due to recent overlapping project experience.\n\n**Suggested Actions**\n• Review the top matches below and share their profiles with the client.\n• Consider highlighting Aditya's specific related project experience in your pitch.";
+          responseContent = "**Summary**\nI found 4 strong matches for this requirement. Top candidates have an average 85% match rate based on skills and experience.\n\n**Key Insights**\n Match rate is primarily driven by exact React and TypeScript experience.\n Location preferences align closely with the requirement.\n Aditya Patel (88% Match) - Best fit due to recent overlapping project experience.\n\n**Suggested Actions**\n Review the top matches below and share their profiles with the client.\n Consider highlighting Aditya's specific related project experience in your pitch.";
         } else if (lowerQuery.includes("in demand") || lowerQuery.includes("market") || lowerQuery.includes("skills")) {
-          responseContent = "**Summary**\nCloud and AI skills are seeing a 35% MoM increase in search queries on the platform.\n\n**Key Insights**\n• High Demand Profiles: DevOps (AWS/Azure), React, Python (AI/ML).\n• Low Demand Profiles: Legacy Java (pre-Java 8), Manual QA.\n• Fastest growing skill request: TypeScript and Kubernetes.\n\n**Suggested Actions**\n• Encourage your bench to upskill in basic cloud deployments to increase marketability.\n• Update older Java profiles to highlight microservices if applicable.\n• Tag relevant candidates with \"TypeScript\" if they possess the skill but haven't listed it.";
+          responseContent = "**Summary**\nCloud and AI skills are seeing a 35% MoM increase in search queries on the platform.\n\n**Key Insights**\n High Demand Profiles: DevOps (AWS/Azure), React, Python (AI/ML).\n Low Demand Profiles: Legacy Java (pre-Java 8), Manual QA.\n Fastest growing skill request: TypeScript and Kubernetes.\n\n**Suggested Actions**\n Encourage your bench to upskill in basic cloud deployments to increase marketability.\n Update older Java profiles to highlight microservices if applicable.\n Tag relevant candidates with \"TypeScript\" if they possess the skill but haven't listed it.";
         } else if (lowerQuery.includes("response") || lowerQuery.includes("activity") || lowerQuery.includes("ignored") || lowerQuery.includes("not getting") || lowerQuery.includes("not responded")) {
-          responseContent = "**Summary**\nI identified 3 resumes that have had no views or responses in the last 14 days.\n\n**Key Insights**\n• Missing key high-volume search skills: \"DevOps Basics\", \"Docker\".\n• Project descriptions are too generic (e.g., \"Worked on software\").\n• Formatting lacks clear skill highlights, making them easy to ignore in quick scans.\n\n**Suggested Actions**\n• Improve the descriptions to use action verbs and impact metrics.\n• Add any missing relevant certifications to bump their search ranking.\n• Re-upload with a prioritized skills section at the top.";
+          responseContent = "**Summary**\nI identified 3 resumes that have had no views or responses in the last 14 days.\n\n**Key Insights**\n Missing key high-volume search skills: \"DevOps Basics\", \"Docker\".\n Project descriptions are too generic (e.g., \"Worked on software\").\n Formatting lacks clear skill highlights, making them easy to ignore in quick scans.\n\n**Suggested Actions**\n Improve the descriptions to use action verbs and impact metrics.\n Add any missing relevant certifications to bump their search ranking.\n Re-upload with a prioritized skills section at the top.";
         } else {
-          responseContent = "**Summary**\nRequest processed successfully based on current platform data.\n\n**Key Insights**\n• Resume visibility can always be optimized by aligning with current job post keywords.\n• Regular profile updates signal active availability to the matching engine.\n\n**Suggested Actions**\n• Please provide a specific requirement (e.g., \"Find match for React developer\") or ask about a particular resume to get detailed actionable steps.";
+          responseContent = "**Summary**\nRequest processed successfully based on current platform data.\n\n**Key Insights**\n Resume visibility can always be optimized by aligning with current job post keywords.\n Regular profile updates signal active availability to the matching engine.\n\n**Suggested Actions**\n Please provide a specific requirement (e.g., \"Find match for React developer\") or ask about a particular resume to get detailed actionable steps.";
         }
 
-        const aiMessage = { 
-          id: `msg-${Date.now()}`, 
-          type: "ai", 
-          content: responseContent, 
+        const aiMessage = {
+          id: `msg-${Date.now()}`,
+          type: "ai",
+          content: responseContent,
           timestamp: new Date(),
           isMatch: lowerQuery.includes("match") || lowerQuery.includes("requirement") || lowerQuery.includes("find best")
         };
         setMessages((prev) => [...prev, aiMessage]);
         setIsLoading(false);
       }, 1200);
+
+      // --- REAL API CALLS ---
+      const lower = textToSubmit.toLowerCase();
+      if (lower.includes("developer") || lower.includes("engineer") || lower.includes("talent") || lower.includes("hiring") || lower.includes("find")) {
+        talentPool({ query: textToSubmit.trim() })
+          .unwrap()
+          .then((res) => {
+            if (Array.isArray(res) && res.length > 0) {
+              const mapped = res.slice(0, 4).map(b => ({
+                name: b.name || b.fullName,
+                role: b.jobTitle || b.currentRole || "Professional",
+                experience: b.totalExperience || b.experience || "N/A",
+                skills: (b.keySkills || b.skills || "").split(",").slice(0, 3).map(s => s.trim()),
+                location: b.currentLocation || "India",
+                score: b.matchScore || 85,
+                marketScore: 80,
+                aiInsight: `Verified experience at ${b.currentCompany || "leading tech firms"}.`
+              }));
+              setSuggestedBench(mapped);
+            }
+          })
+          .catch(err => console.error("API error:", err));
+      }
     },
-    [inputValue, attachedFiles, tokenCount, messages.length]
+    [inputValue, attachedFiles, tokenCount, messages.length, talentPool]
   );
 
   const handleKeyDown = useCallback(
@@ -1183,21 +1208,21 @@ function AIScreen() {
   const parseAIContent = (content) => {
     if (!content) return { summary: "", insights: [], actions: [] };
     const parts = content.split(/\*\*(Summary|Key Insights|Suggested Actions)\*\*/g);
-    
+
     let summary = "";
     let insights = [];
     let actions = [];
 
     for (let i = 0; i < parts.length; i++) {
-        if (parts[i] === "Summary") summary = parts[i+1]?.trim() || "";
-        if (parts[i] === "Key Insights") {
-            insights = parts[i+1]?.trim().split('\n').map(l => l.replace(/^- /,"").trim()).filter(Boolean) || [];
-        }
-        if (parts[i] === "Suggested Actions") {
-            actions = parts[i+1]?.trim().split('\n').map(l => l.replace(/^[-\d.] /,"").trim()).filter(Boolean) || [];
-        }
+      if (parts[i] === "Summary") summary = parts[i + 1]?.trim() || "";
+      if (parts[i] === "Key Insights") {
+        insights = parts[i + 1]?.trim().split('\n').map(l => l.replace(/^- /, "").trim()).filter(Boolean) || [];
+      }
+      if (parts[i] === "Suggested Actions") {
+        actions = parts[i + 1]?.trim().split('\n').map(l => l.replace(/^[-\d.] /, "").trim()).filter(Boolean) || [];
+      }
     }
-    
+
     if (!summary && content) summary = content;
     return { summary, insights, actions };
   };
@@ -1206,24 +1231,35 @@ function AIScreen() {
 
   return (
     <div className="ai-dashboard">
-      
+
       {/* 1. LEFT SIDEBAR */}
       <div className="ai-sidebar">
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-           <div style={{ width: 32, height: 32, background: "var(--accent)", borderRadius: 8, display: "grid", placeItems: "center", fontWeight: "bold", color: "#fff" }}>
+        {/* <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+           <div className="ai-avatar-pulse" style={{ 
+             width: 32, 
+             height: 32, 
+             background: "var(--gradient-rainbow)", 
+             backgroundSize: "200% 200%",
+             borderRadius: 8, 
+             display: "grid", 
+             placeItems: "center", 
+             fontWeight: "900", 
+             color: "#fff",
+             boxShadow: "0 0 10px rgba(99, 102, 241, 0.4)"
+           }}>
              AI
            </div>
-           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)" }}>Workspace</span>
-        </div>
+           <span style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)" }}>Companion</span>
+        </div> */}
 
         <div className="sidebar-title">Quick Actions</div>
-        
+
         <button className="sidebar-btn" onClick={() => { setActiveQuestionnaire(null); }}>
           <FiSearch size={16} /> New
         </button>
 
         {SUGGESTED_PROMPTS.map((prompt) => (
-          <button 
+          <button
             key={prompt.id}
             className="sidebar-btn"
             onClick={() => { setActiveQuestionnaire(prompt.id); }}
@@ -1245,7 +1281,21 @@ function AIScreen() {
       <div className="ai-main">
         <div className="main-header">
           <h1 className="main-title">
-             {activeQuestionnaire ? SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name || "Questionnaire" : "AI Assistant Dashboard"}
+            {activeQuestionnaire ? (
+              SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name || "Questionnaire"
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <Sparkles className="gradient-text-companion" size={32} style={{ fill: "url(#companion-grad)" }} />
+                <span className="gradient-text-companion" style={{ fontSize: "36px" }}>AI Assistant</span>
+                <svg width="0" height="0">
+                  <linearGradient id="companion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="50%" stopColor="#8b5cf6" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                  </linearGradient>
+                </svg>
+              </div>
+            )}
           </h1>
           {activeQuestionnaire && (
             <p className="main-subtitle">Complete the parameters to generate a guided prompt.</p>
@@ -1255,66 +1305,66 @@ function AIScreen() {
         {/* INLINE QUESTIONNAIRE AREA */}
         {activeQuestionnaire ? (
           <div style={{ background: "var(--bg-card)", borderRadius: 16, border: "1px solid var(--border-color)", padding: 24 }}>
-             
-             {activeQuestionnaire === "match-req" ? (
-               <TalentForm
-                  talentForm={talentForm}
-                  talentRoleInputDisplay={talentRoleInputDisplay}
-                  setTalentRoleInputDisplay={setTalentRoleInputDisplay}
-                  dispatch={talentDispatch}
-                  filteredRoleSuggestions={filteredRoleSuggestions}
-                  roleSuggestionsOpen={roleSuggestionsOpen}
-                  setRoleSuggestionsOpen={setRoleSuggestionsOpen}
-                  skillsDropdownOpen={skillsDropdownOpen}
-                  setSkillsDropdownOpen={setSkillsDropdownOpen}
-                  computedSkillOptions={computedSkillOptions}
-                  talentPrompt={talentPrompt}
-                  isEditingTalentPrompt={isEditingTalentPrompt}
-                  setIsEditingTalentPrompt={setIsEditingTalentPrompt}
-                  setTalentPrompt={setTalentPrompt}
-                  setTalentPromptDirty={setTalentPromptDirty}
-                  skillsDropdownRef={skillsDropdownRef}
-                  onSavePrompt={handleSavePrompt}
-                  onSubmit={(e) => {
-                     setActiveQuestionnaire(null);
-                     handleTalentSubmit(e);
-                  }}
-               />
-             ) : (
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    setInputValue(`Execute analysis for: ${SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name}`);
-                    setActiveQuestionnaire(null);
-                    setTimeout(() => handleSubmit(), 100);
-                }}>
-                   <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
-                     <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
-                     <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-                       <strong>I can help you {SUGGESTED_PROMPTS.find(p=>p.id===activeQuestionnaire)?.name.toLowerCase()}!</strong><br/>
-                       To get the best results, what specific role or target audience should I focus my analysis around?
-                     </div>
-                   </div>
 
-                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Target Audience & Focus Areas</span>
-                     <input autoFocus type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="E.g., Senior iOS Developers with Swift experience..." />
-                   </div>
-                   
-                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 25 }}>
-                     <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Any additional instructions for me? <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>(Optional)</span></span>
-                     <input type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="List any specific checks or constraints..." />
-                   </div>
+            {activeQuestionnaire === "match-req" ? (
+              <TalentForm
+                talentForm={talentForm}
+                talentRoleInputDisplay={talentRoleInputDisplay}
+                setTalentRoleInputDisplay={setTalentRoleInputDisplay}
+                dispatch={talentDispatch}
+                filteredRoleSuggestions={filteredRoleSuggestions}
+                roleSuggestionsOpen={roleSuggestionsOpen}
+                setRoleSuggestionsOpen={setRoleSuggestionsOpen}
+                skillsDropdownOpen={skillsDropdownOpen}
+                setSkillsDropdownOpen={setSkillsDropdownOpen}
+                computedSkillOptions={computedSkillOptions}
+                talentPrompt={talentPrompt}
+                isEditingTalentPrompt={isEditingTalentPrompt}
+                setIsEditingTalentPrompt={setIsEditingTalentPrompt}
+                setTalentPrompt={setTalentPrompt}
+                setTalentPromptDirty={setTalentPromptDirty}
+                skillsDropdownRef={skillsDropdownRef}
+                onSavePrompt={handleSavePrompt}
+                onSubmit={(e) => {
+                  setActiveQuestionnaire(null);
+                  handleTalentSubmit(e);
+                }}
+              />
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                setInputValue(`Execute analysis for: ${SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name}`);
+                setActiveQuestionnaire(null);
+                setTimeout(() => handleSubmit(), 100);
+              }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
+                  <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--gradient-rainbow)", backgroundSize: "200% 200%", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
+                  <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
+                    <strong>I can help you {SUGGESTED_PROMPTS.find(p => p.id === activeQuestionnaire)?.name.toLowerCase()}!</strong><br />
+                    To get the best results, what specific role or target audience should I focus my analysis around?
+                  </div>
+                </div>
 
-                   <div style={{ display: "flex", gap: 12 }}>
-                      <button type="submit" style={{ flex: 1, background: "var(--accent)", color: "#fff", border: "none", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 0.9} onMouseLeave={e => e.currentTarget.style.opacity = 1}>
-                        Execute Prompt Request
-                      </button>
-                      <button type="button" onClick={() => setActiveQuestionnaire(null)} style={{ padding: "0 24px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
-                        Cancel
-                      </button>
-                   </div>
-                </form>
-             )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Target Audience & Focus Areas</span>
+                  <input autoFocus type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="E.g., Senior iOS Developers with Swift experience..." />
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 25 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>Any additional instructions for me? <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>(Optional)</span></span>
+                  <input type="text" style={{ background: "var(--bg-card)", border: "1px solid var(--border-color)", padding: "12px 16px", borderRadius: 12, color: "var(--text-primary)", outline: "none", fontSize: 14, boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)" }} placeholder="List any specific checks or constraints..." />
+                </div>
+
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button type="submit" style={{ flex: 1, background: "var(--accent)", color: "#fff", border: "none", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.opacity = 0.9} onMouseLeave={e => e.currentTarget.style.opacity = 1}>
+                    Execute Prompt Request
+                  </button>
+                  <button type="button" onClick={() => setActiveQuestionnaire(null)} style={{ padding: "0 24px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-primary)", height: 42, borderRadius: 12, fontWeight: 700, cursor: "pointer", transition: "0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
 
           </div>
         ) : (
@@ -1325,24 +1375,29 @@ function AIScreen() {
                 <div style={{ display: "flex", gap: 16, marginBottom: 24, alignItems: "flex-start" }}>
                   <div className="ai-avatar-pulse" style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", fontWeight: "900", flexShrink: 0, fontSize: 13, boxShadow: "0 0 15px rgba(99, 102, 241, 0.3)" }}>AI</div>
                   <div style={{ background: "rgba(99, 102, 241, 0.08)", border: "1px solid rgba(99, 102, 241, 0.2)", borderRadius: "0 18px 18px 18px", padding: "16px 20px", color: "var(--text-primary)", fontSize: 15, lineHeight: 1.6 }}>
-                    <strong>Hello! I'm your AI Workspace assistant.</strong><br/>
-                    I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. What would you like to do today?
+                    <span className="companion-subtitle">Get more done with</span>
+                    <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Assistant</strong>
+                    Your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
                   </div>
                 </div>
 
-                <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0", paddingLeft: 60 }}>Guided Workflows</h3>
-                <div className="results-grid">
-                  {SUGGESTED_PROMPTS.map((prompt) => (
-                    <div 
-                      key={prompt.id} 
-                      className="resume-card" 
-                      onClick={() => setActiveQuestionnaire(prompt.id)}
-                      style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
-                    >
-                      <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
-                      <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
+                <div className="gradient-border-wrapper">
+                  <div className="gradient-border-inner" style={{ padding: "20px" }}>
+                    <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0" }}>Guided Workflows</h3>
+                    <div className="results-grid">
+                      {SUGGESTED_PROMPTS.map((prompt) => (
+                        <div
+                          key={prompt.id}
+                          className="resume-card"
+                          onClick={() => setActiveQuestionnaire(prompt.id)}
+                          style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
+                        >
+                          <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
+                          <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -1357,17 +1412,17 @@ function AIScreen() {
                 placeholder='Ask anything manually... e.g., "Find best resumes for React developer"'
                 rows={1}
               />
-              <button 
-                onClick={handleSubmit} 
+              <button
+                onClick={handleSubmit}
                 disabled={!inputValue.trim() || isLoading}
                 className="smart-submit"
                 title="Ask AI"
               >
-                {isLoading ? <FiClock size={20} className="spinning" /> : <FiSend size={20} />}
+                {(isLoading || isApiLoading) ? <FiClock size={20} className="spinning" /> : <FiSend size={20} />}
               </button>
             </div>
 
-            {isLoading && (
+            {(isLoading || isApiLoading) && (
               <div style={{ color: "var(--accent)", fontSize: 14, fontWeight: "bold", display: "flex", gap: 8, alignItems: "center", marginTop: 12 }}>
                 <FiClock className="spinning" /> Analyzing Request...
               </div>
@@ -1375,78 +1430,78 @@ function AIScreen() {
 
             {/* Dynamic RESULTS */}
             {showResults && (
-                <>
-                  {latestAiMessage.isMatch && suggestedBench.length > 0 && (
-                    <div style={{ marginTop: 10 }}>
-                      <h3 style={{ fontSize: 18, color: "var(--text-primary)", fontWeight: 800, margin: "0 0 16px 0" }}>Analysis Results ({suggestedBench.length})</h3>
-                      <div className="results-grid">
-                        {suggestedBench.map((bench, idx) => (
-                          <div className="resume-card" key={idx}>
-                            <div className="r-card-header">
-                              <div>
-                                <h4 className="r-card-name">{bench.name}</h4>
-                                <div className="r-card-role">{bench.role}</div>
-                              </div>
-                              {bench.score >= 90 ? (
-                                <div className="status-tag high">High Match</div>
-                              ) : bench.score >= 70 ? (
-                                <div className="status-tag medium">Needs Work</div>
-                              ) : (
-                                <div className="status-tag low">Low Vis</div>
-                              )}
+              <>
+                {latestAiMessage.isMatch && suggestedBench.length > 0 && (
+                  <div style={{ marginTop: 10 }}>
+                    <h3 style={{ fontSize: 18, color: "var(--text-primary)", fontWeight: 800, margin: "0 0 16px 0" }}>Analysis Results ({suggestedBench.length})</h3>
+                    <div className="results-grid">
+                      {suggestedBench.map((bench, idx) => (
+                        <div className="resume-card" key={idx}>
+                          <div className="r-card-header">
+                            <div>
+                              <h4 className="r-card-name">{bench.name}</h4>
+                              <div className="r-card-role">{bench.role}</div>
                             </div>
+                            {bench.score >= 90 ? (
+                              <div className="status-tag high">High Match</div>
+                            ) : bench.score >= 70 ? (
+                              <div className="status-tag medium">Needs Work</div>
+                            ) : (
+                              <div className="status-tag low">Low Vis</div>
+                            )}
+                          </div>
 
-                            <div className="scores-row">
-                              <div className="score-box">
-                                <span className="score-label">Match</span>
-                                <span className="score-value">{bench.score}%</span>
-                              </div>
-                              <div className="score-box">
-                                <span className="score-label">Resume</span>
-                                <span className="score-value">{bench.marketScore}/100</span>
-                              </div>
+                          <div className="scores-row">
+                            <div className="score-box">
+                              <span className="score-label">Match</span>
+                              <span className="score-value">{bench.score}%</span>
                             </div>
-
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                              {bench.skills.map(s => (
-                                <div className="status-tag" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: 10 }} key={s}>{s}</div>
-                              ))}
-                            </div>
-
-                            <div className="r-card-expand">
-                              <strong style={{ color: "var(--text-primary)" }}>AI Insight:</strong> {bench.aiInsight}
+                            <div className="score-box">
+                              <span className="score-label">Resume</span>
+                              <span className="score-value">{bench.marketScore}/100</span>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* AI RESPONSE BLOCK */}
-                  <div className="ai-response-block">
-                    <div className="ai-resp-summary">
-                      {aiParsed.summary || "Complete process analysis and outcomes shown above."}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {bench.skills.map(s => (
+                              <div className="status-tag" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", fontSize: 10 }} key={s}>{s}</div>
+                            ))}
+                          </div>
+
+                          <div className="r-card-expand">
+                            <strong style={{ color: "var(--text-primary)" }}>AI Insight:</strong> {bench.aiInsight}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    
-                    {aiParsed.insights.length > 0 && (
+                  </div>
+                )}
+
+                {/* AI RESPONSE BLOCK */}
+                <div className="ai-response-block">
+                  <div className="ai-resp-summary">
+                    {aiParsed.summary || "Complete process analysis and outcomes shown above."}
+                  </div>
+
+                  {aiParsed.insights.length > 0 && (
                     <div className="ai-resp-insights">
                       <div className="ai-resp-title">Key Insights</div>
                       <ul className="ai-resp-list">
                         {aiParsed.insights.map((ins, i) => <li key={i}>{ins}</li>)}
                       </ul>
                     </div>
-                    )}
+                  )}
 
-                    {aiParsed.actions.length > 0 && (
+                  {aiParsed.actions.length > 0 && (
                     <div className="ai-resp-actions">
                       <div className="ai-resp-title">Suggested Actions</div>
                       <ul className="ai-resp-list" style={{ listStyleType: "decimal" }}>
                         {aiParsed.actions.map((act, i) => <li key={i}>{act}</li>)}
                       </ul>
                     </div>
-                    )}
-                  </div>
-                </>
+                  )}
+                </div>
+              </>
             )}
           </>
         )}
@@ -1459,36 +1514,36 @@ function AIScreen() {
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">14</span>
-              <div className="status-tag low">Needs Attention</div>
-           </div>
-           <div className="insight-desc">
-              <strong>Low Activity Resumes</strong><br/>
-              Candidates with less than 2 profile views in 30 days.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">14</span>
+            <div className="status-tag low">Needs Attention</div>
+          </div>
+          <div className="insight-desc">
+            <strong>Low Activity Resumes</strong><br />
+            Candidates with less than 2 profile views in 30 days.
+          </div>
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">3</span>
-              <div className="status-tag accent">Trending</div>
-           </div>
-           <div className="insight-desc">
-              <strong>High Demand Skills</strong><br/>
-              React, AWS, Node.js have seen a 45% spike in searches this week.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">3</span>
+            <div className="status-tag accent">Trending</div>
+          </div>
+          <div className="insight-desc">
+            <strong>High Demand Skills</strong><br />
+            React, AWS, Node.js have seen a 45% spike in searches this week.
+          </div>
         </div>
 
         <div className="insight-card">
-           <div className="insight-header">
-              <span className="insight-metric">8</span>
-              <div className="status-tag medium">Review</div>
-           </div>
-           <div className="insight-desc">
-              <strong>Weak Profiles</strong><br/>
-              Resumes missing key summary blocks or project specifics.
-           </div>
+          <div className="insight-header">
+            <span className="insight-metric">8</span>
+            <div className="status-tag medium">Review</div>
+          </div>
+          <div className="insight-desc">
+            <strong>Weak Profiles</strong><br />
+            Resumes missing key summary blocks or project specifics.
+          </div>
         </div>
       </div>
 

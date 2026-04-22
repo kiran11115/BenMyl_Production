@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { FiGrid, FiList, FiSearch, FiChevronDown } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
@@ -7,150 +7,8 @@ import { useNavigate } from "react-router-dom";
 import UserTalentGrid from "./UserTalentGrid";
 import UserTalentTable from "./UserTalentTable";
 import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
-
-// --- DATA SOURCE ---
-const candidatesMock = [
-  {
-    id: 101,
-    name: "Sarah Johnson",
-    verified: true,
-    email: "sarah.j@techsolutions.com",
-    role: "Senior Developer",
-    experience: "8 years exp",
-    skills: ["React", "Node.js", "AWS"],
-    location: "San Francisco, CA",
-    availability: ["Available Now", "Remote"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 102,
-    name: "Michael Chen",
-    verified: false,
-    email: "m.chen@digitaldyn.net",
-    role: "Project Manager",
-    experience: "12 years exp",
-    skills: ["Agile", "Jira", "Scrum"],
-    location: "New York, NY",
-    availability: ["2 Weeks Notice"],
-    status: "IN REVIEW",
-    rating: 4.7,
-    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 103,
-    name: "Emily Davis",
-    verified: true,
-    email: "edavis.dev@gmail.com",
-    role: "DevOps Engineer",
-    experience: "5 years exp",
-    skills: ["Docker", "K8s", "CI/CD"],
-    location: "Austin, TX",
-    availability: ["Available Now"],
-    status: "INTERVIEWING",
-    rating: 4.8,
-    avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 104,
-    name: "David Lee",
-    verified: true,
-    email: "david.lee88@outlook.com",
-    role: "Backend Developer",
-    experience: "6 years exp",
-    skills: ["Python", "Django", "SQL"],
-    location: "Chicago, IL",
-    availability: ["1 Month Notice", "Remote"],
-    status: "INTERVIEWING",
-    rating: 4.6,
-    avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 105,
-    name: "Maria Garcia",
-    verified: false,
-    email: "maria.g.qa@testlab.io",
-    role: "QA Engineer",
-    experience: "4 years exp",
-    skills: ["Selenium", "Cypress"],
-    location: "Miami, FL",
-    availability: ["Available Now"],
-    status: "SHORTLISTED",
-    rating: 4.9,
-    avatar: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 106,
-    name: "James Williams",
-    verified: false,
-    email: "jwilliams@dataminds.com",
-    role: "Data Scientist",
-    experience: "7 years exp",
-    skills: ["Python", "TF", "SQL"],
-    location: "Seattle, WA",
-    availability: ["Remote Only"],
-    status: "IN REVIEW",
-    rating: 5.0,
-    avatar: "https://images.pexels.com/photos/1130624/pexels-photo-1130624.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 107,
-    name: "Olivia Martinez",
-    verified: true,
-    email: "omartinez@product.co",
-    role: "Product Owner",
-    experience: "9 years exp",
-    skills: ["Strategy", "Agile"],
-    location: "Denver, CO",
-    availability: ["Available Now"],
-    status: "OFFER EXTENDED",
-    rating: 4.8,
-    avatar: "https://images.pexels.com/photos/1181682/pexels-photo-1181682.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 108,
-    name: "John Smith",
-    verified: false,
-    email: "john.smith.ui@design.net",
-    role: "UI/UX Designer",
-    experience: "3 years exp",
-    skills: ["Figma", "Sketch"],
-    location: "Boston, MA",
-    availability: ["Part-time"],
-    status: "NEW",
-    rating: 4.5,
-    avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 109,
-    name: "William Rodriguez",
-    verified: false,
-    email: "will.rod@sysops.org",
-    role: "SysAdmin",
-    experience: "15 years exp",
-    skills: ["Linux", "Bash", "Net"],
-    location: "Houston, TX",
-    availability: ["Available Now"],
-    status: "REJECTED",
-    rating: 4.4,
-    avatar: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-  {
-    id: 110,
-    name: "Ava Wilson",
-    verified: true,
-    email: "ava.w@frontend.dev",
-    role: "Jr. Frontend Dev",
-    experience: "1 year exp",
-    skills: ["HTML", "CSS", "JS"],
-    location: "Portland, OR",
-    availability: ["Entry Level"],
-    status: "NEW",
-    rating: 4.7,
-    avatar: "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg?auto=compress&cs=tinysrgb&w=200",
-  },
-];
+import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import NoData from "./NoData";
 
 // --- SORTING FUNCTION ---
 const sortCandidates = (candidates, sortBy) => {
@@ -165,7 +23,10 @@ const sortCandidates = (candidates, sortBy) => {
           NEW: 1,
           REJECTED: 0,
         };
-        return statusPriority[b.status] - statusPriority[a.status] || b.rating - a.rating;
+        return (
+          statusPriority[b.status] - statusPriority[a.status] ||
+          b.rating - a.rating
+        );
 
       case "rating_high":
         return b.rating - a.rating;
@@ -183,9 +44,6 @@ const sortCandidates = (candidates, sortBy) => {
       case "rate_low":
         return Math.random() - 0.5;
 
-      case "name_asc":
-        return a.name.localeCompare(b.name);
-
       default:
         return 0;
     }
@@ -193,38 +51,161 @@ const sortCandidates = (candidates, sortBy) => {
 };
 
 // --- MAIN COMPONENT ---
-const UserTalentProfiles = () => {
-  const navigate = useNavigate();
+const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) => {
+  const PAGE_SIZE = 50;
+
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("recommended");
 
-  // New State for Selection & Modal
+  const [candidatesMock, setCandidatesMock] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
-  // Memoized sorted candidates
+  const [getMyBench, { isLoading }] = useGetMyBenchMutation();
+
+  // Refs to always hold latest values inside scroll/async callbacks
+  const hasMoreRef = useRef(true);
+  const isLoadingRef = useRef(false);
+  const pageNumberRef = useRef(1);
+
+  useEffect(() => {
+    setCandidatesMock([]);
+    setPageNumber(1);
+    setHasMore(true);
+    hasMoreRef.current = true;
+    pageNumberRef.current = 1;
+  }, []);
+
+  /* ================= FETCH ================= */
+  useEffect(() => {
+    let isMounted = true;
+    isLoadingRef.current = true;
+
+    const fetchBench = async () => {
+      try {
+        const payload = {
+          companyid: Number(localStorage.getItem("logincompanyid")),
+          pageNumber,
+          pageSize: PAGE_SIZE,
+          filters: [],
+        };
+
+        const res = await getMyBench(payload).unwrap();
+
+        if (!isMounted) return;
+
+        const list = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.records)
+              ? res.data.records
+              : [];
+
+        const mappedData = list.map((item) => ({
+          id: item.employeeID,
+          name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
+          verified: item.status === "Available",
+          email: item.emailaddress,
+          role: item.role,
+          experience: item.noofexperience
+            ? `${item.noofexperience} years exp`
+            : "0 years exp",
+          skills: item.skills
+            ? item.skills.split(",").map((skill) => skill.trim())
+            : [],
+          location: item.city || "NA",
+          availability: item.status ? [item.status] : [],
+          uploadedByName: item.uploadedByName,
+          status: item.status?.toUpperCase() || "NEW",
+          rating: 4.5,
+          avatar:
+            item.profilepicture ||
+            "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg",
+        }));
+
+        // ✅ Page 1 replace, Page 2+ append
+        setCandidatesMock((prev) =>
+          pageNumber === 1 ? mappedData : [...prev, ...mappedData],
+        );
+
+        // ✅ Stop further calls if we got fewer than a full page
+        const moreAvailable = mappedData.length >= PAGE_SIZE;
+        setHasMore(moreAvailable);
+        hasMoreRef.current = moreAvailable;
+      } catch (err) {
+        console.error("GET MY BENCH FAILED 👉", err);
+      } finally {
+        if (isMounted) isLoadingRef.current = false;
+      }
+    };
+
+    fetchBench();
+
+    return () => {
+      isMounted = false;
+    };
+    // Only re-run when pageNumber changes - hasMore is tracked via ref
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageNumber]);
+
+  /* ================= WINDOW SCROLL ================= */
+  useEffect(() => {
+    const handleScroll = () => {
+      // Use refs so we always read the latest value - no stale closures
+      if (!hasMoreRef.current || isLoadingRef.current) return;
+
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+
+      if (scrollTop + windowHeight >= fullHeight - 100) {
+        isLoadingRef.current = true; // Debounce: prevent duplicate increments
+        setPageNumber((prev) => {
+          const next = prev + 1;
+          pageNumberRef.current = next;
+          return next;
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Registered once - refs carry the live values
+
+
+  /* ================= MEMOS ================= */
+  const filteredCandidates = useMemo(() => {
+    if (!searchQuery.trim()) return candidatesMock;
+    const query = searchQuery.toLowerCase();
+    return candidatesMock.filter((c) =>
+      c.name?.toLowerCase().includes(query) ||
+      c.email?.toLowerCase().includes(query) ||
+      c.role?.toLowerCase().includes(query) ||
+      c.skills?.some(skill => skill.toLowerCase().includes(query)) ||
+      c.location?.toLowerCase().includes(query)
+    );
+  }, [candidatesMock, searchQuery]);
+
   const sortedCandidates = useMemo(() => {
-    return sortCandidates(candidatesMock, sortBy);
-  }, [sortBy]);
+    return sortCandidates(filteredCandidates, sortBy);
+  }, [filteredCandidates, sortBy]);
 
-  // Derive selected objects for the modal
   const selectedCandidates = useMemo(() => {
-    return candidatesMock.filter(c => selectedIds.has(c.id));
-  }, [selectedIds]);
+    return candidatesMock.filter((c) => selectedIds.has(c.id));
+  }, [selectedIds, candidatesMock]);
 
-  const handleProfileClick = () => {
-    navigate("/user/talent-profile");
-  };
-
-  // --- Selection Handlers ---
   const toggleSelection = (id) => {
-    const newSelection = new Set(selectedIds);
-    if (newSelection.has(id)) {
-      newSelection.delete(id);
-    } else {
-      newSelection.add(id);
-    }
-    setSelectedIds(newSelection);
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   const clearSelection = () => {
@@ -244,35 +225,18 @@ const UserTalentProfiles = () => {
 
       <div className="vs-page">
         <div className="projects-container d-flex flex-column gap-3 p-0">
-
           {/* Heading Section */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "16px",
-            }}
-          >
-            <div>
-              <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
+          <div className="ut-header-row">
+            <div className="ut-title-group">
+              <h1 className="section-title">
                 Talent Profiles
               </h1>
-              <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
+              <p className="section-subtitle">
                 Search and manage your Talent network.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-                flex: 1,
-                maxWidth: "680px",
-                justifyContent: "flex-end",
-              }}
-            >
+            <div className="ut-actions-group d-flex align-items-start">
               {/* SORT DROPDOWN */}
               <div className="sort-wrapper">
                 <select
@@ -285,49 +249,36 @@ const UserTalentProfiles = () => {
                   <option value="exp_high">Experience: High to Low</option>
                   <option value="exp_low">Experience: Low to High</option>
                   <option value="rate_low">Hourly Rate: Low to High</option>
-                  <option value="name_asc">Name: A - Z</option>
                 </select>
                 <FiChevronDown className="sort-icon" />
               </div>
 
               {/* SEARCH */}
-              <div style={{ position: "relative", flex: 1 }}>
-                <FiSearch
-                  style={{
-                    position: "absolute",
-                    left: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#94a3b8",
-                  }}
-                />
+              <div className="ut-search-wrapper">
+                <FiSearch className="ut-search-icon" />
                 <input
                   type="text"
                   placeholder="Search by Talent Name..."
-                  style={{
-                    width: "100%",
-                    padding: "7px 10px 7px 40px",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    outline: "none",
-                    fontSize: "14px",
-                    color: "#334155",
-                  }}
+                  className="ut-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
               {/* PUBLISH BUTTON */}
               <button
-                className="add-project-btn"
-                style={{ width: "auto", padding: "6px 20px" }}
+                className="btn-upload ut-publish-btn"
                 onClick={() => setIsPublishModalOpen(true)}
                 disabled={selectedIds.size === 0}
               >
-                <span>Publish {selectedIds.size > 0 ? `(${selectedIds.size})` : "Talent"}</span>
+                <span>
+                  Publish{" "}
+                  {selectedIds.size > 0 ? `(${selectedIds.size})` : "Talent"}
+                </span>
               </button>
 
               {/* VIEW TOGGLE */}
-              <div className="vs-results-right">
+              <div className="vs-results-right ut-view-toggle">
                 <div className="view-toggle1">
                   <button
                     className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}
@@ -348,10 +299,33 @@ const UserTalentProfiles = () => {
 
           <div className="d-flex gap-3">
             <section className="vs-results">
+              {isLoading && (
+                <div
+                  style={{
+                    padding: "40px",
+                    textAlign: "center",
+                    color: "#64748b",
+                    fontSize: "14px",
+                  }}
+                >
+                  Loading Talent Profiles...
+                </div>
+              )}
+
+              {/* ❌ No Data */}
+              {!isLoading && sortedCandidates.length === 0 && (
+                <div
+                  style={{
+                    padding: "40px",
+                    width: "100%",
+                  }}
+                >
+                  <NoData text={searchQuery ? "No Talent Profiles matching your search" : "No Talent Profiles found"} />
+                </div>
+              )}
               {viewMode === "grid" ? (
                 <UserTalentGrid
                   candidates={sortedCandidates}
-                  onProfileClick={handleProfileClick}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
                 />
@@ -395,12 +369,6 @@ const UserTalentProfiles = () => {
             transform: translateY(-50%);
             color: #64748b;
             pointer-events: none;
-          }
-          /* Ensure button looks disabled when inactive */
-          .add-project-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background-color: #94a3b8;
           }
         `}</style>
       </div>

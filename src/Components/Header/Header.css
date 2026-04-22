@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+
 /* Header.css - Matches T-Wind Dashboard Style */
 
 .header-container {
@@ -19,6 +21,25 @@
   /* Ensures it stays above content */
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
+
+@media (max-width: 768px) {
+  .desktop-header {
+    display: none !important;
+  }
+
+  .main-content-wrapper {
+    padding-bottom: 70px;
+    /* Room for bottom nav */
+  }
+
+  .cust-main {
+    padding: 1rem !important;
+  }
+}
+
+/* Notifications page start */
+
+
 
 /* --- Left Section: Brand & Logo --- */
 .header-left {
@@ -89,7 +110,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #3b82f6;
+  background-color: #f5810c;
   border-radius: 2px;
 }
 
@@ -134,7 +155,7 @@
 .header-search-input:focus {
   background-color: #fff;
   border-color: #e2e8f0;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(245, 129, 12, 0.1);
   width: 240px;
   /* Expand on focus */
 }
@@ -210,6 +231,28 @@
   font-weight: 600;
   color: #ffffff;
 }
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Initials fallback */
+.initials-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5810c, #d17519);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 
 .profile-role {
   font-size: 0.75rem;
@@ -303,7 +346,7 @@
   /* Add a left border indicator instead for mobile */
   .header-nav.mobile-active .header-nav-link.active {
     padding-left: 12px;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid #f5810c;
   }
 }
 
@@ -386,6 +429,8 @@
   font-size: 12px;
   color: #64748b;
   margin: 2px 0 0 0;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .popover-menu {
@@ -682,7 +727,7 @@
 
 .notification-action {
   display: block;
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 500;
   font-size: 14px;
   line-height: 1.4;
@@ -721,7 +766,7 @@
 }
 
 .action-btn.accept {
-  background: #6843C7;
+  background: #f5810c;
   color: #fff;
 }
 
@@ -732,8 +777,8 @@
 
 .action-btn.decline {
   background: none;
-  color: #6843C7;
-  border: 1px solid #6843C7;
+  color: #f5810c;
+  border: 1px solid #f5810c;
 }
 
 .action-btn.decline:hover {
@@ -771,7 +816,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: #3b82f6;
+  color: #f5810c;
   font-weight: 500;
   cursor: pointer;
   width: 100%;
@@ -784,9 +829,6 @@
   justify-content: center;
 }
 
-.btn-link:hover {
-  background: #eff6ff;
-}
 
 /* Animations */
 @keyframes slideDown {
@@ -838,5 +880,223 @@
   .notification-popover-wrapper {
     width: calc(100vw - 48px);
     right: 12px;
+  }
+}
+
+/* PREMIUM 3D AI Assist BUTTON - Refractive Floating Style */
+.ai-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: none;
+  /* Caveat Brush is mixed case usually */
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-family: 'Caveat Brush', cursive;
+
+  /* Sophisticated Depth Stack - Slightly subtler for small size */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -2px 0 rgba(15, 23, 42, 0.05);
+
+  overflow: hidden;
+}
+
+/* Subtle holographic glow element */
+.ai-pill-btn::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, #4e82ee, #e94435, #fabb06, #34a853, #4e82ee);
+  background-size: 300% 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  filter: blur(8px);
+}
+
+.ai-pill-btn:hover {
+  transform: translateY(-5px) scale(1.03);
+  border-color: rgba(78, 130, 238, 0.4);
+  color: #000;
+  box-shadow:
+    0 20px 40px -10px rgba(15, 23, 42, 0.15),
+    0 15px 20px -15px rgba(15, 23, 42, 0.1);
+}
+
+.ai-pill-btn:hover::after {
+  opacity: 0.15;
+  animation: bg-shift 4s linear infinite;
+}
+
+@keyframes bg-shift {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 300% 50%;
+  }
+}
+
+.ai-pill-btn:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-pill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+  transition: transform 0.4s ease;
+}
+
+.ai-pill-btn:hover .ai-pill-icon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.ai-pill-text {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  font-family: 'Caveat Brush', cursive;
+}
+
+/* --- AI Pill Wrapper (positions the popover) --- */
+.ai-pill-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- AI Coming Soon Popover --- */
+.ai-coming-soon-popover {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 50px -10px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  padding: 20px 18px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  animation: aiPopoverIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Arrow pointing up */
+.ai-coming-soon-popover::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+  filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.06));
+}
+
+@keyframes aiPopoverIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.ai-cs-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff, #fffbeb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  flex-shrink: 0;
+}
+
+.ai-cs-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.ai-cs-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Caveat Brush', cursive;
+  letter-spacing: 0.4px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ai-cs-desc {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+@media (max-width: 480px) {
+  .ai-coming-soon-popover {
+    width: 250px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-80%);
+  }
+  .ai-coming-soon-popover::before {
+    left: 80%;
+  }
+  .notification-popover-wrapper {
+    width: 280px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-80%);
   }
 }

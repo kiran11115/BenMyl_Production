@@ -1,55 +1,50 @@
-import React, { useMemo } from 'react';
-import { FiEye, FiMapPin, FiPlus } from 'react-icons/fi';
-import { BsBuilding } from 'react-icons/bs';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo } from "react";
+import { FiEye, FiMapPin, FiPlus } from "react-icons/fi";
+import { BsBuilding } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import NoData from "../UploadTalent/NoData";
 
 // --- DATA ---
-const JOBS_DATA = [
-  {
-    id: 1,
-    title: "Senior Frontend Developer",
-    company: "TechCorp Inc.",
-    location: "San Francisco, CA",
-    type: "Contract",
-    rateText: "$80-100/hr",
-    experienceText: "5+ yrs",
-    skills: ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"]
-  },
-  {
-    id: 2,
-    title: "Full Stack Engineer",
-    company: "InnovateLabs",
-    location: "Hybrid",
-    type: "Contract",
-    rateText: "$90-120/hr",
-    experienceText: "4+ yrs",
-    skills: ["Node.js", "React", "MongoDB", "AWS", "Docker"]
-  },
-  {
-    id: 3,
-    title: "UI/UX Designer",
-    company: "Creative Studio",
-    location: "On-site",
-    type: "Full-time",
-    rateText: "$60-80/hr",
-    experienceText: "3+ yrs",
-    skills: ["Figma", "Adobe XD", "Prototyping", "User Research"]
-  },
-  {
-    id: 4,
-    title: "React Native Developer",
-    company: "AppSolutions",
-    location: "Remote",
-    type: "Contract",
-    rateText: "$70-95/hr",
-    experienceText: "4+ yrs",
-    skills: ["React Native", "Redux", "iOS", "Android", "Jest"]
-  }
-];
 
 const PostedJobs = () => {
-  const jobs = useMemo(() => JOBS_DATA, []);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("CompanyId");
+
+  const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
+
+  const jobs = useMemo(() => {
+    return apiJobs.map((job) => ({
+      id: job.jobID,
+      title: job.jobTitle,
+      company: job.companyName,
+      location: job.location,
+      type: job.employeeType,
+      workModels: job.workModels,
+      salaryType: job.salarType,
+      rateText:
+        job.salaryRange_Min && job.salaryRange_Max
+          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+          : job.salaryRange_Min
+            ? `$${job.salaryRange_Min}`
+            : "N/A",
+      budgetLabel: (() => {
+        const t = (job.salarType || "").toLowerCase();
+        if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+        if (t.includes("month")) return "/month";
+        if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+        return "/hr"; // default
+      })(),
+      experienceLevel: job.experienceLevel,
+      skills: job.requiredSkills
+        ? job.requiredSkills.split(",").map((s) => s.trim())
+        : [],
+    }));
+  }, [apiJobs]);
+
+  if (isLoading) {
+    return <div style={{ padding: 24 }}>Loading jobs...</div>;
+  }
 
   return (
     <>
@@ -114,14 +109,9 @@ const PostedJobs = () => {
           flex-shrink: 0;
         }
 
-        .job-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0;
-        }
 
         .company {
-          font-size: 14px;
+          font-size: 12px;
           color: #6366f1;
           font-weight: 500;
           margin: 4px 0;
@@ -146,8 +136,10 @@ const PostedJobs = () => {
         }
 
         .stat-label1 {
-          font-size: 12px;
+          font-size: 11px;
           color: #64748b;
+          font-weight: 600;
+          text-transform: uppercase;
         }
 
         .stat-value1 {
@@ -163,7 +155,14 @@ const PostedJobs = () => {
           margin-bottom: 18px;
         }
 
-   
+        .skill {
+          font-size: 12px;
+          padding: 6px 12px;
+          border-radius: 999px;
+          background: #eef2ff;
+          color: #4338ca;
+          white-space: nowrap;
+        }
 
         .add-btn {
           margin-top: auto;
@@ -188,51 +187,67 @@ const PostedJobs = () => {
 
       {/* JSX */}
       <div className="jobs-wrapper">
-        <div className="jobs-grid">
-          {jobs.map(job => (
-            <div key={job.id} className="job-card">
+        {jobs.length === 0 ? (
+          <NoData text="No posted jobs available yet." />
+        ) : (
+          <div className="jobs-grid">
+            {jobs.map((job) => (
+              <div key={job.id} className="job-card justify-content-between">
+                <div className="d-flex flex-column gap-3">
+                  <div className="job-header">
+                    <div className="icon-box">
+                      <BsBuilding size={22} />
+                    </div>
+                    <div>
+                      <h3 className="job-title">{job.title}</h3>
+                      <div className="company">{job.company}</div>
+                      <div className="location">
+                        <FiMapPin size={12} /> {job.location}
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="job-header">
-                <div className="icon-box">
-                  <BsBuilding size={22} />
-                </div>
-                <div>
-                  <h3 className="job-title">{job.title}</h3>
-                  <div className="company">{job.company}</div>
-                  <div className="location">
-                    <FiMapPin size={12} /> {job.location}
+                  <div className="stats">
+                    <div>
+                      <div className="stat-label1">Budget</div>
+                      <div className="stat-value1">
+                        {job.rateText}
+                        <span style={{ fontSize: 11, color: '#64748b', marginLeft: 3 }}>{job.budgetLabel}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="stat-label1">Exp Level</div>
+                      <div className="stat-value1">{job.experienceLevel}</div>
+                    </div>
+                    <div>
+                      <div className="stat-label1">Work Model</div>
+                      <div className="stat-value1">{job.workModels}</div>
+                    </div>
+                  </div>
+
+                  <div className="skills">
+                    {job.skills.map((skill) => (
+                      <span key={skill} className="status-tag status-progress">
+                        {skill}
+                      </span>
+                    ))}
                   </div>
                 </div>
+
+                <button
+                  className="btn-primary w-100 d-flex gap-2"
+                  onClick={() =>
+                    navigate("/user/job-overview", {
+                      state: { jobId: job.id }, // ✅ pass jobID
+                    })
+                  }
+                >
+                  <FiEye size={16} /> View Details
+                </button>
               </div>
-
-              <div className="stats">
-                <div>
-                  <div className="stat-label1">Budget</div>
-                  <div className="stat-value1">{job.rateText}</div>
-                </div>
-                <div>
-                  <div className="stat-label1">Experience</div>
-                  <div className="stat-value1">{job.experienceText}</div>
-                </div>
-                <div>
-                  <div className="stat-label1">Type</div>
-                  <div className="stat-value1">{job.type}</div>
-                </div>
-              </div>
-
-              <div className="skills">
-                {job.skills.map(skill => (
-                  <span key={skill} className="status-tag status-progress">{skill}</span>
-                ))}
-              </div>
-
-              <button className="btn-primary w-100 d-flex gap-2" onClick={()=>navigate("/user/job-overview")}>
-                <FiEye size={16} /> View Details
-              </button>
-
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

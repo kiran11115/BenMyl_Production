@@ -13,7 +13,7 @@ export default function StatCard() {
     <>
     <div className="analytics-stats-grid-analytics">
       {stats.map((s, i) => (
-        <div className="analytics-stat-card-analytics" key={i}>
+        <div className="analytics-stat-card-analytics non-functional" key={i}>
           <div className="d-flex flex-column gap-3">
             <div className="analytics-stat-icon-analytics">
               <s.icon size={18} />

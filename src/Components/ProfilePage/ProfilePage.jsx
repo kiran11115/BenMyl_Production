@@ -4,630 +4,351 @@ import {
   FiBriefcase,
   FiMail,
   FiEdit,
-  FiSettings,
   FiPhone,
   FiLinkedin,
-  FiFileText,
   FiArrowLeft,
-  FiExternalLink,
   FiUsers,
   FiCalendar,
   FiGlobe,
+  FiBell,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import TeamMembersTable from "./TeamMemberTable";
+import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("CompanyId");
+  const adminName = localStorage.getItem("adminFirstName");
+  const industryname = localStorage.getItem("Industry");
 
-  const companyData = {
-    id: "cmp_24781",
-    slug: "talentbridge-hr",
-    name: "John Smith",
-    companyname: "Nimbus Labs",
-    size: "100-200",
-    status: "Active",
-    industry: "Staffing & Recruiting",
-    foundedYear: "2018",
-    websiteUrl: "https://talentbridge.com",
-    domain: "talentbridge.com",
+  const { data: apiData, isLoading } = useGetRecruiterProfileQuery(
+    Number(userId),
+    { skip: !userId }
+  );
 
-    headquarters: {
-      city: "San francisco",
-      state: "CA",
-      country: "USA",
-      postalCode: "572734",
-      street1: "27-1-72/4, hms  knska",
-      street2: "3rd Floor, Tech Tower",
-    },
 
-    description:
-      "TalentBridge Solutions is a leading staffing and recruitment firm specializing in healthcare, IT, and engineering talent acquisition. We partner with enterprises to build high-performing teams through strategic hiring, talent pipelining, and workforce management solutions. Our HR technology platform streamlines recruitment workflows, candidate tracking, and employee onboarding for scalable growth.",
 
-    contact: {
-      email: "hr@talentbridge.com",
-      phone: "+91 891 234 5678",
-      linkedinUrl: "https://linkedin.com/company/talentbridge-solutions",
-    },
 
-    teamMembers: [
-      {
-        username: "hr-manager",
-        email: "hr-manager@talentbridge.com",
-        role: "HR Manager",
+  const companyData = apiData
+    ? {
+      id: apiData.authInfoID,
+      name: apiData.fullName,
+      companyname: apiData.companyName,
+      size: "100-200",
+      status: "Active",
+      industry: apiData.role,
+      foundedYear: apiData.createdate,
+      websiteUrl: "",
+      domain: "",
+      headquarters: {
+        city: apiData.city,
+        state: apiData.state,
+        country: apiData.country,
+        postalCode: apiData.postalCode,
+        street1: apiData.streetAddress1,
+        street2: apiData.streetAddress2,
       },
-      {
-        username: "recruiter-lead",
-        email: "lead-recruiter@talentbridge.com",
-        role: "Recruitment Lead",
+      description: apiData.description,
+      contact: {
+        email: apiData.emailid,
+        phone: apiData.phone,
+        linkedinUrl: apiData.linkedinURL,
       },
+      role: apiData.role,
+      company: apiData.company,
+      startYear: apiData.startYear,
+      endYear: apiData.endYear,
+      experience: apiData.experience,
+      jobtitle: apiData.jobtitle,
+      education: apiData.education,
+      languagesSpoken: apiData.languagesSpoken
+        ? apiData.languagesSpoken.split(",")
+        : [],
+      referredBy: apiData.referedBy,
+      referredBy: adminName,
+      profilePhoto: apiData.profilePhoto,
+    }
+    : null;
+
+  if (isLoading || !companyData) return null;
+
+  const onEdit = () => navigate("/user/edit-profile");
+
+  const workExperiences = companyData.jobtitle
+    ? [
       {
-        username: "talent-admin",
-        email: "admin@talentbridge.com",
-        role: "Talent Admin",
+        title: companyData.jobtitle,
+        company: companyData.company,
+        start: companyData.startYear,
+        end: companyData.endYear || "Present",
       },
-      {
-        username: "onboarding-specialist",
-        email: "onboarding@talentbridge.com",
-        role: "Onboarding Specialist",
-      },
-    ],
-  };
+    ]
+    : [];
 
-  const fullAddress = [
-    companyData.headquarters?.street1,
-    companyData.headquarters?.street2,
-    [companyData.headquarters?.city, companyData.headquarters?.state]
-      .filter(Boolean)
-      .join(", "),
-    companyData.headquarters?.postalCode,
-    companyData.headquarters?.country,
-  ]
-    .filter(Boolean)
-    .join(" • ");
-
-  const onEdit = () => {
-    navigate("/user/edit-profile");
-  };
-
-  const onAccountSettings = () => {
-    navigate("/admin/account-settings");
-  };
+  /* token math (placeholder) */
+  const totalTokens = 0;
+  const usedTokens = 0;
+  const leftTokens = totalTokens - usedTokens;
+  // const usedPct     = Math.round((usedTokens / totalTokens) * 100);
+  const usedPct = 0;
 
   return (
     <div className="projects-container">
+
       {/* Breadcrumb */}
-      <div className="profile-breadcrumb d-flex gap-1">
-        <button
-          className="link-button"
-          onClick={() => navigate("/user/user-dashboard")}
-        >
-          <FiArrowLeft /> Back to Dashboard
+      <div className="profile-breadcrumb">
+        <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+          <FiArrowLeft size={13} /> Back to Dashboard
         </button>
         <span className="crumb">/ Profile</span>
       </div>
 
-      <div className="dashboard-layout">
-        {/* === LEFT MAIN COLUMN === */}
-        <div className="dashboard-column-main">
-          <div className="row">
-            <div className="col-12 col-md-12 col-lg-8 mb-4">
-              {/* Company Header Card */}
-              <div className="project-card">
-                <div className="d-flex gap-3 align-items-start">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="TalentBridge Logo"
-                    className="profile-avatar-lg"
-                  />
+      <div className="pp-layout">
 
-                  <div className="profile-header-content w-100">
-                    <div className="d-flex align-items-center justify-content-between gap-3">
-                      <h1 className="mb-1">{companyData.name}</h1>
-                      {/* Status */}
-                      <div className="profile-status-wrapper">
-                        <span className="status-tag status-completed">
-                          {companyData.status}
+        {/* ══════════ LEFT MAIN COLUMN ══════════ */}
+        <div className="pp-main-col">
+
+          {/* ── Top Row: Hero + Tokens side by side ── */}
+          <div className="pp-top-row">
+
+            {/* Hero Card */}
+            <div className="project-card pp-hero-card">
+              <div className="pp-hero-cover" />
+              <div className="pp-hero-content">
+
+                {/* Avatar */}
+                <div className="pp-avatar-wrap">
+                  {companyData.profilePhoto ? (
+                    <img
+                      src={
+                        companyData.profilePhoto.startsWith("http")
+                          ? `${companyData.profilePhoto}?t=${Date.now()}`
+                          : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
+                      }
+                      alt="Profile"
+                      className="profile-avatar-lg"
+                    />
+                  ) : (
+                    <div className="profile-avatar-placeholder">
+                      {companyData.name?.charAt(0)}
+                    </div>
+                  )}
+                  <span className="pp-status-dot" />
+                </div>
+
+                {/* Body */}
+                <div className="pp-hero-body">
+                  <div className="pp-hero-top">
+                    <h1 className="pp-name">{companyData.name}</h1>
+                    <span className="pp-status-badge">{companyData.status}</span>
+                  </div>
+
+                  <div className="pp-company">{companyData.companyname}</div>
+
+                  <div className="pp-meta-row">
+                    <span className="pp-meta-item">
+                      <FiBriefcase size={13} /> {companyData.industry}
+                    </span>
+                    <span className="pp-meta-item">
+                      <FiMapPin size={13} />
+                      {companyData.headquarters.city}, {companyData.headquarters.state}
+                    </span>
+                  </div>
+
+                  <div className="pp-about-label">About</div>
+                  <div className="pp-about-text">{companyData.description}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tokens Card */}
+            <div className="project-card pp-tokens-card">
+              <div className="pp-section-header">
+                <span className="pp-section-header-text">Tokens</span>
+                <span className="pp-section-header-line" />
+              </div>
+
+              <div className="pp-tokens-grid">
+                <div className="pp-token-row">
+                  <span className="pp-token-label">Total Tokens</span>
+                  <span className="pp-token-badge pp-token-total">{totalTokens}</span>
+                </div>
+                <div className="pp-token-row">
+                  <span className="pp-token-label">Tokens Used</span>
+                  <span className="pp-token-badge pp-token-used">{usedTokens}</span>
+                </div>
+                <div className="pp-token-row">
+                  <span className="pp-token-label">Tokens Left</span>
+                  <span className="pp-token-badge pp-token-left">{leftTokens}</span>
+                </div>
+              </div>
+
+              <div className="pp-token-progress-wrap">
+                <div className="pp-token-progress-label">
+                  <span>Usage</span>
+                  <span>{usedPct}% used</span>
+                </div>
+                <div className="pp-token-bar">
+                  <div className="pp-token-bar-fill" style={{ width: `${usedPct}%` }} />
+                </div>
+              </div>
+            </div>
+
+          </div>{/* end pp-top-row */}
+
+          {/* ── Bottom 3-column row ── */}
+          <div className="pp-bottom-row">
+
+            {/* Notification Preferences */}
+            <div className="project-card" style={{ marginBottom: 0 }}>
+              <div className="pp-section-header">
+                <span className="pp-section-header-text">Notifications</span>
+                <span className="pp-section-header-line" />
+              </div>
+              <div className="pp-notif-list">
+                {["Email Notifications", "SMS Notifications", "Push Notifications", "Do Not Disturb"].map(label => (
+                  <div className="pp-notif-item" key={label}>
+                    <span className="pp-notif-label">{label}</span>
+                    <span className="pp-notif-check">✓</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Work Experience */}
+            <div className="project-card" style={{ marginBottom: 0 }}>
+              <div className="pp-section-header">
+                <span className="pp-section-header-text">Work Experience</span>
+                <span className="pp-section-header-line" />
+              </div>
+
+              <div className="pp-exp-list">
+                {workExperiences.length > 0 ? (
+                  workExperiences.map((exp, i) => (
+                    <div className="pp-exp-item" key={i}>
+                      <div className="pp-exp-icon">
+                        <FiBriefcase size={16} />
+                      </div>
+                      <div>
+                        <p className="pp-exp-title">{exp.title}</p>
+                        <span className="pp-exp-sub">
+                          {exp.company} &bull; {exp.start} - {exp.end}
                         </span>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <span style={{ fontSize: "13px", color: "#94a3b8" }}>-</span>
+                )}
+              </div>
 
-                    <div className="card-title mb-2">
-                      {companyData.companyname}
-                    </div>
+              <hr className="pp-exp-divider" />
+              <div className="pp-exp-total">
+                <span className="pp-exp-total-label">Total Experience</span>
+                <span className="pp-exp-total-val">
+                  {companyData.experience ? `${companyData.experience} Years` : "-"}
+                </span>
+              </div>
+            </div>
 
-                    {/* Meta row */}
-                    <div className="profile-meta-row">
-                      <span className="meta-item">
-                        <FiBriefcase /> {companyData.industry}
-                      </span>
-                      <span className="meta-item">
-                        <FiMapPin /> {companyData.headquarters.city},{" "}
-                        {companyData.headquarters.state}
-                      </span>
-                    </div>
-
-                    {/* About */}
-                    <div className="mt-3">
-                      <h3 className="card-title mb-2">About</h3>
-                      <div className="small text-muted">
-                        {companyData.description}
-                      </div>
-                    </div>
+            {/* Additional Information */}
+            <div className="project-card" style={{ marginBottom: 0 }}>
+              <div className="pp-section-header">
+                <span className="pp-section-header-text">Additional Information</span>
+                <span className="pp-section-header-line" />
+              </div>
+              <div className="pp-info-list">
+                <div className="pp-info-row">
+                  <span className="pp-info-key">Job Title</span>
+                  <span className="pp-info-val">{companyData.jobtitle || "-"}</span>
+                </div>
+                <div className="pp-info-row">
+                  <span className="pp-info-key">Experience</span>
+                  <span className="pp-info-val">
+                    {companyData.experience ? `${companyData.experience} Years` : "-"}
+                  </span>
+                </div>
+                <div className="pp-info-row">
+                  <span className="pp-info-key">Education</span>
+                  <span className="pp-info-val">{companyData.education || "-"}</span>
+                </div>
+                <div className="pp-info-row">
+                  <span className="pp-info-key">Languages</span>
+                  <div className="pp-lang-chips">
+                    {companyData.languagesSpoken?.length > 0
+                      ? companyData.languagesSpoken.map((lang, i) => (
+                        <span className="status-tag status-progress d-flex gap-3" key={i}>{lang.trim()}</span>
+                      ))
+                      : <span className="pp-info-val">-</span>}
                   </div>
+                </div>
+                <div className="pp-info-row">
+                  <span className="pp-info-key">Referred By</span>
+                  <span className="pp-info-val">{companyData.referredBy || "-"}</span>
                 </div>
               </div>
             </div>
 
-            <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card" style={{ height: "200px" }}>
-                <h3
-                  className="card-title"
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    marginBottom: "10px",
-                  }}
-                >
-                  Tokens
-                </h3>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        color: "#444",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Total Tokens:
-                    </span>
-                    <span
-                      style={{
-                        padding: "3px 10px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        borderRadius: "12px",
-                        minWidth: "50px",
-                        textAlign: "center",
-                        background: "#dbeafe", // blue-100
-                        color: "#1d4ed8", // blue-700
-                      }}
-                    >
-                      1500
-                    </span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        color: "#444",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Tokens Used:
-                    </span>
-                    <span
-                      style={{
-                        padding: "3px 10px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        borderRadius: "12px",
-                        minWidth: "50px",
-                        textAlign: "center",
-                        background: "#fee2e2", // red-100
-                        color: "#b91c1c", // red-700
-                      }}
-                    >
-                      850
-                    </span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        color: "#444",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Tokens Left:
-                    </span>
-                    <span
-                      style={{
-                        padding: "3px 10px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        borderRadius: "12px",
-                        minWidth: "50px",
-                        textAlign: "center",
-                        background: "#dcfce7", // green-100
-                        color: "#15803d", // green-700
-                      }}
-                    >
-                      650
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card" style={{ padding: "14px 16px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <span style={{ fontSize: "12px", fontWeight: 600 }}>
-                    Notifications Preferences
-                  </span>
-                </div>
-
-                <div />
-
-                {/* Row */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <span style={{ fontSize: "13px" }}>
-                    Email Notifications :
-                  </span>
-                  <span style={{ color: "#16a34a", fontWeight: 600 }}>✓</span>
-                </div>
-
-                {/* Row */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <span style={{ fontSize: "13px" }}>SMS Notifications :</span>
-                  <span style={{ color: "#16a34a", fontWeight: 600 }}>✓</span>
-                </div>
-
-                {/* Row */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <span style={{ fontSize: "13px" }}>Push Notifications :</span>
-                  <span style={{ color: "#16a34a", fontWeight: 600 }}>✓</span>
-                </div>
-
-                {/* Row */}
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <span style={{ fontSize: "13px" }}>Do Not Disturb :</span>
-                  <span style={{ color: "#16a34a", fontWeight: 600 }}>✓</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div
-                className="project-card"
-              >
-                {/* Header */}
-                <div
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: 600,
-                    marginBottom: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    color: "#111827",
-                  }}
-                >
-                  Work Experience
-                </div>
-       
-
-                {/* Experience List */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "14px",
-                  }}
-                >
-                  {/* Experience Row */}
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#1f2937",
-                        marginBottom: "2px",
-                      }}
-                    >
-                      Recruiter
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      Nimbus Labs • 2019 — Present
-                    </div>
-                  </div>
-
-                  {/* Experience Row */}
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#1f2937",
-                        marginBottom: "2px",
-                      }}
-                    >
-                      HR Intern
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      TalentBridge • 2017 — 2019
-                    </div>
-                  </div>
-                </div>
-
-                {/* Summary */}
-                <div
-                  style={{
-                    marginTop: "16px",
-                    paddingTop: "10px",
-                    fontSize: "12px",
-                    color: "#6b7280",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>Total Experience:</span>
-                  <span style={{ fontWeight: 600, color: "#1f2937" }}>
-                    5 Years
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-12 col-lg-4 mb-4">
-              <div className="project-card">
-                {/* Header */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    marginBottom: "6px",
-                  }}
-                >
-                  <span style={{ fontSize: "12px", fontWeight: 600 }}>
-                    Additional Information
-                  </span>
-                </div>
-
-                {/* Professional Information */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      width: "140px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Job Title :
-                  </span>
-                  <span style={{ fontSize: "13px", color: "#374151" }}>
-                    Recruiter
-                  </span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      width: "140px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Experience :
-                  </span>
-                  <span style={{ fontSize: "13px", color: "#374151" }}>
-                    5 Years
-                  </span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      width: "140px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Education :
-                  </span>
-                  <span style={{ fontSize: "13px", color: "#374151" }}>
-                    Bachelor's Degree
-                  </span>
-                </div>
-
-                {/* Languages */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    marginBottom: "12px",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      width: "140px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Languages Spoken :
-                  </span>
-                  <div className="status-tag status-progress d-flex gap-3">
-                    {["English", "Spanish"].map((lang, i) => (
-                      <span key={i}>{lang}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Referred By */}
-                <div style={{ display: "flex", alignItems: "flex-start" }}>
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      width: "140px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Referred By :
-                  </span>
-                  <a href="">gsrinivas@mylastech.com</a>
-                </div>
-              </div>
-            </div>
-
-            {/* Team members table */}
-            <div className="col-12 mt-3">
-              {/* <div className="table-card">
-                <TeamMembersTable />
-              </div> */}
-            </div>
-          </div>
+          </div>{/* end pp-bottom-row */}
         </div>
 
-        {/* === RIGHT SIDE COLUMN === */}
-        <div className="dashboard-column-side">
-          {/* Actions */}
-          <div className="sidebar-actions">
-            <button className="btn-primary w-100 gap-2" onClick={onEdit}>
-              <FiEdit /> Edit
-            </button>
+        {/* ══════════ RIGHT SIDEBAR ══════════ */}
+        <div className="pp-sidebar">
 
-            <button
-              className="btn-secondary w-100 gap-2"
-              onClick={onAccountSettings}
-            >
-              <FiSettings /> Account Settings
-            </button>
-          </div>
+          {/* Edit button */}
+          <button className="btn-secondary w-100 d-flex gap-2" onClick={onEdit}>
+            <FiEdit size={15} /> <span>Edit Profile</span>
+          </button>
 
           {/* Company Information */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Company information</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiGlobe className="contact-icon" />{" "}
-                <a
-                  href={companyData.websiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {companyData.domain}
-                </a>
+          <div className="pp-sidebar-card">
+            <div className="pp-section-header">
+              <span className="pp-section-header-text">Company Information</span>
+              <span className="pp-section-header-line" />
+            </div>
+            <div className="pp-contact-list">
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiBriefcase size={13} /></span>
+                Company: {companyData.companyname || "-"}
               </div>
-              <div className="contact-item">
-                <FiBriefcase className="contact-icon" /> Industry:{" "}
-                {companyData.industry}
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiBriefcase size={13} /></span>
+                Industry: {industryname || "-"}
               </div>
-              <div className="contact-item">
-                <FiUsers className="contact-icon" /> Size: {companyData.size}
-              </div>
-              <div className="contact-item">
-                <FiCalendar className="contact-icon" /> Founded:{" "}
-                {companyData.foundedYear}
-              </div>
-              <div className="contact-item">
-                <FiMapPin className="contact-icon" /> HQ:{" "}
-                {companyData.headquarters.city},{" "}
-                {companyData.headquarters.state}
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiMapPin size={13} /></span>
+                Location: {companyData.headquarters.city}, {companyData.headquarters.state}
               </div>
             </div>
           </div>
 
           {/* Contact */}
-          <div className="table-card sidebar-card">
-            <h3 className="card-title">Contact</h3>
-            <div className="contact-list">
-              <div className="contact-item">
-                <FiMail className="contact-icon" />{" "}
+          <div className="pp-sidebar-card">
+            <div className="pp-section-header">
+              <span className="pp-section-header-text">Contact</span>
+              <span className="pp-section-header-line" />
+            </div>
+            <div className="pp-contact-list">
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiMail size={13} /></span>
                 <a href={`mailto:${companyData.contact.email}`}>
                   {companyData.contact.email}
                 </a>
               </div>
-              <div className="contact-item">
-                <FiPhone className="contact-icon" /> {companyData.contact.phone}
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiPhone size={13} /></span>
+                {companyData.contact.phone}
               </div>
-              <div className="contact-item">
-                <FiLinkedin className="contact-icon" />{" "}
-                <a
-                  href={companyData.contact.linkedinUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+              <div className="pp-contact-item">
+                <span className="pp-contact-icon"><FiLinkedin size={13} /></span>
+                <a href={companyData.contact.linkedinUrl} target="_blank" rel="noreferrer">
                   LinkedIn
                 </a>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

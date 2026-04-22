@@ -1,15 +1,12 @@
 import React from "react";
-import { MoreVertical, Clock, DollarSign } from "lucide-react";
+import { MoreVertical, Clock, DollarSign, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MdOutlineCloudUpload } from "react-icons/md";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
 
-const ProjectsSection = ({ projects }) => {
+const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
   const navigate = useNavigate();
 
-  // Helper to generate a consistent random avatar based on the name
   const getAvatarUrl = (name) => {
-    // Remove spaces and special chars to create a clean seed
     const seed = name.replace(/[^a-zA-Z0-9]/g, "");
     return `https://i.pravatar.cc/150?u=${seed}`;
   };
@@ -17,33 +14,48 @@ const ProjectsSection = ({ projects }) => {
   return (
     <>
       {/* Header Section */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div className="d-flex gap-3">
-          <h3 className="section-title" style={{ margin: 0 }}>
+      <div className="projects-header-row mb-4">
+        <div className="d-flex gap-3 align-items-center projects-title-wrap">
+          <h3 className="section-title" style={{ margin: 0, fontSize: "1.25rem" }}>
             Ongoing Projects
           </h3>
-          <button className="border-0" style={{textDecoration: "underline", background: "none", color: "Blue", fontSize: "13px"}}>View all</button>
+          <button 
+            className="border-0 p-0" 
+            onClick={() => navigate("/user/user-projects")}
+            style={{ 
+              textDecoration: "none", 
+              background: "none", 
+              color: "#f5810c", 
+              fontSize: "13px", 
+              fontWeight: "700",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px"
+            }}
+          >
+            Explore All <ExternalLink size={12} />
+          </button>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 projects-actions-wrap">
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-post-new-positions")}
           >
             + Create Job
           </button>
-          <UploadTalentModal/>
+          
+          <UploadTalentModal
+            onSuccess={onUploadSuccess}
+            onUploading={onUploading}
+          />
+
           <button
             className="btn-upload"
             onClick={() => navigate("/user/user-upcoming-interview")}
+            style={{ background: "#f8fafc", color: "#475569", border: "1px solid #e2e8f0" }}
           >
-            Schedule Interviews
+            Schedule Interview
           </button>
         </div>
       </div>
@@ -51,8 +63,7 @@ const ProjectsSection = ({ projects }) => {
       {/* Projects Grid */}
       <div className="projects-grid">
         {projects.map((project, index) => {
-          // Use 'talent' or 'company' field from your data as the name
-          const talentName = project.talent || project.company || "Unknown Talent";
+          const talentName = project.talent || project.company || "Unknown Contact";
           const avatarUrl = project.image || getAvatarUrl(talentName);
 
           return (
@@ -70,10 +81,9 @@ const ProjectsSection = ({ projects }) => {
                   src={avatarUrl}
                   alt={talentName}
                   className="author-avatar"
-                  // Add a small error handler to fallback if image fails
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = `https://ui-avatars.com/api/?name=${talentName}&background=random`;
+                    e.target.src = `https://ui-avatars.com/api/?name=${talentName}&background=f5810c&color=fff`;
                   }}
                 />
                 <span className="author-name">{talentName}</span>
@@ -81,8 +91,8 @@ const ProjectsSection = ({ projects }) => {
 
               <div className="progress-section">
                 <div className="progress-labels">
-                  <span>Progress</span>
-                  <span className="progress-text">{project.progress}%</span>
+                  <span style={{ fontWeight: "700", fontSize: "11px", textTransform: "uppercase", color: "#64748b" }}>Progress</span>
+                  <span className="progress-text" style={{ color: "#f5810c", fontWeight: "800" }}>{project.progress}%</span>
                 </div>
                 <div className="progress-bg">
                   <div
@@ -92,22 +102,22 @@ const ProjectsSection = ({ projects }) => {
                 </div>
               </div>
 
-      <div className="d-flex justify-content-between">
-              <div className="card-details">
-                <div className="detail-item">
-                  <Clock size={14} /> Due: {project.dueDate}
+              <div className="d-flex justify-content-between align-items-end">
+                <div className="card-details">
+                  <div className="detail-item" style={{ background: "#f8fafc" }}>
+                    <Clock size={12} className="text-slate-400" /> <span style={{ fontSize: "11px" }}>Due {project.dueDate}</span>
+                  </div>
+                  <div className="detail-item" style={{ background: "#f8fafc" }}>
+                    <DollarSign size={12} className="text-slate-400" /> <span style={{ fontSize: "11px" }}>{project.budget}</span>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <DollarSign size={14} /> Budget: {project.budget}
-                </div>
-              </div>
 
-              <div>
-                <span className={`status-tag ${project.statusClass}`}>
-                  {project.status}
-                </span>
+                <div>
+                  <span className={`status-tag ${project.statusClass}`}>
+                    {project.status}
+                  </span>
+                </div>
               </div>
-            </div>
             </div>
           );
         })}
