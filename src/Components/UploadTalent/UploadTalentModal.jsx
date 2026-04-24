@@ -106,7 +106,9 @@ function UploadTalentModal({
 
       setTimeout(() => {
         handleClose();
-        navigate("/user/user-upload-talent", {
+        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+        navigate(targetPath, {
           state: {
             files: uploadedFiles,
             activeTab: "Review",

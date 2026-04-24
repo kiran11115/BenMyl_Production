@@ -44,7 +44,11 @@ export default function InterviewDetails() {
         return (
             <div className="ui-page">
                 <div className="ui-breadcrumbs">
-                    <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}>
+                    <button className="link-button" onClick={() => {
+                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
+                        navigate(targetPath);
+                    }}>
                         <FiArrowLeft /> Back to Interviews
                     </button>
                 </div>
@@ -73,10 +77,18 @@ export default function InterviewDetails() {
     return (
         <div className="ui-page">
             <div className="profile-breadcrumb d-flex gap-1 mb-4">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                    navigate(targetPath);
+                }}>
                     Dashboard
                 </button>
-                <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
+                    navigate(targetPath);
+                }}>
                     / Upcoming Interviews
                 </button>
                 <span className="crumb">/ Interview Details</span>
@@ -93,7 +105,11 @@ export default function InterviewDetails() {
                             <button
                                 className="btn-secondary d-flex align-items-center gap-2 w-100"
                                 style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid var(--slate-200)', background: 'white', color: 'var(--slate-800)', fontWeight: 600, fontSize: '14px' }}
-                                onClick={() => navigate("/user/user-schedule-interview", { state: { interview, mode: 'reschedule' } })}
+                                onClick={() => {
+                                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
+                                    navigate(targetPath, { state: { interview, mode: 'reschedule' } });
+                                }}
                             >
                                 <FiCalendar /> Reschedule Interview
                             </button>

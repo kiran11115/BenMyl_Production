@@ -73,7 +73,10 @@ const ProfilePage = () => {
 
   if (isLoading || !companyData) return null;
 
-  const onEdit = () => navigate("/user/edit-profile");
+  const onEdit = () => {
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    navigate(`${basePath}/edit-profile`);
+  };
 
   const workExperiences = companyData.jobtitle
     ? [
@@ -98,7 +101,11 @@ const ProfilePage = () => {
 
       {/* Breadcrumb */}
       <div className="profile-breadcrumb">
-        <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+        <button className="link-button" onClick={() => {
+          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+          const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+          navigate(targetPath);
+        }}>
           <FiArrowLeft size={13} /> Back to Dashboard
         </button>
         <span className="crumb">/ Profile</span>

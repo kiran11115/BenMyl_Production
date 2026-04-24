@@ -1564,7 +1564,11 @@ const ReviewTalent = () => {
       <div className="d-flex gap-2 mb-4 align-items-center">
         <button
           className="auth-link"
-          onClick={() => navigate("/user/user-upload-talent")}
+          onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+            navigate(targetPath);
+          }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -2493,7 +2497,8 @@ const ReviewTalent = () => {
           onRetry={() => setValidationErrorsState(null)}
           onContactSupport={() => {
             setValidationErrorsState(null);
-            navigate("/support");
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/support`);
           }}
         />
       )}

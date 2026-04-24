@@ -86,7 +86,11 @@ export default function ContractManagement() {
     return (
         <div style={{ padding: 24 }}>
             <div className="back-row">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                    navigate(targetPath);
+                }}><FiArrowLeft /> Back to Dashboard</button>
                 <span className="crumb">/ Contract Management</span>
             </div>
 
@@ -134,7 +138,11 @@ export default function ContractManagement() {
                             <p className="page-sub">Here's what's happening with your projects today</p>
                         </div>
                         <button
-                        onClick={()=>navigate("/user/create-new-contract")}
+                        onClick={()=>{
+                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-create-new-contract` : `${basePath}/create-new-contract`;
+                            navigate(targetPath);
+                        }}
                             className="border-0 rounded-2 fw-semibold"
                             style={{
                                 background: "#2563EB",

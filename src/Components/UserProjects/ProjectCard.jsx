@@ -205,11 +205,12 @@ export default function ProjectCard({ project, onUpload, onReview }) {
         <button
           className="btn-review"
           style={{ flex: 1 }}
-          onClick={() =>
-            navigate(`/user/project-details/${project.id}`, {
+          onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/project-details/${project.id}`, {
               state: { project },
-            })
-          }
+            });
+          }}
         >
           View Details
         </button>

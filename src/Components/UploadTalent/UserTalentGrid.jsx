@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 const CandidateCard = memo(({ candidate, isSelected, onToggle }) => {
   const navigate = useNavigate();
   const handleProfileClick = () => {
-    navigate("/user/talent-profile", {
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    navigate(`${basePath}/talent-profile`, {
       state: {
         employeeId: candidate.id,
       },

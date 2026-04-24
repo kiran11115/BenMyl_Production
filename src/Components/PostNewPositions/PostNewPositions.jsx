@@ -402,7 +402,11 @@ useEffect(() => {
       {/* HEADER */}
       <div className="form-header">
         <div className="vs-breadcrumbs mb-2 mt-3 d-flex gap-2">
-          <button type="button" className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+          <button type="button" className="link-button" onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+            navigate(targetPath);
+          }}>
             <FiArrowLeft /> Back to Dashboard
           </button>
           <span className="crumb">/ Job Posting</span>
@@ -742,7 +746,11 @@ useEffect(() => {
 
             {/* FOOTER */}
             <div className="d-flex justify-content-between mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
-              <button type="button" className="btn-secondary" onClick={() => navigate("/user/user-dashboard")}>
+              <button type="button" className="btn-secondary" onClick={() => {
+                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                navigate(targetPath);
+              }}>
                 Cancel
               </button>
               <button type="submit" className="btn-primary">

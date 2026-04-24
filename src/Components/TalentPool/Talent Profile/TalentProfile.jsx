@@ -366,7 +366,10 @@ const TalentProfile = () => {
           <div className="sidebar-actions">
             <button
               className="btn-primary w-100"
-              onClick={() => navigate("/user/user-schedule-interview")}
+              onClick={() => {
+                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                navigate(`${basePath}/user-schedule-interview`);
+              }}
             >
               Schedule Interview
             </button>

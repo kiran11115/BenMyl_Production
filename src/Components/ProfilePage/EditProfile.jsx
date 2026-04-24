@@ -239,7 +239,9 @@ function EditProfile() {
 
 
       await updateRecruiterProfile(fd).unwrap();
-      navigate("/user/user-profile");
+      const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+      const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-profile` : `${basePath}/user-profile`;
+      navigate(targetPath);
 
     },
   });
@@ -375,7 +377,11 @@ function EditProfile() {
     formik.handleSubmit();
   };
 
-  const handleCancel = () => navigate("/user/profile");
+  const handleCancel = () => {
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-profile` : `${basePath}/user-profile`;
+    navigate(targetPath);
+  };
 
   const FormError = ({ error, touched }) => {
     if (!touched || !error) return null;

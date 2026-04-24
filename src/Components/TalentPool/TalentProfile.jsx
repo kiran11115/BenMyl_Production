@@ -101,7 +101,10 @@ const TalentProfile = () => {
     <div className="projects-container">
       {/* Breadcrumb - Matches Global Text Styles */}
       <div className="profile-breadcrumb">
-        <button className="link-button" onClick={() => navigate("/user/user-talentpool")}><FiArrowLeft /> Talent Pool </button>
+        <button className="link-button" onClick={() => {
+          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+          navigate(`${basePath}/admin-talentpool`);
+        }}><FiArrowLeft /> Talent Pool </button>
         <span className="crumb">/ Profile Page</span>
       </div>
 
@@ -251,7 +254,10 @@ const TalentProfile = () => {
         <div className="dashboard-column-side">
           {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100" onClick={() => navigate("/user/user-schedule-interview")}>Schedule Interview</button>
+            <button className="btn-primary w-100" onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/user-schedule-interview`);
+            }}>Schedule Interview</button>
             <button className="btn-secondary w-100">Shortlist Candidate</button>
 
             <div className="sidebar-links">

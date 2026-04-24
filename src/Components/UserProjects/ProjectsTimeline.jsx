@@ -29,7 +29,10 @@ export default function ProjectsTimeline({ data }) {
             <ProjectTimeCard
               key={item.id}
               item={item}
-              onClick={() => navigate(`/user/project-details/${item.id}`, { state: { project: item.originalProject } })}
+              onClick={() => {
+                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                navigate(`${basePath}/project-details/${item.id}`, { state: { project: item.originalProject } });
+              }}
             />
           ))}
         </div>
