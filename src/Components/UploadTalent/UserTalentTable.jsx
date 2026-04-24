@@ -41,7 +41,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
     navigate(`${basePath}/talent-profile`, {
       state: {
-        employeeID: candidate.id,
+        employeeId: candidate.id,
       },
     });
   };
