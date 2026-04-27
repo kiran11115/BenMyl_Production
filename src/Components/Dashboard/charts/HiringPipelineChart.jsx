@@ -1,7 +1,7 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
 
-const HiringPipelineChart = ({ data, tooltipTheme }) => {
+const HiringPipelineChart = ({ data, tooltipTheme, isComingSoon }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -32,13 +32,18 @@ const HiringPipelineChart = ({ data, tooltipTheme }) => {
   };
 
   return (
-    <div className="project-card">
+    <div className={`project-card ${isComingSoon ? 'non-functional' : ''}`}>
       <div className="card-header">
         <h3 className="card-title">Hiring Pipeline</h3>
       </div>
       <div style={{ height: "180px", marginTop: "16px", position: "relative", zIndex: 2 }}>
         <Line data={data} options={options} />
       </div>
+      {isComingSoon && (
+        <div className="coming-soon-badge">
+          Coming Soon
+        </div>
+      )}
     </div>
   );
 };

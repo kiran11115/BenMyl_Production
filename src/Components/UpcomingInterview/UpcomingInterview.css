@@ -801,22 +801,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5810c, #f97316);
-    color: white;
-    font-weight: 700;
+    background: #ffffff;
+    color: #1e293b;
+    border: 2px solid #f5810c;
+    font-weight: 900;
     text-transform: uppercase;
-    border: 2px solid white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .initials-avatar.small-avatar {
-    font-size: 14px;
+    font-size: 16px;
     width: 40px;
     height: 40px;
 }
 
 .initials-avatar.int-avatar-large {
-    font-size: 24px;
+    font-size: 25px;
     width: 64px;
     height: 64px;
 }

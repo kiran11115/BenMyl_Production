@@ -8,7 +8,7 @@ const StatsRow = ({ stats }) => {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className={`stat-card ${stat.cardType || ""}`}
+          className={`stat-card ${stat.cardType || ""} ${stat.isNonFunctional ? "non-functional" : ""}`}
         >
           {/* Floating bubble decorations */}
           <div
@@ -38,6 +38,12 @@ const StatsRow = ({ stats }) => {
           <div className="stat-icon-box">
             <stat.icon size={22} />
           </div>
+
+          {stat.isNonFunctional && (
+            <div className="coming-soon-badge">
+              Coming Soon
+            </div>
+          )}
         </div>
       ))}
     </div>

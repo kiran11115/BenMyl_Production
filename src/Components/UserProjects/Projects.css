@@ -371,7 +371,7 @@
   height: 26px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #f5810c; /* Updated to brand orange */
 }
 
 .author-name {

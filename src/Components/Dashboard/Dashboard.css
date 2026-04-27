@@ -6,6 +6,21 @@
   color: #334155;
 }
 
+.btn-explore-all {
+  text-decoration: none;
+  background: none;
+  color: #f5810c;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-explore-all:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .projects-container {
     padding: 16px;
@@ -363,8 +378,9 @@
   height: 28px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px #e2e8f0;
+  border: 1.5px solid #f5810c;
+  /* Updated to brand orange */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .author-name {
@@ -700,4 +716,84 @@
   background: #fff7ed;
   color: #ea580c;
   border-color: rgba(234, 88, 12, 0.1);
+}
+
+/* =========================================
+   7. Coming Soon & Non-Functional States
+   ========================================= */
+.non-functional {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none;
+  position: relative;
+}
+
+/* Force neutral background and remove colorful gradients */
+.stat-card.non-functional,
+.project-card.non-functional {
+  background-image: none !important;
+  background-color: #f1f5f9 !important;
+  /* Neutral light slate */
+  border-color: #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+/* Neutralize icon box */
+.non-functional .stat-icon-box {
+  background-color: #94a3b8 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* Remove decorative bubbles */
+.non-functional .bubbles-container {
+  display: none !important;
+}
+
+/* Make card content dull/greyed out */
+.non-functional>*:not(.coming-soon-badge) {
+  filter: grayscale(1) opacity(0.35) !important;
+  transition: none !important;
+}
+
+/* Target specific text elements for better readability in gray-scale */
+.non-functional .stat-label,
+.non-functional .card-title,
+.non-functional .stat-value {
+  color: #475569 !important;
+}
+
+.non-functional:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #334155;
+  /* Dark Slate/Grey */
+  color: #ffffff;
+  /* Pure White */
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  filter: none !important;
+}
+
+/* Ensure parents have position relative for absolute positioning of badge */
+.stat-card,
+.project-card,
+.table-card {
+  position: relative;
 }

@@ -47,12 +47,13 @@
   align-items: center;
   cursor: pointer;
   padding: 0;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 
 .crumb {
   color: #94a3b8;
+  font-size: 12px;
 }
 
 h1 {

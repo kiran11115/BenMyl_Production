@@ -245,12 +245,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f5810c, #d17519);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid #f5810c;
+  font-size: 18px; /* Increased from 14px */
+  font-weight: 900;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 

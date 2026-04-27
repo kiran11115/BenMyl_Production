@@ -27,6 +27,12 @@ const StatsGrid = ({ data }) => {
           <div className="stat-icon-box">
             <item.icon size={24} />
           </div>
+
+          {item.isNonFunctional && (
+            <div className="coming-soon-badge">
+              Coming Soon
+            </div>
+          )}
         </div>
       ))}
     </div>

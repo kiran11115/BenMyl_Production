@@ -56,10 +56,11 @@
   height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  /* Consistent with .author-avatar style but larger */
-  border: 4px solid #fff;
+  background: #ffffff;
+  border: 3px solid #f5810c; /* Updated to brand orange */
   box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .profile-header-content {
@@ -314,14 +315,16 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: #e2e8f0;
-  color: #1e293b;
-  font-size: 40px;
-  font-weight: 600;
+  background: #ffffff; /* Clean white background */
+  color: #1e293b; /* Strong navy text */
+  border: 3px solid #f5810c; /* Bold orange border */
+  font-size: 30px; /* Much larger font */
+  font-weight: 900; /* Maximum weight */
   display: flex;
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* Projects card */

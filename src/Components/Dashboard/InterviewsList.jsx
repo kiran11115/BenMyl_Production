@@ -2,7 +2,7 @@ import React from "react";
 import { Calendar, Clock, MoreVertical } from "lucide-react";
 import NoData from "../UploadTalent/NoData";
 
-const InterviewsList = ({ interviews }) => {
+const InterviewsList = ({ interviews, isComingSoon }) => {
   const hasInterviews = Array.isArray(interviews) && interviews.length > 0;
 
   const getTagClass = (tag) => {
@@ -14,7 +14,7 @@ const InterviewsList = ({ interviews }) => {
   };
 
   return (
-    <div className="project-card" style={{ padding: '16px' }}>
+    <div className={`project-card ${isComingSoon ? 'non-functional' : ''}`} style={{ padding: '16px' }}>
 
       {/* Header with Title and Options Dots */}
       <div className="card-header-compact">
@@ -58,6 +58,11 @@ const InterviewsList = ({ interviews }) => {
           image="/Images/no data.svg"
           maxWidth="160px"
         />
+      )}
+      {isComingSoon && (
+        <div className="coming-soon-badge">
+          Coming Soon
+        </div>
       )}
     </div>
   );

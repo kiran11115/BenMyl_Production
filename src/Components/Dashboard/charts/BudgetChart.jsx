@@ -1,7 +1,7 @@
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
 
-const BudgetChart = ({ data, totalBudget, tooltipTheme }) => {
+const BudgetChart = ({ data, totalBudget, tooltipTheme, isComingSoon }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -28,7 +28,7 @@ const BudgetChart = ({ data, totalBudget, tooltipTheme }) => {
   };
 
   return (
-    <div className="project-card">
+    <div className={`project-card ${isComingSoon ? 'non-functional' : ''}`}>
       <div className="card-header">
         <h3 className="card-title">Budget Allocation</h3>
       </div>
@@ -64,6 +64,11 @@ const BudgetChart = ({ data, totalBudget, tooltipTheme }) => {
           <span style={{ fontWeight: "600", color: "#f59e0b" }}>0%</span>
         </div>
       </div>
+      {isComingSoon && (
+        <div className="coming-soon-badge">
+          Coming Soon
+        </div>
+      )}
     </div>
   );
 };

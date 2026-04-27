@@ -1,0 +1,259 @@
+/* EditProfile.css - Exact replica of the user image */
+
+.ep-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: transparent;
+}
+
+.ep-header-box {
+  margin-bottom: 30px;
+}
+
+.ep-header-box h1 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.ep-header-box p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* --- Form Body --- */
+.ep-form-body {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.ep-section {
+  margin-bottom: 40px;
+}
+
+.ep-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* --- Profile Photo --- */
+.ep-photo-box {
+  border: 2px dashed #e2e8f0;
+  border-radius: 8px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+  background-color: #fafbfc;
+  transition: all 0.2s ease;
+}
+
+.ep-photo-box:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.ep-photo-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%; /* Circle */
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 3px solid #f5810c; /* Orange border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ep-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ep-remove-btn {
+  background: #f43f5e;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ep-remove-btn:hover {
+  opacity: 0.9;
+}
+
+/* --- Grid System --- */
+.ep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.ep-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ep-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.ep-group {
+  margin-bottom: 1rem;
+}
+
+.ep-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ep-label span {
+  color: #ef4444;
+}
+
+.ep-input, .ep-textarea, .ep-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ep-input:focus, .ep-textarea:focus, .ep-select:focus {
+  border-color: #f5810c;
+  box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
+}
+
+.ep-input:disabled {
+  background-color: #f8fafc;
+  color: #94a3b8;
+}
+
+/* --- Work Experience --- */
+.ep-exp-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.ep-exp-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.ep-add-exp-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ep-total-exp {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ep-total-exp span {
+  color: #64748b;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+/* --- Languages Spoken --- */
+.ep-lang-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.ep-lang-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ep-lang-tag-remove {
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* --- Footer Actions --- */
+.ep-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ep-cancel-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 10px 30px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ep-save-btn {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ep-save-btn:hover {
+  background: #0f172a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ep-grid, .ep-grid-3, .ep-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}

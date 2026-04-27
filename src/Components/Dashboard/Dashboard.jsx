@@ -284,21 +284,23 @@ const Dashboard = () => {
 
         {/* RIGHT COLUMN: Charts & Interviews */}
         <div className="dashboard-column-side">
-          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column non-functional">
+          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column">
             <HiringPipelineChart
               data={pipelineLineData}
               tooltipTheme={tooltipTheme}
+              isComingSoon={true}
             />
 
             <BudgetChart
               data={budgetDoughnutData}
               totalBudget={125000}
               tooltipTheme={tooltipTheme}
+              isComingSoon={true}
             />
           </div>
 
           <div id="dashboard-interviews-list">
-            <InterviewsList interviews={interviews} />
+            <InterviewsList interviews={interviews} isComingSoon={true} />
           </div>
         </div>
       </div>
