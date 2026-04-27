@@ -1003,6 +1003,236 @@
 }
 
 /* ============================= */
+/* DELETE CONFIRMATION MODAL */
+/* ============================= */
+
+.delete-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.delete-confirm-card {
+  position: relative;
+  box-sizing: border-box;
+  width: min(430px, 100%);
+  min-height: 346px;
+  padding: 35px 37px 30px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff5f5;
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.22);
+  font-family: inherit;
+  animation: deleteConfirmIn 0.2s ease-out;
+}
+
+.delete-confirm-close {
+  position: absolute;
+  top: 32px;
+  right: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.delete-confirm-close:hover {
+  color: #64748b;
+  transform: scale(1.04);
+}
+
+.delete-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 35px 24px 0;
+}
+
+.delete-confirm-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 11px;
+  background: #ffe1e3;
+  color: #ff3036;
+  flex-shrink: 0;
+}
+
+.delete-confirm-title {
+  margin: 0;
+  color: #9f1239;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.delete-confirm-body {
+  margin: 0;
+}
+
+.delete-confirm-message {
+  margin: 0 0 15px;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.delete-confirm-note {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 79px;
+  padding: 11px 14px 10px 12px;
+  border-left: 4px solid #f43f5e;
+  border-radius: 4px;
+  background: #fff1f2;
+  color: #be123c;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.delete-confirm-note-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+  color: #9f1239;
+  font-weight: 800;
+}
+
+.delete-confirm-note p {
+  margin: 0;
+}
+
+.delete-confirm-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 49px;
+  width: 100%;
+}
+
+.delete-confirm-cancel,
+.delete-confirm-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 17px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.delete-confirm-cancel {
+  width: 99px;
+  flex: 0 0 99px;
+  border: 1px solid #dbeafe;
+  background: #ffffff;
+  color: #334155;
+}
+
+.delete-confirm-cancel:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.delete-confirm-action {
+  flex: 1 1 auto;
+  border: 0;
+  background: #ef3030;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.delete-confirm-action:hover {
+  background: #dc2626;
+}
+
+.delete-confirm-cancel:active,
+.delete-confirm-action:active {
+  transform: translateY(1px);
+}
+
+@keyframes deleteConfirmIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 576px) {
+  .delete-confirm-card {
+    width: min(100%, 420px);
+    min-height: auto;
+    padding: 32px 24px 28px;
+    border-radius: 16px;
+  }
+
+  .delete-confirm-close {
+    top: 24px;
+    right: 20px;
+  }
+
+  .delete-confirm-header {
+    gap: 16px;
+    margin-right: 32px;
+    margin-bottom: 24px;
+  }
+
+  .delete-confirm-icon {
+    width: 54px;
+    height: 54px;
+  }
+
+  .delete-confirm-title {
+    font-size: 24px;
+  }
+
+  .delete-confirm-message {
+    font-size: 16px;
+  }
+
+  .delete-confirm-note {
+    font-size: 14px;
+  }
+
+  .delete-confirm-footer {
+    flex-direction: column-reverse;
+    margin-top: 34px;
+  }
+
+  .delete-confirm-cancel,
+  .delete-confirm-action {
+    width: 100%;
+    flex-basis: auto;
+  }
+}
+
+/* ============================= */
 /* USER TALENT PROFILES HEADER */
 /* ============================= */
 

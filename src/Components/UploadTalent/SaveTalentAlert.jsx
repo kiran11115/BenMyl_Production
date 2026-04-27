@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiCheck, FiAlertTriangle, FiFileText, FiTrash2 } from "react-icons/fi";
+import { FiX, FiCheck, FiAlertTriangle, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 export const ValidationErrorModal = ({
@@ -205,53 +205,51 @@ export const SaveErrorModal = ({ onClose, onRetry }) => {
   );
 };
 
-export const DeleteConfirmModal = ({ onClose, onConfirm }) => {
+export const DeleteConfirmModal = ({
+  onClose,
+  onConfirm,
+  title = "Delete Draft",
+  message = "Are you sure you want to delete this draft employee?",
+  note = "This action is permanent and will remove the draft record from the system. It cannot be undone.",
+  confirmText = "Yes, Delete",
+}) => {
   return (
-    <div className="modal-overlay">
-      <div className="alert-card error-theme">
-        <button className="alert-close-icon" onClick={onClose}>
+    <div className="delete-confirm-overlay">
+      <div className="delete-confirm-card" role="dialog" aria-modal="true" aria-labelledby="delete-draft-title">
+        <button className="delete-confirm-close" onClick={onClose} aria-label="Close delete confirmation">
           <FiX size={20} />
         </button>
 
-        <div className="alert-header">
-          <div className="alert-icon-wrapper" style={{ background: "#fee2e2", color: "#ef4444" }}>
-            <FiTrash2 />
+        <div className="delete-confirm-header">
+          <div className="delete-confirm-icon">
+            <FiTrash2 size={28} />
           </div>
-          <h3 className="alert-title">Delete Draft</h3>
+          <h3 className="delete-confirm-title" id="delete-draft-title">{title}</h3>
         </div>
 
-        <div className="alert-body">
-          <p className="alert-message">
-            Are you sure you want to delete this draft employee?
+        <div className="delete-confirm-body">
+          <p className="delete-confirm-message">
+            {message}
           </p>
-          <div
-            style={{
-              marginTop: "16px",
-              padding: "12px",
-              background: "#fff1f2",
-              borderLeft: "4px solid #f43f5e",
-              borderRadius: "4px",
-              fontSize: "13px",
-              color: "#9f1239",
-              lineHeight: "1.5",
-            }}
-          >
-            <div style={{ fontWeight: 700, marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <FiAlertTriangle size={14} /> NOTE:
+          <div className="delete-confirm-note">
+            <div className="delete-confirm-note-title">
+              <FiAlertTriangle size={16} /> NOTE:
             </div>
-            This action is permanent and will remove the draft record from the system. It cannot be undone.
+            <p>
+              {note}
+            </p>
           </div>
         </div>
 
-        <div className="alert-footer">
-          <button className="btn-secondary" onClick={onClose}>
+        <div className="delete-confirm-footer">
+          <button className="delete-confirm-cancel" onClick={onClose}>
             Cancel
           </button>
           <button
-            className="btn-alert-primary btn-alert-error"
+            className="delete-confirm-action"
             onClick={onConfirm}
           >
-            Yes, Delete
+            {confirmText}
           </button>
         </div>
       </div>

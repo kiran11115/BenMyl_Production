@@ -31,6 +31,7 @@ import {
   SaveSuccessModal,
   SaveErrorModal,
   AlreadyExistModal,
+  DeleteConfirmModal,
 } from "./SaveTalentAlert";
 
 // ===== ACCORDION ANIMATIONS =====
@@ -794,6 +795,7 @@ const ReviewTalent = () => {
   const [isReviewed, setIsReviewed] = useState(false);
   const [showAlreadyExistModal, setShowAlreadyExistModal] = useState(false);
   const [apiErrorMessage, setApiErrorMessage] = useState("");
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const [pendingReviewCount, setPendingReviewCount] = useState(0);
   const [totalTalentCount, setTotalTalentCount] = useState(0);
@@ -1511,36 +1513,47 @@ const ReviewTalent = () => {
       ],
     }));
 
-  const deleteExperience = (index) => {
-    if (
-      window.confirm("Are you sure you want to delete this experience entry?")
-    ) {
-      setTalent((p) => ({
-        ...p,
-        experience: p.experience.filter((_, i) => i !== index),
-      }));
-    }
+  const openDeleteConfirm = (type, index) => {
+    const copy = {
+      experience: {
+        label: "Experience",
+        message: "Are you sure you want to delete this experience entry?",
+      },
+      projects: {
+        label: "Project",
+        message: "Are you sure you want to delete this project entry?",
+      },
+      education: {
+        label: "Education",
+        message: "Are you sure you want to delete this education entry?",
+      },
+    };
+
+    setPendingDelete({
+      type,
+      index,
+      label: copy[type].label,
+      message: copy[type].message,
+    });
   };
 
-  const deleteProjects = (index) => {
-    if (window.confirm("Are you sure you want to delete this project entry?")) {
-      setTalent((p) => ({
-        ...p,
-        projects: p.projects.filter((_, i) => i !== index),
-      }));
-    }
+  const confirmEntryDelete = () => {
+    if (!pendingDelete) return;
+
+    setTalent((p) => ({
+      ...p,
+      [pendingDelete.type]: p[pendingDelete.type].filter(
+        (_, i) => i !== pendingDelete.index
+      ),
+    }));
+    setPendingDelete(null);
   };
 
-  const deleteEducation = (index) => {
-    if (
-      window.confirm("Are you sure you want to delete this education entry?")
-    ) {
-      setTalent((p) => ({
-        ...p,
-        education: p.education.filter((_, i) => i !== index),
-      }));
-    }
-  };
+  const deleteExperience = (index) => openDeleteConfirm("experience", index);
+
+  const deleteProjects = (index) => openDeleteConfirm("projects", index);
+
+  const deleteEducation = (index) => openDeleteConfirm("education", index);
 
   const smoothStyle = (open) => ({
     maxHeight: open ? 1000 : 0,
@@ -2511,6 +2524,16 @@ const ReviewTalent = () => {
         <AlreadyExistModal
           message={apiErrorMessage}
           onClose={() => setShowAlreadyExistModal(false)}
+        />
+      )}
+
+      {pendingDelete && (
+        <DeleteConfirmModal
+          title={`Delete ${pendingDelete.label}`}
+          message={pendingDelete.message}
+          note={`This action will remove the ${pendingDelete.label.toLowerCase()} entry from this profile. It cannot be undone.`}
+          onClose={() => setPendingDelete(null)}
+          onConfirm={confirmEntryDelete}
         />
       )}
     </div>
