@@ -88,7 +88,10 @@ const JobOverview = () => {
           <button
             type="button"
             className="link-button"
-            onClick={() => navigate("/user/user-projects")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/user-projects`);
+            }}
           >
             <FiArrowLeft /> Back to Projects
           </button>
@@ -104,15 +107,16 @@ const JobOverview = () => {
           </div>
           <button
             className="btn-premium btn-premium-secondary"
-            onClick={() =>
-  navigate("/user/user-post-new-positions", {
-    state: {
-      jobId: job?.jobID,
-      jobData: job,
-      isEdit: true
-    },
-  })
-}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/user-post-new-positions`, {
+                state: {
+                  jobId: job?.jobID,
+                  jobData: job,
+                  isEdit: true
+                },
+              });
+            }}
             style={{
               padding: "8px 16px",
               display: "flex",

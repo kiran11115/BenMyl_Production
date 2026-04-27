@@ -28,14 +28,22 @@ export const SuccessModal = ({ onClose }) => {
                         {/* 2. Apply navigation on button click */}
                         <button
                             className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-talentpool")}
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-talentpool` : `${basePath}/user-talentpool`;
+                                navigate(targetPath);
+                            }}
                         >
                             Find Talent
                         </button>
 
                         <button
                             className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-dashboard")}
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                                navigate(targetPath);
+                            }}
                         >
                             Go to Dashboard
                         </button>

@@ -41,6 +41,7 @@ import CreateProject from "./UserProjects/CreateProject";
 import ProjectDetailsPage from "./UserProjects/ProjectDetailsPage";
 import AdminControlCenter from "./Admin/AdminControlCenter/AdminControlCenter";
 import ComingSoonModule from "./Admin/Modules/ComingSoon";
+import Portal from "./Portal/Portal";
 
 // Admin Module Imports
 import RoleConfiguration from "./Admin/Modules/RoleConfiguration/RoleConfiguration";
@@ -81,6 +82,26 @@ const routes = createBrowserRouter(
           <Route path="automation-panel" element={<AutomationPanel />} />
           <Route path="notification-policy" element={<NotificationPolicy />} />
           <Route path="billing-control" element={<BillingControl />} />
+          <Route path="portal" element={<Portal />} />
+          <Route path="admin-talentpool" element={<TalentPool />} />
+          <Route path="admin-projects" element={<Projects />} />
+          <Route path="admin-jobs" element={<UserJobs />} />
+          <Route path="admin-upload-talent" element={<UploadTalent />} />
+          
+          <Route path="user-talent-profile" element={<TalentProfile />} />
+          <Route path="talent-profile" element={<UploadTalentProfile />} />
+          <Route path="review-talent" element={<ReviewTalent />} />
+          <Route path="project-details/:id" element={<ProjectDetailsPage />} />
+          <Route path="job-overview" element={<JobOverview />} />
+          <Route path="create-project" element={<CreateProject />} />
+          <Route path="user-post-new-positions" element={<PostNewPositions />} />
+          <Route path="user-schedule-interview" element={<ScheduleInterview />} />
+          <Route path="admin-upcoming-interview" element={<UpcomingInterview />} />
+          <Route path="admin-interview-details" element={<InterviewDetails />} />
+          <Route path="admin-messages" element={<Messages />} />
+          <Route path="admin-contract-management" element={<ContractManagement />} />
+          <Route path="admin-contract-view" element={<ContractView />} />
+          <Route path="admin-create-new-contract" element={<CreateNewContract />} />
         </Route>
 
         <Route path="User" element={<Header />}>

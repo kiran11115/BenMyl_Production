@@ -43,9 +43,12 @@ const JobModal = ({ candidate, job, onClose }) => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate("/user/talent-profile", {
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    navigate(`${basePath}/talent-profile`, {
       state: {
-        employeeId: job?.id,
+        employeeID: candidate.id,
+        jobId: job.id,
+        fromJobsOverview: true,
       },
     });
   };
@@ -591,11 +594,15 @@ const JobModal = ({ candidate, job, onClose }) => {
                           //   e.stopPropagation();
                           //   alert(`Viewing profile of ${profile.name}`);
                           // }}
-                          onClick={() => navigate("/user/talent-profile", {
-                            state: {
-                              employeeId: profile?.id,
-                            },
-                          })}
+                          onClick={() => {
+                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                            navigate(`${basePath}/talent-profile`, {
+                              state: {
+                                employeeId: profile.id,
+                                jobId: job.id,
+                              },
+                            });
+                          }}
                           style={{
                             padding: "6px 12px",
                             fontSize: "12px",

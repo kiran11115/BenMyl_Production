@@ -61,7 +61,11 @@ export default function ContractItem({ title, amount, date, status, user, avatar
             <div ref={menuRef} className="action-menu">
               <button
                 className="action-item"
-                onClick={() =>navigate("/user/user-contract-view") }
+                onClick={() => {
+                  const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                  const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-contract-view` : `${basePath}/user-contract-view`;
+                  navigate(targetPath);
+                }}
               >
                 View Contract
               </button>

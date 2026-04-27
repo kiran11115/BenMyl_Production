@@ -269,8 +269,14 @@ const ScheduleInterview = () => {
         <div className="jobs-container no-effects">
 
             <div className="profile-breadcrumb">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Dashboard </button>
-                <button className="link-button" onClick={() => navigate("/user/user-upcoming-interview")}>/ Upcoming Interviews </button>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    navigate(`${basePath}/user-dashboard`);
+                }}><FiArrowLeft /> Dashboard </button>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    navigate(`${basePath}/user-upcoming-interview`);
+                }}>/ Upcoming Interviews </button>
                 <span className="crumb">/ Schedule Interview</span>
             </div>
 
@@ -299,7 +305,10 @@ const ScheduleInterview = () => {
                             <button
                                 className="btn-upload"
                                 style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
-                                onClick={() => navigate("/user/user-post-new-positions")}
+                                onClick={() => {
+                                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                    navigate(`${basePath}/user-post-new-positions`);
+                                }}
                             >
                                 + Create Job
                             </button>
@@ -322,7 +331,10 @@ const ScheduleInterview = () => {
                                 {jobs.length > 0 && (
                                     <button
                                         className="btn-upload"
-                                        onClick={() => navigate("/user/user-talentpool", { state: { jobTitle: selectedJob?.title } })}
+                                        onClick={() => {
+                                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                            navigate(`${basePath}/user-talentpool`, { state: { jobTitle: selectedJob?.title } });
+                                        }}
                                     >
                                         Find Talent
                                     </button>

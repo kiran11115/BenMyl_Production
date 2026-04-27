@@ -55,7 +55,10 @@ export default function ProjectDetailsPage() {
     return (
       <div className="ui-page">
         <div className="profile-breadcrumb d-flex gap-1 mb-4">
-          <button className="link-button" onClick={() => navigate("/user/user-projects")}>
+          <button className="link-button" onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/user-projects`);
+          }}>
             <FiArrowLeft /> Back to Projects
           </button>
         </div>
@@ -85,7 +88,10 @@ export default function ProjectDetailsPage() {
       <div className="detail-page-container">
         {/* Breadcrumb */}
         <div className="profile-breadcrumb d-flex gap-2 mb-3" style={{ fontSize: "13px" }}>
-          <button className="link-button d-flex align-items-center gap-1" onClick={() => navigate("/user/user-projects")} style={{ color: "#f5810c" }}>
+          <button className="link-button d-flex align-items-center gap-1" onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/user-projects`);
+          }} style={{ color: "#f5810c" }}>
             <FiArrowLeft size={13} /> Projects
           </button>
           <span className="crumb">/ {project.title}</span>
@@ -543,11 +549,12 @@ export default function ProjectDetailsPage() {
                             <button
                               className="btn-review"
                               style={{ flex: 1 }}
-                              onClick={() =>
-                                navigate("/user/user-talentpool", {
+                              onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                navigate(`${basePath}/user-talentpool`, {
                                   state: { talentId: member.id },
-                                })
-                              }
+                                });
+                              }}
                             >
                               <FiExternalLink size={12} /> Profile
                             </button>

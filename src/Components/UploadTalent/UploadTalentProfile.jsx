@@ -108,7 +108,9 @@ const RecommendedJobs = ({ navigate, role, skills }) => {
   };
 
   const handleViewMoreJobs = () => {
-    navigate("/user/user-jobs");
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
+    navigate(targetPath);
   };
 
   return (
@@ -1694,7 +1696,11 @@ const UploadTalentProfile = () => {
         <div className="profile-breadcrumb d-flex gap-1">
           <button
             className="link-button"
-            onClick={() => navigate("/user/user-upload-talent")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+              navigate(targetPath);
+            }}
           >
             <FiArrowLeft /> Talent Profile
           </button>
@@ -1933,11 +1939,13 @@ const UploadTalentProfile = () => {
             <div className="sidebar-actions">
               <button
                 className="btn-primary w-100"
-                onClick={() =>
-                  navigate("/user/user-jobs", {
+                onClick={() => {
+                  const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                  const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
+                  navigate(targetPath, {
                     state: { role: profileData?.role },
-                  })
-                }
+                  });
+                }}
               >
                 Find Jobs
               </button>

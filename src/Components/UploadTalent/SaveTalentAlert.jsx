@@ -112,7 +112,11 @@ export const SaveSuccessModal = ({ onClose }) => {
         <div className="alert-footer">
           <button
             className="btn-alert-primary"
-            onClick={() => navigate("/user/user-upload-talent")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+              navigate(targetPath);
+            }}
           >
             Review Profiles
           </button>
@@ -147,11 +151,13 @@ export const AlreadyExistModal = ({ onClose, message }) => {
         <div className="alert-footer">
           <button
             className="btn-alert-primary"
-            onClick={() =>
-              navigate("/user/user-upload-talent", {
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+              navigate(targetPath, {
                 state: { activeTab: "Review" },
-              })
-            }
+              });
+            }}
           >
             View Review Profiles
           </button>

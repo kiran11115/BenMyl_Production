@@ -21,7 +21,11 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
           </h3>
           <button 
             className="border-0 p-0" 
-            onClick={() => navigate("/user/user-projects")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-projects` : `${basePath}/user-projects`;
+              navigate(targetPath);
+            }}
             style={{ 
               textDecoration: "none", 
               background: "none", 
@@ -40,7 +44,11 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
         <div className="d-flex align-items-center gap-2 projects-actions-wrap">
           <button
             className="btn-upload"
-            onClick={() => navigate("/user/user-post-new-positions")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-post-new-positions` : `${basePath}/user-post-new-positions`;
+              navigate(targetPath);
+            }}
           >
             + Create Job
           </button>
@@ -52,7 +60,11 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
 
           <button
             className="btn-upload"
-            onClick={() => navigate("/user/user-upcoming-interview")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
+              navigate(targetPath);
+            }}
             style={{ background: "#f8fafc", color: "#475569", border: "1px solid #e2e8f0" }}
           >
             Schedule Interview

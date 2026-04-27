@@ -231,11 +231,12 @@ useEffect(() => {
           <MobileTalentCard
             key={i}
             talent={talent}
-            onView={() =>
-              navigate("/user/review-talent", {
+            onView={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/review-talent`, {
                 state: { employeeID: talent.employeeID },
               })
-            }
+            }}
             onDelete={() => handleDelete(talent.employeeID)}
           />
         ))}
@@ -401,7 +402,8 @@ useEffect(() => {
                           cursor: "pointer",
                         }}
                         onClick={() => {
-                          navigate("/user/review-talent", {
+                          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                          navigate(`${basePath}/review-talent`, {
                             state: { employeeID: talent.employeeID },
                           });
                         }}

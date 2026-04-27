@@ -193,7 +193,8 @@ export default function CreateProject() {
       "customProjects",
       JSON.stringify([...existing, newProject])
     );
-    navigate("/user/user-projects");
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    navigate(`${basePath}/user-projects`);
   };
 
   /* ──────────────────────────────────────────── */
@@ -204,7 +205,10 @@ export default function CreateProject() {
         <div className="profile-breadcrumb d-flex gap-2 mb-3" style={{ fontSize: "13px" }}>
           <button
             className="link-button d-flex align-items-center gap-1"
-            onClick={() => navigate("/user/user-projects")}
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/user-projects`);
+            }}
             style={{ color: "#f5810c" }}
           >
             <FiArrowLeft size={13} /> Projects
@@ -582,7 +586,10 @@ export default function CreateProject() {
                 <button
                   type="button"
                   className="btn-review"
-                  onClick={() => navigate("/user/user-projects")}
+                  onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    navigate(`${basePath}/user-projects`);
+                  }}
                 >
                   Discard
                 </button>

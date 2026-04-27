@@ -766,9 +766,10 @@ const TalentPool = () => {
 
   const handleProfileClick = (candidate) => {
     const from = location.pathname + location.search;
+    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
 
     navigate(
-      `/user/user-talent-profile?from=${encodeURIComponent(from)}`,
+      `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
       {
         state: {
           employeeID: candidate.id,
@@ -984,6 +985,7 @@ const TalentPool = () => {
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}
                 shortlistedMap={shortlistedMap}
+                onProfileClick={handleProfileClick}
                 hasMore={hasMore}
               />
             )}
@@ -1023,7 +1025,11 @@ const TalentPool = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button
                 style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                onClick={() => navigate("/user/user-schedule-interview", { state: { preSelectedJobId: successJobId } })}
+                onClick={() => {
+                  const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                  const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
+                  navigate(targetPath, { state: { preSelectedJobId: successJobId } });
+                }}
               >
                 Schedule Interview
               </button>

@@ -40,7 +40,10 @@ export default function ProjectsHeader({ activeFilter, onFilterChange }) {
         </div>
 
           <button
-          onClick={() => navigate("/user/user-post-new-positions")}
+          onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/user-post-new-positions`);
+          }}
           className="btn-upload"
           style={{
             background: "#fefefe",
@@ -53,7 +56,10 @@ export default function ProjectsHeader({ activeFilter, onFilterChange }) {
         </button>
 
         <button
-          onClick={() => navigate("/user/create-project")}
+          onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            navigate(`${basePath}/create-project`);
+          }}
           className="btn-upload"
         >
           <FiPlus size={14} />

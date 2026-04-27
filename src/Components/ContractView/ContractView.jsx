@@ -254,8 +254,16 @@ export default function ContractView() {
         <div className="cv-page">
             <div className="cv-container">
                 <div className="cv-breadcrumbs">
-                    <button className="link-button" onClick={() => navigate("/user/user-dashboard")}><FiArrowLeft /> Back to Dashboard</button>
-                    <button className="link-button" onClick={() => navigate("/user/user-contract-management")}><FiArrowLeft /> Contract Management</button>
+                    <button className="link-button" onClick={() => {
+                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                        navigate(targetPath);
+                    }}><FiArrowLeft /> Back to Dashboard</button>
+                    <button className="link-button" onClick={() => {
+                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-contract-management` : `${basePath}/user-contract-management`;
+                        navigate(targetPath);
+                    }}><FiArrowLeft /> Contract Management</button>
                     <span className="crumb">/ Contract View</span>
                 </div>
 

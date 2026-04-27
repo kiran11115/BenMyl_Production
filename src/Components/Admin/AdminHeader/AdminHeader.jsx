@@ -48,7 +48,7 @@ function AdminHeader() {
     // --- Navigation Handlers ---
     const handleViewProfile = () => {
         setIsProfileOpen(false); // Close menu
-        navigate("/admin/admin-profile"); // Navigate to profile page
+        navigate("/Admin/admin-profile"); // Navigate to profile page
     };
 
 
@@ -102,6 +102,7 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
                         {[
+                             { path: "/Admin/portal", label: "Portal" },
                              { path: "/Admin/overview-dashboard", label: "Dashboard" },
                              { path: "/Admin/control-center", label: "Control Center" },
                              { path: "/Admin/admin-profile", label: "Profile" },
@@ -239,7 +240,7 @@ function AdminHeader() {
                                         <User size={16} />
                                         View Profile
                                     </button>
-                                    <button className="popover-item" onClick={() => navigate("/admin/admin-analytics")}>
+                                    <button className="popover-item" onClick={() => navigate("/Admin/admin-analytics")}>
                                         <File size={16} />
                                         Analytics
                                     </button>

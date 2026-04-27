@@ -78,20 +78,26 @@ export const SuccessModal = ({ onClose,data,isEdit }) => {
                         {/* 2. Apply navigation on button click */}
                         <button
                             className="btn-primary w-100"
-                            onClick={() =>
-    navigate("/user/user-talentpool", {
-      state: {
-        jobTitle: data?.jobTitle, // 👈 pass title
-      },
-    })
-  }
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-talentpool` : `${basePath}/user-talentpool`;
+                                navigate(targetPath, {
+                                    state: {
+                                        jobTitle: data?.jobTitle, // 👈 pass title
+                                    },
+                                });
+                            }}
                         >
                             Find Talent
                         </button>
 
                         <button
                             className="btn-primary w-100"
-                            onClick={() => navigate("/user/user-dashboard")}
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                                navigate(targetPath);
+                            }}
                         >
                             Go to Dashboard
                         </button>

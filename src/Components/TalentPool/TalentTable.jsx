@@ -40,7 +40,7 @@ const SortIcon = ({ active, direction }) => {
 // --- Sub-component: Table Row ---
 // Modified to accept shortlist props and render the button in the Action column
 const CandidateRow = memo(
-  ({ candidate, onShortlist, isShortlisted, activeJobId, activeJobColor }) => {
+  ({ candidate, onShortlist, onProfileClick, isShortlisted, activeJobId, activeJobColor }) => {
     const navigate = useNavigate();
     return (
       <tr className="tt-row">
@@ -114,7 +114,7 @@ const CandidateRow = memo(
           </button>
           <button
             className="tt-action-btn"
-            onClick={() => navigate("/user/user-talent-profile?from=%2Fuser%2Fuser-talentpool")}
+            onClick={() => onProfileClick(candidate)}
           >
             <FiEye size={16} />
           </button>
@@ -131,6 +131,7 @@ const TalentTableView = ({
   activeJobId,
   activeJobColor,
   shortlistedMap,
+  onProfileClick,
   hasMore,
 }) => {
   const [sortConfig, setSortConfig] = useState({
@@ -264,6 +265,7 @@ const TalentTableView = ({
                 key={c.id}
                 candidate={c}
                 onShortlist={onShortlist}
+                onProfileClick={onProfileClick}
                 isShortlisted={isShortlisted}
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}

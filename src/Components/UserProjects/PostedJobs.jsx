@@ -236,11 +236,12 @@ const PostedJobs = () => {
 
                 <button
                   className="btn-primary w-100 d-flex gap-2"
-                  onClick={() =>
-                    navigate("/user/job-overview", {
+                  onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    navigate(`${basePath}/job-overview`, {
                       state: { jobId: job.id }, // ✅ pass jobID
-                    })
-                  }
+                    });
+                  }}
                 >
                   <FiEye size={16} /> View Details
                 </button>

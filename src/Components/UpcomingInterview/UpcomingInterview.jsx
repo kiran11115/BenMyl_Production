@@ -255,7 +255,9 @@ export default function UpcomingInterview() {
     }, [selectedDate, activeTab]);
 
     const handleViewDetail = (interview) => {
-        navigate("/user/user-interview-details", { state: { interview } });
+        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-interview-details` : `${basePath}/user-interview-details`;
+        navigate(targetPath, { state: { interview } });
     };
 
     const handleShare = () => {
@@ -294,7 +296,11 @@ export default function UpcomingInterview() {
     return (
         <div className="ui-page">
             <div className="profile-breadcrumb d-flex gap-1 mb-4">
-                <button className="link-button" onClick={() => navigate("/user/user-dashboard")}>
+                <button className="link-button" onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
+                    navigate(targetPath);
+                }}>
                     <FiArrowLeft /> Back to Dashboard
                 </button>
                 <span className="crumb">/ Upcoming Interviews</span>
@@ -307,7 +313,12 @@ export default function UpcomingInterview() {
                 </div>
 
                 <div className="ui-actions">
-                    <button className="btn-upload" onClick={() => navigate("/user/user-schedule-interview")}>
+                    <button className="btn-upload" onClick={() => {
+                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
+                        // Note: Routes.jsx shows user-schedule-interview for both
+                        navigate(targetPath);
+                    }}>
                         <FiPlus /> Add New Interview
                     </button>
                 </div>
