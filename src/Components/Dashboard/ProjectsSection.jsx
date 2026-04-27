@@ -16,7 +16,7 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
       {/* Header Section */}
       <div className="projects-header-row mb-4">
         <div className="d-flex gap-3 align-items-center projects-title-wrap">
-          <h3 className="section-title" style={{ margin: 0, fontSize: "1.25rem" }}>
+          <h3 className="section-title" style={{ margin: 0 }}>
             Ongoing Projects
           </h3>
           <button 
@@ -65,7 +65,6 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading }) => {
               const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
               navigate(targetPath);
             }}
-            style={{ background: "#f8fafc", color: "#475569", border: "1px solid #e2e8f0" }}
           >
             Schedule Interview
           </button>
