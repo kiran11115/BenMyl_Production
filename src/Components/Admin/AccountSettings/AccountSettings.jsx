@@ -36,8 +36,9 @@ export default function AccountSettings() {
 
   // Format team members for the table component
   const formattedTeamMembers = useMemo(() => {
-    if (!Array.isArray(teamApiData)) return [];
-    return teamApiData.map((member) => ({
+    const dataList = Array.isArray(teamApiData) ? teamApiData : (teamApiData?.value || []);
+    if (!dataList.length) return [];
+    return dataList.map((member) => ({
       username: member.name || member.emailID.split("@")[0],
       email: member.emailID,
       role: member.role,
