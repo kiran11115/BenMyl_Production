@@ -730,17 +730,19 @@
 
 /* Force neutral background and remove colorful gradients */
 .stat-card.non-functional,
-.project-card.non-functional {
+.project-card.non-functional,
+.analytics-stat-card-analytics.non-functional,
+.card-premium.non-functional {
   background-image: none !important;
-  background-color: #f1f5f9 !important;
-  /* Neutral light slate */
+  background-color: #f6f7f9 !important;
   border-color: #e2e8f0 !important;
   box-shadow: none !important;
 }
 
 /* Neutralize icon box */
-.non-functional .stat-icon-box {
-  background-color: #94a3b8 !important;
+.non-functional .stat-icon-box,
+.non-functional .analytics-stat-icon-analytics {
+  background-color: #cbd5e1 !important; /* Lighter gray icon box */
   color: #ffffff !important;
   box-shadow: none !important;
 }
@@ -750,50 +752,42 @@
   display: none !important;
 }
 
-/* Make card content dull/greyed out */
-.non-functional>*:not(.coming-soon-badge) {
-  filter: grayscale(1) opacity(0.35) !important;
+/* Make card content extremely dull/greyed out to match screenshot */
+.non-functional > *:not(.coming-soon-badge) {
+  filter: grayscale(0.35) opacity(0.58) !important;
   transition: none !important;
 }
 
-/* Target specific text elements for better readability in gray-scale */
-.non-functional .stat-label,
-.non-functional .card-title,
-.non-functional .stat-value {
-  color: #475569 !important;
-}
-
-.non-functional:hover {
-  transform: none !important;
-  box-shadow: none !important;
-}
-
+/* Shared black badge for all coming-soon cards */
 .coming-soon-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: #334155;
-  /* Dark Slate/Grey */
-  color: #ffffff;
-  /* Pure White */
-  padding: 5px 12px;
+  top: 15px;
+  right: 15px;
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  padding: 6px 14px;
   border-radius: 6px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: 12px; /* Slightly larger */
+  font-weight: 900; /* Bolder */
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   filter: none !important;
+  mix-blend-mode: normal;
 }
 
-/* Ensure parents have position relative for absolute positioning of badge */
 .stat-card,
 .project-card,
-.table-card {
+.table-card,
+.analytics-stat-card-analytics,
+.card-premium {
   position: relative;
 }
+

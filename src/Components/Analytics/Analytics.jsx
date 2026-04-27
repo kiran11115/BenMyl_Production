@@ -37,7 +37,8 @@ export default function Analytics() {
       {/* CHARTS GRID */}
       <div className="row g-4 mb-4">
         <div className="col-lg-8">
-          <div className="card-premium h-100">
+          <div className="card-premium h-100 non-functional">
+            <div className="coming-soon-badge">Coming Soon</div>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 className="card-title-premium m-0"><FiTrendingUp /> Hiring Pipeline Trend</h3>
               <div className="d-flex gap-2">
@@ -51,7 +52,8 @@ export default function Analytics() {
           </div>
         </div>
         <div className="col-lg-4">
-          <div className="card-premium h-100">
+          <div className="card-premium h-100 non-functional">
+            <div className="coming-soon-badge">Coming Soon</div>
             <h3 className="card-title-premium mb-4"><FiUsers /> Source Distribution</h3>
             <div className="analytics-chart-box-analytics" style={{ height: "320px" }}>
               <BudgetPieChart />
@@ -76,7 +78,8 @@ export default function Analytics() {
         </div>
 
         <div className="col-12">
-          <div className="card-premium">
+          <div className="card-premium non-functional">
+            <div className="coming-soon-badge">Coming Soon</div>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 className="card-title-premium m-0"><FiDollarSign /> Monthly Spend by Department</h3>
               <div className="d-flex gap-2">
@@ -91,7 +94,8 @@ export default function Analytics() {
       </div>
 
       {/* DETAILED TABLE */}
-      <section className="card-premium">
+      <section className="card-premium non-functional">
+        <div className="coming-soon-badge">Coming Soon</div>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h3 className="card-title-premium m-0">Department Performance Metrics</h3>
           <div className="text-muted small">Updated 2 hours ago</div>

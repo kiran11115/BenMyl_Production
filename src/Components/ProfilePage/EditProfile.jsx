@@ -7,6 +7,7 @@ import {
   useUpdateRecruiterProfileMutation,
   useGetRecruiterProfileQuery,
 } from "../../State-Management/Api/RecruiterProfileApiSlice";
+import "./EditProfile.css";
 
 
 function EditProfile() {
@@ -395,85 +396,76 @@ function EditProfile() {
 
   /* ================= JSX ================= */
   return (
-    <div className="container" style={{ padding: "2rem 0" }}>
-      <div className="profile-header">
-        <div>
-          <h1 className="section-title mb-1">Edit Profile</h1>
-          <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
-            Update your personal and company information
-          </p>
-        </div>
+    <div className="ep-container">
+      <div className="ep-header-box">
+        <h1>Edit Profile</h1>
+        <p>Update your personal and company information</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="profile-form shadow-sm">
-
+      <form onSubmit={handleSubmit} className="ep-form-body">
         {/* Profile Photo */}
-        <div className="form-section">
-          <h3 className="section-title">Profile Photo</h3>
-          <div className="logo-upload-container">
-            <label className="logo-upload-label">
-              <div className="logo-preview-wrapper">
-                {logoPreview ? (
-                  <>
-                    <img src={logoPreview} alt="Preview" className="logo-preview" />
-                    <button
-                      type="button"
-                      className="logo-remove-btn"
-                      onClick={removeLogo}
-                    >
-                      Remove Photo
-                    </button>
-                  </>
-                ) : (
-                  <div className="logo-placeholder">
-                    <FiImage className="logo-placeholder-icon" />
-                    <p>Click anywhere to upload</p>
-                  </div>
-                )}
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="logo-input"
-              />
-            </label>
+        <div className="ep-section">
+          <span className="ep-section-title">Profile Photo</span>
+          <div className="ep-photo-box">
+            <div className="ep-photo-preview">
+              {logoPreview ? (
+                <img src={logoPreview} alt="Preview" />
+              ) : (
+                <div className="ep-photo-placeholder">
+                  <FiImage size={40} color="#cbd5e1" />
+                </div>
+              )}
+            </div>
+            <div className="d-flex flex-column align-items-center gap-2">
+              <label className="ep-add-exp-btn" style={{ cursor: 'pointer' }}>
+                Change Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+              {logoPreview && (
+                <button type="button" className="ep-remove-btn" onClick={removeLogo}>
+                  Remove Photo
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Personal Information */}
-        <div className="form-section">
-          <h3 className="section-title">Personal Information</h3>
-          <div className="input-grid-2">
-            <div className="auth-group">
-              <label className="auth-label">Full Name<span style={{ color: '#ef4444' }}> *</span></label>
+        <div className="ep-section">
+          <span className="ep-section-title">Personal Information</span>
+          <div className="ep-grid">
+            <div className="ep-group">
+              <label className="ep-label">Full Name<span> *</span></label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
-                className="auth-input text-muted"
+                className="ep-input"
                 disabled
               />
-
               <FormError
                 error={formik.errors.name}
                 touched={formik.touched.name}
               />
             </div>
-            <div className="auth-group">
-              <label className="auth-label">Company Name<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Company Name<span> *</span></label>
               <input
                 type="text"
                 name="companyname"
                 value={formData.companyname}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
-                className="auth-input text-muted"
+                className="ep-input"
                 disabled
               />
-
               <FormError
                 error={formik.errors.companyname}
                 touched={formik.touched.companyname}
@@ -483,48 +475,39 @@ function EditProfile() {
         </div>
 
         {/* Description */}
-        <div className="form-section">
-          <div className="auth-group">
-            <label className="auth-label">Description<span style={{ color: '#ef4444' }}> *</span></label>
+        <div className="ep-section">
+          <div className="ep-group">
+            <label className="ep-label">Description<span> *</span></label>
             <textarea
               name="description"
               rows="4"
               value={formData.description}
               onChange={handleChange}
               onBlur={formik.handleBlur}
-              className="auth-input resize-vertical"
+              className="ep-textarea"
             />
-
             <FormError
               error={formik.errors.description}
               touched={formik.touched.description}
             />
-            <small style={{ float: "right", color: "#64748b" }}>
+            <small style={{ float: "right", color: "#64748b", marginTop: "4px" }}>
               {formData.description.length}/500
             </small>
           </div>
         </div>
 
         {/* Work Experience */}
-        <div className="form-section">
-          <h3 className="section-title">Work Experience</h3>
+        <div className="ep-section">
+          <span className="ep-section-title">Work Experience</span>
 
           {formData.workExperience.map((exp, index) => (
-            <div
-              key={index}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: "10px",
-                padding: "16px",
-                marginBottom: "12px",
-              }}
-            >
-              <div className="input-grid-2">
-                <div className="auth-group">
-                  <label className="auth-label">Role<span style={{ color: '#ef4444' }}> *</span></label>
+            <div key={index} className="ep-exp-item">
+              <div className="ep-grid">
+                <div className="ep-group">
+                  <label className="ep-label">Role<span> *</span></label>
                   <input
                     type="text"
-                    className="auth-input"
+                    className="ep-input"
                     value={exp.role}
                     onChange={(e) =>
                       handleExperienceChange(index, "role", e.target.value)
@@ -533,18 +516,17 @@ function EditProfile() {
                       formik.setFieldTouched(`workExperience.${index}.role`, true)
                     }
                   />
-
                   <FormError
                     error={formik.errors.workExperience?.[index]?.role}
                     touched={formik.touched.workExperience?.[index]?.role}
                   />
                 </div>
 
-                <div className="auth-group">
-                  <label className="auth-label">Company<span style={{ color: '#ef4444' }}> *</span></label>
+                <div className="ep-group">
+                  <label className="ep-label">Company<span> *</span></label>
                   <input
                     type="text"
-                    className="auth-input"
+                    className="ep-input"
                     value={exp.company}
                     onChange={(e) =>
                       handleExperienceChange(index, "company", e.target.value)
@@ -554,12 +536,12 @@ function EditProfile() {
                 </div>
               </div>
 
-              <div className="input-grid-3 mt-2">
-                <div className="auth-group">
-                  <label className="auth-label">Start Year<span style={{ color: '#ef4444' }}> *</span></label>
+              <div className="ep-grid-3 mt-2">
+                <div className="ep-group">
+                  <label className="ep-label">Start Year<span> *</span></label>
                   <input
                     type="number"
-                    className="auth-input"
+                    className="ep-input"
                     value={exp.startYear}
                     onChange={(e) =>
                       handleExperienceChange(index, "startYear", e.target.value)
@@ -568,20 +550,19 @@ function EditProfile() {
                       formik.setFieldTouched(`workExperience.${index}.startYear`, true)
                     }
                   />
-
                   <FormError
                     error={formik.errors.workExperience?.[index]?.startYear}
                     touched={formik.touched.workExperience?.[index]?.startYear}
                   />
                 </div>
 
-                <div className="auth-group">
-                  <label className="auth-label">End Year</label>
+                <div className="ep-group">
+                  <label className="ep-label">End Year</label>
                   {!exp.isCurrent && (
                     <>
                       <input
                         type="number"
-                        className="auth-input"
+                        className="ep-input"
                         value={exp.endYear}
                         onChange={(e) =>
                           handleExperienceChange(index, "endYear", e.target.value)
@@ -590,18 +571,16 @@ function EditProfile() {
                           formik.setFieldTouched(`workExperience.${index}.endYear`, true)
                         }
                       />
-
                       <FormError
                         error={formik.errors.workExperience?.[index]?.endYear}
                         touched={formik.touched.workExperience?.[index]?.endYear}
                       />
                     </>
                   )}
-
                 </div>
 
-                <div className="auth-group" style={{ alignSelf: "end" }}>
-                  <label className="auth-label">
+                <div className="ep-group" style={{ alignSelf: "end" }}>
+                  <label className="ep-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                     <input
                       type="checkbox"
                       checked={exp.isCurrent}
@@ -622,7 +601,7 @@ function EditProfile() {
                 <button
                   type="button"
                   onClick={() => removeExperience(index)}
-                  className="btn-secondary mt-2"
+                  className="ep-remove-btn mt-2"
                 >
                   Remove
                 </button>
@@ -630,52 +609,44 @@ function EditProfile() {
             </div>
           ))}
 
-          <button
-            type="button"
-            onClick={addExperience}
-            className="btn-secondary"
-          >
-            + Add Experience
-          </button>
-
-          <div
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              justifyContent: "space-between",
-              fontWeight: 600,
-            }}
-          >
-            <span style={{ color: "#64748b" }}>Total Experience:</span>
-            <span>{totalExperience} Years</span>
+          <div className="ep-exp-footer">
+            <button
+              type="button"
+              onClick={addExperience}
+              className="ep-add-exp-btn"
+            >
+              + Add Experience
+            </button>
+            <div className="ep-total-exp">
+              <span>Total Experience:</span> {totalExperience} Years
+            </div>
           </div>
         </div>
 
 
         {/* Address */}
-        <div className="form-section">
-          <h3 className="section-title">Address</h3>
-          <div className="input-grid-2">
-            <div className="auth-group">
-              <label className="auth-label">Street Address 1<span style={{ color: '#ef4444' }}> *</span></label>
+        <div className="ep-section">
+          <span className="ep-section-title">Address</span>
+          <div className="ep-grid">
+            <div className="ep-group">
+              <label className="ep-label">Street Address 1<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="headquarters.street1"
                 value={formData.headquarters.street1}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
               />
-
               <FormError
                 error={formik.errors.headquarters?.street1}
                 touched={formik.touched.headquarters?.street1}
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Street Address 2<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Street Address 2<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="headquarters.street2"
                 value={formData.headquarters.street2}
                 onChange={handleChange}
@@ -683,11 +654,11 @@ function EditProfile() {
               />
             </div>
           </div>
-          <div className="input-grid-4">
-            <div className="auth-group">
-              <label className="auth-label">City<span style={{ color: '#ef4444' }}> *</span></label>
+          <div className="ep-grid-4">
+            <div className="ep-group">
+              <label className="ep-label">City<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="headquarters.city"
                 value={formData.headquarters.city}
                 onChange={handleChange}
@@ -695,10 +666,10 @@ function EditProfile() {
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">State<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">State<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="headquarters.state"
                 value={formData.headquarters.state}
                 onChange={handleChange}
@@ -706,10 +677,10 @@ function EditProfile() {
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Postal Code<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Postal Code<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="headquarters.postalCode"
                 value={formData.headquarters.postalCode}
                 onChange={handleChange}
@@ -717,10 +688,10 @@ function EditProfile() {
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Country<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Country<span> *</span></label>
               <select
-                className="auth-input"
+                className="ep-select"
                 name="headquarters.country"
                 value={formData.headquarters.country}
                 onChange={handleChange}
@@ -735,31 +706,29 @@ function EditProfile() {
         </div>
 
         {/* Contact Information */}
-        <div className="form-section">
-          <h3 className="section-title">Contact Information</h3>
-          <div className="input-grid-3">
-            <div className="auth-group">
-              <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
+        <div className="ep-section">
+          <span className="ep-section-title">Contact Information</span>
+          <div className="ep-grid-3">
+            <div className="ep-group">
+              <label className="ep-label">Email<span> *</span></label>
               <input
-                className="auth-input text-muted"
+                className="ep-input"
                 name="contact.email"
                 value={formData.contact.email}
                 onChange={handleChange}
                 onBlur={formik.handleBlur}
                 disabled
               />
-
               <FormError
                 error={formik.errors.contact?.email}
                 touched={formik.touched.contact?.email}
               />
-
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Phone<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Phone<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="contact.phone"
                 value={formData.contact.phone}
                 onChange={handleChange}
@@ -767,10 +736,10 @@ function EditProfile() {
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Linkedin Url<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Linkedin Url<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="contact.linkedinUrl"
                 value={formData.contact.linkedinUrl}
                 onChange={handleChange}
@@ -781,13 +750,13 @@ function EditProfile() {
         </div>
 
         {/* Additional Information */}
-        <div className="form-section">
-          <h3 className="section-title">Additional Information</h3>
-          <div className="input-grid-2">
-            <div className="auth-group">
-              <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
+        <div className="ep-section">
+          <span className="ep-section-title">Additional Information</span>
+          <div className="ep-grid">
+            <div className="ep-group">
+              <label className="ep-label">Job Title<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="additionalInfo.jobTitle"
                 value={formData.additionalInfo.jobTitle}
                 onChange={handleChange}
@@ -795,10 +764,10 @@ function EditProfile() {
               />
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Experience<span style={{ color: '#ef4444' }}> *</span></label>
+            <div className="ep-group">
+              <label className="ep-label">Experience<span> *</span></label>
               <input
-                className="auth-input"
+                className="ep-input"
                 name="additionalInfo.experience"
                 value={formData.additionalInfo.experience}
                 onChange={handleChange}
@@ -807,11 +776,11 @@ function EditProfile() {
             </div>
           </div>
 
-          <div className="input-grid-2 mt-3">
-            <div className="auth-group">
-              <label className="auth-label">Education<span style={{ color: '#ef4444' }}> *</span></label>
+          <div className="ep-grid mt-3">
+            <div className="ep-group">
+              <label className="ep-label">Education<span> *</span></label>
               <select
-                className="auth-input"
+                className="ep-select"
                 name="additionalInfo.education"
                 value={formData.additionalInfo.education}
                 onChange={handleChange}
@@ -824,24 +793,24 @@ function EditProfile() {
               </select>
             </div>
 
-            <div className="auth-group">
-              <label className="auth-label">Referred By *</label>
+            <div className="ep-group">
+              <label className="ep-label">Referred By<span> *</span></label>
               <input
-  className="auth-input text-muted"
-  name="additionalInfo.referredBy"
-  value={formData.additionalInfo.referredBy}
-  disabled
-  placeholder="Referred By"
-/>
+                className="ep-input"
+                name="additionalInfo.referredBy"
+                value={formData.additionalInfo.referredBy}
+                disabled
+                placeholder="Referred By"
+              />
             </div>
           </div>
 
           {/* Languages */}
-          <div className="auth-group mt-3">
-            <label className="auth-label">Languages Spoken *</label>
+          <div className="ep-group mt-3">
+            <label className="ep-label">Languages Spoken<span> *</span></label>
 
             <select
-              className="auth-input"
+              className="ep-select"
               onChange={(e) => {
                 const value = e.target.value;
                 if (!value) return;
@@ -868,25 +837,11 @@ function EditProfile() {
             </select>
 
             {/* Selected language chips */}
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                flexWrap: "wrap",
-                marginTop: "8px",
-              }}
-            >
+            <div className="ep-lang-tags">
               {formData.additionalInfo.languages.map((lang) => (
                 <span
                   key={lang}
-                  style={{
-                    background: "#e0f2fe",
-                    color: "#0284c7",
-                    padding: "4px 10px",
-                    borderRadius: "999px",
-                    fontSize: "12px",
-                    cursor: "pointer",
-                  }}
+                  className="ep-lang-tag"
                   onClick={() =>
                     formik.setFieldValue(
                       "additionalInfo.languages",
@@ -894,7 +849,7 @@ function EditProfile() {
                     )
                   }
                 >
-                  {lang} ✕
+                  {lang} <span className="ep-lang-tag-remove">✕</span>
                 </span>
               ))}
             </div>
@@ -902,28 +857,27 @@ function EditProfile() {
             {/* Validation error */}
             {formik.touched.additionalInfo?.languages &&
               formik.errors.additionalInfo?.languages && (
-                <small style={{ color: "red" }}>
-                  {formik.errors.additionalInfo.languages}
-                </small>
+                <FormError
+                  error={formik.errors.additionalInfo.languages}
+                  touched={formik.touched.additionalInfo.languages}
+                />
               )}
-              <p style={{ color: "#6b7280", fontSize: "12px" }}>Note: you can select multiple languages</p>
+            <p style={{ color: "#6b7280", fontSize: "12px", marginTop: "8px" }}>Note: you can select multiple languages</p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="form-actions">
-          <button type="button" onClick={handleCancel} className="btn-secondary">
-            <FiX /> Cancel
+        <div className="ep-footer">
+          <button type="button" onClick={handleCancel} className="ep-cancel-btn">
+            Cancel
           </button>
           <button
             type="submit"
-            className="btn-primary d-flex gap-1"
+            className="ep-save-btn"
             disabled={isSaving || !formik.isValid}
           >
-            <FiSave />
             {isSaving ? "Saving..." : "Save Changes"}
           </button>
-
         </div>
       </form>
     </div>

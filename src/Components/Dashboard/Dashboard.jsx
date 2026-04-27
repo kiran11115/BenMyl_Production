@@ -284,7 +284,7 @@ const Dashboard = () => {
 
         {/* RIGHT COLUMN: Charts & Interviews */}
         <div className="dashboard-column-side">
-          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column">
+          <div id="dashboard-charts-area" className="gap-3 d-flex flex-column non-functional">
             <HiringPipelineChart
               data={pipelineLineData}
               tooltipTheme={tooltipTheme}
