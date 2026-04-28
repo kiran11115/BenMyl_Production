@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiCheck, FiFileText, FiArrowLeft } from "react-icons/fi";
+import { FiX, FiCheck, FiFileText } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 /**
