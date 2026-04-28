@@ -1500,3 +1500,115 @@ p.muted {
   padding: 0;
   font-size: 14px;
 }
+
+/* Submission error modal */
+.alert-card.submission-error-card {
+  width: min(460px, calc(100vw - 40px));
+  min-height: 312px;
+  padding: 42px 42px 36px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff5f5;
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.22);
+  overflow: visible;
+}
+
+.alert-card.submission-error-card::before {
+  content: none;
+}
+
+.submission-error-card .alert-close-icon {
+  top: 38px;
+  right: 31px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  border: 0;
+  background: transparent;
+}
+
+.submission-error-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 40px 26px 0;
+}
+
+.submission-error-header .alert-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f43434;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  font-size: 25px;
+}
+
+.submission-error-header .alert-title {
+  margin: 0;
+  color: #9f1239;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.submission-error-body .alert-message {
+  margin: 0 0 19px;
+  color: #1f3a5a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.submission-error-list-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #1f3a5a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.submission-error-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.submission-error-list li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+  color: #536b8f;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.submission-error-list li span {
+  display: inline-flex;
+  color: #f43434;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 576px) {
+  .alert-card.submission-error-card {
+    min-height: auto;
+    padding: 34px 24px 30px;
+    border-radius: 16px;
+  }
+
+  .submission-error-card .alert-close-icon {
+    top: 26px;
+    right: 20px;
+  }
+
+  .submission-error-header {
+    margin-right: 32px;
+  }
+}

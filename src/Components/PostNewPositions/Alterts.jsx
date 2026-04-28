@@ -12,36 +12,29 @@ export const SubmissionErrorModal = ({
 }) => {
     return (
         <div className="modal-overlay">
-            <div className="alert-card error-theme">
+            <div className="alert-card error-theme submission-error-card">
                 <button className="alert-close-icon" onClick={onClose}><FiX /></button>
 
-                <div className="alert-content">
-                    <div className="icon-circle error-icon-bg">
-                        <FiX className="icon-main" />
+                <div className="submission-error-header">
+                    <div className="alert-icon-wrapper">
+                        <FiX />
                     </div>
-
                     <h3 className="alert-title">Submission Error</h3>
+                </div>
+
+                <div className="submission-error-body">
                     <p className="alert-message">
                         Your application could not be submitted at this time.
                         Please review the form for any errors.
                     </p>
 
-                    <div className="error-list-container">
-                        <span className="error-list-label">Common issues to check:</span>
-                        <ul className="error-list">
-                            <li><span className="bullet-icon"><FiFileText /></span> Missing required fields</li>
-                            <li><span className="bullet-icon"><FiFileText /></span> Incorrect file format</li>
-                            <li><span className="bullet-icon"><FiFileText /></span> Server error</li>
+                    <div className="submission-error-list-container">
+                        <span className="submission-error-list-label">Common issues to check:</span>
+                        <ul className="submission-error-list">
+                            <li><span><FiFileText /></span> Missing required fields</li>
+                            <li><span><FiFileText /></span> Incorrect file format</li>
+                            <li><span><FiFileText /></span> Server error</li>
                         </ul>
-                    </div>
-
-                    <div className="link-button">
-                        <button className="btn-alert-primary error-btn" onClick={onRetry}>
-                            Try Again
-                        </button>
-                        <button className="btn-alert-text error-text-btn" onClick={onContactSupport}>
-                            Contact Support
-                        </button>
                     </div>
                 </div>
             </div>

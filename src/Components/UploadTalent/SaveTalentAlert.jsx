@@ -1,5 +1,5 @@
 import React from "react";
-import { FiX, FiCheck, FiAlertTriangle, FiTrash2 } from "react-icons/fi";
+import { FiX, FiCheck, FiAlertTriangle, FiTrash2, FiFileText } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 export const ValidationErrorModal = ({
@@ -9,19 +9,19 @@ export const ValidationErrorModal = ({
 }) => {
   return (
     <div className="modal-overlay">
-      <div className="alert-card error-theme">
+      <div className="alert-card error-theme submission-error-card">
         <button className="alert-close-icon" onClick={onClose}>
           <FiX size={20} />
         </button>
 
-        <div className="alert-header">
+        <div className="submission-error-header">
           <div className="alert-icon-wrapper">
             <FiX />
           </div>
           <h3 className="alert-title">Submission Error</h3>
         </div>
 
-        <div className="alert-body"
+        <div className="submission-error-body validation-error-body"
           style={{
             maxHeight: "300px",   // 👈 control height
             overflowY: "auto",    // 👈 enable scroll
@@ -29,10 +29,10 @@ export const ValidationErrorModal = ({
           }}>
           <div className="alert-message">
             {Array.isArray(errors) ? (
-              <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
+              <ul className="submission-error-list validation-error-list">
                 {errors.map((err, idx) => (
-                  <li key={idx} style={{ marginBottom: "6px" }}>
-                    • {err}
+                  <li key={idx}>
+                    <span><FiFileText size={14} /></span> {err}
                   </li>
                 ))}
               </ul>

@@ -13,32 +13,32 @@ export const SubmissionErrorModal = ({
 }) => {
     return (
         <div className="modal-overlay">
-            <div className="alert-card error-theme">
+            <div className="alert-card error-theme submission-error-card">
                 <button className="alert-close-icon" onClick={onClose}><FiX size={20} /></button>
 
-                <div className="alert-header">
+                <div className="submission-error-header">
                     <div className="alert-icon-wrapper">
                         <FiX />
                     </div>
                     <h3 className="alert-title">Submission Error</h3>
                 </div>
 
-                <div className="alert-body">
+                <div className="submission-error-body">
                     <p className="alert-message">
                         {message || "Your application could not be submitted at this time. Please review the form for any errors."}
                     </p>
 
-                    <div className="alert-list-container" style={{ marginTop: "16px" }}>
-                        <span className="alert-list-label" style={{ fontWeight: 600, color: "#475569", fontSize: "13px" }}>Common issues to check:</span>
-                        <ul className="alert-list" style={{ listStyle: "none", padding: 0, marginTop: "8px" }}>
-                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
-                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Missing required fields
+                    <div className="submission-error-list-container">
+                        <span className="submission-error-list-label">Common issues to check:</span>
+                        <ul className="submission-error-list">
+                            <li>
+                                <span><FiFileText size={14} /></span> Missing required fields
                             </li>
-                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
-                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Incorrect file format
+                            <li>
+                                <span><FiFileText size={14} /></span> Incorrect file format
                             </li>
-                            <li style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#64748b", marginBottom: "6px" }}>
-                                <span style={{ color: "#ef4444", display: "flex" }}><FiFileText size={14} /></span> Server error
+                            <li>
+                                <span><FiFileText size={14} /></span> Server error
                             </li>
                         </ul>
                     </div>
