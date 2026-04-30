@@ -195,12 +195,13 @@ const Messages = () => {
 
       showDate: true,
     }));
-  }, [messagesApiData, selectedConversationId, messagesFetching, userId]);
+  }, [messagesApiData, selectedConversationId, messagesLoading, userId]);
 
   /* Merge API messages + any locally typed (unsent) messages */
   const localSent = messagesByConversation[selectedId] || EMPTY_MESSAGES;
-  const currentMessages =
-    apiMessages.length > 0 ? [...apiMessages, ...localSent] : localSent;
+  const currentMessages = useMemo(() => {
+    return apiMessages.length > 0 ? [...apiMessages, ...localSent] : localSent;
+  }, [apiMessages, localSent]);
 
   /* Clear local optimistic messages when the API polls and provides the authoritative list, to prevent duplicates */
   useEffect(() => {
@@ -224,10 +225,12 @@ const Messages = () => {
         c.role.toLowerCase().includes(search.toLowerCase())
     );
 
+  const currentMessagesCount = currentMessages.length;
   useEffect(() => {
-    if (chatBodyRef.current)
+    if (chatBodyRef.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-  }, [currentMessages, selectedId]);
+    }
+  }, [currentMessagesCount, selectedId]);
 
   /* Auto-select first conversation when tab or data changes */
   useEffect(() => {
