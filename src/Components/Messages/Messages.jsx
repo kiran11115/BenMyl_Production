@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   FiSearch,
   FiEdit,
@@ -10,6 +10,14 @@ import {
   FiChevronLeft,
 } from "react-icons/fi";
 import "./Messages.css";
+import {
+  useChatListDetailsQuery,
+  useChatUsersListQuery,
+  useChatMessagesQuery,
+  useStartConversationMutation,
+  useSendMessageMutation,
+} from "../../State-Management/Api/ChatApiSlice";
+import { startConnection, getConnection } from "./SignalRService";
 
 /* ── Google Font ── */
 if (!document.getElementById("msg-inter-font")) {
@@ -21,125 +29,57 @@ if (!document.getElementById("msg-inter-font")) {
   document.head.appendChild(link);
 }
 
-/* ── Data ── */
-const conversations = [
-  {
-    id: 3,
-    name: "Venugopal Nallana",
-    avatar: "VN",
-    avatarColor: "#1e293b",
-    preview: "You: Sent an image",
-    time: "24:02",
-    unread: 0,
-    online: false,
-    domain: "sameDomain",
-    role: "Bench Sales",
-  },
-  {
-    id: 4,
-    name: "Harry",
-    avatar: "H",
-    avatarColor: "#0284c7",
-    preview: "You: ok ok",
-    time: "11:02",
-    unread: 0,
-    online: true,
-    domain: "nonDomain",
-    role: "Recruiter",
-  },
-  {
-    id: 5,
-    name: "Sample Group",
-    avatar: "SG",
-    avatarColor: "#16a34a",
-    preview: "mournika: Event cancelled: sample",
-    time: "02-12-2025",
-    unread: 0,
-    online: false,
-    domain: "sameDomain",
-    role: "Team Lead",
-  },
-  {
-    id: 6,
-    name: "Ashok KDM",
-    avatar: "AK",
-    avatarColor: "#0891b2",
-    preview: "No messages yet",
-    time: "14-11-2025",
-    unread: 0,
-    online: false,
-    domain: "nonDomain",
-    role: "Hiring Manager",
-  },
-  {
-    id: 7,
-    name: "KiranBenerjee Pentakota",
-    avatar: "KB",
-    avatarColor: "#7c3aed",
-    preview: "You: Sent a file",
-    time: "14-11-2025",
-    unread: 0,
-    online: false,
-    domain: "sameDomain",
-    role: "Bench Sales",
-  },
-  {
-    id: 8,
-    name: "Mohan Rao",
-    avatar: "MR",
-    avatarColor: "#dc2626",
-    preview: "You: link click chasi download chasey",
-    time: "11-11-2025",
-    unread: 0,
-    online: false,
-    domain: "nonDomain",
-    role: "Recruiter",
-  },
-  {
-    id: 9,
-    name: "Gnana Reddy",
-    avatar: "GR",
-    avatarColor: "#16a34a",
-    preview: "You: Gnana bro",
-    time: "04-10-2025",
-    unread: 0,
-    online: false,
-    domain: "sameDomain",
-    role: "Account Manager",
-  },
-  {
-    id: 10,
-    name: "Rishav",
-    avatar: "R",
-    avatarColor: "#ea580c",
-    preview: "You: Sent a file",
-    time: "29-08-2025",
-    unread: 0,
-    online: false,
-    domain: "sameDomain",
-    role: "Delivery Lead",
-  },
-  {
-    id: 11,
-    name: "Ganesh Vaddlashi",
-    avatar: "GV",
-    avatarColor: "#0891b2",
-    preview: "No messages yet",
-    time: "12-08-2025",
-    unread: 0,
-    online: false,
-    domain: "nonDomain",
-    role: "Bench Sales",
-  },
+/* ── Helpers ── */
+const AVATAR_COLORS = [
+  "#1e293b", "#0284c7", "#16a34a", "#0891b2",
+  "#7c3aed", "#dc2626", "#ea580c", "#9333ea",
+  "#0f766e", "#b45309",
 ];
 
-const initialMessagesByConversation = {};
+/** Get initials from a full name */
+const getInitials = (name = "") => {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+};
 
+/** Pick a deterministic colour based on string hash */
+const pickColor = (str = "") => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+};
+
+/** Extract domain from an email string */
+const emailDomain = (email = "") => (email.split("@")[1] || "").toLowerCase();
+
+/** Map a raw API user object → conversation shape used by the UI */
+const mapUser = (user, index) => {
+  const name =
+    user.FullName ?? user.fullName ?? user.UserName ?? user.userName ?? user.name ?? "Unknown";
+  const email = (user.EmailID ?? user.Email ?? user.email ?? "").toLowerCase();
+  const role = user.Role ?? user.role ?? user.designation ?? "";
+  const id = user.AuthInfoId ?? user.userId ?? user.id ?? index;
+  return {
+    id,
+    name: name.trim(),
+    email,
+    avatar: getInitials(name),
+    avatarColor: pickColor(email || name || String(index)),
+    preview: user.lastMessage ?? user.LastMessage ?? "No messages yet",
+    time: user.lastMessageTime ?? user.LastMessageTime ?? "",
+    unread: user.unreadCount ?? user.UnreadCount ?? 0,
+    online: user.isOnline ?? user.IsOnline ?? false,
+    role,
+  };
+};
+
+const initialMessagesByConversation = {};
 const EMPTY_MESSAGES = [];
 
 /* ── Component ── */
 const Messages = () => {
-  const [selectedId, setSelectedId] = useState(3);
+  const [selectedId, setSelectedId] = useState(null);
   const [messagesByConversation, setMessagesByConversation] = useState(
     initialMessagesByConversation
   );
@@ -151,8 +91,127 @@ const Messages = () => {
   const [mobileView, setMobileView] = useState("list"); // "list" or "chat"
   const chatBodyRef = useRef(null);
 
+  /* ── userId from localStorage (stored at login as response.userid) ── */
+  const userId = useMemo(() => localStorage.getItem("CompanyId") ?? "", []);
+
+  const [startConversation] = useStartConversationMutation();
+  const [sendMessage] = useSendMessageMutation();
+
+  useEffect(() => {
+    if (userId) {
+      startConnection(userId);
+    }
+  }, [userId]);
+
+  /* ── API 1: GET /api/Chat/chat-users → all users for sidebar ── */
+  const { data: chatData, isLoading, isError } = useChatListDetailsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  /* ── API 2: GET api/Chat/chat-list/{userId} → logged-in user's chat list with conversationId ── */
+  const { data: chatUsersListData } = useChatUsersListQuery(userId, {
+    skip: !userId,
+    refetchOnMountOrArgChange: true,
+  });
+
+  /* Build lookup: userId → conversationId from API 2 response */
+  const conversationIdMap = useMemo(() => {
+    const raw =
+      chatUsersListData?.data ??
+      chatUsersListData?.users ??
+      (Array.isArray(chatUsersListData) ? chatUsersListData : []);
+    return raw.reduce((acc, entry) => {
+      const uid = String(
+        entry.AuthInfoId ?? entry.userId ?? entry.UserId ?? entry.id ?? ""
+      );
+      const cid =
+        entry.ConversationId ??
+        entry.conversationId ??
+        entry.conversation_id ??
+        null;
+      if (uid && cid) acc[uid] = cid;
+      return acc;
+    }, {});
+  }, [chatUsersListData]);
+
+  /* ── Logged-in user domain from localStorage ── */
+  const loggedInDomain = useMemo(() => {
+    const email = localStorage.getItem("Email") ?? "";
+    return emailDomain(email);
+  }, []);
+
+  /* ── Map API data → conversations list with domain tag ── */
+  const conversations = useMemo(() => {
+    const raw = chatData?.data ?? chatData?.users ?? chatData ?? [];
+    if (!Array.isArray(raw)) return [];
+    return raw.map((user, i) => {
+      const mapped = mapUser(user, i);
+      const userDomain = emailDomain(mapped.email);
+      const isSame =
+        loggedInDomain !== "" && userDomain !== "" && userDomain === loggedInDomain;
+      return { ...mapped, domain: isSame ? "sameDomain" : "nonDomain" };
+    });
+  }, [chatData, loggedInDomain]);
+
   const currentConversation = conversations.find((c) => c.id === selectedId);
-  const currentMessages = messagesByConversation[selectedId] || EMPTY_MESSAGES;
+
+  /* conversationId for the selected contact (from API 2 lookup map) */
+  const selectedConversationId = selectedId
+    ? (conversationIdMap[String(selectedId)] ?? null)
+    : null;
+
+  /* ── API 3: GET api/Chat/messages/{conversationId} → right-panel messages ── */
+  const {
+    data: messagesApiData,
+    isLoading: messagesLoading,
+    isFetching: messagesFetching,
+  } = useChatMessagesQuery(selectedConversationId, {
+    skip: !selectedConversationId,
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 3000, 
+  });
+
+  /* Map API 3 response → UI message shape */
+  const apiMessages = useMemo(() => {
+    // Prevent stale messages from the previous chat from showing while loading the new one,
+    // or if the selected user doesn't have a conversation yet.
+    if (!selectedConversationId || messagesLoading) {
+      return [];
+    }
+
+    const raw =
+      messagesApiData?.data ??
+      messagesApiData?.messages ??
+      (Array.isArray(messagesApiData) ? messagesApiData : []);
+
+    return raw.map((m) => ({
+      id: m.id ?? Math.random(), // ✅ FIXED
+
+      from: String(m.SenderId) === String(userId) ? "me" : "them",
+
+      text: m.Message || "", // ✅ FIXED (exact field)
+
+      date: m.CreatedAt || "",
+
+      showDate: true,
+    }));
+  }, [messagesApiData, selectedConversationId, messagesFetching, userId]);
+
+  /* Merge API messages + any locally typed (unsent) messages */
+  const localSent = messagesByConversation[selectedId] || EMPTY_MESSAGES;
+  const currentMessages =
+    apiMessages.length > 0 ? [...apiMessages, ...localSent] : localSent;
+
+  /* Clear local optimistic messages when the API polls and provides the authoritative list, to prevent duplicates */
+  useEffect(() => {
+    if (apiMessages.length > 0) {
+      setMessagesByConversation((prev) => {
+        if (!prev[selectedId] || prev[selectedId].length === 0) return prev;
+        return { ...prev, [selectedId]: [] };
+      });
+    }
+  }, [apiMessages, selectedId]);
+
   const isPublicTab = domainTab === "nonDomain";
   const isAcceptedPublicChat = Boolean(acceptedPublicChats[selectedId]);
 
@@ -170,12 +229,13 @@ const Messages = () => {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
   }, [currentMessages, selectedId]);
 
+  /* Auto-select first conversation when tab or data changes */
   useEffect(() => {
-    const firstConversation = conversations.find((c) => c.domain === domainTab);
-    if (firstConversation) {
-      setSelectedId(firstConversation.id);
+    const firstInTab = conversations.find((c) => c.domain === domainTab);
+    if (firstInTab && selectedId === null) {
+      setSelectedId(firstInTab.id);
     }
-  }, [domainTab]);
+  }, [conversations, domainTab]); // eslint-disable-line
 
   useEffect(() => {
     if (filtered.length > 0 && !filtered.some((c) => c.id === selectedId)) {
@@ -183,7 +243,13 @@ const Messages = () => {
     }
   }, [filtered, selectedId]);
 
-  const handleSend = (e) => {
+  /* Tab switch → reset selection */
+  const handleTabChange = (tab) => {
+    setDomainTab(tab);
+    setSelectedId(null);
+  };
+
+  const handleSend = async (e) => {
     e.preventDefault();
     const text = inputValue.trim();
     if (!text) return;
@@ -194,6 +260,28 @@ const Messages = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+    try {
+      let currentConvId = selectedConversationId;
+
+      if (!currentConvId && userId && selectedId) {
+        // user1 is the logged-in user, user2 is the selected contact
+        const startRes = await startConversation({ user1: userId, user2: selectedId }).unwrap();
+        // Extract conversationId from response
+        currentConvId = startRes?.ConversationId || startRes?.conversationId || startRes?.id || startRes;
+      }
+
+      if (currentConvId && userId) {
+        await sendMessage({
+          conversationId: currentConvId,
+          senderId: userId,
+          message: text,
+        }).unwrap();
+      }
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
+
     setMessagesByConversation((prev) => ({
       ...prev,
       [selectedId]: [
@@ -203,6 +291,51 @@ const Messages = () => {
     }));
     setInputValue("");
   };
+
+  useEffect(() => {
+    let conn;
+
+    if (userId) {
+      startConnection(userId).then((connection) => {
+        conn = connection;
+
+        connection.off("ReceiveMessage");
+        connection.off("MessageSent");
+
+        const handleMessage = (msg) => {
+          console.log("📩 Real-time:", msg);
+
+          if (msg.conversationId !== selectedConversationId) return;
+
+          setMessagesByConversation((prev) => ({
+            ...prev,
+            [selectedId]: [
+              ...(prev[selectedId] || []),
+              {
+                id: msg.msgId,
+                from:
+                  String(msg.senderId) === String(userId)
+                    ? "me"
+                    : "them",
+                text: msg.message,
+                date: new Date().toLocaleString(),
+              },
+            ],
+          }));
+        };
+
+        connection.on("ReceiveMessage", handleMessage);
+        connection.on("MessageSent", handleMessage);
+      });
+    }
+
+    return () => {
+      if (conn) {
+        conn.off("ReceiveMessage");
+        conn.off("MessageSent");
+      }
+    };
+  }, [userId, selectedConversationId]);
 
   const handleAcceptPublicChat = () => {
     setAcceptedPublicChats((prev) => ({
@@ -245,15 +378,25 @@ const Messages = () => {
             <div className="tms-domain-tabs">
               <button
                 className={`tms-domain-tab ${domainTab === "sameDomain" ? "tms-tab-active" : ""}`}
-                onClick={() => setDomainTab("sameDomain")}
+                onClick={() => handleTabChange("sameDomain")}
               >
                 Team
+                {!isLoading && (
+                  <span className="tms-tab-count">
+                    {conversations.filter((c) => c.domain === "sameDomain").length}
+                  </span>
+                )}
               </button>
               <button
                 className={`tms-domain-tab ${domainTab === "nonDomain" ? "tms-tab-active" : ""}`}
-                onClick={() => setDomainTab("nonDomain")}
+                onClick={() => handleTabChange("nonDomain")}
               >
                 Public
+                {!isLoading && (
+                  <span className="tms-tab-count">
+                    {conversations.filter((c) => c.domain === "nonDomain").length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -271,7 +414,19 @@ const Messages = () => {
 
           {/* Contact list */}
           <div className="tms-contact-list">
-            {filtered.map((c) => {
+            {isLoading && (
+              <div className="tms-empty">
+                <span className="tms-loading-spinner" /> Loading chats…
+              </div>
+            )}
+
+            {isError && !isLoading && (
+              <div className="tms-empty tms-empty-error">
+                Failed to load chats. Please try again.
+              </div>
+            )}
+
+            {!isLoading && !isError && filtered.map((c) => {
               const active = selectedId === c.id;
               return (
                 <div
@@ -309,12 +464,11 @@ const Messages = () => {
                       <span className="tms-unread-badge">{c.unread}</span>
                     )}
                   </button>
-
                 </div>
               );
             })}
 
-            {filtered.length === 0 && (
+            {!isLoading && !isError && filtered.length === 0 && (
               <div className="tms-empty">No chats found</div>
             )}
           </div>
@@ -328,8 +482,8 @@ const Messages = () => {
           {/* Chat Header */}
           <header className="tms-chat-header">
             <div className="tms-chat-header-left">
-              <button 
-                className="tms-back-btn" 
+              <button
+                className="tms-back-btn"
                 onClick={() => setMobileView("list")}
                 title="Back to list"
               >
@@ -397,7 +551,14 @@ const Messages = () => {
               </div>
             )}
 
-            {currentMessages.map((msg, index) => {
+            {/* Messages loading (API 3) */}
+            {messagesLoading && selectedConversationId && (
+              <div className="tms-empty">
+                <span className="tms-loading-spinner" /> Loading messages…
+              </div>
+            )}
+
+            {!messagesLoading && currentMessages.map((msg, index) => {
               const isMe = msg.from === "me";
               const showDate = msg.showDate || index === 0;
 

@@ -892,3 +892,50 @@
 .tms-back-btn {
   display: none;
 }
+
+/* ── Tab count badge ── */
+.tms-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  margin-left: 5px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  vertical-align: middle;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tms-tab-active .tms-tab-count {
+  background: #f5810c;
+  color: #ffffff;
+}
+
+/* ── Loading spinner ── */
+.tms-loading-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #f5810c;
+  border-radius: 50%;
+  animation: tms-spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes tms-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error state ── */
+.tms-empty-error {
+  color: #ef4444;
+  font-size: 12px;
+  padding: 24px 16px;
+}
