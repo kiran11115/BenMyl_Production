@@ -60,13 +60,17 @@ const mapUser = (user, index) => {
   const email = (user.EmailID ?? user.Email ?? user.email ?? "").toLowerCase();
   const role = user.Role ?? user.role ?? user.designation ?? "";
   const id = user.AuthInfoId ?? user.userId ?? user.id ?? index;
+
+  const rawMsg = user.lastMessage ?? user.LastMessage;
+
   return {
     id,
     name: name.trim(),
     email,
     avatar: getInitials(name),
     avatarColor: pickColor(email || name || String(index)),
-    preview: user.lastMessage ?? user.LastMessage ?? "No messages yet",
+    preview: rawMsg || "",
+    hasMessaged: !!rawMsg,
     time: user.lastMessageTime ?? user.LastMessageTime ?? "",
     unread: user.unreadCount ?? user.UnreadCount ?? 0,
     online: user.isOnline ?? user.IsOnline ?? false,
@@ -105,17 +109,18 @@ const Messages = () => {
 
   /* ── API 1: GET /api/Chat/chat-users → all users for sidebar ── */
   const { data: chatData, isLoading, isError } = useChatListDetailsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: true
   });
 
   /* ── API 2: GET api/Chat/chat-list/{userId} → logged-in user's chat list with conversationId ── */
-  const { data: chatUsersListData } = useChatUsersListQuery(userId, {
+  const { data: chatUsersListData, refetch: refetchChatUsersList } = useChatUsersListQuery(userId, {
     skip: !userId,
     refetchOnMountOrArgChange: true,
+    pollingInterval: 3000,
   });
 
-  /* Build lookup: userId → conversationId from API 2 response */
-  const conversationIdMap = useMemo(() => {
+  /* Build lookup: userId → chat info from API 2 response */
+  const chatUsersListMap = useMemo(() => {
     const raw =
       chatUsersListData?.data ??
       chatUsersListData?.users ??
@@ -124,12 +129,7 @@ const Messages = () => {
       const uid = String(
         entry.AuthInfoId ?? entry.userId ?? entry.UserId ?? entry.id ?? ""
       );
-      const cid =
-        entry.ConversationId ??
-        entry.conversationId ??
-        entry.conversation_id ??
-        null;
-      if (uid && cid) acc[uid] = cid;
+      if (uid) acc[uid] = entry;
       return acc;
     }, {});
   }, [chatUsersListData]);
@@ -145,19 +145,35 @@ const Messages = () => {
     const raw = chatData?.data ?? chatData?.users ?? chatData ?? [];
     if (!Array.isArray(raw)) return [];
     return raw.map((user, i) => {
-      const mapped = mapUser(user, i);
+      const uid = String(user.AuthInfoId ?? user.userId ?? user.id ?? i);
+      const extraInfo = chatUsersListMap[uid] || {};
+
+      const mapped = mapUser({ ...user, ...extraInfo }, i);
+
+      // Instantly apply local messages to the sidebar
+      const localMsgs = messagesByConversation[uid];
+      if (localMsgs && localMsgs.length > 0) {
+        const lastMsg = localMsgs[localMsgs.length - 1];
+        mapped.preview = lastMsg.text;
+        mapped.hasMessaged = true;
+        mapped.time = lastMsg.dateLabel || lastMsg.date || mapped.time;
+      }
+
       const userDomain = emailDomain(mapped.email);
       const isSame =
         loggedInDomain !== "" && userDomain !== "" && userDomain === loggedInDomain;
       return { ...mapped, domain: isSame ? "sameDomain" : "nonDomain" };
     });
-  }, [chatData, loggedInDomain]);
+  }, [chatData, loggedInDomain, chatUsersListMap, messagesByConversation]);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
 
   /* conversationId for the selected contact (from API 2 lookup map) */
   const selectedConversationId = selectedId
-    ? (conversationIdMap[String(selectedId)] ?? null)
+    ? (chatUsersListMap[String(selectedId)]?.ConversationId ??
+      chatUsersListMap[String(selectedId)]?.conversationId ??
+      chatUsersListMap[String(selectedId)]?.conversation_id ??
+      null)
     : null;
 
   /* ── API 3: GET api/Chat/messages/{conversationId} → right-panel messages ── */
@@ -168,7 +184,7 @@ const Messages = () => {
   } = useChatMessagesQuery(selectedConversationId, {
     skip: !selectedConversationId,
     refetchOnMountOrArgChange: true,
-    pollingInterval: 3000, 
+    pollingInterval: 3000,
   });
 
   /* Map API 3 response → UI message shape */
@@ -280,6 +296,7 @@ const Messages = () => {
           senderId: userId,
           message: text,
         }).unwrap();
+        refetchChatUsersList();
       }
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -307,6 +324,8 @@ const Messages = () => {
 
         const handleMessage = (msg) => {
           console.log("📩 Real-time:", msg);
+
+          refetchChatUsersList();
 
           if (msg.conversationId !== selectedConversationId) return;
 
@@ -338,7 +357,7 @@ const Messages = () => {
         conn.off("MessageSent");
       }
     };
-  }, [userId, selectedConversationId]);
+  }, [userId, selectedConversationId, refetchChatUsersList]);
 
   const handleAcceptPublicChat = () => {
     setAcceptedPublicChats((prev) => ({
@@ -460,7 +479,11 @@ const Messages = () => {
                         <span className="tms-contact-name">{c.name}</span>
                         {c.time && <span className="tms-contact-time">{c.time}</span>}
                       </div>
-                      <span className="tms-contact-role">{c.role}</span>
+                      {c.hasMessaged ? (
+                        <span className="tms-contact-preview">{c.preview}</span>
+                      ) : (
+                        <span className="tms-contact-role">{c.role}</span>
+                      )}
                     </div>
 
                     {c.unread > 0 && (
