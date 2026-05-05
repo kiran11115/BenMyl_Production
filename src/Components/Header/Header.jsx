@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MobileBottomNav from "./MobileBottomNav";
 import MobileTopBar from "./MobileTopBar";
+import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
 
 
 function Header() {
@@ -29,6 +30,18 @@ function Header() {
     useGetRecruiterProfileQuery(Number(userId), {
       skip: !userId,
     });
+
+  const { hasPermission, isLoading: isPermLoading } = usePermissions();
+
+  const navLinks = [
+    { path: "/user/user-dashboard", label: "Dashboard", module: "Main Dashboard" },
+    { path: "/user/user-talentpool", label: "Talent Pool", module: "Talent Pool" },
+    { path: "/user/user-projects", label: "Projects", module: "Projects" },
+    { path: "/user/user-jobs", label: "Find Jobs", module: "Job Management" },
+    { path: "/user/user-upload-talent", label: "Talent Management", module: "Talent Pool" }, // Mapping to Talent Pool for now
+  ];
+
+  const filteredNavLinks = navLinks.filter(link => hasPermission(link.module, 'view'));
 
   const companyData = apiData
     ? {
@@ -120,13 +133,7 @@ function Header() {
 
           {/* Navigation Menu (Responsive) */}
           <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
-            {[
-              { path: "/user/user-dashboard", label: "Dashboard" },
-              { path: "/user/user-talentpool", label: "Talent Pool" },
-              { path: "/user/user-projects", label: "Projects" },
-              { path: "/user/user-jobs", label: "Find Jobs" },
-              { path: "/user/user-upload-talent", label: "Talent Management" },
-            ].map((link) => (
+            {filteredNavLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}

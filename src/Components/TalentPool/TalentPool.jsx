@@ -24,6 +24,7 @@ import FilterBottomSheet from "../Common/FilterBottomSheet";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import NoData from "../UploadTalent/NoData";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
+import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -38,6 +39,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
 
   const companyname = localStorage.getItem("CompanyName");
   const username = localStorage.getItem("UserName");
+
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission("Talent Pool", "edit");
 
   const handleSendInvite = async (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
@@ -135,23 +139,29 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
                   ))}
 
                   <div className="job-footer">
-                    <button
-                      className={`btn-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
-                      onClick={() => handleSendInvite(jobId)}
-                      disabled={currentStatus !== "idle"}
-                    >
-                      {currentStatus === "loading" && (
-                        <>
-                          <FiLoader className="spin-icon" /> Sending...
-                        </>
-                      )}
-                      {currentStatus === "sent" && (
-                        <>
-                          <FiCheck /> Invite Sent
-                        </>
-                      )}
-                      {currentStatus === "idle" && "Send Invite"}
-                    </button>
+                    {canEdit ? (
+                      <button
+                        className={`btn-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
+                        onClick={() => handleSendInvite(jobId)}
+                        disabled={currentStatus !== "idle"}
+                      >
+                        {currentStatus === "loading" && (
+                          <>
+                            <FiLoader className="spin-icon" /> Sending...
+                          </>
+                        )}
+                        {currentStatus === "sent" && (
+                          <>
+                            <FiCheck /> Invite Sent
+                          </>
+                        )}
+                        {currentStatus === "idle" && "Send Invite"}
+                      </button>
+                    ) : (
+                      <div className="permission-denied-text" style={{ fontSize: '12px', color: '#ef4444', fontStyle: 'italic' }}>
+                        You don't have permission to send invites.
+                      </div>
+                    )}
                   </div>
                 </div>
               );

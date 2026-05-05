@@ -53,6 +53,7 @@ import AutomationPanel from "./Admin/Modules/AutomationPanel/AutomationPanel";
 import NotificationPolicy from "./Admin/Modules/NotificationPolicy/NotificationPolicy";
 import BillingControl from "./Admin/Modules/BillingControl/BillingControl";
 import AdminDashboard from "./Admin/Modules/AdminDashboard/AdminDashboard";
+import ModuleProtectedRoute from "./Admin/Modules/RoleConfiguration/ModuleProtectedRoute";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -107,41 +108,54 @@ const routes = createBrowserRouter(
         <Route path="User" element={<Header />}>
           <Route path="notifications-page" element={<NotificationsPage />} />
           <Route path="AI-screen" element={<AIScreen />} />
-          <Route path="user-projects" element={<Projects />} />
-          <Route path="user-dashboard" element={<Dashboard />} />
-          <Route path="user-upload-talent" element={<UploadTalent />} />
-          <Route path="user-Jobs" element={<UserJobs />} />
+          
+          <Route element={<ModuleProtectedRoute module="Main Dashboard" />}>
+            <Route path="user-dashboard" element={<Dashboard />} />
+          </Route>
+
+          <Route element={<ModuleProtectedRoute module="Talent Pool" />}>
+            <Route path="user-talentpool" element={<TalentPool />} />
+            <Route path="user-talent-profile" element={<TalentProfile />} />
+            <Route path="talent-profile" element={<UploadTalentProfile />} />
+            <Route path="user-upload-talent" element={<UploadTalent />} />
+            <Route path="review-talent" element={<ReviewTalent />} />
+          </Route>
+
+          <Route element={<ModuleProtectedRoute module="Projects" />}>
+            <Route path="user-projects" element={<Projects />} />
+            <Route element={<ModuleProtectedRoute module="Projects" action="edit" />}>
+              <Route path="create-project" element={<CreateProject />} />
+            </Route>
+            <Route path="project-details/:id" element={<ProjectDetailsPage />} />
+          </Route>
+
+          <Route element={<ModuleProtectedRoute module="Job Management" />}>
+            <Route path="user-Jobs" element={<UserJobs />} />
+            <Route path="job-overview" element={<JobOverview />} />
+            <Route element={<ModuleProtectedRoute module="Job Management" action="edit" />}>
+              <Route path="user-post-new-positions" element={<PostNewPositions />} />
+            </Route>
+          </Route>
+
+          <Route element={<ModuleProtectedRoute module="Analytics" />}>
+            <Route path="user-analytics" element={<Analytics />} />
+          </Route>
+
+          <Route element={<ModuleProtectedRoute module="Contracts" />}>
+            <Route path="user-contract-management" element={<ContractManagement />} />
+            <Route path="user-contract-view" element={<ContractView />} />
+            <Route element={<ModuleProtectedRoute module="Contracts" action="edit" />}>
+              <Route path="create-new-contract" element={<CreateNewContract />} />
+            </Route>
+          </Route>
+
           <Route path="user-messages" element={<Messages />} />
-          <Route path="user-talentpool" element={<TalentPool />} />
-          <Route path="user-talent-profile" element={<TalentProfile />} />
-          <Route path="talent-profile" element={<UploadTalentProfile />} />
-          <Route path="user-analytics" element={<Analytics />} />
           <Route path="user-profile" element={<ProfilePage />} />
           <Route path="edit-profile" element={<EditProfile />} />
-          <Route
-            path="user-post-new-positions"
-            element={<PostNewPositions />}
-          />
           <Route path="user-invite-bid" element={<InviteBid />} />
-          <Route
-            path="user-upcoming-interview"
-            element={<UpcomingInterview />}
-          />
-          <Route
-            path="user-schedule-interview"
-            element={<ScheduleInterview />}
-          />
-          <Route
-            path="user-contract-management"
-            element={<ContractManagement />}
-          />
-          <Route path="user-contract-view" element={<ContractView />} />
-          <Route path="create-new-contract" element={<CreateNewContract />} />
-          <Route path="review-talent" element={<ReviewTalent />} />
-          <Route path="job-overview" element={<JobOverview />} />
+          <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
+          <Route path="user-schedule-interview" element={<ScheduleInterview />} />
           <Route path="user-interview-details" element={<InterviewDetails />} />
-          <Route path="create-project" element={<CreateProject />} />
-          <Route path="project-details/:id" element={<ProjectDetailsPage />} />
         </Route>
       </Route>
     </Route>,
