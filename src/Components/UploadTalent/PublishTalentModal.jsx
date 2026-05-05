@@ -253,7 +253,7 @@ export default function PublishTalentModal({
                             {getInitials(talent.name)}
                           </div>
 
-                          <div className="t-info">
+                          <div className="t-info" style={{ flex: 1 }}>
                             <div className="t-header">
                               <span className="t-name">{talent.name}</span>
                               {talent.verified && (
@@ -275,6 +275,7 @@ export default function PublishTalentModal({
                             <button
                               className="t-remove-btn"
                               onClick={() => onRemove(talent.id)}
+                              title="Remove"
                             >
                               <FiTrash2 />
                             </button>
@@ -283,21 +284,21 @@ export default function PublishTalentModal({
                       ))
                     )}
                   </div>
-                  <div className="talent-selection-description" style={{ marginTop: "16px", padding: "16px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                    <div style={{ marginBottom: "12px" }}>
-                      <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "4px", textTransform: "uppercase" }}>Post Description</label>
+                  <div className="talent-selection-description">
+                    <div style={{ marginBottom: "16px" }}>
+                      <label className="desc-label">Post Description</label>
                       <textarea
-                        style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", color: "#1e293b", minHeight: "80px", resize: "vertical" }}
+                        className="desc-textarea"
                         value={postDescription}
                         onChange={(e) => setPostDescription(e.target.value)}
                         placeholder="Enter post description..."
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#64748b", marginBottom: "4px", textTransform: "uppercase" }}>Post Link</label>
+                      <label className="desc-label">Post Link</label>
                       <input
                         type="text"
-                        style={{ width: "100%", padding: "8px 10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", color: "#3b82f6", backgroundColor: "#f1f5f9", cursor: "not-allowed" }}
+                        className="desc-input"
                         value={postLink}
                         readOnly
                       />
@@ -439,37 +440,54 @@ export default function PublishTalentModal({
         }
  
         .talent-card-row {
-          display: grid;
-          grid-template-columns: auto 1fr auto;
+          display: flex;
           align-items: center;
           gap: 16px;
           padding: 16px;
           border: 1px solid #e2e8f0;
-          border-radius: 10px;
-          background: white;
+          border-radius: 12px;
+          background: #ffffff;
           transition: all 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .talent-card-row:hover {
           border-color: #cbd5e1;
           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+          transform: translateY(-1px);
+        }
+
+        .initial-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background-color: #f1f5f9;
+          color: #475569;
+          font-size: 16px;
+          font-weight: 700;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
  
-        .t-info { display: flex; flex-direction: column; gap: 2px; }
-        .t-header { display: flex; align-items: center; gap: 6px; }
+        .t-info { display: flex; flex-direction: column; gap: 4px; }
+        .t-header { display: flex; align-items: center; gap: 8px; }
         .t-name { font-weight: 700; color: #1e293b; font-size: 15px; }
         .t-verified { color: #059669; display: flex; align-items: center; }
-        .t-role { color: #3b82f6; font-size: 13px; font-weight: 500; }
-        .t-meta { display: flex; gap: 6px; font-size: 12px; color: #64748b; }
-        .bullet { color: #cbd5e1; }
+        .t-role { color: #64748b; font-size: 13px; font-weight: 500; }
+        .t-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; font-weight: 500; }
+        .bullet { color: #cbd5e1; font-size: 10px; }
  
         .t-actions { display: flex; gap: 8px; }
         .t-remove-btn {
-          background: transparent;
-          border: 1px solid transparent;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           color: #94a3b8;
-          padding: 6px;
-          border-radius: 6px;
+          padding: 8px;
+          border-radius: 8px;
           cursor: pointer;
+          transition: all 0.2s;
         }
         .t-remove-btn:hover {
           background: #fee2e2;
@@ -478,41 +496,105 @@ export default function PublishTalentModal({
         }
  
         .empty-state {
-          padding: 32px;
+          padding: 40px;
           text-align: center;
           color: #94a3b8;
           border: 2px dashed #e2e8f0;
-          border-radius: 8px;
+          border-radius: 12px;
           background: #f8fafc;
+          font-weight: 500;
         }
  
         .hotlist-wrapper {
           border: 1px solid #e2e8f0;
-          border-radius: 10px;
-          padding: 16px;
+          border-radius: 16px;
+          padding: 24px;
           background: #ffffff;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
         .hotlist-actions {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 20px;
         }
         .hotlist-table {
           width: 100%;
-          border-collapse: collapse;
+          border-collapse: separate;
+          border-spacing: 0;
           font-size: 14px;
         }
         .hotlist-table th {
-          background: #1e293b;
-          color: #fefefe;
-          padding: 10px;
-          border: 1px solid #d1d5db;
+          background: #f8fafc;
+          color: #64748b;
+          padding: 12px 16px;
+          border-bottom: 1px solid #e2e8f0;
           text-align: left;
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 12px;
+          letter-spacing: 0.05em;
+        }
+        .hotlist-table th:first-child {
+          border-top-left-radius: 8px;
+        }
+        .hotlist-table th:last-child {
+          border-top-right-radius: 8px;
         }
         .hotlist-table td {
-          padding: 10px;
-          border: 1px solid #d1d5db;
+          padding: 16px;
+          border-bottom: 1px solid #f1f5f9;
+          color: #334155;
+          font-weight: 500;
+        }
+        .hotlist-table tr:last-child td {
+          border-bottom: none;
+        }
+
+        .talent-selection-description {
+          margin-top: 24px;
+          padding: 20px;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+        }
+        .desc-label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          color: #64748b;
+          margin-bottom: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .desc-textarea, .desc-input {
+          width: 100%;
+          border-radius: 8px;
+          border: 1px solid #cbd5e1;
+          font-size: 14px;
+          color: #1e293b;
+          transition: all 0.2s ease;
+          background: #ffffff;
+          box-sizing: border-box;
+        }
+        .desc-textarea:focus, .desc-input:focus {
+          outline: none;
+          border-color: #f5810c;
+          box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
+        }
+        .desc-textarea {
+          padding: 12px;
+          min-height: 80px;
+          resize: vertical;
+        }
+        .desc-input {
+          padding: 10px 12px;
+        }
+        .desc-input[readOnly] {
+          background-color: #f1f5f9;
+          color: #3b82f6;
+          cursor: not-allowed;
+          font-weight: 500;
         }
       `}</style>
     </>,

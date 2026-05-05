@@ -164,6 +164,62 @@
   color: #94a3b8;
 }
 
+.tms-list-section-header {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Accordions */
+.tms-accordions {
+  display: flex;
+  flex-direction: column;
+}
+
+.tms-accordion {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tms-accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+
+.tms-accordion-header:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.tms-accordion-badge {
+  margin-left: auto;
+  background: #f5810c;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+
+.tms-accordion-content {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Contact list */
 .tms-contact-list {
   flex: 1;
@@ -296,6 +352,17 @@
   font-weight: 600;
   color: #f5810c;
   text-transform: capitalize;
+}
+
+/* Last message preview (shown when conversation has history) */
+.tms-contact-preview {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 .tms-action-btn {
@@ -474,7 +541,6 @@
 }
 
 .tms-public-request-card {
-  width: min(420px, 100%);
   padding: 28px 24px;
   border-radius: 20px;
   border: 1px solid #e2e8f0;
@@ -556,6 +622,56 @@
 .tms-msg-row {
   display: flex;
   margin-bottom: 2px;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* Avatar beside message */
+.tms-msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+/* Wrap for name + bubble + time */
+.tms-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+}
+
+.tms-msg-me .tms-bubble-wrap {
+  align-items: flex-end;
+}
+
+/* Sender name above bubble */
+.tms-sender-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+  margin-left: 2px;
+}
+
+/* Timestamp below/beside bubble (hover style) */
+.tms-msg-time {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tms-msg-row:hover .tms-msg-time {
+  opacity: 1;
 }
 
 .tms-msg-them {
@@ -568,13 +684,14 @@
 
 /* Bubbles */
 .tms-bubble {
-  max-width: 60%;
+  max-width: 100%;
   padding: 10px 15px;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 13.5px;
   line-height: 1.55;
   position: relative;
   word-break: break-word;
+  transition: transform 0.1s ease;
 }
 
 /* CRITICAL: override App.css global p { color: var(--text-muted) } */
@@ -590,16 +707,16 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   color: #334155 !important;
-  border-radius: 0 10px 10px 10px;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+  border-radius: 2px 14px 14px 14px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 }
 
-/* Me bubble: project brand orange */
+/* Me bubble: soft blue/slate */
 .tms-bubble-me {
-  background: #eef2ff;
-  color: #1e293b !important;
-  border-radius: 10px 10px 0 10px;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+  background: #f5810c;
+  color: #ffffff !important;
+  border-radius: 14px 14px 2px 14px;
+  box-shadow: 0 2px 4px rgba(245, 129, 12, 0.15);
 }
 
 /* Link bubble */
@@ -756,8 +873,17 @@
   min-height: 40px;
 }
 
-.tms-input::placeholder {
+.tms-search-input::placeholder {
   color: #94a3b8;
+}
+
+.tms-list-section-header {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .tms-input-actions {
@@ -819,7 +945,8 @@
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .tms-root {
-    height: calc(100vh - 140px); /* Adjust for header/footer */
+    height: calc(100vh - 140px);
+    /* Adjust for header/footer */
     padding: 0;
   }
 
@@ -930,7 +1057,9 @@
 }
 
 @keyframes tms-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Error state ── */

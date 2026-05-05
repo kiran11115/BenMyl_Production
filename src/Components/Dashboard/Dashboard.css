@@ -742,7 +742,8 @@
 /* Neutralize icon box */
 .non-functional .stat-icon-box,
 .non-functional .analytics-stat-icon-analytics {
-  background-color: #cbd5e1 !important; /* Lighter gray icon box */
+  background-color: #cbd5e1 !important;
+  /* Lighter gray icon box */
   color: #ffffff !important;
   box-shadow: none !important;
 }
@@ -753,7 +754,7 @@
 }
 
 /* Make card content extremely dull/greyed out to match screenshot */
-.non-functional > *:not(.coming-soon-badge) {
+.non-functional>*:not(.coming-soon-badge) {
   filter: grayscale(0.35) opacity(0.58) !important;
   transition: none !important;
 }
@@ -769,8 +770,10 @@
   opacity: 1 !important;
   padding: 6px 14px;
   border-radius: 6px;
-  font-size: 12px; /* Slightly larger */
-  font-weight: 900; /* Bolder */
+  font-size: 12px;
+  /* Slightly larger */
+  font-weight: 900;
+  /* Bolder */
   text-transform: uppercase;
   letter-spacing: 0.05em;
   z-index: 100;
@@ -790,4 +793,3 @@
 .card-premium {
   position: relative;
 }
-

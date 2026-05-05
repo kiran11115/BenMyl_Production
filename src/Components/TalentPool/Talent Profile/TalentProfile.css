@@ -1,812 +1,627 @@
-/* =========================================
-   1. Shared Dashboard Elements
-   ========================================= */
-/* Re-using dashboard colors for consistency */
+/* --- Talent Profile - Admin Design Alignment (Premium) --- */
 :root {
-  --color-slate-900: #0f172a;
-  --color-slate-800: #1e293b;
-  --color-slate-600: #475569;
-  --color-slate-500: #64748b;
-  --color-slate-400: #94a3b8;
-  --color-blue-500: #3b82f6;
-  --color-blue-600: #2563eb;
-  --border-color: #e2e8f0;
+  --admin-slate-900: #0f172a;
+  --admin-slate-800: #1e293b;
+  --admin-slate-600: #475569;
+  --admin-slate-500: #64748b;
+  --admin-slate-400: #94a3b8;
+  --admin-slate-100: #f1f5f9;
+  --admin-orange: #f5810c;
+  --admin-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --admin-radius-lg: 24px;
+  --admin-radius-md: 20px;
 }
 
-/* Breadcrumb Navigation */
-.profile-breadcrumb {
-  margin-bottom: 24px;
-  font-size: 13px;
-  color: #64748b;
-  /* Matching .card-details color */
+.projects-container {
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* --- Hero Section (Talent Header) --- */
+.tp-hero-card {
+  background: white;
+  border-radius: var(--admin-radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--admin-shadow);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
-  align-items: center;
-}
-
-.breadcrumb-link {
-  color: #3b82f6;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.breadcrumb-link:hover {
-  text-decoration: underline;
-}
-
-.breadcrumb-separator {
-  margin: 0 8px;
-  color: #cbd5e1;
-}
-
-/* =========================================
-   2. Profile Header (Extending .table-card)
-   ========================================= */
-.profile-header-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 24px;
-  /* Overriding padding slightly for better avatar fit */
-  padding: 32px !important;
-}
-
-.profile-avatar-lg {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #ffffff;
-  border: 3px solid #f5810c; /* Updated to brand orange */
-  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-.profile-header-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.profile-name-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.profile-name-row h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.profile-verified-icon {
-  color: #3b82f6;
-  /* Blue accent */
-  font-size: 20px;
-}
-
-.profile-role {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.profile-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 13px;
-  color: #64748b;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.status-pill {
-  /* Extending .status-tag */
-  border-radius: 100px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* =========================================
-   3. Content Sections
-   ========================================= */
-.profile-section {
-  margin-bottom: 40px;
-}
-
-/* Reusing from dashboard.css */
-.summary-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #475569;
-  /* Slightly darker than .card-details */
-  margin-bottom: 24px;
-}
-
-/* Stats Box - mimicking .stat-card but smaller */
-.summary-stats-grid {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.summary-stat-box {
-  flex: 1;
-  min-width: 200px;
-  background-color: #eff6ff;
-  /* Blue tint background */
-  padding: 20px 24px;
-  border-radius: 12px;
-  /* Matches .stat-card radius approx */
-  border: 1px solid #dbeafe;
-}
-
-.summary-stat-value {
-  font-size: 24px;
-  /* Slightly smaller than .stat-value */
-  font-weight: 700;
-  color: #2563eb;
-  margin-bottom: 4px;
-}
-
-.summary-stat-label {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-/* =========================================
-   4. Work Experience
-   ========================================= */
-.experience-list {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  gap: 2.5rem;
   position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
 
-/* Connecting Line */
-.experience-list::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 40px;
-  bottom: 20px;
-  width: 2px;
-  background-color: #e2e8f0;
-  z-index: 0;
-}
-
-.experience-item {
-  display: flex;
-  gap: 20px;
+.tp-avatar-wrapper {
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
 }
 
-.experience-icon-box {
-  width: 44px;
-  /* Matching .stat-icon-box */
-  height: 44px;
-  border-radius: 50%;
-  background-color: #1e293b;
-  /* Matches other icon backgrounds */
-  color: #f6faff;
-  border: 4px solid #fff;
+.tp-avatar-lg {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--admin-orange);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: var(--admin-slate-100);
+  font-size: 48px;
+  font-weight: 400;
+  border-radius: 100%;
 }
 
-.experience-content {
-  flex: 1;
+.tp-info-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
-.experience-content h3 {
-  font-size: 12px;
+.tp-name-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.tp-name-row h1 {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 4px 0;
-}
-
-.job-meta {
-  font-size: 13px;
-  color: #475569;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.job-location {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-bottom: 8px;
-}
-
-.job-desc {
-  font-size: 14px;
-  color: #64748b;
-  line-height: 1.5;
+  color: var(--admin-slate-900);
   margin: 0;
 }
 
-/* =========================================
-   5. Portfolio & Skills
-   ========================================= */
-/* Skills */
-.skills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.skill-tag {
-  /* Extends .status-tag */
-  font-size: 13px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  /* Slightly rounder than standard tags */
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Portfolio Cards - reusing .table-card */
-.portfolio-card {
-  padding: 0 !important;
-  /* Reset padding for image */
-  overflow: hidden;
-  gap: 0 !important;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.portfolio-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-}
-
-.portfolio-img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.portfolio-content {
-  padding: 16px;
-}
-
-.portfolio-title {
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.portfolio-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.portfolio-tag {
-  font-size: 11px;
-  background-color: #f1f5f9;
-  color: #64748b;
-  padding: 4px 8px;
-  border-radius: 4px;
+.tp-role-subtitle {
+  font-size: 1rem;
   font-weight: 600;
+  color: var(--admin-orange);
+  margin-bottom: 1rem;
 }
 
-.initials-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #ffffff; /* Clean white background */
-  color: #1e293b; /* Strong navy text */
-  border: 3px solid #f5810c; /* Bold orange border */
-  font-size: 30px; /* Much larger font */
-  font-weight: 900; /* Maximum weight */
+.tp-meta-strip {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-transform: uppercase;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* Projects card */
-
-
-
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-}
-
-
-
-.card-subtitle {
-  color: #64748b;
-  font-size: 14px;
-}
-
-.status-pill {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-.status-pill.active {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.card-meta {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  color: #475569;
-  font-size: 13px;
-}
-
-.card-meta span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.card-date {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.card-skills {
-  margin-top: 12px;
-  display: flex;
-  gap: 8px;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
-.skill-pill {
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
+.tp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--admin-slate-500);
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
-.card-description {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #475569;
+.tp-meta-item svg {
+  color: var(--admin-orange);
+  font-size: 1rem;
 }
 
-.card-footer {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.progress {
-  flex: 1;
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  width: 70%;
-  height: 100%;
-  background: #f97316;
-}
-
-.progress-text {
-  font-size: 12px;
-  color: #475569;
-}
-
-
-
-
-/* =========================================
-   6. Sidebar Buttons (Matches .btn-upload)
-   ========================================= */
-.sidebar-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  /* Sticky positioning for desktop */
-  /* position: sticky; */
-  top: 24px;
-  z-index: 5;
-}
-
-.sidebar-links {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 4px;
-}
-
-.link-btn {
-  background: none;
-  border: none;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
-}
-
-.link-btn:hover {
-  color: #1e293b;
-  background-color: #f1f5f9;
-}
-
-/* =========================================
-   7. Sidebar Info (Extending .table-card)
-   ========================================= */
-.sidebar-card {
-  gap: 10px;
-}
-
-.quick-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.info-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.languages-list {
-  display: flex;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-/* Contact List */
-.contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: #475569;
-}
-
-.contact-icon {
-  color: #94a3b8;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-/* Education List */
-.education-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.education-item {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.edu-icon-box {
-  min-width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background-color: #f1f5f9;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.edu-degree {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1e293b;
-  line-height: 1.3;
-}
-
-.edu-school {
-  font-size: 12px;
-  color: #64748b;
-}
-
-.edu-year {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 4px;
-}
-
-/* =========================================
-   8. Responsive Adjustments
-   ========================================= */
-
-/* Tablet (Matches dashboard 1024px break) */
-@media (max-width: 1024px) {
-
-  /* Ensure profile header has breathing room */
-  .profile-header-card {
-    padding: 24px !important;
-  }
-}
-
-/* Mobile (Matches dashboard layout shift at 768px) */
-@media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column !important;
-    /* Force stack */
-  }
-
-  .dashboard-column-main,
-  .dashboard-column-side {
-    width: 100% !important;
-  }
-
-  .row {
-    flex-direction: column;
-    margin: 0 !important;
-  }
-
-  .col-3,
-  .col-9,
-  .col-8,
-  .col-4 {
-    width: 100% !important;
-    padding: 0 !important;
-    margin-bottom: 16px;
-  }
-
-  /* Force vertical layout on header */
-  .profile-header-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 24px 16px !important;
-  }
-
-  .profile-avatar-lg {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 12px;
-  }
-
-  .profile-header-content {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .profile-name-row {
-    justify-content: center;
-  }
-
-  .profile-meta-row {
-    justify-content: center;
-    gap: 12px;
-  }
-
-  /* Stack Summary Stats Vertically on Mobile */
-  .summary-stats-grid {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .summary-stat-box {
-    width: 100%;
-    min-width: unset;
-    /* Remove min-width constraint */
-  }
-
-  /* Reset layout for portfolio grid if needed by global css, 
-     though grid-template-columns usually handles it */
-
-  /* Sidebar actions should not stick on mobile */
-  .sidebar-actions {
-    position: static;
-    margin-bottom: 24px;
-    order: -1;
-    /* Move actions to top on mobile for better UX? Or bottom? Plan says stack. Default is top if side is after main. */
-  }
-
-  .dashboard-column-side {
-    order: -1;
-    /* Put actions and quick info first on mobile */
-  }
-
-  .experience-item {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .experience-list::before {
-    display: none;
-    /* Hide line on mobile for cleaner look */
-  }
-
-  .experience-icon-box {
-    margin-bottom: 8px;
-  }
-
-  /* Adjust Experience Line position if icon size shifts */
-  .experience-list::before {
-    left: 19px;
-  }
-}
-
-
-/* ================= PORTFOLIO ================= */
-
-.portfolio-section {
-  margin-top: 24px;
-}
-
-.portfolio-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.portfolio-count {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* Grid */
-.premium-portfolio-grid {
+/* --- Layout Grid --- */
+.tp-details-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+}
+
+/* --- Premium Cards --- */
+.tp-card-premium {
+  background: white;
+  border-radius: var(--admin-radius-md);
+  padding: 2rem;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.tp-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--admin-slate-900);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  position: relative;
+}
+
+.tp-card-title svg {
+  color: var(--admin-orange);
+  font-size: 1.2rem;
+}
+
+.summary-text {
+  font-size: 13px;
+  color: var(--admin-slate-600);
+  line-height: 1.8;
+  margin: 0;
+}
+
+.sidebar-card {
+  padding: 1.5rem !important; /* Slightly less padding for sidebar blocks */
+}
+
+.sidebar-card .tp-card-title {
+  font-size: 14px;
+  margin-bottom: 1.25rem;
+}
+
+/* --- Timeline (Experience) --- */
+.tp-timeline {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
 
-/* Card */
-.premium-portfolio-card {
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  transition: all 0.25s ease;
-}
-
-.premium-portfolio-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
-}
-
-/* Image */
-.portfolio-img-wrapper {
+.tp-timeline-item {
+  display: flex;
+  gap: 1.25rem;
   position: relative;
-  height: 190px;
-  overflow: hidden;
 }
 
-.portfolio-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.35s ease;
-}
-
-.premium-portfolio-card:hover .portfolio-img {
-  transform: scale(1.06);
-}
-
-/* Overlay */
-.portfolio-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-      rgba(15, 23, 42, 0.15),
-      rgba(15, 23, 42, 0.7));
+.tp-timeline-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--admin-slate-100);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--admin-slate-600);
+  flex-shrink: 0;
+}
+
+.tp-timeline-content {
+  flex: 1;
+}
+
+.tp-timeline-content h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--admin-slate-900);
+  margin-bottom: 4px;
+}
+
+.tp-timeline-company {
+  font-size: 0.875rem;
+  color: var(--admin-orange);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tp-timeline-period {
+  font-size: 0.75rem;
+  color: var(--admin-slate-400);
+  margin-bottom: 8px;
+}
+
+/* --- Sidebar Actions (Matches Admin Style) --- */
+.tp-sidebar-actions {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  opacity: 0;
-  transition: opacity 0.25s ease;
 }
 
-.premium-portfolio-card:hover .portfolio-overlay {
-  opacity: 1;
+/* --- Quick Info Block (Matches Admin Sidebar) --- */
+.tp-info-block {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-.overlay-btn {
+.tp-info-icon-box {
+  width: 40px;
+  height: 40px;
+  background: var(--admin-slate-100);
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  font-size: 12px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  background: #ffffff;
-  color: #0f172a;
-  font-weight: 600;
+  justify-content: center;
+  color: var(--admin-slate-500);
+  flex-shrink: 0;
 }
 
-.overlay-btn.secondary {
-  background: rgba(255, 255, 255, 0.85);
+.tp-info-label-sm {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-slate-400);
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
-/* Content */
-.portfolio-content {
-  padding: 14px 16px 16px;
+.tp-info-value-md {
+  font-size: 0.875rem;
+  color: var(--admin-slate-900);
+  font-weight: 700;
+  line-height: 1.4;
 }
 
-.portfolio-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 10px;
-}
-
-/* Tags */
-.portfolio-tags {
+/* --- Tag Pills --- */
+.tp-tags-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
-.portfolio-tag {
-  font-size: 11px;
-  padding: 4px 8px;
-  background: #f1f5f9;
-  border-radius: 999px;
-  color: #334155;
-  font-weight: 500;
+.tp-tag-pill {
+  background: var(--admin-slate-100);
+  color: var(--admin-slate-600);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-/* ================= RESPONSIVE ================= */
+.scrollable-skills {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 8px; /* Space for scrollbar */
+}
 
-@media (max-width: 1456px) {
-  .premium-portfolio-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Scrollbar for skills */
+.scrollable-skills::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollable-skills::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-skills::-webkit-scrollbar-thumb {
+  background: var(--admin-slate-200);
+  border-radius: 10px;
+}
+
+/* --- Contact Locked (Premium) --- */
+.tp-contact-locked {
+  background: var(--admin-slate-900);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.tp-contact-locked .tp-card-title {
+  color: white;
+}
+
+.tp-lock-overlay {
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tp-lock-text {
+  font-size: 0.875rem;
+  color: var(--admin-slate-400);
+}
+
+.tp-btn-unlock {
+  background: var(--admin-orange);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* --- Breadcrumb Alignment --- */
+.profile-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--admin-slate-500);
+}
+
+.breadcrumb-back {
+  background: none;
+  border: none;
+  color: var(--admin-orange);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+  .tp-hero-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
-}
-
-@media (max-width: 768px) {
-  .premium-portfolio-grid {
+  .tp-meta-strip {
+    justify-content: center;
+  }
+  .tp-details-grid {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Square Section Cards (New Request) --- */
+.tp-square-sections-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+}
+
+.tp-square-card {
+  background: white;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.05);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-square-card.collapsed {
+  width: 320px;
+  height: 320px;
+  cursor: pointer;
+}
+
+.tp-square-card.expanded {
+  flex: 1 1 100%; /* Take full width in the flex row */
+  min-height: 600px;
+  border-color: rgba(245, 129, 12, 0.2);
+  box-shadow: 0 20px 40px -20px rgba(245, 129, 12, 0.15);
+}
+
+.tp-square-card-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.tp-view-toggle {
+  background: #fff7ed;
+  color: var(--admin-orange);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tp-view-toggle:hover {
+  background: var(--admin-orange);
+  color: white;
+}
+
+.tp-square-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Preview Mode (Compact) --- */
+.tp-latest-preview {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tp-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.tp-preview-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tp-timeline-icon.sm {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+}
+
+.tp-preview-main h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--admin-slate-900);
+  line-height: 1.2;
+}
+
+.tp-preview-desc {
+  font-size: 12px;
+  color: var(--admin-slate-500);
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tp-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--admin-slate-100);
+  color: var(--admin-slate-400);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* --- Layout Alignment --- */
+@media (max-width: 1024px) {
+  .tp-square-sections-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tp-section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+  background: #fcfdfe;
+}
+
+.tp-section-accordion.active .tp-section-content {
+  max-height: 2000px; /* High enough to contain content */
+  transition: max-height 0.5s cubic-bezier(1, 0, 1, 0);
+  border-top: 1px solid var(--admin-slate-100);
+}
+
+.tp-scrollable-area {
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tp-scrollable-area.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .tp-scrollable-area.grid-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom Scrollbar */
+.tp-scrollable-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tp-scrollable-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tp-scrollable-area::-webkit-scrollbar-thumb {
+  background: var(--admin-slate-200, #e2e8f0);
+  border-radius: 10px;
+}
+
+.tp-scrollable-area::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-slate-400);
+}
+
+/* --- Item Cards (Elegant Grid) --- */
+.tp-item-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+}
+
+.tp-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px -10px rgba(0, 0, 0, 0.08);
+  border-color: rgba(245, 129, 12, 0.3);
+}
+
+.tp-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+}
+
+.tp-timeline-icon {
+  width: 40px;
+  height: 40px;
+  background: #fff7ed;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-orange);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.tp-item-card:hover .tp-timeline-icon {
+  background: var(--admin-orange);
+  color: white;
+}
+
+.tp-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-card-header-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.tp-card-header-row h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--admin-slate-900);
+  line-height: 1.3;
+}
+
+.tp-card-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--admin-orange);
+  background: #fff7ed;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tp-card-badge.secondary {
+  color: var(--admin-slate-600);
+  background: var(--admin-slate-100);
+}
+
+.timeline-desc {
+  font-size: 13px;
+  color: var(--admin-slate-600);
+  line-height: 1.5;
+  margin: 0.75rem 0;
+}
+

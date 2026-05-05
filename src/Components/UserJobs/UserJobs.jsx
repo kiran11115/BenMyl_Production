@@ -173,12 +173,12 @@ const UserJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
-     rateText:
-  job.salaryRange_Min && job.salaryRange_Max
-    ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
-    : job.salaryRange_Min
-    ? `$${job.salaryRange_Min}`
-    : "N/A",
+      rateText:
+        job.salaryRange_Min && job.salaryRange_Max
+          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+          : job.salaryRange_Min
+            ? `$${job.salaryRange_Min}`
+            : "N/A",
       experienceText: job.experienceLevel,
       description: job.jobDescription,
       salaryType: (() => {
@@ -218,7 +218,7 @@ const UserJobs = () => {
         <div className="header-text">
           <h1
             style={{
-              fontSize: "24px",
+              fontSize: "28px",
               fontWeight: 700,
               margin: "0 0 4px 0",
               color: "var(--slate-800)",
@@ -247,9 +247,9 @@ const UserJobs = () => {
               placeholder="Search by Talent Role..."
               style={{
                 width: "100%",
-                padding: "7px 10px 7px 40px",
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0",
+                padding: "12px 16px 12px 44px",
+                borderRadius: "14px",
+                border: "1px solid #f1f5f9",
                 outline: "none",
                 fontSize: "14px",
                 color: "#334155",

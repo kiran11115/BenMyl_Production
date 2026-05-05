@@ -12,9 +12,19 @@ import {
   FiArrowLeft,
   FiCalendar,
   FiUser,
+  FiCheckCircle,
+  FiExternalLink,
+  FiLoader,
+  FiAward,
+  FiBookOpen,
+  FiStar,
+  FiTrendingUp,
+  FiLock,
+  FiClock,
+  FiChevronDown
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
-import { FaGem } from "react-icons/fa"; // Added for Premium Diamond Icon
+import { FaGem } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/Api/TalentPoolApiSlice";
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
@@ -24,6 +34,8 @@ import NoData from "../../UploadTalent/NoData";
 const TalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isExpOpen, setIsExpOpen] = React.useState(true);
+  const [isProjOpen, setIsProjOpen] = React.useState(true);
 
   const query = new URLSearchParams(location.search);
   const from = query.get("from");
@@ -37,7 +49,6 @@ const TalentProfile = () => {
   };
   const { state } = useLocation();
   const employeeId = state?.employeeID;
-  console.log("EmpId:", employeeId);
   const jobId = state?.jobId;
 
   const [isShortlisted, setIsShortlisted] = React.useState(false);
@@ -69,12 +80,8 @@ const TalentProfile = () => {
       )}`,
     location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
     experience: calculateTotalExperience(employee?.workexperiences),
-    status: employee?.status ?? "N/A",
+    status: employee?.status ?? "Verified",
     summary: employee?.bio ?? "N/A",
-    stats: [
-      { label: "Projects Completed", value: "150+" },
-      { label: "Client Satisfaction", value: "98%" },
-    ],
     skills: employee?.skills
       ? employee?.skills.split(",").map((s) => s.trim())
       : [],
@@ -149,223 +156,53 @@ const TalentProfile = () => {
     };
 
     localStorage.setItem("shortlistedMap", JSON.stringify(updated));
-    setIsShortlisted(!exists); // 🔥 update UI instantly
+    setIsShortlisted(!exists);
   };
 
+  if (isLoading) return <div className="projects-container d-flex justify-content-center align-items-center"><FiLoader className="loading-spinner" /></div>;
 
   return (
     <div className="projects-container">
-      {/* Breadcrumb - Matches Global Text Styles */}
-      <div className="profile-breadcrumb d-flex gap-1">
-        <button
-          className="link-button"
-          onClick={handleBack}
-        >
-          <FiArrowLeft /> Talent Pool{" "}
+      {/* Breadcrumb - Matches Admin Look */}
+      <div className="profile-breadcrumb">
+        <button className="breadcrumb-back" onClick={handleBack}>
+          <FiArrowLeft /> Talent Pool
         </button>
-        <span className="crumb">/ Profile Page</span>
+        <span>/ Talent Details</span>
       </div>
 
-      <div className="dashboard-layout gap-2">
-        {/* === LEFT MAIN COLUMN === */}
-        <div className="dashboard-column-main">
-          <div className="row">
-            <div className="row">
-              <div className="col-3">
-                {/* Profile Header Card */}
-                <div className="project-card h-100">
-                  <div className="profile-avatar-lg initials-avatar">
-                    {getInitials(profileData.name)}
-                  </div>
-                  <div className="profile-header-content">
-                    <div className="d-flex gap-3">
-                      <h1 className="mb-2">{profileData.name}</h1>
-                      <FiFileText className="profile-verified-icon" />
-                    </div>
-                    <div className="card-title mb-2">{profileData.role}</div>
-
-                    <div className="profile-meta-row">
-                      <span className="meta-item">
-                        <FiMapPin /> {profileData.location}
-                      </span>
-                      <span className="meta-item">
-                        <FiBriefcase /> {profileData.experience}
-                      </span>
-                    </div>
-
-                    <div className="profile-status-wrapper">
-                      <span className="status-tag status-completed">
-                        {profileData.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-9">
-                {/* Professional Summary */}
-
-                <div className="project-card h-100">
-                  <h2 className="card-title">Professional Summary</h2>
-
-                  <div className="summary-text-container" style={{
-                    flex: 1,
-                    overflow: "auto",
-                    marginBottom: "16px"
-                  }}>
-                    <p className="summary-text">{profileData.summary}</p>
-                  </div>
-
-                  <div className="summary-stats-grid" style={{ flexShrink: 0 }}>
-                    {profileData.stats.map((stat, idx) => (
-                      <div key={idx} className="summary-stat-box">
-                        <div className="summary-stat-value">{stat.value}</div>
-                        <div className="summary-stat-label">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-            </div>
+      {/* Hero Section - Matches Admin .company-hero-card */}
+      <div className="tp-hero-card">
+        <div className="tp-avatar-wrapper">
+          {employee?.profilePicture ? (
+            <img src={profileData.avatar} alt={profileData.name} className="tp-avatar-lg" />
+          ) : (
+            <div className="tp-avatar-lg">{getInitials(profileData.name)}</div>
+          )}
+        </div>
+        <div className="tp-info-main">
+          <div className="tp-name-row">
+            <h1>{profileData.name}</h1>
+            <FiCheckCircle color="#10b981" size={24} />
           </div>
-
-          <div className="row">
-            <div className="row" style={{ minHeight: "400px" }}>
-              <div className="col-8">
-                {/* Work Experience */}
-                <div className="project-card mb-3 h-100" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                  <h2 className="card-title">Work Experience</h2>
-                  <div className="experience-list" style={{ flex: 1, overflow: "auto" }}>
-                    {profileData.workExperience.length > 0 ? (
-                      profileData.workExperience.map((job, idx) => (
-                        <div key={idx} className="experience-item">
-                          <div className="experience-icon-box">
-                            <FiBriefcase />
-                          </div>
-                          <div className="experience-content">
-                            <h3>{job.role}</h3>
-                            <div className="job-meta">
-                              {job.company} • {job.period}
-                            </div>
-                            <div className="job-location">{job.location}</div>
-                            <p className="job-desc">{job.desc}</p>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <NoData text="No work experience added yet" />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-4 d-flex flex-column gap-3" style={{ height: "100%" }}>
-                {/* Skills & Expertise */}
-                <div className="project-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                  <h2 className="card-title">Skills & Expertise</h2>
-                  <div className="skills-container">
-                    {profileData.skills.length > 0 ? (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                        {profileData.skills.map((skill, idx) => (
-                          <span key={idx} className="status-tag status-progress" style={{ height: "25px" }}>
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <NoData text="No skills added yet" maxWidth="110px" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Education */}
-                <div className="project-card sidebar-card flex-grow-1" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                  <h3 className="card-title">Education</h3>
-                  <div className="education-list" style={{ flex: 1, overflow: "auto" }}>
-                    {profileData.education.length > 0 ? (
-                      profileData.education.map((edu, idx) => (
-                        <div key={idx} className="interview-item-premium">
-                          <div className="edu-icon-box">
-                            <FiFileText size={14} />
-                          </div>
-                          <div>
-                            <div className="edu-degree">{edu.degree}</div>
-                            <div className="edu-school">{edu.school}</div>
-                            <div className="edu-year">{edu.year}</div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <NoData text="No education details added yet" maxWidth="110px" />
-                    )}
-                  </div>
-                </div>
-              </div>
+          <div className="tp-role-subtitle">{profileData.role}</div>
+          <div className="tp-meta-strip">
+            <div className="tp-meta-item">
+              <FiMapPin /> {profileData.location}
             </div>
-          </div>
-
-          {/* Portfolio */}
-          <div className="portfolio-section">
-            <div className="portfolio-header">
-              <h2 className="card-title">Projects</h2>
+            <div className="tp-meta-item">
+              <FiBriefcase /> {profileData.experience}
             </div>
-
-            <div className="premium-portfolio-grid">
-              {projectsData.length > 0 ? (
-                projectsData.map((data, index) => (
-                  <div key={index} className="project-card mb-3">
-                    <div className="card-top">
-                      <div>
-                        <h3 className="card-title">{data.projectName}</h3>
-                        <p className="card-subtitle">{data.role}</p>
-                      </div>
-                    </div>
-
-                    <div className="d-flex justify-content-between">
-                      <div>
-                        <span style={{ fontSize: "14px" }}>Start Date</span>
-                        <div className="card-date">
-                          <FiCalendar />
-                          {data.startDate}
-                        </div>
-                      </div>
-
-                      <div>
-                        <span style={{ fontSize: "14px" }}>End Date</span>
-                        <div className="card-date">
-                          <FiCalendar />
-                          {data.endDate}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="card-skills">
-                      {data.skills.map((skill, i) => (
-                        <span key={i} className="status-tag status-progress">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    <p className="card-description">{data.description}</p>
-                  </div>
-                ))
-              ) : (
-                <div style={{ width: "100%", gridColumn: "1 / -1" }}>
-                  <NoData text="No projects added yet" maxWidth="200px" />
-                </div>
-              )}
+            <div className="tp-meta-item">
+              <FiAward /> {profileData.status}
             </div>
           </div>
         </div>
-
-        {/* === RIGHT SIDE COLUMN === */}
-        <div className="dashboard-column-side">
-          {/* Action Buttons */}
-          <div className="sidebar-actions">
+        
+        {/* Quick Action Side in Hero */}
+        <div className="tp-sidebar-actions">
             <button
-              className="btn-primary w-100"
+              className="btn-primary"
               onClick={() => {
                 const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
                 navigate(`${basePath}/user-schedule-interview`);
@@ -374,109 +211,238 @@ const TalentProfile = () => {
               Schedule Interview
             </button>
             <button
-              className={`btn-secondary w-100 ${isShortlisted ? "active" : ""}`}
+              className={`btn-secondary ${isShortlisted ? "active" : ""}`}
               onClick={handleShortlistFromProfile}
-              style={{
-                backgroundColor: isShortlisted ? "#3B82F6" : "",
-                color: isShortlisted ? "#fff" : ""
-              }}
             >
-              {isShortlisted ? "Shortlisted" : "Shortlist Candidate"}
-
+              {isShortlisted ? "Selected" : "Shortlist Talent"}
             </button>
+        </div>
+      </div>
 
+      {/* Content Grid - Matches Admin .profile-details-grid */}
+      <div className="tp-details-grid">
+        {/* Main Column */}
+        <div className="tp-column-main">
+          
+          {/* Professional Summary */}
+          <div className="tp-card-premium">
+            <h3 className="tp-card-title" style={{borderBottom: "1px solid #f8fafc",paddingBottom: "1.25rem"}}><FiUser /> Professional Summary</h3>
+            <p className="summary-text">
+              {profileData.summary}
+            </p>
+          </div>
 
-            <div className="sidebar-links">
-              <button className="link-btn">
-                <FiDownload /> Download Resume
-              </button>
-              <button className="link-btn">
-                <FiShare2 /> Share Profile
-              </button>
+          {/* Square Section Cards Row */}
+          <div className="tp-square-sections-grid">
+            {/* Work Experience Square Card */}
+            <div className={`tp-square-card ${isExpOpen ? "expanded" : "collapsed"}`}>
+              <div className="tp-square-card-header">
+                 <h3 className="tp-card-title"><FiTrendingUp /> Work Experience</h3>
+                 <button className="tp-view-toggle" onClick={() => setIsExpOpen(!isExpOpen)}>
+                   {isExpOpen ? "Show Less" : "View All"}
+                 </button>
+              </div>
+              
+              <div className="tp-square-card-content">
+                {isExpOpen ? (
+                  <div className="tp-scrollable-area grid-view">
+                    {profileData.workExperience.length > 0 ? (
+                      profileData.workExperience.map((job, idx) => (
+                        <div key={idx} className="tp-item-card">
+                          <div className="tp-card-body">
+                            <div className="tp-timeline-icon">
+                              <FiBriefcase />
+                            </div>
+                            <div className="tp-card-info">
+                              <div className="tp-card-header-row">
+                                <h4>{job.role}</h4>
+                                <span className="tp-card-badge">{job.company}</span>
+                              </div>
+                              <div className="tp-timeline-period">
+                                <FiCalendar size={12} /> {job.period} • <FiMapPin size={12} /> {job.location}
+                              </div>
+                              <p className="timeline-desc">{job.desc}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <NoData text="No work history provided" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="tp-latest-preview">
+                    {profileData.workExperience.length > 0 ? (
+                      <div className="tp-preview-item">
+                        <div className="tp-preview-header">
+                          <div className="tp-timeline-icon sm">
+                             <FiBriefcase />
+                          </div>
+                          <div className="tp-preview-main">
+                             <h4>{profileData.workExperience[0].role}</h4>
+                             <div className="tp-timeline-company">{profileData.workExperience[0].company}</div>
+                          </div>
+                        </div>
+                        <p className="tp-preview-desc">{profileData.workExperience[0].desc.slice(0, 120)}...</p>
+                        <div className="tp-preview-footer">
+                           <span>Latest Experience</span>
+                           <FiChevronDown />
+                        </div>
+                      </div>
+                    ) : (
+                      <NoData text="No work history" />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Project Portfolio Square Card */}
+            <div className={`tp-square-card ${isProjOpen ? "expanded" : "collapsed"}`}>
+              <div className="tp-square-card-header">
+                 <h3 className="tp-card-title"><FiFileText /> Project Portfolio</h3>
+                 <button className="tp-view-toggle" onClick={() => setIsProjOpen(!isProjOpen)}>
+                   {isProjOpen ? "Show Less" : "View All"}
+                 </button>
+              </div>
+              
+              <div className="tp-square-card-content">
+                {isProjOpen ? (
+                  <div className="tp-scrollable-area grid-view">
+                    {projectsData.length > 0 ? (
+                      projectsData.map((data, idx) => (
+                        <div key={idx} className="tp-item-card">
+                          <div className="tp-card-body">
+                            <div className="tp-timeline-icon">
+                              <FiExternalLink />
+                            </div>
+                            <div className="tp-card-info">
+                              <div className="tp-card-header-row">
+                                <h4>{data.projectName}</h4>
+                                <span className="tp-card-badge secondary">{data.role}</span>
+                              </div>
+                              <div className="tp-tags-wrapper mb-3">
+                                {data.skills.map((skill, i) => (
+                                  <span key={i} className="tp-tag-pill">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                              <p className="timeline-desc">{data.description}</p>
+                              <div className="tp-timeline-period mt-2">
+                                <FiCalendar size={12} /> {data.startDate} - {data.endDate}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <NoData text="No projects listed" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="tp-latest-preview">
+                    {projectsData.length > 0 ? (
+                      <div className="tp-preview-item">
+                        <div className="tp-preview-header">
+                          <div className="tp-timeline-icon sm">
+                             <FiExternalLink />
+                          </div>
+                          <div className="tp-preview-main">
+                             <h4>{projectsData[0].projectName}</h4>
+                             <div className="tp-timeline-company">{projectsData[0].role}</div>
+                          </div>
+                        </div>
+                        <p className="tp-preview-desc">{projectsData[0].description.slice(0, 120)}...</p>
+                        <div className="tp-preview-footer">
+                           <span>Latest Project</span>
+                           <FiChevronDown />
+                        </div>
+                      </div>
+                    ) : (
+                      <NoData text="No projects" />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar Column */}
+        <div className="tp-column-side">
+          
+          {/* Quick Info Sidebar Block */}
+          <div className="tp-card-premium sidebar-card">
+            <h3 className="tp-card-title">Quick Information</h3>
+            <div className="tp-info-block">
+               <div className="tp-info-icon-box"><FiStar /></div>
+               <div className="tp-info-content-box">
+                  <div className="tp-info-label-sm">Expected Salary</div>
+                  <div className="tp-info-value-md">$120k - $150k / yr</div>
+               </div>
+            </div>
+            <div className="tp-info-block">
+               <div className="tp-info-icon-box"><FiMapPin /></div>
+               <div className="tp-info-content-box">
+                  <div className="tp-info-label-sm">Work Model</div>
+                  <div className="tp-info-value-md">Hybrid / Remote</div>
+               </div>
             </div>
           </div>
 
-          {/* Quick Information */}
-          <div className=" sidebar-card project-card">
-            <h3 className="card-title">Quick Information</h3>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Expected Salary</div>
-              <div className="info-value">$120,000 - $150,000 / year</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Work Preference</div>
-              <div className="info-value">Hybrid (2-3 days remote)</div>
-            </div>
-
-            <div className="quick-info-item">
-              <div className="stat-label">Languages</div>
-              <div className="languages-list">
-                <span className="status-tag status-pending">English</span>
-                <span className="status-tag status-pending">Spanish</span>
-              </div>
+          {/* Skills Sidebar Block */}
+          <div className="tp-card-premium sidebar-card">
+            <h3 className="tp-card-title">Expertise</h3>
+            <div className="tp-tags-wrapper scrollable-skills">
+               {profileData.skills.map((skill, idx) => (
+                 <span key={idx} className="tp-tag-pill">{skill}</span>
+               ))}
             </div>
           </div>
 
-          {/* Contact Information - BLURRED PREMIUM SECTION */}
-          <div
-            className="sidebar-card project-card"
-            style={{ position: "relative", overflow: "hidden" }}
-          >
-            <h3 className="card-title">Contact Information</h3>
+          {/* Education Sidebar Block */}
+          <div className="tp-card-premium sidebar-card">
+            <h3 className="tp-card-title">Education</h3>
+            {profileData.education.length > 0 ? (
+                profileData.education.map((edu, idx) => (
+                  <div key={idx} className="tp-info-block" style={{ marginBottom: '16px' }}>
+                    <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#f5810c' }}>
+                      <FiBookOpen size={18} />
+                    </div>
+                    <div className="tp-info-content-box">
+                      <div className="tp-info-value-md">{edu.degree}</div>
+                      <div className="tp-info-label-sm">{edu.school}</div>
+                      <div className="tp-timeline-period">{edu.year}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <NoData text="N/A" />
+              )}
+          </div>
 
-            {/* Blurred Content Layer */}
-            <div
-              className="contact-list"
-              style={{
-                filter: "blur(6px)",
-                opacity: 0.6,
-                pointerEvents: "none",
-                userSelect: "none",
-              }}
-            >
-              <div className="contact-item">
-                <FiMail className="contact-icon" /> [sarah.anderson@example.com]
-              </div>
-              <div className="contact-item">
-                <FiPhone className="contact-icon" /> +1 (555) 123-4567
-              </div>
-              <div className="contact-item">
-                <FiLinkedin className="contact-icon" />{" "}
-                linkedin.com/in/sarahanderson
-              </div>
-              <div className="contact-item">
-                <BsDribbble className="contact-icon" /> sarahanderson.design
-              </div>
-            </div>
-
-            {/* Premium Overlay Layer */}
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(255, 255, 255, 0.4)",
-                zIndex: 10,
-                gap: "12px",
-              }}
-            >
-              <button className="link-btn">
-                <FaGem /> Unlock Premium
-              </button>
-
-              <button className="btn-primary w-50">
-                Contact Hiring Manager
-              </button>
+          {/* Contact Locked (Matches Admin Premium Look) */}
+          <div className="tp-card-premium tp-contact-locked">
+            <h3 className="tp-card-title"><FiLock /> Contact Details</h3>
+            <div className="tp-lock-overlay">
+               <div className="tp-lock-text">Unlock to view direct contact info</div>
+               <button className="tp-btn-unlock">
+                 <FaGem /> Unlock Profile
+               </button>
             </div>
           </div>
+
+          {/* Utility Links */}
+          <div className="d-flex justify-content-between px-2">
+               <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
+                 <FiDownload size={14} /> Resume
+               </button>
+               <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
+                 <FiShare2 size={14} /> Share
+               </button>
+            </div>
+
         </div>
       </div>
     </div>

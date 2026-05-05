@@ -226,27 +226,27 @@
     .admin-cc-container {
         padding: 1.25rem;
     }
-    
+
     .admin-cc-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1.5rem;
     }
-    
+
     .cc-toolbar {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .search-wrapper {
         width: 100%;
     }
-    
+
     .admin-cc-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .header-info {
         flex-direction: column;
         align-items: flex-start;

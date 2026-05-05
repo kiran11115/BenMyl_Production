@@ -123,8 +123,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
           status: item.status?.toUpperCase() || "NEW",
           rating: 4.5,
           avatar:
-            item.profilepicture ||
-            "https://images.pexels.com/photos/774095/pexels-photo-774095.jpeg",
+            item.profilepicture || "",
         }));
 
         // ✅ Page 1 replace, Page 2+ append

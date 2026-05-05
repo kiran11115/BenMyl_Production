@@ -1,6 +1,6 @@
 import React from "react";
-import { 
-    CreditCard, Calendar, Users, Zap, 
+import {
+    CreditCard, Calendar, Users, Zap,
     TrendingUp, Shield, HelpCircle, ArrowRight,
     Check, Sparkles, Sliders, DollarSign
 } from "lucide-react";
@@ -8,26 +8,26 @@ import "./BillingControl.css";
 import ModuleHeader from "../ModuleHeader";
 
 const PLAN_TIERS = [
-    { 
-        id: "starter", 
-        name: "Starter", 
-        price: "$299", 
+    {
+        id: "starter",
+        name: "Starter",
+        price: "$299",
         period: "/mo",
         features: ["Up to 5 Users", "Basic AI Matching", "Standard Support", "Audit Logs (30 days)"],
         current: false
     },
-    { 
-        id: "pro", 
-        name: "Professional", 
-        price: "$799", 
+    {
+        id: "pro",
+        name: "Professional",
+        price: "$799",
         period: "/mo",
         features: ["Up to 25 Users", "Advanced AI Behavior", "Priority Support", "Unlimited Audit Logs", "Custom Workflows"],
         current: true
     },
-    { 
-        id: "enterprise", 
-        name: "Enterprise", 
-        price: "Custom", 
+    {
+        id: "enterprise",
+        name: "Enterprise",
+        price: "Custom",
         period: "",
         features: ["Unlimited Users", "Full AI Automation", "Dedicated Account Manager", "White-label Options", "SLA Guarantee"],
         current: false
@@ -37,22 +37,22 @@ const PLAN_TIERS = [
 function BillingControl() {
     return (
         <div className="billing-container">
-            <ModuleHeader 
+            <ModuleHeader
                 breadcrumb="Billing Control"
                 title="Billing & Subscription Control"
                 description="Manage subscription tiers, monitor seat allocation, and configure platform-wide pricing rules."
                 badgeText="Financial Governance"
                 icon={DollarSign}
                 actions={[
-                    { 
-                        label: "Billing History", 
-                        icon: <Calendar size={16} />, 
+                    {
+                        label: "Billing History",
+                        icon: <Calendar size={16} />,
                         type: "secondary",
                         onClick: () => console.log("History")
                     },
-                    { 
-                        label: "Upgrade Plan", 
-                        icon: <Zap size={16} />, 
+                    {
+                        label: "Upgrade Plan",
+                        icon: <Zap size={16} />,
                         type: "primary",
                         onClick: () => console.log("Upgrade")
                     }
