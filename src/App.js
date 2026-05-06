@@ -5,15 +5,18 @@ import './App.css';
 import DatePicker, { registerLocale } from "react-datepicker";
 import en from "date-fns/locale/en-US";
 import "react-datepicker/dist/react-datepicker.css";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
   registerLocale("en-US", en);
 
   return (
-    <RouterProvider router={Routes}>
-
-    </RouterProvider>
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <RouterProvider router={Routes} />
+    </>
   );
 }
 
