@@ -305,124 +305,63 @@ const UserJobs = () => {
               jobs.map((job) => (
                 <div
                   key={job.id}
-                  className={`project-card ${selectedJob?.id === job.id ? "active-card" : ""}`}
-                  style={{ gap: "0" }}
+                  className={`tp-item-card ${selectedJob?.id === job.id ? "active-card" : ""}`}
                 >
-                  {/* A. Header: Title & Company Info */}
-                  <div
-                    className="job-card-top"
-                    style={{ marginBottom: "16px", alignItems: "flex-start" }}
-                  >
-                    <div className="company-icon-box large">
-                      <BsBuilding size={24} />
-                    </div>
-                    <div className="job-header-info">
-                      <h3
-                        className="job-title"
-                        style={{ fontSize: "18px", marginBottom: "6px" }}
-                      >
-                        {job.title}
-                      </h3>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: "2px",
-                        }}
-                      >
-                        <p
-                          className="company-name"
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#3b82f6",
-                          }}
-                        >
-                          {job.company}
-                        </p>
-                        <div
-                          style={{
-                            fontSize: "13px",
-                            color: "var(--slate-500)",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                          }}
-                        >
-                          <FiMapPin size={12} /> {job.location}
+                  <div className="tp-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {/* Header */}
+                    <div className="d-flex align-items-start gap-3">
+                      <div className="company-icon-box" style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                        <BsBuilding size={20} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h3 className="job-title" style={{ fontSize: '14px', fontWeight: '700', marginBottom: '2px', color: '#0f172a' }}>{job.title}</h3>
+                        <div className="d-flex flex-column">
+                          <p className="company-name" style={{ color: '#3b82f6', fontWeight: '600', fontSize: '12px', margin: 0 }}>{job.company}</p>
+                          <div className="d-flex align-items-center gap-1 text-muted" style={{ fontSize: '11px' }}>
+                            <FiMapPin size={10} /> {job.location}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* B. Stats Block (Grey Box) */}
-                  <div
-                    className="drawer-stats-3"
-                    style={{ marginBottom: "20px" }}
-                  >
-                    <div className="drawer-stat-item">
-                      <span className="label">Budget</span>
-                      <span className="value">{job.rateText} {job.salaryType || "/hr"}</span>
+                    {/* Highlighted Stats */}
+                    <div className="drawer-stats-3" style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                      <div className="d-flex flex-column">
+                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Budget</span>
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.rateText} {job.salaryType}</span>
+                      </div>
+                      <div className="d-flex flex-column">
+                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Exp</span>
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.experienceText}</span>
+                      </div>
+                      <div className="d-flex flex-column">
+                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Type</span>
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.type}</span>
+                      </div>
                     </div>
-                    <div className="drawer-stat-item">
-                      <span className="label">Experience</span>
-                      <span className="value">{job.experienceText}</span>
-                    </div>
-                    <div className="drawer-stat-item">
-                      <span className="label">Type</span>
-                      <span className="value">{job.type}</span>
-                    </div>
-                  </div>
 
-                  {/* C. Description */}
-                  {/* <div style={{ marginBottom: '20px' }}>
-                  <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--slate-800)', margin: '0 0 8px 0' }}>
-                    Job Description
-                  </h4>
-                  <p style={{ fontSize: '13px', color: 'var(--slate-500)', lineHeight: '1.6', margin: 0 }}>
-                    {job.description}
-                  </p>
-                </div> */}
-
-                  {/* D. Skills Cloud */}
-                  <div style={{ marginBottom: "24px" }}>
-                    <h4
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "var(--slate-800)",
-                        margin: "0 0 8px 0",
-                      }}
-                    >
-                      Required Skills
-                    </h4>
-                    <div className="skills-cloud">
-                      {job.skills.map((skill) => (
+                    {/* Skills */}
+                    <div className="d-flex flex-wrap gap-2">
+                      {job.skills?.slice(0, 3).map((skill) => (
                         <span
                           key={skill}
-                          className="status-tag status-progress"
+                          className="tp-tag-pill"
+                          style={{ fontSize: '11px', padding: '4px 10px', background: '#f1f5f9', borderRadius: '6px', color: '#475569', fontWeight: '600' }}
                         >
                           {skill}
                         </span>
                       ))}
+                      {job.skills?.length > 3 && (
+                        <span style={{ fontSize: '11px', color: '#94a3b8', alignSelf: 'center' }}>+{job.skills.length - 3}</span>
+                      )}
                     </div>
-                  </div>
 
-                  {/* E. Action Button */}
-                  <div
-                    className="card-actions full-width"
-                    style={{
-                      marginTop: "auto",
-                      borderTop: "none",
-                      paddingTop: 0,
-                    }}
-                  >
+                    {/* Action */}
                     <button
-                      className="btn-primary full-width"
+                      className="btn-primary w-100"
                       onClick={() => handleAddTalentClick(job)}
+                      style={{ marginTop: 'auto', padding: '10px', borderRadius: '10px', fontWeight: '600', fontSize: '13px' }}
                     >
-                      <FiPlus size={16} style={{ marginRight: "8px" }} />
                       Add Talent
                     </button>
                   </div>
