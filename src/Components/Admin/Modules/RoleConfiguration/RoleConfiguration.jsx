@@ -49,6 +49,7 @@ function RoleConfiguration() {
         isLoading: isTeamLoading,
     } = useMembersListQuery(selectedRole.name, {
         skip: !selectedRole.name || selectedRole.name === 'Loading...',
+        refetchOnMountOrArgChange: true
     });
 
     const adminEmail = localStorage.getItem("Email");
