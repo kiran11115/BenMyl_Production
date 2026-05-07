@@ -6,6 +6,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 import { useRegisterMutation } from "../../State-Management/Api/SignupApiSlice";
+import { toast } from "react-toastify";
+import { SubmissionErrorModal } from "./SigninAlert";
 
 /* =========================
    Validation Schema
@@ -49,6 +51,10 @@ function SignUp() {
 
   const [isVisible, setIsVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
+  // Alert State
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   /* =========================
      READ URL QUERY PARAMS
@@ -95,6 +101,8 @@ function SignUp() {
         };
 
         const res = await register(payload).unwrap();
+        const successMsg = res?.message || (typeof res === 'string' ? res : "Registration successful!");
+        toast.success(successMsg);
 
         navigate("/otp-verification", {
           state: {
@@ -106,6 +114,15 @@ function SignUp() {
         });
       } catch (err) {
         console.error("Signup failed:", err);
+        // Extract the most relevant error message
+        const extractedMsg =
+          err?.data?.message ||
+          (typeof err?.data === 'string' ? err.data : "Signup failed") ||
+          err?.message ||
+          "Signup failed. Please try again.";
+
+        setErrorMsg(extractedMsg);
+        setShowError(true);
       }
     },
   });
@@ -252,6 +269,9 @@ function SignUp() {
                   {isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
               </div>
+              {formik.touched.password && formik.errors.password && (
+                <p className="auth-error-msg">{formik.errors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -272,6 +292,9 @@ function SignUp() {
                   {isConfirmVisible ? <Eye size={18} /> : <EyeOff size={18} />}
                 </button>
               </div>
+              {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                <p className="auth-error-msg">{formik.errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Terms */}
@@ -287,6 +310,9 @@ function SignUp() {
                   I agree to the Terms & Conditions and Cookie Policy.
                 </span>
               </label>
+              {formik.touched.acceptTerms && formik.errors.acceptTerms && (
+                <p className="auth-error-msg">{formik.errors.acceptTerms}</p>
+              )}
             </div>
 
             <button
@@ -310,6 +336,18 @@ function SignUp() {
           </p>
         </div>
       </div>
+
+      {/* ERROR MODAL */}
+      {showError && (
+        <SubmissionErrorModal
+          message={errorMsg}
+          onClose={() => setShowError(false)}
+          onRetry={() => {
+            setShowError(false);
+            formik.handleSubmit();
+          }}
+        />
+      )}
     </div>
   );
 }
