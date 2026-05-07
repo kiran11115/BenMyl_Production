@@ -29,7 +29,7 @@ export default function PublishTalentModal({
   const [showHotlist, setShowHotlist] = useState(false);
   const [hotlistLoading, setHotlistLoading] = useState(false);
   const [postDescription, setPostDescription] = useState("Latest Talent Hotlist is live! Discover skilled bench talent ready for new opportunities. Connect with top professionals and explore talent available to make an impact.");
-  const [postLink, setPostLink] = useState("https://react.benmyl.com/sign-in");
+  const [postLink, setPostLink] = useState("https://app.benmyl.com/sign-in");
 
 
   const [saveHotlistImage] = useSaveHotlistImageMutation();
