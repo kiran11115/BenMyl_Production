@@ -545,7 +545,6 @@
   border-radius: 16px;
   border: 1px solid rgba(226, 232, 240, 0.6);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
 }
 
 .tp-item-card:hover {
@@ -625,3 +624,139 @@
   margin: 0.75rem 0;
 }
 
+/* --- Candidate Card Styles (Shared Design System) --- */
+.candidate-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px !important;
+  height: 100%;
+}
+
+.candidate-card:hover {
+  transform: translateY(-8px);
+  border-color: #ffedd5;
+}
+
+.candidate-card .card-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.candidate-card .avatar-wrapper {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.candidate-card .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  object-fit: cover;
+  border: 2px solid #f8fafc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-card .header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.candidate-card .name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+  gap: 8px;
+}
+
+.candidate-card .name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.candidate-card .role {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.candidate-card .meta-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.candidate-card .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.candidate-card .meta-item svg {
+  color: #f5810c;
+  flex-shrink: 0;
+}
+
+.candidate-card .tags-section {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.candidate-card .tags-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.candidate-card .tag-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.candidate-card .tag-pill.skill {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.candidate-card .tag-pill.skill:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.candidate-card .card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+}

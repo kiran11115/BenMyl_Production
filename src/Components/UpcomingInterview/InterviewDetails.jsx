@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import {
     FiCalendar,
     FiClock,
@@ -68,10 +69,10 @@ export default function InterviewDetails() {
 
     const handleShare = () => {
         if (!meetingLinkInput) {
-            alert("Please provide a meeting link before sharing.");
+            toast.error("Please provide a meeting link before sharing.");
             return;
         }
-        alert(`Meeting link has been sent to ${interview.name}'s email successfully!`);
+        toast.success(`Meeting link has been sent to ${interview.name}'s email successfully!`);
     };
 
     return (

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import "./FormWizard.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFormik } from "formik";
@@ -277,7 +278,7 @@ const FormWizard = () => {
       navigate("/sign-in");
     } catch (err) {
       console.error(err);
-      alert(err?.data?.message || "Backend validation failed");
+      toast.error(err?.data?.message || "Backend validation failed");
     } finally {
       setIsSubmitting(false);
     }

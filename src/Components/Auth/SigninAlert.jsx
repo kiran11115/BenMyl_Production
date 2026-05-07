@@ -8,22 +8,21 @@ import { useNavigate } from "react-router-dom";
 export const SubmissionErrorModal = ({
     onClose,
     onRetry,
-    message,
-    onContactSupport
+    message
 }) => {
     return (
         <div className="modal-overlay">
-            <div className="alert-card error-theme submission-error-card">
+            <div className="alert-card error-theme">
                 <button className="alert-close-icon" onClick={onClose}><FiX size={20} /></button>
 
-                <div className="submission-error-header">
+                <div className="alert-header">
                     <div className="alert-icon-wrapper">
                         <FiX />
                     </div>
                     <h3 className="alert-title">Submission Error</h3>
                 </div>
 
-                <div className="submission-error-body">
+                <div className="alert-body">
                     <p className="alert-message">
                         {message || "Your application could not be submitted at this time. Please review the form for any errors."}
                     </p>
@@ -46,7 +45,6 @@ export const SubmissionErrorModal = ({
  * Success Modal - Replicates the green "Success!" design
  */
 export const SuccessModal = ({ onClose }) => {
-    // 1. Initialize the hook
     const navigate = useNavigate();
     window.scrollTo(0, 0);
 
@@ -63,15 +61,12 @@ export const SuccessModal = ({ onClose }) => {
                 </div>
 
                 <div className="alert-body">
-                    <h4 style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: 600, color: "#0f172a" }}>
-                        What would you like to do today?
-                    </h4>
                     <p className="alert-message">
                         Choose an option below to continue with your daily tasks quickly and easily.
                     </p>
                 </div>
 
-                <div className="alert-footer" style={{ flexDirection: "column", gap: "10px" }}>
+                <div className="alert-footer" style={{ flexDirection: "column", gap: "12px" }}>
                     <button
                         className="btn-alert-primary"
                         onClick={() => navigate("/user/user-post-new-positions")}
@@ -80,7 +75,7 @@ export const SuccessModal = ({ onClose }) => {
                     </button>
                     <button
                         className="btn-secondary"
-                        style={{ width: "100%", textAlign: "center", justifyContent: "center" }}
+                        style={{ width: "100%" }}
                         onClick={() => navigate("/user/user-upload-talent")}
                     >
                         Upload Talent

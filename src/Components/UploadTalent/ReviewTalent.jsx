@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
+import { toast } from "react-toastify";
 import "./UploadTalent.css";
 import {
   useApprovedEmployeeMutation,
@@ -1208,7 +1209,7 @@ const ReviewTalent = () => {
 
     } catch (err) {
       console.error("Approve failed", err);
-      alert("Failed to save talent");
+      toast.error("Failed to save talent");
     }
   };
 
@@ -1374,7 +1375,7 @@ const ReviewTalent = () => {
       setShowSuccessModal(true);
     } catch (err) {
       console.error("Approve failed", err);
-      alert("Failed to save talent");
+      toast.error("Failed to save talent");
     }
   };
 

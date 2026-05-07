@@ -9,33 +9,39 @@ export const ValidationErrorModal = ({
 }) => {
   return (
     <div className="modal-overlay">
-      <div className="alert-card error-theme submission-error-card">
+      <div className="alert-card error-theme">
         <button className="alert-close-icon" onClick={onClose}>
           <FiX size={20} />
         </button>
 
-        <div className="submission-error-header">
+        <div className="alert-header">
           <div className="alert-icon-wrapper">
             <FiX />
           </div>
           <h3 className="alert-title">Submission Error</h3>
         </div>
 
-        <div className="submission-error-body validation-error-body"
-          style={{
-            maxHeight: "300px",   // 👈 control height
-            overflowY: "auto",    // 👈 enable scroll
-            paddingRight: "6px"
-          }}>
+        <div className="alert-body" style={{ maxHeight: "300px", overflowY: "auto", textAlign: "left" }}>
           <div className="alert-message">
             {Array.isArray(errors) ? (
-              <ul className="submission-error-list validation-error-list">
+              <div className="submission-error-list" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {errors.map((err, idx) => (
-                  <li key={idx}>
-                    <span><FiFileText size={14} /></span> {err}
-                  </li>
+                  <div key={idx} style={{ 
+                    display: "flex", 
+                    gap: "12px", 
+                    padding: "10px 14px", 
+                    backgroundColor: "rgba(239, 68, 68, 0.05)", 
+                    borderRadius: "10px",
+                    border: "1px solid rgba(239, 68, 68, 0.1)",
+                    color: "#475569",
+                    fontSize: "13px",
+                    lineHeight: "1.5"
+                  }}>
+                    <FiFileText size={16} style={{ color: "#ef4444", marginTop: "2px", flexShrink: 0 }} /> 
+                    <span>{err}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               errors
             )}
@@ -43,10 +49,7 @@ export const ValidationErrorModal = ({
         </div>
 
         <div className="alert-footer">
-          <button
-            className="btn-alert-primary btn-alert-error"
-            onClick={onRetry}
-          >
+          <button className="btn-alert-primary btn-alert-error" onClick={onRetry}>
             Try Again
           </button>
         </div>
@@ -72,8 +75,7 @@ export const ConfirmSaveModal = ({ onClose, onConfirm }) => {
 
         <div className="alert-body">
           <p className="alert-message">
-            Are you sure you want to save this talent? This will submit the
-            profile to the system for review.
+            Are you sure you want to save this talent? This will submit the profile to the system for review.
           </p>
         </div>
 
@@ -104,8 +106,7 @@ export const SaveSuccessModal = ({ onClose }) => {
 
         <div className="alert-body">
           <p className="alert-message">
-            The talent profile has been securely added to the system and is now
-            ready for further actions.
+            The talent profile has been securely added to the system and is now ready for further actions.
           </p>
         </div>
 
@@ -184,8 +185,7 @@ export const SaveErrorModal = ({ onClose, onRetry }) => {
 
         <div className="alert-body">
           <p className="alert-message">
-            There was a problem saving the talent profile. Please try again or contact
-            support if the issue persists.
+            There was a problem saving the talent profile. Please try again or contact support if the issue persists.
           </p>
         </div>
 
@@ -193,10 +193,7 @@ export const SaveErrorModal = ({ onClose, onRetry }) => {
           <button className="btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button
-            className="btn-alert-primary btn-alert-error"
-            onClick={onRetry}
-          >
+          <button className="btn-alert-primary btn-alert-error" onClick={onRetry}>
             Try Again
           </button>
         </div>
@@ -210,45 +207,39 @@ export const DeleteConfirmModal = ({
   onConfirm,
   title = "Delete Draft",
   message = "Are you sure you want to delete this draft employee?",
-  note = "This action is permanent and will remove the draft record from the system. It cannot be undone.",
+  note = "This action is permanent and will remove the draft record from the system.",
   confirmText = "Yes, Delete",
 }) => {
   return (
-    <div className="delete-confirm-overlay">
-      <div className="delete-confirm-card" role="dialog" aria-modal="true" aria-labelledby="delete-draft-title">
-        <button className="delete-confirm-close" onClick={onClose} aria-label="Close delete confirmation">
+    <div className="modal-overlay">
+      <div className="alert-card error-theme">
+        <button className="alert-close-icon" onClick={onClose}>
           <FiX size={20} />
         </button>
 
-        <div className="delete-confirm-header">
-          <div className="delete-confirm-icon">
-            <FiTrash2 size={28} />
+        <div className="alert-header">
+          <div className="alert-icon-wrapper">
+            <FiTrash2 />
           </div>
-          <h3 className="delete-confirm-title" id="delete-draft-title">{title}</h3>
+          <h3 className="alert-title">{title}</h3>
         </div>
 
-        <div className="delete-confirm-body">
-          <p className="delete-confirm-message">
+        <div className="alert-body">
+          <p className="alert-message" style={{ marginBottom: "16px" }}>
             {message}
           </p>
-          <div className="delete-confirm-note">
-            <div className="delete-confirm-note-title">
-              <FiAlertTriangle size={16} /> NOTE:
-            </div>
-            <p>
-              {note}
+          <div style={{ background: "#fff5f5", padding: "12px", borderRadius: "12px", border: "1px solid #fee2e2", textAlign: "left" }}>
+            <p style={{ color: "#991b1b", fontSize: "12px", margin: 0, fontWeight: 600 }}>
+              NOTE: {note}
             </p>
           </div>
         </div>
 
-        <div className="delete-confirm-footer">
-          <button className="delete-confirm-cancel" onClick={onClose}>
+        <div className="alert-footer">
+          <button className="btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button
-            className="delete-confirm-action"
-            onClick={onConfirm}
-          >
+          <button className="btn-alert-primary btn-alert-error" onClick={onConfirm}>
             {confirmText}
           </button>
         </div>

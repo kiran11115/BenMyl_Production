@@ -14,6 +14,8 @@ import { useFormik, FieldArray, FormikProvider } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { ValidationErrorModal } from "./SaveTalentAlert";
 
@@ -60,7 +62,13 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
+const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSuccess: propsSuccess }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const initialData = propsData || location.state?.initialData;
+  const onCancel = propsCancel || (() => navigate(-1));
+  const onSuccess = propsSuccess || (() => navigate(-1));
+
   const [updateEmployee, { isLoading: isSaving }] =
     useUpdateEmployeeResumeMutation();
   const [skillInput, setSkillInput] = useState("");
@@ -178,7 +186,7 @@ const EditTalentProfile = ({ initialData, onCancel, onSuccess }) => {
         onSuccess();
       } catch (err) {
         console.error("Failed to save profile:", err);
-        alert("Failed to save changes. Please try again.");
+        toast.error("Failed to save changes. Please try again.");
       }
     },
   });

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
   FileText, X, Building2, Check, ChevronDown
@@ -142,7 +143,7 @@ useEffect(() => {
   ========================= */
   const handlePostJob = async () => {
     if (!user) {
-      alert("User session expired. Please login again.");
+      toast.error("User session expired. Please login again.");
       return;
     }
 
@@ -246,10 +247,10 @@ useEffect(() => {
 
     try {
       await saveJobDraft(fd).unwrap();
-      alert("Draft saved successfully");
+      toast.success("Draft saved successfully");
     } catch (err) {
       console.error(err);
-      alert("Failed to save draft");
+      toast.error("Failed to save draft");
     }
   };
 
@@ -321,7 +322,7 @@ useEffect(() => {
       !formik.values.yearsExperience ||
       skills.length === 0
     ) {
-      alert("Please enter All Required Fields (Job Title, Company, Employment Type, Work Model, Education, Experience, and at least one Skill)");
+      toast.error("Please enter All Required Fields (Job Title, Company, Employment Type, Work Model, Education, Experience, and at least one Skill)");
       return;
     }
 
@@ -350,7 +351,7 @@ useEffect(() => {
 
     } catch (err) {
       console.error(err);
-      alert("Failed to generate AI description");
+      toast.error("Failed to generate AI description");
     }
   };
 

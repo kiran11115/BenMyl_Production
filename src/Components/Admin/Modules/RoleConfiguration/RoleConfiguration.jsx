@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { toast } from "react-toastify";
 import { 
     Shield, ShieldCheck, UserPlus, Search, 
     MoreVertical, ChevronRight, Save, RotateCcw,
@@ -116,10 +117,10 @@ function RoleConfiguration() {
 
         try {
             await saveUserPermissions(payload).unwrap();
-            alert("Permissions saved successfully!");
+            toast.success("Permissions saved successfully!");
         } catch (error) {
             console.error("Failed to save permissions", error);
-            alert("Failed to save permissions.");
+            toast.error("Failed to save permissions.");
         }
     };
 

@@ -15,6 +15,7 @@ import {
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const MOCK = [
     {
@@ -262,10 +263,10 @@ export default function UpcomingInterview() {
 
     const handleShare = () => {
         if (!meetingLinkInput) {
-            alert("Please provide a meeting link before sharing.");
+            toast.warning("Please provide a meeting link before sharing.");
             return;
         }
-        alert(`Meeting link has been sent to ${selectedInterview.name}'s email successfully!`);
+        toast.success(`Meeting link has been sent to ${selectedInterview.name}'s email successfully!`);
     };
 
     const getInitials = (name = "") => {

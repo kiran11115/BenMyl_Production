@@ -29,6 +29,7 @@ import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
+import EditTalentProfile from "./UploadTalent/EditTalentProfile";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
 import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
@@ -91,6 +92,7 @@ const routes = createBrowserRouter(
           
           <Route path="user-talent-profile" element={<TalentProfile />} />
           <Route path="talent-profile" element={<UploadTalentProfile />} />
+          <Route path="edit-talent-profile" element={<EditTalentProfile />} />
           <Route path="review-talent" element={<ReviewTalent />} />
           <Route path="project-details/:id" element={<ProjectDetailsPage />} />
           <Route path="job-overview" element={<JobOverview />} />
@@ -117,6 +119,7 @@ const routes = createBrowserRouter(
             <Route path="user-talentpool" element={<TalentPool />} />
             <Route path="user-talent-profile" element={<TalentProfile />} />
             <Route path="talent-profile" element={<UploadTalentProfile />} />
+            <Route path="edit-talent-profile" element={<EditTalentProfile />} />
             <Route path="user-upload-talent" element={<UploadTalent />} />
             <Route path="review-talent" element={<ReviewTalent />} />
           </Route>

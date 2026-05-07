@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -219,7 +220,7 @@ const ScheduleInterview = () => {
 
     const handleConfirm = async () => {
         if (!selectedCandidate || !selectedJob) {
-            alert("Please select candidate and job");
+            toast.error("Please select candidate and job");
             return;
         }
 
@@ -257,7 +258,7 @@ const ScheduleInterview = () => {
         } catch (error) {
             console.error("Interview scheduling failed:", error);
             setStatus("idle");
-            alert("Failed to schedule interview");
+            toast.error("Failed to schedule interview");
         }
     };
 

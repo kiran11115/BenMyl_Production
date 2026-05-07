@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   FiArrowLeft,
   FiUser,
@@ -144,15 +145,15 @@ export default function CreateProject() {
 
   const handleSave = () => {
     if (!formData.title.trim()) {
-      alert("Please enter a project title to proceed.");
+      toast.error("Please enter a project title to proceed.");
       return;
     }
     if (formData.roles.length === 0) {
-      alert("Please select at least one core business role.");
+      toast.error("Please select at least one core business role.");
       return;
     }
     if (selectedTalentIds.length === 0) {
-      alert("Please assign at least one team member to this project.");
+      toast.error("Please assign at least one team member to this project.");
       return;
     }
     if (!isTeamConfirmed) {

@@ -7,8 +7,9 @@ import {
   FiUser,
   FiPlus,
   FiFilter,
+  FiBriefcase,
+  FiVideo,
 } from "react-icons/fi";
-import { BsBuilding } from "react-icons/bs";
 import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
@@ -18,6 +19,15 @@ import NoData from "../UploadTalent/NoData";
 import { useLocation } from "react-router-dom";
 
 const PAGE_SIZE = 10;
+
+const getInitials = (name = "") => {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0].toUpperCase())
+    .join("");
+};
 
 const UserJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
@@ -135,6 +145,62 @@ const UserJobs = () => {
     if (res.length < PAGE_SIZE) {
       setHasMore(false);
     }
+
+    // Auto-open logic
+    const autoOpenJobId = location.state?.autoOpenJobId;
+    if (autoOpenJobId && pageNumber === 1) {
+      const jobToOpen = res.find(j => (j.jobID || j.id) === autoOpenJobId);
+      if (jobToOpen) {
+        // We need to map it to the UI format
+        const mappedJob = {
+          id: jobToOpen.jobID,
+          title: jobToOpen.jobTitle,
+          company: jobToOpen.companyName,
+          location: jobToOpen.location,
+          type: jobToOpen.employeeType,
+          workModel: jobToOpen.workModels,
+          department: jobToOpen.department,
+          jobDuration: jobToOpen.jobDuration,
+          rateText: jobToOpen.salaryRange_Min && jobToOpen.salaryRange_Max
+            ? `$${jobToOpen.salaryRange_Min}-${jobToOpen.salaryRange_Max}`
+            : jobToOpen.salaryRange_Min
+              ? `$${jobToOpen.salaryRange_Min}`
+              : "N/A",
+          experienceText: jobToOpen.experienceLevel,
+          description: jobToOpen.jobDescription,
+          additionalRequirements: jobToOpen.additionalRequirements,
+          salaryType: (() => {
+            const t = (jobToOpen.salarType || "").toLowerCase();
+            if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+            if (t.includes("month")) return "/month";
+            if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+            return "/hr";
+          })(),
+          educationLevel: jobToOpen.educationLevel,
+          yearsOfExperience: jobToOpen.yearsOfExperience,
+          skills: jobToOpen.requiredSkills
+            ? jobToOpen.requiredSkills.split(",").map((s) => s.trim())
+            : [],
+          workAuthorization: [
+            jobToOpen.isUSCitizen && "US Citizen",
+            jobToOpen.isGC && "Green Card",
+            jobToOpen.isH1B && "H1B",
+            jobToOpen.isEAD && "EAD",
+            jobToOpen.isOPT && "OPT",
+            jobToOpen.isCPT && "CPT",
+            jobToOpen.isH4 && "H4",
+          ].filter(Boolean),
+          preferredEmployment: [
+            jobToOpen.isCorpToCorp && "Corp-Corp",
+            jobToOpen.isW2Permanent && "W2-Permanent",
+            jobToOpen.isW2Contract && "W2-Contract",
+            jobToOpen.is1099Contract && "1099-Contract",
+            jobToOpen.isContractToHire && "Contract to Hire",
+          ].filter(Boolean),
+        };
+        setSelectedJob(mappedJob);
+      }
+    }
   };
 
   // initial + pagination fetch
@@ -173,6 +239,9 @@ const UserJobs = () => {
       company: job.companyName,
       location: job.location,
       type: job.employeeType,
+      workModel: job.workModels,
+      department: job.department,
+      jobDuration: job.jobDuration,
       rateText:
         job.salaryRange_Min && job.salaryRange_Max
           ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
@@ -181,6 +250,7 @@ const UserJobs = () => {
             : "N/A",
       experienceText: job.experienceLevel,
       description: job.jobDescription,
+      additionalRequirements: job.additionalRequirements,
       salaryType: (() => {
         const t = (job.salarType || "").toLowerCase();
         if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
@@ -193,6 +263,22 @@ const UserJobs = () => {
       skills: job.requiredSkills
         ? job.requiredSkills.split(",").map((s) => s.trim())
         : [],
+      workAuthorization: [
+        job.isUSCitizen && "US Citizen",
+        job.isGC && "Green Card",
+        job.isH1B && "H1B",
+        job.isEAD && "EAD",
+        job.isOPT && "OPT",
+        job.isCPT && "CPT",
+        job.isH4 && "H4",
+      ].filter(Boolean),
+      preferredEmployment: [
+        job.isCorpToCorp && "Corp-Corp",
+        job.isW2Permanent && "W2-Permanent",
+        job.isW2Contract && "W2-Contract",
+        job.is1099Contract && "1099-Contract",
+        job.isContractToHire && "Contract to Hire",
+      ].filter(Boolean),
     }));
   }, [allJobs]);
 
@@ -216,17 +302,45 @@ const UserJobs = () => {
       {/* 1. Header Section */}
       <div className="search-header-row d-flex justify-content-between">
         <div className="header-text">
-          <h1
-            style={{
-              fontSize: "28px",
-              fontWeight: 700,
-              margin: "0 0 4px 0",
-              color: "var(--slate-800)",
-            }}
-          >
-            Find Jobs
-          </h1>
-          <p style={{ margin: 0, color: "var(--slate-500)", fontSize: "14px" }}>
+          <div className="d-flex align-items-center gap-2">
+            <h1
+              style={{
+                fontSize: "28px",
+                fontWeight: 700,
+                margin: "0",
+                color: "var(--slate-800)",
+              }}
+            >
+              Find Jobs
+            </h1>
+            <button 
+              className="video-btn-help"
+              style={{
+                background: 'var(--orange-light)',
+                border: 'none',
+                color: 'var(--orange-primary)',
+                padding: '8px',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                marginTop: '4px'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'var(--orange-primary)';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'var(--orange-light)';
+                e.currentTarget.style.color = 'var(--orange-primary)';
+              }}
+            >
+              <FiVideo size={18} />
+            </button>
+          </div>
+          <p style={{ margin: "4px 0 0 0", color: "var(--slate-500)", fontSize: "14px", fontWeight: "500" }}>
             Search and manage your Jobs network.
           </p>
         </div>
@@ -249,10 +363,21 @@ const UserJobs = () => {
                 width: "100%",
                 padding: "12px 16px 12px 44px",
                 borderRadius: "14px",
-                border: "1px solid #f1f5f9",
+                border: "1px solid var(--slate-100)",
                 outline: "none",
                 fontSize: "14px",
-                color: "#334155",
+                color: "var(--slate-800)",
+                background: "white",
+                transition: "all 0.2s ease",
+                boxShadow: "var(--shadow-sm)"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "var(--orange-primary)";
+                e.target.style.boxShadow = "0 0 0 3px rgba(245, 129, 12, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "var(--slate-100)";
+                e.target.style.boxShadow = "var(--shadow-sm)";
               }}
             />
           </div>
@@ -271,10 +396,10 @@ const UserJobs = () => {
         style={{
           display: "flex",
           gap: 16,
-          height: "calc(100vh - 0px)", // ✅ FIXED HEIGHT
+          height: "calc(100vh - 200px)",
+          overflow: "hidden"
         }}
       >
-        {/* Sidebar */}
         <aside className="vs-filters-sidebar hide-scrollbar" style={{ overflowY: "auto" }}>
           <JobFilters initialFilters={filters} onApplyFilters={(appliedFilters) => {
             setAllJobs([]);
@@ -299,98 +424,140 @@ const UserJobs = () => {
         </FilterBottomSheet>
 
         {/* Main Grid */}
-        <main className="jobs-results-wrapper" ref={resultsRef}>
-          <div className="jobs-grid">
-            {jobs.length > 0 ? (
-              jobs.map((job) => (
-                <div
-                  key={job.id}
-                  className={`tp-item-card ${selectedJob?.id === job.id ? "active-card" : ""}`}
-                >
-                  <div className="tp-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {/* Header */}
-                    <div className="d-flex align-items-start gap-3">
-                      <div className="company-icon-box" style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-                        <BsBuilding size={20} />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <h3 className="job-title" style={{ fontSize: '14px', fontWeight: '700', marginBottom: '2px', color: '#0f172a' }}>{job.title}</h3>
-                        <div className="d-flex flex-column">
-                          <p className="company-name" style={{ color: '#3b82f6', fontWeight: '600', fontSize: '12px', margin: 0 }}>{job.company}</p>
-                          <div className="d-flex align-items-center gap-1 text-muted" style={{ fontSize: '11px' }}>
-                            <FiMapPin size={10} /> {job.location}
+        <main className="jobs-results-wrapper">
+          <div className="jobs-main-container">
+            {isLoading && pageNumber === 1 ? (
+              <div className="container-loader-wrapper">
+                <div className="custom-loader"></div>
+                <span className="loader-text">Finding the best jobs for you...</span>
+              </div>
+            ) : (
+              <div className="jobs-grid" ref={resultsRef}>
+              {jobs.length > 0 ? (
+                jobs.map((job) => (
+                  <div
+                    key={job.id}
+                    className={`candidate-card ${selectedJob?.id === job.id ? "active-card" : ""}`}
+                    style={{height:"350px"}}
+                  >
+                    <div className="d-flex flex-column gap-3">
+                      {/* Header: Company Avatar + Title */}
+                      <div className="card-header">
+                        <div className="avatar-wrapper">
+                          <div className="avatar initial-avatar d-flex align-items-center justify-content-center" style={{
+                            background: "var(--slate-50)",
+                            color: "var(--slate-600)",
+                            fontSize: "22px",
+                            fontWeight: "600",
+                            textTransform: "uppercase"
+                          }}>
+                            {getInitials(job.company)}
                           </div>
+                        </div>
+                        <div className="header-info flex-column gap-0 align-items-start">
+                          <div className="name-row w-100">
+                            <h4 className="name" title={job.title}>{job.title}</h4>
+                          </div>
+                          <div className="role" style={{ color: 'var(--orange-primary)', fontWeight: '600' }}>
+                            {job.company}
+                          </div>
+                          {/* Department badge */}
+                          {job.department && (
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              color: 'var(--slate-500)',
+                              background: 'var(--slate-100)',
+                              padding: '2px 8px',
+                              borderRadius: '6px',
+                              marginTop: '4px',
+                              display: 'inline-block',
+                            }}>
+                              {job.department}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Meta Info: Salary, Exp Level, Location, Work Model */}
+                      <div className="meta-info">
+                        <div className="meta-item">
+                          <FiDollarSign size={14} />
+                          <span>{job.rateText}{job.salaryType ? ` ${job.salaryType}` : ''}</span>
+                        </div>
+                        <div className="meta-item">
+                          <FiBriefcase size={14} />
+                          <span>{job.experienceText}{job.yearsOfExperience ? ` · ${job.yearsOfExperience}yr` : ''}</span>
+                        </div>
+                        <div className="meta-item">
+                          <FiMapPin size={14} />
+                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{job.location}</span>
+                        </div>
+                        <div className="meta-item">
+                          <FiClock size={14} />
+                          <span>{job.workModel || job.type}</span>
+                        </div>
+                      </div>
+
+                      {/* Skills Tags */}
+                      <div className="tags-section">
+                        <div className="tags-group">
+                          {job.skills?.slice(0, 3).map((skill) => (
+                            <span key={skill} className="tag-pill skill">
+                              {skill}
+                            </span>
+                          ))}
+                          {job.skills?.length > 3 && (
+                            <span className="tag-pill skill" style={{ color: 'var(--slate-400)' }}>
+                              +{job.skills.length - 3}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Highlighted Stats */}
-                    <div className="drawer-stats-3" style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                      <div className="d-flex flex-column">
-                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Budget</span>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.rateText} {job.salaryType}</span>
-                      </div>
-                      <div className="d-flex flex-column">
-                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Exp</span>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.experienceText}</span>
-                      </div>
-                      <div className="d-flex flex-column">
-                        <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.02em' }}>Type</span>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>{job.type}</span>
-                      </div>
+                    {/* Action Button */}
+                    <div className="mt-auto">
+                      <button
+                        className="btn-primary w-100"
+                        onClick={() => handleAddTalentClick(job)}
+                      >
+                        <FiPlus size={16} /> Add Talent
+                      </button>
                     </div>
-
-                    {/* Skills */}
-                    <div className="d-flex flex-wrap gap-2">
-                      {job.skills?.slice(0, 3).map((skill) => (
-                        <span
-                          key={skill}
-                          className="tp-tag-pill"
-                          style={{ fontSize: '11px', padding: '4px 10px', background: '#f1f5f9', borderRadius: '6px', color: '#475569', fontWeight: '600' }}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                      {job.skills?.length > 3 && (
-                        <span style={{ fontSize: '11px', color: '#94a3b8', alignSelf: 'center' }}>+{job.skills.length - 3}</span>
-                      )}
-                    </div>
-
-                    {/* Action */}
-                    <button
-                      className="btn-primary w-100"
-                      onClick={() => handleAddTalentClick(job)}
-                      style={{ marginTop: 'auto', padding: '10px', borderRadius: '10px', fontWeight: '600', fontSize: '13px' }}
-                    >
-                      Add Talent
-                    </button>
                   </div>
+                ))
+              ) : !isLoading ? (
+                <div
+                  style={{
+                    gridColumn: "1 / -1",
+                    minHeight: "320px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NoData text="No jobs found matching your filters" />
                 </div>
-              ))
-            ) : !isLoading ? (
-              <div
-                style={{
-                  gridColumn: "1 / -1",
-                  minHeight: "320px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <NoData text="No jobs found matching your filters" />
-              </div>
-            ) : null}
-          </div>
-          {isLoading && (
-            <div style={{ textAlign: "center", padding: 16 }}>
-              Loading more jobs…
+              ) : null}
             </div>
-          )}
+            )}
+            {isLoading && pageNumber > 1 && (
+              <div className="compact-loader-wrapper">
+                <div className="compact-loader"></div>
+                <span className="compact-loader-text">Loading more jobs...</span>
+              </div>
+            )}
+          </div>
         </main>
       </div>
 
       {selectedJob && (
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+        <JobModal 
+          job={selectedJob} 
+          onClose={() => setSelectedJob(null)} 
+          initialSelectedTalentId={location.state?.initialSelectedTalentId}
+        />
       )}
     </div>
   );

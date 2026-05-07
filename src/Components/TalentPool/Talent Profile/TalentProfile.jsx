@@ -30,6 +30,7 @@ import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
 import NoData from "../../UploadTalent/NoData";
+import RecommendedJobs from "../../UploadTalent/RecommendedJobs";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
@@ -366,6 +367,11 @@ const TalentProfile = () => {
                 )}
               </div>
             </div>
+          </div>
+          
+          <div className="tp-card-premium">
+            <h3 className="tp-card-title" style={{ marginBottom: "1.5rem" }}><FiStar /> Recommended Jobs</h3>
+            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} />
           </div>
         </div>
 

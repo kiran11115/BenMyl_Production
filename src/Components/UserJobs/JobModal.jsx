@@ -1,78 +1,69 @@
 import React, { useState } from "react";
-import { FiX, FiCheck, FiEye, FiLoader } from "react-icons/fi";
+import { createPortal } from "react-dom";
+import { 
+  FiX, 
+  FiCheck, 
+  FiLoader, 
+  FiMapPin, 
+  FiClock, 
+  FiDollarSign, 
+  FiBriefcase,
+  FiBook,
+  FiAward,
+  FiInfo
+} from "react-icons/fi";
 import { useGetEmployeesByTitleQuery } from "../../State-Management/Api/ProjectApiSlice";
 import { useNavigate } from "react-router-dom";
 
-// Mock Data for Talent Profiles inside Modal
-
-
-const JobModal = ({ candidate, job, onClose }) => {
+const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
   const title = job?.title;
-
+  
   const {
     data: talents = [],
     isLoading,
     isError,
   } = useGetEmployeesByTitleQuery(title);
 
-  const [selectedTalents, setSelectedTalents] = useState([]);
+  const [selectedTalents, setSelectedTalents] = useState(initialSelectedTalentId ? [initialSelectedTalentId] : []);
   const [customNote, setCustomNote] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loader state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Toggle selection logic for multi-select
+  const navigate = useNavigate();
+
   const handleToggleTalent = (id) => {
-    if (isSubmitting) return; // Disable during submit
+    if (isSubmitting) return;
     setSelectedTalents((prev) =>
       prev.includes(id) ? prev.filter((tId) => tId !== id) : [...prev, id],
     );
   };
 
-
   const handleDone = async () => {
     if (isSubmitting) return;
-
     setIsSubmitting(true);
-
-    // 1 second simulated API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    // Simulated API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSubmitting(false);
     onClose();
   };
 
-  const navigate = useNavigate();
-
-  const handleProfileClick = () => {
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    navigate(`${basePath}/talent-profile`, {
-      state: {
-        employeeID: candidate.id,
-        jobId: job.id,
-        fromJobsOverview: true,
-      },
-    });
-  };
+  const getInitials = (name = "") =>
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0].toUpperCase())
+      .join("");
 
   const formatMarkdownToHtml = (text) => {
     if (!text) return "";
-
     let formatted = text;
-
-    // Remove first line completely
     formatted = formatted.replace(/^[^\n]*\n?/, "");
-
-    // Convert bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-
-    // Convert bullet points
     formatted = formatted.replace(/^\s*-\s+(.*)$/gm, "<li>$1</li>");
-
     if (formatted.includes("<li>")) {
       formatted = formatted.replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
     }
-
     formatted = formatted.replace(/\n/g, "<br/>");
-
     return formatted;
   };
 
@@ -81,624 +72,531 @@ const JobModal = ({ candidate, job, onClose }) => {
     name: `${t.firstName} ${t.lastName}`,
     role: title,
     email: t.emailAddress,
-    resume: t.resumeFilePath,
-    status: t.status,
-    avatar: `https://ui-avatars.com/api/?name=${t.firstName}+${t.lastName}`,
+    avatar: t.profileImage, // Use actual profile image if available
   }));
 
-  return (
-    <div
-      className="drawer-overlay"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        zIndex: 10000,
-      }}
-    >
-      {/* Modal Container */}
-      <div
-        className="card-base"
-        style={{
-          width: "clamp(350px, 95vw, 1000px)",
-          height: "clamp(500px, 90vh, 800px)",
-          maxHeight: "90vh",
-          maxWidth: "95vw",
-          padding: "0",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          borderRadius: "12px",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            padding: "20px 24px",
-            borderBottom: "1px solid #e2e8f0",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#fff",
-          }}
-        >
-          <div>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: "clamp(16px, 2vw, 18px)",
-                color: "#1e293b",
-                fontWeight: 700,
-              }}
-            >
-              Talent Allocation
-            </h3>
-            <p
-              style={{
-                margin: "4px 0 0 0",
-                fontSize: "13px",
-                color: "#64748b",
-              }}
-            >
-              Assign talents to <strong>{job.company}</strong>
-            </p>
+  return createPortal(
+    <div className="modal-overlay">
+      <div className="modal-window job-modal-window">
+        {isSubmitting && (
+          <div className="loading-overlay">
+            <div className="spinner" />
+            <div className="loading-text">Finalizing talent allocation…</div>
           </div>
-          <button
-            className="close-btn"
-            onClick={onClose}
-            disabled={isSubmitting}
-            style={{
-              border: "none",
-              background: "transparent",
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              color: isSubmitting ? "#94a3b8" : "#64748b",
-            }}
-          >
-            <FiX size={22} />
-          </button>
-        </div>
+        )}
 
-        {/* Scrollable Body */}
-        <div
-          style={{ flex: 1, overflowY: "auto", padding: "24px", minHeight: 0 }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr",
-              gap: "24px",
-              height: "100%",
-            }}
-          >
-            {/* LEFT: Project Overview + Notes */}
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "24px" }}
-            >
-              {/* Project Details */}
-              <div>
-                <h4
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "#334155",
-                    marginBottom: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "4px",
-                      height: "16px",
-                      background: "#3b82f6",
-                      borderRadius: "2px",
-                    }}
-                  ></span>
-                  Project Overview
-                </h4>
-                <div
-                  style={{
-                    background: "#f8fafc",
-                    padding: "20px",
-                    borderRadius: "12px",
-                    border: "1px solid #f1f5f9",
-                  }}
-                >
-                  <div style={{ marginBottom: "16px" }}>
-                    <h2
-                      style={{
-                        fontSize: "clamp(18px, 3vw, 20px)",
-                        fontWeight: 700,
-                        color: "#1e293b",
-                        margin: "0 0 8px 0",
-                      }}
-                    >
-                      {job.title}
-                    </h2>
-                    <span className="status-tag status-progress">
-                      {job.type}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr",
-                      gap: "16px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <div className="d-flex gap-2">
-                      <div
-                        style={{
-                          background: "#fff",
-                          padding: "12px",
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          width: "100%",
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "block",
-                            fontSize: "12px",
-                            color: "#64748b",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          Budget Rate
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                          }}
-                        >
-                          {job.rateText} {job.salaryType}
-                        </span>
-                      </div>
+        <button className="modal-close" onClick={onClose} disabled={isSubmitting}>
+          <FiX />
+        </button>
 
-                      <div
-                        style={{
-                          background: "#fff",
-                          padding: "12px",
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          width: "100%",
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "block",
-                            fontSize: "12px",
-                            color: "#64748b",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          Experience Level
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                          }}
-                        >
-                          {job.experienceText}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* ✅ NEW */}
-                    <div className="d-flex gap-2">
-                      <div
-                        style={{
-                          background: "#fff",
-                          padding: "12px",
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          width: "100%",
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "block",
-                            fontSize: "12px",
-                            color: "#64748b",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          Education Level
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                          }}
-                        >
-                          {job.educationLevel}
-                        </span>
-                      </div>
-
-                      {/* ✅ NEW */}
-                      <div
-                        style={{
-                          background: "#fff",
-                          padding: "12px",
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          width: "100%",
-                        }}
-                      >
-                        <span
-                          style={{
-                            display: "block",
-                            fontSize: "12px",
-                            color: "#64748b",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          Years of Experience
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: 600,
-                            color: "#0f172a",
-                          }}
-                        >
-                          {job.yearsOfExperience}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <h5
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#334155",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Description
-                  </h5>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#64748b",
-                      lineHeight: "1.6",
-                      margin: "0 0 20px 0",
-                    }}
-                  >
-                    {job?.description ? (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: formatMarkdownToHtml(job.description),
-                        }}
-                      />
-                    ) : (
-                      <p style={{ color: "#64748b" }}>
-                        No description available for this job.
-                      </p>
-                    )}
-                  </p>
-                  <h5
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#334155",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Required Skills
-                  </h5>
-                  <div
-                    className="skills-cloud"
-                    style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
-                  >
-                    {job.skills?.map((skill) => (
-                      <span key={skill} className="status-tag status-progress">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+        <div className="modal-inner">
+          {/* LEFT: Project Overview */}
+          <div className="modal-left">
+            <div className="modal-header-section">
+              <div className="d-flex align-items-center gap-3">
+                <div className="modal-icon-badge">
+                  <FiBriefcase />
+                </div>
+                <div>
+                  <h2 className="modal-title">Job Details</h2>
+                  <p className="muted small">Review requirements and budget for {job.company}</p>
                 </div>
               </div>
+            </div>
 
-              {/* Notes TextArea */}
-              <div>
-                <h4
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "#334155",
-                    marginBottom: "12px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "4px",
-                      height: "16px",
-                      background: "#8b5cf6",
-                      borderRadius: "2px",
-                    }}
-                  ></span>
-                  Notes
-                </h4>
+            <div className="job-details-content">
+              <div className="job-main-info-card">
+                <div className="job-title-row">
+                  <h3>{job.title}</h3>
+                  <span className="type-badge">{job.type}</span>
+                </div>
+
+                <div className="job-meta-grid-modern">
+                  <div className="meta-card">
+                    <FiDollarSign className="meta-icon orange" />
+                    <div className="meta-text">
+                      <span className="label">Budget Rate</span>
+                      <span className="value">{job.rateText} {job.salaryType}</span>
+                    </div>
+                  </div>
+                  <div className="meta-card">
+                    <FiAward className="meta-icon blue" />
+                    <div className="meta-text">
+                      <span className="label">Experience</span>
+                      <span className="value">{job.experienceText}</span>
+                    </div>
+                  </div>
+                  <div className="meta-card">
+                    <FiBook className="meta-icon purple" />
+                    <div className="meta-text">
+                      <span className="label">Education</span>
+                      <span className="value">{job.educationLevel || "N/A"}</span>
+                    </div>
+                  </div>
+                  <div className="meta-card">
+                    <FiClock className="meta-icon green" />
+                    <div className="meta-text">
+                      <span className="label">Duration</span>
+                      <span className="value">{job.jobDuration === '0' ? 'Ongoing' : `${job.jobDuration} mo`}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="job-description-section">
+                  <h4><FiInfo /> Description</h4>
+                  <div 
+                    className="description-text"
+                    dangerouslySetInnerHTML={{ __html: formatMarkdownToHtml(job.description) }}
+                  />
+                </div>
+
+                {job.skills?.length > 0 && (
+                  <div className="job-skills-section">
+                    <h4>Skills Required</h4>
+                    <div className="skills-cloud">
+                      {job.skills.map(skill => (
+                        <span key={skill} className="skill-tag">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="notes-section">
+                <label className="desc-label">Internal Notes</label>
                 <textarea
+                  className="desc-textarea"
                   placeholder="Add specific requirements or notes for this allocation..."
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
                   disabled={isSubmitting}
-                  style={{
-                    width: "100%",
-                    minHeight: "120px",
-                    padding: "12px",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                    fontSize: "14px",
-                    fontFamily: "inherit",
-                    resize: "vertical",
-                    outline: "none",
-                    color: isSubmitting ? "#94a3b8" : "#334155",
-                    background: isSubmitting ? "#f8fafc" : "#fff",
-                  }}
                 />
-              </div>
-            </div>
-
-            {/* RIGHT: Talent Selection */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "16px",
-                }}
-              >
-                <h4
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "#334155",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    margin: 0,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "4px",
-                      height: "16px",
-                      background: "#10b981",
-                      borderRadius: "2px",
-                    }}
-                  ></span>
-                  Select Talent
-                </h4>
-                <span
-                  style={{
-                    fontSize: "12px",
-                    color: "#64748b",
-                    background: "#f1f5f9",
-                    padding: "2px 8px",
-                    borderRadius: "12px",
-                  }}
-                >
-                  {selectedTalents.length} Selected
-                </span>
-              </div>
-
-              <div
-                style={{
-                  flex: 1,
-                  overflowY: "auto",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "12px",
-                  background: "#fff",
-                  minHeight: 0,
-                }}
-              >
-                {isLoading ? (
-                  <div style={{ padding: "20px", textAlign: "center" }}>
-                    Loading talents...
-                  </div>
-                ) : isError ? (
-                  <div style={{ padding: "20px", textAlign: "center", color: "red" }}>
-                    Failed to load talents
-                  </div>
-                ) : normalizedTalents.length === 0 ? (
-                  <div style={{ padding: "20px", textAlign: "center" }}>
-                    No talents found for this role
-                  </div>
-                ) : (
-                  normalizedTalents.map((profile) => {
-                    const isSelected = selectedTalents.includes(profile.id);
-
-                    return (
-                      <div
-                        key={profile.id}
-                        onClick={() => handleToggleTalent(profile.id)}
-                        className="talent-row"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "16px",
-                          borderBottom: "1px solid #f1f5f9",
-                          cursor: isSubmitting ? "not-allowed" : "pointer",
-                          background: isSelected ? "#f0f9ff" : "transparent",
-                        }}
-                      >
-                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                          <div
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              borderRadius: "4px",
-                              border: isSelected ? "none" : "2px solid #cbd5e1",
-                              background: isSelected ? "#3b82f6" : "#fff",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            {isSelected && <FiCheck size={14} color="#fff" />}
-                          </div>
-
-                          <img
-                            src={profile.avatar}
-                            alt={profile.name}
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              borderRadius: "50%",
-                              border: "1px solid #e2e8f0",
-                            }}
-                          />
-
-                          <div>
-                            <div style={{ fontSize: "14px", fontWeight: 600 }}>
-                              {profile.name}
-                            </div>
-                            <div style={{ fontSize: "12px", color: "#64748b" }}>
-                              {profile.role}
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          className="btn-primary"
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   alert(`Viewing profile of ${profile.name}`);
-                          // }}
-                          onClick={() => {
-                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                            navigate(`${basePath}/talent-profile`, {
-                              state: {
-                                employeeId: profile.id,
-                                jobId: job.id,
-                              },
-                            });
-                          }}
-                          style={{
-                            padding: "6px 12px",
-                            fontSize: "12px",
-                            opacity: isSubmitting ? 0.6 : 1,
-                            width: "8rem",
-                          }}
-                        >
-                          View Profile
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer with Loader */}
-        <div
-          style={{
-            padding: "16px 24px",
-            borderTop: "1px solid #e2e8f0",
-            display: "flex",
-            justifyContent: "flex-end",
-            background: "#fff",
-            gap: "12px",
-          }}
-        >
-          <button
-            onClick={onClose}
-            disabled={isSubmitting}
-            style={{
-              padding: "10px 24px",
-              background: "#fff",
-              border: "1px solid #cbd5e1",
-              borderRadius: "6px",
-              color: "#475569",
-              fontWeight: 600,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              opacity: isSubmitting ? 0.6 : 1,
-            }}
-          >
-            Cancel
-          </button>
+          {/* RIGHT: Talent Selection */}
+          <aside className="modal-right">
+            <div className="selection-header">
+              <h4 className="selection-title">Select Talent</h4>
+              <span className="count-badge">{selectedTalents.length} Selected</span>
+            </div>
 
-          <button
-            className="btn-primary"
-            onClick={handleDone}
-            disabled={isSubmitting}
-            style={{
-              padding: "10px 32px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "12rem",
-              opacity: isSubmitting ? 0.7 : 1,
-            }}
-          >
-            {isSubmitting ? (
-              <>
-                <FiLoader
-                  className="spin"
-                  style={{ animation: "spin 1s linear infinite" }}
-                  size={16}
-                />
-                Placing Bid...
-              </>
-            ) : (
-              "Place Bid"
-            )}
-          </button>
+            <div className="talent-scroll-area">
+              {isLoading ? (
+                <div className="empty-state">
+                  <div className="spinner" style={{ marginBottom: '12px' }} />
+                  Loading suitable talents...
+                </div>
+              ) : isError ? (
+                <div className="empty-state error">Failed to load talents</div>
+              ) : normalizedTalents.length === 0 ? (
+                <div className="empty-state">No talents matching this role</div>
+              ) : (
+                <div className="talent-list">
+                  {normalizedTalents.map((talent) => {
+                    const isSelected = selectedTalents.includes(talent.id);
+                    return (
+                      <div 
+                        key={talent.id} 
+                        className={`talent-card-row selectable ${isSelected ? 'selected' : ''}`}
+                        onClick={() => handleToggleTalent(talent.id)}
+                      >
+                        <div className="selection-indicator">
+                          {isSelected ? <FiCheck /> : null}
+                        </div>
+
+                        <div className="initial-avatar">
+                          {talent.avatar ? (
+                            <img src={talent.avatar} alt={talent.name} />
+                          ) : (
+                            getInitials(talent.name)
+                          )}
+                        </div>
+
+                        <div className="t-info">
+                          <div className="t-header">
+                            <span className="t-name">{talent.name}</span>
+                          </div>
+                          <div className="t-role">{talent.role}</div>
+                        </div>
+
+                        <button 
+                          className="t-view-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                            navigate(`${basePath}/talent-profile`, {
+                              state: { employeeId: talent.id, jobId: job.id },
+                            });
+                          }}
+                        >
+                          View
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer-actions">
+              <button className="btn-secondary" onClick={onClose} disabled={isSubmitting}>
+                Cancel
+              </button>
+              <button 
+                className="btn-primary" 
+                onClick={handleDone}
+                disabled={isSubmitting || selectedTalents.length === 0}
+              >
+                {isSubmitting ? "Processing..." : "Place Bid"}
+              </button>
+            </div>
+          </aside>
         </div>
       </div>
 
-      {/* Styles */}
       <style>{`
-        @keyframes spin {
-          100% { transform: rotate(360deg); }
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          animation: fadeIn 0.3s ease-out;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        textarea:focus {
-          border-color: #3b82f6 !important;
-          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+
+        .modal-window.job-modal-window {
+          width: 95vw;
+          max-width: 1100px;
+          height: 85vh;
+          background: #ffffff;
+          border-radius: 24px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @media (min-width: 768px) {
-          .card-base > div > div {
-            grid-template-columns: 1fr 1fr !important;
-          }
+
+        .modal-inner {
+          display: grid;
+          grid-template-columns: 1fr 420px;
+          height: 100%;
+          overflow: hidden;
         }
+
+        .modal-left {
+          padding: 32px;
+          overflow-y: auto;
+          background: #f8fafc;
+          border-right: 1px solid #e2e8f0;
+        }
+
+        .modal-right {
+          padding: 32px;
+          display: flex;
+          flex-direction: column;
+          background: #ffffff;
+          width: 100%;
+        }
+
+        .modal-header-section { margin-bottom: 32px; }
+        .modal-icon-badge {
+          width: 48px;
+          height: 48px;
+          background: #fff7ed;
+          color: #f5810c;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.1);
+        }
+
+        .modal-title { font-size: 24px; font-weight: 800; color: #1e293b; margin: 0; }
+        .muted { color: #64748b; margin-top: 4px; }
+
+        .job-main-info-card {
+          background: #ffffff;
+          border-radius: 20px;
+          padding: 24px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+          margin-bottom: 24px;
+        }
+
+        .job-title-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 24px;
+        }
+        .job-title-row h3 { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; }
+        .type-badge {
+          background: #eff6ff;
+          color: #3b82f6;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .job-meta-grid-modern {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+
+        .meta-card {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #f1f5f9;
+        }
+        .meta-icon { font-size: 18px; }
+        .meta-icon.orange { color: #f5810c; }
+        .meta-icon.blue { color: #3b82f6; }
+        .meta-icon.purple { color: #8b5cf6; }
+        .meta-icon.green { color: #10b981; }
+
+        .meta-text { display: flex; flex-direction: column; }
+        .meta-text .label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+        .meta-text .value { font-size: 14px; font-weight: 600; color: #334155; }
+
+        .job-description-section h4, .job-skills-section h4 {
+          font-size: 14px;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 12px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .description-text { font-size: 14px; color: #64748b; line-height: 1.6; }
+
+        .skills-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+        .skill-tag {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #475569;
+        }
+
+        .notes-section {
+          padding: 24px;
+          background: #fff7ed;
+          border-radius: 20px;
+          border: 1px solid #fed7aa;
+        }
+
+        .selection-header {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+        .selection-title { font-size: 18px; font-weight: 700; color: #1e293b; margin: 0; }
+        .count-badge {
+          background: #f5810c;
+          color: white;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 700;
+        }
+
+        .talent-scroll-area {
+          flex: 1;
+          overflow-y: auto;
+          margin-bottom: 24px;
+          padding-right: 8px;
+        }
+
+        .talent-card-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          margin-bottom: 12px;
+          transition: all 0.2s ease;
+          cursor: pointer;
+        }
+        .talent-card-row.selectable:hover {
+          border-color: #cbd5e1;
+          background: #f8fafc;
+          transform: translateX(4px);
+        }
+        .talent-card-row.selected {
+          background: #fff7ed;
+          border-color: #f5810c;
+        }
+
+        .selection-indicator {
+          width: 20px;
+          height: 20px;
+          border-radius: 6px;
+          border: 2px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          transition: all 0.2s;
+        }
+        .selected .selection-indicator {
+          background: #f5810c;
+          border-color: #f5810c;
+        }
+
+        .initial-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: #f1f5f9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          color: #64748b;
+          font-size: 14px;
+          overflow: hidden;
+        }
+        .initial-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .t-info { flex: 1; }
+        .t-name { font-weight: 700; color: #1e293b; font-size: 14px; }
+        .t-role { font-size: 12px; color: #94a3b8; }
+
+        .t-view-btn {
+          background: white;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
+          padding: 4px 10px;
+          border-radius: 8px;
+          font-size: 11px;
+          font-weight: 600;
+          transition: all 0.2s;
+        }
+        .t-view-btn:hover { background: #f1f5f9; color: #1e293b; }
+
+        .modal-footer-actions {
+          display: grid;
+          grid-template-columns: 1fr 1.5fr;
+          gap: 12px;
+          padding-top: 24px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-primary {
+          background: #f5810c;
+          color: white;
+          border: none;
+          padding: 12px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 14px;
+          box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.2);
+          transition: all 0.2s;
+        }
+        .btn-primary:hover:not(:disabled) { background: #d17519; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-secondary {
+          background: white;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
+          padding: 12px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .loading-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0.8);
+          backdrop-filter: blur(4px);
+          z-index: 100;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #f1f5f9;
+          border-top-color: #f5810c;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .modal-close {
+          position: absolute;
+          top: 24px;
+          right: 24px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: white;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #64748b;
+          cursor: pointer;
+          z-index: 10;
+          transition: all 0.2s;
+        }
+        .modal-close:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .empty-state {
+          padding: 40px 20px;
+          text-align: center;
+          color: #94a3b8;
+          font-size: 14px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .desc-label { display: block; font-size: 11px; font-weight: 700; color: #f5810c; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .desc-textarea {
+          width: 100%;
+          min-height: 100px;
+          padding: 12px;
+          border-radius: 12px;
+          border: 1px solid #fed7aa;
+          background: white;
+          font-size: 14px;
+          color: #1e293b;
+          outline: none;
+          resize: none;
+          transition: all 0.2s;
+        }
+        .desc-textarea:focus { border-color: #f5810c; box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1); }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 };
 

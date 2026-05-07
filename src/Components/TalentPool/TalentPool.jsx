@@ -77,7 +77,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
     } catch (err) {
       console.error("Invite failed", err);
       setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
-      alert("Failed to send invite");
+      toast.error("Failed to send invite");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import html2canvas from "html2canvas";
+import { toast } from "react-toastify";
 import {
   FiX,
   FiCopy,
@@ -40,7 +41,7 @@ export default function PublishTalentModal({
       const element = document.getElementById("post-capture-area");
 
       if (!element) {
-        alert("Please create post first.");
+        toast.warning("Please create post first.");
         return;
       }
 
@@ -82,7 +83,7 @@ export default function PublishTalentModal({
 
     } catch (error) {
       console.error("LinkedIn Share Error:", error);
-      alert(error?.data?.message || error.message || "LinkedIn share failed");
+      toast.error(error?.data?.message || error.message || "LinkedIn share failed");
     }
   };
 

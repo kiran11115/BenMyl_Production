@@ -19,139 +19,7 @@ import StatsGrid from "../Dashboard/StatsGrid";
 import { Users, Briefcase } from "lucide-react";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
-// ===========================
-// RecommendedJobs Component
-// ===========================
-const RecommendedJobs = ({ navigate, role, skills }) => {
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [allJobs, setAllJobs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [getRecommendedJobs] = useGetRecommendJobsListMutation();
-
-  useEffect(() => {
-    const fetchRecommendedJobs = async () => {
-      if (!role || !skills || skills.length === 0) return;
-      try {
-        setIsLoading(true);
-        const payload = { role, skills };
-        const res = await getRecommendedJobs(payload).unwrap();
-        setAllJobs(Array.isArray(res) ? res : []);
-      } catch (error) {
-        console.error("Error fetching recommended jobs:", error);
-        setAllJobs([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchRecommendedJobs();
-  }, [role, skills, getRecommendedJobs]);
-
-  const handleAddTalentClick = (job) => {
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
-    navigate(targetPath, { state: { jobTitle: job.title } });
-  };
-
-  const handleViewMoreJobs = () => {
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
-    navigate(targetPath, { state: { role: role } });
-  };
-
-  const firstThreeJobs = useMemo(() => allJobs.slice(0, 3), [allJobs]);
-
-  return (
-    <div style={{ padding: "0" }}>
-      <div>
-        <div className="tp-scrollable-area grid-view" style={{ padding: 0 }}>
-          {!isLoading && firstThreeJobs.length > 0 ? (
-            <>
-              {firstThreeJobs.map((job) => (
-                <div key={job.id} className="tp-item-card">
-                  <div className="tp-card-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div className="d-flex align-items-start justify-content-between">
-                      <div className="d-flex gap-3">
-                        <div className="tp-timeline-icon" style={{ width: '40px', height: '40px', borderRadius: '12px' }}>
-                          <BsBuilding size={20} />
-                        </div>
-                        <div>
-                          <h4 className="mb-0" style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{job.title}</h4>
-                          <span className="tp-card-badge" style={{ fontSize: '11px', color: '#3b82f6', background: 'transparent', padding: 0 }}>{job.company}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="meta-info d-flex gap-3 text-muted" style={{ fontSize: '12px' }}>
-                      <div className="d-flex align-items-center gap-1">
-                        <FiMapPin size={12} /> <span>{job.location}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-1">
-                        <FiClock size={12} /> <span>{job.type}</span>
-                      </div>
-                    </div>
-
-                    <div className="tp-meta-strip" style={{ gap: '1rem', background: '#f8fafc', padding: '12px', borderRadius: '12px' }}>
-                      <div className="tp-meta-item" style={{ fontSize: '11px' }}>
-                         <strong style={{ color: '#64748b', fontWeight: '600' }}>Budget:</strong> <span style={{ color: '#0f172a', fontWeight: '700' }}>{job.rateText}{job.budgetLabel}</span>
-                      </div>
-                      <div className="tp-meta-item" style={{ fontSize: '11px' }}>
-                         <strong style={{ color: '#64748b', fontWeight: '600' }}>Exp:</strong> <span style={{ color: '#0f172a', fontWeight: '700' }}>{job.experienceText}</span>
-                      </div>
-                    </div>
-
-                    <div className="tp-tags-wrapper">
-                      {job.skills?.slice(0, 3).map((skill) => (
-                        <span key={skill} className="tp-tag-pill" style={{ fontSize: '11px', padding: '4px 10px', background: '#f1f5f9', border: 'none' }}>
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    <button
-                      className="btn-primary w-100 mt-1"
-                      onClick={() => handleAddTalentClick(job)}
-                      style={{ padding: '8px', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}
-                    >
-                      Add Talent
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {firstThreeJobs.length >= 3 && (
-                <div className="tp-item-card" style={{ borderStyle: 'dashed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="tp-card-body text-center">
-                    <div className="tp-timeline-icon mx-auto mb-3" style={{ background: '#f5f3ff', color: '#7c3aed' }}>
-                       <FiArrowRight size={24} />
-                    </div>
-                    <h4 className="mb-2">View All Opportunities</h4>
-                    <p className="text-muted small mb-4">Discover more jobs matching your expertise</p>
-                    <button className="btn-secondary w-100" onClick={handleViewMoreJobs}>
-                      Explore More Jobs
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          ) : isLoading ? (
-            <div className="d-flex justify-content-center p-5 w-100">
-               <FiLoader className="loading-spinner" />
-            </div>
-          ) : (
-            <div className="w-100">
-              <NoData text="No matching jobs found at the moment" />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {selectedJob && (
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
-      )}
-    </div>
-  );
-};
+import RecommendedJobs from "./RecommendedJobs";
 
 // ===========================
 // Main UploadTalentProfile
@@ -161,7 +29,6 @@ const UploadTalentProfile = () => {
   const location = useLocation();
   const [showContent, setShowContent] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [expExpanded, setExpExpanded] = useState(false);
   const [portfolioExpanded, setPortfolioExpanded] = useState(false);
   const [skillInput, setSkillInput] = useState("");
@@ -295,7 +162,12 @@ const UploadTalentProfile = () => {
     return (first + last).toUpperCase() || "N/A";
   }, [apiData]);
 
-  const handleEditClick = () => setShowEditModal(true);
+  const handleEditClick = () => {
+    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    navigate(`${basePath}/edit-talent-profile`, {
+      state: { initialData: apiData }
+    });
+  };
   const handleCloseModal = () => setShowEditModal(false);
 
   const handleInputChange = (e) => {
@@ -411,16 +283,6 @@ const UploadTalentProfile = () => {
     );
   }
 
-  if (isEditing) {
-    return (
-      <EditTalentProfile
-        initialData={apiData}
-        onCancel={() => setIsEditing(false)}
-        onSuccess={() => { setIsEditing(false); getEmployeeProfile(employeeId); }}
-      />
-    );
-  }
-
   return (
     <div className="projects-container">
       <div className="profile-breadcrumb">
@@ -443,9 +305,11 @@ const UploadTalentProfile = () => {
           )}
         </div>
         <div className="tp-info-main">
-          <div className="tp-name-row">
-            <h1>{profileData?.name}</h1>
-            <FiCheckCircle color="#10b981" size={24} />
+          <div className="tp-name-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div className="d-flex align-items-center gap-2">
+              <h1>{profileData?.name}</h1>
+              <FiCheckCircle color="#10b981" size={24} />
+            </div>
           </div>
           <div className="tp-role-subtitle">{profileData?.role}</div>
           <div className="tp-meta-strip">
@@ -456,7 +320,7 @@ const UploadTalentProfile = () => {
         </div>
         <div className="tp-sidebar-actions">
           <div 
-            className="tp-card-premium sidebar-card mb-4" 
+            className="tp-card-premium sidebar-card mb-0" 
             style={{ 
               background: 'linear-gradient(135deg, #eff6ff 0%, #fff 100%)',
               border: '1px solid #dbeafe',
@@ -490,6 +354,23 @@ const UploadTalentProfile = () => {
               </div>
             </div>
           </div>
+
+            <button 
+              className="btn-primary" 
+              onClick={handleEditClick}
+              style={{ 
+                width: 'auto', 
+                padding: '8px 16px', 
+                fontSize: '14px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                borderRadius: '8px',
+                fontWeight: '600'
+              }}
+            >
+              <FiEdit2 size={16} /> Edit Profile Details
+            </button>
         </div>
       </div>
 
@@ -611,7 +492,7 @@ const UploadTalentProfile = () => {
             </div>
           <div className="tp-card-premium">
             <h3 className="tp-card-title" style={{ marginBottom: "1.5rem" }}><FiStar /> Recommended Jobs</h3>
-            <RecommendedJobs navigate={navigate} role={profileData?.role} skills={profileData?.skills} />
+            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} />
           </div>
         </div>
 

@@ -391,8 +391,8 @@ label {
   color: #374151;
 }
 
-/* /* Elegant Submission error modal */
-.alert-card.submission-error-card {
+/* Elegant Premium Alert System */
+.alert-card {
   width: min(440px, calc(100vw - 40px));
   min-height: auto;
   padding: 48px 40px 40px;
@@ -401,9 +401,10 @@ label {
   background: linear-gradient(135deg, #ffffff 0%, #fffafa 100%);
   box-shadow: 
     0 20px 50px rgba(0, 0, 0, 0.1),
-    0 4px 12px rgba(244, 52, 52, 0.05);
+    0 4px 12px rgba(15, 23, 42, 0.05);
   overflow: hidden;
   text-align: center;
+  position: relative;
   animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -418,7 +419,7 @@ label {
   }
 }
 
-.submission-error-card .alert-close-icon {
+.alert-card .alert-close-icon {
   position: absolute;
   top: 24px;
   right: 24px;
@@ -433,15 +434,16 @@ label {
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
-.submission-error-card .alert-close-icon:hover {
+.alert-card .alert-close-icon:hover {
   background: #f1f5f9;
   color: #1e293b;
   transform: rotate(90deg);
 }
 
-.submission-error-header {
+.alert-header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -449,20 +451,55 @@ label {
   margin-bottom: 24px;
 }
 
-.submission-error-header .alert-icon-wrapper {
+.alert-icon-wrapper {
   width: 64px;
   height: 64px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #f43434 0%, #ef4444 100%);
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Themes */
+.alert-card.error-theme {
+  background: linear-gradient(135deg, #ffffff 0%, #fffafa 100%);
+}
+.alert-card.error-theme .alert-icon-wrapper {
+  background: linear-gradient(135deg, #f43434 0%, #ef4444 100%);
+  color: #ffffff;
   box-shadow: 0 10px 20px rgba(244, 52, 52, 0.25);
 }
 
-.submission-error-header .alert-title {
+.alert-card.success-theme {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+}
+.alert-card.success-theme .alert-icon-wrapper {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+}
+
+.alert-card.info-theme {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+}
+.alert-card.info-theme .alert-icon-wrapper {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
+}
+
+.alert-card.warning-theme {
+  background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+}
+.alert-card.warning-theme .alert-icon-wrapper {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(245, 158, 11, 0.25);
+}
+
+.alert-title {
   margin: 0;
   color: #1e293b;
   font-size: 24px;
@@ -470,12 +507,12 @@ label {
   letter-spacing: -0.02em;
 }
 
-.submission-error-body {
+.alert-body {
   padding: 0;
   margin-bottom: 32px;
 }
 
-.submission-error-body .alert-message {
+.alert-message {
   margin: 0;
   color: #64748b;
   font-size: 15px;
@@ -489,17 +526,21 @@ label {
   width: 100%;
 }
 
-.alert-footer .btn-secondary {
+.alert-footer button {
   flex: 1;
   padding: 12px 24px;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #475569;
   font-weight: 600;
   font-size: 14px;
-  border: 1px solid #e2e8f0;
+  border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.alert-footer .btn-secondary {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 .alert-footer .btn-secondary:hover {
@@ -508,28 +549,29 @@ label {
   border-color: #cbd5e1;
 }
 
-.alert-footer .btn-alert-primary.btn-alert-error {
-  flex: 1.5;
-  padding: 12px 24px;
-  border-radius: 12px;
+.alert-footer .btn-alert-primary {
   background: #1e293b;
   color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
 }
 
-.alert-footer .btn-alert-primary.btn-alert-error:hover {
+.alert-footer .btn-alert-primary:hover {
   background: #0f172a;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(30, 41, 59, 0.3);
 }
 
+.alert-footer .btn-alert-error {
+  background: #ef4444;
+}
+
+.alert-footer .btn-alert-error:hover {
+  background: #dc2626;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
 @media (max-width: 480px) {
-  .alert-card.submission-error-card {
+  .alert-card {
     padding: 40px 24px 32px;
     border-radius: 20px;
   }
