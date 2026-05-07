@@ -27,31 +27,16 @@ export const SubmissionErrorModal = ({
                     <p className="alert-message">
                         {message || "Your application could not be submitted at this time. Please review the form for any errors."}
                     </p>
-
-                    <div className="submission-error-list-container">
-                        <span className="submission-error-list-label">Common issues to check:</span>
-                        <ul className="submission-error-list">
-                            <li>
-                                <span><FiFileText size={14} /></span> Missing required fields
-                            </li>
-                            <li>
-                                <span><FiFileText size={14} /></span> Incorrect file format
-                            </li>
-                            <li>
-                                <span><FiFileText size={14} /></span> Server error
-                            </li>
-                        </ul>
-                    </div>
                 </div>
 
-                {/* <div className="alert-footer">
-                    <button className="btn-secondary" onClick={onContactSupport}>
-                        Contact Support
+                <div className="alert-footer">
+                    <button className="btn-secondary" onClick={onClose}>
+                        Close
                     </button>
                     <button className="btn-alert-primary btn-alert-error" onClick={onRetry}>
                         Try Again
                     </button>
-                </div> */}
+                </div>
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 import { useRegisterMutation } from "../../State-Management/Api/SignupApiSlice";
 import { toast } from "react-toastify";
+import { SubmissionErrorModal } from "./SigninAlert";
 
 /* =========================
    Validation Schema
@@ -50,6 +51,10 @@ function SignUp() {
 
   const [isVisible, setIsVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
+  // Alert State
+  const [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   /* =========================
      READ URL QUERY PARAMS
@@ -110,13 +115,14 @@ function SignUp() {
       } catch (err) {
         console.error("Signup failed:", err);
         // Extract the most relevant error message
-        const errorMsg =
+        const extractedMsg =
           err?.data?.message ||
           (typeof err?.data === 'string' ? err.data : "Signup failed") ||
           err?.message ||
           "Signup failed. Please try again.";
 
-        toast.error(errorMsg);
+        setErrorMsg(extractedMsg);
+        setShowError(true);
       }
     },
   });
@@ -330,6 +336,18 @@ function SignUp() {
           </p>
         </div>
       </div>
+
+      {/* ERROR MODAL */}
+      {showError && (
+        <SubmissionErrorModal
+          message={errorMsg}
+          onClose={() => setShowError(false)}
+          onRetry={() => {
+            setShowError(false);
+            formik.handleSubmit();
+          }}
+        />
+      )}
     </div>
   );
 }
