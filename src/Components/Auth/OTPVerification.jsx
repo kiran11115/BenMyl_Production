@@ -187,6 +187,9 @@ function OTPVerification() {
             <p className="auth-subtitle">
               Enter the 6-digit code sent to your email.
             </p>
+            <p className="auth-subtitle">
+              <strong>Note:</strong> If you do not receive the OTP, please check your Spam/Junk folder.
+            </p>
 
             {timer > 0 ? (
               <p className="auth-tagline">Resend available in {timer}s</p>
