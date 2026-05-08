@@ -32,6 +32,19 @@ const UserMobileTalentCard = ({ candidate, isSelected, onToggle }) => {
                     <div className="text-content">
                         <h4 className="file-name">{candidate.name}</h4>
                         <p className="candidate-email">{candidate.email}</p>
+                        {candidate.uploadedByName && (
+                          <div className="d-flex align-items-center gap-1 mt-2" style={{ 
+                            background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)", 
+                            padding: "3px 10px", 
+                            borderRadius: "100px", 
+                            border: "1px solid #e2e8f0",
+                            width: "fit-content",
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+                          }}>
+                            <FaStar size={8} color="#64748b" />
+                            <span style={{ fontSize: "9px", color: "#64748b", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.03em" }}>By: {candidate.uploadedByName}</span>
+                          </div>
+                        )}
                     </div>
                 </div>
                 <div className="action-row">

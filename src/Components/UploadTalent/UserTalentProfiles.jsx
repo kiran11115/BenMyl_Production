@@ -311,7 +311,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                 </div>
               )}
 
-              {/* ❌ No Data */}
+              {/* No Data */}
               {!isLoading && sortedCandidates.length === 0 && (
                 <div
                   style={{

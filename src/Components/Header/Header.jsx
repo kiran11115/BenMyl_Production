@@ -33,15 +33,45 @@ function Header() {
 
   const { hasPermission, isLoading: isPermLoading } = usePermissions();
 
-  const navLinks = [
-    { path: "/user/user-dashboard", label: "Dashboard", module: "Main Dashboard" },
-    { path: "/user/user-talentpool", label: "Talent Pool", module: "Talent Pool" },
-    { path: "/user/user-projects", label: "Projects", module: "Projects" },
-    { path: "/user/user-jobs", label: "Find Jobs", module: "Job Management" },
-    { path: "/user/user-upload-talent", label: "Talent Management", module: "Talent Pool" }, // Mapping to Talent Pool for now
-  ];
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
 
-  const filteredNavLinks = navLinks.filter(link => hasPermission(link.module, 'view'));
+  const navigationData = {
+    "Recruiter": [
+      { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
+      {
+        label: "Projects",
+        module: "Projects",
+        subItems: [
+          { label: "posted jobs", path: "/user/user-Jobs" },
+          { label: "create job", path: "/user/user-post-new-positions" },
+          { label: "ongoing projects", path: "/user/user-projects" },
+        ],
+      },
+      { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },
+      {
+        label: "Interviews",
+        module: "Interviews",
+        subItems: [
+          { label: "create interview", path: "/user/user-schedule-interview" },
+          { label: "schedule interview", path: "/user/user-upcoming-interview" },
+        ],
+      },
+    ],
+    "Benchsales": [
+      { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
+      { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
+      { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
+      { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
+    ],
+  };
+
+  const navLinks = navigationData[role] || navigationData["Recruiter"];
+
+  const filteredNavLinks = navLinks.filter(link => {
+    if (link.module === "Interviews") return true; // Always show interviews for now or check a specific permission
+    return hasPermission(link.module, 'view');
+  });
 
   const companyData = apiData
     ? {
@@ -86,6 +116,9 @@ function Header() {
       }
       if (aiPopoverRef.current && !aiPopoverRef.current.contains(event.target)) {
         setIsAiPopoverOpen(false);
+      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
       }
     };
 
@@ -132,18 +165,50 @@ function Header() {
           </a>
 
           {/* Navigation Menu (Responsive) */}
-          <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
+          <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`} ref={dropdownRef}>
             {filteredNavLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsMenuOpen(false)} // Close menu on click
-                className={({ isActive }) =>
-                  `header-nav-link ${isActive ? "active" : ""}`
-                }
-              >
-                {link.label}
-              </NavLink>
+              <div key={link.label} className="nav-item-container">
+                {link.subItems ? (
+                  <div className="nav-dropdown-wrapper">
+                    <button
+                      className={`header-nav-link dropdown-trigger ${openDropdown === link.label ? "active" : ""}`}
+                      onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                    >
+                      {link.label}
+                      <ChevronDown size={14} className={`dropdown-icon ${openDropdown === link.label ? "rotate" : ""}`} />
+                    </button>
+                    {openDropdown === link.label && (
+                      <div className="nav-dropdown-menu">
+                        {link.subItems.map((sub) => (
+                          <NavLink
+                            key={sub.path}
+                            to={sub.path}
+                            className={({ isActive }) =>
+                              `dropdown-item ${isActive ? "active" : ""}`
+                            }
+                            onClick={() => {
+                              setOpenDropdown(null);
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            {sub.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <NavLink
+                    to={link.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `header-nav-link ${isActive ? "active" : ""}`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                )}
+              </div>
             ))}
           </nav>
         </div>
@@ -239,7 +304,7 @@ function Header() {
 
               <div className="profile-info">
                 <span className="profile-name">{user}</span>
-                <span className="profile-role">{role}</span>
+                <span className="profile-role">{role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role}</span>
               </div>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
             </div>
