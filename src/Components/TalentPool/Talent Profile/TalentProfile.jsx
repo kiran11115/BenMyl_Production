@@ -30,7 +30,7 @@ import { useLazyGetEmployeeTalentProfileQuery } from "../../../State-Management/
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
 import NoData from "../../UploadTalent/NoData";
-import RecommendedJobs from "../../UploadTalent/RecommendedJobs";
+
 
 const TalentProfile = () => {
   const navigate = useNavigate();
@@ -199,24 +199,24 @@ const TalentProfile = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Quick Action Side in Hero */}
         <div className="tp-sidebar-actions">
-            <button
-              className="btn-primary"
-              onClick={() => {
-                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                navigate(`${basePath}/user-schedule-interview`);
-              }}
-            >
-              Schedule Interview
-            </button>
-            <button
-              className={`btn-secondary ${isShortlisted ? "active" : ""}`}
-              onClick={handleShortlistFromProfile}
-            >
-              {isShortlisted ? "Selected" : "Shortlist Talent"}
-            </button>
+          <button
+            className="btn-primary"
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/user-schedule-interview`);
+            }}
+          >
+            Schedule Interview
+          </button>
+          <button
+            className={`btn-secondary ${isShortlisted ? "active" : ""}`}
+            onClick={handleShortlistFromProfile}
+          >
+            {isShortlisted ? "Selected" : "Shortlist Talent"}
+          </button>
         </div>
       </div>
 
@@ -224,10 +224,10 @@ const TalentProfile = () => {
       <div className="tp-details-grid">
         {/* Main Column */}
         <div className="tp-column-main">
-          
+
           {/* Professional Summary */}
           <div className="tp-card-premium">
-            <h3 className="tp-card-title" style={{borderBottom: "1px solid #f8fafc",paddingBottom: "1.25rem"}}><FiUser /> Professional Summary</h3>
+            <h3 className="tp-card-title" style={{ borderBottom: "1px solid #f8fafc", paddingBottom: "1.25rem" }}><FiUser /> Professional Summary</h3>
             <p className="summary-text">
               {profileData.summary}
             </p>
@@ -238,12 +238,12 @@ const TalentProfile = () => {
             {/* Work Experience Square Card */}
             <div className={`tp-square-card ${isExpOpen ? "expanded" : "collapsed"}`}>
               <div className="tp-square-card-header">
-                 <h3 className="tp-card-title"><FiTrendingUp /> Work Experience</h3>
-                 <button className="tp-view-toggle" onClick={() => setIsExpOpen(!isExpOpen)}>
-                   {isExpOpen ? "Show Less" : "View All"}
-                 </button>
+                <h3 className="tp-card-title"><FiTrendingUp /> Work Experience</h3>
+                <button className="tp-view-toggle" onClick={() => setIsExpOpen(!isExpOpen)}>
+                  {isExpOpen ? "Show Less" : "View All"}
+                </button>
               </div>
-              
+
               <div className="tp-square-card-content">
                 {isExpOpen ? (
                   <div className="tp-scrollable-area grid-view">
@@ -277,17 +277,17 @@ const TalentProfile = () => {
                       <div className="tp-preview-item">
                         <div className="tp-preview-header">
                           <div className="tp-timeline-icon sm">
-                             <FiBriefcase />
+                            <FiBriefcase />
                           </div>
                           <div className="tp-preview-main">
-                             <h4>{profileData.workExperience[0].role}</h4>
-                             <div className="tp-timeline-company">{profileData.workExperience[0].company}</div>
+                            <h4>{profileData.workExperience[0].role}</h4>
+                            <div className="tp-timeline-company">{profileData.workExperience[0].company}</div>
                           </div>
                         </div>
                         <p className="tp-preview-desc">{profileData.workExperience[0].desc.slice(0, 120)}...</p>
                         <div className="tp-preview-footer">
-                           <span>Latest Experience</span>
-                           <FiChevronDown />
+                          <span>Latest Experience</span>
+                          <FiChevronDown />
                         </div>
                       </div>
                     ) : (
@@ -301,12 +301,12 @@ const TalentProfile = () => {
             {/* Project Portfolio Square Card */}
             <div className={`tp-square-card ${isProjOpen ? "expanded" : "collapsed"}`}>
               <div className="tp-square-card-header">
-                 <h3 className="tp-card-title"><FiFileText /> Project Portfolio</h3>
-                 <button className="tp-view-toggle" onClick={() => setIsProjOpen(!isProjOpen)}>
-                   {isProjOpen ? "Show Less" : "View All"}
-                 </button>
+                <h3 className="tp-card-title"><FiFileText /> Project Portfolio</h3>
+                <button className="tp-view-toggle" onClick={() => setIsProjOpen(!isProjOpen)}>
+                  {isProjOpen ? "Show Less" : "View All"}
+                </button>
               </div>
-              
+
               <div className="tp-square-card-content">
                 {isProjOpen ? (
                   <div className="tp-scrollable-area grid-view">
@@ -347,17 +347,17 @@ const TalentProfile = () => {
                       <div className="tp-preview-item">
                         <div className="tp-preview-header">
                           <div className="tp-timeline-icon sm">
-                             <FiExternalLink />
+                            <FiExternalLink />
                           </div>
                           <div className="tp-preview-main">
-                             <h4>{projectsData[0].projectName}</h4>
-                             <div className="tp-timeline-company">{projectsData[0].role}</div>
+                            <h4>{projectsData[0].projectName}</h4>
+                            <div className="tp-timeline-company">{projectsData[0].role}</div>
                           </div>
                         </div>
                         <p className="tp-preview-desc">{projectsData[0].description.slice(0, 120)}...</p>
                         <div className="tp-preview-footer">
-                           <span>Latest Project</span>
-                           <FiChevronDown />
+                          <span>Latest Project</span>
+                          <FiChevronDown />
                         </div>
                       </div>
                     ) : (
@@ -368,32 +368,29 @@ const TalentProfile = () => {
               </div>
             </div>
           </div>
-          
-          <div className="tp-card-premium">
-            <h3 className="tp-card-title" style={{ marginBottom: "1.5rem" }}><FiStar /> Recommended Jobs</h3>
-            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} />
-          </div>
+
+
         </div>
 
         {/* Sidebar Column */}
         <div className="tp-column-side">
-          
+
           {/* Quick Info Sidebar Block */}
           <div className="tp-card-premium sidebar-card">
             <h3 className="tp-card-title">Quick Information</h3>
             <div className="tp-info-block">
-               <div className="tp-info-icon-box"><FiStar /></div>
-               <div className="tp-info-content-box">
-                  <div className="tp-info-label-sm">Expected Salary</div>
-                  <div className="tp-info-value-md">$120k - $150k / yr</div>
-               </div>
+              <div className="tp-info-icon-box"><FiStar /></div>
+              <div className="tp-info-content-box">
+                <div className="tp-info-label-sm">Expected Salary</div>
+                <div className="tp-info-value-md">$120k - $150k / yr</div>
+              </div>
             </div>
             <div className="tp-info-block">
-               <div className="tp-info-icon-box"><FiMapPin /></div>
-               <div className="tp-info-content-box">
-                  <div className="tp-info-label-sm">Work Model</div>
-                  <div className="tp-info-value-md">Hybrid / Remote</div>
-               </div>
+              <div className="tp-info-icon-box"><FiMapPin /></div>
+              <div className="tp-info-content-box">
+                <div className="tp-info-label-sm">Work Model</div>
+                <div className="tp-info-value-md">Hybrid / Remote</div>
+              </div>
             </div>
           </div>
 
@@ -401,9 +398,9 @@ const TalentProfile = () => {
           <div className="tp-card-premium sidebar-card">
             <h3 className="tp-card-title">Expertise</h3>
             <div className="tp-tags-wrapper scrollable-skills">
-               {profileData.skills.map((skill, idx) => (
-                 <span key={idx} className="tp-tag-pill">{skill}</span>
-               ))}
+              {profileData.skills.map((skill, idx) => (
+                <span key={idx} className="tp-tag-pill">{skill}</span>
+              ))}
             </div>
           </div>
 
@@ -411,43 +408,43 @@ const TalentProfile = () => {
           <div className="tp-card-premium sidebar-card">
             <h3 className="tp-card-title">Education</h3>
             {profileData.education.length > 0 ? (
-                profileData.education.map((edu, idx) => (
-                  <div key={idx} className="tp-info-block" style={{ marginBottom: '16px' }}>
-                    <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#f5810c' }}>
-                      <FiBookOpen size={18} />
-                    </div>
-                    <div className="tp-info-content-box">
-                      <div className="tp-info-value-md">{edu.degree}</div>
-                      <div className="tp-info-label-sm">{edu.school}</div>
-                      <div className="tp-timeline-period">{edu.year}</div>
-                    </div>
+              profileData.education.map((edu, idx) => (
+                <div key={idx} className="tp-info-block" style={{ marginBottom: '16px' }}>
+                  <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#f5810c' }}>
+                    <FiBookOpen size={18} />
                   </div>
-                ))
-              ) : (
-                <NoData text="N/A" />
-              )}
+                  <div className="tp-info-content-box">
+                    <div className="tp-info-value-md">{edu.degree}</div>
+                    <div className="tp-info-label-sm">{edu.school}</div>
+                    <div className="tp-timeline-period">{edu.year}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <NoData text="N/A" />
+            )}
           </div>
 
           {/* Contact Locked (Matches Admin Premium Look) */}
           <div className="tp-card-premium tp-contact-locked">
             <h3 className="tp-card-title"><FiLock /> Contact Details</h3>
             <div className="tp-lock-overlay">
-               <div className="tp-lock-text">Unlock to view direct contact info</div>
-               <button className="tp-btn-unlock">
-                 <FaGem /> Unlock Profile
-               </button>
+              <div className="tp-lock-text">Unlock to view direct contact info</div>
+              <button className="tp-btn-unlock">
+                <FaGem /> Unlock Profile
+              </button>
             </div>
           </div>
 
           {/* Utility Links */}
           <div className="d-flex justify-content-between px-2">
-               <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
-                 <FiDownload size={14} /> Resume
-               </button>
-               <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
-                 <FiShare2 size={14} /> Share
-               </button>
-            </div>
+            <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
+              <FiDownload size={14} /> Resume
+            </button>
+            <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}>
+              <FiShare2 size={14} /> Share
+            </button>
+          </div>
 
         </div>
       </div>

@@ -501,30 +501,6 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           border-top: 1px solid #f1f5f9;
         }
 
-        .btn-primary {
-          background: #f5810c;
-          color: white;
-          border: none;
-          padding: 12px;
-          border-radius: 12px;
-          font-weight: 700;
-          font-size: 14px;
-          box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.2);
-          transition: all 0.2s;
-        }
-        .btn-primary:hover:not(:disabled) { background: #d17519; transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-secondary {
-          background: white;
-          border: 1px solid #e2e8f0;
-          color: #64748b;
-          padding: 12px;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 14px;
-        }
-
         .loading-overlay {
           position: absolute;
           inset: 0;

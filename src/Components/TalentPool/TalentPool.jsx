@@ -328,7 +328,7 @@ const TalentPool = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [successJobId, setSuccessJobId] = useState(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("recommended");
+  const [sortBy, setSortBy] = useState("name_asc");
   const [selectedJobId, setSelectedJobId] = useState(null);
 
   const [pageNumber, setPageNumber] = useState(1);
@@ -867,7 +867,7 @@ const TalentPool = () => {
             {/* Sort */}
             <div className="sort-wrapper">
               <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="recommended">Sort by: Recommended</option>
+
                 <option value="rating_high">Rating: High to Low</option>
                 <option value="exp_high">Experience: High to Low</option>
                 <option value="exp_low">Experience: Low to High</option>
