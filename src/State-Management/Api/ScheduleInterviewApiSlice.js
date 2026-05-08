@@ -9,8 +9,18 @@ export const ScheduleInterviewApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: formData,
             }),
+            invalidatesTags: ["Scheduled"],
         }),
+
+        schedulesDetails: builder.query({
+            query: (recruiterId) => ({
+                url: `api/uatcompany/InterviewSchedule/${recruiterId}`,
+                method: "GET",
+            }),
+            providesTags: ["Scheduled"],
+        }),
+
     }),
 });
 
-export const { useScheduleInterviewMutation } = ScheduleInterviewApiSlice;
+export const { useScheduleInterviewMutation,useSchedulesDetailsQuery } = ScheduleInterviewApiSlice;

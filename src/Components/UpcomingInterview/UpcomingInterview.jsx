@@ -16,212 +16,9 @@ import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSchedulesDetailsQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 
-const MOCK = [
-    {
-        id: 1,
-        date: new Date(2026, 3, 15),
-        dateLabel: "April 15, 2026",
-        time: "10:00 AM",
-        name: "Sarah Anderson",
-        avatar: "",
-        role: "Senior Frontend Developer",
-        experience: "6+ Years",
-        location: "Remote",
-        rating: 4.8,
-        verified: true,
-        skills: ["React", "TypeScript", "Node.js"],
-        status: "scheduled",
-        vendorName: "Skyline Staffing",
-        partnerContact: "Sarah Anderson",
-        meetingLink: "https://meet.google.com/abc-defg-hij",
-        jobData: {
-            title: "Senior Frontend Developer",
-            company: "TechFlow Systems",
-            location: "Remote",
-            budget: "120k - 150k",
-            salaryType: "Yearly",
-            experience: 6,
-            type: "Full-time",
-            description: "Building a highly scalable React dashboard with real-time data integration and complex visualization requirements. **Responsibilities:** \n - Lead frontend architecture \n - Optimize performance \n - Mentor junior developers",
-            requiredSkills: ["React", "TypeScript", "Redux", "Node.js"]
-        }
-    },
-    {
-        id: 2,
-        date: new Date(2026, 3, 15),
-        dateLabel: "April 15, 2026",
-        time: "2:30 PM",
-        name: "David Wilson",
-        avatar: "",
-        role: "Product Manager",
-        experience: "8+ Years",
-        location: "On-site",
-        rating: 4.5,
-        verified: false,
-        skills: ["Agile", "Scrum", "Product Roadmap"],
-        status: "scheduled",
-        vendorName: "Global Talent Corp",
-        partnerContact: "David Wilson",
-        meetingLink: "",
-        jobData: {
-            title: "Product Manager",
-            company: "FinTech Hub",
-            location: "New York, NY",
-            budget: "140k - 180k",
-            salaryType: "Yearly",
-            experience: 8,
-            type: "Full-time",
-            description: "Streamlining cross-functional teams and managing product roadmaps for the next-generation fintech application.",
-            requiredSkills: ["Product Strategy", "Agile", "Stakeholder Management"]
-        }
-    },
-    {
-        id: 3,
-        date: new Date(2026, 3, 16),
-        dateLabel: "April 16, 2026",
-        time: "11:00 AM",
-        name: "James Thompson",
-        avatar: "",
-        role: "UX Designer",
-        experience: "4+ Years",
-        location: "Hybrid",
-        rating: 4.7,
-        verified: true,
-        skills: ["Figma", "Adobe XD", "User Research"],
-        status: "scheduled",
-        vendorName: "Creative Partners",
-        partnerContact: "James Thompson",
-        meetingLink: "https://zoom.us/j/123456789",
-        jobData: {
-            title: "UX Designer",
-            company: "Creative Pulse",
-            location: "Hybrid",
-            budget: "90k - 110k",
-            salaryType: "Yearly",
-            experience: 4,
-            type: "Contract",
-            description: "Creating intuitive user journeys and high-fidelity prototypes for a multi-platform e-commerce solution.",
-            requiredSkills: ["Figma", "UI Design", "Prototyping"]
-        }
-    },
-    {
-        id: 4,
-        date: new Date(2026, 3, 20),
-        dateLabel: "April 20, 2026",
-        time: "09:00 AM",
-        name: "Linda Garcia",
-        avatar: "",
-        role: "Backend Engineer",
-        experience: "7+ Years",
-        location: "Remote",
-        rating: 4.6,
-        verified: true,
-        skills: ["Go", "Kubernetes", "PostgreSQL"],
-        status: "scheduled",
-        vendorName: "Cloud Ninjas",
-        partnerContact: "Linda Garcia",
-        meetingLink: "",
-        jobData: {
-            title: "Backend Engineer",
-            company: "CloudCore",
-            location: "Remote",
-            budget: "130k - 160k",
-            salaryType: "Yearly",
-            experience: 7,
-            type: "Full-time",
-            description: "Designing robust microservices architecture and optimizing database performance for high-traffic APIs.",
-            requiredSkills: ["Go", "Kubernetes", "PostgreSQL", "gRPC"]
-        }
-    },
-    {
-        id: 5,
-        date: new Date(2026, 3, 10),
-        dateLabel: "April 10, 2026",
-        time: "03:00 PM",
-        name: "Robert Miller",
-        avatar: "",
-        role: "DevOps Engineer",
-        experience: "5+ Years",
-        location: "Remote",
-        rating: 4.4,
-        verified: true,
-        skills: ["Docker", "Jenkins", "AWS"],
-        status: "completed",
-        vendorName: "Skyline Staffing",
-        partnerContact: "Robert Miller",
-        meetingLink: "https://meet.google.com/xyz-pdq",
-        jobData: {
-            title: "DevOps Engineer",
-            company: "ScaleGrid",
-            location: "Remote",
-            budget: "110k - 140k",
-            salaryType: "Yearly",
-            experience: 5,
-            type: "Full-time",
-            description: "Implementing CI/CD pipelines and managing cloud infrastructure.",
-            requiredSkills: ["Docker", "Jenkins", "AWS"]
-        }
-    },
-    {
-        id: 6,
-        date: new Date(2026, 3, 5),
-        dateLabel: "April 5, 2026",
-        time: "11:30 AM",
-        name: "Kevin Smith",
-        avatar: "",
-        role: "Project Manager",
-        experience: "10+ Years",
-        location: "Hybrid",
-        rating: 4.2,
-        verified: true,
-        skills: ["PMP", "Agile", "Budgeting"],
-        status: "cancelled",
-        vendorName: "Apex Talents",
-        partnerContact: "Kevin Smith",
-        meetingLink: "",
-        jobData: {
-            title: "Project Manager",
-            company: "BuildIt",
-            location: "Hybrid",
-            budget: "150k - 180k",
-            salaryType: "Yearly",
-            experience: 10,
-            type: "Full-time",
-            description: "Managing large scale construction and tech projects.",
-            requiredSkills: ["PMP", "Agile"]
-        }
-    },
-    {
-        id: 7,
-        date: new Date(2026, 3, 22),
-        dateLabel: "April 22, 2026",
-        time: "11:00 AM",
-        name: "Maria Rodriguez",
-        avatar: "",
-        role: "Data Scientist",
-        experience: "5+ Years",
-        location: "Remote",
-        rating: 4.9,
-        verified: true,
-        skills: ["Python", "TensorFlow", "SQL"],
-        status: "rescheduled",
-        vendorName: "AI Specialists Inc.",
-        partnerContact: "Maria Rodriguez",
-        meetingLink: "https://meet.google.com/resched-link",
-        jobData: {
-            title: "Data Scientist",
-            company: "AI Insights",
-            location: "Remote",
-            budget: "135k - 165k",
-            salaryType: "Yearly",
-            experience: 5,
-            type: "Full-time",
-            description: "Building machine learning models and data pipelines for consumer behavioral analysis.",
-            requiredSkills: ["Python", "ML", "Statistics"]
-        }
-    }
-];
+
 
 export default function UpcomingInterview() {
     const navigate = useNavigate();
@@ -233,15 +30,55 @@ export default function UpcomingInterview() {
     const [meetingLinkInput, setMeetingLinkInput] = useState("");
     const [isJobExpanded, setIsJobExpanded] = useState(true);
 
+    const recruiterId = localStorage.getItem("CompanyId");
+    const { data: apiInterviews = [], isLoading, isError } = useSchedulesDetailsQuery(recruiterId, {
+        skip: !recruiterId
+    });
+
+    const interviews = useMemo(() => {
+        if (!Array.isArray(apiInterviews)) return [];
+        return apiInterviews.map((item, index) => {
+            const dateObj = new Date(item.interviewDate);
+            return {
+                id: item.candidateID || index,
+                date: dateObj,
+                dateLabel: dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                time: item.interviewTime,
+                name: item.candidateName,
+                avatar: item.profilePicture || "",
+                role: item.title,
+                experience: `${item.experienceYears} Years`,
+                location: item.interviewLocation || "Remote",
+                rating: 4.5,
+                verified: true,
+                skills: item.skills ? item.skills.split(",").map(s => s.trim()) : [],
+                status: "scheduled", // Default to scheduled for this view
+                vendorName: item.companyName,
+                partnerContact: item.candidateName,
+                meetingLink: item.interviewLink,
+                jobData: {
+                    title: item.jobTitle,
+                    company: item.companyName,
+                    location: item.interviewLocation || "Remote",
+                    budget: "N/A",
+                    salaryType: "N/A",
+                    experience: item.experienceYears,
+                    type: "Full-time",
+                    description: "",
+                    requiredSkills: item.skills ? item.skills.split(",").map(s => s.trim()) : []
+                }
+            };
+        });
+    }, [apiInterviews]);
+
     const nextInterview = useMemo(() => {
-        const upcoming = MOCK.filter(it => it.status === "scheduled");
+        const upcoming = interviews.filter(it => it.status === "scheduled");
         if (upcoming.length === 0) return null;
-        // Simple sort by date/time (assuming mock data is roughly sorted)
         return upcoming[0];
-    }, []);
+    }, [interviews]);
 
     const filteredInterviews = useMemo(() => {
-        let list = MOCK;
+        let list = interviews;
 
         // Filter by Tab
         list = list.filter(it => it.status === activeTab);
@@ -253,7 +90,7 @@ export default function UpcomingInterview() {
             it.date.getMonth() === selectedDate.getMonth() &&
             it.date.getFullYear() === selectedDate.getFullYear()
         );
-    }, [selectedDate, activeTab]);
+    }, [interviews, selectedDate, activeTab]);
 
     const handleViewDetail = (interview) => {
         const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
@@ -279,7 +116,7 @@ export default function UpcomingInterview() {
     };
 
     const isInterviewDate = (day, month, year) => {
-        return MOCK.some(it =>
+        return interviews.some(it =>
             it.date.getDate() === day &&
             it.date.getMonth() === month &&
             it.date.getFullYear() === year
@@ -405,7 +242,16 @@ export default function UpcomingInterview() {
 
                     <div className="interviews-stack hide-scrollbar">
                         <div className="interviews-list">
-                            {filteredInterviews.length > 0 ? (
+                            {isLoading ? (
+                                <div className="loading-state p-4 text-center">
+                                    <div className="spinner-border text-primary mb-2" role="status"></div>
+                                    <p style={{ color: '#64748b' }}>Loading interviews...</p>
+                                </div>
+                            ) : isError ? (
+                                <div className="error-state p-4 text-center">
+                                    <p className="text-danger">Failed to load interviews. Please try again later.</p>
+                                </div>
+                            ) : filteredInterviews.length > 0 ? (
                                 filteredInterviews.map((it) => (
                                     <article className="project-card d-flex flex-column gap-3 small-card" key={it.id}>
                                         <div className="d-flex flex-column gap-2">

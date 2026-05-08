@@ -125,7 +125,7 @@ const ScheduleInterview = () => {
 
                 if (Array.isArray(res)) {
                     // Filter for isshortlisted
-                    const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
+                    const shortlisted = res.filter(item => item.isshortlisted && !item.isSchedules).map(item => ({
                         id: item.employeeID,
                         name: `${item.firstName} ${item.lastName}`,
                         role: item.title || "-",
@@ -694,7 +694,7 @@ const ScheduleInterview = () => {
                             <p><strong>Note:</strong> Please check your mail to continue the process.</p>
                         </div>
 
-                        <button className="back-btn-ui" onClick={() => setShowSuccessModal(false)}>
+                        <button className="back-btn-ui" onClick={() => navigate("/user/user-upcoming-interview")}>
                             Back to Schedules
                         </button>
                     </div>

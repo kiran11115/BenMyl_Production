@@ -130,7 +130,7 @@ export default function InterviewDetails() {
                                                 {getInitials(interview.name)}
                                             </div>
                                         )}
-                                        <div className="header-info">
+                                        <div className="header-info flex flex-column gap-0 align-items-start">
                                             <div className="name-row">
                                                 <h2 className="name">
                                                     {interview.name} {interview.verified && (<GiCheckMark size={16} color="#059669" />)}
