@@ -5,7 +5,7 @@ import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import "../TalentPool/TalentPool.css";
 
-export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryAction, small = false }) => {
+export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryAction, primaryActionLabel, small = false }) => {
   const navigate = useNavigate();
   const handleProfileClick = (e) => {
     e.stopPropagation();
@@ -159,7 +159,7 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
           onClick={handleProfileClick}
           style={small ? { padding: '6px 12px', fontSize: '12px', borderRadius: '8px', flex: 1 } : {}}
         >
-          {candidate.salary ? 'Add Talent' : small ? 'Details' : 'View Profile'}
+          {primaryActionLabel || (candidate.salary ? 'Add Talent' : small ? 'Details' : 'View Profile')}
         </button>
 
         {!candidate.salary && (

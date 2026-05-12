@@ -274,55 +274,30 @@ export default function Projects() {
         {/* Page heading */}
         <div className="projects-page-header">
           <div>
-            <h1 className="projects-page-title">Projects & Jobs</h1>
+            <h1 className="projects-page-title">Ongoing Projects</h1>
             <p className="projects-page-subtitle">
-              Manage your active projects, track milestones and posted positions.
+              Manage your active projects, track milestones and monitor progress.
             </p>
           </div>
         </div>
 
         {/* Stats */}
-        <StatsRow stats={stats} />
-
-        {/* Tab switcher */}
-        <div className="view-toggle1">
-          <button
-            className={`toggle ${view === "ongoingprojects" ? "active" : ""}`}
-            onClick={() => setView("ongoingprojects")}
-          >
-            Ongoing Projects
-          </button>
-          <button
-            className={`toggle ${view === "postedjobs" ? "active" : ""}`}
-            onClick={() => setView("postedjobs")}
-          >
-            Posted Jobs
-          </button>
-        </div>
+        <StatsRow stats={projectStats} />
 
         {/* View content */}
         <div className="view-content">
-          {view === "ongoingprojects" && (
-            <div className="upload-main">
-              <ProjectsHeader
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-              />
-              <ProjectsGrid
-                projects={filteredProjects}
-                onUpload={handleUpload}
-                onReview={handleReview}
-              />
-            </div>
-          )}
-          {view === "postedjobs" && (
-            <div className="upload-main">
-              <PostedJobs />
-            </div>
-          )}
+          <div className="upload-main">
+            <ProjectsHeader
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+            <ProjectsGrid
+              projects={filteredProjects}
+              onUpload={handleUpload}
+              onReview={handleReview}
+            />
+          </div>
         </div>
-
-
       </div>
     </div>
   );

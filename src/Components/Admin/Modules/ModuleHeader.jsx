@@ -9,17 +9,32 @@ const ModuleHeader = ({
     breadcrumb, 
     icon: IconComponent, 
     badgeText,
-    actions = []
+    actions = [],
+    customBreadcrumbs = []
 }) => {
     return (
         <header className="module-header-standard">
             <div className="header-left-content">
                 <nav className="breadcrumb-nav">
-                    <Link to="/Admin/control-center" className="breadcrumb-link">
-                        <Home size={14} />
-                        Control Center
-                    </Link>
-                    <ChevronRight size={14} className="breadcrumb-separator" />
+                    {customBreadcrumbs.length > 0 ? (
+                        customBreadcrumbs.map((cb, idx) => (
+                            <React.Fragment key={idx}>
+                                <Link to={cb.path} className="breadcrumb-link">
+                                    {cb.icon}
+                                    {cb.label}
+                                </Link>
+                                <ChevronRight size={14} className="breadcrumb-separator" />
+                            </React.Fragment>
+                        ))
+                    ) : (
+                        <>
+                            <Link to="/Admin/control-center" className="breadcrumb-link">
+                                <Home size={14} />
+                                Control Center
+                            </Link>
+                            <ChevronRight size={14} className="breadcrumb-separator" />
+                        </>
+                    )}
                     <span className="breadcrumb-current">{breadcrumb}</span>
                 </nav>
 

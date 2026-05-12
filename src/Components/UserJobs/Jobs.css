@@ -411,29 +411,6 @@
   transform: translateY(-1px);
 }
 
-/* Secondary Button (View Details) - Matching .btn-review */
-.btn-secondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  color: var(--slate-500);
-  transition: all 0.2s;
-  width: 165px;
-}
-
-.btn-secondary:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-  color: var(--slate-800);
-}
-
 .full-width {
   width: 100%;
 }

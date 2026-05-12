@@ -666,21 +666,8 @@
   box-shadow: 0 6px 15px rgba(245, 129, 12, 0.3);
 }
 
-.btn-premium-secondary {
-  background: white;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-.btn-premium-secondary:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-}
-
 .btn-premium:disabled,
-.btn-primary:disabled,
-.btn-secondary:disabled {
+.btn-primary:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   filter: grayscale(0.8);

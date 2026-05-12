@@ -8,7 +8,6 @@ import {
     FiChevronLeft,
     FiChevronRight,
     FiMapPin,
-    FiStar,
     FiX
 
 } from "react-icons/fi";
@@ -17,6 +16,8 @@ import "./UpcomingInterview.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSchedulesDetailsQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
+import ModuleHeader from "../Admin/Modules/ModuleHeader";
+import { Home } from "lucide-react";
 
 
 
@@ -38,7 +39,13 @@ export default function UpcomingInterview() {
     const interviews = useMemo(() => {
         if (!Array.isArray(apiInterviews)) return [];
         return apiInterviews.map((item, index) => {
-            const dateObj = new Date(item.interviewDate);
+            // Ensure date is parsed correctly regardless of timezone shifts
+            // If interviewDate is "YYYY-MM-DD", new Date(YYYY, MM-1, DD) is safer
+            const dateParts = item.interviewDate.split('T')[0].split('-');
+            const dateObj = dateParts.length === 3 
+                ? new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]))
+                : new Date(item.interviewDate);
+            
             return {
                 id: item.candidateID || index,
                 date: dateObj,
@@ -117,6 +124,7 @@ export default function UpcomingInterview() {
 
     const isInterviewDate = (day, month, year) => {
         return interviews.some(it =>
+            it.status === activeTab &&
             it.date.getDate() === day &&
             it.date.getMonth() === month &&
             it.date.getFullYear() === year
@@ -131,36 +139,29 @@ export default function UpcomingInterview() {
         setNavDate(new Date(navDate.getFullYear(), navDate.getMonth() + 1, 1));
     };
 
+    const isUser = !window.location.pathname.toLowerCase().startsWith('/admin');
+    const basePath = isUser ? '/User' : '/Admin';
+
     return (
         <div className="ui-page">
-            <div className="profile-breadcrumb d-flex gap-1 mb-4">
-                <button className="link-button" onClick={() => {
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
-                    navigate(targetPath);
-                }}>
-                    <FiArrowLeft /> Back to Dashboard
-                </button>
-                <span className="crumb">/ Upcoming Interviews</span>
-            </div>
-
-            <div className="ui-header">
-                <div>
-                    <h1 className="ui-title">Upcoming Interviews</h1>
-                    <p className="ui-sub">Manage your scheduled interviews and meeting links</p>
-                </div>
-
-                <div className="ui-actions">
-                    <button className="btn-upload" onClick={() => {
-                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                        const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
-                        // Note: Routes.jsx shows user-schedule-interview for both
-                        navigate(targetPath);
-                    }}>
-                        <FiPlus /> Add New Interview
-                    </button>
-                </div>
-            </div>
+            <ModuleHeader 
+                breadcrumb="Upcoming Interviews"
+                title="Upcoming Interviews"
+                description="Manage your scheduled interviews and meeting links"
+                badgeText="Interview Management"
+                icon={FiCalendar}
+                customBreadcrumbs={[
+                    { label: "Dashboard", path: isUser ? '/user/user-dashboard' : '/Admin/overview-dashboard', icon: <Home size={14} /> }
+                ]}
+                actions={[
+                    {
+                        label: "Add New Interview",
+                        icon: <FiPlus size={16} />,
+                        type: "primary",
+                        onClick: () => navigate(`${basePath}/user-schedule-interview`)
+                    }
+                ]}
+            />
 
             {nextInterview && !selectedDate && (
                 <div className="hero-next-interview mb-4">
@@ -239,7 +240,6 @@ export default function UpcomingInterview() {
                             <button className="clear-filter" onClick={() => setSelectedDate(null)}>Show All</button>
                         )}
                     </div>
-
                     <div className="interviews-stack hide-scrollbar">
                         <div className="interviews-list">
                             {isLoading ? (
@@ -252,94 +252,74 @@ export default function UpcomingInterview() {
                                     <p className="text-danger">Failed to load interviews. Please try again later.</p>
                                 </div>
                             ) : filteredInterviews.length > 0 ? (
-                                filteredInterviews.map((it) => (
-                                    <article className="project-card d-flex flex-column gap-3 small-card" key={it.id}>
-                                        <div className="d-flex flex-column gap-2">
-                                            {/* Header matching Talent Pool */}
-                                            <div className="card-header position-relative">
-                                                <div className="d-flex gap-2 align-items-center">
-                                                    {it.avatar ? (
-                                                        <img src={it.avatar} alt={it.name} className="avatar small-avatar" />
-                                                    ) : (
-                                                        <div className="initials-avatar small-avatar">
-                                                            {getInitials(it.name)}
-                                                        </div>
-                                                    )}
-                                                    <div className="header-info">
-                                                        <div className="name-row">
-                                                            <h4 className="name small-name">
-                                                                {it.name} {it.verified && (<GiCheckMark size={12} color="#059669" />)}
-                                                            </h4>
-                                                        </div>
-                                                        <div className="role">{it.role}</div>
-                                                    </div>
-                                                </div>
-                                                {/* Rating in Right Corner */}
-                                                <div className="rating small-rating corner-rating">
-                                                    <FiStar size={10} fill="#f59e0b" color="#f59e0b" />
-                                                    <span style={{ color: "#f59e0b" }}>{it.rating}</span>
-                                                </div>
-                                            </div>
-
-
-
-                                            {/* Card Top Info (Time/Date) */}
-                                            <div className="meta-grid small-meta">
-                                                <div className="meta-item">
-                                                    <FiCalendar size={12} /> <span>{it.dateLabel}</span>
-                                                </div>
-                                                <div className="meta-item">
-                                                    <FiClock size={12} /> <span>{it.time}</span>
-                                                </div>
-                                                <div className="meta-item">
-                                                    <FiBriefcase size={12} /> <span>{it.experience}</span>
-                                                </div>
-                                                <div className="meta-item">
-                                                    <FiMapPin size={12} /> <span>{it.location}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Meeting Link Status row */}
-                                            <div className="badges-row">
-                                                <div className={`link-status-badge small-badge w-[fit-content] d-flex align-items-center gap-2 ${it.meetingLink ? "yes" : "no"}`}>
-                                                    Meeting Link: <span>{it.meetingLink ? "Provided" : "Not Provided"}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Skills */}
-                                            <div className="skills-row small-skills">
-                                                {it.skills.slice(0, 2).map(skill => (
-                                                    <span key={skill} className="status-tag status-progress">{skill}</span>
-                                                ))}
-                                                {it.skills.length > 2 && <span className="status-tag">+{it.skills.length - 2}</span>}
+                                filteredInterviews.map((interview) => (
+                                    <div key={interview.id} className="interview-card-premium">
+                                        <div className="card-top">
+                                            <div className="interview-status-badge">
+                                                <div className={`status-dot ${interview.status.toLowerCase()}`}></div>
+                                                {interview.status}
                                             </div>
                                         </div>
 
-                                        <div className="card-actions-ui d-flex gap-2 pt-2 mt-auto">
-                                            <button className="btn-primary flex-1 small-btn" onClick={() => handleViewDetail(it)}>
+                                        <div className="card-profile">
+                                            {interview.avatar ? (
+                                                <img src={interview.avatar} alt={interview.name} className="avatar-premium" />
+                                            ) : (
+                                                <div className="avatar-initials-premium">
+                                                    {getInitials(interview.name)}
+                                                </div>
+                                            )}
+                                            <div className="profile-info">
+                                                <h3 className="name">{interview.name}</h3>
+                                                <p className="role">{interview.role}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="card-meta">
+                                            <div className="meta-row">
+                                                <FiCalendar size={14} />
+                                                <span>{interview.dateLabel}</span>
+                                            </div>
+                                            <div className="meta-row">
+                                                <FiClock size={14} />
+                                                <span>{interview.time}</span>
+                                            </div>
+                                            <div className="meta-row">
+                                                <FiMapPin size={14} />
+                                                <span>{interview.location}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="card-actions-premium">
+                                            <button 
+                                                className="btn-details-outline"
+                                                onClick={() => handleViewDetail(interview)}
+                                            >
                                                 Details
                                             </button>
-                                            {it.meetingLink ? (
-                                                <button
-                                                    onClick={() => window.open(it.meetingLink, "_blank", "noopener,noreferrer")}
-                                                    className="hero-join-btn flex-1 d-flex align-items-center justify-content-center"
-                                                    style={{ padding: '8px', fontSize: '12px', borderRadius: '8px', boxShadow: 'none', border: 'none', cursor: 'pointer' }}
+                                            {interview.meetingLink ? (
+                                                <a 
+                                                    href={interview.meetingLink} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="btn-join-primary"
                                                 >
-                                                    Join Meeting
-                                                </button>
+                                                    Join
+                                                </a>
                                             ) : (
-                                                <button className="btn-secondary flex-1 small-btn disabled" disabled>
-                                                    No Link
+                                                <button className="btn-join-primary disabled" disabled>
+                                                    Pending
                                                 </button>
                                             )}
                                         </div>
-                                    </article>
+                                    </div>
                                 ))
                             ) : (
                                 <div className="no-interviews">No interviews scheduled for this date.</div>
                             )}
                         </div>
                     </div>
+
                 </div>
 
                 <aside className="calendar-column">

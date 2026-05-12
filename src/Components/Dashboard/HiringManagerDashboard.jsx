@@ -89,8 +89,9 @@ const HiringManagerDashboard = () => {
   const [hiringHealth, setHiringHealth] = useState(75);
   const [activeMetric, setActiveMetric] = useState('earnings');
   const user = localStorage.getItem("UserName") || "User";
-  const companyId = localStorage.getItem("logincompanyid");
-  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(companyId);
+  const userId = localStorage.getItem("CompanyId");
+  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+  const [dashboardProjects, setDashboardProjects] = useState([]);
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
 
@@ -108,6 +109,35 @@ const HiringManagerDashboard = () => {
     
     setActiveProjectsCount(allProjects.filter(p => p.status === "In Progress").length);
     
+    // Map jobTitles to projects for the dashboard
+    if (Array.isArray(jobTitles)) {
+        const mappedProjects = jobTitles.map(job => {
+            const rateText = job.salaryRange_Min && job.salaryRange_Max 
+                ? `$${job.salaryRange_Min}-${job.salaryRange_Max}` 
+                : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
+            
+            const budgetLabel = (() => {
+                const t = (job.salarType || "").toLowerCase();
+                if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+                if (t.includes("month")) return "/month";
+                if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+                return "/hr"; 
+            })();
+
+            return {
+                title: job.jobTitle,
+                company: job.companyName,
+                status: job.isactive ? "Active" : "Closed",
+                statusClass: job.isactive ? "status-completed" : "status-review",
+                progress: job.isactive ? 100 : 0,
+                budget: `${rateText}${budgetLabel}`,
+                dueDate: job.lastDateToApply ? new Date(job.lastDateToApply).toLocaleDateString() : "Ongoing",
+                approvedBy: job.userName || "Hiring Manager"
+            };
+        });
+        setDashboardProjects(mappedProjects.slice(0, 3));
+    }
+
     const revenue = allProjects
       .filter(p => p.status === "Completed")
       .reduce((sum, p) => sum + (typeof p.budget === 'string' ? parseFloat(p.budget.replace(/[^0-9.]/g, '')) : p.budget || 0), 0);
@@ -115,14 +145,14 @@ const HiringManagerDashboard = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const companyIdNum = Number(companyId);
+        const companyIdNum = Number(userId);
         
         // 1. Fetch Pending Review Count
         const pendingPayload = {
-          companyid: companyIdNum,
-          pageNumber: 1,
-          pageSize: 1000,
-          filters: [],
+            companyid: companyIdNum,
+            pageNumber: 1,
+            pageSize: 1000,
+            filters: [],
         };
         const pendingRes = await getQueueManagement(pendingPayload).unwrap();
         const pendingCount = Array.isArray(pendingRes) ? pendingRes.filter(item => item.status === "Pending For Review").length : 0;
@@ -130,19 +160,32 @@ const HiringManagerDashboard = () => {
 
         // 2. Fetch Recent Jobs for Parity
         if (Array.isArray(jobTitles)) {
-          const mappedJobs = jobTitles.slice(0, 3).map(job => ({
-            id: job.jobID,
-            title: job.jobTitle,
-            company: job.companyName,
-            location: job.location,
-            experience: job.experienceLevel || job.yearsOfExperience,
-            salary: job.salaryRange_Min && job.salaryRange_Max 
+          const mappedJobs = jobTitles.slice(0, 3).map(job => {
+            const rateText = job.salaryRange_Min && job.salaryRange_Max 
               ? `$${job.salaryRange_Min}-${job.salaryRange_Max}` 
-              : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A",
-            type: job.employeeType || job.workModels,
-            department: job.department,
-            avatar: `https://ui-avatars.com/api/?name=${job.companyName}&background=3b82f6&color=fff`,
-          }));
+              : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
+            
+            const budgetLabel = (() => {
+              const t = (job.salarType || "").toLowerCase();
+              if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+              if (t.includes("month")) return "/month";
+              if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+              return "/hr"; 
+            })();
+
+            return {
+              id: job.jobID,
+              title: job.jobTitle,
+              company: job.companyName,
+              location: job.location,
+              experience: job.experienceLevel || job.yearsOfExperience,
+              salary: `${rateText}${budgetLabel}`,
+              type: job.employeeType || job.workModels,
+              department: job.department,
+              skills: job.requiredSkills ? job.requiredSkills.split(",").map(s => s.trim()) : [],
+              avatar: `https://ui-avatars.com/api/?name=${job.companyName}&background=3b82f6&color=fff`,
+            };
+          });
           setRecentJobs(mappedJobs);
         }
 
@@ -158,7 +201,7 @@ const HiringManagerDashboard = () => {
       }
     };
     fetchDashboardData();
-  }, [jobTitles, companyId, getQueueManagement, getMyBench]);
+  }, [jobTitles, userId, getQueueManagement, getMyBench]);
 
   const handleNavigate = (path) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
@@ -203,7 +246,7 @@ const HiringManagerDashboard = () => {
         </div>
 
         <div className="span-4 bento-stats-column">
-          <div className="bento-stat-mini" onClick={() => handleNavigate('/user-Jobs')} style={{ cursor: 'pointer' }}>
+          <div className="bento-stat-mini" onClick={() => handleNavigate('/user-posted-jobs')} style={{ cursor: 'pointer' }}>
             <div className="bento-stat-icon" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}><Briefcase size={20} /></div>
             <div className="bento-stat-info">
               <span className="bento-stat-label">Jobs Posted</span>
@@ -228,7 +271,7 @@ const HiringManagerDashboard = () => {
 
         {/* Row 2: Projects & Pipeline */}
         <div className="bento-card span-8">
-          <ProjectsSection projects={projects} role="Recruiter" />
+          <ProjectsSection projects={dashboardProjects} role="Recruiter" />
         </div>
 
         <div className="bento-card span-4" style={{ background: '#0f172a', color: 'white', border: 'none', position: 'relative', overflow: 'hidden' }}>
@@ -321,7 +364,7 @@ const HiringManagerDashboard = () => {
               <Sparkles size={16} color="#f5810c" />
               <h3 className="bento-card-title">Recently Posted Jobs</h3>
             </div>
-            <button className="link-button" onClick={() => handleNavigate('/user-Jobs')} style={{ fontSize: "12px", fontWeight: 600 }}>Explore All <ChevronRight size={14} /></button>
+            <button className="link-button" onClick={() => handleNavigate('/user-posted-jobs')} style={{ fontSize: "12px", fontWeight: 600 }}>Explore All <ChevronRight size={14} /></button>
           </div>
           <div className="matched-jobs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
             {recentJobs.length > 0 ? (
@@ -332,6 +375,11 @@ const HiringManagerDashboard = () => {
                   isSelected={false} 
                   onToggle={() => {}} 
                   small={true}
+                  primaryActionLabel="View Details"
+                  onPrimaryAction={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    navigate(`${basePath}/job-overview`, { state: { jobId: job.id } });
+                  }}
                 />
               ))
             ) : (

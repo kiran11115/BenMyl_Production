@@ -43,7 +43,7 @@ function Header() {
         label: "Projects",
         module: "Projects",
         subItems: [
-          { label: "posted jobs", path: "/user/user-Jobs" },
+          { label: "posted jobs", path: "/user/user-posted-jobs" },
           { label: "create job", path: "/user/user-post-new-positions" },
           { label: "ongoing projects", path: "/user/user-projects" },
         ],

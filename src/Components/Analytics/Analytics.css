@@ -119,17 +119,6 @@
   cursor: pointer;
 }
 
-.action-btn-secondary {
-  background: #f8fafc;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-.action-btn-secondary:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
 
 .analytics-full-width-analytics {
   grid-column: 1 / -1;

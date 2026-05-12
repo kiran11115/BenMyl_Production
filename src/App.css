@@ -537,18 +537,6 @@ label {
   transition: all 0.2s ease;
 }
 
-.alert-footer .btn-secondary {
-  background: #f8fafc;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-.alert-footer .btn-secondary:hover {
-  background: #f1f5f9;
-  color: #1e293b;
-  border-color: #cbd5e1;
-}
-
 .alert-footer .btn-alert-primary {
   background: #1e293b;
   color: #ffffff;

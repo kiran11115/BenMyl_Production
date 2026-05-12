@@ -157,17 +157,6 @@
   transform: translateY(-1px);
 }
 
-.action-btn-secondary {
-  background: var(--slate-50);
-  color: var(--slate-600);
-  border: 1px solid #e2e8f0;
-}
-
-.action-btn-secondary:hover {
-  background: var(--slate-100);
-  color: var(--slate-900);
-}
-
 /* Link Button */
 .link-button {
   background: none;

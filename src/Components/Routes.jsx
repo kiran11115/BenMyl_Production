@@ -43,6 +43,7 @@ import ProjectDetailsPage from "./UserProjects/ProjectDetailsPage";
 import AdminControlCenter from "./Admin/AdminControlCenter/AdminControlCenter";
 import ComingSoonModule from "./Admin/Modules/ComingSoon";
 import Portal from "./Portal/Portal";
+import PostedJobsPage from "./UserProjects/PostedJobsPage";
 
 // Admin Module Imports
 import RoleConfiguration from "./Admin/Modules/RoleConfiguration/RoleConfiguration";
@@ -87,6 +88,7 @@ const routes = createBrowserRouter(
           <Route path="portal" element={<Portal />} />
           <Route path="admin-talentpool" element={<TalentPool />} />
           <Route path="admin-projects" element={<Projects />} />
+          <Route path="admin-posted-jobs" element={<PostedJobsPage />} />
           <Route path="admin-jobs" element={<UserJobs />} />
           <Route path="admin-upload-talent" element={<UploadTalent />} />
           
@@ -126,6 +128,7 @@ const routes = createBrowserRouter(
 
           <Route element={<ModuleProtectedRoute module="Projects" />}>
             <Route path="user-projects" element={<Projects />} />
+            <Route path="user-posted-jobs" element={<PostedJobsPage />} />
             <Route element={<ModuleProtectedRoute module="Projects" action="edit" />}>
               <Route path="create-project" element={<CreateProject />} />
             </Route>
