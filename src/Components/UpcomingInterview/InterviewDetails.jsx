@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import {
     FiCalendar,
@@ -18,6 +18,7 @@ import { GiCheckMark } from "react-icons/gi";
 import { FiCheckSquare, FiSquare } from "react-icons/fi";
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { ChevronRight, Home } from "lucide-react";
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 
@@ -31,8 +32,30 @@ export default function InterviewDetails() {
     const [addedPeople, setAddedPeople] = useState([]);
     const [newPersonEmail, setNewPersonEmail] = useState("");
     const [showEmailInput, setShowEmailInput] = useState(false);
-
     const userId = localStorage.getItem("CompanyId");
+
+    const { data: fetchedJobs } = useGetGroupedJobTitlesQuery(userId, { skip: !userId });
+
+    // Enrich interview data if description is missing
+    const enrichedInterview = useMemo(() => {
+        if (!interview) return null;
+        if (interview.jobData?.description) return interview;
+
+        const matchingJob = fetchedJobs?.find(j => j.jobTitle === interview.jobData?.title);
+        if (matchingJob) {
+            return {
+                ...interview,
+                jobData: {
+                    ...interview.jobData,
+                    description: matchingJob.jobDescription
+                }
+            };
+        }
+        return interview;
+    }, [interview, fetchedJobs]);
+
+    const activeInterview = enrichedInterview || interview;
+
     const { data: apiData } = useGetRecruiterProfileQuery(Number(userId), {
         skip: !userId,
     });
@@ -47,7 +70,9 @@ export default function InterviewDetails() {
         profilePhoto: null
     };
 
-    if (!interview) {
+    const userRole = localStorage.getItem("Role");
+
+    if (!activeInterview) {
         return (
             <div className="ui-page">
                 <div className="ui-breadcrumbs">
@@ -78,7 +103,7 @@ export default function InterviewDetails() {
             toast.error("Please provide a meeting link before sharing.");
             return;
         }
-        const recipientList = addedPeople.length > 0 ? addedPeople.join(", ") : interview.name;
+        const recipientList = addedPeople.length > 0 ? addedPeople.join(", ") : activeInterview.name;
         toast.success(`Meeting link has been sent to ${recipientList} successfully!`);
     };
 
@@ -116,12 +141,12 @@ export default function InterviewDetails() {
                     { label: "Dashboard", path: isUser ? '/user/user-dashboard' : '/Admin/overview-dashboard', icon: <Home size={14} /> },
                     { label: "Interviews", path: isUser ? '/user/user-upcoming-interview' : '/Admin/admin-upcoming-interview' }
                 ]}
-                actions={[
+                actions={userRole === 'Benchsales' ? [] : [
                     {
                         label: "Reschedule Interview",
                         icon: <FiCalendar size={16} />,
                         type: "primary",
-                        onClick: () => navigate(`${basePath}/user-schedule-interview`, { state: { interview, mode: 'reschedule' } })
+                        onClick: () => navigate(`${basePath}/user-schedule-interview`, { state: { interview: activeInterview, mode: 'reschedule' } })
                     }
                 ]}
             />
@@ -130,33 +155,33 @@ export default function InterviewDetails() {
                 <div className="detail-view-grid-premium">
                     {/* Left: Profile Card */}
                     <aside className="profile-card-premium">
-                        {interview.avatar ? (
-                            <img src={interview.avatar} alt={interview.name} className="avatar-large-premium" />
+                        {activeInterview.avatar ? (
+                            <img src={activeInterview.avatar} alt={activeInterview.name} className="avatar-initials-premium" />
                         ) : (
-                            <div className="avatar-initials-large-premium">
-                                {getInitials(interview.name)}
+                            <div className="avatar-initials-premium">
+                                {getInitials(activeInterview.name)}
                             </div>
                         )}
-                        <h2>{interview.name}</h2>
-                        <p className="role">{interview.role}</p>
+                        <h2>{activeInterview.name}</h2>
+                        <p className="role">{activeInterview.role}</p>
                         
                         <div className="card-meta w-100 mt-4">
                             <div className="meta-row">
                                 <FiCalendar size={14} />
-                                <span>{interview.dateLabel}</span>
+                                <span>{activeInterview.dateLabel}</span>
                             </div>
                             <div className="meta-row">
                                 <FiClock size={14} />
-                                <span>{interview.time}</span>
+                                <span>{activeInterview.time}</span>
                             </div>
                             <div className="meta-row">
                                 <FiMapPin size={14} />
-                                <span>{interview.location}</span>
+                                <span>{activeInterview.location}</span>
                             </div>
                         </div>
 
                         <div className="skills-row mt-4 w-100 d-flex flex-wrap gap-2">
-                            {interview.skills.map(skill => (
+                            {activeInterview.skills.map(skill => (
                                 <span key={skill} className="status-tag status-progress">{skill}</span>
                             ))}
                         </div>
@@ -230,7 +255,7 @@ export default function InterviewDetails() {
                             <label className="info-label mb-3 d-block">Shared With</label>
                             <div className="recipients-list-premium">
                                 <div className="recipient-tag-premium highlight">
-                                    {interview.name} (Candidate)
+                                    {activeInterview.name} (Candidate)
                                 </div>
                                 {addedPeople.map((email, idx) => (
                                     <div key={idx} className="recipient-tag-premium">
@@ -249,7 +274,7 @@ export default function InterviewDetails() {
                         <h3 className="hub-title">Job Position Overview</h3>
                     </div>
                     <JobOverviewCard
-                        job={interview.jobData}
+                        job={activeInterview.jobData}
                         isExpanded={isJobExpanded}
                         onToggle={() => setIsJobExpanded(!isJobExpanded)}
                     />

@@ -6,14 +6,17 @@ import 'react-datepicker/dist/react-datepicker.css';
 import {
     FiMapPin, FiArrowLeft, FiCheckSquare, FiSquare, FiCalendar,
     FiClock, FiStar, FiCheckCircle, FiEye, FiX, FiBriefcase,
-    FiChevronLeft, FiChevronRight
+    FiChevronLeft, FiChevronRight, FiList
 } from 'react-icons/fi';
 import { GiCheckMark } from "react-icons/gi";
+import { Home, Plus } from "lucide-react";
+import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import './ScheduleInterview.css';
+import '../UpcomingInterview/UpcomingInterview.css';
 import { useScheduleInterviewMutation } from '../../State-Management/Api/ScheduleInterviewApiSlice';
 
 // Removed mock candidates
@@ -87,6 +90,8 @@ const ScheduleInterview = () => {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
     const [timeMode, setTimeMode] = useState('quick'); // 'quick' or 'custom'
+    const [showDateTimeModal, setShowDateTimeModal] = useState(false);
+    const [candidatesView, setCandidatesView] = useState("table"); // "table" | "grid"
 
     // Initial state setup for jobs
     useEffect(() => {
@@ -269,288 +274,269 @@ const ScheduleInterview = () => {
         return <div className="jobs-container d-flex align-items-center justify-content-center">Loading Jobs...</div>;
     }
 
+    const isUserMode = !window.location.pathname.toLowerCase().startsWith('/admin');
+    const dashboardPath = isUserMode ? '/user/user-dashboard' : '/Admin/overview-dashboard';
+    const interviewsPath = isUserMode ? '/user/user-upcoming-interview' : '/Admin/admin-upcoming-interview';
+
     return (
-        <div className="jobs-container no-effects">
+        <div className="ui-page">
+            <ModuleHeader
+                breadcrumb="Schedule Interview"
+                title="Schedule Interview"
+                description="Manage and finalize candidate interviews efficiently"
+                badgeText="Interview Setup"
+                icon={FiCalendar}
+                customBreadcrumbs={[
+                    { label: "Dashboard", path: dashboardPath, icon: <Home size={14} /> },
+                    { label: "Upcoming Interviews", path: interviewsPath }
+                ]}
+                actions={jobs.length > 0 ? [
+                    {
+                        customElement: (
+                            <div className="d-flex align-items-center gap-3">
+                                <div className="search-input-container m-0" style={{ maxWidth: '300px' }}>
+                                    <select
+                                        className="sort-select"
+                                        value={selectedJob?.id || ""}
+                                        onChange={(e) => handleJobSelect(e.target.value)}
+                                        style={{ height: '42px' }}
+                                    >
+                                        {jobs.map(j => (
+                                            <option key={j.id} value={j.id}>{j.title}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {selectedJob && (
+                                    <div
+                                        className="job-details-tag-v2"
+                                        onClick={() => setShowJobModal(true)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <FiBriefcase size={12} /> View Job Details
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    }
+                ] : [
+                    {
+                        label: "Create Job",
+                        icon: <Plus size={16} />,
+                        type: "primary",
+                        onClick: () => {
+                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                            navigate(`${basePath}/user-post-new-positions`);
+                        }
+                    }
+                ]}
+            />
 
-            <div className="profile-breadcrumb">
-                <button className="link-button" onClick={() => {
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    navigate(`${basePath}/user-dashboard`);
-                }}><FiArrowLeft /> Dashboard </button>
-                <button className="link-button" onClick={() => {
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    navigate(`${basePath}/user-upcoming-interview`);
-                }}>/ Upcoming Interviews </button>
-                <span className="crumb">/ Schedule Interview</span>
-            </div>
+            {/* ── BENTO GRID V2: Big Candidates | Settings Column ── */}
+            <div className="si-bento-grid-v2">
 
-            <div className="search-header-row">
-                <div className="header-text">
-                    <h1 className="ui-title">Schedule Interview</h1>
-                    <p className="sub-title">Manage and finalize candidate interviews efficiently.</p>
-                </div>
-                <div className="search-input-container">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                        <label className="fg-title m-0">Select Posted Job</label>
-                    </div>
-                    {jobs.length > 0 ? (
-                        <div className="dropdown-wrapper">
-                            <select
-                                className="sort-select"
-                                value={selectedJob?.id || ""}
-                                onChange={(e) => handleJobSelect(e.target.value)}
-                            >
-                                {jobs.map(job => <option key={job.id} value={job.id}>{job.title}</option>)}
-                            </select>
-                        </div>
-                    ) : (
+                {/* LEFT: Shortlisted Profiles — Big Panel */}
+                <div className="si-bento-cell si-cell-candidates project-card">
+                    <div className="bento-cell-header d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center gap-2">
-                            <span style={{ color: "var(--slate-500)", fontSize: "14px", fontWeight: 500 }}>No projects created</span>
+                            <div className="bento-cell-icon-wrap"><FiBriefcase size={14} /></div>
+                            <h3 className="fg-title m-0">Shortlisted Profiles</h3>
+                            <span className="bento-count-badge">{candidates.length}</span>
+                        </div>
+                        <div className="view-toggle-v2">
                             <button
-                                className="btn-upload"
-                                style={{ padding: "6px 16px", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}
-                                onClick={() => {
-                                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                                    navigate(`${basePath}/user-post-new-positions`);
-                                }}
+                                className={`vt-btn ${candidatesView === "table" ? "active" : ""}`}
+                                onClick={() => setCandidatesView("table")}
+                                title="Table View"
                             >
-                                + Create Job
+                                <FiList size={16} />
+                            </button>
+                            <button
+                                className={`vt-btn ${candidatesView === "grid" ? "active" : ""}`}
+                                onClick={() => setCandidatesView("grid")}
+                                title="Grid View"
+                            >
+                                <FiSquare size={16} />
                             </button>
                         </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="three-column-schedule">
-
-                {/* COLUMN 1: Profiles */}
-                <section className="col-candidates">
-                    <h3 className="fg-title">Shortlisted Profiles ({candidates.length})</h3>
-                    <div className="profiles-stack hide-scrollbar">
+                    </div>
+                    <div className="profiles-stack hide-scrollbar p-2">
                         {isCandidatesLoading ? (
                             <div className="d-flex justify-content-center p-4">Loading...</div>
                         ) : candidates.length === 0 ? (
-                            <div className="empty-candidates-msg p-4">
+                            <div className="empty-candidates-msg p-4 text-center">
                                 <p>No shortlisted profiles found.</p>
                                 {jobs.length > 0 && (
                                     <button
-                                        className="btn-upload"
+                                        className="btn-v2-primary mt-3"
                                         onClick={() => {
-                                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                                            navigate(`${basePath}/user-talentpool`, { state: { jobTitle: selectedJob?.title } });
+                                            const isUser = !window.location.pathname.toLowerCase().startsWith('/admin');
+                                            navigate(isUser ? '/user/user-talent-pool' : '/Admin/talent-pool');
                                         }}
                                     >
-                                        Find Talent
+                                        Browse Talent Pool
                                     </button>
                                 )}
                             </div>
                         ) : (
-                            candidates.map(candidate => (
-                                <div
-                                    key={candidate.id}
-                                    className={`project-card mt-2 ${selectedCandidate?.id === candidate.id ? 'active-card' : ''}`}
-                                    onClick={() => setSelectedCandidate(candidate)}
-                                    style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", cursor: "pointer" }}
-                                >
-                                    <div className="card-header">
-                                        {candidate.avatar ? (
-                                            <img src={candidate.avatar} alt={candidate.name} className="avatar" />
-                                        ) : (
-                                            <div className="avatar initials-bg-profile">
-                                                {getInitials(candidate.name)}
-                                            </div>
-                                        )}
-                                        <div className="header-info">
-                                            <div className="name-row">
-                                                <h4 className="name">
-                                                    {candidate.name} {candidate.verified && (<GiCheckMark size={14} color="#059669" />)}
-                                                </h4>
-                                                <div className="rating">
-                                                    <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
-                                                    <span style={{ color: "#f59e0b" }}>{candidate.rating}</span>
+                            <div className="candidates-view-container">
+                                {candidatesView === "table" ? (
+                                    <div className="candidates-table-wrapper hide-scrollbar">
+                                        <table className="custom-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Candidate</th>
+                                                    <th>Skills</th>
+                                                    <th>Experience</th>
+                                                    <th>Location</th>
+                                                    <th className="text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {candidates.map((candidate) => (
+                                                    <tr
+                                                        key={candidate.id}
+                                                        className={selectedCandidate?.id === candidate.id ? "selected-row" : ""}
+                                                        onClick={() => setSelectedCandidate(candidate)}
+                                                    >
+                                                        <td>
+                                                            <div className="table-profile-cell">
+                                                                <div className="avatar-initials-premium sm">
+                                                                    {candidate.avatar ? (
+                                                                        <img src={candidate.avatar} alt={candidate.name} />
+                                                                    ) : (
+                                                                        getInitials(candidate.name)
+                                                                    )}
+                                                                </div>
+                                                                <span className="candidate-name-sm">{candidate.name}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="table-skills-cell">
+                                                                {(candidate.skills || []).slice(0, 2).map((skill, i) => (
+                                                                    <span key={i} className="skill-tag-sm">{skill}</span>
+                                                                ))}
+                                                                {(candidate.skills || []).length > 2 && (
+                                                                    <span className="skill-count-sm">+{candidate.skills.length - 2}</span>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                        <td><span className="exp-text-sm">{candidate.experience}</span></td>
+                                                        <td>
+                                                            <div className="loc-cell-sm">
+                                                                <FiMapPin size={12} /> {candidate.city}
+                                                            </div>
+                                                        </td>
+                                                        <td className="text-center">
+                                                            <div className={`check-circle-premium sm ${selectedCandidate?.id === candidate.id ? "active" : ""}`}>
+                                                                {selectedCandidate?.id === candidate.id && <GiCheckMark size={8} />}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="candidates-grid-v2">
+                                        {candidates.map((candidate) => (
+                                            <div
+                                                key={candidate.id}
+                                                className={`interview-card-v2 selection-card ${selectedCandidate?.id === candidate.id ? 'active-selection' : ''}`}
+                                                onClick={() => setSelectedCandidate(candidate)}
+                                            >
+                                                <div className="card-accent-bar"></div>
+                                                <div className="card-header-row">
+                                                    <div className="status-pill-v2">
+                                                        <span className="dot" style={{ background: '#10b981' }}></span>
+                                                        Shortlisted
+                                                    </div>
+                                                    <div className="selection-indicator">
+                                                        {selectedCandidate?.id === candidate.id ? (
+                                                            <div className="check-circle-premium active"><GiCheckMark size={10} /></div>
+                                                        ) : (
+                                                            <div className="check-circle-premium"></div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="card-profile-section">
+                                                    {candidate.avatar ? (
+                                                        <img src={candidate.avatar} alt={candidate.name} className="avatar-initials-premium" />
+                                                    ) : (
+                                                        <div className="avatar-initials-premium">
+                                                            {getInitials(candidate.name)}
+                                                        </div>
+                                                    )}
+                                                    <div className="profile-details">
+                                                        <h4 className="candidate-name">{candidate.name}</h4>
+                                                        <p className="candidate-role">{candidate.role} • {candidate.experience}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="card-meta-grid">
+                                                    <div className="meta-pill">
+                                                        <FiMapPin size={12} /> <span>{candidate.city}</span>
+                                                    </div>
+                                                    <div className="meta-pill">
+                                                        <FiStar size={12} /> <span>{candidate.rating} Rating</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="card-skills-row mt-2" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                                    {(candidate.skills || []).slice(0, 3).map((skill, i) => (
+                                                        <span key={i} className="status-tag">{skill}</span>
+                                                    ))}
+                                                    {candidate.skills.length > 3 && <span className="status-tag count">+{candidate.skills.length - 3}</span>}
                                                 </div>
                                             </div>
-                                            <div className="role">{candidate.role}</div>
-                                        </div>
-                                    </div>
-                                    <div className="meta-grid">
-                                        <div className="meta-item"><FiBriefcase size={14} /> <span>{candidate.experience}</span></div>
-                                        <div className="meta-item"><FiMapPin size={14} /> <span>{candidate.city || "Remote"}</span></div>
-                                    </div>
-                                    <div className="skills-row">
-                                        {candidate.skills.slice(0, 2).map(skill => (
-                                            <span key={skill} className="status-tag">{skill}</span>
                                         ))}
-                                        {candidate.skills.length > 2 && <span className="status-tag count">+{candidate.skills.length - 2}</span>}
                                     </div>
-                                </div>
-                            ))
+                                )}
+                            </div>
                         )}
                     </div>
-                </section>
+                </div>
 
-                {/* COLUMN 2: Select Date (Middle - 1fr) */}
-                <section className="col-dates">
-                    <div className="project-card flex-grow-1 gap-0 d-flex flex-column mb-4" style={{ minHeight: 0 }}>
-                        <div className="d-flex justify-content-between align-items-center p-3 pb-0">
-                            <h3 className="fg-title m-0"><FiCalendar /> Select Date</h3>
-                            <div className="d-flex align-items-center gap-3">
-                                <div className="weekend-legend-inline">
-                                    <span className="dot"></span> Weekends
-                                </div>
-                                <div className="date-picker-popup">
-                                    <DatePicker
-                                        selected={selectedDate}
-                                        onChange={handlePickerChange}
-                                        minDate={new Date()}
-                                        todayButton="Go to Today"
-                                        customInput={<button className="icon-btn-picker" title="Select custom date"><FiCalendar /></button>}
-                                        popperPlacement="bottom-end"
-                                        portalId="root"
-                                    />
-                                </div>
-                            </div>
+                {/* RIGHT: Settings Column */}
+                <div className="si-settings-column">
+
+                    {/* Card 1: Date + Time trigger */}
+                    <div className="si-bento-cell si-cell-datetime project-card">
+                        <div className="bento-cell-header">
+                            <div className="bento-cell-icon-wrap"><FiCalendar size={14} /></div>
+                            <h3 className="fg-title m-0">Date &amp; Time</h3>
                         </div>
-                        <div className="month-selection-header mt-3">
-                            <button className="month-nav-btn" onClick={() => handleMonthChange(-1)} title="Previous Month">
-                                <FiChevronLeft size={18} />
-                            </button>
-                            <span className="month-label">
-                                {viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                            </span>
-                            <button className="month-nav-btn" onClick={() => handleMonthChange(1)} title="Next Month">
-                                <FiChevronRight size={18} />
-                            </button>
-                        </div>
-                        <div className="date-cards-grid overflow-y-auto p-3">
-                            {upcomingDates.map((date, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`date-small-box ${isSameDay(selectedDate, date) ? 'active' : ''} ${(date.getDay() === 0 || date.getDay() === 6) ? 'is-weekend' : ''}`}
-                                    onClick={() => setSelectedDate(date)}
-                                >
-                                    <span className="d-num">{date.getDate()}</span>
-                                    <span className="d-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                        <div className="datetime-trigger-body">
+                            <button
+                                className={`datetime-summary-btn ${selectedDate ? 'has-value' : ''}`}
+                                onClick={() => setShowDateTimeModal(true)}
+                            >
+                                <div className="dt-row">
+                                    <div className="dt-icon-wrap"><FiCalendar size={15} /></div>
+                                    <div className="dt-text">
+                                        <span className="dt-label">Date</span>
+                                        <span className="dt-value">
+                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set'}
+                                        </span>
+                                    </div>
                                 </div>
-                            ))}
+                                <div className="dt-divider" />
+                                <div className="dt-row">
+                                    <div className="dt-icon-wrap"><FiClock size={15} /></div>
+                                    <div className="dt-text">
+                                        <span className="dt-label">Time</span>
+                                        <span className="dt-value">{formattedRange || 'Not set'}</span>
+                                    </div>
+                                </div>
+                                <div className="dt-edit-hint">
+                                    <FiChevronRight size={16} />
+                                    <span>Edit</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
 
-                    {selectedJob ? (
-                        <div style={{ position: 'relative' }}>
-                            <JobOverviewCard
-                                job={selectedJob}
-                                isExpanded={false}
-                                onToggle={() => { }}
-                            />
-                            <button
-                                style={{
-                                    position: 'absolute',
-                                    top: '16px',
-                                    right: '16px',
-                                    background: '#f8fafc',
-                                    border: '1px solid #e2e8f0',
-                                    color: '#1e293b',
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                                }}
-                                onClick={() => setShowJobModal(true)}
-                                title="View Full Details"
-                            >
-                                <FiEye size={16} />
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="empty-candidates-msg" style={{ height: '140px' }}>
-                            <p>Select a job to see overview</p>
-                        </div>
-                    )}
-                </section>
-
-                {/* COLUMN 3: Select Time (Right - 350px) */}
-                <section className="col-times">
-                    <div className="project-card flex-grow-1 d-flex flex-column" style={{ minHeight: 0, height: '100%' }}>
-                        <h3 className="fg-title p-3 m-0"><FiClock /> Select Time</h3>
-
-                        <div className="time-tabs-wrapper mb-3">
-                            <button
-                                className={`time-tab-btn ${timeMode === 'quick' ? 'active' : ''}`}
-                                onClick={() => setTimeMode('quick')}
-                            >
-                                Quick
-                            </button>
-                            <button
-                                className={`time-tab-btn ${timeMode === 'custom' ? 'active' : ''}`}
-                                onClick={() => setTimeMode('custom')}
-                            >
-                                Custom
-                            </button>
-                        </div>
-
-                        <div className="times-stack hide-scrollbar p-3 pt-0">
-                            {/* QUICK SLOTS */}
-                            {timeMode === 'quick' && (
-                                <div className="quick-slots-container mb-4">
-                                    <div className="slots-grid">
-                                        {timeSlots.map(slot => (
-                                            <button
-                                                key={slot.id}
-                                                className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
-                                                onClick={() => handleQuickSlotClick(slot)}
-                                            >
-                                                {slot.time}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* CUSTOM RANGE */}
-                            {timeMode === 'custom' && (
-                                <div className="custom-range-container">
-                                    <div className="time-select-block mb-3">
-                                        <span className="range-label">From:</span>
-                                        <div className="h-m-picker">
-                                            <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                                {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                            </select>
-                                            <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                                {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                            </select>
-                                            <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div className="time-select-block">
-                                        <span className="range-label">To:</span>
-                                        <div className="h-m-picker">
-                                            <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                                {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                            </select>
-                                            <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                                {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                            </select>
-                                            <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                                <option value="AM">AM</option>
-                                                <option value="PM">PM</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </section>
+                </div>
 
             </div>
 
@@ -559,9 +545,9 @@ const ScheduleInterview = () => {
                 <div className="d-flex align-items-center gap-3">
                     <div className="recruiter-pill">
                         {profilePhoto ? (
-                            <img src={profilePhoto} alt="Recruiter" className="recruiter-avatar" />
+                            <img src={profilePhoto} alt="Recruiter" className="avatar-initials-premium" style={{ width: '40px', height: '40px' }} />
                         ) : (
-                            <div className="recruiter-avatar initials-bg">
+                            <div className="avatar-initials-premium" style={{ width: '40px', height: '40px' }}>
                                 {getInitials(userName)}
                             </div>
                         )}
@@ -704,6 +690,106 @@ const ScheduleInterview = () => {
                 </div>
             )}
 
+            {/* ── Combined Date + Time Modal ── */}
+            {showDateTimeModal && (
+                <div className="custom-modal-overlay" onClick={() => setShowDateTimeModal(false)}>
+                    <div className="dt-modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header-premium">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div className="bento-cell-icon-wrap"><FiCalendar size={14} /></div>
+                                <h3 className="m-0" style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>Schedule Date &amp; Time</h3>
+                            </div>
+                            <button className="close-btn-premium" onClick={() => setShowDateTimeModal(false)}>
+                                <FiX size={20} />
+                            </button>
+                        </div>
+                        <div className="dt-modal-body">
+                            {/* Left: Calendar */}
+                            <div className="dt-modal-calendar">
+                                <p className="dt-section-label"><FiCalendar size={12} /> Pick a Date</p>
+                                <div className="calendar-popover-container">
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={(date) => setSelectedDate(date)}
+                                        minDate={new Date()}
+                                        inline
+                                    />
+                                </div>
+                            </div>
+                            {/* Right: Time */}
+                            <div className="dt-modal-time">
+                                <p className="dt-section-label"><FiClock size={12} /> Pick a Time</p>
+                                <div className="time-tabs-wrapper mb-3" style={{ margin: '0 0 12px' }}>
+                                    <button className={`time-tab-btn ${timeMode === 'quick' ? 'active' : ''}`} onClick={() => setTimeMode('quick')}>Quick</button>
+                                    <button className={`time-tab-btn ${timeMode === 'custom' ? 'active' : ''}`} onClick={() => setTimeMode('custom')}>Custom</button>
+                                </div>
+                                {timeMode === 'quick' && (
+                                    <div className="slots-grid">
+                                        {timeSlots.map(slot => (
+                                            <button
+                                                key={slot.id}
+                                                className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
+                                                onClick={() => handleQuickSlotClick(slot)}
+                                            >
+                                                {slot.time}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                {timeMode === 'custom' && (
+                                    <div className="custom-range-container">
+                                        <div className="time-select-block mb-3">
+                                            <span className="range-label">From:</span>
+                                            <div className="h-m-picker">
+                                                <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                    {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                                </select>
+                                                <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                    {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                                </select>
+                                                <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                    <option value="AM">AM</option>
+                                                    <option value="PM">PM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="time-select-block">
+                                            <span className="range-label">To:</span>
+                                            <div className="h-m-picker">
+                                                <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                    {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                                </select>
+                                                <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                    {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                                </select>
+                                                <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                    <option value="AM">AM</option>
+                                                    <option value="PM">PM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="dt-modal-confirm-row">
+                                    <div className="dt-confirm-summary">
+                                        <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selected</span>
+                                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
+                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'} · {formattedRange || '—'}
+                                        </span>
+                                    </div>
+                                    <button
+                                        className="btn-alert-primary"
+                                        style={{ padding: '10px 28px', fontSize: '13px' }}
+                                        onClick={() => setShowDateTimeModal(false)}
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
