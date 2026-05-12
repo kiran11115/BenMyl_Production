@@ -346,6 +346,23 @@ function SignUp() {
             setShowError(false);
             formik.handleSubmit();
           }}
+          extraAction={
+            errorMsg.toLowerCase().includes("already exists")
+              ? {
+                  label: "Verify OTP",
+                  onClick: () => {
+                    navigate("/otp-verification", {
+                      state: {
+                        emailID: formik.values.email,
+                        fullName: formik.values.fullName,
+                        companyName: formik.values.companyName,
+                        role: invitedRole || "Admin",
+                      },
+                    });
+                  },
+                }
+              : null
+          }
         />
       )}
     </div>

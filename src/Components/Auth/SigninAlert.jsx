@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 export const SubmissionErrorModal = ({
     onClose,
     onRetry,
-    message
+    message,
+    extraAction
 }) => {
     return (
         <div className="modal-overlay">
@@ -32,9 +33,11 @@ export const SubmissionErrorModal = ({
                     <button className="btn-secondary" onClick={onClose}>
                         Close
                     </button>
-                    <button className="btn-alert-primary btn-alert-error" onClick={onRetry}>
-                        Try Again
-                    </button>
+                    {extraAction && (
+                        <button className="btn-alert-primary" onClick={extraAction.onClick}>
+                            {extraAction.label}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

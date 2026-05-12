@@ -249,6 +249,9 @@ const ScheduleInterview = () => {
             formData.append("InterviewLink", "Google.com");
             formData.append("CandidateID", selectedCandidate.id);
             formData.append("CandidateEmailid", selectedCandidate.email);
+            formData.append("Salary", selectedJob.budget);
+            formData.append("SalaryType", selectedJob.salaryType);
+            formData.append("CandidtateRecruiterid", 0);
 
             await scheduleInterview(formData).unwrap();
 
