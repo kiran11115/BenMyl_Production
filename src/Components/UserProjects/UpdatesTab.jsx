@@ -43,9 +43,9 @@ function FeedEntry({ entry, onReact }) {
         <div className="project-card mb-3" style={{ padding: "16px", gap: "12px" }}>
             <div className="d-flex gap-3">
                 {entry.avatar ? (
-                    <img src={entry.avatar} alt={entry.name} style={{ width: "36px", height: "36px", borderRadius: "50%" }} />
+                    <img src={entry.avatar} alt={entry.name} className="avatar-initials-premium" style={{ width: "36px", height: "36px" }} />
                 ) : (
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className="avatar-initials-premium" style={{ width: "36px", height: "36px", background: "#e2e8f0" }}>
                         <FiUser size={18} color="#64748b" />
                     </div>
                 )}

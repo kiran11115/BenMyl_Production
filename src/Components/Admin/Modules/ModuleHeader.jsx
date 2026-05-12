@@ -51,16 +51,21 @@ const ModuleHeader = ({
             </div>
 
             <div className="header-right-actions">
-                {actions.map((action, index) => (
-                    <button 
-                        key={index} 
-                        className={`btn-${action.type || 'secondary'}`} 
-                        onClick={action.onClick}
-                    >
-                        {action.icon}
-                        {action.label}
-                    </button>
-                ))}
+                {actions.map((action, index) => {
+                    if (action.customElement) {
+                        return <React.Fragment key={index}>{action.customElement}</React.Fragment>;
+                    }
+                    return (
+                        <button 
+                            key={index} 
+                            className={`btn-${action.type || 'secondary'}`} 
+                            onClick={action.onClick}
+                        >
+                            {action.icon}
+                            {action.label}
+                        </button>
+                    );
+                })}
             </div>
         </header>
     );

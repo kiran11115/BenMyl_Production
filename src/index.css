@@ -1,3 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #f5810c;
+  --primary-hover: #ea580c;
+  --primary-light: rgba(245, 129, 12, 0.1);
+  --slate-800: #1e293b;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --card-shadow: 0 4px 12px -1px rgba(15, 23, 42, 0.05);
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --primary-gradient: linear-gradient(135deg, #f5810c 0%, #ea580c 100%);
+  --dark-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -45,4 +68,263 @@ code {
     opacity: 0.5 !important;
     cursor: not-allowed !important;
     pointer-events: none !important;
+}
+
+/* Global Premium Avatar Styles */
+.avatar-initials-premium, 
+.avatar, 
+.initial-avatar, 
+.initials-avatar,
+.author-avatar,
+.team-avatar {
+    border-radius: 16px !important;
+    font-weight: 400 !important;
+    object-fit: cover !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+/* Specific Initials Style */
+.avatar-initials-premium {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    font-size: 16px !important;
+}
+
+/* ── Global Card System ── */
+.project-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #f5810c 0%, #e11d48 50%, #7c3aed 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-card:hover::after {
+  opacity: 1;
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: #ffedd5;
+}
+
+/* ── Interview Card V2 ── */
+.interview-card-v2 {
+  position: relative;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.interview-card-v2:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(15, 23, 42, 0.1);
+  border-color: var(--primary);
+}
+
+.card-accent-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.interview-card-v2:hover .card-accent-bar {
+  background: var(--primary-gradient);
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-pill-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #475569;
+}
+
+.status-pill-v2 .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-pill-v2 .dot.scheduled { background: #3b82f6; }
+.status-pill-v2 .dot.completed { background: #10b981; }
+.status-pill-v2 .dot.cancelled { background: #ef4444; }
+
+.time-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.candidate-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.candidate-role {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.avatar-initials-premium {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  border: 2px solid #f1f5f9;
+  object-fit: cover;
+}
+
+.card-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.meta-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.card-actions-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.btn-v2-outline {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-v2-outline:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.btn-v2-primary {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary-gradient);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(245, 129, 12, 0.2);
+}
+
+.btn-v2-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 129, 12, 0.3);
+}
+
+.btn-v2-disabled {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #f1f5f9;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+/* ── Additional Card Utilities ── */
+.card-skills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-tag.count {
+    background: #f8fafc;
+    color: var(--primary);
+    border: 1px solid var(--primary-light);
 }

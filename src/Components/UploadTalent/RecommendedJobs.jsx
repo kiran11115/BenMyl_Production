@@ -149,16 +149,8 @@ const RecommendedJobs = ({ role, skills, employeeId }) => {
             <div className="d-flex flex-column gap-3">
               {/* Header: Company Avatar + Title */}
               <div className="card-header">
-                <div className="avatar-wrapper">
-                  <div className="avatar initial-avatar d-flex align-items-center justify-content-center" style={{
-                    background: "var(--slate-50)",
-                    color: "var(--slate-600)",
-                    fontSize: "22px",
-                    fontWeight: "600",
-                    textTransform: "uppercase"
-                  }}>
+                <div className="avatar-initials-premium">
                     {getInitials(job.company)}
-                  </div>
                 </div>
                 <div className="header-info flex-column gap-0 align-items-start">
                   <div className="name-row w-100">

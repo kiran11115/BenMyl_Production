@@ -57,12 +57,14 @@ function Header() {
           { label: "schedule interview", path: "/user/user-upcoming-interview" },
         ],
       },
+
     ],
     "Benchsales": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
       { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
       { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
+
     ],
   };
 
@@ -294,10 +296,10 @@ function Header() {
                       : `https://webapidev.benmyl.com/${companyData.profilePhoto}?t=${Date.now()}`
                   }
                   alt="Profile"
-                  className="profile-avatar"
+                  className="avatar-initials-premium"
                 />
               ) : (
-                <div className="profile-avatar initials-avatar fs-5">
+                <div className="avatar-initials-premium">
                   {getInitials(user)}
                 </div>
               )}

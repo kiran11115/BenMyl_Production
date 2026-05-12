@@ -488,8 +488,9 @@ const TalentPool = () => {
       availability: item.status ? [item.status] : ["Available"],
 
       verified: true,
+      status: item.status?.toUpperCase() || "AVAILABLE",
       isshortlisted: item.isshortlisted,
-
+      uploadedByName: item.uploadedByName,
       hourlyRate: item.salary || 0,
     }));
   }, [allCandidates]);
@@ -783,6 +784,7 @@ const TalentPool = () => {
       {
         state: {
           employeeID: candidate.id,
+          candidate: candidate, // Pass whole object
           jobId: activeJobId, // 🔥 this is critical
         },
       }

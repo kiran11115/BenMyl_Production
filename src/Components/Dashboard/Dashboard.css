@@ -815,39 +815,7 @@
   mix-blend-mode: normal;
 }
 
-.project-card {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 24px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px !important;
-  position: relative;
-  overflow: hidden;
-}
-
-.project-card::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #f5810c 0%, #e11d48 50%, #7c3aed 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.project-card:hover::after {
-  opacity: 1;
-}
-
-.project-card:hover {
-  transform: translateY(-8px);
-  border-color: #ffedd5;
-}
+/* project-card styles moved to index.css for global reuse */
 
 .stat-card,
 .table-card,

@@ -121,12 +121,15 @@ const UploadTalentProfile = () => {
 
   const profileData = useMemo(() => {
     if (!apiData) return null;
+    const payloadCandidate = location.state?.candidate;
+    
     return {
       name: `${apiData?.firstName || "N/A"} ${apiData?.lastName || ""}`.trim(),
       role: apiData?.title || "N/A",
       location: `${apiData?.city || "N/A"}, ${apiData?.state || ""}`.replace(/, $/, ""),
       experience: calculateTotalExperience(apiData?.workexperiences),
-      status: apiData?.status || "N/A",
+      status: payloadCandidate?.status || apiData?.status || "N/A",
+      uploadedByName: payloadCandidate?.uploadedByName || "N/A",
       summary: apiData?.bio || "N/A",
       email: apiData?.emailAddress || "N/A",
       phoneNo: apiData?.phoneNo || "N/A",
@@ -299,9 +302,9 @@ const UploadTalentProfile = () => {
       <div className="tp-hero-card">
         <div className="tp-avatar-wrapper">
           {profileData?.profileImage ? (
-            <img src={profileData.profileImage} alt={profileData?.name} className="tp-avatar-lg" />
+            <img src={profileData.profileImage} alt={profileData?.name} className="avatar-initials-premium" style={{ width: '120px', height: '120px', fontSize: '32px' }} />
           ) : (
-            <div className="tp-avatar-lg avatar-initials">{initials}</div>
+            <div className="avatar-initials-premium" style={{ width: '120px', height: '120px', fontSize: '32px' }}>{initials}</div>
           )}
         </div>
         <div className="tp-info-main">
@@ -316,6 +319,9 @@ const UploadTalentProfile = () => {
             <div className="tp-meta-item"><FiMapPin /> {profileData?.location}</div>
             <div className="tp-meta-item"><FiBriefcase /> {profileData?.experience}</div>
             <div className="tp-meta-item"><FiAward /> {profileData?.status}</div>
+            {profileData?.uploadedByName !== "N/A" && (
+              <div className="tp-meta-item"><FiUser /> Uploaded By: {profileData?.uploadedByName}</div>
+            )}
           </div>
         </div>
         <div className="tp-sidebar-actions">

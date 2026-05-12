@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMapPin, FiStar, FiBriefcase, FiClock } from "react-icons/fi";
+import { FiMapPin, FiStar, FiBriefcase, FiClock, FiUser } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import NoData from "../UploadTalent/NoData";
@@ -25,9 +25,9 @@ const TalentGridView = ({
   };
 
   const visibleCandidates = candidates.filter(
-  (candidate) => candidate.isshortlisted  === false
-);
-const matchingCount = visibleCandidates.length;
+    (candidate) => candidate.isshortlisted === false
+  );
+  const matchingCount = visibleCandidates.length;
 
   return (
     <div>
@@ -40,15 +40,15 @@ const matchingCount = visibleCandidates.length;
 
       {visibleCandidates.length === 0 && (
         <div
-                style={{
-                  minHeight: "320px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <NoData text="No Matching Profiles found" />
-              </div>
+          style={{
+            minHeight: "320px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <NoData text="No Matching Profiles found" />
+        </div>
       )}
 
       <div className="candidate-grid">
@@ -58,107 +58,98 @@ const matchingCount = visibleCandidates.length;
             shortlistedMap?.[activeJobId]?.find((c) => c.id === candidate.id);
 
           return (
-            <div key={candidate.id} className="candidate-card">
-              {/* Header: Avatar, Name, Rating */}
-              <div className="card-header">
-                <div className="avatar-wrapper">
-                  {candidate.avatar ? (
-                    <img
-                      src={candidate.avatar}
-                      alt={candidate.name}
-                      className="avatar"
-                    />
-                  ) : (
-                    <div className="avatar initial-avatar d-flex align-items-center justify-content-center" style={{ backgroundColor: "#f1f5f9", color: "#475569", fontSize: "18px", fontWeight: 700, textTransform: "uppercase" }}>
-                      {getInitials(candidate.name)}
-                    </div>
-                  )}
-                  {candidate.verified && (
-                    <div className="verified-badge">
-                      <GiCheckMark size={10} />
-                    </div>
-                  )}
+            <div key={candidate.id} className="interview-card-v2">
+              <div className="card-accent-bar"></div>
+
+              {/* Header: Status Pill and Rating */}
+              <div className="card-header-row">
+                <div className="status-pill-v2">
+                  <span className="dot" style={{ 
+                    background: 
+                      candidate.status === 'AVAILABLE' ? '#10b981' : 
+                      candidate.status === 'SHORTLISTED' ? '#3b82f6' : 
+                      candidate.status === 'INTERVIEWING' ? '#8b5cf6' : 
+                      '#f59e0b' 
+                  }}></span>
+                  {candidate.status || (candidate.verified ? 'Verified' : 'Pending')}
                 </div>
-                <div className="header-info flex-column gap-0 align-items-start">
-                  <div className="name-row w-100">
-                    <h4 className="name">{candidate.name}</h4>
-                    <div className="rating-badge">
-                      <FiStar size={10} fill="#f59e0b" color="#f59e0b" />
-                      <span>{candidate.rating}</span>
-                    </div>
+                <div className="rating-pill">
+                  <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
+                  <span>{candidate.rating}</span>
+                </div>
+              </div>
+
+              {/* Profile Section */}
+              <div className="card-profile-section">
+                {candidate.avatar ? (
+                  <img src={candidate.avatar} alt={candidate.name} className="avatar-initials-premium" />
+                ) : (
+                  <div className="avatar-initials-premium">
+                    {getInitials(candidate.name)}
                   </div>
-                  <div className="role">{candidate.role}</div>
+                )}
+                <div className="profile-details">
+                  <h4 className="candidate-name">{candidate.name}</h4>
+                  <p className="candidate-role">{candidate.role}</p>
                 </div>
               </div>
 
               {/* Meta Info: Exp, Location */}
-              <div className="meta-info">
-                <div className="meta-item">
-                  <FiBriefcase size={14} />
+              <div className="card-meta-grid">
+                <div className="meta-pill">
+                  <FiBriefcase size={12} />
                   <span>{candidate.experience}</span>
                 </div>
-                <div className="meta-item">
-                  <FiMapPin size={14} />
+                <div className="meta-pill">
+                  <FiMapPin size={12} />
                   <span>{candidate.location}</span>
                 </div>
+                {candidate.uploadedByName && (
+                  <div className="meta-pill" title={`Uploaded By: ${candidate.uploadedByName}`}>
+                    <FiUser size={12} />
+                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      By: {candidate.uploadedByName}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {/* Tags section: Availability & Skills */}
-              <div className="tags-section">
-                {/* Skills */}
-                <div className="tags-group">
-                  {candidate.skills.slice(0, 3).map((skill) => (
-                    <span key={skill} className="tag-pill skill">
-                      {skill}
-                    </span>
-                  ))}
-                  {candidate.skills.length > 3 && (
-                    <span className="tag-pill skill">
-                      +{candidate.skills.length - 3}
-                    </span>
-                  )}
-                </div>
-                {/* Availability */}
-                <div className="tags-group2">
-                  {candidate.availability.map((avail, idx) => (
-                    <span key={idx} className="tag-pill availability">
-                      <FiClock size={10} style={{ marginRight: "4px" }} />{" "}
-                      {avail}
-                    </span>
-                  ))}
-                </div>
+              {/* Skills Row */}
+              <div className="card-skills-row">
+                {candidate.skills.slice(0, 3).map((skill) => (
+                  <span key={skill} className="status-tag">
+                    {skill}
+                  </span>
+                ))}
+                {candidate.skills.length > 3 && (
+                  <span className="status-tag count">
+                    +{candidate.skills.length - 3}
+                  </span>
+                )}
               </div>
 
               {/* Actions */}
-              <div className="card-actions">
+              <div className="card-actions-v2">
                 <button
                   onClick={() => onProfileClick(candidate)}
-                  className="btn-primary"
+                  className="btn-v2-outline"
                 >
                   View Profile
                 </button>
 
                 <button
                   onClick={() => onShortlist(candidate)}
-                  className={isShortlisted ? "btn-shortlisted" : "btn-shortlist"}
+                  className={isShortlisted ? "btn-v2-primary shortlisted" : "btn-v2-primary"}
                   style={
-                    !isShortlisted
-                      ? {
-                          borderColor: activeJobId ? activeJobColor : "#e2e8f0",
-                          color: activeJobId ? activeJobColor : "#475569",
-                          backgroundColor: "transparent",
-                          boxShadow: "none",
-                        }
-                      : {
-                          backgroundColor: activeJobColor || "#059669",
-                          borderColor: activeJobColor || "#059669",
-                        }
+                    isShortlisted && activeJobColor
+                      ? { backgroundColor: activeJobColor, borderColor: activeJobColor }
+                      : {}
                   }
                 >
                   {isShortlisted ? (
-                    <>
-                      <GiCheckMark size={12} /> Shortlisted
-                    </>
+                    <span className="d-flex align-items-center gap-1">
+                      <GiCheckMark size={12} /> Selected
+                    </span>
                   ) : (
                     "Shortlist"
                   )}

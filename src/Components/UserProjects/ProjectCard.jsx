@@ -82,7 +82,8 @@ export default function ProjectCard({ project, onUpload, onReview }) {
           <img
             src={project.avatar}
             alt={project.author}
-            className="author-avatar"
+            className="avatar-initials-premium"
+            style={{ width: '32px', height: '32px' }}
           />
           <span className="author-name">{project.author}</span>
         </div>
@@ -93,12 +94,11 @@ export default function ProjectCard({ project, onUpload, onReview }) {
             <img
               key={member.id}
               src={member.avatar}
+              className="avatar-initials-premium"
               style={{
                 width: "22px",
                 height: "22px",
-                borderRadius: "50%",
                 border: "2px solid white",
-                objectFit: "cover",
                 marginLeft: idx > 0 ? "-7px" : "0",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               }}
@@ -108,19 +108,15 @@ export default function ProjectCard({ project, onUpload, onReview }) {
           ))}
           {project.team?.length > 3 && (
             <div
+              className="avatar-initials-premium"
               style={{
                 width: "22px",
                 height: "22px",
-                borderRadius: "50%",
                 background: "#f1f5f9",
                 color: "#64748b",
                 fontSize: "9px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 border: "2px solid white",
                 marginLeft: "-7px",
-                fontWeight: 700,
               }}
             >
               +{project.team.length - 3}

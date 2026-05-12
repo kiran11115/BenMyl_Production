@@ -14,7 +14,7 @@ const MODULE_PERMISSIONS = [
     { id: "talent", name: "Talent Pool", icon: <Layout size={18} />, moduleId: 2 },
     { id: "jobs", name: "Job Management", icon: <Layout size={18} />, moduleId: 3 },
     { id: "projects", name: "Projects", icon: <Layout size={18} />, moduleId: 4 },
-    { id: "contracts", name: "Contracts", icon: <Layout size={18} />, moduleId: 5 },
+
     { id: "analytics", name: "Analytics", icon: <Layout size={18} />, moduleId: 6 },
 ];
 

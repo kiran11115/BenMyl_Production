@@ -81,7 +81,8 @@ const TalentProfile = () => {
       )}`,
     location: `${employee?.city ?? ""}, ${employee?.state ?? ""}, ${employee?.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "N/A",
     experience: calculateTotalExperience(employee?.workexperiences),
-    status: employee?.status ?? "Verified",
+    status: state?.candidate?.status || employee?.status || "Verified",
+    uploadedByName: state?.candidate?.uploadedByName || "N/A",
     summary: employee?.bio ?? "N/A",
     skills: employee?.skills
       ? employee?.skills.split(",").map((s) => s.trim())
@@ -197,6 +198,11 @@ const TalentProfile = () => {
             <div className="tp-meta-item">
               <FiAward /> {profileData.status}
             </div>
+            {profileData.uploadedByName !== "N/A" && (
+              <div className="tp-meta-item">
+                <FiUser /> Uploaded By: {profileData.uploadedByName}
+              </div>
+            )}
           </div>
         </div>
 

@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 const TalentProfile = () => {
 
   const navigate = useNavigate();
+  const role = localStorage.getItem("Role");
 
   const profileData = {
     name: "Sarah Anderson",
@@ -114,32 +115,38 @@ const TalentProfile = () => {
           <div className="row">
             <div className="col-3">
               {/* Profile Header Card */}
-              <div className="project-card">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
-                  alt="Profile"
-                  className="profile-avatar-lg"
-                />
-                <div className="profile-header-content">
-                  <div className="d-flex gap-3">
-                    <h1 className="mb-2">{profileData.name}</h1>
-                    <FiFileText className="profile-verified-icon" />
-                  </div>
-                  <div className="card-title mb-2">{profileData.role}</div>
+              <div className="interview-card-v2">
+                <div className="card-accent-bar"></div>
 
-                  <div className="profile-meta-row">
-                    <span className="meta-item">
-                      <FiMapPin /> {profileData.location}
-                    </span>
-                    <span className="meta-item">
-                      <FiBriefcase /> {profileData.experience}
-                    </span>
+                <div className="card-header-row mb-2">
+                  <div className="status-pill-v2">
+                    <span className="dot" style={{ background: '#10b981' }}></span>
+                    {profileData.status}
                   </div>
+                  <FiFileText className="text-primary" />
+                </div>
 
-                  <div className="profile-status-wrapper">
-                    <span className="status-tag status-completed">
-                      {profileData.status}
-                    </span>
+                <div className="card-profile-section flex-column align-items-center text-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
+                    alt="Profile"
+                    className="avatar-initials-premium"
+                    style={{ width: '120px', height: '120px', borderRadius: '24px' }}
+                  />
+                  <div className="profile-details mt-3">
+                    <h2 className="candidate-name" style={{ fontSize: '24px' }}>{profileData.name}</h2>
+                    <p className="candidate-role" style={{ fontSize: '15px' }}>{profileData.role}</p>
+                  </div>
+                </div>
+
+                <div className="card-meta-grid">
+                  <div className="meta-pill">
+                    <FiMapPin size={12} />
+                    <span>{profileData.location}</span>
+                  </div>
+                  <div className="meta-pill">
+                    <FiBriefcase size={12} />
+                    <span>{profileData.experience}</span>
                   </div>
                 </div>
               </div>
@@ -254,10 +261,12 @@ const TalentProfile = () => {
         <div className="dashboard-column-side">
           {/* Action Buttons */}
           <div className="sidebar-actions">
-            <button className="btn-primary w-100" onClick={() => {
-              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(`${basePath}/user-schedule-interview`);
-            }}>Schedule Interview</button>
+            {role !== 'Benchsales' && (
+              <button className="btn-primary w-100" onClick={() => {
+                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                navigate(`${basePath}/user-schedule-interview`);
+              }}>Schedule Interview</button>
+            )}
             <button className="btn-secondary w-100">Shortlist Candidate</button>
 
             <div className="sidebar-links">

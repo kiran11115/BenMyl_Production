@@ -316,19 +316,6 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                 .react-datepicker__input-container input {
                     padding-left: 2.5rem !important;
                 }
-                .initials-avatar {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 8px;
-                    background: #f1f5f9;
-                    color: #475569;
-                    font-weight: 700;
-                    font-size: 18px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border: 1px solid #e2e8f0;
-                }
             `}</style>
         <div className="post-job-form">
           <div className="form-header">
@@ -951,7 +938,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                 <h3 className="section-title mb-3">Live Preview</h3>
                 <div className="project-card p-3">
                   <div className="d-flex align-items-center gap-3 mb-3">
-                    <div className="initials-avatar">
+                    <div className="avatar-initials-premium" style={{ width: '48px', height: '48px', fontSize: '18px' }}>
                       {getInitials(
                         initialData?.firstName,
                         initialData?.lastName,

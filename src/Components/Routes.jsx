@@ -22,9 +22,6 @@ import PostNewPositions from "./PostNewPositions/PostNewPositions";
 import InviteBid from "./InviteBid/InviteBid";
 import UpcomingInterview from "./UpcomingInterview/UpcomingInterview";
 import ScheduleInterview from "./ScheduleInterview/ScheduleInterview";
-import ContractManagement from "./ContractManagement/ContractManagement";
-import ContractView from "./ContractView/ContractView";
-import CreateNewContract from "./NewContract/CreateNewContract";
 import TalentProfile from "./TalentPool/Talent Profile/TalentProfile";
 import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
@@ -44,6 +41,7 @@ import AdminControlCenter from "./Admin/AdminControlCenter/AdminControlCenter";
 import ComingSoonModule from "./Admin/Modules/ComingSoon";
 import Portal from "./Portal/Portal";
 import PostedJobsPage from "./UserProjects/PostedJobsPage";
+
 
 // Admin Module Imports
 import RoleConfiguration from "./Admin/Modules/RoleConfiguration/RoleConfiguration";
@@ -104,9 +102,7 @@ const routes = createBrowserRouter(
           <Route path="admin-upcoming-interview" element={<UpcomingInterview />} />
           <Route path="admin-interview-details" element={<InterviewDetails />} />
           <Route path="admin-messages" element={<Messages />} />
-          <Route path="admin-contract-management" element={<ContractManagement />} />
-          <Route path="admin-contract-view" element={<ContractView />} />
-          <Route path="admin-create-new-contract" element={<CreateNewContract />} />
+
         </Route>
 
         <Route path="User" element={<Header />}>
@@ -147,13 +143,6 @@ const routes = createBrowserRouter(
             <Route path="user-analytics" element={<Analytics />} />
           </Route>
 
-          <Route element={<ModuleProtectedRoute module="Contracts" />}>
-            <Route path="user-contract-management" element={<ContractManagement />} />
-            <Route path="user-contract-view" element={<ContractView />} />
-            <Route element={<ModuleProtectedRoute module="Contracts" action="edit" />}>
-              <Route path="create-new-contract" element={<CreateNewContract />} />
-            </Route>
-          </Route>
 
           <Route path="user-messages" element={<Messages />} />
           <Route path="user-profile" element={<ProfilePage />} />

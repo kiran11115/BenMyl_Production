@@ -161,6 +161,7 @@ const UserJobs = () => {
           workModel: jobToOpen.workModels,
           department: jobToOpen.department,
           jobDuration: jobToOpen.jobDuration,
+          jobDurationText: jobToOpen.jobDuration ? `${jobToOpen.jobDuration} ${jobToOpen.jobDuration_Unit || "Months"}` : null,
           rateText: jobToOpen.salaryRange_Min && jobToOpen.salaryRange_Max
             ? `$${jobToOpen.salaryRange_Min}-${jobToOpen.salaryRange_Max}`
             : jobToOpen.salaryRange_Min
@@ -242,6 +243,7 @@ const UserJobs = () => {
       workModel: job.workModels,
       department: job.department,
       jobDuration: job.jobDuration,
+      jobDurationText: job.jobDuration ? `${job.jobDuration} ${job.jobDuration_Unit || "Months"}` : null,
       rateText:
         job.salaryRange_Min && job.salaryRange_Max
           ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
@@ -313,7 +315,7 @@ const UserJobs = () => {
             >
               Find Jobs
             </h1>
-            <button 
+            <button
               className="video-btn-help"
               style={{
                 background: 'var(--orange-light)',
@@ -433,114 +435,101 @@ const UserJobs = () => {
               </div>
             ) : (
               <div className="jobs-grid" ref={resultsRef}>
-              {jobs.length > 0 ? (
-                jobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className={`candidate-card ${selectedJob?.id === job.id ? "active-card" : ""}`}
-                    style={{height:"350px"}}
-                  >
-                    <div className="d-flex flex-column gap-3">
-                      {/* Header: Company Avatar + Title */}
-                      <div className="card-header">
-                        <div className="avatar-wrapper">
-                          <div className="avatar initial-avatar d-flex align-items-center justify-content-center" style={{
-                            background: "var(--slate-50)",
-                            color: "var(--slate-600)",
-                            fontSize: "22px",
-                            fontWeight: "600",
-                            textTransform: "uppercase"
-                          }}>
-                            {getInitials(job.company)}
+                {jobs.length > 0 ? (
+                  jobs.map((job) => (
+                    <div
+                      key={job.id}
+                      className={`interview-card-v2 ${selectedJob?.id === job.id ? "active-card" : ""}`}
+                      style={{height:'max-content'}}
+                    >
+                      <div className="card-accent-bar"></div>
+                      <div className="d-flex flex-column h-100 gap-3">
+                        {/* Header: Company Avatar + Title */}
+                        <div className="card-header-row">
+                          <div className="status-pill-v2">
+                            <span className="dot" style={{ background: '#3b82f6' }}></span>
+                            Active
                           </div>
-                        </div>
-                        <div className="header-info flex-column gap-0 align-items-start">
-                          <div className="name-row w-100">
-                            <h4 className="name" title={job.title}>{job.title}</h4>
-                          </div>
-                          <div className="role" style={{ color: 'var(--orange-primary)', fontWeight: '600' }}>
-                            {job.company}
-                          </div>
-                          {/* Department badge */}
-                          {job.department && (
-                            <span style={{
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              color: 'var(--slate-500)',
-                              background: 'var(--slate-100)',
-                              padding: '2px 8px',
-                              borderRadius: '6px',
-                              marginTop: '4px',
-                              display: 'inline-block',
-                            }}>
-                              {job.department}
-                            </span>
+                          {job.jobDurationText && (
+                            <div className="time-badge">
+                              <FiClock size={12} /> {job.jobDurationText}
+                            </div>
                           )}
                         </div>
-                      </div>
 
-                      {/* Meta Info: Salary, Exp Level, Location, Work Model */}
-                      <div className="meta-info">
-                        <div className="meta-item">
-                          <FiDollarSign size={14} />
-                          <span>{job.rateText}{job.salaryType ? ` ${job.salaryType}` : ''}</span>
+                        <div className="card-profile-section">
+                          <div className="avatar-initials-premium">
+                            {getInitials(job.company)}
+                          </div>
+                          <div className="profile-details">
+                            <h4 className="candidate-name" title={job.title}>{job.title}</h4>
+                            <p className="candidate-role" style={{ color: 'var(--primary)', fontWeight: '600' }}>
+                              {job.company}
+                            </p>
+                          </div>
                         </div>
-                        <div className="meta-item">
-                          <FiBriefcase size={14} />
-                          <span>{job.experienceText}{job.yearsOfExperience ? ` · ${job.yearsOfExperience}yr` : ''}</span>
-                        </div>
-                        <div className="meta-item">
-                          <FiMapPin size={14} />
-                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{job.location}</span>
-                        </div>
-                        <div className="meta-item">
-                          <FiClock size={14} />
-                          <span>{job.workModel || job.type}</span>
-                        </div>
-                      </div>
 
-                      {/* Skills Tags */}
-                      <div className="tags-section">
-                        <div className="tags-group">
+                        {/* Meta Info Grid */}
+                        <div className="card-meta-grid">
+                          <div className="meta-pill">
+                            <FiDollarSign size={12} />
+                            <span>{job.rateText}{job.salaryType ? ` ${job.salaryType}` : ''}</span>
+                          </div>
+                          <div className="meta-pill">
+                            <FiBriefcase size={12} />
+                            <span>{job.experienceText}</span>
+                          </div>
+                          <div className="meta-pill">
+                            <FiMapPin size={12} />
+                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{job.location}</span>
+                          </div>
+                          <div className="meta-pill">
+                            <FiUser size={12} />
+                            <span>{job.workModel || job.type}</span>
+                          </div>
+                        </div>
+
+                        {/* Skills Row */}
+                        <div className="card-skills-row mt-1">
                           {job.skills?.slice(0, 3).map((skill) => (
-                            <span key={skill} className="tag-pill skill">
+                            <span key={skill} className="status-tag">
                               {skill}
                             </span>
                           ))}
                           {job.skills?.length > 3 && (
-                            <span className="tag-pill skill" style={{ color: 'var(--slate-400)' }}>
+                            <span className="status-tag count">
                               +{job.skills.length - 3}
                             </span>
                           )}
                         </div>
+
+                        {/* Action Button */}
+                        <div className="card-actions-v2 mt-auto">
+                          <button
+                            className="btn-v2-primary w-100"
+                            onClick={() => handleAddTalentClick(job)}
+                            style={{ gridColumn: 'span 2' }}
+                          >
+                            <FiPlus size={16} /> Add Talent
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Action Button */}
-                    <div className="mt-auto">
-                      <button
-                        className="btn-primary w-100"
-                        onClick={() => handleAddTalentClick(job)}
-                      >
-                        <FiPlus size={16} /> Add Talent
-                      </button>
-                    </div>
+                  ))
+                ) : !isLoading ? (
+                  <div
+                    style={{
+                      gridColumn: "1 / -1",
+                      minHeight: "320px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoData text="No jobs found matching your filters" />
                   </div>
-                ))
-              ) : !isLoading ? (
-                <div
-                  style={{
-                    gridColumn: "1 / -1",
-                    minHeight: "320px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <NoData text="No jobs found matching your filters" />
-                </div>
-              ) : null}
-            </div>
+                ) : null}
+              </div>
             )}
             {isLoading && pageNumber > 1 && (
               <div className="compact-loader-wrapper">
@@ -553,9 +542,9 @@ const UserJobs = () => {
       </div>
 
       {selectedJob && (
-        <JobModal 
-          job={selectedJob} 
-          onClose={() => setSelectedJob(null)} 
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
           initialSelectedTalentId={location.state?.initialSelectedTalentId}
         />
       )}
