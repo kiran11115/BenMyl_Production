@@ -20,7 +20,14 @@ export const ScheduleInterviewApiSlice = apiSlice.injectEndpoints({
             providesTags: ["Scheduled"],
         }),
 
+        schedulesDetailsBenchsales: builder.query({
+            query: (recruiterId) => ({
+                url: `api/uatcompany/interview-details/${recruiterId}`,
+                method: "GET",
+            }),
+        }),
+
     }),
 });
 
-export const { useScheduleInterviewMutation,useSchedulesDetailsQuery } = ScheduleInterviewApiSlice;
+export const { useScheduleInterviewMutation,useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery } = ScheduleInterviewApiSlice;

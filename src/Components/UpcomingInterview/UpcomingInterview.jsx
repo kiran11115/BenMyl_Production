@@ -15,7 +15,7 @@ import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSchedulesDetailsQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
+import { useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery  } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
@@ -39,11 +39,20 @@ export default function UpcomingInterview() {
     const [showJobModal, setShowJobModal] = useState(false);
 
     const recruiterId = localStorage.getItem("CompanyId");
-    const userRole = localStorage.getItem("Role"); // e.g. 'Benchsales', 'Recruiter'
+    const userRole = localStorage.getItem("Role");
+    const isBenchsales = userRole === "Benchsales";
 
-    const { data: apiInterviews = [], isLoading, isError } = useSchedulesDetailsQuery(recruiterId, {
-        skip: !recruiterId
+    const { data: apiInterviewsNormal = [], isLoading: isLoadingNormal, isError: isErrorNormal } = useSchedulesDetailsQuery(recruiterId, {
+        skip: !recruiterId || isBenchsales
     });
+
+    const { data: apiInterviewsBench = [], isLoading: isLoadingBench, isError: isErrorBench } = useSchedulesDetailsBenchsalesQuery(recruiterId, {
+        skip: !recruiterId || !isBenchsales
+    });
+
+    const apiInterviews = isBenchsales ? apiInterviewsBench : apiInterviewsNormal;
+    const isLoading = isBenchsales ? isLoadingBench : isLoadingNormal;
+    const isError = isBenchsales ? isErrorBench : isErrorNormal;
 
     const { data: fetchedJobs } = useGetGroupedJobTitlesQuery(recruiterId, { skip: !recruiterId });
 
