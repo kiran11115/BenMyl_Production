@@ -27,7 +27,15 @@ export const ScheduleInterviewApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
+        shareMeetingLink: builder.mutation({
+      query: (body) => ({
+        url: "/api/uatcompany/share-meeting-link",
+        method: "POST",
+        body,
+      }),
+    }),
+
     }),
 });
 
-export const { useScheduleInterviewMutation,useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery } = ScheduleInterviewApiSlice;
+export const { useScheduleInterviewMutation,useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery,useShareMeetingLinkMutation } = ScheduleInterviewApiSlice;

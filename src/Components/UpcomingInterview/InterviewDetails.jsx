@@ -21,6 +21,7 @@ import { useGetRecruiterProfileQuery } from "../../State-Management/Api/Recruite
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { ChevronRight, Home } from "lucide-react";
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
+import { useShareMeetingLinkMutation } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 
 export default function InterviewDetails() {
     const location = useLocation();
@@ -71,6 +72,7 @@ export default function InterviewDetails() {
     };
 
     const userRole = localStorage.getItem("Role");
+    const [shareMeetingLink, { isLoading: shareLoading }] = useShareMeetingLinkMutation();
 
     if (!activeInterview) {
         return (
@@ -98,13 +100,53 @@ export default function InterviewDetails() {
             .join("");
     };
 
-    const handleShare = () => {
+    console.log("interview:",activeInterview?.email);
+    console.log("interview:",activeInterview?.role)
+
+    const handleShare = async () => {
         if (!meetingLinkInput) {
             toast.error("Please provide a meeting link before sharing.");
             return;
         }
-        const recipientList = addedPeople.length > 0 ? addedPeople.join(", ") : activeInterview.name;
-        toast.success(`Meeting link has been sent to ${recipientList} successfully!`);
+
+        try {
+            const payload = {
+                candidateId: activeInterview?.id || 0,
+                candidateEmail: activeInterview?.email || "",
+                candidateName: activeInterview?.name || "",
+
+                recruiterID: String(userId),
+                recruiterEmail: recruiterData?.email || "",
+                recruiterName: recruiterData?.name || "",
+
+                companyName: activeInterview?.vendorName || "",
+
+                meetingLink: meetingLinkInput,
+
+                jobTitle: activeInterview?.jobData?.title || "",
+
+                time: `${activeInterview?.dateLabel || ""} ${activeInterview?.time || ""}`,
+
+                interviewerName: recruiterData?.name || "",
+
+                recipientEmails: addedPeople || [],
+            };
+
+            const response = await shareMeetingLink(payload).unwrap();
+
+            toast.success(
+                response?.message ||
+                "Meeting link shared successfully!"
+            );
+
+        } catch (error) {
+            console.error(error);
+
+            toast.error(
+                error?.data?.message ||
+                "Failed to share meeting link"
+            );
+        }
     };
 
     const handleAddPerson = () => {
@@ -131,7 +173,7 @@ export default function InterviewDetails() {
 
     return (
         <div className="ui-page">
-            <ModuleHeader 
+            <ModuleHeader
                 breadcrumb="Interview Details"
                 title="Interview Details"
                 description="View and manage interview information"
@@ -164,7 +206,7 @@ export default function InterviewDetails() {
                         )}
                         <h2>{activeInterview.name}</h2>
                         <p className="role">{activeInterview.role}</p>
-                        
+
                         <div className="card-meta w-100 mt-4">
                             <div className="meta-row">
                                 <FiCalendar size={14} />
@@ -191,8 +233,8 @@ export default function InterviewDetails() {
                     <section className="collaboration-hub-premium">
                         <div className="d-flex justify-content-between align-items-center">
                             <h3 className="hub-title">Collaboration Hub</h3>
-                            <button 
-                                className="btn-details-outline w-50" 
+                            <button
+                                className="btn-details-outline w-50"
                                 style={{ padding: '8px 16px' }}
                                 onClick={() => setShowEmailInput(!showEmailInput)}
                             >
@@ -227,8 +269,14 @@ export default function InterviewDetails() {
                                     value={meetingLinkInput}
                                     onChange={(e) => setMeetingLinkInput(e.target.value)}
                                 />
-                                <button className="btn-share-premium" onClick={handleShare}>
-                                    <FiShare2 /> Share Now
+                                <button
+                                    className="btn-share-premium"
+                                    onClick={handleShare}
+                                    disabled={shareLoading}
+                                >
+                                    <FiShare2 />
+
+                                    {shareLoading ? "Sharing..." : "Share Now"}
                                 </button>
                             </div>
                         </div>

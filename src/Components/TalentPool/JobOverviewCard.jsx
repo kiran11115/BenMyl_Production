@@ -71,11 +71,11 @@ const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
         <div className="card-meta-grid">
           <div className="meta-pill">
             <FiDollarSign size={12} />
-            <span>{job.budget || job.rateText} {job.salaryType}</span>
+            <span>{(job.budget ?? job.rateText ?? "NA")} {job.salaryType}</span>
           </div>
           <div className="meta-pill">
             <FiBriefcase size={12} />
-            <span>{job.experience || job.experienceText}</span>
+            <span>{job.experience ?? job.experienceText}</span>
           </div>
           <div className="meta-pill">
             <FiClock size={12} />

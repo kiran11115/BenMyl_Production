@@ -15,7 +15,7 @@ import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery  } from "../../State-Management/Api/ScheduleInterviewApiSlice";
+import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
@@ -43,11 +43,13 @@ export default function UpcomingInterview() {
     const isBenchsales = userRole === "Benchsales";
 
     const { data: apiInterviewsNormal = [], isLoading: isLoadingNormal, isError: isErrorNormal } = useSchedulesDetailsQuery(recruiterId, {
-        skip: !recruiterId || isBenchsales
+        skip: !recruiterId || isBenchsales,
+        refetchOnMountOrArgChange: true
     });
 
     const { data: apiInterviewsBench = [], isLoading: isLoadingBench, isError: isErrorBench } = useSchedulesDetailsBenchsalesQuery(recruiterId, {
-        skip: !recruiterId || !isBenchsales
+        skip: !recruiterId || !isBenchsales,
+        refetchOnMountOrArgChange: true
     });
 
     const apiInterviews = isBenchsales ? apiInterviewsBench : apiInterviewsNormal;
@@ -82,6 +84,7 @@ export default function UpcomingInterview() {
                 dateLabel: dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
                 time: item.interviewTime,
                 name: item.candidateName,
+                email: item.emailAddress,
                 avatar: item.profilePicture || "",
                 role: item.title,
                 experience: `${item.experienceYears} Years`,
