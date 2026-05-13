@@ -105,6 +105,7 @@ function AdminHeader() {
                              { path: "/Admin/portal", label: "Portal" },
                              { path: "/Admin/overview-dashboard", label: "Dashboard" },
                              { path: "/Admin/control-center", label: "Control Center" },
+                             { path: "/Admin/contract-listing", label: "Contracts" },
 
                              { path: "/Admin/admin-profile", label: "Profile" },
                              { path: "/Admin/admin-analytics", label: "Analytics" },

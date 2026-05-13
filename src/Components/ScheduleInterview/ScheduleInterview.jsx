@@ -334,7 +334,7 @@ const ScheduleInterview = () => {
             {/* ── BENTO GRID V2: Big Candidates | Settings Column ── */}
             <div className="si-bento-grid-v2">
 
-                {/* LEFT: Shortlisted Profiles — Big Panel */}
+                {/* LEFT: Shortlisted Profiles - Big Panel */}
                 <div className="si-bento-cell si-cell-candidates project-card">
                     <div className="bento-cell-header d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center gap-2">
@@ -774,7 +774,7 @@ const ScheduleInterview = () => {
                                     <div className="dt-confirm-summary">
                                         <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selected</span>
                                         <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
-                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'} · {formattedRange || '—'}
+                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'} · {formattedRange || '-'}
                                         </span>
                                     </div>
                                     <button

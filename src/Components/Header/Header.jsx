@@ -57,6 +57,7 @@ function Header() {
           { label: "schedule interview", path: "/user/user-upcoming-interview" },
         ],
       },
+      { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
 
     ],
     "Benchsales": [
@@ -64,6 +65,7 @@ function Header() {
       { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
       { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
+      { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
 
     ],
   };

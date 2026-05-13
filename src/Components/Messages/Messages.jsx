@@ -67,14 +67,14 @@ const formatSidebarTime = (raw = "") => {
   if (isNaN(d.getTime())) return raw;
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yestStart  = new Date(todayStart - 86400000);
-  const msgStart   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  
+  const yestStart = new Date(todayStart - 86400000);
+  const msgStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
   if (msgStart >= todayStart) {
     return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
   }
   if (msgStart >= yestStart) return "Yesterday";
-  
+
   // Within same year
   if (d.getFullYear() === now.getFullYear()) {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -96,11 +96,11 @@ const formatTeamsTime = (raw = "") => {
   if (isNaN(d.getTime())) return raw;
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yestStart  = new Date(todayStart - 86400000);
-  const msgStart   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const yestStart = new Date(todayStart - 86400000);
+  const msgStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const timeStr = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
   if (msgStart >= todayStart) return timeStr;
-  if (msgStart >= yestStart)  return `Yesterday ${timeStr}`;
+  if (msgStart >= yestStart) return `Yesterday ${timeStr}`;
   return `${formatDDMMMYYYY(d)}  ${timeStr}`;
 };
 
@@ -111,10 +111,10 @@ const formatDateGroup = (raw = "") => {
   if (isNaN(d.getTime())) return raw;
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yestStart  = new Date(todayStart - 86400000);
-  const msgStart   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const yestStart = new Date(todayStart - 86400000);
+  const msgStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   if (msgStart >= todayStart) return "Today";
-  if (msgStart >= yestStart)  return "Yesterday";
+  if (msgStart >= yestStart) return "Yesterday";
   return formatDDMMMYYYY(d);
 };
 
@@ -159,7 +159,7 @@ const Messages = () => {
   const [search, setSearch] = useState("");
   const [domainTab, setDomainTab] = useState("sameDomain");
   const [mobileView, setMobileView] = useState("list"); // "list" or "chat"
-  
+
   // Accordion states
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [pendingExpanded, setPendingExpanded] = useState(true);
@@ -236,11 +236,11 @@ const Messages = () => {
         loggedInDomain !== "" && userDomain !== "" && userDomain === loggedInDomain;
       return { ...mapped, domain: isSame ? "sameDomain" : "nonDomain" };
     })
-    .sort((a, b) => {
-      const timeA = new Date(a.lastRawTime || 0).getTime();
-      const timeB = new Date(b.lastRawTime || 0).getTime();
-      return timeB - timeA;
-    });
+      .sort((a, b) => {
+        const timeA = new Date(a.lastRawTime || 0).getTime();
+        const timeB = new Date(b.lastRawTime || 0).getTime();
+        return timeB - timeA;
+      });
   }, [chatData, loggedInDomain, chatUsersListMap, messagesByConversation]);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
@@ -520,7 +520,7 @@ const Messages = () => {
               const recentList = filtered.filter(c => c.hasMessaged);
               // Secondary: Contacts in the current tab that DON'T have messages yet
               const secondaryList = filtered.filter(c => !c.hasMessaged);
-              
+
               const secondaryLabel = isPublicTab ? "Public" : "Team";
 
               const renderContact = (c) => {
@@ -573,7 +573,7 @@ const Messages = () => {
                 <div className="tms-accordions">
                   {/* Recent Accordion (Active chats) */}
                   <div className="tms-accordion">
-                    <button 
+                    <button
                       className="tms-accordion-header"
                       onClick={() => setRecentExpanded(!recentExpanded)}
                     >
@@ -595,7 +595,7 @@ const Messages = () => {
 
                   {/* Secondary Accordion (Public or Team contacts without messages) */}
                   <div className="tms-accordion">
-                    <button 
+                    <button
                       className="tms-accordion-header"
                       onClick={() => setPendingExpanded(!pendingExpanded)}
                     >
@@ -665,12 +665,12 @@ const Messages = () => {
             }
             ref={chatBodyRef}
           >
-            {/* Accept card — only shown for incoming public requests that haven't been handled yet. */}
-            {isPublicTab && 
-             currentConversation && 
-             currentConversation.hasMessaged && 
-             !isAcceptedPublicChat && 
-             !currentMessages.some(m => m.from === "me") ? (
+            {/* Accept card - only shown for incoming public requests that haven't been handled yet. */}
+            {isPublicTab &&
+              currentConversation &&
+              currentConversation.hasMessaged &&
+              !isAcceptedPublicChat &&
+              !currentMessages.some(m => m.from === "me") ? (
               <div className="tms-public-request-card">
                 <div className="tms-public-request-icon">
                   <FiMessageSquare size={24} />
@@ -809,34 +809,34 @@ const Messages = () => {
           </div>
 
           {/* Input Bar - Only shown if not in showAcceptCard state */}
-          {!(isPublicTab && 
-             currentConversation && 
-             currentConversation.hasMessaged && 
-             !isAcceptedPublicChat && 
-             !currentMessages.some(m => m.from === "me")) && (
-            <footer className="tms-input-bar">
-              <form className="tms-input-wrapper" onSubmit={handleSend}>
-                <input
-                  className="tms-input"
-                  placeholder="Type a message"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                />
-                <div className="tms-input-actions">
-                  <button type="button" className="tms-act-btn" title="Attach"><FiPaperclip size={18} /></button>
-                  <button type="button" className="tms-act-btn" title="Mention"><FiAtSign size={18} /></button>
-                  <button
-                    type="submit"
-                    className={"tms-send-btn" + (inputValue.trim() ? " tms-send-active" : "")}
-                    title="Send"
-                    disabled={!inputValue.trim()}
-                  >
-                    <FiSend size={16} />
-                  </button>
-                </div>
-              </form>
-            </footer>
-          )}
+          {!(isPublicTab &&
+            currentConversation &&
+            currentConversation.hasMessaged &&
+            !isAcceptedPublicChat &&
+            !currentMessages.some(m => m.from === "me")) && (
+              <footer className="tms-input-bar">
+                <form className="tms-input-wrapper" onSubmit={handleSend}>
+                  <input
+                    className="tms-input"
+                    placeholder="Type a message"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                  <div className="tms-input-actions">
+                    <button type="button" className="tms-act-btn" title="Attach"><FiPaperclip size={18} /></button>
+                    <button type="button" className="tms-act-btn" title="Mention"><FiAtSign size={18} /></button>
+                    <button
+                      type="submit"
+                      className={"tms-send-btn" + (inputValue.trim() ? " tms-send-active" : "")}
+                      title="Send"
+                      disabled={!inputValue.trim()}
+                    >
+                      <FiSend size={16} />
+                    </button>
+                  </div>
+                </form>
+              </footer>
+            )}
 
         </section>
       </div>

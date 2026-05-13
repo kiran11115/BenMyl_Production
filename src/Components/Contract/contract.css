@@ -1,0 +1,1124 @@
+/* =====================================================================
+   contract.css - Contract Management Module Styles
+   Extends BenMyl Production design system (Orange #f5810c + Slate #1e293b)
+   ===================================================================== */
+
+/* =========================================
+   1. Page Layout
+   ========================================= */
+.contract-page {
+  padding: 32px;
+  color: #334155;
+  background-size: 20px 20px;
+  min-height: 100vh;
+}
+
+.formal-document-view-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  padding-bottom: 80px;
+}
+
+@media (max-width: 1100px) {
+  .formal-document-view-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.document-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.premium-timeline {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 24px;
+  position: relative;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: 0;
+  width: 2px;
+  background: #f1f5f9;
+}
+
+.timeline-item.active:not(:last-child)::after {
+  background: #f5810c;
+}
+
+.timeline-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.timeline-item.active .timeline-dot {
+  background: #fff;
+  border-color: #f5810c;
+  color: #f5810c;
+  box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1);
+}
+
+.timeline-item.completed .timeline-dot {
+  background: #f5810c;
+  border-color: #f5810c;
+  color: #fff;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.timeline-sub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.document-seal {
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  width: 100px;
+  height: 100px;
+  opacity: 0.15;
+  pointer-events: none;
+  transform: rotate(-15deg);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.link-button:hover {
+  color: #1e293b;
+}
+
+/* =========================================
+   2. Stats KPI Row
+   ========================================= */
+.contract-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .contract-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .contract-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   3. Stepper
+   ========================================= */
+.contract-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 24px 0 32px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.contract-step-item {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.contract-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.contract-step-item.active .contract-step-circle {
+  background: #1e293b;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+}
+
+.contract-step-item.completed .contract-step-circle {
+  background: #10b981;
+  color: #fff;
+}
+
+.contract-step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.contract-step-item.active .contract-step-label {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.contract-step-item.completed .contract-step-label {
+  color: #10b981;
+}
+
+.contract-step-line {
+  flex: 1;
+  min-width: 24px;
+  height: 2px;
+  background: #e2e8f0;
+  margin: 0 8px;
+}
+
+.contract-step-line.completed {
+  background: #10b981;
+}
+
+/* =========================================
+   4. Status Badges
+   ========================================= */
+.badge-draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-accepted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-completed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-shared {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.contract-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* =========================================
+   5. Signature Pad
+   ========================================= */
+.sig-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  width: fit-content;
+  margin-bottom: 16px;
+}
+
+.sig-tab {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sig-tab.active {
+  background: #1e293b;
+  color: #fff;
+}
+
+.sig-canvas-wrapper {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.sig-canvas-wrapper:hover {
+  border-color: #f5810c;
+}
+
+.sig-canvas {
+  display: block;
+  width: 100%;
+  height: 180px;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sig-canvas-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  pointer-events: none;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sig-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sig-preview {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+  max-height: 120px;
+  object-fit: contain;
+  width: 100%;
+}
+
+/* =========================================
+   6. Mutual Acceptance Tracker
+   ========================================= */
+.acceptance-tracker {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.acceptance-tracker-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acceptance-party {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+}
+
+.acceptance-party:last-child {
+  margin-bottom: 0;
+}
+
+.party-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.party-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.party-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.party-role {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.accept-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.accept-btn.waiting {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.accept-btn.primary {
+  background: #1e293b;
+  color: #fff;
+}
+
+.accept-btn.primary:hover {
+  background: #0f172a;
+  transform: translateY(-1px);
+}
+
+.accept-btn.done {
+  background: #d1fae5;
+  color: #065f46;
+  cursor: default;
+}
+
+.accept-btn.rejected-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* =========================================
+   7. Contract Table
+   ========================================= */
+.contract-table-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.contract-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.contract-table-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 7px 12px;
+  flex: 1;
+  max-width: 280px;
+}
+
+.contract-search-bar input {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #334155;
+  width: 100%;
+  outline: none;
+}
+
+.contract-table-scroll {
+  overflow-x: auto;
+}
+
+.contract-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.contract-table thead tr {
+  background: #1e293b;
+}
+
+.contract-table thead th {
+  padding: 13px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #fff;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.contract-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.contract-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.contract-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.contract-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.contract-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+/* =========================================
+   8. Action Buttons in Table
+   ========================================= */
+.tbl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tbl-btn-view {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.tbl-btn-view:hover {
+  background: #dbeafe;
+}
+
+.tbl-btn-download {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.tbl-btn-download:hover {
+  background: #dcfce7;
+}
+
+.tbl-btn-accept {
+  background: #1e293b;
+  color: #fff;
+}
+
+.tbl-btn-accept:hover {
+  background: #0f172a;
+}
+
+.tbl-btn-reject {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* =========================================
+   9. Detail Modal (Elegant Document View)
+   ========================================= */
+.elegant-contract-modal {
+  max-width: 900px;
+  background: #f1f5f9;
+}
+
+.elegant-contract-modal .contract-modal-header {
+  border-bottom: 2px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.formal-document-view {
+  padding: 40px;
+  background: #f1f5f9;
+}
+
+.contract-paper {
+  background: #fff;
+  padding: 60px;
+  border-radius: 16px;
+  position: relative;
+  min-height: 800px;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+}
+
+.paper-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #1e293b;
+}
+
+.company-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.party-box {
+  flex: 1;
+}
+
+.party-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.party-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.contract-title-strip {
+  background: #1e293b;
+  color: #fff;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 32px;
+}
+
+.contract-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 40px;
+  margin-bottom: 40px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 8px;
+}
+
+.info-item .il {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.info-item .iv {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.document-section {
+  margin-bottom: 24px;
+}
+
+.document-section h4 {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.document-section p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.legal-text {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #cbd5e1;
+  font-style: italic;
+}
+
+.signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-top: 60px;
+}
+
+.sig-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.sig-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.formal-sig-wrap {
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.formal-sig-wrap img {
+  max-width: 180px;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.sig-meta {
+  font-size: 9px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.sig-placeholder {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.sig-line {
+  height: 2px;
+  background: #1e293b;
+  margin: 8px 0;
+}
+
+.sig-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.paper-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 10px;
+  color: #cbd5e1;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* =========================================
+   10. PDF Hidden Template
+   ========================================= */
+.pdf-template {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 794px;
+  background: #fff;
+  padding: 48px;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+.pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #1e293b;
+}
+
+.pdf-logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f5810c;
+  letter-spacing: -0.02em;
+}
+
+.pdf-meta {
+  font-size: 12px;
+  color: #64748b;
+  text-align: right;
+}
+
+.pdf-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #f5810c;
+  margin: 24px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pdf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+}
+
+.pdf-field {
+  margin-bottom: 8px;
+}
+
+.pdf-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.pdf-value {
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.pdf-clause {
+  font-size: 12px;
+  color: #475569;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.pdf-sig-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pdf-sig-box {
+  text-align: center;
+}
+
+.pdf-sig-img {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 8px;
+}
+
+.pdf-sig-label {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* =========================================
+   11. Confirmation Screen
+   ========================================= */
+.contract-confirm-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 32px;
+}
+
+.confirm-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+  animation: bounceIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.confirm-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 28px;
+}
+
+.confirm-details-card {
+  width: 100%;
+  max-width: 440px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+
+.confirm-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.confirm-detail-row:last-child {
+  border-bottom: none;
+}
+
+.confirm-detail-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.confirm-detail-value {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* =========================================
+   12. Empty State
+   ========================================= */
+.contract-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.contract-empty-icon {
+  width: 64px;
+  height: 64px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.contract-empty h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.contract-empty p {
+  font-size: 13px;
+  margin: 0;
+}
+
+/* =========================================
+   13. Animations
+   ========================================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes contractSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.contract-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: contractSpin 0.7s linear infinite;
+}
+
+/* =========================================
+   14. Responsive
+   ========================================= */
+@media (max-width: 768px) {
+  .contract-page {
+    padding: 16px;
+  }
+
+  .contract-modal {
+    max-height: 100vh;
+    border-radius: 16px 16px 0 0;
+    align-self: flex-end;
+  }
+
+  .contract-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .contract-step-label {
+    display: none;
+  }
+
+  .contract-paper {
+    padding: 30px;
+  }
+
+  .contract-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .signature-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}

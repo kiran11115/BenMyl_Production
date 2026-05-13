@@ -317,9 +317,9 @@ export default function TasksTab({ tasks, setTasks, logActivity }) {
                                     <td className="tt-td text-center">
                                         {getAssignee(task.assigneeId) ? (
                                             <img src={getAssignee(task.assigneeId).avatar} style={{ width: "28px", height: "28px", borderRadius: "50%" }} title={getAssignee(task.assigneeId).name} />
-                                        ) : "—"}
+                                        ) : "-"}
                                     </td>
-                                    <td className="tt-td text-center">{task.dueDate || "—"}</td>
+                                    <td className="tt-td text-center">{task.dueDate || "-"}</td>
                                     <td className="tt-td text-center">
                                         <div className="d-flex justify-content-center align-items-center gap-1">
                                             {statusIcon(task.status)}

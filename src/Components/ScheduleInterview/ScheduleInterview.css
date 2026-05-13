@@ -63,10 +63,21 @@
   overflow: hidden;
 }
 
-.si-cell-candidates { grid-area: candidates; }
-.si-cell-date       { grid-area: date; }
-.si-cell-job        { grid-area: job; }
-.si-cell-time       { grid-area: time; }
+.si-cell-candidates {
+  grid-area: candidates;
+}
+
+.si-cell-date {
+  grid-area: date;
+}
+
+.si-cell-job {
+  grid-area: job;
+}
+
+.si-cell-time {
+  grid-area: time;
+}
 
 /* Bento cell header bar */
 .bento-cell-header {
@@ -162,7 +173,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px; /* Increased from 14px */
+  font-size: 18px;
+  /* Increased from 14px */
   font-weight: 900;
   border: 2px solid #f5810c;
   border-radius: 50%;
@@ -862,143 +874,144 @@
     margin: 0 0 16px 0;
   }
 }
+
 /* Date Selection Trigger Card */
 .date-selection-trigger-premium {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px;
-    background: #f8fafc;
-    border: 2px dashed var(--slate-200);
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border: 2px dashed var(--slate-200);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
 }
 
 .date-selection-trigger-premium:hover {
-    border-color: var(--f5810c);
-    background: white;
-    box-shadow: 0 4px 12px rgba(245, 129, 12, 0.05);
+  border-color: var(--f5810c);
+  background: white;
+  box-shadow: 0 4px 12px rgba(245, 129, 12, 0.05);
 }
 
 .date-selection-trigger-premium.has-date {
-    background: white;
-    border: 2px solid var(--f5810c);
-    box-shadow: 0 4px 12px rgba(245, 129, 12, 0.1);
+  background: white;
+  border: 2px solid var(--f5810c);
+  box-shadow: 0 4px 12px rgba(245, 129, 12, 0.1);
 }
 
 .date-icon-circle {
-    width: 48px;
-    height: 48px;
-    background: var(--slate-100);
-    color: var(--slate-500);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+  width: 48px;
+  height: 48px;
+  background: var(--slate-100);
+  color: var(--slate-500);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
 .date-selection-trigger-premium.has-date .date-icon-circle {
-    background: var(--f5810c-light);
-    color: var(--f5810c);
+  background: var(--f5810c-light);
+  color: var(--f5810c);
 }
 
 .date-text-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .date-label-small {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--slate-400);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .date-value-large {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--slate-800);
-    margin-top: 2px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--slate-800);
+  margin-top: 2px;
 }
 
 .edit-icon {
-    color: var(--slate-400);
-    transition: all 0.2s;
+  color: var(--slate-400);
+  transition: all 0.2s;
 }
 
 .date-selection-trigger-premium:hover .edit-icon {
-    color: var(--f5810c);
-    transform: translateX(2px);
+  color: var(--f5810c);
+  transform: translateX(2px);
 }
 
 /* DatePicker Inline Overrides for Modal */
 .calendar-popover-container {
-    padding: 10px;
-    display: flex;
-    justify-content: center;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .calendar-popover-container .react-datepicker {
-    border: none;
-    font-family: inherit;
-    width: 100%;
+  border: none;
+  font-family: inherit;
+  width: 100%;
 }
 
 .calendar-popover-container .react-datepicker__month-container {
-    width: 100%;
+  width: 100%;
 }
 
 .calendar-popover-container .react-datepicker__header {
-    background: white;
-    border-bottom: 1px solid var(--slate-100);
-    padding-top: 15px;
+  background: white;
+  border-bottom: 1px solid var(--slate-100);
+  padding-top: 15px;
 }
 
 .calendar-popover-container .react-datepicker__current-month {
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--slate-800);
-    margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--slate-800);
+  margin-bottom: 10px;
 }
 
 .calendar-popover-container .react-datepicker__day-name {
-    color: var(--slate-400);
-    font-weight: 700;
-    width: 2.5rem;
-    line-height: 2.5rem;
+  color: var(--slate-400);
+  font-weight: 700;
+  width: 2.5rem;
+  line-height: 2.5rem;
 }
 
 .calendar-popover-container .react-datepicker__day {
-    width: 2.5rem;
-    line-height: 2.5rem;
-    font-weight: 600;
-    color: var(--slate-600);
-    border-radius: 8px;
+  width: 2.5rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  border-radius: 8px;
 }
 
 .calendar-popover-container .react-datepicker__day--selected {
-    background: var(--f5810c) !important;
-    color: white !important;
+  background: var(--f5810c) !important;
+  color: white !important;
 }
 
 .calendar-popover-container .react-datepicker__day--keyboard-selected {
-    background: var(--f5810c-light);
-    color: var(--f5810c);
+  background: var(--f5810c-light);
+  color: var(--f5810c);
 }
 
 .calendar-popover-container .react-datepicker__day:hover {
-    background: var(--slate-100);
+  background: var(--slate-100);
 }
 
 
 /* ════════════════════════════════════════════════════════
-   PREMIUM POLISH — Bento Grid Refinements
+   PREMIUM POLISH - Bento Grid Refinements
    ════════════════════════════════════════════════════════ */
 
 /* ── Bento Cell Cards ── */
@@ -1048,7 +1061,7 @@
   vertical-align: middle;
 }
 
-/* ── Candidate Cards — Selection & Hover ── */
+/* ── Candidate Cards - Selection & Hover ── */
 .si-cell-candidates .project-card {
   border-radius: 14px !important;
   border: 1.5px solid #edf0f4 !important;
@@ -1199,7 +1212,7 @@
 
 .si-cell-time .time-tab-btn:not(.active):hover {
   color: #1e293b;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Quick Slot Chips ── */
@@ -1302,7 +1315,7 @@
   color: #64748b;
 }
 
-/* ── Floating Footer — Premium Glass ── */
+/* ── Floating Footer - Premium Glass ── */
 .floating-footer-ui {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -1392,21 +1405,39 @@
 
 /* ── Smooth fade-in animation for bento cells ── */
 @keyframes bentoFadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .si-bento-cell {
   animation: bentoFadeUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.si-cell-candidates { animation-delay: 0.05s; }
-.si-cell-date       { animation-delay: 0.12s; }
-.si-cell-job        { animation-delay: 0.18s; }
-.si-cell-time       { animation-delay: 0.08s; }
+.si-cell-candidates {
+  animation-delay: 0.05s;
+}
+
+.si-cell-date {
+  animation-delay: 0.12s;
+}
+
+.si-cell-job {
+  animation-delay: 0.18s;
+}
+
+.si-cell-time {
+  animation-delay: 0.08s;
+}
 
 /* ════════════════════════════════════════════════════════
-   BENTO GRID V2 — 2-Column Layout
+   BENTO GRID V2 - 2-Column Layout
    ════════════════════════════════════════════════════════ */
 
 .si-bento-grid-v2 {
@@ -1455,9 +1486,10 @@
 }
 
 /* Candidate cards in big panel */
-.si-bento-grid-v2 .si-cell-candidates .profiles-stack > .project-card {
+.si-bento-grid-v2 .si-cell-candidates .profiles-stack>.project-card {
   width: 100%;
-  margin-top: 0 !important; /* Reset previous margin */
+  margin-top: 0 !important;
+  /* Reset previous margin */
 }
 
 /* Settings column */
@@ -1694,7 +1726,7 @@
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 0 0 1px rgba(15, 23, 42, 0.05),
     0 20px 50px -12px rgba(15, 23, 42, 0.25);
   animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1720,8 +1752,15 @@
 }
 
 @keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(24px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .dt-modal-body {
@@ -1903,8 +1942,15 @@
 }
 
 @keyframes footerSlideUp {
-  from { transform: translate(-50%, 40px); opacity: 0; }
-  to   { transform: translate(-50%, 0); opacity: 1; }
+  from {
+    transform: translate(-50%, 40px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 .recruiter-pill {
@@ -1996,8 +2042,10 @@
 /* ── Standard Custom Table ── */
 .candidates-table-wrapper {
   overflow-x: auto;
-  overflow-y: auto; /* Enable vertical scroll for sticky header */
-  max-height: 550px; /* Give it a boundary for scrolling */
+  overflow-y: auto;
+  /* Enable vertical scroll for sticky header */
+  max-height: 550px;
+  /* Give it a boundary for scrolling */
   padding: 0;
   border-radius: 12px;
   background: white;
@@ -2023,7 +2071,8 @@
   background-color: #1e293b;
   border-bottom: 1px solid #e2e8f0;
   letter-spacing: 0.05em;
-  box-shadow: 0 1px 0 rgba(226, 232, 240, 0.5); /* subtle shadow for separation */
+  box-shadow: 0 1px 0 rgba(226, 232, 240, 0.5);
+  /* subtle shadow for separation */
 }
 
 .custom-table td {

@@ -41,6 +41,10 @@ import AdminControlCenter from "./Admin/AdminControlCenter/AdminControlCenter";
 import ComingSoonModule from "./Admin/Modules/ComingSoon";
 import Portal from "./Portal/Portal";
 import PostedJobsPage from "./UserProjects/PostedJobsPage";
+import ContractForm from "./Contract/contractform";
+import ContractCreate from "./Contract/contractcreate";
+import ContractView from "./Contract/contractview";
+
 
 
 // Admin Module Imports
@@ -102,6 +106,10 @@ const routes = createBrowserRouter(
           <Route path="admin-upcoming-interview" element={<UpcomingInterview />} />
           <Route path="admin-interview-details" element={<InterviewDetails />} />
           <Route path="admin-messages" element={<Messages />} />
+          <Route path="contract-listing" element={<ContractForm />} />
+          <Route path="contract-create" element={<ContractCreate />} />
+          <Route path="contract-view/:id" element={<ContractView />} />
+
 
         </Route>
 
@@ -151,6 +159,10 @@ const routes = createBrowserRouter(
           <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
           <Route path="user-schedule-interview" element={<ScheduleInterview />} />
           <Route path="user-interview-details" element={<InterviewDetails />} />
+          <Route path="contract-listing" element={<ContractForm />} />
+          <Route path="contract-create" element={<ContractCreate />} />
+          <Route path="contract-view/:id" element={<ContractView />} />
+
         </Route>
       </Route>
     </Route>,

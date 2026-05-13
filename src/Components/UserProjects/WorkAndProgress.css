@@ -1,4 +1,4 @@
-/* Work and preference — aligned with Projects design system */
+/* Work and preference - aligned with Projects design system */
 
 .section {
   margin-bottom: 20px;
@@ -91,8 +91,8 @@
   .options-grid {
     grid-template-columns: 1fr;
   }
-  
-  
+
+
   .option-text {
     font-size: 13px;
   }

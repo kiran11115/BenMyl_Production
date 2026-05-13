@@ -8,14 +8,18 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { ContractProvider } from './Components/Contract/ContractContext';
+
 function App() {
 
   registerLocale("en-US", en);
 
   return (
     <>
+    <ContractProvider>
       <ToastContainer position="top-right" autoClose={3000} />
       <RouterProvider router={Routes} />
+    </ContractProvider>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-    LayoutDashboard, UserCheck, TrendingUp, ExternalLink, 
+import {
+    LayoutDashboard, UserCheck, TrendingUp, ExternalLink,
     Activity, Layers, Shield, Zap, PieChart, ChevronRight,
     ShieldCheck, CheckCircle, Database, Bell, CreditCard,
     TrendingDown
@@ -32,7 +32,7 @@ const BENCH_DISTRIBUTION = [
 
 const PENDING_APPROVALS = [
     { id: "app-1", subject: "Senior Frontend Developer Submission", requestedBy: "David Miller", type: "Talent Submission", date: "2024-03-21" },
-    { id: "app-2", subject: "Rate Increase ($110/hr) — AWS Expert", requestedBy: "Sarah Jones", type: "Rate Change", date: "2024-03-20" },
+    { id: "app-2", subject: "Rate Increase ($110/hr) - AWS Expert", requestedBy: "Sarah Jones", type: "Rate Change", date: "2024-03-20" },
     { id: "app-3", subject: "New Project: AI Optimization Hub", requestedBy: "System Admin", type: "Project Init", date: "2024-03-19" },
 ];
 
@@ -164,11 +164,11 @@ function AdminDashboard() {
                                     </div>
                                     <div className="bench-bar-context">
                                         <div className="bench-bar-track">
-                                            <div 
-                                                className="bench-bar-fill" 
-                                                style={{ 
-                                                    width: `${(item.count / 420) * 100}%`, 
-                                                    backgroundColor: i % 2 === 0 ? "#f5810c" : "#1e293b" 
+                                            <div
+                                                className="bench-bar-fill"
+                                                style={{
+                                                    width: `${(item.count / 420) * 100}%`,
+                                                    backgroundColor: i % 2 === 0 ? "#f5810c" : "#1e293b"
                                                 }}
                                             ></div>
                                         </div>
