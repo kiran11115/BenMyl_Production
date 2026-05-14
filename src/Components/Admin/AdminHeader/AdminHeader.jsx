@@ -110,7 +110,6 @@ function AdminHeader() {
                              { path: "/Admin/admin-upload-talent", label: "Talent Management" },
                              { path: "/Admin/admin-upcoming-interview", label: "Interviews" },
                              { path: "/Admin/contract-listing", label: "Contracts" },
-                             { path: "/Admin/notification-policy", label: "Notifications" },
                         ].map((link) => (
                             <NavLink
                                 key={link.path}
