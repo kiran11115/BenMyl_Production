@@ -561,14 +561,20 @@ const TalentPool = () => {
 
   const filtersReady = useMemo(() => {
     const hasURLParams = searchParams.toString().length > 0;
-
+ 
+    // If coming from "Find Talent" (with preselectedJobTitle in state),
+    // wait until the job is matched and appliedFilters is set.
+    if (preselectedJobTitle && appliedFilters === null) {
+      return false;
+    }
+ 
     // If URL has filters but appliedFilters not restored yet → wait
     if (hasURLParams && appliedFilters === null) {
       return false;
     }
-
+ 
     return true;
-  }, [searchParams, appliedFilters]);
+  }, [searchParams, appliedFilters, preselectedJobTitle]);
 
   useEffect(() => {
     if (selectedJobId !== null) {
