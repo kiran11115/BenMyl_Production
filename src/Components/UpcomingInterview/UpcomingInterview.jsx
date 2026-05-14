@@ -41,20 +41,34 @@ export default function UpcomingInterview() {
     const recruiterId = localStorage.getItem("CompanyId");
     const userRole = localStorage.getItem("Role");
     const isBenchsales = userRole === "Benchsales";
+    const isRecruiter2 = userRole === "Recruiter2";
+    const isAdmin = userRole === "Admin" || window.location.pathname.toLowerCase().startsWith('/admin');
+
+    const shouldFetchBoth = isRecruiter2 || isAdmin;
+    const shouldFetchNormal = !isBenchsales || shouldFetchBoth; 
+    const shouldFetchBench = isBenchsales || shouldFetchBoth; 
 
     const { data: apiInterviewsNormal = [], isLoading: isLoadingNormal, isError: isErrorNormal } = useSchedulesDetailsQuery(recruiterId, {
-        skip: !recruiterId || isBenchsales,
+        skip: !recruiterId || !shouldFetchNormal,
         refetchOnMountOrArgChange: true
     });
 
     const { data: apiInterviewsBench = [], isLoading: isLoadingBench, isError: isErrorBench } = useSchedulesDetailsBenchsalesQuery(recruiterId, {
-        skip: !recruiterId || !isBenchsales,
+        skip: !recruiterId || !shouldFetchBench,
         refetchOnMountOrArgChange: true
     });
 
-    const apiInterviews = isBenchsales ? apiInterviewsBench : apiInterviewsNormal;
-    const isLoading = isBenchsales ? isLoadingBench : isLoadingNormal;
-    const isError = isBenchsales ? isErrorBench : isErrorNormal;
+    let apiInterviews = [];
+    if (shouldFetchBoth) {
+        apiInterviews = [...apiInterviewsNormal, ...apiInterviewsBench];
+    } else if (isBenchsales) {
+        apiInterviews = apiInterviewsBench;
+    } else {
+        apiInterviews = apiInterviewsNormal;
+    }
+
+    const isLoading = shouldFetchBoth ? (isLoadingNormal || isLoadingBench) : (isBenchsales ? isLoadingBench : isLoadingNormal);
+    const isError = shouldFetchBoth ? (isErrorNormal || isErrorBench) : (isBenchsales ? isErrorBench : isErrorNormal);
 
     const { data: fetchedJobs } = useGetGroupedJobTitlesQuery(recruiterId, { skip: !recruiterId });
 
