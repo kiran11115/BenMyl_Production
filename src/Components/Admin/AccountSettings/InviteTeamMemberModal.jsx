@@ -121,6 +121,7 @@ export default function InviteTeamMemberModal({ show, onHide, onInviteSuccess })
                 style={{ fontSize: "14px", color: "#1e293b", cursor: "pointer" }}
               >
                 <option value="Admin">Administrator</option>
+                <option value="Recruiter2">Recruiter</option>
                 <option value="Recruiter">Hiring Manager</option>
                 <option value="Benchsales">Bench Sales Personnel</option>
               </select>

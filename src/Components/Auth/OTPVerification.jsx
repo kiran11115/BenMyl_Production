@@ -67,7 +67,7 @@ function OTPVerification() {
           return;
         }
 
-        if (role === "Recruiter" || role === "Benchsales") {
+        if (role === "Recruiter" || role === "Benchsales" || role === "Recruiter2") {
   navigate("/sign-in");
 } else {
   navigate("/User-details", {

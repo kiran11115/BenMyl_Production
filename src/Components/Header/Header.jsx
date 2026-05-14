@@ -68,6 +68,31 @@ function Header() {
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
 
     ],
+    "Recruiter2":[
+      { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
+      {
+        label: "Projects",
+        module: "Projects",
+        subItems: [
+          { label: "posted jobs", path: "/user/user-posted-jobs" },
+          { label: "create job", path: "/user/user-post-new-positions" },
+          { label: "ongoing projects", path: "/user/user-projects" },
+        ],
+      },
+      { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },
+      {
+        label: "Interviews",
+        module: "Interviews",
+        subItems: [
+          { label: "create interview", path: "/user/user-schedule-interview" },
+          { label: "schedule interview", path: "/user/user-upcoming-interview" },
+        ],
+      },
+      { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
+      { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
+      { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
+      { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
+    ]
   };
 
   const navLinks = navigationData[role] || navigationData["Recruiter"];
