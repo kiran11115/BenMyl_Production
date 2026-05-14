@@ -1,74 +1,55 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Briefcase, Search, Upload } from 'lucide-react';
+import { 
+  Settings, 
+  Shield, 
+  GitMerge, 
+  CheckSquare, 
+  Database, 
+  FileCheck, 
+  Zap, 
+  BellRing, 
+  CreditCard 
+} from 'lucide-react';
 import './Portal.css';
 
 const Portal = () => {
   const navigate = useNavigate();
 
-  const flowLinks = [
-    { name: 'Talent Pool', path: '/Admin/admin-talentpool', icon: Users },
-    { name: 'Projects', path: '/Admin/admin-projects', icon: Briefcase },
-    { name: 'Find Jobs', path: '/Admin/admin-jobs', icon: Search },
-    { name: 'Talent Management', path: '/Admin/admin-upload-talent', icon: Upload },
+  const adminModules = [
+    { name: 'Control Center', path: '/Admin/control-center', icon: Settings, description: 'Global system settings and parameters' },
+    { name: 'Role Configuration', path: '/Admin/role-configuration', icon: Shield, description: 'Manage user permissions and access levels' },
+    { name: 'Notification', path: '/Admin/notification-policy', icon: BellRing, description: 'Set up alerts and messaging templates' },
+    { name: 'Billing', path: '/Admin/billing-control', icon: CreditCard, description: 'Manage subscriptions and invoicing' },
+    { name: 'Coming with more features', path: '#', icon: Zap, description: 'Stay tuned for new administrative capabilities' },
   ];
 
   return (
     <div className="portal-container">
       <div className="portal-header">
-        <h1>Portal Navigation</h1>
-        <p>Select your role-based flow to get started</p>
+        <h1>Admin Portal</h1>
+        <p>Manage platform configurations, security, and global settings</p>
       </div>
 
-      <div className="portal-cards-wrapper">
-        {/* Hiring Manager Card */}
-        <div className="portal-card">
-          <div className="portal-card-header hiring-manager-header">
-            <h2>Hiring Manager</h2>
-            <p className='text-white'>Access your primary hiring workflows</p>
-          </div>
-          <div className="portal-card-body">
-            <ul className="portal-flow-links">
-              {flowLinks.map((link, index) => {
-                const Icon = link.icon;
-                return (
-                  <li key={index} className="portal-flow-item" onClick={() => navigate(link.path)}>
-                    <div className="flow-item-icon">
-                      <Icon size={20} />
-                    </div>
-                    <span className="flow-item-name">{link.name}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-
-        {/* Bench Sales Card */}
-        <div className="portal-card">
-          <div className="portal-card-header bench-sales-header">
-            <h2>Bench Sales</h2>
-            <p className='text-white'>Access your primary sales workflows</p>
-          </div>
-          <div className="portal-card-body">
-            <ul className="portal-flow-links">
-              {flowLinks.map((link, index) => {
-                const Icon = link.icon;
-                return (
-                  <li key={index} className="portal-flow-item" onClick={() => navigate(link.path)}>
-                    <div className="flow-item-icon">
-                      <Icon size={20} />
-                    </div>
-                    <span className="flow-item-name">{link.name}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
+      <div className="admin-grid-wrapper">
+        {adminModules.map((module, index) => {
+          const Icon = module.icon;
+          return (
+            <div key={index} className="admin-module-card" onClick={() => navigate(module.path)}>
+              <div className="admin-module-icon-wrap">
+                <Icon size={28} className="admin-module-icon" />
+              </div>
+              <div className="admin-module-content">
+                <h3 className="admin-module-title">{module.name}</h3>
+                <p className="admin-module-desc">{module.description}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export default Portal;
+

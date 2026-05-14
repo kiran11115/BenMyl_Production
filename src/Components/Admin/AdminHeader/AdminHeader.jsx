@@ -102,13 +102,15 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`}>
                         {[
-                             { path: "/Admin/portal", label: "Portal" },
+                             { path: "/Admin/portal", label: "Admin Portal" },
                              { path: "/Admin/overview-dashboard", label: "Dashboard" },
-                             { path: "/Admin/control-center", label: "Control Center" },
+                             { path: "/Admin/admin-projects", label: "Projects" },
+                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
+                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
+                             { path: "/Admin/admin-upload-talent", label: "Talent Management" },
+                             { path: "/Admin/admin-upcoming-interview", label: "Interviews" },
                              { path: "/Admin/contract-listing", label: "Contracts" },
-
-                             { path: "/Admin/admin-profile", label: "Profile" },
-                             { path: "/Admin/admin-analytics", label: "Analytics" },
+                             { path: "/Admin/notification-policy", label: "Notifications" },
                         ].map((link) => (
                             <NavLink
                                 key={link.path}
