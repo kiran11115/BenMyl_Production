@@ -91,14 +91,13 @@ function Header() {
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
       { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
-      { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
     ]
   };
 
   const navLinks = navigationData[role] || navigationData["Recruiter"];
 
   const filteredNavLinks = navLinks.filter(link => {
-    if (link.module === "Interviews") return true; // Always show interviews for now or check a specific permission
+    if (link.module === "Interviews" || link.module === "Contracts") return true; // Always show interviews and contracts for now
     return hasPermission(link.module, 'view');
   });
 
@@ -333,7 +332,7 @@ function Header() {
 
               <div className="profile-info">
                 <span className="profile-name">{user}</span>
-                <span className="profile-role">{role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role}</span>
+                <span className="profile-role">{role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role === "Recruiter2" ? "Recruiter" : role}</span>
               </div>
               <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
             </div>

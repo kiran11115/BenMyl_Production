@@ -81,6 +81,11 @@ function Signin() {
             return;
           }
 
+          if (role === "Recruiter2") {
+            navigate("/user/user-dashboard");
+            return;
+          }
+
         }
 
         // ERROR IF isvalid is false
