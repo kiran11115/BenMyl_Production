@@ -77,8 +77,10 @@ code {
 .initials-avatar,
 .author-avatar,
 .team-avatar {
-    border-radius: 16px !important;
+    border-radius: 100px !important;
     font-weight: 400 !important;
+     width: 45px !important;
+  height: 45px !important;
     object-fit: cover !important;
     display: flex !important;
     align-items: center !important;
