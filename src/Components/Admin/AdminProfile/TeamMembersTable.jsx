@@ -165,6 +165,7 @@ function TeamMembersTable({ teammembers = [], isLoading }) {
                         }}
                       >
                         <option value="Admin">Administrator</option>
+                        <option value="Recruiter2">Recruiter</option>
                         <option value="Recruiter">Hiring Manager</option>
                         <option value="Benchsales">Bench Sales</option>
                       </select>
