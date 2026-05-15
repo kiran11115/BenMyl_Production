@@ -66,6 +66,13 @@ getMyBench: builder.mutation({
       }),
     }),
 
+    getLinkedInAuthUrlPostJob: builder.query({
+      query: () => ({
+        url: "/api/uatcompany/LoginWithLinkedInssds_jobspost",
+        method: "GET",
+      }),
+    }),
+
     updateEmployeeResume: builder.mutation({
   query: (data) => ({
     url: "/api/uatcompany/update_employee",
@@ -84,4 +91,4 @@ getMyBench: builder.mutation({
   }),
 });
 
-export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery,useUpdateEmployeeResumeMutation,useDeleteDraftEmployeeMutation   } = UploadResumeApiSlice;
+export const { useUploadProfilesMutation,useGetQueueManagementMutation,useGetEmployeeResumeQuery,useApprovedEmployeeMutation,useGetMyBenchMutation,useDraftProfileEmployeeMutation,useSaveHotlistImageMutation,useLazyGetLinkedInAuthUrlQuery,useUpdateEmployeeResumeMutation,useDeleteDraftEmployeeMutation,useLazyGetLinkedInAuthUrlPostJobQuery   } = UploadResumeApiSlice;

@@ -14,7 +14,7 @@ import { FaBuilding, FaPuzzlePiece } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import { toast } from "react-toastify";
-import { useLazyGetLinkedInAuthUrlQuery, useSaveHotlistImageMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useLazyGetLinkedInAuthUrlPostJobQuery, useSaveHotlistImageMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { useGetCompanyProfileEditQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
 
 // Alerts
@@ -37,7 +37,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   const [shareToLinkedIn, setShareToLinkedIn] = useState(false);
 
   const [saveHotlistImage] = useSaveHotlistImageMutation();
-  const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlQuery();
+  const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlPostJobQuery();
 
   const emailid = localStorage.getItem("Email");
   const { data: companyApiData } = useGetCompanyProfileEditQuery(emailid);

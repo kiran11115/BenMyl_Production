@@ -75,7 +75,7 @@ const routes = createBrowserRouter(
           <Route path="account-settings" element={<AccountSettings />} />
           <Route path="edit-profile" element={<AdminProfileEdit />} />
           <Route path="admin-analytics" element={<Analytics />} />
-          
+
           {/* New Admin Modules */}
           <Route path="control-center" element={<AdminControlCenter />} />
           <Route path="overview-dashboard" element={<AdminDashboard />} />
@@ -93,7 +93,7 @@ const routes = createBrowserRouter(
           <Route path="admin-posted-jobs" element={<PostedJobsPage />} />
           <Route path="admin-jobs" element={<UserJobs />} />
           <Route path="admin-upload-talent" element={<UploadTalent />} />
-          
+
           <Route path="user-talent-profile" element={<TalentProfile />} />
           <Route path="talent-profile" element={<UploadTalentProfile />} />
           <Route path="edit-talent-profile" element={<EditTalentProfile />} />
@@ -116,7 +116,7 @@ const routes = createBrowserRouter(
         <Route path="User" element={<Header />}>
           <Route path="notifications-page" element={<NotificationsPage />} />
           <Route path="AI-screen" element={<AIScreen />} />
-          
+
           <Route element={<ModuleProtectedRoute module="Main Dashboard" />}>
             <Route path="user-dashboard" element={<Dashboard />} />
           </Route>
@@ -134,7 +134,8 @@ const routes = createBrowserRouter(
             <Route path="user-projects" element={<Projects />} />
             <Route path="user-posted-jobs" element={<PostedJobsPage />} />
             <Route element={<ModuleProtectedRoute module="Projects" action="edit" />}>
-              <Route path="create-project" element={<CreateProject />} />
+              <Route path="user-post-new-positions" element={<PostNewPositions />} />
+
             </Route>
             <Route path="project-details/:id" element={<ProjectDetailsPage />} />
           </Route>
@@ -143,7 +144,7 @@ const routes = createBrowserRouter(
             <Route path="user-Jobs" element={<UserJobs />} />
             <Route path="job-overview" element={<JobOverview />} />
             <Route element={<ModuleProtectedRoute module="Job Management" action="edit" />}>
-              <Route path="user-post-new-positions" element={<PostNewPositions />} />
+              <Route path="create-project" element={<CreateProject />} />
             </Route>
           </Route>
 
