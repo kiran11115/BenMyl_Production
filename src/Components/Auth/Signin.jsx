@@ -54,6 +54,7 @@ function Signin() {
           localStorage.setItem("Role", response?.roleID);
           localStorage.setItem("adminFirstName", response?.adminFirstName);
           localStorage.setItem("Industry", response?.industry);
+          localStorage.removeItem("trialPopoverHidden");
           const role = response?.roleID;
 
           if (formik.values.rememberMe) {

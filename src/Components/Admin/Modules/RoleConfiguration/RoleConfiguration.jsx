@@ -19,7 +19,7 @@ const MODULE_PERMISSIONS = [
 ];
 
 function RoleConfiguration() {
-    const [selectedRole, setSelectedRole] = useState({ id: "", name: "Loading..." });
+    const [selectedRole, setSelectedRole] = useState({ id: "", name: "Loading...", displayName: "Loading..." });
     const [permissions, setPermissions] = useState({});
     const [selectedTeamMember, setSelectedTeamMember] = useState("");
 
@@ -31,12 +31,20 @@ function RoleConfiguration() {
     const rolesList = useMemo(() => {
         if (!rolesApiData) return [];
         const raw = Array.isArray(rolesApiData) ? rolesApiData : rolesApiData.data || [];
-        return raw.map(r => ({
-            id: r.roleId || r.id,
-            name: r.roleName || r.name,
-            type: "Standard", 
-            status: "Active"
-        }));
+        return raw.map(r => {
+            const rawName = r.roleName || r.name;
+            let displayName = rawName;
+            if (rawName === "Recruiter") displayName = "Hiring Manager";
+            else if (rawName === "Recruiter2") displayName = "Recruiter";
+            else if (rawName === "Consultant Admin" || rawName === "consultant admin") displayName = "Admin";
+            return {
+                id: r.roleId || r.id,
+                name: rawName,
+                displayName: displayName,
+                type: "Standard", 
+                status: "Active"
+            };
+        });
     }, [rolesApiData]);
 
     useEffect(() => {
@@ -160,8 +168,8 @@ function RoleConfiguration() {
                                 <div className="role-icon">
                                     <Shield size={20} />
                                 </div>
-                                <div className="role-info">
-                                    <span className="role-name">{role.name}</span>
+                                <div class="role-info">
+                                    <span className="role-name">{role.displayName}</span>
                                     <span className="role-type">{role.type}</span>
                                 </div>
                                 <ChevronRight size={16} className="chevron" />
@@ -174,7 +182,7 @@ function RoleConfiguration() {
             <div className="role-config-main">
                 <ModuleHeader 
                     breadcrumb="Role Configuration"
-                    title={selectedRole.name}
+                    title={selectedRole.displayName}
                     description="Set module-level access and feature capabilities for this role."
                     badgeText="Configuring Permissions"
                     icon={ShieldCheck}
@@ -226,7 +234,7 @@ function RoleConfiguration() {
                         </select>
                         {filteredTeamMembers.length === 0 && !isTeamLoading && (
                             <span style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
-                                No active team members found with the role "{selectedRole.name}".
+                                No active team members found with the role "{selectedRole.displayName}".
                             </span>
                         )}
                         {isTeamLoading && (

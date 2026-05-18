@@ -26,8 +26,7 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  /* Spacing between logo and nav links */
+  gap: 2rem; /* Reduced from 3rem to save space */
 }
 
 .header-brand {
@@ -57,19 +56,21 @@
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.25rem; /* Reduced from 2rem to save space */
 }
 
 .header-nav-link {
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: 0.8125rem; /* Reduced from 14px to 13px */
   font-weight: 500;
   color: #d2d8e0;
-  /* Slate-500 */
   text-decoration: none;
   transition: color 0.2s;
   padding: 0.5rem 0;
   position: relative;
+  white-space: nowrap; /* Prevent wrapping onto multiple lines */
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .header-nav-link:hover {
@@ -99,7 +100,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem; /* Reduced from 1.5rem to save space */
 }
 
 /* Search Bar */

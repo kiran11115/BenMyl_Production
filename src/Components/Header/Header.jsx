@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MobileBottomNav from "./MobileBottomNav";
 import MobileTopBar from "./MobileTopBar";
 import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
+import TrialPopover from "./TrialPopover";
 
 
 function Header() {
@@ -374,6 +375,8 @@ function Header() {
       <MobileBottomNav />
 
       <ToastContainer position="top-right" autoClose={3000} />
+      
+      <TrialPopover />
 
       {/* Video Guide Popover */}
       <VideoGuidePopover

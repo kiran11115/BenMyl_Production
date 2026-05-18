@@ -7,6 +7,7 @@ import * as Yup from "yup";
 
 import StepAccount from "./FormSteps/StepAccount";
 import StepVerify from "./FormSteps/StepVerify";
+import StepSubscriptions from "./FormSteps/StepSubscriptions";
 import StepBilling from "./FormSteps/StepBilling";
 
 import {
@@ -87,6 +88,9 @@ const FormWizard = () => {
         }),
       }),
       3: Yup.object({
+        subscriptionPlan: Yup.string().required(),
+      }),
+      4: Yup.object({
         cardNumber: Yup.string().required(),
         cardName: Yup.string().required(),
         cardExpiry: Yup.string().required(),
@@ -119,6 +123,8 @@ const FormWizard = () => {
       cardName: "",
       cardExpiry: "",
       cardCvv: "",
+
+      subscriptionPlan: "free_trial",
     },
     validationSchema: stepSchemas[currentStep],
     validateOnChange: false,
@@ -201,6 +207,7 @@ const FormWizard = () => {
         "state",
         "zipCode",
       ];
+    if (step === 3) return ["subscriptionPlan"];
     return ["cardNumber", "cardName", "cardExpiry", "cardCvv"];
   };
 
@@ -209,7 +216,7 @@ const FormWizard = () => {
     touchFields(fields);
     const errors = await formik.validateForm();
     if (Object.keys(errors).length === 0) {
-      setCurrentStep((s) => Math.min(s + 1, 3));
+      setCurrentStep((s) => Math.min(s + 1, 4));
     }
   };
 
@@ -266,7 +273,7 @@ const FormWizard = () => {
 
   /* ================= SUBMIT ================= */
   const handleAccountCreation = async () => {
-    const fields = getStepFields(3);
+    const fields = getStepFields(4);
     touchFields(fields);
 
     const errors = await formik.validateForm();
@@ -275,6 +282,9 @@ const FormWizard = () => {
     setIsSubmitting(true);
     try {
       await admindetails(buildPayload(formik.values)).unwrap();
+      localStorage.setItem("TrialStartDate", new Date().toISOString());
+      localStorage.removeItem("trialPopoverHidden"); // Reset hidden state for new user
+      toast.success("Account created successfully! Free trial valid for 20 days.");
       navigate("/sign-in");
     } catch (err) {
       console.error(err);
@@ -310,6 +320,11 @@ const FormWizard = () => {
               <div className="auth-step-line"></div>
               <div className={`auth-step ${currentStep >= 3 ? "auth-step-active" : ""}`}>
                 <div className="auth-step-circle">3</div>
+                <span className="auth-step-text">Plans</span>
+              </div>
+              <div className="auth-step-line"></div>
+              <div className={`auth-step ${currentStep >= 4 ? "auth-step-active" : ""}`}>
+                <div className="auth-step-circle">4</div>
                 <span className="auth-step-text">Billing</span>
               </div>
             </div>
@@ -349,6 +364,13 @@ const FormWizard = () => {
               )}
 
               {currentStep === 3 && (
+                <StepSubscriptions
+                  formData={formData}
+                  handleSubscriptionChange={(val) => formik.setFieldValue("subscriptionPlan", val)}
+                />
+              )}
+
+              {currentStep === 4 && (
                 <StepBilling
                   formData={formData}
                   handleInputChange={handleInputChange}
@@ -372,12 +394,12 @@ const FormWizard = () => {
                     Back
                   </button>
                 )}
-                {currentStep < 3 && (
+                {currentStep < 4 && (
                   <button type="button" className="btn-primary" onClick={nextStep}>
                     Next Step
                   </button>
                 )}
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                   <button
                     type="button"
                     className="btn-primary"

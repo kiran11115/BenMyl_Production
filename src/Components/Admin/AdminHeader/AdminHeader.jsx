@@ -4,6 +4,7 @@ import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, Messa
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import TrialPopover from "../../Header/TrialPopover";
 
 
 function AdminHeader() {
@@ -318,6 +319,8 @@ function AdminHeader() {
                     <Outlet />
                 </main>
             </div>
+            
+            <TrialPopover />
 
         </>
     );

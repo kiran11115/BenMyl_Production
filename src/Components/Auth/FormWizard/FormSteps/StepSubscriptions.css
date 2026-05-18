@@ -1,0 +1,126 @@
+.plans-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.plan-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-card:hover:not(.disabled) {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.plan-card.selected {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+.plan-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-right: 100px; /* space for badge */
+}
+
+.plan-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.plan-price {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.plan-desc {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.plan-radio {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.radio-circle.checked {
+  border-color: #3b82f6;
+}
+
+.radio-circle.checked::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b82f6;
+}
+
+@media (min-width: 768px) {
+  .plans-grid {
+    flex-direction: row;
+  }
+  
+  .plan-card {
+    flex: 1;
+  }
+  
+  .plan-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 0;
+    gap: 8px;
+  }
+  
+  .plan-price {
+    font-size: 20px;
+  }
+}
