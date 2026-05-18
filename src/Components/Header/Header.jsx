@@ -44,9 +44,9 @@ function Header() {
         label: "Projects",
         module: "Projects",
         subItems: [
-          { label: "posted jobs", path: "/user/user-posted-jobs" },
-          { label: "create job", path: "/user/user-post-new-positions" },
-          { label: "ongoing projects", path: "/user/user-projects" },
+          { label: "Posted Jobs", path: "/user/user-posted-jobs" },
+          { label: "Create Job", path: "/user/user-post-new-positions" },
+          { label: "Ongoing Projects", path: "/user/user-projects" },
         ],
       },
       { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },

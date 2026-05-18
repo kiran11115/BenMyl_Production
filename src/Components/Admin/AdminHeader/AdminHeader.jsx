@@ -113,9 +113,9 @@ function AdminHeader() {
                             { 
                                 label: "Projects", 
                                 subItems: [
-                                    { label: "posted jobs", path: "/Admin/admin-posted-jobs" },
-                                    { label: "create job", path: "/Admin/user-post-new-positions" },
-                                    { label: "ongoing projects", path: "/Admin/admin-projects" },
+                                    { label: "Posted Jobs", path: "/Admin/admin-posted-jobs" },
+                                    { label: "Create Job", path: "/Admin/user-post-new-positions" },
+                                    { label: "Ongoing Projects", path: "/Admin/admin-projects" },
                                 ]
                             },
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
