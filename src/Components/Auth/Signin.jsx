@@ -68,7 +68,7 @@ function Signin() {
           }
 
           if (role === "Admin") {
-            navigate("/Admin/account-settings");
+            navigate("/Admin/overview-dashboard");
             return;
           }
 

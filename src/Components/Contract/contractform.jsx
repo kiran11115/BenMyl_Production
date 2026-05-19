@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, Plus, Download, Eye, Search, CheckCircle,
@@ -6,7 +6,8 @@ import {
   PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { ContractContext } from './ContractContext';
+import { ContractContext, mapApiContractToUI } from './ContractContext';
+import { useGetContractsByBenchsalesQuery } from '../../State-Management/Api/ContractApiSlice';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiFileText, FiPlus, FiSearch } from "react-icons/fi";
 import { Home } from "lucide-react";
@@ -146,7 +147,22 @@ const SignatureSection = ({ onComplete, onCancel }) => {
    ========================================= */
 const ContractForm = () => {
   const navigate = useNavigate();
-  const { contracts, updateContract } = useContext(ContractContext);
+  const { updateContract } = useContext(ContractContext);
+
+  const userId = localStorage.getItem("CompanyId");
+  const { data: apiResponse, isLoading } = useGetContractsByBenchsalesQuery(userId, {
+    skip: !userId,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const contracts = useMemo(() => {
+    const dataArray = apiResponse?.data || apiResponse;
+    if (dataArray && Array.isArray(dataArray)) {
+      return dataArray.map(mapApiContractToUI).filter(Boolean);
+    }
+    return [];
+  }, [apiResponse]);
+
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [isDownloading, setIsDownloading] = useState(null);
@@ -320,30 +336,45 @@ const ContractForm = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(c => {
-                const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
-                const sigCfg = SIG_STATUS[sigStatus];
-                return (
-                  <tr key={c.id}>
-                    <td><span className="contract-id">{c.id}</span></td>
-                    <td><div style={{ fontWeight: 700, color: '#1e293b' }}>{c.contractTitle}</div><div style={{ fontSize: 10, color: '#64748b' }}>{c.clientCompany} → {c.companyName || 'BenMyl'}</div></td>
-                    <td><div className="d-flex align-items-center gap-2"><User size={12} color="#64748b" /> {c.candidateName}</div></td>
-                    <td><ContractBadge status={c.status} /></td>
-                    <td style={{ color: '#64748b', fontSize: 12 }}>{c.createdDate}</td>
-                    <td><span className={`contract-badge ${sigCfg.cls}`}><span className="badge-dot" />{sigCfg.label}</span></td>
-                    <td>
-                      <div className="d-flex gap-2 justify-content-center">
-                        <button className="tbl-btn tbl-btn-view" onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}>
-                          <Eye size={12} /> View & Sign
-                        </button>
-                        <button className="tbl-btn tbl-btn-download" onClick={() => handleDownload(c)} disabled={isDownloading === c.id}>
-                          {isDownloading === c.id ? <div className="contract-spinner" style={{ width: 10, height: 10 }} /> : <Download size={12} />}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0' }}>
+                    <div className="contract-spinner" style={{ width: 24, height: 24, margin: '0 auto 12px' }} />
+                    <span style={{ fontSize: 13, color: '#64748b' }}>Loading legal documents...</span>
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
+                    No legal documents found.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map(c => {
+                  const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
+                  const sigCfg = SIG_STATUS[sigStatus];
+                  return (
+                    <tr key={c.id}>
+                      <td><span className="contract-id">{c.id}</span></td>
+                      <td><div style={{ fontWeight: 700, color: '#1e293b' }}>{c.contractTitle}</div><div style={{ fontSize: 10, color: '#64748b' }}>{c.clientCompany} → {c.companyName || 'BenMyl'}</div></td>
+                      <td><div className="d-flex align-items-center gap-2"><User size={12} color="#64748b" /> {c.candidateName}</div></td>
+                      <td><ContractBadge status={c.status} /></td>
+                      <td style={{ color: '#64748b', fontSize: 12 }}>{c.createdDate}</td>
+                      <td><span className={`contract-badge ${sigCfg.cls}`}><span className="badge-dot" />{sigCfg.label}</span></td>
+                      <td>
+                        <div className="d-flex gap-2 justify-content-center">
+                          <button className="tbl-btn tbl-btn-view" onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}>
+                            <Eye size={12} /> View & Sign
+                          </button>
+                          <button className="tbl-btn tbl-btn-download" onClick={() => handleDownload(c)} disabled={isDownloading === c.id}>
+                            {isDownloading === c.id ? <div className="contract-spinner" style={{ width: 10, height: 10 }} /> : <Download size={12} />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

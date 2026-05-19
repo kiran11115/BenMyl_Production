@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import DatePicker from 'react-datepicker';
 import {
   Check,
   ChevronRight,
@@ -21,12 +22,14 @@ import {
 } from 'lucide-react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { toast } from 'react-toastify';
-import { ContractContext } from './ContractContext';
+import { ContractContext, formatDate } from './ContractContext';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiFilePlus } from "react-icons/fi";
 import { Home } from "lucide-react";
 import './contract.css';
 import '../PostNewPositions/PostNewPositions.css';
+import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useSaveContractMutation } from "../../State-Management/Api/ContractApiSlice";
 
 /* =====================================================================
    LEGAL DISCLAIMER - REQUIRES REVIEW BEFORE PRODUCTION USE
@@ -58,6 +61,26 @@ const ContractCreate = () => {
   const [signatureData, setSignatureData] = useState(null);
   const canvasRef = useRef(null);
   const isDrawing = useRef(false);
+
+  const userId = localStorage.getItem("CompanyId");
+  const companyId = localStorage.getItem("logincompanyid");
+
+  // Fetch Jobs
+  const { data: fetchedJobs, isLoading: isJobsLoading } = useGetGroupedJobTitlesQuery(userId, { skip: !userId });
+
+  const jobs = useMemo(() => {
+    if (!fetchedJobs || !Array.isArray(fetchedJobs)) return [];
+    return fetchedJobs.map(job => ({
+      id: job.jobID,
+      title: job.jobTitle,
+      company: job.companyName || "Your Company",
+    }));
+  }, [fetchedJobs]);
+
+  const [candidates, setCandidates] = useState([]);
+  const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
+  const [getFindTalent] = useTalentPoolMutation();
+  const [saveContract, { isLoading: isSavingContract }] = useSaveContractMutation();
 
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
 
@@ -94,6 +117,51 @@ const ContractCreate = () => {
       setStep(3);
     },
   });
+
+  // Load candidates when jobTitle changes
+  useEffect(() => {
+    if (!formik.values.jobTitle || !companyId) {
+      setCandidates([]);
+      return;
+    }
+
+    const fetchShortlisted = async () => {
+      setIsCandidatesLoading(true);
+      try {
+        const payload = {
+          companyid: Number(companyId),
+          pageNumber: 1,
+          pageSize: 100,
+          filters: [
+            {
+              filterName: "Title",
+              filterOperator: "Equals",
+              filterValue: [formik.values.jobTitle],
+            }
+          ],
+        };
+
+        const res = await getFindTalent(payload).unwrap();
+
+        if (Array.isArray(res)) {
+          // Filter for isshortlisted
+          const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
+            id: item.employeeID,
+            name: `${item.firstName} ${item.lastName}`,
+            email: item.emailAddress,
+            phone: item.phoneNumber || "",
+          }));
+          setCandidates(shortlisted);
+        }
+      } catch (err) {
+        console.error("Failed to fetch shortlisted candidates:", err);
+      } finally {
+        setIsCandidatesLoading(false);
+      }
+    };
+
+    fetchShortlisted();
+  }, [formik.values.jobTitle, companyId, getFindTalent]);
 
   // Signature Canvas Logic
   useEffect(() => {
@@ -139,27 +207,93 @@ const ContractCreate = () => {
     setSignatureData(null);
   };
 
-  const handleCreateContract = () => {
+  const dataURLtoBlob = (dataurl) => {
+    if (!dataurl) return null;
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  };
+
+  const handleCreateContract = async () => {
     if (!signatureData) {
       toast.error('Please provide a signature before sharing.');
       return;
     }
 
-    const newContract = {
-      ...formik.values,
-      id: `CTR-${Date.now().toString().slice(-4)}`,
-      status: 'Shared',
-      createdDate: new Date().toISOString().split('T')[0],
-      hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
-      benchSalesUser: formik.values.candidateName || 'Bench Sales Team',
-      hiringManagerAccepted: true,
-      benchSalesAccepted: false,
-      hiringManagerSignature: signatureData,
-      benchSalesSignature: null,
-    };
+    const selectedJobObj = jobs.find(j => j.title === formik.values.jobTitle);
+    const cand = candidates.find(c => c.name === formik.values.candidateName);
 
-    addContract(newContract);
-    setStep(4);
+    try {
+      const formData = new FormData();
+      formData.append("contractID", 0);
+      formData.append("JobID", selectedJobObj?.id ? String(selectedJobObj.id) : "");
+      formData.append("CandidateID", cand?.id ? String(cand.id) : "");
+      formData.append("JobTitle", formik.values.jobTitle || "");
+      formData.append("CandidateName", formik.values.candidateName || "");
+      formData.append("ContractTitle", formik.values.contractTitle || "");
+      formData.append("ClientCompanyName", formik.values.clientCompany || "");
+      formData.append("VendorCompanyName", formik.values.companyName || "");
+      formData.append("WorkLocation", formik.values.workLocation || "");
+      formData.append("CandidateEmail", formik.values.candidateEmail || "");
+      formData.append("CandidatePhone", formik.values.candidatePhone || "");
+      formData.append("EmploymentType", formik.values.employmentType || "");
+      
+      const startIso = formik.values.startDate ? new Date(formik.values.startDate).toISOString() : new Date().toISOString();
+      const endIso = formik.values.endDate ? new Date(formik.values.endDate).toISOString() : new Date().toISOString();
+      formData.append("StartDate", startIso);
+      formData.append("EndDate", endIso);
+      
+      formData.append("SalaryRate", formik.values.salary || "");
+      formData.append("PaymentCycle", formik.values.paymentCycle || "");
+      formData.append("ReportingManager", formik.values.reportingManager || "");
+      formData.append("NoticePeriod", formik.values.noticePeriod || "");
+      formData.append("TermsAndConditions", formik.values.termsAndConditions || "");
+      formData.append("AgreementStatus", "Shared");
+
+      // Signature Image Convert
+      const sigBlob = dataURLtoBlob(signatureData);
+      if (sigBlob) {
+        formData.append("SignatureImage", sigBlob, "signature.png");
+      }
+
+      formData.append("SignatureStatus_A", "Signed");
+      formData.append("SignatureStatus_B", "");
+      formData.append("SignatureStatus_C", "");
+      formData.append("CreatedOn", new Date().toISOString());
+      formData.append("signatureImagePath", "");
+      formData.append("signatureimagePatbenchsales", "");
+      formData.append("CreatedBy", Number(localStorage.getItem("CompanyId")) || 0);
+
+      await saveContract(formData).unwrap();
+
+      const newContract = {
+        ...formik.values,
+        id: `CTR-${Date.now().toString().slice(-4)}`,
+        status: 'Shared',
+        startDate: formik.values.startDate ? formatDate(formik.values.startDate) : '-',
+        endDate: formik.values.endDate ? formatDate(formik.values.endDate) : '-',
+        createdDate: formatDate(new Date().toISOString().split('T')[0]),
+        hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
+        benchSalesUser: formik.values.candidateName || 'Bench Sales Team',
+        hiringManagerAccepted: true,
+        benchSalesAccepted: false,
+        hiringManagerSignature: signatureData,
+        benchSalesSignature: null,
+      };
+
+      addContract(newContract);
+      setStep(4);
+      toast.success("Contract created and shared successfully!");
+    } catch (err) {
+      console.error("Failed to create contract:", err);
+      toast.error(err?.data?.message || err?.message || "Failed to create contract.");
+    }
   };
 
   const renderStep1 = () => (
@@ -174,13 +308,22 @@ const ContractCreate = () => {
             className="auth-input"
             name="jobTitle"
             value={formik.values.jobTitle}
-            onChange={formik.handleChange}
+            onChange={(e) => {
+              formik.handleChange(e);
+              formik.setFieldValue('candidateName', '');
+              formik.setFieldValue('candidateEmail', '');
+              formik.setFieldValue('candidatePhone', '');
+            }}
             onBlur={formik.handleBlur}
           >
             <option value="">Select a job</option>
-            <option value="Senior React Developer">Senior React Developer</option>
-            <option value="Full Stack Developer">Full Stack Developer</option>
-            <option value="DevOps Engineer">DevOps Engineer</option>
+            {isJobsLoading ? (
+              <option disabled>Loading jobs...</option>
+            ) : (
+              jobs.map(j => (
+                <option key={j.id} value={j.title}>{j.title}</option>
+              ))
+            )}
           </select>
           {formik.touched.jobTitle && formik.errors.jobTitle && <div className="auth-error">{formik.errors.jobTitle}</div>}
         </div>
@@ -191,17 +334,28 @@ const ContractCreate = () => {
             name="candidateName"
             value={formik.values.candidateName}
             onChange={(e) => {
-              formik.handleChange(e);
-              // Mock auto-fill email
-              formik.setFieldValue('candidateEmail', e.target.value.toLowerCase().replace(' ', '.') + '@email.com');
-              formik.setFieldValue('candidatePhone', '+1 (555) 000-0000');
+              const selectedName = e.target.value;
+              formik.setFieldValue('candidateName', selectedName);
+              const cand = candidates.find(c => c.name === selectedName);
+              if (cand) {
+                formik.setFieldValue('candidateEmail', cand.email);
+                formik.setFieldValue('candidatePhone', cand.phone);
+              } else {
+                formik.setFieldValue('candidateEmail', '');
+                formik.setFieldValue('candidatePhone', '');
+              }
             }}
             onBlur={formik.handleBlur}
+            disabled={!formik.values.jobTitle || isCandidatesLoading}
           >
             <option value="">Select a candidate</option>
-            <option value="John Doe">John Doe</option>
-            <option value="Jane Smith">Jane Smith</option>
-            <option value="Alex Johnson">Alex Johnson</option>
+            {isCandidatesLoading ? (
+              <option disabled>Loading candidates...</option>
+            ) : (
+              candidates.map(c => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))
+            )}
           </select>
           {formik.touched.candidateName && formik.errors.candidateName && <div className="auth-error">{formik.errors.candidateName}</div>}
         </div>
@@ -274,11 +428,61 @@ const ContractCreate = () => {
         <div className="grid-3">
           <div className="auth-form-group">
             <label className="auth-label">Start Date *</label>
-            <input className="auth-input" type="date" name="startDate" {...formik.getFieldProps('startDate')} />
+            <div className="auth-password-wrapper">
+              <DatePicker
+                className="auth-input w-100"
+                maxDate={new Date("2099-12-31")}
+                selected={
+                  formik.values.startDate
+                    ? new Date(formik.values.startDate)
+                    : null
+                }
+                onChange={(date) =>
+                  formik.setFieldValue(
+                    "startDate",
+                    date ? date.toISOString().split('T')[0] : ""
+                  )
+                }
+                dateFormat="dd MMM yyyy"
+                placeholderText="dd MMM yyyy"
+              />
+              <Calendar
+                size={16}
+                className="auth-icon-left"
+              />
+            </div>
+            {formik.touched.startDate && formik.errors.startDate && (
+              <div className="auth-error">{formik.errors.startDate}</div>
+            )}
           </div>
           <div className="auth-form-group">
             <label className="auth-label">End Date *</label>
-            <input className="auth-input" type="date" name="endDate" {...formik.getFieldProps('endDate')} />
+            <div className="auth-password-wrapper">
+              <DatePicker
+                className="auth-input w-100"
+                maxDate={new Date("2099-12-31")}
+                selected={
+                  formik.values.endDate
+                    ? new Date(formik.values.endDate)
+                    : null
+                }
+                onChange={(date) =>
+                  formik.setFieldValue(
+                    "endDate",
+                    date ? date.toISOString().split('T')[0] : ""
+                  )
+                }
+                dateFormat="dd MMM yyyy"
+                placeholderText="dd MMM yyyy"
+              />
+              <Calendar
+                size={16}
+                className="auth-icon-left"
+              />
+            </div>
+            {formik.touched.endDate && formik.errors.endDate && (
+              <div className="auth-error">{formik.errors.endDate}</div>
+            )}
           </div>
           <div className="auth-form-group">
             <label className="auth-label">Salary / Rate *</label>
@@ -426,8 +630,8 @@ const ContractCreate = () => {
 
       <div className="d-flex justify-content-between mt-4">
         <button className="btn-secondary" onClick={() => setStep(2)}>Back</button>
-        <button className="btn-primary" onClick={handleCreateContract}>
-          Share Contract for Mutual Acceptance <ChevronRight size={16} />
+        <button className="btn-primary" onClick={handleCreateContract} disabled={isSavingContract}>
+          {isSavingContract ? 'Sharing Contract...' : 'Share Contract for Mutual Acceptance'} <ChevronRight size={16} />
         </button>
       </div>
     </div>
@@ -470,6 +674,27 @@ const ContractCreate = () => {
 
   return (
     <div className="contract-page">
+      <style>{`
+        .auth-password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .auth-icon-left {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .react-datepicker-wrapper {
+            width: 100%;
+        }
+        .react-datepicker__input-container input {
+            padding-left: 2.5rem !important;
+        }
+      `}</style>
       <ModuleHeader
         breadcrumb="Create New Work Order"
         title="Generate Work Order"

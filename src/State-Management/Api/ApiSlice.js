@@ -28,7 +28,8 @@ export const apiSlice = createApi({
     "CompanyProfile",
     "ResumeUpdate",
     "JobFilter",
-    "RecruiterProfile"
+    "RecruiterProfile",
+    "Contracts"
   ],
   endpoints: () => ({}),
 });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users } from "lucide-react";
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
@@ -297,6 +297,10 @@ function AdminHeader() {
                                     <button className="popover-item" onClick={() => navigate("/Admin/admin-analytics")}>
                                         <File size={16} />
                                         Analytics
+                                    </button>
+                                    <button className="popover-item" onClick={() => { setIsProfileOpen(false); navigate("/Admin/account-settings", { state: { activeTab: "team" } }); }}>
+                                        <Users size={16} />
+                                        Invite Team
                                     </button>
                                     {/* <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
                                         <Settings size={16} />

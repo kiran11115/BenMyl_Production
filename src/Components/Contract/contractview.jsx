@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   FileText, ArrowLeft, Download, CheckCircle,
@@ -6,10 +6,11 @@ import {
   Lock, Clock, Building, User, Info, FileCheck, Check
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { ContractContext } from './ContractContext';
+import { ContractContext, formatDate } from './ContractContext';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiFileText, FiArrowLeft, FiPrinter, FiDownload } from "react-icons/fi";
 import { Home } from "lucide-react";
+import { useGetContractByIdQuery, useSaveContractMutation } from '../../State-Management/Api/ContractApiSlice';
 import './contract.css';
 
 const SignatureSection = ({ onComplete, onCancel }) => {
@@ -99,17 +100,86 @@ const SignatureSection = ({ onComplete, onCancel }) => {
   );
 };
 
+const dataURLtoBlob = (dataurl) => {
+  if (!dataurl) return null;
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+};
+
+const mapApiContractToUI = (item) => {
+  if (!item) return null;
+  return {
+    id: String(item.contractID || ''),
+    contractTitle: item.contractTitle || 'Unnamed Contract',
+    jobTitle: item.jobTitle || '-',
+    candidateName: item.candidateName || '-',
+    candidateEmail: item.candidateEmail || '',
+    candidatePhone: item.candidatePhone || '',
+    clientCompany: item.clientCompanyName || '-',
+    companyName: item.vendorCompanyName || 'BenMyl Staffing',
+    workLocation: item.workLocation || '-',
+    employmentType: item.employmentType || '-',
+    startDate: item.startDate ? formatDate(item.startDate.split('T')[0]) : '-',
+    endDate: item.endDate ? formatDate(item.endDate.split('T')[0]) : '-',
+    salary: item.salaryRate || '-',
+    paymentCycle: item.paymentCycle || '-',
+    workingHours: '40 hrs/week',
+    reportingManager: item.reportingManager || '-',
+    projectDuration: '-',
+    noticePeriod: item.noticePeriod || '-',
+    taxInformation: '-',
+    benefits: '-',
+    additionalNotes: '',
+    termsAndConditions: item.termsAndConditions || '',
+    confidentialityClause: item.confidentialityClause || '',
+    ndaSection: '',
+    terminationPolicy: '',
+    status: item.agreementStatus || 'Shared',
+    createdDate: item.createdOn ? formatDate(item.createdOn.split('T')[0]) : formatDate(new Date().toISOString().split('T')[0]),
+    hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
+    benchSalesUser: item.candidateName || 'Bench Sales Team',
+    hiringManagerAccepted: item.signatureStatus_A === 'Signed' || !!item.signatureImagePath,
+    benchSalesAccepted: item.signatureStatus_B === 'Signed' || !!(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales),
+    hiringManagerSignature: item.signatureImagePath || null,
+    benchSalesSignature: item.signatureImagePatbenchsales || item.signatureimagePatbenchsales || null,
+  };
+};
+
 const ContractView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { contracts, updateContract } = useContext(ContractContext);
+  const { updateContract } = useContext(ContractContext);
   const [showSignBox, setShowSignBox] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const contract = contracts.find(c => c.id === id);
+  const { data: apiResponse, isLoading: isApiLoading } = useGetContractByIdQuery(id);
+  const [saveContract, { isLoading: isSaving }] = useSaveContractMutation();
+
+  const contract = useMemo(() => {
+    if (!apiResponse || !apiResponse.data) return null;
+    return mapApiContractToUI(apiResponse.data);
+  }, [apiResponse]);
+
   const role = localStorage.getItem('Role') || 'Benchsales';
   const isBS = role === 'Benchsales';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
+
+  if (isApiLoading) {
+    return (
+      <div className="contract-page d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
+        <div className="contract-spinner" style={{ width: 40, height: 40, marginBottom: 16 }} />
+        <h4 style={{ fontWeight: 700, color: '#475569' }}>Retrieving Secure Document...</h4>
+        <p style={{ color: '#94a3b8', fontSize: 13 }}>Verifying signatures and audit records</p>
+      </div>
+    );
+  }
 
   if (!contract) {
     return (
@@ -124,28 +194,111 @@ const ContractView = () => {
     );
   }
 
-  const handleAccept = (signature) => {
+  const handleAccept = async (signature) => {
     if (!signature) {
       toast.error('Legal signature is required to proceed.');
       return;
     }
-    const updated = {
-      ...contract,
-      benchSalesAccepted: true,
-      benchSalesSignature: signature,
-      status: 'Completed',
-      benchSalesDate: new Date().toISOString().split('T')[0]
-    };
-    updateContract(updated);
-    setShowSignBox(false);
-    toast.success('🎉 Agreement fully executed and archived.');
+
+    try {
+      const formData = new FormData();
+      formData.append("contractID", apiResponse.data.contractID);
+      formData.append("JobID", apiResponse.data.jobID || "");
+      formData.append("CandidateID", apiResponse.data.candidateID || "");
+      formData.append("JobTitle", apiResponse.data.jobTitle || "");
+      formData.append("CandidateName", apiResponse.data.candidateName || "");
+      formData.append("ContractTitle", apiResponse.data.contractTitle || "");
+      formData.append("ClientCompanyName", apiResponse.data.clientCompanyName || "");
+      formData.append("VendorCompanyName", apiResponse.data.vendorCompanyName || "");
+      formData.append("WorkLocation", apiResponse.data.workLocation || "");
+      formData.append("CandidateEmail", apiResponse.data.candidateEmail || "");
+      formData.append("CandidatePhone", apiResponse.data.candidatePhone || "");
+      formData.append("EmploymentType", apiResponse.data.employmentType || "");
+      formData.append("StartDate", apiResponse.data.startDate || "");
+      formData.append("EndDate", apiResponse.data.endDate || "");
+      formData.append("SalaryRate", apiResponse.data.salaryRate || "");
+      formData.append("PaymentCycle", apiResponse.data.paymentCycle || "");
+      formData.append("ReportingManager", apiResponse.data.reportingManager || "");
+      formData.append("NoticePeriod", apiResponse.data.noticePeriod || "");
+      formData.append("TermsAndConditions", apiResponse.data.termsAndConditions || "");
+      formData.append("AgreementStatus", "Completed");
+
+      formData.append("SignatureStatus_A", apiResponse.data.signatureStatus_A || "Signed");
+      formData.append("SignatureStatus_B", "Signed");
+      formData.append("SignatureStatus_C", "");
+      formData.append("CreatedOn", apiResponse.data.createdOn || new Date().toISOString());
+
+      // Preserve existing hiring manager signature path to prevent database null values
+      const existingPath = apiResponse.data.signatureImagePath || "";
+      formData.append("SignatureImagePath", existingPath);
+      formData.append("signatureImagePath", existingPath);
+
+      // Pass existing benchsales path if present
+      const existingBSPath = apiResponse.data.signatureImagePatbenchsales || apiResponse.data.signatureimagePatbenchsales || "";
+      formData.append("SignatureImagePatbenchsales", existingBSPath);
+      formData.append("signatureimagePatbenchsales", existingBSPath);
+
+      formData.append("CreatedBy", apiResponse.data.createdBy || 0);
+
+      // Signature Image Convert
+      const sigBlob = dataURLtoBlob(signature);
+      if (sigBlob) {
+        formData.append("signature_iformfile_benchsales", sigBlob, "signature_benchsales.png");
+      }
+
+      await saveContract(formData).unwrap();
+      setShowSignBox(false);
+      toast.success('🎉 Agreement fully executed and archived.');
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.data?.message || 'Failed to submit signature. Please try again.');
+    }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (window.confirm('Are you sure you want to decline this agreement? This action will be logged.')) {
-      updateContract({ ...contract, status: 'Rejected', benchSalesAccepted: false });
-      toast.error('Agreement declined.');
-      navigate(`${basePath}/contract-listing`);
+      try {
+        const formData = new FormData();
+        formData.append("contractID", apiResponse.data.contractID);
+        formData.append("JobID", apiResponse.data.jobID || "");
+        formData.append("CandidateID", apiResponse.data.candidateID || "");
+        formData.append("JobTitle", apiResponse.data.jobTitle || "");
+        formData.append("CandidateName", apiResponse.data.candidateName || "");
+        formData.append("ContractTitle", apiResponse.data.contractTitle || "");
+        formData.append("ClientCompanyName", apiResponse.data.clientCompanyName || "");
+        formData.append("VendorCompanyName", apiResponse.data.vendorCompanyName || "");
+        formData.append("WorkLocation", apiResponse.data.workLocation || "");
+        formData.append("CandidateEmail", apiResponse.data.candidateEmail || "");
+        formData.append("CandidatePhone", apiResponse.data.candidatePhone || "");
+        formData.append("EmploymentType", apiResponse.data.employmentType || "");
+        formData.append("StartDate", apiResponse.data.startDate || "");
+        formData.append("EndDate", apiResponse.data.endDate || "");
+        formData.append("SalaryRate", apiResponse.data.salaryRate || "");
+        formData.append("PaymentCycle", apiResponse.data.paymentCycle || "");
+        formData.append("ReportingManager", apiResponse.data.reportingManager || "");
+        formData.append("NoticePeriod", apiResponse.data.noticePeriod || "");
+        formData.append("TermsAndConditions", apiResponse.data.termsAndConditions || "");
+        formData.append("AgreementStatus", "Rejected");
+
+        formData.append("SignatureStatus_A", apiResponse.data.signatureStatus_A || "Signed");
+        formData.append("SignatureStatus_B", "Rejected");
+        formData.append("SignatureStatus_C", "");
+        formData.append("CreatedOn", apiResponse.data.createdOn || new Date().toISOString());
+
+        // Preserve existing signature image path to prevent database null values
+        const existingPath = apiResponse.data.signatureImagePath || "";
+        formData.append("SignatureImagePath", existingPath);
+        formData.append("signatureImagePath", existingPath);
+
+        formData.append("CreatedBy", apiResponse.data.createdBy || 0);
+
+        await saveContract(formData).unwrap();
+        toast.error('Agreement declined.');
+        navigate(`${basePath}/contract-listing`);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to submit reject status.');
+      }
     }
   };
 

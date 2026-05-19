@@ -12,7 +12,7 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 import "./AccountSettings.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BillingHistoryTable from "./BillingHistoryTable";
 import InviteTeamMemberModal from "./InviteTeamMemberModal";
 import TeamMembersTable from "../AdminProfile/TeamMembersTable";
@@ -32,7 +32,8 @@ export default function AccountSettings() {
     skip: !emailID,
   });
 
-  const [activeTab, setActiveTab] = useState("billing");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || "billing");
 
   // Format team members for the table component
   const formattedTeamMembers = useMemo(() => {

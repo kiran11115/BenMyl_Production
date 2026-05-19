@@ -1,4 +1,5 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { useGetAllContractsQuery } from '../../State-Management/Api/ContractApiSlice';
 
 /* =========================================
    STATIC SEED DATA
@@ -113,10 +114,89 @@ const SEED_CONTRACTS = [
   },
 ];
 
+export const formatDate = (dateStr) => {
+  if (!dateStr || dateStr === '-') return '-';
+  try {
+    if (typeof dateStr === 'string' && dateStr.includes('-') && !dateStr.includes('T')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const monthIdx = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const months = [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        return `${day} ${months[monthIdx]} ${year}`;
+      }
+    }
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const day = date.getDate();
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  } catch (e) {
+    return dateStr;
+  }
+};
+
+export const mapApiContractToUI = (item) => {
+  if (!item) return null;
+  return {
+    id: String(item.contractID || ''),
+    contractTitle: item.contractTitle || 'Unnamed Contract',
+    jobTitle: item.jobTitle || '-',
+    candidateName: item.candidateName || '-',
+    candidateEmail: item.candidateEmail || '',
+    candidatePhone: item.candidatePhone || '',
+    clientCompany: item.clientCompanyName || '-',
+    companyName: item.vendorCompanyName || 'BenMyl Staffing',
+    workLocation: item.workLocation || '-',
+    employmentType: item.employmentType || '-',
+    startDate: item.startDate ? formatDate(item.startDate.split('T')[0]) : '-',
+    endDate: item.endDate ? formatDate(item.endDate.split('T')[0]) : '-',
+    salary: item.salaryRate || '-',
+    paymentCycle: item.paymentCycle || '-',
+    workingHours: '40 hrs/week',
+    reportingManager: item.reportingManager || '-',
+    projectDuration: '-',
+    noticePeriod: item.noticePeriod || '-',
+    taxInformation: '-',
+    benefits: '-',
+    additionalNotes: '',
+    termsAndConditions: item.termsAndConditions || '',
+    confidentialityClause: item.confidentialityClause || '',
+    ndaSection: '',
+    terminationPolicy: '',
+    status: item.agreementStatus || 'Shared',
+    createdDate: item.createdOn ? formatDate(item.createdOn.split('T')[0]) : formatDate(new Date().toISOString().split('T')[0]),
+    hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
+    benchSalesUser: item.candidateName || 'Bench Sales Team',
+    hiringManagerAccepted: item.signatureStatus_A === 'Signed' || !!item.signatureImagePath,
+    benchSalesAccepted: item.signatureStatus_B === 'Signed' || !!(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales),
+    hiringManagerSignature: item.signatureImagePath || null,
+    benchSalesSignature: item.signatureImagePatbenchsales || item.signatureimagePatbenchsales || null,
+  };
+};
+
 export const ContractContext = createContext(null);
 
 export const ContractProvider = ({ children }) => {
-  const [contracts, setContracts] = useState(SEED_CONTRACTS);
+  const { data: apiContracts, isLoading } = useGetAllContractsQuery();
+  const [contracts, setContracts] = useState([]);
+
+  // Sync API contracts to state
+  useEffect(() => {
+    if (apiContracts && Array.isArray(apiContracts)) {
+      const mapped = apiContracts.map(mapApiContractToUI).filter(Boolean);
+      setContracts(mapped);
+    }
+  }, [apiContracts]);
 
   const addContract = (newContract) => {
     setContracts(prev => [newContract, ...prev]);
@@ -127,7 +207,7 @@ export const ContractProvider = ({ children }) => {
   };
 
   return (
-    <ContractContext.Provider value={{ contracts, addContract, updateContract }}>
+    <ContractContext.Provider value={{ contracts, addContract, updateContract, isLoading }}>
       {children}
     </ContractContext.Provider>
   );
