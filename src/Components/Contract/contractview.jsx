@@ -12,6 +12,7 @@ import { FiFileText, FiArrowLeft, FiPrinter, FiDownload } from "react-icons/fi";
 import { Home } from "lucide-react";
 import { useGetContractByIdQuery, useSaveContractMutation } from '../../State-Management/Api/ContractApiSlice';
 import './contract.css';
+import jsPDF from 'jspdf';
 
 const SignatureSection = ({ onComplete, onCancel }) => {
   const [type, setType] = useState('draw');
@@ -305,11 +306,47 @@ const ContractView = () => {
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      const { default: jsPDF } = await import('jspdf');
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const W = doc.internal.pageSize.getWidth();
       const H = doc.internal.pageSize.getHeight();
       let y = 50;
+
+      // Helper to fetch and convert any image URL/path to base64 (supporting CORS)
+      const getBase64Image = async (url) => {
+        if (!url) return null;
+        if (url.startsWith('data:')) return url;
+        
+        let targetUrl = url;
+        if (url.startsWith('/')) {
+          targetUrl = `https://webapidev.benmyl.com${url}`;
+        }
+        
+        try {
+          const response = await fetch(targetUrl, { mode: 'cors' });
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (e) {
+          console.warn(`Failed to fetch image from ${targetUrl}:`, e);
+          return null;
+        }
+      };
+
+      // Prefetch signatures before drawing PDF elements
+      let hmSigBase64 = null;
+      if (contract.hiringManagerSignature) {
+        hmSigBase64 = await getBase64Image(contract.hiringManagerSignature);
+      }
+
+      let bsSigBase64 = null;
+      if (contract.benchSalesSignature) {
+        bsSigBase64 = await getBase64Image(contract.benchSalesSignature);
+      }
 
       doc.setFillColor(30, 41, 59); doc.rect(0, 0, W, 70, 'F');
       doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('BenMyl', 40, 42);
@@ -341,7 +378,7 @@ const ContractView = () => {
 
       section('Terms of Engagement');
       doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setLineHeightFactor(1.5);
-      const lines = doc.splitTextToSize(contract.termsAndConditions, W - 100);
+      const lines = doc.splitTextToSize(contract.termsAndConditions || '', W - 100);
       doc.text(lines, 50, y);
       y += lines.length * 15 + 40;
 
@@ -352,15 +389,40 @@ const ContractView = () => {
       doc.setFontSize(8); doc.setTextColor(148, 163, 184);
       doc.text('Client Authorized Signature', 50, sigY + 72); doc.text('Vendor Authorized Signature', W / 2 + 20, sigY + 72);
 
-      if (contract.hiringManagerSignature) doc.addImage(contract.hiringManagerSignature, 'PNG', 50, sigY, 140, 55);
-      if (contract.benchSalesSignature) doc.addImage(contract.benchSalesSignature, 'PNG', W / 2 + 20, sigY, 140, 55);
+      // Draw hiring manager signature safely
+      if (hmSigBase64) {
+        try {
+          doc.addImage(hmSigBase64, 'PNG', 50, sigY, 140, 55);
+        } catch (err) {
+          console.warn("Error drawing hiring manager signature in PDF:", err);
+          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
+          doc.text('[Client Signature Draw Failed]', 50, sigY + 25);
+        }
+      } else if (contract.hiringManagerSignature) {
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
+        doc.text('[Client Signature Image Unavailable]', 50, sigY + 25);
+      }
+
+      // Draw bench sales signature safely
+      if (bsSigBase64) {
+        try {
+          doc.addImage(bsSigBase64, 'PNG', W / 2 + 20, sigY, 140, 55);
+        } catch (err) {
+          console.warn("Error drawing bench sales signature in PDF:", err);
+          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
+          doc.text('[Vendor Signature Draw Failed]', W / 2 + 20, sigY + 25);
+        }
+      } else if (contract.benchSalesSignature) {
+        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
+        doc.text('[Vendor Signature Image Unavailable]', W / 2 + 20, sigY + 25);
+      }
 
       doc.setTextColor(203, 213, 225); doc.setFontSize(8);
       doc.text(`TRACER-ID: ${contract.id}-SECURE-VERIFIED | DIGITAL AUDIT LOGGED | COMPLIANT DOCUMENT`, 40, H - 30);
       doc.save(`Legal_Contract_${contract.id}.pdf`);
       toast.success('Professional document exported.');
     } catch (e) {
-      console.error(e);
+      console.error("PDF generation global failure:", e);
       toast.error('Export failed.');
     } finally {
       setIsDownloading(false);

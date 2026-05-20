@@ -9,8 +9,8 @@ const ShareJobCard = () => {
 
   const [shared, setShared] = useState({
     linkedin: true,
-    facebook: false,
-    email: true,
+    // facebook: false,
+    // email: true,
   });
 
   const [copied, setCopied] = useState(false);
@@ -28,18 +28,18 @@ const ShareJobCard = () => {
       label: "Share on LinkedIn",
       color: "#0a66c2",
     },
-    {
-      key: "facebook",
-      icon: FaFacebookF,
-      label: "Share on Facebook",
-      color: "#1877f2",
-    },
-    {
-      key: "email",
-      icon: FiMail,
-      label: "Share via Email",
-      color: "#f5810c",
-    },
+    // {
+    //   key: "facebook",
+    //   icon: FaFacebookF,
+    //   label: "Share on Facebook",
+    //   color: "#1877f2",
+    // },
+    // {
+    //   key: "email",
+    //   icon: FiMail,
+    //   label: "Share via Email",
+    //   color: "#f5810c",
+    // },
   ];
 
   return (
@@ -47,7 +47,7 @@ const ShareJobCard = () => {
       <div className="share-job-title">Share This Job</div>
 
       {/* Link Row */}
-      <div className="share-label">Job Link</div>
+      {/* <div className="share-label">Job Link</div>
       <div className="share-link-row">
         <input
           value={jobLink}
@@ -58,7 +58,7 @@ const ShareJobCard = () => {
           {copied ? <FiCheck size={14} /> : <FiCopy size={14} />}
           {copied ? "Copied!" : "Copy"}
         </button>
-      </div>
+      </div> */}
 
       {/* Platform Buttons */}
       {platforms.map(({ key, icon: Icon, label, color }) => (

@@ -304,7 +304,7 @@ const UploadTalentProfile = () => {
           {profileData?.profileImage ? (
             <img src={profileData.profileImage} alt={profileData?.name} className="avatar-initials-premium" style={{ width: '120px', height: '120px', fontSize: '32px' }} />
           ) : (
-            <div className="avatar-initials-premium" style={{ width: '120px', height: '120px', fontSize: '32px' }}>{initials}</div>
+            <div className="avatar-initials-premiums" style={{ width: '10px', height: '10px', fontSize: '32px' }}>{initials}</div>
           )}
         </div>
         <div className="tp-info-main">

@@ -88,6 +88,21 @@ code {
     overflow: hidden !important;
 }
 
+.avatar-initials-premiums{
+  border-radius: 100px !important;
+    font-weight: 400 !important;
+     width: 145px !important;
+  height: 145px !important;
+    object-fit: cover !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    font-size: 43px !important;
+}
+
 /* Specific Initials Style */
 .avatar-initials-premium {
     background: #f1f5f9 !important;
