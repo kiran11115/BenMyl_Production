@@ -122,6 +122,7 @@ export default function UpcomingInterview() {
                 vendorName: item.companyName,
                 partnerContact: item.candidateName,
                 meetingLink: item.interviewLink,
+                recruiterID: item.recruiterID || item.recruiterId || null,
                 jobData: {
                     title: item.jobTitle,
                     company: item.companyName,

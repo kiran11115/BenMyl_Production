@@ -34,8 +34,11 @@ export default function InterviewDetails() {
     const [newPersonEmail, setNewPersonEmail] = useState("");
     const [showEmailInput, setShowEmailInput] = useState(false);
     const userId = localStorage.getItem("CompanyId");
+    const userRole = localStorage.getItem("Role");
+    const isBenchsales = userRole === 'Benchsales';
+    const jobQueryUserId = isBenchsales && interview?.recruiterID ? interview.recruiterID : userId;
 
-    const { data: fetchedJobs } = useGetGroupedJobTitlesQuery(userId, { skip: !userId });
+    const { data: fetchedJobs } = useGetGroupedJobTitlesQuery(jobQueryUserId, { skip: !jobQueryUserId });
 
     // Enrich interview data if description is missing
     const enrichedInterview = useMemo(() => {
@@ -71,7 +74,6 @@ export default function InterviewDetails() {
         profilePhoto: null
     };
 
-    const userRole = localStorage.getItem("Role");
     const [shareMeetingLink, { isLoading: shareLoading }] = useShareMeetingLinkMutation();
 
     if (!activeInterview) {
