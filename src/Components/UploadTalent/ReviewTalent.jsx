@@ -17,6 +17,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { toast } from "react-toastify";
 import "./UploadTalent.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   useApprovedEmployeeMutation,
   useDraftProfileEmployeeMutation,
@@ -97,6 +99,12 @@ const formatDateToInput = (value) => {
   return date.toISOString().split("T")[0]; // YYYY-MM-DD for input type=date
 };
 
+const parseDateSafe = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : date;
+};
+
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
@@ -162,7 +170,7 @@ const PDFResumePreview = ({ data }) => {
               <div className="resume-item-header">
                 <div className="resume-item-main">{e.companyName}</div>
                 <div className="resume-date-badge">
-                  {e.startDate?.slice(0, 7)} - {e.endDate ? e.endDate.slice(0, 7) : "Present"}
+                  {formatDateToDisplay(e.startDate)} - {e.endDate ? formatDateToDisplay(e.endDate) : "Present"}
                 </div>
               </div>
               <div className="resume-item-sub">{e.position}</div>
@@ -188,7 +196,7 @@ const PDFResumePreview = ({ data }) => {
               <div className="resume-item-header">
                 <div className="resume-item-main">{e.university}</div>
                 <div className="resume-date-badge">
-                  {e.startDate?.slice(0, 4)} - {e.endDate?.slice(0, 4)}
+                  {formatDateToDisplay(e.startDate)} - {e.endDate ? formatDateToDisplay(e.endDate) : "Present"}
                 </div>
               </div>
               <div className="resume-item-sub">
@@ -211,7 +219,7 @@ const PDFResumePreview = ({ data }) => {
               <div className="resume-item-header">
                 <div className="resume-item-main">{p.projectName}</div>
                 <div className="resume-date-badge">
-                  {p.startDate?.slice(0, 7)} - {p.endDate ? p.endDate.slice(0, 7) : "Present"}
+                  {formatDateToDisplay(p.startDate)} - {p.endDate ? formatDateToDisplay(p.endDate) : "Present"}
                 </div>
               </div>
               <p className="resume-summary-text" style={{ marginBottom: "10px" }}>{p.description}</p>
@@ -608,14 +616,30 @@ const EditableField = ({
 
       {editing ? (
         <div style={{ position: "relative" }}>
-          <input
-            type={isDateField ? "date" : "text"}
-            max={isDateField ? "2099-12-31" : undefined}
-            className={`field-input ${hasValidationError ? "error-border" : ""}`}
-            value={temp}
-            onChange={handleChange}
-            autoFocus
-          />
+          {isDateField ? (
+            <DatePicker
+              selected={parseDateSafe(temp)}
+              onChange={(date) => {
+                const isoStr = date ? date.toISOString().split("T")[0] : "";
+                setTemp(isoStr);
+                setErrorLocal(null);
+                onSave(isoStr);
+              }}
+              dateFormat="dd-MMM-yyyy"
+              placeholderText="dd-MMM-yyyy"
+              maxDate={new Date("2099-12-31")}
+              className={`field-input ${hasValidationError ? "error-border" : ""}`}
+              autoFocus
+            />
+          ) : (
+            <input
+              type="text"
+              className={`field-input ${hasValidationError ? "error-border" : ""}`}
+              value={temp}
+              onChange={handleChange}
+              autoFocus
+            />
+          )}
           {errorLocal && (
             <div style={{ color: "#ef4444", fontSize: 12, marginTop: 4 }}>
               {errorLocal}
@@ -1575,6 +1599,11 @@ const ReviewTalent = () => {
 
   return (
     <div className="review-talent-container">
+      <style>{`
+        .react-datepicker-wrapper {
+          width: 100%;
+        }
+      `}</style>
       <div className="d-flex gap-2 mb-4 align-items-center">
         <button
           className="auth-link"

@@ -53,7 +53,10 @@ const fmtTime = (dateString) => {
   const hrs  = Math.floor((now - d) / 3600000);
   if (hrs <= 0)  return "Just now";
   if (hrs < 24)  return `${hrs}h ago`;
-  return d.toLocaleDateString("en-IN");
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleString("en-US", { month: "short" });
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
 /* ════════════════════════════════════════

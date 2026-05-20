@@ -77,7 +77,7 @@ const formatSidebarTime = (raw = "") => {
 
   // Within same year
   if (d.getFullYear() === now.getFullYear()) {
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return formatDDMMMYYYY(d);
   }
   return formatDDMMMYYYY(d);
 };

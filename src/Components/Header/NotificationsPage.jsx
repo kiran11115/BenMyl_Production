@@ -75,19 +75,21 @@ const fmtRelative = (dateString) => {
   const days = Math.floor(hrs / 24);
   if (days === 1) return "Yesterday";
   if (days < 7) return `${days}d ago`;
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleString("en-US", { month: "short" });
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
 const fmtDateHeading = (iso) => {
   if (!iso || iso === "Unknown") return "Date Unknown";
   const d = new Date(iso + "T00:00:00");
   if (isNaN(d.getTime())) return "Invalid Date";
-  return d.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleString("en-US", { month: "short" });
+  const year = d.getFullYear();
+  const weekday = d.toLocaleString("en-US", { weekday: "long" });
+  return `${weekday}, ${day}-${month}-${year}`;
 };
 
 /* ─────────────────────────────────────────────
@@ -131,11 +133,11 @@ const SectionLabel = ({ text, count }) => (
 ───────────────────────────────────────────── */
 const fmtFullDate = (isoDate) => {
   if (!isoDate) return "";
-  return new Date(isoDate + "T00:00:00").toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const d = new Date(isoDate + "T00:00:00");
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleString("en-US", { month: "short" });
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
 const NotifCard = ({ n }) => {

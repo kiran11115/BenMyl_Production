@@ -1,88 +1,133 @@
+/* TrialPopover.css — Matches the premium Orange & Slate UI design system */
+
 .trial-floating-popover {
   position: fixed;
-  bottom: 80px;
+  bottom: 24px;
   right: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  z-index: 1000;
-  animation: slideUpFade 0.4s ease-out;
+  z-index: 1050;
+  animation: trialSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 320px;
+  width: 100%;
 }
 
-@keyframes slideUpFade {
+@keyframes trialSlideIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
+/* Outer Card Container */
+.trial-popover-content {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  box-shadow: 
+    0 12px 30px -4px rgba(0, 0, 0, 0.08), 
+    0 4px 12px -2px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.01);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Modern top glowing gradient accent bar */
+.trial-popover-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f5810c 0%, #ff9f43 100%);
+}
+
+/* Header Row: Badge & Close Button */
+.trial-popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Premium Badge */
 .trial-badge {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
+  background: rgba(245, 129, 12, 0.08);
+  color: #f5810c;
+  border: 1px solid rgba(245, 129, 12, 0.18);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
-.trial-text {
-  flex: 1;
+/* Sleek Circular Close Button */
+.trial-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trial-close-btn:hover {
+  background: #f1f5f9;
+  color: #475569;
+  transform: rotate(90deg);
+}
+
+.trial-close-btn:active {
+  transform: scale(0.92) rotate(90deg);
+}
+
+/* Text Section */
+.trial-popover-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .trial-title {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a; /* Slate 900 */
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 .trial-desc {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 12px;
-  color: #64748b;
-  line-height: 1.4;
+  color: #64748b; /* Slate 500 */
+  line-height: 1.45;
 }
 
-.trial-hide-btn {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.trial-hide-btn:hover {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.trial-hide-btn .ml-1 {
-  margin-left: 4px;
-}
-
-/* Mobile responsive */
+/* Mobile responsive alignment */
 @media (max-width: 768px) {
   .trial-floating-popover {
-    bottom: 90px;
+    bottom: 80px; /* Kept above MobileBottomNav */
     right: 16px;
     left: 16px;
     max-width: none;
+    width: calc(100% - 32px);
   }
 }

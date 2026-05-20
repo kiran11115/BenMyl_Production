@@ -592,7 +592,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -621,7 +621,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -736,7 +736,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -765,7 +765,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -869,7 +869,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -896,7 +896,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
-                                    placeholderText="DD-MMM-YYYY"
+                                    placeholderText="dd-MMM-yyyy"
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar

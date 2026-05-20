@@ -23,6 +23,18 @@ import { Home } from "lucide-react";
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { FiEye } from "react-icons/fi";
 
+const formatDateToDisplay = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 
 
 export default function UpcomingInterview() {
@@ -95,7 +107,7 @@ export default function UpcomingInterview() {
             return {
                 id: item.candidateID || index,
                 date: dateObj,
-                dateLabel: dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                dateLabel: formatDateToDisplay(dateObj),
                 time: item.interviewTime,
                 name: item.candidateName,
                 email: item.emailAddress,
@@ -297,7 +309,7 @@ export default function UpcomingInterview() {
                         <div className="d-flex flex-column gap-0">
                             <h3 className="fg-title m-0">
                                 {selectedDate
-                                    ? `Interviews: ${selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                                    ? `Interviews: ${formatDateToDisplay(selectedDate)}`
                                     : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Feed`}
                             </h3>
                             <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 600 }}>

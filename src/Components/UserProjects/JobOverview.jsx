@@ -38,11 +38,11 @@ const JobOverview = () => {
   const formatPostedDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    if (isNaN(date)) return dateString;
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   const formatMarkdownToHtml = (text) => {

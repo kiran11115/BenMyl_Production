@@ -35,6 +35,18 @@ const getNDaysFromDate = (baseDate, n) => {
     return dates;
 };
 
+const formatDateToDisplay = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 const ScheduleInterview = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -516,7 +528,7 @@ const ScheduleInterview = () => {
                                     <div className="dt-text">
                                         <span className="dt-label">Date</span>
                                         <span className="dt-value">
-                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set'}
+                                            {selectedDate ? formatDateToDisplay(selectedDate) : 'Not set'}
                                         </span>
                                     </div>
                                 </div>
@@ -565,7 +577,7 @@ const ScheduleInterview = () => {
                             Candidate: <span style={{ color: "var(--f5810c)", fontWeight: 700 }}>{selectedCandidate?.name || "None Selection"}</span>
                         </p>
                         <p style={{ margin: 0, fontSize: "13px", color: "var(--slate-500)" }}>
-                            On <strong>{selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' })}</strong> | <strong>{formattedRange}</strong>
+                            On <strong>{formatDateToDisplay(selectedDate)}</strong> | <strong>{formattedRange}</strong>
                         </p>
                     </div>
                     <div className="divider-v"></div>
@@ -670,7 +682,7 @@ const ScheduleInterview = () => {
                             <div className="summary-divider"></div>
                             <div className="summary-item">
                                 <span className="s-label">Date</span>
-                                <span className="s-value">{selectedDate.toLocaleDateString('en-US', { dateStyle: 'long' })}</span>
+                                <span className="s-value">{formatDateToDisplay(selectedDate)}</span>
                             </div>
                             <div className="summary-divider"></div>
                             <div className="summary-item">
@@ -774,7 +786,7 @@ const ScheduleInterview = () => {
                                     <div className="dt-confirm-summary">
                                         <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selected</span>
                                         <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', marginTop: '2px' }}>
-                                            {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '-'} · {formattedRange || '-'}
+                                            {selectedDate ? formatDateToDisplay(selectedDate) : '-'} · {formattedRange || '-'}
                                         </span>
                                     </div>
                                     <button
