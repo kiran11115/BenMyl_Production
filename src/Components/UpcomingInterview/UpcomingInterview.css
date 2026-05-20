@@ -1931,3 +1931,50 @@
 .calendar-days .day.has-interview {
     position: relative;
 }
+
+/* =====================================================
+   Skills Scroll Card for Interview Details
+   ===================================================== */
+.skills-scroll-card {
+    background: var(--white);
+    border: 1px solid var(--slate-200);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.skills-card-header {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--slate-600);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--slate-100);
+    padding-bottom: 8px;
+}
+
+.skills-internal-scroll {
+    max-height: 110px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-right: 4px;
+}
+
+/* Custom scrollbar style for internal scroll */
+.skills-internal-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+.skills-internal-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.skills-internal-scroll::-webkit-scrollbar-thumb {
+    background: var(--slate-300);
+    border-radius: 99px;
+}
+.skills-internal-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--slate-400);
+}

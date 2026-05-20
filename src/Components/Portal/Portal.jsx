@@ -17,7 +17,7 @@ const Portal = () => {
   const navigate = useNavigate();
 
   const adminModules = [
-    { name: 'Control Center', path: '/Admin/control-center', icon: Settings, description: 'Global system settings and parameters' },
+    // { name: 'Control Center', path: '/Admin/control-center', icon: Settings, description: 'Global system settings and parameters' },
     { name: 'Role Configuration', path: '/Admin/role-configuration', icon: Shield, description: 'Manage user permissions and access levels' },
     { name: 'Notification', path: '/Admin/notification-policy', icon: BellRing, description: 'Set up alerts and messaging templates' },
     { name: 'Billing', path: '/Admin/billing-control', icon: CreditCard, description: 'Manage subscriptions and invoicing' },
@@ -27,7 +27,7 @@ const Portal = () => {
   return (
     <div className="portal-container">
       <div className="portal-header">
-        <h1>Admin Portal</h1>
+        <h1>Control Center</h1>
         <p>Manage platform configurations, security, and global settings</p>
       </div>
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import "./ModuleHeader.css";
+import { useNavigate } from "react-router-dom";
 
 const ModuleHeader = ({ 
     title, 
@@ -12,6 +13,9 @@ const ModuleHeader = ({
     actions = [],
     customBreadcrumbs = []
 }) => {
+
+    const navigate = useNavigate();
+
     return (
         <header className="module-header-standard">
             <div className="header-left-content">
@@ -28,10 +32,10 @@ const ModuleHeader = ({
                         ))
                     ) : (
                         <>
-                            <Link to="/Admin/control-center" className="breadcrumb-link">
+                            <div onClick={() => navigate(-1)} className="breadcrumb-link">
                                 <Home size={14} />
                                 Control Center
-                            </Link>
+                            </div>
                             <ChevronRight size={14} className="breadcrumb-separator" />
                         </>
                     )}

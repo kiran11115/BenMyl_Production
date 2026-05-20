@@ -224,11 +224,16 @@ export default function InterviewDetails() {
                             </div>
                         </div>
 
-                        <div className="skills-row mt-4 w-100 d-flex flex-wrap gap-2">
-                            {activeInterview.skills.map(skill => (
-                                <span key={skill} className="status-tag status-progress">{skill}</span>
-                            ))}
-                        </div>
+                        {activeInterview.skills && activeInterview.skills.length > 0 && (
+                            <div className="skills-scroll-card mt-4 w-100">
+                                <h4 className="skills-card-header">Key Expertise</h4>
+                                <div className="skills-internal-scroll">
+                                    {activeInterview.skills.map(skill => (
+                                        <span key={skill} className="status-tag status-progress">{skill}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </aside>
 
                     {/* Right: Collaboration Hub & Link */}

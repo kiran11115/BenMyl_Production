@@ -108,7 +108,7 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`} ref={dropdownRef}>
                         {[
-                            { path: "/Admin/portal", label: "Admin Portal" },
+                            { path: "/Admin/portal", label: "Control Center" },
                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
                             { 
                                 label: "Projects", 

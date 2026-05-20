@@ -31,6 +31,17 @@ import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
 import NoData from "../../UploadTalent/NoData";
 
+const formatDateToDisplay = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`; // 16-Feb-2026
+};
 
 const TalentProfile = () => {
   const navigate = useNavigate();
@@ -102,7 +113,7 @@ const TalentProfile = () => {
       employee?.employee_Heighers?.map((edu) => ({
         degree: edu.highestQualification || "N/A",
         school: edu.university || "N/A",
-        year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate?.slice(0, 4) || "N/A"}`,
+        year: `${edu.startDate ? formatDateToDisplay(edu.startDate) : "N/A"} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "Present"}`,
       })) || [],
   };
 
@@ -119,10 +130,10 @@ const TalentProfile = () => {
       projectName: proj.projectName || "N/A",
       role: proj.role || "N/A",
       startDate: proj.startDate
-        ? proj.startDate.slice(0, 10)
+        ? formatDateToDisplay(proj.startDate)
         : "N/A",
       endDate: proj.endDate
-        ? proj.endDate.slice(0, 10)
+        ? formatDateToDisplay(proj.endDate)
         : "Present",
       skills: proj.skills
         ? proj.skills.split(",").map((s) => s.trim())

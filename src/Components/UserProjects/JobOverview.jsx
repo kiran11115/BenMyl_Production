@@ -89,8 +89,8 @@ const JobOverview = () => {
             type="button"
             className="link-button"
             onClick={() => {
-              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(`${basePath}/user-projects`);
+              // const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(-1);
             }}
           >
             <FiArrowLeft /> Back to Projects

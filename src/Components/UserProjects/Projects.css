@@ -1080,3 +1080,225 @@
     align-items: flex-start;
   }
 }
+
+/* =====================================================
+   11. PREMIUM COMING SOON MODULE STYLES
+   ===================================================== */
+.projects-coming-soon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  animation: fadeInCS 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cs-hero-card {
+  width: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -10px rgba(148, 163, 184, 0.15);
+  margin-bottom: 48px;
+}
+
+.cs-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #f5810c 0%, #3b82f6 50%, #10b981 100%);
+}
+
+.cs-hero-glow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(245, 129, 12, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cs-badge-wrapper {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  margin-bottom: 24px;
+}
+
+.cs-badge {
+  background: rgba(245, 129, 12, 0.08);
+  color: #f5810c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 99px;
+  border: 1px solid rgba(245, 129, 12, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cs-pulse-dot {
+  width: 7px;
+  height: 7px;
+  background-color: #f5810c;
+  border-radius: 50%;
+  position: relative;
+  display: inline-block;
+}
+
+.cs-pulse-dot::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  border-radius: inherit;
+  animation: pulseCS 1.8s infinite ease-in-out;
+}
+
+.cs-hero-title {
+  font-size: 38px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.cs-hero-subtitle {
+  font-size: 16px;
+  color: #475569;
+  max-width: 650px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.cs-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin: 12px 0 40px;
+}
+
+.cs-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.cs-divider-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cs-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  width: 100%;
+}
+
+@media (max-width: 968px) {
+  .cs-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cs-features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cs-feature-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 30px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.cs-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.cs-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.cs-feature-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.cs-feature-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+@keyframes fadeInCS {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseCS {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}

@@ -21,6 +21,18 @@ import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../Stat
 
 import RecommendedJobs from "./RecommendedJobs";
 
+const formatDateToDisplay = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date)) return value;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`; // 16-Feb-2026
+};
+
 // ===========================
 // Main UploadTalentProfile
 // ===========================
@@ -145,14 +157,14 @@ const UploadTalentProfile = () => {
         title: p.projectName || "N/A",
         role: p.role || "N/A",
         description: p.description || "N/A",
-        period: `${p.startDate?.slice(0, 10) || "N/A"} - ${p.endDate ? p.endDate.slice(0, 10) : "Present"}`,
+        period: p.startDate ? `${formatDateToDisplay(p.startDate)} - ${p.endDate ? formatDateToDisplay(p.endDate) : "Present"}` : "N/A",
         tags: p.skills ? p.skills.split(",") : [],
       })) || [],
       education: apiData.employee_Heighers?.map(edu => ({
         degree: edu.highestQualification || "N/A",
         school: edu.university || "N/A",
         field: edu.fieldofstudy || "N/A",
-        year: `${edu.startDate?.slice(0, 4) || "N/A"} - ${edu.endDate ? edu.endDate.slice(0, 4) : "Present"}`,
+        year: edu.startDate ? `${formatDateToDisplay(edu.startDate)} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "Present"}` : "N/A",
       })) || [],
       profileImage: apiData.profileImage
     };
