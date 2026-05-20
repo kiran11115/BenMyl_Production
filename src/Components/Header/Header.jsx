@@ -54,8 +54,8 @@ function Header() {
         label: "Interviews",
         module: "Interviews",
         subItems: [
-          { label: "create interview", path: "/user/user-schedule-interview" },
-          { label: "schedule interview", path: "/user/user-upcoming-interview" },
+          { label: "Create interview", path: "/user/user-schedule-interview" },
+          { label: "Schedule interview", path: "/user/user-upcoming-interview" },
         ],
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
@@ -69,15 +69,15 @@ function Header() {
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
 
     ],
-    "Recruiter2":[
+    "Recruiter2": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
       {
         label: "Projects",
         module: "Projects",
         subItems: [
-          { label: "posted jobs", path: "/user/user-posted-jobs" },
-          { label: "create job", path: "/user/user-post-new-positions" },
-          { label: "ongoing projects", path: "/user/user-projects" },
+          { label: "Posted jobs", path: "/user/user-posted-jobs" },
+          { label: "Create job", path: "/user/user-post-new-positions" },
+          { label: "Ongoing projects", path: "/user/user-projects" },
         ],
       },
       { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },
@@ -85,8 +85,8 @@ function Header() {
         label: "Interviews",
         module: "Interviews",
         subItems: [
-          { label: "create interview", path: "/user/user-schedule-interview" },
-          { label: "schedule interview", path: "/user/user-upcoming-interview" },
+          { label: "Create interview", path: "/user/user-schedule-interview" },
+          { label: "Schedule interview", path: "/user/user-upcoming-interview" },
         ],
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
@@ -375,7 +375,7 @@ function Header() {
       <MobileBottomNav />
 
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <TrialPopover />
 
       {/* Video Guide Popover */}
