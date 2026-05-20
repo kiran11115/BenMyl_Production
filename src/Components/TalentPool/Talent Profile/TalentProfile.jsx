@@ -103,8 +103,7 @@ const TalentProfile = () => {
       employee?.workexperiences?.map((exp) => ({
         role: exp.position || "N/A",
         company: exp.companyName || "N/A",
-        period: `${exp.startDate?.slice(0, 10) || "N/A"} - ${exp.endDate ? exp.endDate.slice(0, 10) : "Present"
-          }`,
+        period: `${exp.startDate ? formatDateToDisplay(exp.startDate) : "N/A"} - ${exp.endDate ? formatDateToDisplay(exp.endDate) : "Present"}`,
         location: employee?.city || "N/A",
         desc: exp.description || "N/A",
       })) || [],
