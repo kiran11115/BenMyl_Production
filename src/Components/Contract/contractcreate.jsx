@@ -88,7 +88,7 @@ const ContractCreate = () => {
     initialValues: {
       contractTitle: '',
       clientCompany: '',
-      companyName: 'BenMyl Staffing',
+      companyName: localStorage.getItem("CompanyName") || 'BenMyl Staffing',
       candidateName: '',
       candidateEmail: '',
       candidatePhone: '',
@@ -145,12 +145,15 @@ const ContractCreate = () => {
 
         if (Array.isArray(res)) {
           // Filter for isshortlisted
-          const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
-            id: item.employeeID,
-            name: `${item.firstName} ${item.lastName}`,
-            email: item.emailAddress,
-            phone: item.phoneNumber || "",
-          }));
+          const shortlisted = res.filter(item => item.isshortlisted).map(item => {
+            return {
+              id: item.employeeID,
+              name: `${item.firstName} ${item.lastName}`,
+              email: item.emailAddress,
+              phone: item.phoneNumber || "",
+              workLocation: item.city,
+            };
+          });
           setCandidates(shortlisted);
         }
       } catch (err) {
@@ -243,12 +246,12 @@ const ContractCreate = () => {
       formData.append("CandidateEmail", formik.values.candidateEmail || "");
       formData.append("CandidatePhone", formik.values.candidatePhone || "");
       formData.append("EmploymentType", formik.values.employmentType || "");
-      
+
       const startIso = formik.values.startDate ? new Date(formik.values.startDate).toISOString() : new Date().toISOString();
       const endIso = formik.values.endDate ? new Date(formik.values.endDate).toISOString() : new Date().toISOString();
       formData.append("StartDate", startIso);
       formData.append("EndDate", endIso);
-      
+
       formData.append("SalaryRate", formik.values.salary || "");
       formData.append("PaymentCycle", formik.values.paymentCycle || "");
       formData.append("ReportingManager", formik.values.reportingManager || "");
@@ -340,9 +343,11 @@ const ContractCreate = () => {
               if (cand) {
                 formik.setFieldValue('candidateEmail', cand.email);
                 formik.setFieldValue('candidatePhone', cand.phone);
+                formik.setFieldValue('workLocation', cand.workLocation || '');
               } else {
                 formik.setFieldValue('candidateEmail', '');
                 formik.setFieldValue('candidatePhone', '');
+                formik.setFieldValue('workLocation', '');
               }
             }}
             onBlur={formik.handleBlur}
@@ -396,7 +401,7 @@ const ContractCreate = () => {
           </div>
           <div className="auth-form-group">
             <label className="auth-label">Vendor Company Name *</label>
-            <input className="auth-input" name="companyName" {...formik.getFieldProps('companyName')} placeholder="Vendor Company Name" />
+            <input className="auth-input" name="companyName" {...formik.getFieldProps('companyName')} placeholder="Vendor Company Name" readOnly />
           </div>
           <div className="auth-form-group">
             <label className="auth-label">Work Location *</label>
@@ -443,8 +448,8 @@ const ContractCreate = () => {
                     date ? date.toISOString().split('T')[0] : ""
                   )
                 }
-                dateFormat="dd MMM yyyy"
-                placeholderText="dd MMM yyyy"
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-MMM-yyyy"
               />
               <Calendar
                 size={16}
@@ -472,8 +477,8 @@ const ContractCreate = () => {
                     date ? date.toISOString().split('T')[0] : ""
                   )
                 }
-                dateFormat="dd MMM yyyy"
-                placeholderText="dd MMM yyyy"
+                dateFormat="dd-MMM-yyyy"
+                placeholderText="dd-MMM-yyyy"
               />
               <Calendar
                 size={16}

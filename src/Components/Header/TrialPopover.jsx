@@ -4,6 +4,8 @@ import "./TrialPopover.css";
 
 const TrialPopover = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const rawDays = localStorage.getItem("RemainingDays");
+  const trialdays = (rawDays === null || rawDays === undefined || rawDays === "undefined" || rawDays === "null" || isNaN(Number(rawDays))) ? "0" : rawDays;
 
   useEffect(() => {
     const hidden = localStorage.getItem("trialPopoverHidden");
@@ -24,7 +26,7 @@ const TrialPopover = () => {
       <div className="trial-popover-content">
         <span className="trial-badge">Free Trial</span>
         <div className="trial-text mt-1">
-          <p className="trial-title">20 Days Remaining</p>
+          <p className="trial-title">{trialdays} Days Remaining</p>
           <p className="trial-desc">You are currently on a limited time free trial.</p>
         </div>
         <button className="trial-hide-btn" onClick={handleHide}>
