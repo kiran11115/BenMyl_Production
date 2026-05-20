@@ -54,12 +54,7 @@ function Signin() {
           localStorage.setItem("Role", response?.roleID);
           localStorage.setItem("adminFirstName", response?.adminFirstName);
           localStorage.setItem("Industry", response?.industry);
-          const remainingDays = (response?.remainingDays !== undefined && response?.remainingDays !== null)
-            ? response.remainingDays
-            : ((response?.remainingdays !== undefined && response?.remainingdays !== null)
-              ? response.remainingdays
-              : 0);
-          localStorage.setItem("RemainingDays", remainingDays);
+          localStorage.setItem("RemainingDays", response?.remainingDays);
           localStorage.removeItem("trialPopoverHidden");
           const role = response?.roleID;
 
@@ -83,7 +78,7 @@ function Signin() {
             return;
           }
 
-           if (role === "Benchsales") {
+          if (role === "Benchsales") {
             navigate("/user/user-dashboard");
             return;
           }
