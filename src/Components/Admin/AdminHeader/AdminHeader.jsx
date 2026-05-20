@@ -124,8 +124,8 @@ function AdminHeader() {
                             { 
                                 label: "Interviews", 
                                 subItems: [
-                                    { label: "Create interview", path: "/Admin/user-schedule-interview" },
-                                    { label: "Schedule interview", path: "/Admin/admin-upcoming-interview" },
+                                    { label: "Create Interview", path: "/Admin/user-schedule-interview" },
+                                    { label: "Schedule Interview", path: "/Admin/admin-upcoming-interview" },
                                 ]
                             },
                             { path: "/Admin/contract-listing", label: "Contracts" },
