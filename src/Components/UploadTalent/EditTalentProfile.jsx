@@ -588,7 +588,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     onChange={(date) =>
                                       formik.setFieldValue(
                                         `workexperiences.${index}.startDate`,
-                                        date ? date.toISOString() : "",
+                                        date ? date.toLocaleDateString("en-CA") : "",
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
@@ -732,7 +732,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     onChange={(date) =>
                                       formik.setFieldValue(
                                         `employeeprojects.${index}.startDate`,
-                                        date ? date.toISOString() : "",
+                                        date ? date.toLocaleDateString("en-CA") : "",
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
@@ -761,7 +761,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     onChange={(date) =>
                                       formik.setFieldValue(
                                         `employeeprojects.${index}.endDate`,
-                                        date ? date.toISOString() : "",
+                                        date ? date.toLocaleDateString("en-CA") : "",
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
@@ -865,7 +865,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     onChange={(date) =>
                                       formik.setFieldValue(
                                         `employee_Heighers.${index}.startDate`,
-                                        date ? date.toISOString() : "",
+                                        date ? date.toLocaleDateString("en-CA") : "",
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"
@@ -892,7 +892,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     onChange={(date) =>
                                       formik.setFieldValue(
                                         `employee_Heighers.${index}.endDate`,
-                                        date ? date.toISOString() : "",
+                                        date ? date.toLocaleDateString("en-CA") : "",
                                       )
                                     }
                                     dateFormat="dd-MMM-yyyy"

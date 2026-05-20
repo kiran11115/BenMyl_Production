@@ -620,7 +620,7 @@ const EditableField = ({
             <DatePicker
               selected={parseDateSafe(temp)}
               onChange={(date) => {
-                const isoStr = date ? date.toISOString().split("T")[0] : "";
+                const isoStr = date ? date.toLocaleDateString("en-CA") : "";
                 setTemp(isoStr);
                 setErrorLocal(null);
                 onSave(isoStr);

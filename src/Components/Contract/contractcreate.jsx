@@ -445,7 +445,7 @@ const ContractCreate = () => {
                 onChange={(date) =>
                   formik.setFieldValue(
                     "startDate",
-                    date ? date.toISOString().split('T')[0] : ""
+                    date ? date.toLocaleDateString("en-CA") : ""
                   )
                 }
                 dateFormat="dd-MMM-yyyy"
@@ -474,7 +474,7 @@ const ContractCreate = () => {
                 onChange={(date) =>
                   formik.setFieldValue(
                     "endDate",
-                    date ? date.toISOString().split('T')[0] : ""
+                    date ? date.toLocaleDateString("en-CA") : ""
                   )
                 }
                 dateFormat="dd-MMM-yyyy"

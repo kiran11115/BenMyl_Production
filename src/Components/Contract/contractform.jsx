@@ -211,7 +211,7 @@ const ContractForm = () => {
       ...c,
       benchSalesAccepted: true,
       status: 'Completed',
-      benchSalesDate: new Date().toISOString().split('T')[0]
+      benchSalesDate: new Date().toLocaleDateString("en-CA")
     };
     updateContract(updated);
     toast.success('🎉 Contract Accepted!');

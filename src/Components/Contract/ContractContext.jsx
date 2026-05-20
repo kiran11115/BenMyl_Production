@@ -174,7 +174,7 @@ export const mapApiContractToUI = (item) => {
     ndaSection: '',
     terminationPolicy: '',
     status: item.agreementStatus || 'Shared',
-    createdDate: item.createdOn ? formatDate(item.createdOn.split('T')[0]) : formatDate(new Date().toISOString().split('T')[0]),
+    createdDate: item.createdOn ? formatDate(item.createdOn.split('T')[0]) : formatDate(new Date().toLocaleDateString("en-CA")),
     hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
     benchSalesUser: item.candidateName || 'Bench Sales Team',
     hiringManagerAccepted: item.signatureStatus_A === 'Signed' || !!item.signatureImagePath,
