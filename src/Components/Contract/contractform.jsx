@@ -229,12 +229,12 @@ const ContractForm = () => {
       const getBase64Image = async (url) => {
         if (!url) return null;
         if (url.startsWith('data:')) return url;
-        
+
         let targetUrl = url;
         if (url.startsWith('/')) {
           targetUrl = `https://webapidev.benmyl.com${url}`;
         }
-        
+
         try {
           const response = await fetch(targetUrl, { mode: 'cors' });
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

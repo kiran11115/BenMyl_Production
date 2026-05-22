@@ -397,3 +397,373 @@
     display: inline-block;
 }
 
+/* --- High-Fidelity Additions --- */
+.admin-toast-alert {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0f172a;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.live-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.live-ping {
+    width: 6px;
+    height: 6px;
+    background: #16a34a;
+    border-radius: 50%;
+    position: relative;
+    display: inline-block;
+}
+
+.live-ping::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    background: #16a34a;
+    animation: livePulse 1.5s infinite;
+}
+
+@keyframes livePulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Divided System Roles Card styling */
+.role-breakdown-card-expanded {
+    grid-column: span 1;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.divided-roles-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 99px;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.roles-segment {
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.segment-sa { background: #6366f1; }
+.segment-bs { background: #f5810c; }
+.segment-hm { background: #10b981; }
+
+.divided-values-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+}
+
+.legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.legend-dot.sa { background: #6366f1; }
+.legend-dot.bs { background: #f5810c; }
+.legend-dot.hm { background: #10b981; }
+
+.legend-role-name {
+    color: #64748b;
+    font-weight: 600;
+    flex: 1;
+}
+
+.legend-role-val {
+    color: #1e293b;
+    font-weight: 800;
+}
+
+/* Interactive Direct Actions inside approvals list */
+.approval-interactive-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-action-approve, .btn-action-deny {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action-approve {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.btn-action-approve:hover {
+    background: #15803d;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.btn-action-deny {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.btn-action-deny:hover {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.animate-list-row {
+    animation: rowEntry 0.3s ease forwards;
+}
+
+@keyframes rowEntry {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Premium Shortcuts grid with descriptions */
+.shortcuts-modern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.shortcut-interactive-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shortcut-interactive-card:hover {
+    border-color: #f5810c;
+    background: #fff7ed;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -8px rgba(245, 129, 12, 0.15);
+}
+
+.shortcut-icon-wrapper {
+    background: #ffffff;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.shortcut-interactive-card:hover .shortcut-icon-wrapper {
+    color: #ffffff;
+    background: #f5810c;
+    border-color: #f5810c;
+}
+
+.shortcut-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.shortcut-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.shortcut-desc {
+    font-size: 10px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.shortcut-chevron {
+    color: #cbd5e1;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.shortcut-interactive-card:hover .shortcut-chevron {
+    transform: translateX(3px);
+    color: #f5810c;
+}
+
+/* Infrastructure Health */
+.stat-trend-pulse {
+    font-size: 10px;
+    font-weight: 800;
+    color: #ef4444;
+    background: #fee2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    animation: textFlash 1.5s infinite;
+}
+
+@keyframes textFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.admin-subtitle {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.admin-context-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 16px;
+}
+
+.btn-sync-status {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.btn-sync-status:hover {
+    border-color: #f5810c;
+    color: #f5810c;
+}
+
+.btn-sync-status:active {
+    transform: scale(0.98);
+}
+
+.spin-icon {
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.empty-approvals-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 12px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+}
+
+.role-color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.header-title-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toast-sparkle-dot {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f5810c;
+}
+
+.toast-sparkle-ping {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #f5810c;
+    border-radius: 50%;
+    animation: livePulse 1s infinite;
+}
+
+.role-icon-glow {
+    background-color: rgba(99, 102, 241, 0.1) !important;
+    color: #6366f1 !important;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+}
+
+.date-highlight {
+    font-weight: 800;
+    color: #475569;
+}
+
+

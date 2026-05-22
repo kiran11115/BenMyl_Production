@@ -1,0 +1,456 @@
+/* =====================================================================
+   contractwizard.css – 5-Step Contract Wizard
+   Extends BenMyl design system (Orange #f5810c + Slate #1e293b)
+   ===================================================================== */
+
+/* ── 1. Wizard Shell ── */
+.cw-shell { margin: 0 auto; padding-bottom: 80px; }
+
+/* ── 2. Sticky Progress Header ── */
+.cw-progress-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 16px 28px; margin-bottom: 28px;
+  box-shadow: 0 4px 24px -4px rgba(15,23,42,.06);
+}
+.cw-progress-row { display: flex; align-items: center; gap: 0; }
+.cw-progress-step {
+  display: flex; align-items: center; gap: 10px; cursor: default; flex-shrink: 0;
+}
+.cw-progress-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; transition: all .3s;
+  background: #f1f5f9; color: #94a3b8; border: 2px solid #e2e8f0;
+}
+.cw-progress-step.active .cw-progress-num {
+  background: #1e293b; color: #fff; border-color: #1e293b;
+  box-shadow: 0 4px 14px rgba(30,41,59,.25);
+}
+.cw-progress-step.done .cw-progress-num {
+  background: #10b981; color: #fff; border-color: #10b981;
+}
+.cw-progress-info { display: flex; flex-direction: column; }
+.cw-progress-label {
+  font-size: 12px; font-weight: 700; color: #94a3b8; transition: color .2s;
+}
+.cw-progress-step.active .cw-progress-label { color: #1e293b; }
+.cw-progress-step.done .cw-progress-label { color: #10b981; }
+.cw-progress-sub { font-size: 10px; color: #cbd5e1; }
+.cw-progress-line {
+  flex: 1; height: 2px; background: #e2e8f0; margin: 0 12px;
+  position: relative; overflow: hidden; min-width: 20px;
+}
+.cw-progress-line.done { background: #10b981; }
+.cw-progress-line.active::after {
+  content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 50%;
+  background: linear-gradient(90deg, #f5810c, #10b981);
+  animation: cwLinePulse 1.8s ease-in-out infinite;
+}
+@keyframes cwLinePulse { 0%,100%{width:30%} 50%{width:70%} }
+
+/* ── Autosave Indicator ── */
+.cw-autosave {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #94a3b8; justify-content: flex-end; margin-right: 20px; margin-bottom: 10px;
+}
+.cw-autosave-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #10b981;
+  animation: cwPulse 2s infinite;
+}
+@keyframes cwPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* ── 3. Layout: Main + Sidebar ── */
+.cw-layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; }
+.cw-layout-full { display: block; }
+@media(max-width:1100px){ .cw-layout{grid-template-columns:1fr} }
+
+/* ── 4. Cards ── */
+.cw-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  transition: box-shadow .3s; animation: cwFadeUp .4s ease-out;
+}
+.cw-card:hover { box-shadow: 0 8px 24px -8px rgba(15,23,42,.08); }
+@keyframes cwFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cw-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;
+}
+.cw-card-title {
+  font-size: 15px; font-weight: 800; color: #1e293b;
+  display: flex; align-items: center; gap: 10px;
+}
+.cw-card-title-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(245,129,12,.08); color: #f5810c;
+}
+
+/* ── Section Completion Badge ── */
+.cw-section-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.cw-section-badge.complete { background: #d1fae5; color: #065f46; }
+.cw-section-badge.incomplete { background: #fef3c7; color: #92400e; }
+
+/* ── 5. Collapsible Sections ── */
+.cw-section {
+  border: 1px solid #e2e8f0; border-radius: 14px;
+  margin-bottom: 16px; overflow: visible; transition: border-color .2s;
+}
+.cw-section:hover { border-color: #cbd5e1; }
+.cw-section.has-error { border-color: #fca5a5; }
+.cw-section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; cursor: pointer; background: #fafbfc;
+  transition: background .2s; user-select: none;
+}
+.cw-section-head:hover { background: #f1f5f9; }
+.cw-section-head-left {
+  display: flex; align-items: center; gap: 12px;
+}
+.cw-section-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(245,129,12,.08); color: #f5810c; flex-shrink: 0;
+}
+.cw-section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+.cw-section-desc { font-size: 11px; color: #64748b; }
+.cw-section-chevron { transition: transform .25s; color: #94a3b8; }
+.cw-section.open .cw-section-chevron { transform: rotate(180deg); }
+.cw-section-body {
+  padding: 0 20px; max-height: 0; overflow: hidden;
+  transition: max-height .35s ease, padding .35s ease;
+}
+.cw-section.open .cw-section-body {
+  max-height: 1200px; padding: 20px; overflow: visible !important;
+}
+
+/* ── 6. Form Grid ── */
+.cw-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cw-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media(max-width:768px){
+  .cw-grid-2, .cw-grid-3 { grid-template-columns: 1fr; }
+}
+.cw-field label {
+  display: block; font-size: 12px; font-weight: 700;
+  color: #475569; margin-bottom: 6px; letter-spacing: .02em;
+}
+.cw-field label .req { color: #ef4444; }
+
+/* ── Datepicker Popover Fixes ── */
+.cw-field .auth-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.cw-field .auth-password-wrapper .react-datepicker-wrapper {
+  width: 100%;
+}
+.cw-field .auth-password-wrapper .auth-input {
+  padding-left: 38px !important;
+}
+.cw-field .auth-password-wrapper .auth-icon-left {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 10;
+}
+.react-datepicker-popper {
+  z-index: 99999 !important;
+}
+
+/* ── Duration Calculator ── */
+.cw-duration-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg,#eff6ff,#f0fdf4);
+  border: 1px solid #dbeafe; border-radius: 10px;
+  padding: 10px 16px; margin-top: 12px; font-size: 12px; font-weight: 700;
+  color: #1e40af;
+}
+
+/* ── 7. Step 1: Candidate Selection ── */
+.cw-candidate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 14px; margin-top: 16px; }
+.cw-candidate-card {
+  border: 2px solid #e2e8f0; border-radius: 14px; padding: 18px;
+  cursor: pointer; transition: all .25s; position: relative; background: #fff;
+}
+.cw-candidate-card:hover { border-color: #f5810c; transform: translateY(-2px); box-shadow: 0 8px 20px -6px rgba(245,129,12,.12); }
+.cw-candidate-card.selected {
+  border-color: #f5810c; background: linear-gradient(135deg,#fff7ed,#fff);
+  box-shadow: 0 0 0 3px rgba(245,129,12,.12);
+}
+.cw-candidate-card.selected::after {
+  content: '✓'; position: absolute; top: 10px; right: 10px;
+  width: 22px; height: 22px; border-radius: 50%; background: #f5810c; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800;
+}
+.cw-candidate-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg,#f5810c,#ea580c); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; margin-bottom: 10px;
+}
+.cw-candidate-name { font-size: 14px; font-weight: 700; color: #1e293b; }
+.cw-candidate-email { font-size: 11px; color: #64748b; margin-top: 2px; word-break: break-all; }
+.cw-candidate-phone { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+/* Job Role Cards */
+.cw-job-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 12px; margin-top: 12px; }
+.cw-job-card {
+  border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 16px;
+  cursor: pointer; transition: all .2s; background: #fff;
+}
+.cw-job-card:hover { border-color: #f5810c; }
+.cw-job-card.selected { border-color: #f5810c; background: #fff7ed; }
+.cw-job-card-title { font-size: 13px; font-weight: 700; color: #1e293b; }
+.cw-job-card-company { font-size: 11px; color: #64748b; }
+
+/* Summary Panel */
+.cw-summary-panel {
+  background: linear-gradient(135deg,#0f172a,#1e293b);
+  border-radius: 16px; padding: 24px; color: #fff;
+}
+.cw-summary-title {
+  font-size: 13px; font-weight: 800; color: #f5810c;
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cw-summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: 12px;
+}
+.cw-summary-row:last-child { border-bottom: none; }
+.cw-summary-label { color: #94a3b8; font-weight: 500; }
+.cw-summary-value { color: #fff; font-weight: 700; }
+.cw-summary-value.empty { color: #475569; font-style: italic; }
+
+/* ── 8. Step 3: Contract Review ── */
+.cw-legal-doc {
+  background: #fff; border: 1px solid #d1d5db; border-radius: 4px;
+  padding: 48px 56px; font-family: 'Georgia','Times New Roman',serif;
+  color: #1e293b; position: relative; min-height: 600px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+}
+.cw-legal-watermark {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-30deg);
+  font-size: 72px; font-weight: 900; color: rgba(245,129,12,.04);
+  pointer-events: none; letter-spacing: .1em; white-space: nowrap;
+}
+.cw-legal-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 20px; border-bottom: 3px double #1e293b; margin-bottom: 28px;
+}
+.cw-legal-org-label {
+  font-size: 9px; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: .12em;
+}
+.cw-legal-org-name { font-size: 18px; font-weight: 700; color: #1e293b; margin-top: 2px; }
+.cw-legal-org-name.accent { color: #f5810c; }
+.cw-legal-title-bar {
+  background: linear-gradient(135deg,#1e293b,#334155);
+  color: #fff; text-align: center; padding: 14px 24px;
+  font-size: 15px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; border-radius: 4px; margin-bottom: 28px;
+}
+.cw-legal-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; margin-bottom: 32px;
+}
+.cw-legal-field-label {
+  font-size: 10px; font-weight: 700; color: #94a3b8;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.cw-legal-field-value { font-size: 14px; font-weight: 600; color: #1e293b; margin-top: 2px; }
+.cw-legal-article {
+  margin-bottom: 24px;
+}
+.cw-legal-article h4 {
+  font-size: 13px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .04em; color: #1e293b; margin-bottom: 8px;
+  font-family: 'Inter','Segoe UI',sans-serif;
+}
+.cw-legal-article p {
+  font-size: 13px; line-height: 1.7; color: #475569;
+}
+.cw-legal-article .legal-quote {
+  background: #f8fafc; border-left: 3px solid #f5810c;
+  padding: 14px 18px; border-radius: 0 8px 8px 0;
+  font-style: italic; margin-top: 8px;
+}
+.cw-legal-sig-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px;
+  padding-top: 32px; border-top: 2px solid #1e293b;
+}
+.cw-legal-sig-line { height: 1px; background: #1e293b; margin: 40px 0 8px; }
+.cw-legal-sig-name { font-size: 12px; font-weight: 700; color: #1e293b; }
+.cw-legal-sig-role { font-size: 10px; color: #64748b; }
+.cw-legal-footer {
+  margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0;
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: #cbd5e1; letter-spacing: .04em;
+  font-family: 'Inter','Segoe UI',sans-serif;
+}
+
+/* ── 9. Step 4: Generation Progress ── */
+.cw-gen-container {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 500px; text-align: center;
+  padding: 40px;
+}
+.cw-gen-ring {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 4px solid #f1f5f9; border-top-color: #f5810c;
+  animation: cwSpin 1.2s linear infinite;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 32px; position: relative;
+}
+.cw-gen-ring.complete {
+  border-color: #10b981; animation: none;
+  background: #d1fae5;
+}
+@keyframes cwSpin { to{transform:rotate(360deg)} }
+.cw-gen-ring-inner {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: #fff; display: flex; align-items: center;
+  justify-content: center; font-size: 36px;
+}
+.cw-gen-title { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+.cw-gen-sub { font-size: 13px; color: #64748b; margin-bottom: 32px; }
+.cw-gen-steps { width: 100%; max-width: 480px; }
+.cw-gen-step {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+  transition: all .3s; background: #f8fafc; border: 1px solid #f1f5f9;
+}
+.cw-gen-step.active { background: #fff7ed; border-color: #fed7aa; }
+.cw-gen-step.done { background: #f0fdf4; border-color: #bbf7d0; }
+.cw-gen-step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #e2e8f0; color: #94a3b8; font-size: 12px; font-weight: 700;
+  flex-shrink: 0; transition: all .3s;
+}
+.cw-gen-step.active .cw-gen-step-dot { background: #f5810c; color: #fff; }
+.cw-gen-step.done .cw-gen-step-dot { background: #10b981; color: #fff; }
+.cw-gen-step-label { font-size: 13px; font-weight: 600; color: #475569; }
+.cw-gen-step.active .cw-gen-step-label { color: #1e293b; font-weight: 700; }
+.cw-gen-step.done .cw-gen-step-label { color: #065f46; }
+
+/* ── 10. Step 5: Approval & Signature ── */
+.cw-approval-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+@media(max-width:768px){ .cw-approval-grid{grid-template-columns:1fr} }
+.cw-role-card {
+  border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;
+  display: flex; align-items: center; gap: 14px; transition: all .2s;
+}
+.cw-role-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,.04); }
+.cw-role-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+.cw-role-avatar.creator { background: linear-gradient(135deg,#f5810c,#ea580c); }
+.cw-role-avatar.approver { background: linear-gradient(135deg,#3b82f6,#2563eb); }
+.cw-role-name { font-size: 13px; font-weight: 700; color: #1e293b; }
+.cw-role-type { font-size: 11px; color: #64748b; }
+.cw-role-badge {
+  margin-left: auto; padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.cw-role-badge.active { background: #dbeafe; color: #1e40af; }
+.cw-role-badge.pending { background: #fef3c7; color: #92400e; }
+
+/* Audit Trail */
+.cw-audit { margin-top: 20px; }
+.cw-audit-title {
+  font-size: 13px; font-weight: 800; color: #1e293b;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+.cw-audit-item {
+  display: flex; gap: 14px; padding-bottom: 18px; position: relative;
+}
+.cw-audit-item.done .cw-audit-dot { background: #d1fae5; color: #10b981; }
+.cw-audit-item.active .cw-audit-dot { background: #fff7ed; color: #f5810c; border: 2px solid #f5810c; }
+.cw-audit-text { font-size: 13px; font-weight: 600; color: #1e293b; }
+.cw-audit-time { font-size: 11px; color: #94a3b8; }
+
+/* ── Validation Summary ── */
+.cw-validation-box {
+  background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;
+  padding: 16px 20px; margin-bottom: 20px;
+  animation: cwShake .4s ease-in-out;
+}
+@keyframes cwShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+.cw-validation-title {
+  font-size: 13px; font-weight: 700; color: #991b1b;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.cw-validation-list { list-style: none; padding: 0; margin: 0; }
+.cw-validation-list li {
+  font-size: 12px; color: #b91c1c; padding: 3px 0;
+  padding-left: 16px; position: relative;
+}
+.cw-validation-list li::before {
+  content: '•'; position: absolute; left: 4px; color: #ef4444;
+}
+
+/* ── Sticky Footer Actions ── */
+.cw-footer-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 0; margin-top: 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* ── Live Preview Sidebar ── */
+.cw-preview-mini {
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;
+  padding: 20px; font-size: 11px;
+}
+.cw-preview-mini-title {
+  font-size: 12px; font-weight: 800; color: #1e293b;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.cw-preview-mini-row {
+  display: flex; justify-content: space-between; padding: 5px 0;
+  border-bottom: 1px solid #f1f5f9; font-size: 11px;
+}
+.cw-preview-mini-row:last-child { border-bottom: none; }
+.cw-preview-mini-label { color: #94a3b8; }
+.cw-preview-mini-value { color: #1e293b; font-weight: 600; max-width: 160px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Success State ── */
+.cw-success {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 48px 32px; animation: cwFadeUp .5s ease-out;
+}
+.cw-success-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg,#10b981,#059669);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px; box-shadow: 0 12px 32px rgba(16,185,129,.25);
+  animation: bounceIn .6s cubic-bezier(.16,1,.3,1);
+}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .cw-shell { padding: 0 8px; }
+  .cw-progress-sub { display: none; }
+  .cw-progress-label { font-size: 10px; }
+  .cw-legal-doc { padding: 24px 20px; }
+  .cw-legal-grid { grid-template-columns: 1fr; }
+  .cw-legal-sig-grid { grid-template-columns: 1fr; gap: 24px; }
+}

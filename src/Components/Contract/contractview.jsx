@@ -114,8 +114,30 @@ const dataURLtoBlob = (dataurl) => {
   return new Blob([u8arr], { type: mime });
 };
 
+const API_BASE = 'https://webapidev.benmyl.com';
+
+// Prefix relative image paths with API base and append stable cache-buster to prevent rendering stale signatures
+const resolveImagePath = (path, buster) => {
+  if (!path) return null;
+  if (path.startsWith('data:') || path.startsWith('http')) return path;
+  const baseUrl = `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+  return `${baseUrl}?v=${buster}`;
+};
+
 const mapApiContractToUI = (item) => {
   if (!item) return null;
+
+  // Cache buster stamp stable for the lifecycle of this mapped item
+  const buster = Date.now();
+
+  // Creator/Hiring Manager Name: check reportingManager first, then other creator fields, falling back to Sarah Mitchell
+  const creatorName = item.reportingManager || item.createdByName || item.createdBy_Name || item.createdByEmail || 'Sarah Mitchell';
+  const creatorRole = item.createdByRole || 'Hiring Manager';
+  const hiringManagerLabel = creatorName.includes('(') ? creatorName : `${creatorName} (${creatorRole})`;
+
+  // Bench sales signatory: use dedicated bench sales name first, fall back to candidateName, then default
+  const benchSalesLabel = item.benchSalesName || item.benchSales_Name || item.vendorSignatoryName || 'Bench Sales Representative';
+
   return {
     id: String(item.contractID || ''),
     contractTitle: item.contractTitle || 'Unnamed Contract',
@@ -144,12 +166,14 @@ const mapApiContractToUI = (item) => {
     terminationPolicy: '',
     status: item.agreementStatus || 'Shared',
     createdDate: item.createdOn ? formatDate(item.createdOn.split('T')[0]) : formatDate(new Date().toLocaleDateString("en-CA")),
-    hiringManagerUser: 'Sarah Mitchell (Hiring Manager)',
-    benchSalesUser: item.candidateName || 'Bench Sales Team',
+    // Accurate creator & bench sales labels
+    hiringManagerUser: hiringManagerLabel,
+    benchSalesUser: benchSalesLabel,
     hiringManagerAccepted: item.signatureStatus_A === 'Signed' || !!item.signatureImagePath,
     benchSalesAccepted: item.signatureStatus_B === 'Signed' || !!(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales),
-    hiringManagerSignature: item.signatureImagePath || null,
-    benchSalesSignature: item.signatureImagePatbenchsales || item.signatureimagePatbenchsales || null,
+    // Resolve full image URLs for signatures with cache buster
+    hiringManagerSignature: resolveImagePath(item.signatureImagePath, buster),
+    benchSalesSignature: resolveImagePath(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales, buster),
   };
 };
 
@@ -168,8 +192,9 @@ const ContractView = () => {
     return mapApiContractToUI(apiResponse.data);
   }, [apiResponse]);
 
-  const role = localStorage.getItem('Role') || 'Benchsales';
-  const isBS = role === 'Benchsales';
+  const role = (localStorage.getItem('Role') || '').toLowerCase();
+  // BenchSales role can be stored with varying casing
+  const isBS = role === 'benchsales' || role === 'bench sales' || role === 'bench_sales';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
 
   if (isApiLoading) {
@@ -234,10 +259,9 @@ const ContractView = () => {
       formData.append("SignatureImagePath", existingPath);
       formData.append("signatureImagePath", existingPath);
 
-      // Pass existing benchsales path if present
-      const existingBSPath = apiResponse.data.signatureImagePatbenchsales || apiResponse.data.signatureimagePatbenchsales || "";
-      formData.append("SignatureImagePatbenchsales", existingBSPath);
-      formData.append("signatureimagePatbenchsales", existingBSPath);
+      // Clear old signature paths when uploading a new signature, so backend processes the new file upload
+      formData.append("SignatureImagePatbenchsales", "");
+      formData.append("signatureimagePatbenchsales", "");
 
       formData.append("CreatedBy", apiResponse.data.createdBy || 0);
 
@@ -315,12 +339,12 @@ const ContractView = () => {
       const getBase64Image = async (url) => {
         if (!url) return null;
         if (url.startsWith('data:')) return url;
-        
+
         let targetUrl = url;
         if (url.startsWith('/')) {
           targetUrl = `https://webapidev.benmyl.com${url}`;
         }
-        
+
         try {
           const response = await fetch(targetUrl, { mode: 'cors' });
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -523,7 +547,7 @@ const ContractView = () => {
             <div className="paper-header">
               <div className="company-info-row">
                 <div className="party-box">
-                  <span className="party-label">CLIENT ORGANIZATION</span>
+                  <span className="party-label">CREATOR ORGANIZATION</span>
                   <div className="party-val" style={{ color: '#f5810c' }}>{contract.clientCompany}</div>
                 </div>
                 <div className="party-box" style={{ textAlign: 'right' }}>
@@ -569,7 +593,7 @@ const ContractView = () => {
                   <span className="sig-label">Authorized Signatory (Hiring Side)</span>
                   {contract.hiringManagerSignature ? (
                     <div className="formal-sig-wrap">
-                      <img src={contract.hiringManagerSignature} alt="HM Sig" style={{ filter: 'contrast(1.2) brightness(0.8)' }} />
+                      <img src={`${contract.hiringManagerSignature}?t=${Date.now()}`} alt="HM Sig" style={{ filter: 'contrast(1.2) brightness(0.8)' }} />
                       <div className="sig-meta">Digitally Authenticated: {contract.createdDate}</div>
                     </div>
                   ) : <div className="sig-placeholder">Waiting for Signature</div>}
@@ -582,7 +606,7 @@ const ContractView = () => {
                   <span className="sig-label">Authorized Signatory (Vendor Side)</span>
                   {contract.benchSalesSignature ? (
                     <div className="formal-sig-wrap">
-                      <img src={contract.benchSalesSignature} alt="BS Sig" style={{ filter: 'contrast(1.2) brightness(0.8)' }} />
+                      <img src={`${contract.benchSalesSignature}?t=${Date.now()}`} alt="BS Sig" style={{ filter: 'contrast(1.2) brightness(0.8)' }} />
                       <div className="sig-meta">Digitally Authenticated: {contract.benchSalesDate || contract.createdDate}</div>
                     </div>
                   ) : <div className="sig-placeholder">Pending Vendor Acceptance</div>}

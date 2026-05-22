@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import "./BentoDashboard.css";
-import { Briefcase, Users, FileText, Info, Search, ArrowRight, LayoutGrid, Sparkles, Upload, Calendar, DollarSign, MapPin, Clock, Plus, ChevronRight, TrendingUp, PieChart } from "lucide-react";
+import { Briefcase, Users, FileText, Info, Search, ArrowRight, Activity, Upload, Calendar, Clock, ChevronRight, TrendingUp, CheckSquare } from "lucide-react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -18,7 +18,6 @@ import {
 import { Line, Doughnut } from "react-chartjs-2";
 import UploadTalentTable from "../UploadTalent/UploadTalentTable";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
-import InterviewsList from "./InterviewsList";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
 import { CandidateCard } from "../UploadTalent/UserTalentGrid";
@@ -178,15 +177,24 @@ const BenchSalesDashboard = () => {
     navigate(`${basePath}${path}`);
   };
 
+  const handlePitchCandidate = (candidateName, jobTitle, company) => {
+    setToastMessage(`Pitch initiated — structuring placement package for ${candidateName} at ${company} for ${jobTitle}.`);
+    setShowUploadedSuccess(true);
+    setTimeout(() => setShowUploadedSuccess(false), 5000);
+  };
+
   return (
     <div className="projects-container">
-      {/* Header Section - Admin Standard */}
+      {/* Header Section - Modern Role Banner */}
       <div className="d-flex justify-content-between align-items-center mb-4 pb-3" style={{ borderBottom: '1px solid #e2e8f0' }}>
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
-            <span style={{ fontSize: "10px", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>Talent Operations</span>
+            <span className="live-status-pill">
+              <span className="live-ping"></span>
+              Bench Sales Lead Console
+            </span>
           </div>
-          <h1 className="m-0" style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Talent Overview</h1>
+          <h1 className="m-0" style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Talent Operations Overview</h1>
         </div>
         <div className="d-flex gap-2">
             <UploadTalentModal 
@@ -201,16 +209,34 @@ const BenchSalesDashboard = () => {
 
       <Guide ref={guideRef} />
 
+      {/* Role-Specific Guidance & Status Alert */}
+      <div className="role-guidance-banner mb-4 animate-banner">
+        <div className="d-flex align-items-center gap-3">
+          <div className="guidance-icon-box">
+            <Activity size={20} color="#f5810c" />
+          </div>
+          <div className="guidance-text-box">
+            <span className="guidance-label">RECOMMENDED NEXT ACTIONS</span>
+            <p className="guidance-desc">
+              Your bench sales channel is active. You have <strong style={{ color: "#0f172a" }}>{totalTalentCount} available candidates</strong> and{" "}
+              <strong style={{ color: "#0f172a" }}>{pendingReviewCount} resumes pending review</strong>. Match candidates with open vacancies and submit qualified profiles.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="bento-grid">
         {/* Row 1: Welcome & Stats */}
         <div className="bento-card welcome-card span-8" style={{ borderLeftColor: '#3b82f6' }}>
           <div className="d-flex justify-content-between align-items-start h-100">
             <div>
               <h3 className="bento-card-title">Welcome back, {user}</h3>
-              <p className="welcome-text" style={{ fontSize: "14px", color: "#64748b", marginTop: "12px", lineHeight: "1.6" }}>Your talent pool is growing. You have <span style={{ fontWeight: 700, color: "#0f172a" }}>{pendingReviewCount} profiles pending review</span> and 45 new job matches identified today.</p>
+              <p className="welcome-text" style={{ fontSize: "14px", color: "#64748b", marginTop: "12px", lineHeight: "1.6" }}>
+                Keep your bench active. You have parsed <span style={{ fontWeight: 700, color: "#0f172a" }}>{totalTalentCount} profiles</span> and matched them against <span style={{ fontWeight: 700, color: "#0f172a" }}>{matchedJobsCount} client vacancies</span> across multiple vendors.
+              </p>
               <div className="d-flex gap-3 mt-4">
-                <button className="btn" onClick={() => handleNavigate('/user-Jobs')} style={{ background: "#0f172a", border: "none", color: "white", padding: "12px 28px", borderRadius: "12px", fontWeight: 700, fontSize: "14px", boxShadow: "0 10px 15px -3px rgba(15,23,42,0.1)" }}>Discover Jobs</button>
-                <button className="btn" onClick={() => handleNavigate('/user-upload-talent')} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid #e2e8f0", color: "#64748b", padding: "12px 28px", borderRadius: "12px", fontWeight: 700, fontSize: "14px" }}>Manage Talent</button>
+                <button className="btn" onClick={() => handleNavigate('/user-Jobs')} style={{ background: "#0f172a", border: "none", color: "white", padding: "12px 28px", borderRadius: "12px", fontWeight: 700, fontSize: "14px", boxShadow: "0 10px 15px -3px rgba(15,23,42,0.1)" }}>Discover Open Jobs</button>
+                <button className="btn" onClick={() => handleNavigate('/user-upload-talent')} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid #e2e8f0", color: "#64748b", padding: "12px 28px", borderRadius: "12px", fontWeight: 700, fontSize: "14px" }}>Manage Resume Queue</button>
               </div>
             </div>
             <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "16px", borderRadius: "20px" }}>
@@ -223,37 +249,89 @@ const BenchSalesDashboard = () => {
           <div className="bento-stat-mini" onClick={() => handleNavigate('/user-upload-talent')} style={{ cursor: 'pointer' }}>
             <div className="bento-stat-icon" style={{ background: 'rgba(245, 129, 12, 0.1)', color: '#f5810c' }}><Users size={20} /></div>
             <div className="bento-stat-info">
-              <span className="bento-stat-label">Total Talent</span>
+              <span className="bento-stat-label">Total Bench</span>
               <span className="bento-stat-value">{totalTalentCount}</span>
             </div>
           </div>
           <div className="bento-stat-mini" onClick={() => handleNavigate('/user-upload-talent')} style={{ cursor: 'pointer' }}>
             <div className="bento-stat-icon" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}><FileText size={20} /></div>
             <div className="bento-stat-info">
-              <span className="bento-stat-label">Pending Review</span>
+              <span className="bento-stat-label">Resumes Awaiting</span>
               <span className="bento-stat-value">{pendingReviewCount}</span>
             </div>
           </div>
           <div className="bento-stat-mini" onClick={() => handleNavigate('/user-Jobs')} style={{ cursor: 'pointer' }}>
             <div className="bento-stat-icon" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}><Briefcase size={20} /></div>
             <div className="bento-stat-info">
-              <span className="bento-stat-label">Job Matches</span>
+              <span className="bento-stat-label">Vacancies Found</span>
               <span className="bento-stat-value">{matchedJobsCount}</span>
             </div>
           </div>
         </div>
 
-        {/* Row 2: Job Matches & Sidebar Action */}
+        {/* Row 2: Quick Action Shortcuts (no duplicates) */}
+        <div className="bento-card span-12">
+          <div className="bento-card-header mb-3">
+            <div>
+              <h3 className="bento-card-title m-0">Quick Actions</h3>
+              <span style={{ fontSize: "11px", color: "#64748b" }}>Core workflows for your Bench Sales role</span>
+            </div>
+          </div>
+          <div className="shortcuts-modern-grid">
+            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/user-upload-talent')}>
+              <div className="shortcut-icon-wrapper">
+                <Upload size={18} />
+              </div>
+              <div className="shortcut-text-wrapper">
+                <span className="shortcut-title">Upload Resumes</span>
+                <span className="shortcut-desc">Parse and add candidate files to the bench pool</span>
+              </div>
+              <ChevronRight className="shortcut-chevron" size={16} />
+            </div>
+            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/review-talent')}>
+              <div className="shortcut-icon-wrapper">
+                <CheckSquare size={18} />
+              </div>
+              <div className="shortcut-text-wrapper">
+                <span className="shortcut-title">Review Queue</span>
+                <span className="shortcut-desc">Audit {pendingReviewCount} resumes pending AI processing</span>
+              </div>
+              <ChevronRight className="shortcut-chevron" size={16} />
+            </div>
+            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/user-Jobs')}>
+              <div className="shortcut-icon-wrapper">
+                <Search size={18} />
+              </div>
+              <div className="shortcut-text-wrapper">
+                <span className="shortcut-title">Discover Vacancies</span>
+                <span className="shortcut-desc">Browse {matchedJobsCount} auto-matched client positions</span>
+              </div>
+              <ChevronRight className="shortcut-chevron" size={16} />
+            </div>
+            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/user-talentpool')}>
+              <div className="shortcut-icon-wrapper">
+                <Users size={18} />
+              </div>
+              <div className="shortcut-text-wrapper">
+                <span className="shortcut-title">Talent Pool</span>
+                <span className="shortcut-desc">{totalTalentCount} candidates — explore and filter your bench</span>
+              </div>
+              <ChevronRight className="shortcut-chevron" size={16} />
+            </div>
+          </div>
+        </div>
+
+        {/* Row 3: Recommended Jobs with Direct Pitch action */}
         <div className="bento-card span-8">
           <div className="bento-card-header mb-4">
             <div className="d-flex align-items-center gap-2">
-              <Sparkles size={16} color="#f5810c" />
-              <h3 className="bento-card-title">Recommended Jobs</h3>
+              <Briefcase size={16} color="#f5810c" />
+              <h3 className="bento-card-title">Recommended Placements</h3>
             </div>
-            <button className="link-button" onClick={() => handleNavigate('/user-Jobs')} style={{ fontSize: "12px", fontWeight: 600 }}>Explore All <ChevronRight size={14} /></button>
+            <button className="link-button" onClick={() => handleNavigate('/user-Jobs')} style={{ fontSize: "12px", fontWeight: 600 }}>Browse Vacancy List <ChevronRight size={14} /></button>
           </div>
           
-          <div className="matched-jobs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          <div className="matched-jobs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
             {isJobsLoading ? (
               [1, 2, 3].map(i => (
                 <div key={i} className="candidate-card small-card" style={{ padding: '16px', borderRadius: '12px', height: '180px', background: '#f8fafc', border: '1px dashed #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -262,156 +340,100 @@ const BenchSalesDashboard = () => {
               ))
             ) : realMatchedJobs.length > 0 ? (
               realMatchedJobs.map((job) => (
-                <CandidateCard 
-                  key={job.id} 
-                  candidate={job} 
-                  isSelected={false} 
-                  onToggle={() => {}} 
-                  onPrimaryAction={(j) => {
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
-                    navigate(`${basePath}/user-Jobs`, {
-                      state: { autoOpenJobId: j.id }
-                    });
-                  }}
-                  small={true}
-                />
+                <div key={job.id} className="job-match-card-expanded">
+                  <div className="job-match-card-header">
+                    <img src={job.avatar} alt={job.company} className="job-match-avatar" />
+                    <div className="job-match-meta">
+                      <span className="job-match-title">{job.title}</span>
+                      <span className="job-match-company">{job.company} · <span style={{ fontWeight: 800 }}>{job.location}</span></span>
+                    </div>
+                    <div className="job-match-percentage-badge">
+                      95% Match
+                    </div>
+                  </div>
+                  <div className="job-match-specs mt-2">
+                    <span className="spec-tag">{job.type}</span>
+                    <span className="spec-tag">{job.experience}</span>
+                    <span className="spec-tag-salary">{job.salary}</span>
+                  </div>
+                  <div className="job-match-action-row mt-3">
+                    <button 
+                      className="btn-action-pitch-submit"
+                      onClick={() => handlePitchCandidate(dashboardTalent[0]?.name || "Bench Candidate", job.title, job.company)}
+                    >
+                      <ArrowRight size={13} style={{ marginRight: 4 }} /> Quick Submit
+                    </button>
+                    <button 
+                      className="btn-action-view-details-only"
+                      onClick={() => navigate(`${window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User'}/user-Jobs`, { state: { autoOpenJobId: job.id } })}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
               ))
             ) : (
               <div className="w-100 py-4 text-center" style={{ gridColumn: '1 / -1', color: '#94a3b8', fontSize: '13px' }}>
-                No job matches found for your talent pool.
+                No active recommended placements. Add profiles to trigger.
               </div>
             )}
           </div>
         </div>
 
         <div className="bento-card span-4" style={{ background: '#0f172a', color: 'white', border: 'none', position: 'relative', overflow: 'hidden' }}>
-          {/* Subtle background glow */}
-          <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: activeMetric === 'earnings' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(245, 129, 12, 0.1)', filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }}></div>
-          
+          {/* Glow accent */}
+          <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: 'rgba(245, 129, 12, 0.12)', filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }}></div>
+
           <div className="d-flex flex-column h-100" style={{ position: 'relative', zIndex: 1 }}>
-            {/* Custom Toggle Switch */}
-            <div className="d-flex p-1 mb-4" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', alignSelf: 'center', width: 'fit-content' }}>
-              <button 
-                onClick={() => setActiveMetric('earnings')}
-                style={{ 
-                  padding: '6px 16px', 
-                  borderRadius: '10px', 
-                  border: 'none', 
-                  background: activeMetric === 'earnings' ? '#ffffff' : 'transparent',
-                  color: activeMetric === 'earnings' ? '#0f172a' : 'rgba(255,255,255,0.6)',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer'
-                }}
-              >
-                Earnings
-              </button>
-              <button 
-                onClick={() => setActiveMetric('utilization')}
-                style={{ 
-                  padding: '6px 16px', 
-                  borderRadius: '10px', 
-                  border: 'none', 
-                  background: activeMetric === 'utilization' ? '#ffffff' : 'transparent',
-                  color: activeMetric === 'utilization' ? '#0f172a' : 'rgba(255,255,255,0.6)',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer'
-                }}
-              >
-                Utilization
-              </button>
+            <div className="d-flex align-items-center gap-2 mb-4">
+              <Activity size={16} color="#f5810c" />
+              <span style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Live Bench Summary</span>
             </div>
 
-            {activeMetric === 'earnings' ? (
-              <div className="d-flex flex-column h-100">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <div>
-                    <span style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>Total Earnings</span>
-                    <h3 style={{ fontSize: "24px", fontWeight: 800, margin: 0, color: "#ffffff" }}>$124,500</h3>
-                  </div>
-                  <div style={{ background: "rgba(59, 130, 246, 0.2)", padding: "8px", borderRadius: "10px" }}>
-                    <TrendingUp size={18} color="#3b82f6" />
-                  </div>
-                </div>
-                <div style={{ flex: 1, minHeight: "140px" }}>
-                  <Line 
-                    data={{
-                      ...earningsData,
-                      datasets: [{
-                        ...earningsData.datasets[0],
-                        borderColor: "#3b82f6",
-                        backgroundColor: "rgba(59, 130, 246, 0.2)",
-                        pointBackgroundColor: "#ffffff",
-                        pointBorderColor: "#3b82f6",
-                        pointBorderWidth: 2,
-                      }]
-                    }} 
-                    options={{
-                      ...earningsOptions,
-                      scales: {
-                        x: { display: false },
-                        y: { display: false }
-                      }
-                    }} 
-                  />
-                </div>
-                <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>Monthly Revenue Growth</span>
-                    <span style={{ fontSize: "11px", color: "#10b981", fontWeight: 800 }}>+12.5%</span>
-                  </div>
+            {/* Total bench — real API value */}
+            <div className="d-flex flex-column gap-3 flex-1">
+              <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px 16px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Total on Bench</span>
+                <div className="d-flex align-items-end gap-2 mt-1">
+                  <span style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', lineHeight: 1 }}>{totalTalentCount}</span>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '2px' }}>candidates</span>
                 </div>
               </div>
-            ) : (
-              <div className="d-flex flex-column h-100">
-                <div className="d-flex align-items-center gap-2 mb-4 justify-content-center">
-                  <PieChart size={16} color="#f5810c" />
-                  <h3 className="bento-card-title text-white m-0" style={{ fontSize: '14px' }}>Bench Health</h3>
-                </div>
-                <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                  <div style={{ width: "130px", height: "130px" }}>
-                    <Doughnut 
-                      data={{
-                        ...utilizationData,
-                        datasets: [{
-                          ...utilizationData.datasets[0],
-                          backgroundColor: ["#f5810c", "rgba(255,255,255,0.05)"],
-                        }]
-                      }} 
-                      options={{ cutout: "75%", plugins: { legend: { display: false } } }} 
-                    />
-                  </div>
-                  <div style={{ position: "absolute", textAlign: "center" }}>
-                    <div style={{ fontSize: "24px", fontWeight: 800, color: "#ffffff" }}>75%</div>
-                    <div style={{ fontSize: "9px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>Utilized</div>
-                  </div>
-                </div>
-                <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div className="d-flex justify-content-between align-items-center px-2">
-                    <div className="d-flex align-items-center gap-2">
-                      <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#f5810c" }}></div>
-                      <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>Occupied</span>
-                    </div>
-                    <div className="d-flex align-items-center gap-2">
-                      <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.2)" }}></div>
-                      <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>Idle</span>
-                    </div>
-                  </div>
+
+              {/* Pending review — real API value */}
+              <div style={{ background: 'rgba(245,129,12,0.08)', border: '1px solid rgba(245,129,12,0.15)', borderRadius: '10px', padding: '14px 16px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(245,129,12,0.7)', textTransform: 'uppercase' }}>Awaiting Review</span>
+                <div className="d-flex align-items-center justify-content-between mt-1">
+                  <span style={{ fontSize: '28px', fontWeight: 800, color: '#f5810c', lineHeight: 1 }}>{pendingReviewCount}</span>
+                  {pendingReviewCount > 0 && (
+                    <button
+                      onClick={() => handleNavigate('/review-talent')}
+                      style={{ background: '#f5810c', border: 'none', color: '#fff', fontSize: '10px', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', cursor: 'pointer' }}
+                    >
+                      Review
+                    </button>
+                  )}
                 </div>
               </div>
-            )}
+
+              {/* Matched vacancies — real API value */}
+              <div style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: '10px', padding: '14px 16px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(59,130,246,0.7)', textTransform: 'uppercase' }}>Open Vacancies</span>
+                <div className="d-flex align-items-end gap-2 mt-1">
+                  <span style={{ fontSize: '28px', fontWeight: 800, color: '#60a5fa', lineHeight: 1 }}>{matchedJobsCount}</span>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '2px' }}>matched</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Row 3: Pending Review & Interviews */}
-        <div className="bento-card span-8">
+        {/* Row 4: Pending Review Queue — full width */}
+        <div className="bento-card span-12">
           <div className="bento-card-header mb-4">
             <div className="d-flex align-items-center gap-2">
               <Clock size={16} color="#f5810c" />
-              <h3 className="bento-card-title">Profiles Pending Review</h3>
+              <h3 className="bento-card-title">Pending Parser Auditing Queue</h3>
             </div>
             <button className="link-button" onClick={() => handleNavigate('/user-upload-talent')} style={{ fontSize: "12px", fontWeight: 600 }}>Manage Queue <ChevronRight size={14} /></button>
           </div>
@@ -419,29 +441,33 @@ const BenchSalesDashboard = () => {
             <UploadTalentTable isDashboard={true} statusFilter="Pending For Review" refreshKey={refreshKey} onDeleted={() => setRefreshKey(prev => prev + 1)} />
           </div>
         </div>
-
-        <div className="bento-card span-4">
-          <InterviewsList interviews={[]} isComingSoon={true} />
-        </div>
       </div>
 
       {showUploading && (
         <div className="uploading-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20000 }}>
           <div style={{ background: 'white', padding: 24, borderRadius: 16, textAlign: 'center', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
             <div className="spinner" style={{ width: 32, height: 32, border: '3px solid #f5810c', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-            <div style={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>Uploading</div>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>Uploading Resumes</div>
           </div>
         </div>
       )}
 
       {showUploadedSuccess && (
-        <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 20001, background: '#10b981', color: 'white', padding: '12px 20px', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: "13px" }}>
-          <Sparkles size={16} />
-          {toastMessage}
+        <div className="admin-toast-alert" style={{ bottom: 'unset', top: '24px' }}>
+          <SparklePulse />
+          <span>{toastMessage}</span>
         </div>
       )}
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
+  );
+};
+
+const SparklePulse = () => {
+  return (
+    <span className="toast-sparkle-dot">
+      <span className="toast-sparkle-ping"></span>
+    </span>
   );
 };
 
