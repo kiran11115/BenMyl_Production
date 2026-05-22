@@ -174,8 +174,9 @@ const FormWizard = () => {
   const handleCountryChange = (e) => {
     const c = e.target.value;
     formik.setFieldValue("country", c);
-    formik.setFieldValue("licenseType", licenseOptions[c][0].value);
+    formik.setFieldValue("licenseType", licenseOptions[c]?.[0]?.value || "GSTIN");
     formik.setFieldValue("state", "");
+    formik.setFieldValue("city", "");
     formik.setFieldValue("zipCode", "");
   };
 
@@ -360,6 +361,8 @@ const FormWizard = () => {
                   }
                   errors={formik.errors}
                   touched={formik.touched}
+                  setFieldValue={formik.setFieldValue}
+                  handleBlur={formik.handleBlur}
                 />
               )}
 

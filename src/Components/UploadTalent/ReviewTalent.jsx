@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import "./UploadTalent.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Country, State, City } from "country-state-city";
 import {
   useApprovedEmployeeMutation,
   useDraftProfileEmployeeMutation,
@@ -822,6 +823,165 @@ const ReviewTalent = () => {
   const [apiErrorMessage, setApiErrorMessage] = useState("");
   const [pendingDelete, setPendingDelete] = useState(null);
 
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const [talent, setTalent] = useState(null);
+
+  useEffect(() => {
+    if (!talent?.personalInfo) return;
+
+    const countryName = talent.personalInfo.country || "";
+    const stateName = talent.personalInfo.state || "";
+    const cityName = talent.personalInfo.city || "";
+
+    const allCountries = Country.getAllCountries();
+    const countryObj = allCountries.find(
+      (c) =>
+        c.name.toLowerCase() === countryName.toLowerCase() ||
+        c.isoCode.toLowerCase() === countryName.toLowerCase()
+    );
+
+    if (countryObj) {
+      setSelectedCountry(countryObj.isoCode);
+      const countryStates = State.getStatesOfCountry(countryObj.isoCode);
+      setStates(countryStates);
+
+      const stateObj = countryStates.find(
+        (s) =>
+          s.name.toLowerCase() === stateName.toLowerCase() ||
+          s.isoCode.toLowerCase() === stateName.toLowerCase()
+      );
+
+      if (stateObj) {
+        setSelectedState(stateObj.isoCode);
+        const stateCities = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode);
+        setCities(stateCities);
+
+        const cityObj = stateCities.find(
+          (c) => c.name.toLowerCase() === cityName.toLowerCase()
+        );
+        if (cityObj) {
+          setSelectedCity(cityObj.name);
+        } else {
+          setSelectedCity(cityName);
+        }
+      } else {
+        setSelectedState("");
+        setCities([]);
+        setSelectedCity("");
+      }
+    }
+    // If only city exists in resume
+    else if (cityName && !countryName && !stateName) {
+      let matchedCountry = null;
+      let matchedState = null;
+
+      const allCountries = Country.getAllCountries();
+
+      for (const country of allCountries) {
+        const statesList = State.getStatesOfCountry(country.isoCode);
+
+        for (const state of statesList) {
+          const cityList = City.getCitiesOfState(
+            country.isoCode,
+            state.isoCode
+          );
+
+          const foundCity = cityList.find(
+            (c) =>
+              c.name.toLowerCase() === cityName.toLowerCase()
+          );
+
+          if (foundCity) {
+            matchedCountry = country;
+            matchedState = state;
+            break;
+          }
+        }
+
+        if (matchedCountry && matchedState) break;
+      }
+
+      if (matchedCountry && matchedState) {
+        setSelectedCountry(matchedCountry.isoCode);
+
+        const stateList = State.getStatesOfCountry(
+          matchedCountry.isoCode
+        );
+        setStates(stateList);
+
+        setSelectedState(matchedState.isoCode);
+
+        const cityList = City.getCitiesOfState(
+          matchedCountry.isoCode,
+          matchedState.isoCode
+        );
+        setCities(cityList);
+
+        setSelectedCity(cityName);
+
+        // update talent state also
+        setTalent((prev) => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            country: matchedCountry.name,
+            state: matchedState.name,
+            city: cityName,
+          },
+        }));
+      }
+    }
+    else {
+      setSelectedCountry("");
+      setStates([]);
+      setSelectedState("");
+      setCities([]);
+      setSelectedCity("");
+    }
+  }, [talent?.personalInfo?.country, talent?.personalInfo?.state, talent?.personalInfo?.city]);
+
+  const handleCountryChange = (countryCode) => {
+    const countryObj = Country.getCountryByCode(countryCode);
+    const countryName = countryObj ? countryObj.name : "";
+    setTalent((prev) => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        country: countryName,
+        state: "",
+        city: "",
+      },
+    }));
+  };
+
+  const handleStateChange = (stateCode) => {
+    const stateObj = State.getStateByCodeAndCountry(stateCode, selectedCountry);
+    const stateName = stateObj ? stateObj.name : "";
+    setTalent((prev) => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        state: stateName,
+        city: "",
+      },
+    }));
+  };
+
+  const handleCityChange = (cityName) => {
+    setTalent((prev) => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        city: cityName,
+      },
+    }));
+  };
+
   const [pendingReviewCount, setPendingReviewCount] = useState(0);
   const [totalTalentCount, setTotalTalentCount] = useState(0);
 
@@ -939,7 +1099,6 @@ const ReviewTalent = () => {
     cancelEdit("projects");
   };
 
-  const [talent, setTalent] = useState(null);
   const [validationErrorsState, setValidationErrorsState] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const getToday = () => {
@@ -979,22 +1138,7 @@ const ReviewTalent = () => {
   const validateAllEducation = (educationArr) => {
     const errors = [];
     if (!Array.isArray(educationArr)) return errors;
-    educationArr.forEach((edu, idx) => {
-      // Only validate dates if any info is entered in this education entry
-      const hasData =
-        edu.university?.trim() ||
-        edu.qualification?.trim() ||
-        edu.field?.trim();
-
-      if (hasData) {
-        if (!edu.startDate || String(edu.startDate).trim() === "") {
-          errors.push(`Education[${idx + 1}]: Start Date is required`);
-        }
-        if (!edu.endDate || String(edu.endDate).trim() === "") {
-          errors.push(`Education[${idx + 1}]: End Date is required`);
-        }
-      }
-    });
+    // Education start/end dates are optional — no date validation required
     return errors;
   };
 
@@ -1022,22 +1166,7 @@ const ReviewTalent = () => {
   const validateAllProjects = (projectsArr) => {
     const errors = [];
     if (!Array.isArray(projectsArr)) return errors;
-    projectsArr.forEach((proj, idx) => {
-      // Only validate dates if any info is entered in this project entry
-      const hasData =
-        proj.projectName?.trim() ||
-        proj.role?.trim() ||
-        proj.description?.trim();
-
-      if (hasData) {
-        if (!proj.startDate || String(proj.startDate).trim() === "") {
-          errors.push(`Project[${idx + 1}]: Start Date is required`);
-        }
-        if (!proj.endDate || String(proj.endDate).trim() === "") {
-          errors.push(`Project[${idx + 1}]: End Date is required`);
-        }
-      }
-    });
+    // Project start/end dates are optional — no date validation required
     return errors;
   };
 
@@ -1193,7 +1322,7 @@ const ReviewTalent = () => {
           projectName: proj.name ?? "",
           Role: proj.role ?? "",
           StartDate: proj.startDate ?? "",
-          EndDate: proj.endDate || getToday(), // ✅ current date fallback
+          EndDate: proj.endDate || "", // ✅ current date fallback
           Skills: proj.skills ?? [],
           Description: proj.description ?? "",
         })),
@@ -1213,7 +1342,7 @@ const ReviewTalent = () => {
           Certifications: (edu.certifications ?? []).join(","),
           Percentage: edu.percentage ?? "",
           StartDate: edu.startDate ?? "",
-          EndDate: edu.endDate || getToday(), // ✅ current date fallback
+          EndDate: edu.endDate || "", // Education end date is optional — no current date fallback
         })),
       ),
     );
@@ -1389,7 +1518,7 @@ const ReviewTalent = () => {
           Certifications: (edu.certifications ?? []).join(","),
           Percentage: edu.percentage ?? "",
           StartDate: edu.startDate ?? "",
-          EndDate: edu.endDate || getToday(), // ✅ current date fallback
+          EndDate: edu.endDate || null, // Education end date is optional — no current date fallback
         })),
       ),
     );
@@ -1829,8 +1958,8 @@ const ReviewTalent = () => {
                 <div className="accordion-content">
                   <div className="review-form-grid" style={{ marginTop: 16 }}>
                     {Object.keys(talent.personalInfo).map((field) => {
-                      const isTxt = field === "bio";
-                      return isTxt ? null : (
+                      const isSpecial = ["bio", "country", "state", "city"].includes(field);
+                      return isSpecial ? null : (
                         <EditableField
                           key={field}
                           label={fieldLabels[field] || field}
@@ -1843,10 +1972,90 @@ const ReviewTalent = () => {
                             }))
                           }
                           section="personalInfo"
-                          required={field === "address" || field === "city"}
+                          required={field === "address"}
                         />
                       );
                     })}
+
+                    {/* Country Dropdown */}
+                    <div className="field-group">
+                      <label className="field-label">
+                        Country
+                        <span style={{ color: "#ef4444" }}> *</span>
+                      </label>
+                      {editingSections.includes("personalInfo") ? (
+                        <select
+                          className="field-input"
+                          value={selectedCountry}
+                          onChange={(e) => handleCountryChange(e.target.value)}
+                        >
+                          <option value="">Select Country</option>
+                          {Country.getAllCountries().map((c) => (
+                            <option key={c.isoCode} value={c.isoCode}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="field-value">
+                          {talent.personalInfo.country || "-"}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* State Dropdown */}
+                    <div className="field-group">
+                      <label className="field-label">
+                        State
+                        <span style={{ color: "#ef4444" }}> *</span>
+                      </label>
+                      {editingSections.includes("personalInfo") ? (
+                        <select
+                          className="field-input"
+                          value={selectedState}
+                          onChange={(e) => handleStateChange(e.target.value)}
+                          disabled={!selectedCountry || states.length === 0}
+                        >
+                          <option value="">Select State</option>
+                          {states.map((s) => (
+                            <option key={s.isoCode} value={s.isoCode}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="field-value">
+                          {talent.personalInfo.state || "-"}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* City Dropdown */}
+                    <div className="field-group">
+                      <label className="field-label">
+                        City
+                        <span style={{ color: "#ef4444" }}> *</span>
+                      </label>
+                      {editingSections.includes("personalInfo") ? (
+                        <select
+                          className="field-input"
+                          value={selectedCity}
+                          onChange={(e) => handleCityChange(e.target.value)}
+                          disabled={!selectedState || cities.length === 0}
+                        >
+                          <option value="">Select City</option>
+                          {cities.map((c) => (
+                            <option key={c.name} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="field-value">
+                          {talent.personalInfo.city || "-"}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   {talent.personalInfo.bio !== undefined && (
                     <EditableTextarea

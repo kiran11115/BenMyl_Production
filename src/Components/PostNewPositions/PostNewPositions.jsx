@@ -15,6 +15,7 @@ import {
   usePostJobMutation,
   useSaveJobDraftMutation
 } from '../../State-Management/Api/ProjectApiSlice';
+import { Country, State, City } from 'country-state-city';
 
 import '../Dashboard/Dashboard.css';
 import '../Auth/Auth.css';
@@ -81,6 +82,56 @@ const PostNewPositions = () => {
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isEmpOpen, setIsEmpOpen] = useState(false);
+
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const countries = Country.getAllCountries();
+
+  const handleCountryChange = (countryCode) => {
+    setSelectedCountry(countryCode);
+    setSelectedState("");
+    setSelectedCity("");
+    if (countryCode) {
+      setStates(State.getStatesOfCountry(countryCode));
+    } else {
+      setStates([]);
+    }
+    setCities([]);
+    
+    const countryObj = Country.getCountryByCode(countryCode);
+    formik.setFieldValue("location", countryObj ? countryObj.name : "");
+  };
+
+  const handleStateChange = (stateCode) => {
+    setSelectedState(stateCode);
+    setSelectedCity("");
+    if (stateCode) {
+      setCities(City.getCitiesOfState(selectedCountry, stateCode));
+    } else {
+      setCities([]);
+    }
+    
+    const countryObj = Country.getCountryByCode(selectedCountry);
+    const stateObj = State.getStateByCodeAndCountry(stateCode, selectedCountry);
+    
+    const locStr = [stateObj?.name, countryObj?.name].filter(Boolean).join(", ");
+    formik.setFieldValue("location", locStr);
+  };
+
+  const handleCityChange = (cityName) => {
+    setSelectedCity(cityName);
+    
+    const countryObj = Country.getCountryByCode(selectedCountry);
+    const stateObj = State.getStateByCodeAndCountry(selectedState, selectedCountry);
+    
+    const locStr = [cityName, stateObj?.name, countryObj?.name].filter(Boolean).join(", ");
+    formik.setFieldValue("location", locStr);
+  };
 
 const authRef = useRef(null);
 const empRef = useRef(null);
@@ -303,6 +354,76 @@ useEffect(() => {
       H4: editData?.isH4 || false
     });
 
+    /* ======================
+       Location Binding for Dropdowns on Edit
+    ====================== */
+    if (editData?.location) {
+      const parts = editData.location.split(",").map(p => p.trim());
+      if (parts.length > 0) {
+        let matchedCountry = null;
+        let matchedState = null;
+        let matchedCity = null;
+
+        const allCountries = Country.getAllCountries();
+        // Search country from right-to-left (last to first)
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i];
+          const c = allCountries.find(x => x.name.toLowerCase() === p.toLowerCase() || x.isoCode.toLowerCase() === p.toLowerCase());
+          if (c) {
+            matchedCountry = c;
+            break;
+          }
+        }
+
+        if (matchedCountry) {
+          setSelectedCountry(matchedCountry.isoCode);
+          const countryStates = State.getStatesOfCountry(matchedCountry.isoCode);
+          setStates(countryStates);
+
+          // Search state from remaining parts (excluding the country part if found)
+          for (let i = parts.length - 1; i >= 0; i--) {
+            const p = parts[i];
+            if (p.toLowerCase() === matchedCountry.name.toLowerCase() || p.toLowerCase() === matchedCountry.isoCode.toLowerCase()) {
+              continue;
+            }
+            const s = countryStates.find(x => x.name.toLowerCase() === p.toLowerCase() || x.isoCode.toLowerCase() === p.toLowerCase());
+            if (s) {
+              matchedState = s;
+              break;
+            }
+          }
+
+          if (matchedState) {
+            setSelectedState(matchedState.isoCode);
+            const stateCities = City.getCitiesOfState(matchedCountry.isoCode, matchedState.isoCode);
+            setCities(stateCities);
+
+            // Search city from remaining parts (excluding country and state parts)
+            for (let i = parts.length - 1; i >= 0; i--) {
+              const p = parts[i];
+              if (
+                p.toLowerCase() === matchedCountry.name.toLowerCase() ||
+                p.toLowerCase() === matchedCountry.isoCode.toLowerCase() ||
+                p.toLowerCase() === matchedState.name.toLowerCase() ||
+                p.toLowerCase() === matchedState.isoCode.toLowerCase()
+              ) {
+                continue;
+              }
+              const cityMatch = stateCities.find(x => x.name.toLowerCase() === p.toLowerCase());
+              if (cityMatch) {
+                matchedCity = cityMatch;
+                break;
+              }
+            }
+
+            if (matchedCity) {
+              setSelectedCity(matchedCity.name);
+            }
+          }
+        }
+      }
+    }
+
   }, [editData]);
 
   const handleGenerateAI = async () => {
@@ -434,7 +555,7 @@ useEffect(() => {
               </div>
 
               <div className="grid-4">
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                   <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
                   <JobTitleAutocomplete
                     name="jobTitle"
@@ -460,18 +581,63 @@ useEffect(() => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Location<span style={{ color: '#ef4444' }}> *</span></label>
-                  <input className="auth-input" name="location" placeholder="City, State"
-                    value={formik.values.location} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                  {err("location")}
-                </div>
-
-                <div>
                   <label className="auth-label">Company<span style={{ color: '#ef4444' }}> *</span></label>
                   <input className="auth-input bg-light" name="companyName" placeholder="Company"
                     value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
                   {err("companyName")}
                 </div>
+              </div>
+
+              {/* Cascading Location Dropdowns */}
+              <div style={{ marginBottom: '24px' }}>
+                <label className="auth-label">Location<span style={{ color: '#ef4444' }}> *</span></label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                  <div>
+                    <select
+                      className="auth-input"
+                      value={selectedCountry}
+                      onChange={(e) => handleCountryChange(e.target.value)}
+                    >
+                      <option value="">Select Country</option>
+                      {countries.map((c) => (
+                        <option key={c.isoCode} value={c.isoCode}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      className="auth-input"
+                      value={selectedState}
+                      onChange={(e) => handleStateChange(e.target.value)}
+                      disabled={!selectedCountry || states.length === 0}
+                    >
+                      <option value="">Select State</option>
+                      {states.map((s) => (
+                        <option key={s.isoCode} value={s.isoCode}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      className="auth-input"
+                      value={selectedCity}
+                      onChange={(e) => handleCityChange(e.target.value)}
+                      disabled={!selectedState || cities.length === 0}
+                    >
+                      <option value="">Select City</option>
+                      {cities.map((c) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {err("location")}
               </div>
 
               <div className="grid-3">

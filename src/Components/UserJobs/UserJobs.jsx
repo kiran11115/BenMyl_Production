@@ -481,7 +481,12 @@ const UserJobs = () => {
                           </div>
                           <div className="meta-pill">
                             <FiMapPin size={12} />
-                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{job.location}</span>
+                            <span 
+                              title={job.location}
+                              style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                            >
+                              {job.location ? job.location.split(',')[0].trim() : ""}
+                            </span>
                           </div>
                           <div className="meta-pill">
                             <FiUser size={12} />

@@ -8,6 +8,20 @@ import {
   useGetRecruiterProfileQuery,
 } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import "./EditProfile.css";
+import { State, City } from "country-state-city";
+
+const countryIsoMap = {
+  USA: "US",
+  US: "US",
+  India: "IN",
+  IN: "IN",
+  UK: "GB",
+  GB: "GB",
+  UAE: "AE",
+  AE: "AE",
+  CA: "CA",
+  Canada: "CA"
+};
 
 
 function EditProfile() {
@@ -246,6 +260,40 @@ function EditProfile() {
 
     },
   });
+
+  const countryCode = countryIsoMap[formik.values.headquarters.country] || formik.values.headquarters.country || "US";
+  const states = State.getStatesOfCountry(countryCode);
+
+  const stateObj = states.find(
+    (s) =>
+      s.name.toLowerCase() === formik.values.headquarters.state?.toLowerCase() ||
+      s.isoCode.toLowerCase() === formik.values.headquarters.state?.toLowerCase()
+  );
+  const selectedStateValue = stateObj ? stateObj.isoCode : "";
+
+  const cities = selectedStateValue
+    ? City.getCitiesOfState(countryCode, selectedStateValue)
+    : [];
+
+  const handleCountryChange = (e) => {
+    const selectedCountry = e.target.value;
+    formik.setFieldValue("headquarters.country", selectedCountry);
+    formik.setFieldValue("headquarters.state", "");
+    formik.setFieldValue("headquarters.city", "");
+  };
+
+  const handleStateChange = (e) => {
+    const stateIsoCode = e.target.value;
+    const selectedStateObj = states.find((s) => s.isoCode === stateIsoCode);
+    const stateName = selectedStateObj ? selectedStateObj.name : "";
+    formik.setFieldValue("headquarters.state", stateName);
+    formik.setFieldValue("headquarters.city", "");
+  };
+
+  const handleCityChange = (e) => {
+    const cityName = e.target.value;
+    formik.setFieldValue("headquarters.city", cityName);
+  };
 
   useEffect(() => {
     if (!recruiterData) return;
@@ -656,24 +704,90 @@ function EditProfile() {
           </div>
           <div className="ep-grid-4">
             <div className="ep-group">
-              <label className="ep-label">City<span> *</span></label>
-              <input
-                className="ep-input"
-                name="headquarters.city"
-                value={formData.headquarters.city}
-                onChange={handleChange}
-                placeholder="City"
+              <label className="ep-label">Country<span> *</span></label>
+              <select
+                className="ep-select"
+                name="headquarters.country"
+                value={formData.headquarters.country}
+                onChange={handleCountryChange}
+                onBlur={formik.handleBlur}
+              >
+                <option value="">Select country</option>
+                <option value="IN">India</option>
+                <option value="USA">USA</option>
+                <option value="UK">UK</option>
+                <option value="AE">UAE</option>
+              </select>
+              <FormError
+                error={formik.errors.headquarters?.country}
+                touched={formik.touched.headquarters?.country}
               />
             </div>
 
             <div className="ep-group">
               <label className="ep-label">State<span> *</span></label>
-              <input
-                className="ep-input"
-                name="headquarters.state"
-                value={formData.headquarters.state}
-                onChange={handleChange}
-                placeholder="State"
+              {states.length > 0 ? (
+                <select
+                  className="ep-select"
+                  name="headquarters.state"
+                  value={selectedStateValue}
+                  onChange={handleStateChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value="">Select State</option>
+                  {states.map((s) => (
+                    <option key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  className="ep-input"
+                  name="headquarters.state"
+                  value={formData.headquarters.state}
+                  onChange={handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="State"
+                />
+              )}
+              <FormError
+                error={formik.errors.headquarters?.state}
+                touched={formik.touched.headquarters?.state}
+              />
+            </div>
+
+            <div className="ep-group">
+              <label className="ep-label">City<span> *</span></label>
+              {selectedStateValue && cities.length > 0 ? (
+                <select
+                  className="ep-select"
+                  name="headquarters.city"
+                  value={formData.headquarters.city}
+                  onChange={handleCityChange}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value="">Select City</option>
+                  {cities.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  className="ep-input"
+                  name="headquarters.city"
+                  value={formData.headquarters.city}
+                  onChange={handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="City"
+                  disabled={!formData.headquarters.state}
+                />
+              )}
+              <FormError
+                error={formik.errors.headquarters?.city}
+                touched={formik.touched.headquarters?.city}
               />
             </div>
 
@@ -684,23 +798,13 @@ function EditProfile() {
                 name="headquarters.postalCode"
                 value={formData.headquarters.postalCode}
                 onChange={handleChange}
+                onBlur={formik.handleBlur}
                 placeholder="Postal Code"
               />
-            </div>
-
-            <div className="ep-group">
-              <label className="ep-label">Country<span> *</span></label>
-              <select
-                className="ep-select"
-                name="headquarters.country"
-                value={formData.headquarters.country}
-                onChange={handleChange}
-              >
-                <option value="">Select country</option>
-                <option value="IN">India</option>
-                <option value="USA">USA</option>
-                <option value="UK">UK</option>
-              </select>
+              <FormError
+                error={formik.errors.headquarters?.postalCode}
+                touched={formik.touched.headquarters?.postalCode}
+              />
             </div>
           </div>
         </div>

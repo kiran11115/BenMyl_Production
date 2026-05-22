@@ -1,4 +1,12 @@
 import React from "react";
+import { State, City } from "country-state-city";
+
+const countryIsoMap = {
+  USA: "US",
+  India: "IN",
+  UK: "GB",
+  UAE: "AE"
+};
 
 const StepVerify = ({
   formData,
@@ -12,7 +20,34 @@ const StepVerify = ({
   getLicensePlaceholder,
   errors,
   touched,
+  setFieldValue,
 }) => {
+  const countryCode = countryIsoMap[formData.country] || "US";
+  const states = State.getStatesOfCountry(countryCode);
+
+  const stateObj = states.find(
+    (s) =>
+      s.name.toLowerCase() === formData.state?.toLowerCase() ||
+      s.isoCode.toLowerCase() === formData.state?.toLowerCase()
+  );
+  const selectedStateValue = stateObj ? stateObj.isoCode : "";
+
+  const cities = selectedStateValue
+    ? City.getCitiesOfState(countryCode, selectedStateValue)
+    : [];
+
+  const onStateSelect = (e) => {
+    const stateIsoCode = e.target.value;
+    const selectedStateObj = states.find((s) => s.isoCode === stateIsoCode);
+    const stateName = selectedStateObj ? selectedStateObj.name : "";
+    setFieldValue("state", stateName);
+    setFieldValue("city", "");
+  };
+
+  const onCitySelect = (e) => {
+    const cityName = e.target.value;
+    setFieldValue("city", cityName);
+  };
   return (
     <div className="animate-fade-in">
       {/* ================= BUSINESS VERIFICATION ================= */}
@@ -158,46 +193,83 @@ const StepVerify = ({
           {/* CITY */}
           <div className="auth-group">
             <label className="auth-label">City</label>
-            <input
-              type="text"
-              name="city"
-              className={`auth-input ${
-                touched.city && errors.city ? "is-invalid" : ""
-              }`}
-              placeholder={formData.country === "India" ? "Bengaluru" : "New York"}
-              value={formData.city}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-            />
+            {selectedStateValue && cities.length > 0 ? (
+              <div className="auth-select-wrapper">
+                <select
+                  name="city"
+                  className={`auth-input auth-select ${
+                    touched.city && errors.city ? "is-invalid" : ""
+                  }`}
+                  value={formData.city}
+                  onChange={onCitySelect}
+                  onBlur={handleBlur}
+                >
+                  <option value="">Select City</option>
+                  {cities.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <input
+                type="text"
+                name="city"
+                className={`auth-input ${
+                  touched.city && errors.city ? "is-invalid" : ""
+                }`}
+                placeholder={formData.country === "India" ? "Bengaluru" : "New York"}
+                value={formData.city}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                disabled={!formData.state}
+              />
+            )}
             {touched.city && errors.city && (
               <small className="auth-error">{errors.city}</small>
             )}
           </div>
 
-          {/* STATE (USA ONLY) */}
-          {formData.country === "USA" && (
-            <div className="auth-group">
-              <label className="auth-label">State</label>
-              <select
+          {/* STATE */}
+          <div className="auth-group">
+            <label className="auth-label">State</label>
+            {states.length > 0 ? (
+              <div className="auth-select-wrapper">
+                <select
+                  name="state"
+                  className={`auth-input auth-select ${
+                    touched.state && errors.state ? "is-invalid" : ""
+                  }`}
+                  value={selectedStateValue}
+                  onChange={onStateSelect}
+                  onBlur={handleBlur}
+                >
+                  <option value="">Select State</option>
+                  {states.map((s) => (
+                    <option key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <input
+                type="text"
                 name="state"
-                className={`auth-input auth-select ${
+                className={`auth-input ${
                   touched.state && errors.state ? "is-invalid" : ""
                 }`}
+                placeholder="Enter State"
                 value={formData.state}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-              >
-                <option value="">Select State</option>
-                <option value="CA">California</option>
-                <option value="NY">New York</option>
-                <option value="TX">Texas</option>
-                <option value="FL">Florida</option>
-              </select>
-              {touched.state && errors.state && (
-                <small className="auth-error">{errors.state}</small>
-              )}
-            </div>
-          )}
+              />
+            )}
+            {touched.state && errors.state && (
+              <small className="auth-error">{errors.state}</small>
+            )}
+          </div>
 
           {/* ZIP / POSTAL */}
           <div className="auth-group">

@@ -5,6 +5,20 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./AdminProfileEdit.css";
 import { useGetCompanyProfileEditQuery, useUpdateCompanyProfileMutation } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import { State, City } from "country-state-city";
+
+const countryIsoMap = {
+  USA: "US",
+  US: "US",
+  India: "IN",
+  IN: "IN",
+  UK: "GB",
+  GB: "GB",
+  UAE: "AE",
+  AE: "AE",
+  CA: "CA",
+  Canada: "CA"
+};
 
 const AdminProfileEdit = () => {
   const navigate = useNavigate();
@@ -67,6 +81,40 @@ const AdminProfileEdit = () => {
       }
     },
   });
+
+  const countryCode = countryIsoMap[formik.values.Country] || formik.values.Country || "US";
+  const states = State.getStatesOfCountry(countryCode);
+
+  const stateObj = states.find(
+    (s) =>
+      s.name.toLowerCase() === formik.values.State?.toLowerCase() ||
+      s.isoCode.toLowerCase() === formik.values.State?.toLowerCase()
+  );
+  const selectedStateValue = stateObj ? stateObj.isoCode : "";
+
+  const cities = selectedStateValue
+    ? City.getCitiesOfState(countryCode, selectedStateValue)
+    : [];
+
+  const handleCountryChange = (e) => {
+    const selectedCountry = e.target.value;
+    formik.setFieldValue("Country", selectedCountry);
+    formik.setFieldValue("State", "");
+    formik.setFieldValue("City", "");
+  };
+
+  const handleStateChange = (e) => {
+    const stateIsoCode = e.target.value;
+    const selectedStateObj = states.find((s) => s.isoCode === stateIsoCode);
+    const stateName = selectedStateObj ? selectedStateObj.name : "";
+    formik.setFieldValue("State", stateName);
+    formik.setFieldValue("City", "");
+  };
+
+  const handleCityChange = (e) => {
+    const cityName = e.target.value;
+    formik.setFieldValue("City", cityName);
+  };
 
   useEffect(() => {
     if (!companyData) return;
@@ -305,26 +353,84 @@ const AdminProfileEdit = () => {
           </div>
           <div className="input-grid-premium grid-4-col" style={{gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))"}}>
             <div className="auth-group">
-              <label className="auth-label">City</label>
-              <input type="text" name="City" {...formik.getFieldProps("City")} className="auth-input" />
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">State</label>
-              <input type="text" name="State" {...formik.getFieldProps("State")} className="auth-input" />
-            </div>
-            <div className="auth-group">
-              <label className="auth-label">Postal Code</label>
-              <input type="text" name="PostalCode" {...formik.getFieldProps("PostalCode")} className="auth-input" />
-            </div>
-            <div className="auth-group">
               <label className="auth-label">Country</label>
-              <select name="Country" {...formik.getFieldProps("Country")} className="auth-select">
+              <select
+                name="Country"
+                value={formik.values.Country}
+                onChange={handleCountryChange}
+                onBlur={formik.handleBlur}
+                className="auth-select"
+              >
                 <option value="">Select country</option>
                 <option value="IN">India</option>
                 <option value="US">United States</option>
                 <option value="GB">United Kingdom</option>
                 <option value="CA">Canada</option>
+                <option value="AE">UAE</option>
               </select>
+            </div>
+            <div className="auth-group">
+              <label className="auth-label">State</label>
+              {states.length > 0 ? (
+                <select
+                  name="State"
+                  value={selectedStateValue}
+                  onChange={handleStateChange}
+                  onBlur={formik.handleBlur}
+                  className="auth-select"
+                >
+                  <option value="">Select State</option>
+                  {states.map((s) => (
+                    <option key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  name="State"
+                  value={formik.values.State}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="auth-input"
+                  placeholder="Enter State"
+                />
+              )}
+            </div>
+            <div className="auth-group">
+              <label className="auth-label">City</label>
+              {selectedStateValue && cities.length > 0 ? (
+                <select
+                  name="City"
+                  value={formik.values.City}
+                  onChange={handleCityChange}
+                  onBlur={formik.handleBlur}
+                  className="auth-select"
+                >
+                  <option value="">Select City</option>
+                  {cities.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  name="City"
+                  value={formik.values.City}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="auth-input"
+                  placeholder="Enter City"
+                  disabled={!formik.values.State}
+                />
+              )}
+            </div>
+            <div className="auth-group">
+              <label className="auth-label">Postal Code</label>
+              <input type="text" name="PostalCode" {...formik.getFieldProps("PostalCode")} className="auth-input" />
             </div>
           </div>
         </div>

@@ -151,7 +151,6 @@ const ContractCreate = () => {
               name: `${item.firstName} ${item.lastName}`,
               email: item.emailAddress,
               phone: item.phoneNumber || "",
-              workLocation: item.city,
             };
           });
           setCandidates(shortlisted);

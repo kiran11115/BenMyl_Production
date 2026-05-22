@@ -157,14 +157,14 @@ const UploadTalentProfile = () => {
         title: p.projectName || "N/A",
         role: p.role || "N/A",
         description: p.description || "N/A",
-        period: p.startDate ? `${formatDateToDisplay(p.startDate)} - ${p.endDate ? formatDateToDisplay(p.endDate) : "Present"}` : "N/A",
+        period: p.startDate ? `${formatDateToDisplay(p.startDate)} - ${p.endDate ? formatDateToDisplay(p.endDate) : "N/A"}` : "N/A",
         tags: p.skills ? p.skills.split(",") : [],
       })) || [],
       education: apiData.employee_Heighers?.map(edu => ({
         degree: edu.highestQualification || "N/A",
         school: edu.university || "N/A",
         field: edu.fieldofstudy || "N/A",
-        year: edu.startDate ? `${formatDateToDisplay(edu.startDate)} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "Present"}` : "N/A",
+        year: edu.startDate ? `${formatDateToDisplay(edu.startDate)} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "N/A"}` : "N/A",
       })) || [],
       profileImage: apiData.profileImage
     };

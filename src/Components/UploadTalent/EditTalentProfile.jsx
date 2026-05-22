@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Country, State, City } from "country-state-city";
 import { useUpdateEmployeeResumeMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { ValidationErrorModal } from "./SaveTalentAlert";
 
@@ -73,6 +74,70 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
     useUpdateEmployeeResumeMutation();
   const [skillInput, setSkillInput] = useState("");
   const [validationErrorsState, setValidationErrorsState] = useState(null);
+
+  // Cascading dropdown state
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
+  const [availableStates, setAvailableStates] = useState([]);
+  const [selectedStateCode, setSelectedStateCode] = useState("");
+  const [availableCities, setAvailableCities] = useState([]);
+
+  // Initialize cascading dropdowns from existing profile data
+  useEffect(() => {
+    const countryName = initialData?.country || "";
+    const stateName = initialData?.state || "";
+    if (!countryName) return;
+
+    const allCountries = Country.getAllCountries();
+    const countryObj = allCountries.find(
+      (c) =>
+        c.name.toLowerCase() === countryName.toLowerCase() ||
+        c.isoCode.toLowerCase() === countryName.toLowerCase()
+    );
+    if (countryObj) {
+      setSelectedCountryCode(countryObj.isoCode);
+      const stateList = State.getStatesOfCountry(countryObj.isoCode);
+      setAvailableStates(stateList);
+
+      const stateObj = stateList.find(
+        (s) =>
+          s.name.toLowerCase() === stateName.toLowerCase() ||
+          s.isoCode.toLowerCase() === stateName.toLowerCase()
+      );
+      if (stateObj) {
+        setSelectedStateCode(stateObj.isoCode);
+        const cityList = City.getCitiesOfState(countryObj.isoCode, stateObj.isoCode);
+        setAvailableCities(cityList);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleCountryChange = (e) => {
+    const code = e.target.value;
+    const countryObj = Country.getCountryByCode(code);
+    setSelectedCountryCode(code);
+    setSelectedStateCode("");
+    setAvailableCities([]);
+    const stateList = code ? State.getStatesOfCountry(code) : [];
+    setAvailableStates(stateList);
+    formik.setFieldValue("country", countryObj ? countryObj.name : "");
+    formik.setFieldValue("state", "");
+    formik.setFieldValue("city", "");
+  };
+
+  const handleStateChange = (e) => {
+    const code = e.target.value;
+    const stateObj = State.getStateByCodeAndCountry(code, selectedCountryCode);
+    setSelectedStateCode(code);
+    const cityList = code ? City.getCitiesOfState(selectedCountryCode, code) : [];
+    setAvailableCities(cityList);
+    formik.setFieldValue("state", stateObj ? stateObj.name : "");
+    formik.setFieldValue("city", "");
+  };
+
+  const handleCityChange = (e) => {
+    formik.setFieldValue("city", e.target.value);
+  };
 
    const calculateExperience = (experiences) => {
   if (!experiences || experiences.length === 0) return 0;
@@ -411,49 +476,92 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                     </div>
                     <div>
                       <label className="auth-label">
-                        City<span style={{ color: "#ef4444" }}> *</span>
+                        Country<span style={{ color: "#ef4444" }}>*</span>
                       </label>
-                      <input
-                        name="city"
+                      <select
                         className="auth-input"
-                        value={formik.values.city}
-                        onChange={formik.handleChange}
+                        value={selectedCountryCode}
+                        onChange={handleCountryChange}
                         onBlur={formik.handleBlur}
-                      />
-                      {formik.touched.city && formik.errors.city && (
-                        <div className="auth-error">{formik.errors.city}</div>
+                        name="country"
+                      >
+                        <option value="">Select Country</option>
+                        {Country.getAllCountries().map((c) => (
+                          <option key={c.isoCode} value={c.isoCode}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                      {formik.touched.country && formik.errors.country && (
+                        <div className="auth-error">{formik.errors.country}</div>
                       )}
                     </div>
+
                     <div>
                       <label className="auth-label">
-                        State<span style={{ color: "#ef4444" }}> *</span>
+                        State<span style={{ color: "#ef4444" }}>*</span>
                       </label>
-                      <input
-                        name="state"
-                        className="auth-input"
-                        value={formik.values.state}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      />
+                      {availableStates.length > 0 ? (
+                        <select
+                          className="auth-input"
+                          value={selectedStateCode}
+                          onChange={handleStateChange}
+                          onBlur={formik.handleBlur}
+                          name="state"
+                        >
+                          <option value="">Select State</option>
+                          {availableStates.map((s) => (
+                            <option key={s.isoCode} value={s.isoCode}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          name="state"
+                          className="auth-input"
+                          placeholder="Enter state"
+                          value={formik.values.state}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                      )}
                       {formik.touched.state && formik.errors.state && (
                         <div className="auth-error">{formik.errors.state}</div>
                       )}
                     </div>
+
                     <div>
                       <label className="auth-label">
-                        Country<span style={{ color: "#ef4444" }}> *</span>
+                        City<span style={{ color: "#ef4444" }}>*</span>
                       </label>
-                      <input
-                        name="country"
-                        className="auth-input"
-                        value={formik.values.country}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      />
-                      {formik.touched.country && formik.errors.country && (
-                        <div className="auth-error">
-                          {formik.errors.country}
-                        </div>
+                      {availableCities.length > 0 ? (
+                        <select
+                          className="auth-input"
+                          value={formik.values.city}
+                          onChange={handleCityChange}
+                          onBlur={formik.handleBlur}
+                          name="city"
+                        >
+                          <option value="">Select City</option>
+                          {availableCities.map((city, idx) => (
+                            <option key={idx} value={city.name}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          name="city"
+                          className="auth-input"
+                          placeholder="Enter city"
+                          value={formik.values.city}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                      )}
+                      {formik.touched.city && formik.errors.city && (
+                        <div className="auth-error">{formik.errors.city}</div>
                       )}
                     </div>
                   </div>

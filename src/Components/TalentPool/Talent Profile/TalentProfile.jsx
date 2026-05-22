@@ -112,7 +112,7 @@ const TalentProfile = () => {
       employee?.employee_Heighers?.map((edu) => ({
         degree: edu.highestQualification || "N/A",
         school: edu.university || "N/A",
-        year: `${edu.startDate ? formatDateToDisplay(edu.startDate) : "N/A"} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "Present"}`,
+        year: `${edu.startDate ? formatDateToDisplay(edu.startDate) : "N/A"} - ${edu.endDate ? formatDateToDisplay(edu.endDate) : "N/A"}`,
       })) || [],
   };
 
