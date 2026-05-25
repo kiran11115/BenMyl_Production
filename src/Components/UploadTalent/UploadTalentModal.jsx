@@ -11,6 +11,7 @@ function UploadTalentModal({
   onHide,
   onShow,
   onUploading,
+  hideButton = false,
 }) {
   const [showModal, setShowModal] = useState(show);
   const [dragActive, setDragActive] = useState(false);
@@ -165,13 +166,15 @@ function UploadTalentModal({
 
   return (
     <>
-      <button
-        onClick={handleOpen}
-        className="btn-upload"
-      >
-        <Upload size={18} />
-        <span>{buttonText}</span>
-      </button>
+      {!hideButton && (
+        <button
+          onClick={handleOpen}
+          className="btn-upload"
+        >
+          <Upload size={18} />
+          <span>{buttonText}</span>
+        </button>
+      )}
 
       {showModal && (
         <div

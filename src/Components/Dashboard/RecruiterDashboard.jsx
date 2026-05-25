@@ -79,7 +79,7 @@ const pipelineLineData = {
   }],
 };
 
-const HiringManagerDashboard = () => {
+const RecruiterDashboard = () => {
   const navigate = useNavigate();
   const guideRef = useRef();
   const [postedJobsCount, setPostedJobsCount] = useState(0);
@@ -277,13 +277,13 @@ const HiringManagerDashboard = () => {
                 </button>
 
                 {/* Upload Talent — opens modal */}
-                <button
+                {/* <button
                   className="btn d-flex align-items-center gap-2"
                   onClick={() => setShowUploadModal(true)}
                   style={{ background: "#f5810c", border: "none", color: "white", padding: "10px 20px", borderRadius: "12px", fontWeight: 700, fontSize: "13px", boxShadow: "0 10px 15px -3px rgba(245,129,12,0.2)", whiteSpace: "nowrap" }}
                 >
                   <Upload size={15} /> Upload Talent
-                </button>
+                </button> */}
 
                 {/* Schedule Interview */}
                 <button
@@ -509,4 +509,4 @@ const SparklePulse = () => {
   );
 };
 
-export default HiringManagerDashboard;
+export default RecruiterDashboard;

@@ -51,6 +51,24 @@
   align-items: start;
 }
 
+.vs-filters-sidebar {
+  height: 100%;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+/* optional smooth scrolling */
+.vs-filters-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vs-filters-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
 @media (max-width: 1024px) {
   .jobs-layout {
     grid-template-columns: 1fr;

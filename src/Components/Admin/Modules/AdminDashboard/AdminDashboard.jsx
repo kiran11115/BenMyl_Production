@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   Shield, Users, CheckCircle, RefreshCw,
   ChevronRight, ShieldCheck, Database, Bell,
-  Activity, Briefcase, Plus, FileText, CheckSquare
+  Activity, Briefcase, Plus, FileText, CheckSquare,
+  Upload, Calendar
 } from "lucide-react";
+import UploadTalentModal from "../../../UploadTalent/UploadTalentModal";
 import "../../Modules/AdminDashboard/AdminDashboard.css";
 import "../../../Dashboard/Dashboard.css";
 import "../../../Dashboard/BentoDashboard.css";
@@ -16,9 +18,9 @@ import Guide from "../../../Guide/Guide";
 
 const MODULE_SHORTCUTS = [
   { title: "Role Configuration", desc: "Manage user roles and permission grants", path: "/Admin/role-configuration", icon: <ShieldCheck size={18} /> },
-  { title: "Approval Control", desc: "Configure SLA workflows and routing rules", path: "/Admin/approval-control", icon: <ClipboardList size={18} /> },
-  { title: "Master Data", desc: "Manage dropdowns, values and system constants", path: "/Admin/master-data", icon: <Database size={18} /> },
-  { title: "Notification Policy", desc: "Configure email, SLA and alert thresholds", path: "/Admin/notification-policy", icon: <Bell size={18} /> },
+  { title: "Create Job", desc: "Post a new job opening and define requirements", path: "/Admin/user-post-new-positions", icon: <Plus size={18} /> },
+  { title: "Upload Talent", desc: "Bulk upload candidate resumes via AI parsing", path: null, action: "uploadTalent", icon: <Upload size={18} /> },
+  { title: "Schedule Interview", desc: "Coordinate calendar slots with candidates", path: "/Admin/user-schedule-interview", icon: <Calendar size={18} /> },
   { title: "Talent Pool", desc: "Browse and manage all uploaded candidate profiles", path: "/Admin/admin-talentpool", icon: <Users size={18} /> },
   { title: "Posted Jobs", desc: "Review all active and historical job postings", path: "/Admin/admin-posted-jobs", icon: <Briefcase size={18} /> },
 ];
@@ -59,6 +61,7 @@ function AdminDashboard() {
   const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState(null);
   const [talentCount, setTalentCount] = useState(0);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   // Real API: roles list
   const { data: rolesData, isLoading: rolesLoading } = useRoleListDetailsQuery();
@@ -233,7 +236,7 @@ function AdminDashboard() {
                 </button>
               </div>
             </div>
-            <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "16px", borderRadius: "20px" }}>
+            <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: "16px", borderRadius: "20px", flexShrink: 0 }}>
               <Shield size={32} color="#3b82f6" />
             </div>
           </div>
@@ -282,7 +285,11 @@ function AdminDashboard() {
           </div>
           <div className="shortcuts-modern-grid">
             {MODULE_SHORTCUTS.map((link, i) => (
-              <div key={i} className="shortcut-interactive-card" onClick={() => navigate(link.path)}>
+              <div
+                key={i}
+                className="shortcut-interactive-card"
+                onClick={() => link.action === "uploadTalent" ? setShowUploadModal(true) : navigate(link.path)}
+              >
                 <div className="shortcut-icon-wrapper">{link.icon}</div>
                 <div className="shortcut-text-wrapper">
                   <span className="shortcut-title">{link.title}</span>
@@ -453,6 +460,17 @@ function AdminDashboard() {
         </div>
 
       </div>
+
+      {/* Upload Talent Modal — triggered from welcome card */}
+      <UploadTalentModal
+        show={showUploadModal}
+        hideButton={true}
+        onHide={() => setShowUploadModal(false)}
+        onSuccess={(msg) => {
+          showToast(msg);
+          setShowUploadModal(false);
+        }}
+      />
     </div>
   );
 }

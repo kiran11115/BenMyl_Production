@@ -288,7 +288,22 @@ const BenchSalesDashboard = () => {
               </div>
               <ChevronRight className="shortcut-chevron" size={16} />
             </div>
-            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/review-talent')}>
+            <div
+  className="shortcut-interactive-card"
+  onClick={() =>
+    navigate(
+      `${window.location.pathname.toLowerCase().startsWith('/admin')
+        ? '/Admin'
+        : '/User'
+      }/user-upload-talent`,
+      {
+        state: {
+          activeTab: "Review",
+        },
+      }
+    )
+  }
+>
               <div className="shortcut-icon-wrapper">
                 <CheckSquare size={18} />
               </div>
@@ -308,13 +323,13 @@ const BenchSalesDashboard = () => {
               </div>
               <ChevronRight className="shortcut-chevron" size={16} />
             </div>
-            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/user-talentpool')}>
+            <div className="shortcut-interactive-card" onClick={() => handleNavigate('/user-upcoming-interview')}>
               <div className="shortcut-icon-wrapper">
                 <Users size={18} />
               </div>
               <div className="shortcut-text-wrapper">
-                <span className="shortcut-title">Talent Pool</span>
-                <span className="shortcut-desc">{totalTalentCount} candidates — explore and filter your bench</span>
+                <span className="shortcut-title">Scheduled Interviews</span>
+                <span className="shortcut-desc">explore and find your scheduled interviews</span>
               </div>
               <ChevronRight className="shortcut-chevron" size={16} />
             </div>
