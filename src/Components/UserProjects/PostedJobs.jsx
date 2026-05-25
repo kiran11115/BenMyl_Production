@@ -202,7 +202,9 @@ const PostedJobs = () => {
                       <h3 className="job-title">{job.title}</h3>
                       <div className="company">{job.company}</div>
                       <div className="location">
-                        <FiMapPin size={12} /> {job.location}
+                        <FiMapPin size={12} /> {job.location
+                          ? job.location.split(",")[0].trim()
+                          : "N/A"}
                       </div>
                     </div>
                   </div>

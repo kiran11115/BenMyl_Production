@@ -24,6 +24,7 @@ import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPo
 import { CandidateCard } from "../UploadTalent/UserTalentGrid";
 import Guide from "../Guide/Guide";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
+import { useSchedulesDetailsBenchsalesQuery, useSchedulesDetailsQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler);
 
@@ -85,6 +86,7 @@ const RecruiterDashboard = () => {
   const [postedJobsCount, setPostedJobsCount] = useState(0);
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [pendingReviewCount, setPendingReviewCount] = useState(0);
+  const [scheduledInterviewsCount, setScheduledInterviewsCount] = useState(0);
   const [recentJobs, setRecentJobs] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [hiringHealth, setHiringHealth] = useState(75);
@@ -98,9 +100,71 @@ const RecruiterDashboard = () => {
   const [dashboardProjects, setDashboardProjects] = useState([]);
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
+  const userRole = localStorage.getItem("Role");
+
+const isBenchsales = userRole === "Benchsales";
+const isRecruiter2 = userRole === "Recruiter2";
+
+const isAdmin =
+  userRole === "Admin" ||
+  window.location.pathname
+    .toLowerCase()
+    .startsWith('/admin');
+
+const shouldFetchBoth =
+  isRecruiter2 || isAdmin;
+
+const shouldFetchNormal =
+  !isBenchsales || shouldFetchBoth;
+
+const shouldFetchBench =
+  isBenchsales || shouldFetchBoth;
+
+const {
+  data: apiInterviewsNormal = []
+} = useSchedulesDetailsQuery(userId, {
+  skip: !userId || !shouldFetchNormal,
+  refetchOnMountOrArgChange: true
+});
+
+const {
+  data: apiInterviewsBench = []
+} = useSchedulesDetailsBenchsalesQuery(userId, {
+  skip: !userId || !shouldFetchBench,
+  refetchOnMountOrArgChange: true
+});
+
+let apiInterviews = [];
+
+if (shouldFetchBoth) {
+  apiInterviews = [
+    ...apiInterviewsNormal,
+    ...apiInterviewsBench
+  ];
+} else if (isBenchsales) {
+  apiInterviews = apiInterviewsBench;
+} else {
+  apiInterviews = apiInterviewsNormal;
+}
 
   useEffect(() => {
     setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
+    const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const filteredInterviews = Array.isArray(apiInterviews)
+  ? apiInterviews.filter((item) => {
+      const interviewDate = new Date(
+        item.interviewDate
+      );
+
+      return interviewDate >= today;
+    })
+  : [];
+
+setScheduledInterviewsCount(
+  filteredInterviews.length
+);
     
     // Calculate Project Data
     const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
@@ -316,13 +380,33 @@ const RecruiterDashboard = () => {
               <span className="bento-stat-value">{activeProjectsCount}</span>
             </div>
           </div>
-          <div className="bento-stat-mini" onClick={() => handleNavigate('/user-upload-talent')} style={{ cursor: 'pointer' }}>
-            <div className="bento-stat-icon" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}><Clock size={20} /></div>
-            <div className="bento-stat-info">
-              <span className="bento-stat-label">Pitches to Review</span>
-              <span className="bento-stat-value">{pendingReviewCount}</span>
-            </div>
-          </div>
+          <div
+  className="bento-stat-mini"
+  onClick={() =>
+    handleNavigate('/user-upcoming-interview')
+  }
+  style={{ cursor: 'pointer' }}
+>
+  <div
+    className="bento-stat-icon"
+    style={{
+      background: 'rgba(16, 185, 129, 0.1)',
+      color: '#10b981'
+    }}
+  >
+    <Calendar size={20} />
+  </div>
+
+  <div className="bento-stat-info">
+    <span className="bento-stat-label">
+      Scheduled Interviews
+    </span>
+
+    <span className="bento-stat-value">
+      {scheduledInterviewsCount}
+    </span>
+  </div>
+</div>
         </div>
 
         {/* Row 2: Quick Actions — no duplicate links from welcome card */}
