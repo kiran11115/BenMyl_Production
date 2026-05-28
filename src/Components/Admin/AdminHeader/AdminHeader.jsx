@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users,Plus } from "lucide-react";
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
@@ -13,6 +13,7 @@ function AdminHeader() {
     const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
     const [isMessagesPopoverOpen, setIsMessagesPopoverOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [showRoutineModal, setShowRoutineModal] = useState(false);
     const profileRef = useRef(null);
     const aiPopoverRef = useRef(null);
     const messagesPopoverRef = useRef(null);
@@ -110,14 +111,7 @@ function AdminHeader() {
                         {[
                             // { path: "/Admin/portal", label: "Control Center" },
                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
-                            { 
-                                label: "Projects", 
-                                subItems: [
-                                    { label: "Posted Jobs", path: "/Admin/admin-posted-jobs" },
-                                    { label: "Create Job", path: "/Admin/user-post-new-positions" },
-                                    { label: "Ongoing Projects", path: "/Admin/admin-projects" },
-                                ]
-                            },
+                            { path: "/Admin/admin-posted-jobs",label: "Projects"},
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
                             { path: "/Admin/admin-upload-talent", label: "Talent Management" },
@@ -187,7 +181,7 @@ function AdminHeader() {
               className="header-search-input"
             />
           </div> */}
-                    <div className="ai-pill-wrapper" ref={aiPopoverRef}>
+                    {/* <div className="ai-pill-wrapper" ref={aiPopoverRef}>
                         <button
                             onClick={() => setIsAiPopoverOpen((prev) => !prev)}
                             className="ai-pill-btn"
@@ -228,7 +222,16 @@ function AdminHeader() {
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </div> */}
+                    <button
+  className="quick-create-btn"
+  onClick={() =>
+    setShowRoutineModal(true)
+  }
+>
+  <Plus size={14} />
+  Quick Create
+</button>
 
                      {/* Settings Icon */}
                     <div className="admin-message-popover-wrapper">
@@ -335,7 +338,148 @@ function AdminHeader() {
                     <Outlet />
                 </main>
             </div>
-            
+            {/* QUICK CREATE MODAL */}
+
+{showRoutineModal && (
+
+  <div className="routine-modal-overlay">
+
+    <div className="routine-modal">
+
+      <div className="routine-header">
+
+        <div className="routine-title">
+
+          <span>
+            EXPRESS DISPATCH CONSOLE
+          </span>
+
+        </div>
+
+        <button
+          className="routine-close"
+          onClick={() =>
+            setShowRoutineModal(false)
+          }
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <div className="routine-divider"></div>
+
+      <p className="routine-subtitle">
+
+        Instantly execute workspace workflows.
+
+      </p>
+
+      <div className="routine-grid">
+
+        {/* CREATE JOB */}
+
+        <div
+          className="routine-card"
+          onClick={() => {
+            navigate(
+              "/Admin/user-post-new-positions"
+            );
+            setShowRoutineModal(false);
+          }}
+        >
+
+          <div className="routine-icon">
+            <File size={18} />
+          </div>
+
+          <h4>Create Job</h4>
+
+          <span>
+            Create hiring requirements
+          </span>
+
+        </div>
+
+        {/* UPLOAD TALENT */}
+
+        <div
+          className="routine-card"
+          onClick={() => {
+            navigate(
+              "/Admin/admin-upload-talent"
+            );
+            setShowRoutineModal(false);
+          }}
+        >
+
+          <div className="routine-icon">
+            <Users size={18} />
+          </div>
+
+          <h4>Upload Talent</h4>
+
+          <span>
+            AI parser candidate upload
+          </span>
+
+        </div>
+
+        {/* TALENT POOL */}
+
+        <div
+          className="routine-card"
+          onClick={() => {
+            navigate(
+              "/Admin/admin-talentpool"
+            );
+            setShowRoutineModal(false);
+          }}
+        >
+
+          <div className="routine-icon">
+            <Users size={18} />
+          </div>
+
+          <h4>Talent Pool</h4>
+
+          <span>
+            Manage candidate profiles
+          </span>
+
+        </div>
+
+        {/* INTERVIEW */}
+
+        <div
+          className="routine-card"
+          onClick={() => {
+            navigate(
+              "/Admin/user-schedule-interview"
+            );
+            setShowRoutineModal(false);
+          }}
+        >
+
+          <div className="routine-icon">
+            <Bell size={18} />
+          </div>
+
+          <h4>Schedule Interview</h4>
+
+          <span>
+            Coordinate interview flow
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
             <TrialPopover />
 
         </>

@@ -1386,3 +1386,34 @@
     border-left: 1px solid #334155;
   }
 }
+
+/* QUICK CREATE BUTTON */
+
+.quick-create-btn{
+  height:38px;
+
+  padding:0 16px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#6b63ff;
+
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  font-size:13px;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.quick-create-btn:hover{
+  background:#5c54f5;
+}

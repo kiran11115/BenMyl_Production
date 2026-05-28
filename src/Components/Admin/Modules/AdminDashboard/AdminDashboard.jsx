@@ -71,8 +71,8 @@ function AdminDashboard() {
 
   const [showUploadModal, setShowUploadModal] =
     useState(false);
-    const [showRoutineModal, setShowRoutineModal] =
-  useState(false);
+  const [showRoutineModal, setShowRoutineModal] =
+    useState(false);
 
   const { data: rolesData = [] } =
     useRoleListDetailsQuery();
@@ -133,7 +133,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="ai-dashboard-wrapper">
+    <div className="ai-dashboard-wrapper container">
 
       {/* TOAST */}
 
@@ -154,11 +154,11 @@ function AdminDashboard() {
             ✦ ENTERPRISE AI PORTAL ENABLED
           </div>
 
-          <h1>
+          <h1 style={{ fontSize: '30px' }}>
             Welcome Back to BenMyl
           </h1>
 
-          <p>
+          <p style={{ fontSize: '14px' }}>
             Your autonomous recruitment workflow
             is calibrated and running. AI neural
             screens completed
@@ -190,14 +190,14 @@ function AdminDashboard() {
           </button>
 
           <button
-  className="routine-btn"
-  onClick={() =>
-    setShowRoutineModal(true)
-  }
->
-  View Active Routines
-  <ArrowUpRight size={16} />
-</button>
+            className="routine-btn"
+            onClick={() =>
+              setShowRoutineModal(true)
+            }
+          >
+            View Active Routines
+            <ArrowUpRight size={16} />
+          </button>
 
         </div>
 
@@ -252,163 +252,163 @@ function AdminDashboard() {
 
       <div className="stats-grid">
 
-  {/* CARD 1 */}
+        {/* CARD 1 */}
 
-  <div className="stat-card">
+        <div className="stat-card">
 
-    <div className="stat-header-row">
+          <div className="stat-header-row">
 
-      <div className="stat-title">
-        Active Recruiters
-      </div>
+            <div className="stat-title">
+              Active Recruiters
+            </div>
 
-      <div className="stat-icon-box">
-        <Users size={16} />
-      </div>
+            <div className="stat-icon-box">
+              <Users size={16} />
+            </div>
 
-    </div>
-
-    <div className="stat-number">
-      {teamMembers.length}
-    </div>
-
-    <div className="stat-footer-row">
-
-      <span>
-        Last calibrated 5m ago
-      </span>
-      </div>
-
-      <div className="green-badge">
-        +12%
-      </div>
-
-    
-
-    <div className="stat-bottom-link">
-      ↗ Optimal Flow
-    </div>
-
-  </div>
-
-  {/* CARD 2 */}
-
-  <div className="stat-card">
-
-    <div className="stat-header-row">
-
-      <span className="stat-title">
-        Open Requirements
-      </span>
-
-      <div className="stat-icon-box">
-        <Briefcase size={16} />
-      </div>
-
-    </div>
-
-    <div className="stat-number">
-      {apiJobs.length}
-    </div>
-
-    <div className="stat-footer-row">
-
-      <span>
-        Last calibrated 5m ago
-      </span>
-       </div>
-
-      <div className="green-badge">
-        +8%
-      </div>
-
-   
-
-    <div className="stat-bottom-link">
-      ↗ Optimal Flow
-    </div>
-
-  </div>
-
-  {/* CARD 3 */}
-
-  <div className="stat-card">
-
-    <div className="stat-header-row">
-
-      <span className="stat-title">
-        Candidate Submissions
-      </span>
-
-      <div className="stat-icon-box">
-        <Layers3 size={16} />
-      </div>
-
-    </div>
-
-    <div className="stat-number">
-      {talentCount}
-    </div>
-
-    <div className="stat-footer-row">
-
-      <span>
-        Last calibrated 5m ago
-      </span>
-      </div>
-
-      <div className="green-badge">
-        +24%
-      </div>
-
-    
-
-    <div className="stat-bottom-link">
-      ↗ Optimal Flow
-    </div>
-
-  </div>
-
-  {/* CARD 4 */}
-
-  <div className="stat-card">
-
-    <div className="stat-header-row">
-
-      <span className="stat-title">
-        Hiring Success Rate
-      </span>
-
-      <div className="stat-icon-box">
-        <ShieldCheck size={16} />
-      </div>
-
-    </div>
-
-    <div className="stat-number">
-      94.2%
-    </div>
-
-    <div className="stat-footer-row">
-
-      <span>
-        Last calibrated 5m ago
-      </span>
           </div>
 
-      <div className="green-badge">
-        +4.1%
+          <div className="stat-number">
+            {teamMembers.length}
+          </div>
+
+          <div className="stat-footer-row">
+
+            <span>
+              Last calibrated 5m ago
+            </span>
+          </div>
+
+          <div className="green-badge">
+            +12%
+          </div>
+
+
+
+          <div className="stat-bottom-link">
+            ↗ Optimal Flow
+          </div>
+
+        </div>
+
+        {/* CARD 2 */}
+
+        <div className="stat-card">
+
+          <div className="stat-header-row">
+
+            <span className="stat-title">
+              Open Requirements
+            </span>
+
+            <div className="stat-icon-box">
+              <Briefcase size={16} />
+            </div>
+
+          </div>
+
+          <div className="stat-number">
+            {apiJobs.length}
+          </div>
+
+          <div className="stat-footer-row">
+
+            <span>
+              Last calibrated 5m ago
+            </span>
+          </div>
+
+          <div className="green-badge">
+            +8%
+          </div>
+
+
+
+          <div className="stat-bottom-link">
+            ↗ Optimal Flow
+          </div>
+
+        </div>
+
+        {/* CARD 3 */}
+
+        <div className="stat-card">
+
+          <div className="stat-header-row">
+
+            <span className="stat-title">
+              Candidate Submissions
+            </span>
+
+            <div className="stat-icon-box">
+              <Layers3 size={16} />
+            </div>
+
+          </div>
+
+          <div className="stat-number">
+            {talentCount}
+          </div>
+
+          <div className="stat-footer-row">
+
+            <span>
+              Last calibrated 5m ago
+            </span>
+          </div>
+
+          <div className="green-badge">
+            +24%
+          </div>
+
+
+
+          <div className="stat-bottom-link">
+            ↗ Optimal Flow
+          </div>
+
+        </div>
+
+        {/* CARD 4 */}
+
+        <div className="stat-card">
+
+          <div className="stat-header-row">
+
+            <span className="stat-title">
+              Hiring Success Rate
+            </span>
+
+            <div className="stat-icon-box">
+              <ShieldCheck size={16} />
+            </div>
+
+          </div>
+
+          <div className="stat-number">
+            94.2%
+          </div>
+
+          <div className="stat-footer-row">
+
+            <span>
+              Last calibrated 5m ago
+            </span>
+          </div>
+
+          <div className="green-badge">
+            +4.1%
+          </div>
+
+
+
+          <div className="stat-bottom-link">
+            ↗ Optimal Flow
+          </div>
+
+        </div>
+
       </div>
-
-
-
-    <div className="stat-bottom-link">
-      ↗ Optimal Flow
-    </div>
-
-  </div>
-
-</div>
 
       {/* CHART SECTION */}
 
@@ -420,12 +420,12 @@ function AdminDashboard() {
 
             <div>
 
-              <h3>
+              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
                 Hiring Activity Velocity
                 Index
               </h3>
 
-              <p>
+              <p style={{ fontSize: '12px', marginTop: 0 }}>
                 Real-time mapping of
                 applicant pipelines &
                 revenue capture
@@ -435,22 +435,22 @@ function AdminDashboard() {
 
             <div className="graph-tabs">
 
-              <button className="active">
-                Pipeline Volume
-              </button>
+  <button className="graph-tab active">
+    Pipeline Volume
+  </button>
 
-              <button>
-                Revenue Stream (k$)
-              </button>
+  <button className="graph-tab">
+    Revenue Stream (k$)
+  </button>
 
-            </div>
+</div>
 
           </div>
 
           <div className="graph-area">
 
             <svg
-              viewBox="0 0 1000 300"
+              viewBox="0 0 1000 240"
               className="graph-svg"
             >
 
@@ -491,7 +491,7 @@ function AdminDashboard() {
                 AVG RECRUITMENT CYCLE
               </span>
 
-              <strong style={{fontSize:14}}>
+              <strong style={{ fontSize: 14 }}>
                 11.4 Days
               </strong>
             </div>
@@ -501,7 +501,7 @@ function AdminDashboard() {
                 AI SCORE SUCCESS RATE
               </span>
 
-              <strong style={{fontSize:14,color:'#5B5BD6'}}>
+              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>
                 98.4% Accuracy
               </strong>
             </div>
@@ -511,7 +511,7 @@ function AdminDashboard() {
                 YIELD INDEX GROWTH
               </span>
 
-              <strong style={{fontSize:14,color:'#009966'}}>
+              <strong style={{ fontSize: 14, color: '#009966' }}>
                 +14% Growth
               </strong>
             </div>
@@ -528,11 +528,11 @@ function AdminDashboard() {
 
             <div>
 
-              <h3>
+              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
                 Autonomous Activity Log
               </h3>
 
-              <p>
+              <p style={{ fontSize: '12px', marginTop: 0 }}>
                 Live triggers from
                 sourcing systems
               </p>
@@ -546,75 +546,84 @@ function AdminDashboard() {
           <div className="log-list">
 
             <div className="log-item">
-
+              <div style={{display:'flex',justifyContent:'space-between'}}>
               <span className="log-tag">
                 Sourcing Engine
               </span>
+              <small style={{fontSize:11}}>
+                2 mins ago
+              </small>
+              </div>
 
-              <p>
+              <p style={{fontSize:'11px'}}>
                 AI-Match paired Candidate
                 "Nolan V." with Staffing
                 Requirement #4019 (98.2%
                 Match Score)
               </p>
 
-              <small>
-                2 mins ago
-              </small>
+              
 
             </div>
 
             <div className="log-item">
-
+              <div style={{display:'flex',justifyContent:'space-between'}}>
               <span className="log-tag">
                 Submission Gateway
               </span>
+              <small style={{fontSize:11}}>
+                14 mins ago
+              </small>
+              </div>
 
-              <p>
+              <p style={{fontSize:'11px'}}>
                 Recruiter Samantha Chen
                 submitted 4 candidates to
                 "Cloud Solutions Engineer"
               </p>
 
-              <small>
-                14 mins ago
-              </small>
+              
 
             </div>
 
             <div className="log-item">
-
+               <div style={{display:'flex',justifyContent:'space-between'}}>
               <span className="log-tag">
                 Client Mapping
               </span>
+              <small style={{fontSize:11}}>
+                1 hour ago
+              </small>
+              </div>
 
-              <p>
+              <p style={{fontSize:'11px'}}>
                 New Priority requirement
                 added: Senior DevOps
                 Specialist
               </p>
 
-              <small>
-                1 hour ago
-              </small>
+              
 
             </div>
 
             <div className="log-item">
 
+              <div style={{display:'flex',justifyContent:'space-between'}}>
               <span className="log-tag">
                 Bench Validation
               </span>
+              <small style={{fontSize:11}}>
+                2 hours ago
+              </small>
+              </div>
 
-              <p>
+              <p style={{fontSize:'11px'}}>
                 Vendor "Synapse Sourcing"
                 updated 8 hot-list bench
                 profiles
               </p>
 
-              <small>
-                2 hours ago
-              </small>
+              
 
             </div>
 
@@ -622,12 +631,12 @@ function AdminDashboard() {
 
           <div className="security-box">
 
-            <span>
+            <span style={{fontSize:11}}>
               ✓ Security token protocol
               compliant
             </span>
 
-            <strong>
+            <strong style={{fontSize:10}}>
               EXCELLENT
             </strong>
 
@@ -645,11 +654,11 @@ function AdminDashboard() {
 
           <div>
 
-            <h3>
+            <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
               Quick Action Command Console
             </h3>
 
-            <p>
+            <p style={{ fontSize: '12px', marginTop: 0 }}>
               Launch background processes
               or manual calibration flows
               instantly
@@ -676,11 +685,11 @@ function AdminDashboard() {
                   {item.icon}
                 </div>
 
-                <h4>
+                <h4 style={{fontSize:12,marginBottom:0}}>
                   {item.title}
                 </h4>
 
-                <p>
+                <p style={{fontSize:10,marginTop:0}}>
                   {item.desc}
                 </p>
 
@@ -707,155 +716,155 @@ function AdminDashboard() {
 
       {/* ROUTINE MODAL */}
 
-{showRoutineModal && (
+      {showRoutineModal && (
 
-  <div className="routine-modal-overlay">
+        <div className="routine-modal-overlay">
 
-    <div className="routine-modal">
+          <div className="routine-modal">
 
-      {/* HEADER */}
+            {/* HEADER */}
 
-      <div className="routine-header">
+            <div className="routine-header">
 
-        <div className="routine-title">
+              <div className="routine-title">
 
-          <Sparkles size={18} />
+                <Sparkles size={18} />
 
-          <span>
-            EXPRESS DISPATCH CONSOLE
-          </span>
+                <span>
+                  EXPRESS DISPATCH CONSOLE
+                </span>
 
-        </div>
+              </div>
 
-        <button
-          className="routine-close"
-          onClick={() =>
-            setShowRoutineModal(false)
-          }
-        >
-          ✕
-        </button>
+              <button
+                className="routine-close"
+                onClick={() =>
+                  setShowRoutineModal(false)
+                }
+              >
+                ✕
+              </button>
 
-      </div>
+            </div>
 
-      <div className="routine-divider"></div>
+            <div className="routine-divider"></div>
 
-      <p className="routine-subtitle">
+            <p className="routine-subtitle">
 
-        Instantly execute workspace
-        workflows. Select your
-        operations parameter matching
-        standard staffing lifecycle:
+              Instantly execute workspace
+              workflows. Select your
+              operations parameter matching
+              standard staffing lifecycle:
 
-      </p>
+            </p>
 
-      {/* GRID */}
+            {/* GRID */}
 
-      <div className="routine-grid">
+            <div className="routine-grid">
 
-        {/* CREATE JOB */}
+              {/* CREATE JOB */}
 
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/user-post-new-positions"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/Admin/user-post-new-positions"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
 
-          <div className="routine-icon">
-            <Briefcase size={18} />
+                <div className="routine-icon">
+                  <Briefcase size={18} />
+                </div>
+
+                <h4>Create Job</h4>
+
+                <span>
+                  Create hiring requirements
+                </span>
+
+              </div>
+
+              {/* UPLOAD TALENT */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  setShowRoutineModal(false);
+                  setShowUploadModal(true);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Upload size={18} />
+                </div>
+
+                <h4>Upload Talent</h4>
+
+                <span>
+                  AI parser candidate upload
+                </span>
+
+              </div>
+
+              {/* TALENT POOL */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/Admin/admin-talentpool"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Users size={18} />
+                </div>
+
+                <h4>Talent Pool</h4>
+
+                <span>
+                  Manage candidate profiles
+                </span>
+
+              </div>
+
+              {/* SCHEDULE */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/Admin/user-schedule-interview"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Activity size={18} />
+                </div>
+
+                <h4>
+                  Schedule Interview
+                </h4>
+
+                <span>
+                  Coordinate interview flow
+                </span>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <h4>Create Job</h4>
-
-          <span>
-            Create hiring requirements
-          </span>
-
         </div>
 
-        {/* UPLOAD TALENT */}
-
-        <div
-          className="routine-card"
-          onClick={() => {
-            setShowRoutineModal(false);
-            setShowUploadModal(true);
-          }}
-        >
-
-          <div className="routine-icon">
-            <Upload size={18} />
-          </div>
-
-          <h4>Upload Talent</h4>
-
-          <span>
-            AI parser candidate upload
-          </span>
-
-        </div>
-
-        {/* TALENT POOL */}
-
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/admin-talentpool"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
-
-          <div className="routine-icon">
-            <Users size={18} />
-          </div>
-
-          <h4>Talent Pool</h4>
-
-          <span>
-            Manage candidate profiles
-          </span>
-
-        </div>
-
-        {/* SCHEDULE */}
-
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/user-schedule-interview"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
-
-          <div className="routine-icon">
-            <Activity size={18} />
-          </div>
-
-          <h4>
-            Schedule Interview
-          </h4>
-
-          <span>
-            Coordinate interview flow
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-)}
+      )}
 
     </div>
   );

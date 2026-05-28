@@ -42,7 +42,7 @@ body{
   border-radius:999px;
   background:rgba(255,255,255,.12);
   color:#fff;
-  font-size:11px;
+  font-size:10px;
   font-weight:800;
   letter-spacing:.12em;
 }
@@ -120,7 +120,7 @@ body{
 
 .command-title{
   color:#6b6ff0;
-  font-size:12px;
+  font-size:10px;
   font-weight:800;
   letter-spacing:.08em;
   margin-bottom:18px;
@@ -133,7 +133,7 @@ body{
 
 .command-search input{
   flex:1;
-  height:56px;
+  height:50px;
   border-radius:16px;
   border:1px solid #dfe4ff;
   padding:0 20px;
@@ -169,7 +169,7 @@ body{
   background:#f8f9fd;
   display:flex;
   align-items:center;
-  font-size:12px;
+  font-size:11px;
   font-weight:600;
   color:#5f6985;
 }
@@ -213,7 +213,7 @@ body{
 
 .stat-title{
   color:#8b95b1;
-  font-size:13px;
+  font-size:12px;
   line-height:1.5;
   font-weight:500;
   max-width:120px;
@@ -243,7 +243,7 @@ body{
   left:18px;
   top:56px;
 
-  font-size:40px;
+  font-size:24px;
   line-height:1;
   font-weight:800;
   color:#08152f;
@@ -284,7 +284,7 @@ body{
   background:#e8fbf1;
   color:#00b67a;
 
-  font-size:13px;
+  font-size:12px;
   font-weight:800;
 
   display:flex;
@@ -329,7 +329,10 @@ body{
   display:grid;
   grid-template-columns:2fr 1fr;
   gap:22px;
+  align-items:stretch;
 }
+
+/* SAME HEIGHT */
 
 .graph-card,
 .log-card{
@@ -337,6 +340,10 @@ body{
   border-radius:24px;
   border:1px solid #e6ebf7;
   padding:24px;
+
+  height:520px;
+  display:flex;
+  flex-direction:column;
 }
 
 .graph-header{
@@ -359,27 +366,73 @@ body{
 
 .graph-tabs{
   display:flex;
-  gap:10px;
+  align-items:center;
+  gap:4px;
+
+  padding:2px;
+
+  background:#eef1f6;
+
+  border:1px solid #dfe4ee;
+
+  border-radius:8px;
+  height: 30px;
+}
+
+/* BUTTON */
+
+.graph-tab{
+  height:16px;
+
+  padding:4px 12px;
+
+  border:none;
+
+  border-radius:8px;
+
+  background:transparent;
+
+  color:#7d879c;
+
+  font-size:11px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+/* ACTIVE */
+
+.graph-tab.active{
+  background:#ffffff;
+
+  color:#111827;
+  padding:4px 12px;
+
+  box-shadow:
+  0 1px 2px rgba(0,0,0,.06);
 }
 
 .graph-tabs button{
-  height:42px;
+  height:24px;
   padding:0 16px;
   border:none;
-  border-radius:10px;
+  border-radius:4px;
   background:#f4f6fc;
   color:#6a738f;
   font-weight:700;
 }
 
 .graph-tabs .active{
-  background:#595ce7;
-  color:#fff;
+  background:#fff;
+  color:#000;
 }
 
 .graph-area{
-  margin-top:24px;
-  height:320px;
+  margin-top:16px;
+  height:300px;
   border-radius:18px;
   overflow:hidden;
   border:1px solid #edf1fb;
@@ -397,7 +450,7 @@ body{
 }
 
 .graph-footer{
-  margin-top:24px;
+  margin-top:12px;
   padding-top:22px;
   border-top:1px solid #edf1fb;
   display:flex;
@@ -437,10 +490,23 @@ body{
 }
 
 .log-list{
-  margin-top:24px;
+  margin-top:18px;
   display:flex;
   flex-direction:column;
   gap:22px;
+
+  flex:1;
+  overflow-y:auto;
+  padding-right:6px;
+}
+
+.log-list::-webkit-scrollbar{
+  width:6px;
+}
+
+.log-list::-webkit-scrollbar-thumb{
+  background:#c7cce0;
+  border-radius:10px;
 }
 
 .log-item{
@@ -485,7 +551,8 @@ body{
 }
 
 .security-box{
-  margin-top:20px;
+  margin-top:14px;
+  flex-shrink:0;
   border-radius:14px;
   border:1px solid #e4f7ed;
   background:#f8fffb;
@@ -545,8 +612,8 @@ body{
 }
 
 .quick-icon{
-  width:48px;
-  height:48px;
+  width:40px;
+  height:40px;
   border-radius:14px;
   background:#f3f4ff;
   color:#5a5de8;
