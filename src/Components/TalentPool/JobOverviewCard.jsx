@@ -51,13 +51,13 @@ const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
         </div>
 
         <div className="card-profile-section">
-          <div className="avatar-initials-premium" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
+          <div className="avatar-initials-premium" style={{ background: '#5B5BD6', color: '#5B5BD6' }}>
             <BsBuilding size={24} />
           </div>
           <div className="profile-details">
             <h4 className="candidate-name" style={{ fontSize: '18px' }}>{job.title}</h4>
             <div className="d-flex align-items-center gap-2">
-              <span className="candidate-role" style={{ color: 'var(--primary)' }}>{job.company}</span>
+              <span className="candidate-role" style={{ color: '#5B5BD6' }}>{job.company}</span>
               <span style={{ color: '#cbd5e1' }}>•</span>
               <div className="meta-pill" style={{ padding: 0, background: 'transparent' }}>
                 <FiMapPin size={12} />

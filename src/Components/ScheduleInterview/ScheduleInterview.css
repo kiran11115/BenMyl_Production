@@ -1383,9 +1383,9 @@
 
 /* Skill count badge */
 .status-tag.count {
-  background: var(--f5810c-light);
-  color: var(--f5810c);
-  border-color: rgba(245, 129, 12, 0.2);
+  background: #eef2ff;
+  color: #5B5BD6;
+  border-color: #5B5BD6;
 }
 
 /* meta items in candidate card */
@@ -1977,7 +1977,7 @@
 }
 
 .btn-v2-primary {
-  background: var(--f5810c);
+  background: #5B5BD6;
   color: white;
   border: none;
   padding: 10px 24px;
@@ -1996,7 +1996,7 @@
 .btn-v2-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(245, 129, 12, 0.35);
-  background: #ea580c;
+  background: #5B5BD6;
 }
 
 .btn-v2-primary:disabled {

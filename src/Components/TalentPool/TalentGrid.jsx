@@ -73,10 +73,18 @@ const TalentGridView = ({
                   }}></span>
                   {candidate.status || (candidate.verified ? 'Verified' : 'Pending')}
                 </div>
-                <div className="rating-pill">
-                  <FiStar size={12} fill="#f59e0b" color="#f59e0b" />
-                  <span>{candidate.rating}</span>
-                </div>
+                <div
+            style={{
+              background: "#e8f8ef",
+              color: "#0f9f57",
+              fontSize: "12px",
+              fontWeight: "700",
+              padding: "4px 10px",
+              borderRadius: "8px",
+            }}
+          >
+            93% AIMatch
+          </div>
               </div>
 
               {/* Profile Section */}

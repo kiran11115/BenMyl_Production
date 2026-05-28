@@ -541,8 +541,8 @@
 
 .btn-upload {
   align-items: center;
-  background-color: #f5810c;
-  border: 1px solid #f5810c;
+  background-color: #5B5BD6;
+  border: 1px solid #5B5BD6;
   border-radius: 8px;
   color: #fff;
   cursor: pointer;
@@ -578,7 +578,7 @@
 }
 
 .btn-upload:hover {
-  background-color: #f5810c !important;
+  background-color: #5B5BD6 !important;
   color: #fff !important;
   transform: translateY(-2px);
 }
@@ -1301,4 +1301,4 @@
     transform: scale(1);
     opacity: 0.8;
   }
-}
+}

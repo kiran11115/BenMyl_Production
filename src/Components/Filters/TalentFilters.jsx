@@ -572,7 +572,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           border-radius: 8px;
         }
         .filter-section-header:hover h4 {
-          color: #f5810c;
+          color: #5B5BD6;
         }
         .section-content {
           padding-bottom: 12px;

@@ -995,3 +995,29 @@
     font-size:13px !important;
   }
 }
+
+.job-description{
+  margin-top:18px;
+
+  color:#64748b;
+
+  font-size:12px;
+
+  line-height:1.8;
+
+  flex:1;
+
+  overflow:hidden;
+
+  display:-webkit-box;
+
+  -webkit-line-clamp:3;
+
+  -webkit-box-orient:vertical;
+
+  text-overflow:ellipsis;
+
+  word-break:break-word;
+
+  min-height:64px;
+}

@@ -843,18 +843,11 @@ const TalentPool = () => {
     <div className="vs-page">
       <div className="projects-container d-flex flex-column gap-3">
         {/* Heading */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-            gap: "16px",
-          }}
-        >
+        {/* Heading */}
+
+<div className="talentpool-header">
           <div>
-            <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px" }}>
+            <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px",color:'#fff' }}>
               Find Talent
             </h1>
             <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
@@ -895,7 +888,7 @@ const TalentPool = () => {
             <button
               className="btn-upload"
               onClick={() => setIsDrawerOpen(true)}
-              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              style={{ display: "flex", alignItems: "center", gap: "8px",backgroundColor:'#000',border: '1px solid #000' }}
             >
               <FiBriefcase />
               <span>View Shortlisted</span>

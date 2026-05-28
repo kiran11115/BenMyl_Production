@@ -168,7 +168,7 @@ select {
   padding: 9px;
   border-radius: 10px;
   border: none;
-  background: var(--primary-gradient);
+  background: #5B5BD6;
   color: #ffffff;
   font-size: 12px;
   font-weight: 700;
@@ -231,8 +231,8 @@ select {
 }
 
 .avatar-initials-premium {
-  background: var(--primary-light) !important;
-  color: var(--primary) !important;
+  background: #5B5BD6 !important;
+  color: #ffffff !important;
   font-size: 14px !important;
   border: 2px solid #f1f5f9 !important;
 }
@@ -242,14 +242,14 @@ select {
    ========================================================= */
 .candidate-name {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #0f172a;
 }
 
 .candidate-role {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: 11px;
   color: #64748b;
   font-weight: 500;
 }
