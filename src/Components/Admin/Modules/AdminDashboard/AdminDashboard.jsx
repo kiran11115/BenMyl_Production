@@ -12,6 +12,10 @@ import {
   Send,
   Layers3,
   ArrowUpRight,
+  Cpu,
+  Compass,
+  Search,
+  Command,
 } from "lucide-react";
 
 import UploadTalentModal from "../../../UploadTalent/UploadTalentModal";
@@ -208,10 +212,13 @@ function AdminDashboard() {
       <div className="command-card">
 
         <div className="command-title">
-          ⌘ INTERACTIVE NEURAL COMMAND INTERFACE
+          <Command size={14} className="command-title-icon" />
+          <span>INTERACTIVE NEURAL COMMAND INTERFACE</span>
         </div>
 
         <div className="command-search">
+
+          <Search size={18} className="command-search-icon" />
 
           <input
             type="text"
@@ -220,16 +227,17 @@ function AdminDashboard() {
 
           <button>
             Ask AI
-            <Send size={15} />
+            <Send size={13} />
           </button>
 
         </div>
 
         <div className="prompt-row">
 
+          <span className="prompt-label">Quick Prompts:</span>
+
           <span>
-            Find React developers with 5+
-            years
+            Find React developers with 5+ years
           </span>
 
           <span>
@@ -762,31 +770,7 @@ function AdminDashboard() {
 
             <div className="routine-grid">
 
-              {/* CREATE JOB */}
-
-              <div
-                className="routine-card"
-                onClick={() => {
-                  navigate(
-                    "/Admin/user-post-new-positions"
-                  );
-                  setShowRoutineModal(false);
-                }}
-              >
-
-                <div className="routine-icon">
-                  <Briefcase size={18} />
-                </div>
-
-                <h4>Create Job</h4>
-
-                <span>
-                  Create hiring requirements
-                </span>
-
-              </div>
-
-              {/* UPLOAD TALENT */}
+              {/* UPLOAD BENCH */}
 
               <div
                 className="routine-card"
@@ -800,60 +784,76 @@ function AdminDashboard() {
                   <Upload size={18} />
                 </div>
 
-                <h4>Upload Talent</h4>
+                <h4>Upload Bench</h4>
 
                 <span>
-                  AI parser candidate upload
+                  Ingress candidates
                 </span>
 
               </div>
 
-              {/* TALENT POOL */}
+              {/* REVIEW RESUMES */}
 
               <div
                 className="routine-card"
                 onClick={() => {
-                  navigate(
-                    "/Admin/admin-talentpool"
-                  );
+                  navigate("/Admin/review-talent");
                   setShowRoutineModal(false);
                 }}
               >
 
                 <div className="routine-icon">
-                  <Users size={18} />
+                  <Cpu size={18} />
                 </div>
 
-                <h4>Talent Pool</h4>
+                <h4>Review Resumes</h4>
 
                 <span>
-                  Manage candidate profiles
+                  AI Parsers splitscreen
                 </span>
 
               </div>
 
-              {/* SCHEDULE */}
+              {/* MATCHING JOBS */}
 
               <div
                 className="routine-card"
                 onClick={() => {
-                  navigate(
-                    "/Admin/user-schedule-interview"
-                  );
+                  navigate("/Admin/admin-talentpool");
                   setShowRoutineModal(false);
                 }}
               >
 
                 <div className="routine-icon">
-                  <Activity size={18} />
+                  <Compass size={18} />
                 </div>
 
-                <h4>
-                  Schedule Interview
-                </h4>
+                <h4>Matching Jobs</h4>
 
                 <span>
-                  Coordinate interview flow
+                  Run fit test indices
+                </span>
+
+              </div>
+
+              {/* AI ASSISTANT */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate("/user/AI-screen");
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Sparkles size={18} />
+                </div>
+
+                <h4>AI Assistant</h4>
+
+                <span>
+                  Holographic Oracle chat
                 </span>
 
               </div>

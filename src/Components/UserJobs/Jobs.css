@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
+
 /* --- Shared / Global Styles (Matching Projects) --- */
 :root {
   --slate-800: #1e293b;
@@ -299,9 +301,15 @@
   background: var(--slate-400);
 }
 
+.job-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
 .job-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+  border-color: #cbd5e1 !important;
 }
 
 
@@ -828,34 +836,36 @@
 }
 
 .job-chip{
-  height:28px;
+  height:20px;
 
-  padding:0 12px;
+  padding:0 8px;
 
   border-radius:999px;
 
   display:flex;
   align-items:center;
 
-  font-size:12px;
+  font-size:9px;
   font-weight:700;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
 
   width:max-content;
 }
 
 .job-chip.purple{
-  background:#ede9fe;
-  color:#6d28d9;
+  background:#eceffd;
+  color:#6b6ff0;
 }
 
 .job-chip.green{
-  background:#dcfce7;
-  color:#15803d;
+  background:#e6f9f8;
+  color:#0ea5e9;
 }
 
 .job-chip.mint{
-  background:#fef3c6;
-  color:#bb4d00;
+  background:#e6fbf1;
+  color:#00b67a;
 }
 
 /* =========================================

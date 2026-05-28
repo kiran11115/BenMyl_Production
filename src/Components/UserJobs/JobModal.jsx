@@ -310,7 +310,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           width: 48px;
           height: 48px;
           background: #fff7ed;
-          color: #f5810c;
+          color: #1f2937;
           border-radius: 12px;
           display: flex;
           align-items: center;
@@ -319,7 +319,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           box-shadow: 0 4px 6px -1px rgba(245, 129, 12, 0.1);
         }
 
-        .modal-title { font-size: 24px; font-weight: 800; color: #1e293b; margin: 0; }
+        .modal-title { font-size: 24px; font-weight: 800; color: #020618; margin: 0; }
         .muted { color: #64748b; margin-top: 4px; }
 
         .job-main-info-card {
@@ -337,7 +337,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           align-items: flex-start;
           margin-bottom: 24px;
         }
-        .job-title-row h3 { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; }
+        .job-title-row h3 { font-size: 20px; font-weight: 700; color: #020618; margin: 0; }
         .type-badge {
           background: #eff6ff;
           color: #3b82f6;
@@ -364,7 +364,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           border: 1px solid #f1f5f9;
         }
         .meta-icon { font-size: 18px; }
-        .meta-icon.orange { color: #f5810c; }
+        .meta-icon.orange { color: #1f2937; }
         .meta-icon.blue { color: #3b82f6; }
         .meta-icon.purple { color: #8b5cf6; }
         .meta-icon.green { color: #10b981; }
@@ -376,7 +376,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         .job-description-section h4, .job-skills-section h4 {
           font-size: 14px;
           font-weight: 700;
-          color: #1e293b;
+          color: #020618;
           margin-bottom: 12px;
           display: flex;
           align-items: center;
@@ -408,9 +408,9 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           align-items: center;
           margin-bottom: 24px;
         }
-        .selection-title { font-size: 18px; font-weight: 700; color: #1e293b; margin: 0; }
+        .selection-title { font-size: 18px; font-weight: 700; color: #020618; margin: 0; }
         .count-badge {
-          background: #f5810c;
+          background: #1f2937;
           color: white;
           padding: 4px 10px;
           border-radius: 20px;
@@ -443,7 +443,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         }
         .talent-card-row.selected {
           background: #fff7ed;
-          border-color: #f5810c;
+          border-color: #1f2937;
         }
 
         .selection-indicator {
@@ -458,8 +458,8 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           transition: all 0.2s;
         }
         .selected .selection-indicator {
-          background: #f5810c;
-          border-color: #f5810c;
+          background: #1f2937;
+          border-color: #1f2937;
         }
 
         .initial-avatar {
@@ -478,7 +478,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         .initial-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .t-info { flex: 1; }
-        .t-name { font-weight: 700; color: #1e293b; font-size: 14px; }
+        .t-name { font-weight: 700; color: #020618; font-size: 14px; }
         .t-role { font-size: 12px; color: #94a3b8; }
 
         .t-view-btn {
@@ -491,7 +491,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           font-weight: 600;
           transition: all 0.2s;
         }
-        .t-view-btn:hover { background: #f1f5f9; color: #1e293b; }
+        .t-view-btn:hover { background: #f1f5f9; color: #020618; }
 
         .modal-footer-actions {
           display: grid;
@@ -517,7 +517,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           width: 40px;
           height: 40px;
           border: 3px solid #f1f5f9;
-          border-top-color: #f5810c;
+          border-top-color: #1f2937;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
@@ -555,7 +555,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           align-items: center;
         }
 
-        .desc-label { display: block; font-size: 11px; font-weight: 700; color: #f5810c; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .desc-label { display: block; font-size: 11px; font-weight: 700; color: #1f2937; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
         .desc-textarea {
           width: 100%;
           min-height: 100px;
@@ -564,12 +564,12 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           border: 1px solid #fed7aa;
           background: white;
           font-size: 14px;
-          color: #1e293b;
+          color: #020618;
           outline: none;
           resize: none;
           transition: all 0.2s;
         }
-        .desc-textarea:focus { border-color: #f5810c; box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1); }
+        .desc-textarea:focus { border-color: #1f2937; box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1); }
       `}</style>
     </div>,
     document.body

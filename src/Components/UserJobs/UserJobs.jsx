@@ -10,6 +10,7 @@ import {
   FiBriefcase,
   FiVideo,
   FiEye,
+  FiHeart,
 } from "react-icons/fi";
 import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
@@ -28,6 +29,17 @@ const getInitials = (name = "") => {
     .slice(0, 2)
     .map((n) => n[0].toUpperCase())
     .join("");
+};
+
+const getDaysAgoText = (dateString) => {
+  if (!dateString) return "Posted 5 days ago";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Posted 5 days ago";
+  const diffTime = Math.abs(new Date() - date);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 1) return "Posted today";
+  if (diffDays === 2) return "Posted 1 day ago";
+  return `Posted ${diffDays - 1} days ago`;
 };
 
 const UserJobs = () => {
@@ -245,6 +257,7 @@ const UserJobs = () => {
       department: job.department,
       jobDuration: job.jobDuration,
       jobDurationText: job.jobDuration ? `${job.jobDuration} ${job.jobDuration_Unit || "Months"}` : null,
+      createdOn: job.createdOn || job.postedDate,
       rateText:
         job.salaryRange_Min && job.salaryRange_Max
           ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
@@ -301,300 +314,307 @@ const UserJobs = () => {
   };
 
   return (
-  <div
-    style={{
-      background: "#f5f7fb",
-      minHeight: "100vh",
-      padding: "18px",
-    }}
-  >
     <div
       style={{
-        display: "flex",
-        gap: "22px",
-        alignItems: "flex-start",
+        background: "#f5f7fb",
+        minHeight: "100vh",
+        padding: "18px",
       }}
     >
-      {/* LEFT FILTER */}
-
-      <aside
+      <div
         style={{
-          width: "310px",
-          minWidth: "310px",
-          background: "#fff",
-          borderRadius: "28px",
-          padding: "24px",
-          border: "1px solid #e7ebf3",
-          height: "fit-content",
-          overflowY: "auto",
-          position: "sticky",
-          top: "20px",
+          display: "flex",
+          gap: "22px",
+          alignItems: "flex-start",
         }}
       >
-        <JobFilters
-          initialFilters={filters}
-          onApplyFilters={(appliedFilters) => {
-            setAllJobs([]);
-            setPageNumber(1);
-            setHasMore(true);
-            setFilters(appliedFilters);
-          }}
-        />
-      </aside>
+        {/* LEFT FILTER */}
 
-      {/* RIGHT */}
-
-      <div style={{ flex: 1 }}>
-
-        {/* TOP */}
-
-        <div
+        <aside
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: "22px",
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                fontSize: "42px",
-                fontWeight: "800",
-                color: "#0f172a",
-                marginBottom: "4px",
-                letterSpacing: "-2px",
-              }}
-            >
-              Find jobs
-            </h1>
-
-            <p
-              style={{
-                color: "#94a3b8",
-                fontSize: "16px",
-                fontWeight: "500",
-              }}
-            >
-              Showing {jobs.length} matches based on your interactive filters
-            </p>
-          </div>
-
-          <button
-            style={{
-              height: "48px",
-              padding: "0 18px",
-              borderRadius: "999px",
-              border: "1px solid #e2e8f0",
-              background: "#fff",
-              fontWeight: "700",
-              fontSize: "15px",
-              color: "#0f172a",
-            }}
-          >
-            Most recent
-          </button>
-        </div>
-
-        {/* GRID */}
-
-        <div
-          ref={resultsRef}
-          style={{
-            height: "calc(100vh - 140px)",
+            width: "310px",
+            minWidth: "310px",
+            background: "#fff",
+            borderRadius: "28px",
+            padding: "24px",
+            border: "1px solid #e7ebf3",
+            height: "fit-content",
             overflowY: "auto",
-            paddingRight: "4px",
+            position: "sticky",
+            top: "20px",
           }}
         >
+          <JobFilters
+            initialFilters={filters}
+            onApplyFilters={(appliedFilters) => {
+              setAllJobs([]);
+              setPageNumber(1);
+              setHasMore(true);
+              setFilters(appliedFilters);
+            }}
+          />
+        </aside>
+
+        {/* RIGHT */}
+
+        <div style={{ flex: 1 }}>
+
+          {/* TOP */}
+
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fill,minmax(320px,1fr))",
-              gap: "22px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: "22px",
             }}
           >
-            {jobs.map((job) => (
-
-              <div
-                key={job.id}
-                onClick={() => setSelectedJob(job)}
+            <div>
+              <h1
                 style={{
-                  background: "#fff",
-                  borderRadius: "28px",
-                  border: "1px solid #e7ebf3",
-                  padding: "20px",
-                  minHeight: "255px",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: ".2s",
-                  cursor: "pointer",
+                  fontSize: "42px",
+                  fontWeight: "800",
+                  color: "#0f172a",
+                  marginBottom: "4px",
+                  letterSpacing: "-2px",
                 }}
               >
-                {/* TOP */}
+                Find jobs
+              </h1>
+
+              <p
+                style={{
+                  color: "#94a3b8",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                }}
+              >
+                Showing {jobs.length} matches based on your interactive filters
+              </p>
+            </div>
+
+            <button
+              style={{
+                height: "48px",
+                padding: "0 18px",
+                borderRadius: "999px",
+                border: "1px solid #e2e8f0",
+                background: "#fff",
+                fontWeight: "700",
+                fontSize: "15px",
+                color: "#0f172a",
+              }}
+            >
+              Most recent
+            </button>
+          </div>
+
+          {/* GRID */}
+
+          <div
+            ref={resultsRef}
+            style={{
+              height: "calc(100vh - 240px)",
+              overflowY: "auto",
+              paddingRight: "4px",
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fill,minmax(300px,1fr))",
+                gap: "24px",
+                alignItems: "start",
+              }}
+            >
+              {jobs.map((job) => (
 
                 <div
+                  key={job.id}
+                  onClick={() => setSelectedJob(job)}
+                  className="job-card"
                   style={{
+                    background: "#fff",
+                    borderRadius: "24px",
+                    border: "1px solid #eef2f6",
+                    padding: "16px 20px",
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    flexDirection: "column",
+                    cursor: "pointer",
+                    fontFamily: '"Space Grotesk", sans-serif',
+                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02)"
                   }}
                 >
+                  {/* TOP */}
+
                   <div
                     style={{
                       display: "flex",
-                      gap: "14px",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
                     }}
                   >
                     <div
                       style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "50%",
-                        background: "#f8f1ee",
+                        display: "flex",
+                        gap: "12px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50%",
+                          background: "#fff5f5",
+                          border: "1px solid #ffe3e3",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: "700",
+                          color: "#ef4444",
+                          fontSize: "15px",
+                        }}
+                      >
+                        {getInitials(job.company)}
+                      </div>
+
+                      <div>
+                        <h3
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: "700",
+                            color: "#0f172a",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          {job.title}
+                        </h3>
+
+                        <p
+                          style={{
+                            color: "#94a3b8",
+                            fontSize: "11px",
+                            fontWeight: "500",
+                          }}
+                        >
+                          {job.company} • {job.applicantsCount || (job.id ? (job.id % 15) + 5 : 14)} Applicants
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        color: "#cbd5e1",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontWeight: "700",
-                        color: "#ef4444",
-                        fontSize: "14px",
                       }}
                     >
-                      {getInitials(job.company)}
-                    </div>
-
-                    <div>
-                      <h3
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "700",
-                          color: "#0f172a",
-                          marginBottom: "2px",
-                        }}
-                      >
-                        {job.title}
-                      </h3>
-
-                      <p
-                        style={{
-                          color: "#94a3b8",
-                          fontSize: "10px",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {job.company}
-                      </p>
+                      <FiEye size={18} />
                     </div>
                   </div>
 
-                 <div
-  style={{
-    color: "#cbd5e1",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <FiEye size={22} />
-</div>
-                </div>
+                  {/* TAGS */}
 
-                {/* TAGS */}
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "8px",
-                    flexWrap: "wrap",
-                    marginTop: "18px",
-                  }}
-                >
-                  <span className="job-chip purple">
-                    {job.experienceText}
-                  </span>
-
-                  <span className="job-chip green">
-                    {job.workModel}
-                  </span>
-
-                  <span className="job-chip mint">
-  {job.type?.length > 12
-    ? `${job.type.slice(0, 12)}...`
-    : job.type}
-</span>
-                </div>
-
-                {/* DESC */}
-
-                <p
-                  style={{
-                    marginTop: "18px",
-                    color: "#64748b",
-                    fontSize: "15px",
-                    lineHeight: "1.8",
-                    flex: 1,
-                  }}
-                >
-                  {job.description?.replace(/\*\*/g, "")?.slice(0, 110)}...
-                </p>
-
-                {/* FOOTER */}
-
-                <div
-                  style={{
-                    marginTop: "18px",
-                    paddingTop: "18px",
-                    borderTop: "1px solid #eef2f7",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
                   <div
                     style={{
-                      fontSize: "16px",
-                      fontWeight: "800",
-                      color: "#0f172a",
+                      display: "flex",
+                      gap: "6px",
+                      flexWrap: "wrap",
+                      marginTop: "12px",
                     }}
                   >
-                    {job.rateText}
-                    <span
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {job.salaryType}
+                    <span className="job-chip purple">
+                      {job.experienceText}
+                    </span>
+
+                    <span className="job-chip green">
+                      {job.workModel}
+                    </span>
+
+                    <span className="job-chip mint">
+                      {job.type?.length > 12
+                        ? `${job.type.slice(0, 12)}...`
+                        : job.type}
                     </span>
                   </div>
 
-                  <div className="meta-pill">
-                            <FiMapPin size={12} />
-                            <span 
-                              title={job.location}
-                              style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                            >
-                              {job.location ? job.location.split(',')[0].trim() : ""}
-                            </span>
-                          </div>
+                  {/* DESC */}
+
+                  <p
+                    style={{
+                      marginTop: "12px",
+                      color: "#64748b",
+                      fontSize: "13px",
+                      lineHeight: "1.5",
+                      flex: 1,
+                    }}
+                  >
+                    {job.description?.replace(/\*\*/g, "")?.slice(0, 110)}...
+                  </p>
+
+                  {/* FOOTER */}
+
+                  <div
+                    style={{
+                      marginTop: "14px",
+                      paddingTop: "12px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "800",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {job.rateText}
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: "700",
+                          color: "#64748b",
+                        }}
+                      >
+                        {job.salaryType}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                        color: "#94a3b8",
+                        fontSize: "11px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      <FiClock size={12} style={{ color: "#cbd5e1" }} />
+                      <span>{getDaysAgoText(job.createdOn)}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {selectedJob && (
-      <JobModal
-        job={selectedJob}
-        onClose={() => setSelectedJob(null)}
-        initialSelectedTalentId={
-          location.state?.initialSelectedTalentId
-        }
-      />
-    )}
-  </div>
+      {selectedJob && (
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          initialSelectedTalentId={
+            location.state?.initialSelectedTalentId
+          }
+        />
+      )}
+    </div>
   );
 };
 

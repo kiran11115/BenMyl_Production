@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users,Plus } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus } from "lucide-react";
 import "./AdminHeader.css";
 import AdminNotifications from "./AdminNotifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
@@ -111,12 +111,12 @@ function AdminHeader() {
                         {[
                             // { path: "/Admin/portal", label: "Control Center" },
                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
-                            { path: "/Admin/admin-posted-jobs",label: "Projects"},
+                            { path: "/Admin/admin-posted-jobs", label: "Projects" },
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
                             { path: "/Admin/admin-upload-talent", label: "Talent Management" },
-                            { 
-                                label: "Interviews", 
+                            {
+                                label: "Interviews",
                                 subItems: [
                                     { label: "Create Interview", path: "/Admin/user-schedule-interview" },
                                     { label: "Schedule Interview", path: "/Admin/admin-upcoming-interview" },
@@ -224,16 +224,16 @@ function AdminHeader() {
                         )}
                     </div> */}
                     <button
-  className="quick-create-btn"
-  onClick={() =>
-    setShowRoutineModal(true)
-  }
->
-  <Plus size={14} />
-  Quick Create
-</button>
+                        className="quick-create-btn"
+                        onClick={() =>
+                            setShowRoutineModal(true)
+                        }
+                    >
+                        <Plus size={14} />
+                        Quick Create
+                    </button>
 
-                     {/* Settings Icon */}
+                    {/* Settings Icon */}
                     <div className="admin-message-popover-wrapper">
                         <button
                             onClick={() => navigate('/admin/portal')}
@@ -340,146 +340,146 @@ function AdminHeader() {
             </div>
             {/* QUICK CREATE MODAL */}
 
-{showRoutineModal && (
+            {showRoutineModal && (
 
-  <div className="routine-modal-overlay">
+                <div className="routine-modal-overlay">
 
-    <div className="routine-modal">
+                    <div className="routine-modal">
 
-      <div className="routine-header">
+                        <div className="routine-header">
 
-        <div className="routine-title">
+                            <div className="routine-title">
 
-          <span>
-            EXPRESS DISPATCH CONSOLE
-          </span>
+                                <span>
+                                    EXPRESS DISPATCH CONSOLE
+                                </span>
 
-        </div>
+                            </div>
 
-        <button
-          className="routine-close"
-          onClick={() =>
-            setShowRoutineModal(false)
-          }
-        >
-          ✕
-        </button>
+                            <button
+                                className="routine-close"
+                                onClick={() =>
+                                    setShowRoutineModal(false)
+                                }
+                            >
+                                ✕
+                            </button>
 
-      </div>
+                        </div>
 
-      <div className="routine-divider"></div>
+                        <div className="routine-divider"></div>
 
-      <p className="routine-subtitle">
+                        <p className="routine-subtitle">
 
-        Instantly execute workspace workflows.
+                            Instantly execute workspace workflows.
 
-      </p>
+                        </p>
 
-      <div className="routine-grid">
+                        <div className="routine-grid">
 
-        {/* CREATE JOB */}
+                            {/* CREATE JOB */}
 
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/user-post-new-positions"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
+                            <div
+                                className="routine-card"
+                                onClick={() => {
+                                    navigate(
+                                        "/Admin/user-post-new-positions"
+                                    );
+                                    setShowRoutineModal(false);
+                                }}
+                            >
 
-          <div className="routine-icon">
-            <File size={18} />
-          </div>
+                                <div className="routine-icon">
+                                    <File size={18} />
+                                </div>
 
-          <h4>Create Job</h4>
+                                <h4>Create Job</h4>
 
-          <span>
-            Create hiring requirements
-          </span>
+                                <span>
+                                    Create hiring requirements
+                                </span>
 
-        </div>
+                            </div>
 
-        {/* UPLOAD TALENT */}
+                            {/* UPLOAD TALENT */}
 
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/admin-upload-talent"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
+                            <div
+                                className="routine-card"
+                                onClick={() => {
+                                    navigate(
+                                        "/Admin/admin-upload-talent"
+                                    );
+                                    setShowRoutineModal(false);
+                                }}
+                            >
 
-          <div className="routine-icon">
-            <Users size={18} />
-          </div>
+                                <div className="routine-icon">
+                                    <Users size={18} />
+                                </div>
 
-          <h4>Upload Talent</h4>
+                                <h4>Upload Talent</h4>
 
-          <span>
-            AI parser candidate upload
-          </span>
+                                <span>
+                                    AI parser candidate upload
+                                </span>
 
-        </div>
+                            </div>
 
-        {/* TALENT POOL */}
+                            {/* TALENT POOL */}
 
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/admin-talentpool"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
+                            <div
+                                className="routine-card"
+                                onClick={() => {
+                                    navigate(
+                                        "/Admin/admin-talentpool"
+                                    );
+                                    setShowRoutineModal(false);
+                                }}
+                            >
 
-          <div className="routine-icon">
-            <Users size={18} />
-          </div>
+                                <div className="routine-icon">
+                                    <Users size={18} />
+                                </div>
 
-          <h4>Talent Pool</h4>
+                                <h4>Talent Pool</h4>
 
-          <span>
-            Manage candidate profiles
-          </span>
+                                <span>
+                                    Manage candidate profiles
+                                </span>
 
-        </div>
+                            </div>
 
-        {/* INTERVIEW */}
+                            {/* INTERVIEW */}
 
-        <div
-          className="routine-card"
-          onClick={() => {
-            navigate(
-              "/Admin/user-schedule-interview"
-            );
-            setShowRoutineModal(false);
-          }}
-        >
+                            <div
+                                className="routine-card"
+                                onClick={() => {
+                                    navigate(
+                                        "/Admin/user-schedule-interview"
+                                    );
+                                    setShowRoutineModal(false);
+                                }}
+                            >
 
-          <div className="routine-icon">
-            <Bell size={18} />
-          </div>
+                                <div className="routine-icon">
+                                    <Bell size={18} />
+                                </div>
 
-          <h4>Schedule Interview</h4>
+                                <h4>Schedule Interview</h4>
 
-          <span>
-            Coordinate interview flow
-          </span>
+                                <span>
+                                    Coordinate interview flow
+                                </span>
 
-        </div>
+                            </div>
 
-      </div>
+                        </div>
 
-    </div>
+                    </div>
 
-  </div>
+                </div>
 
-)}
+            )}
             <TrialPopover />
 
         </>
