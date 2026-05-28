@@ -56,17 +56,13 @@
   font-size: 12px;
 }
 
-h1 {
+.post-job-form h1,
+.form-header h1 {
   margin: 0 0 8px 0;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: #0f172a;
-}
-
-p.muted {
-  color: #64748b;
-  margin: 0;
-  font-size: 14px;
+  letter-spacing: -0.01em;
 }
 
 /* =========================================
@@ -130,12 +126,10 @@ p.muted {
 /* =========================================
    3. Form Cards & Inputs
    ========================================= */
-.card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
+/* .card is now globally defined in src/styles/cards.css */
+/* Local override for PostNewPositions page card padding */
+.post-job-form .card {
   padding: 32px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
 
@@ -335,7 +329,7 @@ p.muted {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   margin-top: 4px;
   display: flex;
   flex-direction: column;
@@ -1165,10 +1159,10 @@ p.muted {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 11px;
   color: #475569;
   cursor: pointer;
-  padding: 6px 0;
+  padding: 2px 0;
 }
 
 /* Footer Actions */
@@ -1611,4 +1605,476 @@ p.muted {
   .submission-error-header {
     margin-right: 32px;
   }
+}
+
+/* =========================================
+   MOCKUP REDESIGN STYLES
+   ========================================= */
+
+.job-posting-header-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.job-posting-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.job-posting-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5B5BD6;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.job-posting-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-posting-title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0 0 4px 0;
+}
+
+.job-posting-subtitle {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.job-posting-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1F2937;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.job-posting-back-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Fieldset and legend for coordinates */
+.coordinates-fieldset {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.coordinates-legend {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5B5BD6;
+  padding: 0 8px;
+  margin: 0 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  float: none;
+  width: auto;
+  border: none;
+}
+
+/* Salary frequency segmented control */
+.salary-frequency-segmented {
+  display: flex;
+  background-color: #EEF2F8;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.salary-frequency-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.salary-frequency-btn.active {
+  background-color: #FFFFFF;
+  color: #5B5BD6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Rate inputs box */
+.rate-container-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+}
+
+.rate-input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.rate-prefix {
+  background-color: #EEF2F8;
+  color: #6B7280;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-right: 1px solid #cbd5e1;
+}
+
+.rate-input {
+  flex: 1;
+  border: none;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+  border-radius: 0px !important;
+  color: #1F2937;
+  width: 100%;
+}
+
+/* AI Generate pill button styling */
+.ai-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #7B61FF 0%, #5B5BD6 100%);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.ai-generate-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
+}
+
+/* Footer checkbox and buttons */
+.share-linkedin-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1F2937;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.share-linkedin-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0a66c2;
+  cursor: pointer;
+}
+
+.linkedin-icon-blue {
+  color: #0a66c2;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-create-post {
+  background-color: transparent !important;
+  border: 1px solid #5B5BD6 !important;
+  color: #5B5BD6 !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.btn-create-post:hover {
+  background-color: #f5f5ff !important;
+  transform: translateY(-1px);
+}
+
+.btn-publish-vacancy {
+  background-color: #5B5BD6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 24px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.btn-publish-vacancy:hover {
+  background-color: #4747B8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 91, 214, 0.2) !important;
+}
+
+/* Redesigned preview card on the right column */
+.preview-card-dark {
+  background: linear-gradient(180deg, #0b0f19 0%, #151a28 100%);
+  border-radius: 16px;
+  padding: 28px 24px;
+  color: #FFFFFF;
+  border: 1px solid #20273a;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.preview-card-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-company-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7B61FF 0%, #5B5BD6 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.preview-company-name {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  text-transform: uppercase;
+  margin-left: 8px;
+  flex: 1;
+}
+
+.preview-live-preview-link {
+  font-size: 11px;
+  color: #60A5FA;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.preview-badge-remote {
+  background-color: rgba(91, 91, 214, 0.2);
+  color: #A78BFA;
+  border: 1px solid rgba(123, 97, 255, 0.3);
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.preview-job-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.preview-metas-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+.preview-meta-item.rate-highlight {
+  color: #34D399; /* Mint green */
+  font-weight: 600;
+}
+
+.preview-meta-icon {
+  font-size: 14px;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+}
+
+.preview-meta-icon.rate-highlight {
+  color: #34D399;
+}
+
+.preview-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.preview-tech-stack-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-tech-pill {
+  background-color: #1e2536;
+  color: #CBD5E1;
+  border: 1px solid #2d374e;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.preview-description-abstract {
+  font-size: 12px;
+  color: #94A3B8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* CRM notice card */
+.crm-notice-card {
+  background-color: #EEF2F8;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.01);
+}
+
+.crm-notice-icon {
+  color: #5B5BD6;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+}
+
+.crm-notice-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crm-notice-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 0;
+}
+
+.crm-notice-desc {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Floating chat widget in bottom right */
+.floating-chat-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #111827; /* Dark charcoal */
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: all 0.2s ease-in-out;
+}
+
+.floating-chat-widget:hover {
+  transform: scale(1.06);
+  background-color: #1f2937;
+}
+
+.floating-chat-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.floating-chat-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #EF4444; /* Red dot */
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
 }

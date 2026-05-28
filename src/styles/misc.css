@@ -1,0 +1,20 @@
+/* Accent overlays */
+.grid-bg {
+  background-image: radial-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

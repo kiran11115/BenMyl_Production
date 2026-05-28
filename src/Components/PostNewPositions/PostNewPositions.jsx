@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
-  FileText, X, Building2, Check, ChevronDown
+  FileText, X, Building2, Check, ChevronDown, Calendar, Clock
 } from 'lucide-react';
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiLinkedin } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -82,6 +82,7 @@ const PostNewPositions = () => {
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isEmpOpen, setIsEmpOpen] = useState(false);
+  const [shareToLinkedIn, setShareToLinkedIn] = useState(false);
 
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -500,6 +501,7 @@ useEffect(() => {
     skills,
     currency: formik.values.salaryCurrency,
     additional: formik.values.additionalReqs,
+    shareToLinkedIn,
     workAuthorization: {
       usCitizen: workAuthorization.Citizenship,
       gc: workAuthorization.GC,
@@ -515,47 +517,93 @@ useEffect(() => {
     }
   };
 
+  const getInitials = (name) => {
+    if (!name) return "ML";
+    return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  };
+
+  const getSalaryString = () => {
+    const min = formik.values.salaryMin;
+    const max = formik.values.salaryMax;
+    const type = formik.values.salaryType;
+    const curr = formik.values.salaryCurrency === "USD" ? "$" : "€";
+    if (!min && !max) return "$120 - $160 / hr (Hourly)";
+    if (type === 'entireBudget') return `${curr}${min} (Fixed)`;
+    return `${curr}${min || '0'} - ${curr}${max || '0'} / hr (${type === 'perHour' ? 'Hourly' : 'Monthly'})`;
+  };
+
+  const getDurationString = () => {
+    const dur = formik.values.jobDuration;
+    if (!dur) return "6 Months Term";
+    if (dur === "0") return "Ongoing Term";
+    if (dur === "12") return "1 Year Term";
+    return `${dur} Months Term`;
+  };
+
+  const getEmploymentTypeString = () => {
+    const type = formik.values.employmentType;
+    if (!type) return "Regular Full-time";
+    return type.split(",")[0];
+  };
+
   const err = (name) =>
     formik.touched[name] && formik.errors[name] && (
       <div className="auth-error">{formik.errors[name]}</div>
     );
-  return (
-    <form onSubmit={formik.handleSubmit} className="post-job-form">
-      {/* HEADER */}
-      <div className="form-header">
-        <div className="vs-breadcrumbs mb-2 mt-3 d-flex gap-2">
-          <button type="button" className="link-button" onClick={() => {
-            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
-            navigate(targetPath);
-          }}>
-            <FiArrowLeft /> Back to Dashboard
-          </button>
-          <span className="crumb">/ Job Posting</span>
-        </div>
 
-        <h1>
-          {isEdit ? "Edit Job Posting" : "Creating New Job Posting"}
-        </h1>
-        <p className="muted">
-          Here's what's happening with your projects today
-        </p>
-      </div>
+  return (
+    <form onSubmit={formik.handleSubmit} className="ai-dashboard-wrapper">
+      {/* HEADER CARD */}
+   <div className="hero-card mb-4">
+<div className="hero-left">
+  <div className="hero-pill">
+            ✦ Create New Job
+          </div>
+<h1 className="job-posting-title text-white">Talent & Vacancies Board</h1>
+
+ 
+<div className="job-posting-header-info">
+
+<p className="job-posting-subtitle">
+A cohesive environment compiling hotbench sourcing pools, interactive vacancies.
+</p>
+</div>
+</div>
+ 
+<div className="hero-buttons">
+<button
+type="button"
+className="routine-btn"
+onClick={() => {
+const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/overview-dashboard` : `${basePath}/user-dashboard`;
+navigate(targetPath);
+}}
+>
+<FiArrowLeft /> Back to Workspace
+</button>
+</div>
+</div>
 
       <div className="dashboard-layout">
 
         {/* ================= MAIN FORM ================= */}
         <div className="dashboard-column-main">
           <div className="premium-card">
+            
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Configure New Vacancy Blueprint
+            </h2>
+            <p className="muted small mb-4" style={{ fontSize: "12px", color: "#6B7280" }}>
+              Fields indicated with a red asterisk (<span style={{ color: '#ef4444' }}>*</span>) are mandatory values.
+            </p>
 
             {/* BASIC INFO */}
             <div style={{ marginBottom: '40px' }}>
-              <div className="section-header">
-                <h3>Basic Information</h3>
-              </div>
+              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Basic Information</span>
 
               <div className="grid-4">
-                <div style={{ gridColumn: 'span 2' }}>
+                <div>
                   <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
                   <JobTitleAutocomplete
                     name="jobTitle"
@@ -568,7 +616,7 @@ useEffect(() => {
 
                 <div>
                   <label className="auth-label">Duration</label>
-                  <select className="auth-input" name="jobDuration"
+                  <select className="auth-input placeholder-text" name="jobDuration"
                     value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select duration</option>
                     <option value="1">1 Month</option>
@@ -582,70 +630,16 @@ useEffect(() => {
 
                 <div>
                   <label className="auth-label">Company<span style={{ color: '#ef4444' }}> *</span></label>
-                  <input className="auth-input bg-light" name="companyName" placeholder="Company"
+                  <input className="auth-input bg-light placeholder-text" name="companyName" placeholder="Company"
                     value={formik.values.companyName} onChange={formik.handleChange} onBlur={formik.handleBlur} disabled style={{ cursor: "not-allowed" }} />
                   {err("companyName")}
                 </div>
-              </div>
 
-              {/* Cascading Location Dropdowns */}
-              <div style={{ marginBottom: '24px' }}>
-                <label className="auth-label">Location<span style={{ color: '#ef4444' }}> *</span></label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-                  <div>
-                    <select
-                      className="auth-input"
-                      value={selectedCountry}
-                      onChange={(e) => handleCountryChange(e.target.value)}
-                    >
-                      <option value="">Select Country</option>
-                      {countries.map((c) => (
-                        <option key={c.isoCode} value={c.isoCode}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <select
-                      className="auth-input"
-                      value={selectedState}
-                      onChange={(e) => handleStateChange(e.target.value)}
-                      disabled={!selectedCountry || states.length === 0}
-                    >
-                      <option value="">Select State</option>
-                      {states.map((s) => (
-                        <option key={s.isoCode} value={s.isoCode}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <select
-                      className="auth-input"
-                      value={selectedCity}
-                      onChange={(e) => handleCityChange(e.target.value)}
-                      disabled={!selectedState || cities.length === 0}
-                    >
-                      <option value="">Select City</option>
-                      {cities.map((c) => (
-                        <option key={c.name} value={c.name}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                {err("location")}
-              </div>
-
-              <div className="grid-3">
                 <div>
                   <label className="auth-label">Employment Type<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="vendor-section" ref={empRef}>
-                    <div className="auth-input" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <span>Select Type</span>
+                    <div className="auth-input placeholder-text" onClick={() => setIsEmpOpen(!isEmpOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span className="placeholder-text">Select Type</span>
                       <ChevronDown size={16} className={`chevron ${isEmpOpen ? 'rotate' : ''}`} />
                     </div>
                     {isEmpOpen && (
@@ -682,12 +676,69 @@ useEffect(() => {
                   </div>
                   {err("employmentType")}
                 </div>
+              </div>
 
+              {/* Cascading Location Dropdowns inside fieldset */}
+              <fieldset className="coordinates-fieldset mt-4">
+                <legend className="coordinates-legend">Location Coordinates <span style={{ color: '#ef4444' }}>*</span></legend>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                  <div className="placeholder-text">
+                    <label className="auth-label">Select Country</label>
+                    <select
+                      className="auth-input placeholder-text"
+                      value={selectedCountry}
+                      onChange={(e) => handleCountryChange(e.target.value)}
+                    >
+                      <option value="">Select Country</option>
+                      {countries.map((c) => (
+                        <option key={c.isoCode} value={c.isoCode}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="placeholder-text">
+                    <label className="auth-label">Select State</label>
+                    <select
+                      className="auth-input placeholder-text"
+                      value={selectedState}
+                      onChange={(e) => handleStateChange(e.target.value)}
+                      disabled={!selectedCountry || states.length === 0}
+                    >
+                      <option value="">Select State</option>
+                      {states.map((s) => (
+                        <option key={s.isoCode} value={s.isoCode}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="placeholder-text">
+                    <label className="auth-label">Select City</label>
+                    <select
+                      className="auth-input placeholder-text"
+                      value={selectedCity}
+                      onChange={(e) => handleCityChange(e.target.value)}
+                      disabled={!selectedState || cities.length === 0}
+                    >
+                      <option value="">Select City</option>
+                      {cities.map((c) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {err("location")}
+              </fieldset>
+
+              <div className="grid-4">
                 <div>
-                  <label className="auth-label">Work Authorization</label>
+                  <label className="auth-label">Work Authorization/Visa</label>
                   <div className="vendor-section" ref={authRef}>
-                    <div className="auth-input" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <span>Select Work Autherization</span>
+                    <div className="auth-input placeholder-text" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                      <span className="placeholder-text">Select Work Authorization</span>
                       <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
                     </div>
                     {isAuthOpen && (
@@ -715,54 +766,83 @@ useEffect(() => {
                 </div>
 
                 <div>
-                  <label className="auth-label">Salary Range<span style={{ color: '#ef4444' }}> *</span></label>
-                  <div className="salary-radio-group" style={{ padding: '8px', gap: '8px' }}>
-                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
-                      <input type="radio" name="salaryType" value="perHour" checked={formik.values.salaryType === 'perHour'} onChange={formik.handleChange} />
+                  <label className="auth-label">Salary Frequency<span style={{ color: '#ef4444' }}> *</span></label>
+                  <div className="salary-frequency-segmented">
+                    <button
+                      type="button"
+                      className={`salary-frequency-btn ${formik.values.salaryType === 'perHour' ? 'active' : ''}`}
+                      onClick={() => formik.setFieldValue('salaryType', 'perHour')}
+                    >
                       Hourly
-                    </label>
-                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
-                      <input type="radio" name="salaryType" value="perMonth" checked={formik.values.salaryType === 'perMonth'} onChange={formik.handleChange} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`salary-frequency-btn ${formik.values.salaryType === 'perMonth' ? 'active' : ''}`}
+                      onClick={() => formik.setFieldValue('salaryType', 'perMonth')}
+                    >
                       Monthly
-                    </label>
-                    <label className="salary-radio-item" style={{ fontSize: '11px' }}>
-                      <input type="radio" name="salaryType" value="entireBudget" checked={formik.values.salaryType === 'entireBudget'} onChange={formik.handleChange} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`salary-frequency-btn ${formik.values.salaryType === 'entireBudget' ? 'active' : ''}`}
+                      onClick={() => formik.setFieldValue('salaryType', 'entireBudget')}
+                    >
                       Fixed
-                    </label>
+                    </button>
+                  </div>
+                </div>
+
+                  {/* Rates container box */}
+              <div className="">
+                <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                  <div>
+                    <label className="auth-label">Min Rate<span style={{ color: '#ef4444' }}> *</span></label>
+                    <div className="rate-input-container">
+                      <span className="rate-prefix">USD</span>
+                      <input
+                        type="number"
+                        className="rate-input"
+                        name="salaryMin"
+                        placeholder="c.g. 110"
+                        value={formik.values.salaryMin}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </div>
+                    {err("salaryMin")}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr 60px' : '1fr 1fr 60px', gap: '8px' }}>
-                    {formik.values.salaryType === 'entireBudget' ? (
-                      <input className="auth-input" name="salaryMin" placeholder="Budget" value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                    ) : (
-                      <>
-                        <input className="auth-input" name="salaryMin" placeholder="Min" value={formik.values.salaryMin} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                        <input className="auth-input" name="salaryMax" placeholder="Max" value={formik.values.salaryMax} onChange={formik.handleChange} onBlur={formik.handleBlur} />
-                      </>
-                    )}
-                    <select className="auth-input" name="salaryCurrency" value={formik.values.salaryCurrency} onChange={formik.handleChange} style={{ padding: '10px 4px' }}>
-                      <option>USD</option>
-                      <option>EUR</option>
-                    </select>
-                  </div>
-                  {err("salaryMin")}
-                  {err("salaryMax")}
+                  {formik.values.salaryType !== 'entireBudget' && (
+                    <div>
+                      <label className="auth-label">Max Rate<span style={{ color: '#ef4444' }}> *</span></label>
+                      <div className="rate-input-container">
+                        <span className="rate-prefix">USD</span>
+                        <input
+                          type="number"
+                          className="rate-input"
+                          name="salaryMax"
+                          placeholder="c.g. 160"
+                          value={formik.values.salaryMax}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                        />
+                      </div>
+                      {err("salaryMax")}
+                    </div>
+                  )}
                 </div>
               </div>
+              </div>   
             </div>
-
-
 
             {/* JOB DETAILS & REQUIREMENTS */}
             <div style={{ marginBottom: '40px' }}>
-              <div className="section-header">
-                <h3>Job Details & Requirements</h3>
-              </div>
+              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Job Details & Requirements</span>
 
               <div className="grid-4">
                 <div>
                   <label className="auth-label">Work Model<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input" name="workModel" value={formik.values.workModel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                  <select className="auth-input placeholder-text" name="workModel" value={formik.values.workModel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select model</option>
                     <option value="Remote">Remote</option>
                     <option value="On-site">On-site</option>
@@ -773,7 +853,7 @@ useEffect(() => {
 
                 <div>
                   <label className="auth-label">Department<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input" name="department" value={formik.values.department} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                  <select className="auth-input placeholder-text" name="department" value={formik.values.department} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select department</option>
                     <option value="Engineering">Engineering</option>
                     <option value="Design">Design</option>
@@ -784,7 +864,7 @@ useEffect(() => {
 
                 <div>
                   <label className="auth-label">Experience<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input" name="experienceLevel" value={formik.values.experienceLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                  <select className="auth-input placeholder-text" name="experienceLevel" value={formik.values.experienceLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select level</option>
                     <option value="Junior">Junior</option>
                     <option value="Mid-Level">Mid-Level</option>
@@ -795,7 +875,7 @@ useEffect(() => {
 
                 <div>
                   <label className="auth-label">Education<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input" name="educationLevel" value={formik.values.educationLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                  <select className="auth-input placeholder-text" name="educationLevel" value={formik.values.educationLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
                     <option value="">Select education</option>
                     <option value="Bachelors">Bachelor's</option>
                     <option value="Masters">Master's</option>
@@ -804,8 +884,8 @@ useEffect(() => {
                 </div>
               </div>
 
-              <div className="grid-2">
-                <div>
+              <div className="grid-4 mt-3">
+                <div className="auth-form-group w-100" style={{ marginBottom: 0 }}>
                   <label className="auth-label">Years of Experience<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="auth-password-wrapper">
                     <input
@@ -832,54 +912,41 @@ useEffect(() => {
                 </div>
 
                 <div className="auth-form-group" style={{ marginBottom: 0 }}>
-  <label className="auth-label">Required Skills</label>
-
-  <input
-    className="auth-input"
-    placeholder="Add skills (Press Enter)"
-    value={skillInput}
-    onChange={(e) => setSkillInput(e.target.value)}
-    onKeyDown={handleAddSkill}
-  />
-
-  {/* Instruction note */}
-  <p style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
-    Type a skill and press <b>Enter</b> to add it. Repeat to add multiple skills.
-  </p>
-
-  <div className="modal-tags-row mt-2">
-    {skills.map((skill) => (
-      <span key={skill} className="status-tag status-progress">
-        {skill}
-        <X
-          size={12}
-          className="ms-1"
-          style={{ cursor: "pointer" }}
-          onClick={() => removeSkill(skill)}
-        />
-      </span>
-    ))}
-  </div>
-</div>
+                  <label className="auth-label">Required Skills (Press Enter)<span style={{ color: '#ef4444' }}> *</span></label>
+                  <input
+                    className="auth-input"
+                    placeholder="Add skills (Press Enter)"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={handleAddSkill}
+                  />
+                  <p style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
+                    Type a skill and press <b>Enter</b> to add it. Repeat to add multiple skills.
+                  </p>
+                  <div className="modal-tags-row mt-2">
+                    {skills.map((skill) => (
+                      <span key={skill} className="status-tag status-progress">
+                        {skill}
+                        <X
+                          size={12}
+                          className="ms-1"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => removeSkill(skill)}
+                        />
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="auth-form-group mt-4">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <label className="auth-label m-0">Job Description<span style={{ color: '#ef4444' }}> *</span></label>
-                  <button type="button" className="ai-pill-btn" onClick={handleGenerateAI}>
-                    <span className="ai-pill-icon">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient-post)" />
-                        <defs>
-                          <linearGradient id="gemini-gradient-post" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stopColor="#3b82f6" />
-                            <stop offset="50%" stopColor="#8b5cf6" />
-                            <stop offset="100%" stopColor="#f59e0b" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </span>
-                    <span className="ai-pill-text">{isAiLoading ? "Generating..." : "AI GENERATE"}</span>
+                  <button type="button" className="ai-generate-btn" onClick={handleGenerateAI}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                      <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" />
+                    </svg>
+                    {isAiLoading ? "Generating..." : "AI GENERATE"}
                   </button>
                 </div>
 
@@ -896,14 +963,18 @@ useEffect(() => {
                 </div>
                 {err("description")}
               </div>
+            </div>
 
+            {/* ADDITIONAL REQUIREMENTS */}
+            <div style={{ marginBottom: '20px' }}>
+              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Additional Requirements</span>
               <div className="auth-form-group">
-                <label className="auth-label mb-2">Additional Requirements</label>
+                <label className="auth-label mb-2">Any other requirements...</label>
                 <textarea
                   className="auth-input"
                   rows={2}
                   style={{ height: "60px" }}
-                  placeholder="Any other requirements..."
+                  placeholder="Put down other demands or comments..."
                   name="additionalReqs"
                   value={formik.values.additionalReqs}
                   onChange={formik.handleChange}
@@ -912,17 +983,25 @@ useEffect(() => {
             </div>
 
             {/* FOOTER */}
-            <div className="d-flex justify-content-between mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
-              <button type="button" className="btn-secondary" onClick={() => {
-                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/portal` : `${basePath}/user-dashboard`;
-                navigate(targetPath);
-              }}>
-                Cancel
-              </button>
-              <button type="submit" className="btn-primary">
-                Preview
-              </button>
+            <div className="d-flex justify-content-between align-items-center mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
+              <label className="share-linkedin-container">
+                <input
+                  type="checkbox"
+                  checked={shareToLinkedIn}
+                  onChange={(e) => setShareToLinkedIn(e.target.checked)}
+                />
+                <span className="linkedin-icon-blue"><FiLinkedin style={{ marginRight: '4px' }} /></span>
+                <span>Share with social network (LinkedIn)</span>
+              </label>
+              
+              <div className="d-flex gap-3">
+                {/* <button type="button" className="btn-create-post" onClick={handleSaveDraft}>
+                  Create Post
+                </button> */}
+                <button type="submit" className="btn-publish-vacancy">
+                  Publish Vacancy
+                </button>
+              </div>
             </div>
 
           </div>
@@ -931,94 +1010,105 @@ useEffect(() => {
         {/* ================= PREVIEW ================= */}
         <div className="dashboard-column-side">
           <div className="sticky-preview">
-            <h3 className="section-title mb-3">Preview</h3>
-            <div className="project-card" style={{ gap: '20px' }}>
-
-              {/* Header */}
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '8px',
-                    backgroundColor: '#f1f5f9',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#64748b'
-                  }}
-                >
-                  <FileText size={24} />
-                </div>
-
-                <div>
-                  <h4 style={{ margin: 0 }}>
-                    {formik.values.jobTitle || "Job Title"}
-                  </h4>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
-                    {formik.values.companyName || "Company Name"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Meta Info */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-
-                <div className="d-flex align-items-center gap-2">
-                  <MapPin size={14} />
-                  <span>{formik.values.location || "Location"}</span>
-                </div>
-
-                <div className="d-flex align-items-center gap-2">
-                  <Briefcase size={14} />
-                  <span>{formik.values.employmentType || "Employment Type"}</span>
-                </div>
-
-                <div className="d-flex align-items-center gap-2">
-                  <DollarSign size={14} />
-                  <span>
-                    {formik.values.salaryType === 'entireBudget'
-                      ? `${formik.values.salaryMin} ${formik.values.salaryCurrency} (Fixed)`
-                      : formik.values.salaryMin && formik.values.salaryMax
-                        ? `${formik.values.salaryMin} - ${formik.values.salaryMax} ${formik.values.salaryCurrency}`
-                        : "Salary Range"}
+            
+            {/* Redesigned Premium Dark Preview Card */}
+            <div className="preview-card-dark">
+              
+              <div className="preview-card-logo-row">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div className="preview-company-logo">
+                    {getInitials(formik.values.companyName)}
+                  </div>
+                  <span className="preview-company-name">
+                    {formik.values.companyName || "MYLAS RECRUITING SOLUTIONS"}
                   </span>
                 </div>
+                {/* <span className="preview-badge-remote">Remote</span> */}
+              </div>
 
-                <div className="d-flex align-items-center gap-2">
-                  <Monitor size={14} />
-                  <span>{formik.values.workModel || "Work Model"}</span>
+              <h3 className="preview-job-title">
+                {formik.values.jobTitle || "Senior Full Stack Dev"}
+              </h3>
+
+              <div className="preview-metas-grid">
+                
+                <div className="preview-meta-item">
+                  <span className="preview-meta-icon"><MapPin size={14} /></span>
+                  <span>Remote Available</span>
+                </div>
+
+                <div className="preview-meta-item rate-highlight">
+                  <span className="preview-meta-icon rate-highlight"><DollarSign size={14} /></span>
+                  <span>{getSalaryString()}</span>
+                </div>
+
+                <div className="preview-meta-item">
+                  <span className="preview-meta-icon"><Clock size={14} /></span>
+                  <span>{getDurationString()}</span>
+                </div>
+
+                <div className="preview-meta-item">
+                  <span className="preview-meta-icon"><Briefcase size={14} /></span>
+                  <span>{getEmploymentTypeString()}</span>
                 </div>
 
               </div>
 
-              <div style={{ height: '1px', backgroundColor: '#f1f5f9' }} />
+              <div style={{ height: '1px', backgroundColor: '#20273a' }} />
 
-              {/* Skills */}
+              {/* Tech Stack */}
               <div>
-                <p style={{ fontSize: '12px', fontWeight: 600 }}>
-                  Required Skills
+                <p className="preview-section-title">
+                  REQUIRED INTEL TECH STACK:
                 </p>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div className="preview-tech-stack-container">
                   {skills.length > 0 ? (
                     skills.map(skill => (
-                      <span
-                        key={skill}
-                        className="status-tag status-pending"
-                        style={{ fontSize: '11px' }}
-                      >
+                      <span key={skill} className="preview-tech-pill">
                         {skill}
                       </span>
                     ))
                   ) : (
-                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                      No skills added
-                    </span>
+                    <>
+                      <span className="preview-tech-pill">React</span>
+                      <span className="preview-tech-pill">TypeScript</span>
+                      <span className="preview-tech-pill">Node.js</span>
+                    </>
                   )}
                 </div>
               </div>
 
+              {/* Description Abstract */}
+              <div>
+                <p className="preview-section-title">
+                  Description abstract:
+                </p>
+                <p className="preview-description-abstract">
+                  {formik.values.description 
+                    ? (formik.values.description.length > 150 
+                       ? formik.values.description.slice(0, 150) + "..." 
+                       : formik.values.description)
+                    : "Configure fields on the left and trigger AI Generation tool to compose full text."}
+                </p>
+              </div>
+
+            </div>
+
+            {/* CRM SOURCING INFORMATION CARD */}
+            <div className="crm-notice-card mt-4">
+              <div className="crm-notice-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <div className="crm-notice-content">
+                <h4 className="crm-notice-title">Sourcing Information</h4>
+                <p className="crm-notice-desc">
+                  Publishing a new vacancy instantly loads the matching telemetry criteria into candidate indexes.
+                </p>
+              </div>
             </div>
 
           </div>
@@ -1036,6 +1126,16 @@ useEffect(() => {
           />
         )
       }
+
+      {/* FLOATING CHAT WIDGET */}
+      <div className="floating-chat-widget">
+        <div className="floating-chat-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <span className="floating-chat-badge">2</span>
+      </div>
     </form >
   );
 };

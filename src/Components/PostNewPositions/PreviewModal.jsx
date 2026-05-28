@@ -30,11 +30,11 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [isVendorOpen, setIsVendorOpen] = useState(true);
 
-  const [showPostPreview, setShowPostPreview] = useState(false);
+  const [showPostPreview, setShowPostPreview] = useState(data?.shareToLinkedIn || false);
   const [postPreviewLoading, setPostPreviewLoading] = useState(false);
   const [postDescription, setPostDescription] = useState("🚀 Explore your next career milestone. We are actively seeking a talented professional to drive strategic initiatives and join our dynamic team. Review the core capabilities and position overview below, and apply today to make an impact.\n\n#Hiring #CareerOpportunity #TalentAcquisition #JobOpening #ProfessionalGrowth");
   const [postLink, setPostLink] = useState("https://uat.benmyl.com/sign-in");
-  const [shareToLinkedIn, setShareToLinkedIn] = useState(false);
+  const [shareToLinkedIn, setShareToLinkedIn] = useState(data?.shareToLinkedIn || false);
 
   const [saveHotlistImage] = useSaveHotlistImageMutation();
   const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlPostJobQuery();

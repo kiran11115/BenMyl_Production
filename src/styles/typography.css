@@ -1,0 +1,164 @@
+/* =========================================
+   TYPOGRAPHY — Global Font System
+   All font-sizes: 8px – 16px (responsive via clamp)
+   Applied to every element via :root / body inheritance
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Base reset — single source of truth for fonts */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px; /* base: 1rem = 16px */
+}
+
+body {
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #1F2937;
+  background-color: #F7F8FC;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1F2937;
+  margin: 0 0 0.5em 0;
+}
+
+h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 15px; font-weight: 700; }
+h3 { font-size: 14px; font-weight: 700; }
+h4 { font-size: 13px; font-weight: 600; }
+h5 { font-size: 12px; font-weight: 600; }
+h6 { font-size: 11px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+
+/* ── Body text ── */
+p {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0 0 0.75em 0;
+}
+
+p.small,
+.text-sm {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6B7280;
+}
+
+p.xs,
+.text-xs {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #6B7280;
+}
+
+/* ── Muted / helper text ── */
+.muted {
+  color: #6B7280;
+  font-size: 13px;
+}
+
+.muted.small {
+  font-size: 12px;
+}
+
+/* ── Labels ── */
+label,
+.auth-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── Code / mono ── */
+code,
+pre,
+.font-mono {
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 12px;
+}
+
+/* Placeholder text color */
+.placeholder-text{
+font-size: 13px !important;
+}
+
+
+/* ── Display heading class ── */
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* ── Caption / micro ── */
+.caption {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+}
+
+/* ── Section badge / tag text ── */
+.section-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* ── Link base ── */
+a {
+  color: #5B5BD6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #4747B8;
+}
+
+/* ── Utility overrides ── */
+.text-primary   { color: #5B5BD6; }
+.text-secondary { color: #6B7280; }
+.text-success   { color: #059669; }
+.text-danger    { color: #e11d48; }
+.text-warning   { color: #d97706; }
+.text-white     { color: #ffffff; }
+
+.fw-400 { font-weight: 400; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+
+/* ── Error helper text ── */
+.auth-error,
+.field-error {
+  color: #e11d48;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  display: block;
+}

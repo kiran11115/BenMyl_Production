@@ -1,0 +1,27 @@
+/* Custom premium themes representing "Core Navy to Neon Mint" and "Dark Graphite to Neon Mint" */
+.btn-royal-gold {
+  background: linear-gradient(135deg, #5B5BD6 0%, #7B61FF 100%) !important;
+  color: #ffffff !important;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-royal-gold:hover {
+  background: linear-gradient(135deg, #4747B8 0%, #6449E6 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 91, 214, 0.2);
+}
+
+.btn-navy-yellow {
+  background: #ffffff !important;
+  color: #5B5BD6 !important;
+  border: 1px solid #5B5BD6 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-navy-yellow:hover {
+  background: #f5f5ff !important;
+  color: #4747B8 !important;
+  border-color: #4747B8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(91, 91, 214, 0.1);
+}

@@ -108,7 +108,7 @@ function AdminHeader() {
                     {/* Navigation Menu (Responsive) */}
                     <nav className={`header-nav ${isMenuOpen ? "mobile-active" : ""}`} ref={dropdownRef}>
                         {[
-                            { path: "/Admin/portal", label: "Control Center" },
+                            // { path: "/Admin/portal", label: "Control Center" },
                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
                             { 
                                 label: "Projects", 
@@ -228,6 +228,18 @@ function AdminHeader() {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                     {/* Settings Icon */}
+                    <div className="admin-message-popover-wrapper">
+                        <button
+                            onClick={() => navigate('/admin/portal')}
+                            type="button"
+                            className="header-action-btn"
+                            aria-label="Settings"
+                        >
+                            <Settings size={20} />
+                        </button>
                     </div>
 
                     {/* Messages Icon */}

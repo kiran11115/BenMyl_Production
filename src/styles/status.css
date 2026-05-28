@@ -1,0 +1,127 @@
+/* =========================================
+   STATUS — Pills, Tags, Badges
+   Single source of truth for all status indicators
+   ========================================= */
+
+/* ── Base status tag ── */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ── Progress / Active (indigo) — used across the whole app ── */
+.status-tag.status-progress,
+.status-progress {
+  background-color: #EEF2F8 !important;
+  color: #5B5BD6 !important;
+  border: 1px solid rgba(91, 91, 214, 0.15) !important;
+}
+
+/* ── Count tag ── */
+.status-tag.count {
+  background: #f8fafc;
+  color: #5B5BD6;
+  border: 1px solid rgba(91, 91, 214, 0.15);
+}
+
+/* ── Status pill (rounded, icon + dot style) ── */
+.status-pill-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #475569;
+}
+
+.status-pill-v2 .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-pill-v2 .dot.scheduled { background: #3b82f6; }
+.status-pill-v2 .dot.completed { background: #10b981; }
+.status-pill-v2 .dot.cancelled { background: #ef4444; }
+
+/* ── Colour variants ── */
+.status-pill-yellow {
+  background-color: #fef3c7 !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.status-header-yellow {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+}
+
+.status-pill-purple {
+  background-color: #f3e8ff !important;
+  color: #7c3aed !important;
+  border: 1px solid #e9d5ff !important;
+}
+
+.status-header-purple {
+  background-color: #8b5cf6 !important;
+  color: #ffffff !important;
+}
+
+.status-pill-blue {
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+  border: 1px solid #bae6fd !important;
+}
+
+.status-header-blue {
+  background-color: #0ea5e9 !important;
+  color: #ffffff !important;
+}
+
+.status-pill-green {
+  background-color: #d1fae5 !important;
+  color: #059669 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.status-header-green {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.status-pill-red {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+}
+
+.status-pill-indigo {
+  background-color: #EEF2F8 !important;
+  color: #5B5BD6 !important;
+  border: 1px solid rgba(91, 91, 214, 0.2) !important;
+}
+
+/* ── Time badge ── */
+.time-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
