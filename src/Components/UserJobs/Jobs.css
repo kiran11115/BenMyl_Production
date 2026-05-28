@@ -826,3 +826,162 @@
   margin-top: auto;
   padding-top: 8px;
 }
+
+.job-chip{
+  height:28px;
+
+  padding:0 12px;
+
+  border-radius:999px;
+
+  display:flex;
+  align-items:center;
+
+  font-size:12px;
+  font-weight:700;
+
+  width:max-content;
+}
+
+.job-chip.purple{
+  background:#ede9fe;
+  color:#6d28d9;
+}
+
+.job-chip.green{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+.job-chip.mint{
+  background:#fef3c6;
+  color:#bb4d00;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1200px) {
+
+  .jobs-layout{
+    flex-direction:column;
+    height:auto !important;
+  }
+
+  .vs-filters-sidebar{
+    width:100% !important;
+    min-width:100% !important;
+    position:relative !important;
+    top:0 !important;
+    height:auto !important;
+  }
+
+  .jobs-results-wrapper{
+    width:100%;
+  }
+
+  .jobs-grid{
+    grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr)) !important;
+  }
+}
+
+/* TABLET */
+
+@media (max-width: 992px){
+
+  .search-header-row{
+    flex-direction:column;
+    gap:16px;
+    align-items:flex-start !important;
+  }
+
+  .search-input-container{
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  .jobs-grid{
+    grid-template-columns:
+    repeat(auto-fill,minmax(260px,1fr)) !important;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 768px){
+
+  .jobs-container{
+    padding:12px !important;
+  }
+
+  .jobs-layout{
+    gap:14px !important;
+  }
+
+  .filter-sidebar{
+    padding:18px !important;
+    border-radius:18px !important;
+  }
+
+  .jobs-grid{
+    display:grid !important;
+
+    grid-template-columns:1fr !important;
+
+    gap:16px !important;
+  }
+
+  .interview-card-v2{
+    width:100% !important;
+  }
+
+  .search-header-row h1{
+    font-size:24px !important;
+  }
+
+  .header-text p{
+    font-size:13px !important;
+  }
+
+  .search-input-container{
+    flex-direction:column;
+  }
+
+  .filters-applied{
+    width:100%;
+    justify-content:center;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 480px){
+
+  .jobs-container{
+    padding:10px !important;
+  }
+
+  .filter-sidebar{
+    padding:14px !important;
+  }
+
+  .interview-card-v2{
+    padding:16px !important;
+    border-radius:18px !important;
+  }
+
+  .candidate-name{
+    font-size:16px !important;
+  }
+
+  .meta-pill{
+    font-size:11px !important;
+  }
+
+  .btn-v2-primary{
+    height:42px !important;
+    font-size:13px !important;
+  }
+}

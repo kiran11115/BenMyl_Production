@@ -294,7 +294,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
     <div className="filter-sidebar">
       {/* Header */}
       <div className="filter-header mb-4">
-        <h3 className="filter-title">Filters</h3>
+        <h3 className="filter-title">Interactive Filters</h3>
         <span onClick={resetFilters} className="filter-reset">Reset</span>
       </div>
 
@@ -590,7 +590,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
           border-radius: 8px;
         }
         .filter-section-header:hover h4 {
-          color: #f5810c;
+          color: #5B5BD6;
         }
         .section-content {
           padding-bottom: 12px;
