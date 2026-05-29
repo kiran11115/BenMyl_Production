@@ -10,6 +10,7 @@ import {
   FiBriefcase,
   FiVideo,
   FiEye,
+  FiChevronDown,
 } from "react-icons/fi";
 import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
@@ -350,20 +351,27 @@ const UserJobs = () => {
 
         <div
           style={{
+            background: "linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%)",
+            border: "1px solid #dbe3ef",
+            borderRadius: "18px",
+            padding: "18px 20px",
+            marginBottom: "22px",
+            boxShadow: "0 20px 45px rgba(92, 92, 230, 0.16)",
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: "22px",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "16px",
           }}
         >
           <div>
             <h1
               style={{
-                fontSize: "42px",
-                fontWeight: "800",
-                color: "#0f172a",
-                marginBottom: "4px",
-                letterSpacing: "-2px",
+                fontSize: "24px",
+                fontWeight: "700",
+                color: "#ffffff",
+                marginBottom: "8px",
+                letterSpacing: "-0.5px",
               }}
             >
               Find jobs
@@ -371,29 +379,48 @@ const UserJobs = () => {
 
             <p
               style={{
-                color: "#94a3b8",
-                fontSize: "16px",
+                color: "rgba(255, 255, 255, 0.6)",
+                fontSize: "14px",
                 fontWeight: "500",
+                margin: 0,
               }}
             >
               Showing {jobs.length} matches based on your interactive filters
             </p>
           </div>
 
-          <button
-            style={{
-              height: "48px",
-              padding: "0 18px",
-              borderRadius: "999px",
-              border: "1px solid #e2e8f0",
-              background: "#fff",
-              fontWeight: "700",
-              fontSize: "15px",
-              color: "#0f172a",
-            }}
-          >
-            Most recent
-          </button>
+          <div style={{ position: "relative" }}>
+            <select
+              style={{
+                appearance: "none",
+                WebkitAppearance: "none",
+                backgroundColor: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "6px",
+                padding: "8px 32px 8px 12px",
+                fontSize: "13px",
+                color: "#334155",
+                fontWeight: "500",
+                cursor: "pointer",
+                outline: "none",
+                minWidth: "180px",
+                height: "38px",
+              }}
+              defaultValue="Most recent"
+            >
+              <option value="Most recent">Most recent</option>
+            </select>
+            <FiChevronDown
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#64748b",
+                pointerEvents: "none",
+              }}
+            />
+          </div>
         </div>
 
         {/* GRID */}

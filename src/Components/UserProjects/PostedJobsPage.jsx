@@ -1,5 +1,5 @@
 import React from "react";
-import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft } from "react-icons/fi";
+import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import PostedJobs from "./PostedJobs";
 import StatsRow from "./StatsRow";
@@ -72,18 +72,67 @@ export default function PostedJobsPage() {
                     <span className="crumb">/ Posted Jobs</span>
                 </div>
 
-                <div className="projects-page-header">
+                <div
+                    style={{
+                        background: "linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%)",
+                        border: "1px solid #dbe3ef",
+                        borderRadius: "18px",
+                        padding: "18px 20px",
+                        marginBottom: "28px",
+                        boxShadow: "0 20px 45px rgba(92, 92, 230, 0.16)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: "16px",
+                    }}
+                >
                     <div>
-                        <h1 className="projects-page-title">Posted Jobs</h1>
-                        <p className="projects-page-subtitle">
+                        <h1
+                            style={{
+                                fontSize: "24px",
+                                fontWeight: "700",
+                                color: "#ffffff",
+                                marginBottom: "8px",
+                                letterSpacing: "-0.5px",
+                              }}
+                        >
+                            Posted Jobs
+                        </h1>
+                        <p
+                            style={{
+                                color: "rgba(255, 255, 255, 0.6)",
+                                fontSize: "14px",
+                                fontWeight: "500",
+                                margin: 0,
+                            }}
+                        >
                             Manage and track all positions you've posted to the talent pool.
                         </p>
                     </div>
-                    <button className="btn-primary" onClick={() => {
-                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                        navigate(`${basePath}/user-post-new-positions`);
-                    }}>
-                        Post New Job
+                    <button
+                        onClick={() => {
+                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                            navigate(`${basePath}/user-post-new-positions`);
+                        }}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            backgroundColor: "#000000",
+                            border: "1px solid #000000",
+                            borderRadius: "8px",
+                            color: "#ffffff",
+                            padding: "10px 18px",
+                            fontWeight: "700",
+                            fontSize: "13px",
+                            cursor: "pointer",
+                            height: "38px",
+                            transition: "transform 0.2s ease",
+                        }}
+                    >
+                        <FiPlus size={16} />
+                        <span>Post New Job</span>
                     </button>
                 </div>
 
