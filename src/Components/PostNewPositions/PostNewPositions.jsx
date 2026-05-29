@@ -576,11 +576,11 @@ type="button"
 className="routine-btn"
 onClick={() => {
 const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/overview-dashboard` : `${basePath}/user-dashboard`;
+const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-posted-jobs` : `${basePath}/user-posted-jobs`;
 navigate(targetPath);
 }}
 >
-<FiArrowLeft /> Back to Workspace
+<FiArrowLeft /> Back to Posted jobs
 </button>
 </div>
 </div>

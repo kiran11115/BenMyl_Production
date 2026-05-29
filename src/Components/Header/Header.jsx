@@ -187,7 +187,7 @@ function Header() {
           {/* Brand */}
           <a className="header-brand">
             <img
-              src="/Images/Benmyl White logo.svg"
+              src="/Images/Benmyl-logo.svg"
               alt="BenchSales Logo"
               className="header-brand-logo"
             />

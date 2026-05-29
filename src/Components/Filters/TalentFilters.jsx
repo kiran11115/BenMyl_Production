@@ -669,7 +669,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           gap: 10px;
           cursor: pointer;
           transition: background 0.2s;
-          font-size: 14px;
+          font-size: 11px;
           color: #334155;
         }
         .custom-option:hover {
