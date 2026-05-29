@@ -174,7 +174,7 @@ const TalentProfile = () => {
   if (isLoading) return <div className="projects-container d-flex justify-content-center align-items-center"><FiLoader className="loading-spinner" /></div>;
 
   return (
-    <div className="projects-container">
+    <div className="container">
       {/* Breadcrumb - Matches Admin Look */}
       <div className="profile-breadcrumb">
         <button className="breadcrumb-back" onClick={handleBack}>
@@ -426,7 +426,7 @@ const TalentProfile = () => {
             {profileData.education.length > 0 ? (
               profileData.education.map((edu, idx) => (
                 <div key={idx} className="tp-info-block" style={{ marginBottom: '16px' }}>
-                  <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#f5810c' }}>
+                  <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#1e40af' }}>
                     <FiBookOpen size={18} />
                   </div>
                   <div className="tp-info-content-box">
