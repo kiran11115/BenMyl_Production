@@ -57,9 +57,24 @@ getSkillsByTitle: builder.query({
   }),
 }),
 
+placeBid: builder.mutation({
+  query: (payload) => ({
+    url: "api/uatcompany/JobPostBidModel",
+    method: "POST",
+    body: payload,
+  }),
+}),
+
+getJobBids: builder.query({
+  query: (jobId) => ({
+    url: `api/uatcompany/employee-emails/${jobId}`,
+    method: "GET",
+  }),
+}),
+
 
   }),
 });
 
-export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation,useGenerateJobDescriptionAIMutation, useGetEmployeesByTitleQuery,  useGetSkillsByTitleQuery,
+export const { usePostJobMutation, useSaveJobDraftMutation,useGetFindJobsMutation,useGenerateJobDescriptionAIMutation, useGetEmployeesByTitleQuery,  useGetSkillsByTitleQuery,usePlaceBidMutation,useGetJobBidsQuery
  } = ProjectApiSlice;

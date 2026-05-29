@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FiArrowLeft,
   FiMapPin,
@@ -11,11 +11,16 @@ import {
   FiClock,
   FiFileText,
   FiEdit,
+  FiEye,
+  FiCheck,
+  FiUserPlus,
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
-import { useLazyGetJobByIdQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useLazyGetJobByIdQuery, useSendInviteNotificationMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import WorkAndPreference from "./WorkAndPreference";
+import { useGetJobBidsQuery } from "../../State-Management/Api/ProjectApiSlice";
+import { toast } from "react-toastify";
 
 const JobOverview = () => {
   const navigate = useNavigate();
@@ -25,6 +30,131 @@ const JobOverview = () => {
   const userId = localStorage.getItem("CompanyId");
 
   const [getJobById, { data }] = useLazyGetJobByIdQuery();
+  const [sendInviteNotification] = useSendInviteNotificationMutation();
+  const [inviteStatuses, setInviteStatuses] = useState({});
+  const [selectedBidIds, setSelectedBidIds] = useState([]);
+  const [isBulkInviting, setIsBulkInviting] = useState(false);
+
+  const { data: bids = [] } = useGetJobBidsQuery(jobId, {
+  skip: !jobId,
+  refetchOnMountOrArgChange: true
+});
+
+  const handleToggleSelectBid = (employeeId) => {
+    setSelectedBidIds(prev => 
+      prev.includes(employeeId) 
+        ? prev.filter(id => id !== employeeId) 
+        : [...prev, employeeId]
+    );
+  };
+
+  const handleSendBulkInvite = async () => {
+    if (selectedBidIds.length === 0) return;
+    setIsBulkInviting(true);
+
+    try {
+      const selectedBids = bids.filter(bid => selectedBidIds.includes(bid.EmployeeID));
+      const companyname = localStorage.getItem("CompanyName") || "";
+      const username = localStorage.getItem("UserName") || "";
+
+      // Construct bulk arrays
+      const userIds = selectedBids.map(bid => Number(bid.logUserid || bid.logUserId));
+      const usernames = selectedBids.map(bid => bid.FullName);
+      const employeeIds = selectedBids.map(bid => Number(bid.EmployeeID));
+      const uatUserId = selectedBids[0]?.jobUserId ? Number(selectedBids[0].jobUserId) : Number(userId);
+
+      const payload = {
+        userIds,
+        usernames,
+        employeeIds,
+        message: "Your talent has been shortlisted. Please check your mailbox.",
+        uatUserId,
+        uatfirstName: username,
+        companyName: companyname
+      };
+
+      await sendInviteNotification(payload).unwrap();
+
+      // Update statuses for each of the selected bids
+      const newInviteStatuses = { ...inviteStatuses };
+      selectedBids.forEach(bid => {
+        newInviteStatuses[bid.EmployeeID] = "sent";
+      });
+      setInviteStatuses(newInviteStatuses);
+      
+      // Clear selected list
+      setSelectedBidIds([]);
+      toast.success(`Shortlisted invite sent to ${selectedBids.length} candidate(s) successfully!`);
+
+      const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+      navigate(`${basePath}/user-schedule-interview`, {
+        state: { preSelectedJobId: jobId }
+      });
+    } catch (err) {
+      console.error("Bulk invite failed", err);
+      toast.error("Failed to send bulk invites");
+    } finally {
+      setIsBulkInviting(false);
+    }
+  };
+
+  const handleViewProfile = (bid) => {
+    const from = location.pathname + location.search;
+    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+
+    navigate(
+      `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
+      {
+        state: {
+          employeeID: bid.EmployeeID,
+          candidate: {
+            id: bid.EmployeeID,
+            name: bid.FullName,
+            status: "Verified",
+          },
+          jobId: jobId,
+        },
+      }
+    );
+  };
+
+  const pendingBids =
+  bids?.filter((bid) => bid.IsShortlisted === false) || [];
+
+  const handleSendInvite = async (bid) => {
+    const empId = bid.EmployeeID;
+    setInviteStatuses((prev) => ({ ...prev, [empId]: "loading" }));
+    console.log("bidno:",bid.jobUserId)
+
+    try {
+      const companyname = localStorage.getItem("CompanyName") || "";
+      const username = localStorage.getItem("UserName") || "";
+
+      const payload = {
+        userIds: [Number(bid.logUserid)],
+        usernames: [bid.FullName],
+        employeeIds: [Number(bid.EmployeeID)],
+        message: "Your talent has been shortlisted. Please check your mailbox.",
+        uatUserId: Number(bid.jobUserId),
+        uatfirstName: username,
+        companyName: companyname
+      };
+
+      await sendInviteNotification(payload).unwrap();
+
+      setInviteStatuses((prev) => ({ ...prev, [empId]: "sent" }));
+      toast.success(`Invite successfully sent to ${bid.FullName}!`);
+
+      const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+      navigate(`${basePath}/user-schedule-interview`, {
+        state: { preSelectedJobId: jobId }
+      });
+    } catch (err) {
+      console.error("Invite failed", err);
+      setInviteStatuses((prev) => ({ ...prev, [empId]: "idle" }));
+      toast.error("Failed to send invite");
+    }
+  };
 
   useEffect(() => {
     if (jobId && userId) {
@@ -89,8 +219,9 @@ const JobOverview = () => {
             type="button"
             className="link-button"
             onClick={() => {
-              // const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(-1);
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              const postedJobsPath = basePath === '/Admin' ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+              navigate(postedJobsPath);
             }}
           >
             <FiArrowLeft /> Back to Projects
@@ -254,10 +385,292 @@ const JobOverview = () => {
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="dashboard-column-side card-base filters-sidebar">
+        {/* <div className="dashboard-column-side card-base filters-sidebar">
           <ShareJobCard />
           <WorkAndPreference job={job} />
+        </div> */}
+        <div className="dashboard-column-side">
+
+  {/* BIDS CARD */}
+  <div
+    className="card-base"
+    style={{
+      padding: "18px",
+      marginBottom: "16px",
+      borderRadius: "20px",
+      background: "#fff",
+    }}
+  >
+    <div
+      style={{
+        marginBottom: "16px",
+        borderBottom: "1px solid #eef2f7",
+        paddingBottom: "12px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <div>
+        <h5
+          style={{
+            margin: 0,
+            fontWeight: 700,
+            fontSize: "16px",
+            color: "#0f172a",
+          }}
+        >
+          Bids From Recruiters
+        </h5>
+
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#64748b",
+          }}
+        >
+          {pendingBids.length} Candidate(s)
+        </span>
+      </div>
+
+      {/* Bulk Shortlist/Invite Button */}
+      {selectedBidIds.length > 0 && (
+        <button
+          type="button"
+          onClick={handleSendBulkInvite}
+          disabled={isBulkInviting}
+          style={{
+            padding: "6px 14px",
+            borderRadius: "20px",
+            background: "linear-gradient(135deg,#7c3aed,#2563eb)",
+            color: "#fff",
+            fontSize: "12px",
+            fontWeight: 600,
+            border: "none",
+            cursor: isBulkInviting ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            boxShadow: "0 4px 10px rgba(124,58,237,0.2)",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {isBulkInviting ? (
+            <>
+              <div className="spinner-border spinner-border-sm text-light" style={{ width: "12px", height: "12px", borderWidth: "2px" }} />
+              Sending...
+            </>
+          ) : (
+            <>
+              <FiUserPlus size={14} />
+              Shortlist ({selectedBidIds.length})
+            </>
+          )}
+        </button>
+      )}
+    </div>
+
+    {pendingBids.length > 0 ? (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+        }}
+      >
+        {pendingBids.map((bid) => (
+          <div
+            key={bid.EmployeeID}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "14px",
+              border: "1px solid #eef2f7",
+              borderRadius: "14px",
+              background: "#fafbfc",
+              transition: "all .2s ease",
+            }}
+          >
+            {/* Selection Checkbox */}
+            <input
+              type="checkbox"
+              checked={selectedBidIds.includes(bid.EmployeeID)}
+              onChange={() => handleToggleSelectBid(bid.EmployeeID)}
+              disabled={inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading"}
+              style={{
+                width: "16px",
+                height: "16px",
+                borderRadius: "4px",
+                border: "1px solid #cbd5e1",
+                cursor: (inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading") ? "not-allowed" : "pointer",
+                accentColor: "#7c3aed",
+                marginRight: "4px",
+              }}
+            />
+            {/* Avatar */}
+            <div
+              style={{
+                width: "46px",
+                height: "46px",
+                borderRadius: "50%",
+                background:
+                  "linear-gradient(135deg,#2563eb,#7c3aed)",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                fontSize: "16px",
+                flexShrink: 0,
+              }}
+            >
+              {bid.FullName?.charAt(0)?.toUpperCase()}
+            </div>
+
+            {/* Content */}
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontWeight: 600,
+                  color: "#0f172a",
+                  fontSize: "14px",
+                }}
+              >
+                {bid.FullName}
+              </div>
+
+              <div
+                style={{
+                  marginTop: "4px",
+                  fontSize: "12px",
+                  color: "#64748b",
+                }}
+              >
+                Bidded By {bid.companyName}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {/* View Profile Eye Icon */}
+              <button
+                type="button"
+                onClick={() => handleViewProfile(bid)}
+                title="View Profile"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "1px solid #e2e8f0",
+                  background: "#ffffff",
+                  color: "#64748b",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease-in-out",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#2563eb";
+                  e.currentTarget.style.borderColor = "#bfdbfe";
+                  e.currentTarget.style.background = "#eff6ff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#64748b";
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.background = "#ffffff";
+                }}
+              >
+                <FiEye size={18} />
+              </button>
+
+              {/* Shortlist/Invite Icon */}
+              {/* <button
+                type="button"
+                onClick={() => handleSendInvite(bid)}
+                disabled={inviteStatuses[bid.EmployeeID] === "loading" || inviteStatuses[bid.EmployeeID] === "sent"}
+                title={inviteStatuses[bid.EmployeeID] === "sent" ? "Invite Sent" : "Shortlist & Invite"}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  border: "1px solid",
+                  borderColor: inviteStatuses[bid.EmployeeID] === "sent" ? "#bbf7d0" : "#e2e8f0",
+                  background: inviteStatuses[bid.EmployeeID] === "sent" ? "#f0fdf4" : "#ffffff",
+                  color: inviteStatuses[bid.EmployeeID] === "sent" ? "#16a34a" : "#64748b",
+                  cursor: (inviteStatuses[bid.EmployeeID] === "loading" || inviteStatuses[bid.EmployeeID] === "sent") ? "not-allowed" : "pointer",
+                  transition: "all 0.2s ease-in-out",
+                }}
+                onMouseEnter={(e) => {
+                  if (inviteStatuses[bid.EmployeeID] !== "loading" && inviteStatuses[bid.EmployeeID] !== "sent") {
+                    e.currentTarget.style.color = "#7c3aed";
+                    e.currentTarget.style.borderColor = "#ddd6fe";
+                    e.currentTarget.style.background = "#f5f3ff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (inviteStatuses[bid.EmployeeID] !== "sent") {
+                    e.currentTarget.style.color = "#64748b";
+                    e.currentTarget.style.borderColor = "#e2e8f0";
+                    e.currentTarget.style.background = "#ffffff";
+                  }
+                }}
+              >
+                {inviteStatuses[bid.EmployeeID] === "loading" ? (
+                  <div className="spinner-border spinner-border-sm text-primary" role="status" style={{ width: "16px", height: "16px", borderWidth: "2px", borderColor: "#7c3aed transparent transparent transparent" }} />
+                ) : inviteStatuses[bid.EmployeeID] === "sent" ? (
+                  <FiCheck size={18} />
+                ) : (
+                  <FiUserPlus size={18} />
+                )}
+              </button> */}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "40px 20px",
+          border: "1px dashed #dbe4ee",
+          borderRadius: "14px",
+          background: "#f8fafc",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "14px",
+            fontWeight: 600,
+            color: "#64748b",
+          }}
+        >
+          No candidates selected for this role
         </div>
+
+        <div
+          style={{
+            fontSize: "12px",
+            color: "#94a3b8",
+            marginTop: "6px",
+          }}
+        >
+          Recruiter bids will appear here
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* WORK AUTHORIZATION CARD */}
+  <div className="card-base filters-sidebar">
+    <WorkAndPreference job={job} />
+  </div>
+
+</div>
       </div>
     </div>
   );

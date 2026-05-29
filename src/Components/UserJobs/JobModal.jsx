@@ -12,7 +12,7 @@ import {
   FiAward,
   FiInfo
 } from "react-icons/fi";
-import { useGetEmployeesByTitleQuery } from "../../State-Management/Api/ProjectApiSlice";
+import { useGetEmployeesByTitleQuery, usePlaceBidMutation } from "../../State-Management/Api/ProjectApiSlice";
 import { useNavigate } from "react-router-dom";
 
 const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
@@ -23,6 +23,9 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
     isLoading,
     isError,
   } = useGetEmployeesByTitleQuery(title);
+  const [placeBid] = usePlaceBidMutation();
+  const recruiterUserId = localStorage.getItem("CompanyId");
+  console.log("uId:",job?.userId)
 
   const [selectedTalents, setSelectedTalents] = useState(initialSelectedTalentId ? [initialSelectedTalentId] : []);
   const [customNote, setCustomNote] = useState("");
@@ -38,13 +41,31 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
   };
 
   const handleDone = async () => {
-    if (isSubmitting) return;
+  if (selectedTalents.length === 0) return;
+
+  try {
     setIsSubmitting(true);
-    // Simulated API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
+
+    const payload = {
+      jobId: job.id,
+      jobUserId: job?.userId, // recruiter who posted job
+      logUserId: Number(recruiterUserId),
+      employeesListID: selectedTalents,
+    };
+
+    const response = await placeBid(payload).unwrap();
+
+    console.log("Bid placed:", response);
+    alert(response?.message);
+
     onClose();
-  };
+  } catch (error) {
+    console.error("Place Bid Error:", error);
+    alert("Failed to place bid");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const getInitials = (name = "") =>
     name
@@ -67,13 +88,15 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
     return formatted;
   };
 
-  const normalizedTalents = talents.map((t) => ({
-    id: t.employeeID,
-    name: `${t.firstName} ${t.lastName}`,
-    role: title,
-    email: t.emailAddress,
-    avatar: t.profileImage, // Use actual profile image if available
-  }));
+  const normalizedTalents = talents
+    .filter((t) => !t.isShortlisted)
+    .map((t) => ({
+      id: t.employeeID,
+      name: `${t.firstName} ${t.lastName}`,
+      role: title,
+      email: t.emailAddress,
+      avatar: t.profileImage, // Use actual profile image if available
+    }));
 
   return createPortal(
     <div className="modal-overlay">
