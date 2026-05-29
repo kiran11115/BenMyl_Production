@@ -86,36 +86,62 @@ export default function OverviewTab({ project, tasks }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
                 {/* Mini stats */}
-                <div className="stats-grid" style={{ marginBottom: 0 }}>
+                <div className="stats-grid" style={{ marginBottom: 28 }}>
                     <div className="stat-card">
-                        <div className="stat-content">
-                            <div className="stat-label">Completed</div>
-                            <div className="stat-value" style={{ fontSize: 22, color: "#10b981" }}>{done}</div>
-                            <div className="stat-trend trend-up">
-                                <FiCheckSquare size={12} /> Tasks done
+                        <div className="stat-header-row">
+                            <span className="stat-title">Completed</span>
+                            <div className="stat-icon-box">
+                                <FiCheckSquare size={16} />
                             </div>
                         </div>
-                        <div className="stat-icon-box box-emerald"><FiCheckSquare size={20} /></div>
+                        <div className="stat-number">{done}</div>
+                        <div className="stat-footer-row">
+                            <span>Last calibrated 5m ago</span>
+                        </div>
+                        <div className="green-badge">
+                            Tasks done
+                        </div>
+                        <div className="stat-bottom-link">
+                            ↗ Optimal Flow
+                        </div>
                     </div>
+
                     <div className="stat-card">
-                        <div className="stat-content">
-                            <div className="stat-label">In Progress</div>
-                            <div className="stat-value" style={{ fontSize: 22, color: "#3b82f6" }}>{inProgress}</div>
-                            <div className="stat-trend trend-up">
-                                <FiList size={12} /> Active
+                        <div className="stat-header-row">
+                            <span className="stat-title">In Progress</span>
+                            <div className="stat-icon-box">
+                                <FiList size={16} />
                             </div>
                         </div>
-                        <div className="stat-icon-box box-blue"><FiList size={20} /></div>
+                        <div className="stat-number">{inProgress}</div>
+                        <div className="stat-footer-row">
+                            <span>Last calibrated 5m ago</span>
+                        </div>
+                        <div className="green-badge">
+                            Active
+                        </div>
+                        <div className="stat-bottom-link">
+                            ↗ Optimal Flow
+                        </div>
                     </div>
+
                     <div className="stat-card">
-                        <div className="stat-content">
-                            <div className="stat-label">To Do</div>
-                            <div className="stat-value" style={{ fontSize: 22, color: "#f59e0b" }}>{todo}</div>
-                            <div className="stat-trend trend-down">
-                                <FiAlertCircle size={12} /> Pending
+                        <div className="stat-header-row">
+                            <span className="stat-title">To Do</span>
+                            <div className="stat-icon-box">
+                                <FiAlertCircle size={16} />
                             </div>
                         </div>
-                        <div className="stat-icon-box box-amber"><FiAlertCircle size={20} /></div>
+                        <div className="stat-number">{todo}</div>
+                        <div className="stat-footer-row">
+                            <span>Last calibrated 5m ago</span>
+                        </div>
+                        <div className="green-badge trend-down">
+                            Pending
+                        </div>
+                        <div className="stat-bottom-link">
+                            ↗ Optimal Flow
+                        </div>
                     </div>
                 </div>
 

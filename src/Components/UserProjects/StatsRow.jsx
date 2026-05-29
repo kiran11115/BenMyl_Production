@@ -1,5 +1,4 @@
 import React from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
 import "./Projects.css";
 
 const StatsRow = ({ stats }) => {
@@ -10,33 +9,27 @@ const StatsRow = ({ stats }) => {
           key={index}
           className={`stat-card ${stat.cardType || ""} ${stat.isNonFunctional ? "non-functional" : ""}`}
         >
-          {/* Floating bubble decorations */}
-          <div
-            className="bubbles-container"
-            style={{ color: stat.bubbleColor || "#3b82f6" }}
-          >
-            <div className="bubble bubble-1" />
-            <div className="bubble bubble-2" />
-            <div className="bubble bubble-3" />
-          </div>
-
-          <div className="stat-content">
-            <span className="stat-label">{stat.label}</span>
-            <div className="stat-value-row">
-              <span className="stat-value">{stat.value}</span>
-            </div>
-            <div className={`stat-trend ${stat.isPositive ? "trend-up" : "trend-down"}`}>
-              {stat.isPositive ? (
-                <TrendingUp size={13} />
-              ) : (
-                <TrendingDown size={13} />
-              )}
-              <span>{stat.trend}</span>
+          <div className="stat-header-row">
+            <span className="stat-title">{stat.label}</span>
+            <div className="stat-icon-box">
+              <stat.icon size={16} />
             </div>
           </div>
 
-          <div className="stat-icon-box">
-            <stat.icon size={22} />
+          <div className="stat-number">
+            {stat.value}
+          </div>
+
+          <div className="stat-footer-row">
+            <span>Last calibrated 5m ago</span>
+          </div>
+
+          <div className="green-badge">
+            {stat.trend}
+          </div>
+
+          <div className="stat-bottom-link">
+            ↗ Optimal Flow
           </div>
 
           {stat.isNonFunctional && (

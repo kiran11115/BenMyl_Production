@@ -45,11 +45,24 @@ const ContractBadge = ({ status }) => {
 
 const StatCard = ({ icon, label, value, colorClass }) => (
   <div className={`stat-card ${colorClass}`}>
-    <div className="stat-content">
-      <span className="stat-label">{label}</span>
-      <span className="stat-value">{value}</span>
+    <div className="stat-header-row">
+      <span className="stat-title">{label}</span>
+      <div className="stat-icon-box">{icon}</div>
     </div>
-    <div className="stat-icon-box">{icon}</div>
+
+    <div className="stat-number">{value}</div>
+
+    <div className="stat-footer-row">
+      <span>Last calibrated 5m ago</span>
+    </div>
+
+    <div className="green-badge">
+      Live now
+    </div>
+
+    <div className="stat-bottom-link">
+      ↗ Optimal Flow
+    </div>
   </div>
 );
 

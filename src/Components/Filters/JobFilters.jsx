@@ -91,7 +91,7 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
       >
         <span style={{
           color: selectedValues.length ? '#0f172a' : '#64748b',
-          fontSize: '14px'
+          fontSize: '12px'
         }}>
           {isOpen ? "Close List" : (selectedValues.length > 0 ? `${selectedValues.length} selected` : label)}
         </span>
@@ -124,7 +124,7 @@ const MultiSelectDropdown = ({ label, options, selectedValues, onChange }) => {
       padding: "12px",
       textAlign: "center",
       color: "#94a3b8",
-      fontSize: "13px"
+      fontSize: "12px"
     }}
   >
     No data found
@@ -302,6 +302,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
       {/* 1. Roles */}
       <div className="filter-section">
         <SectionHeader
+        className="filter-select"
           id="roles"
           title="Find by Roles"
           isExpanded={activeSection === 'roles'}
@@ -629,7 +630,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
           align-items: center;
           gap: 10px;
           cursor: pointer;
-          font-size: 14px;
+          font-size: 12px;
           color: #334155;
         }
         .checkbox-container {
@@ -687,7 +688,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
           gap: 10px;
           cursor: pointer;
           transition: background 0.2s;
-          font-size: 14px;
+          font-size: 11px;
           color: #334155;
         }
         .custom-option:hover {
@@ -713,7 +714,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
-  font-size: 14px;
+  font-size: 12px;
   background: #fff;
   color: #334155;
   outline: none;

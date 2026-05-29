@@ -1,14 +1,15 @@
 import React from "react";
-import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft } from "react-icons/fi";
+import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import PostedJobs from "./PostedJobs";
 import StatsRow from "./StatsRow";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import "./Projects.css";
 
 export default function PostedJobsPage() {
     const navigate = useNavigate();
+    const [showStats, setShowStats] = useState(false);
     const userId = localStorage.getItem("CompanyId");
     const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
 
@@ -62,34 +63,51 @@ export default function PostedJobsPage() {
     return (
         <div className="projects-page-wrapper">
             <div className="projects-container">
-                <div className="profile-breadcrumb d-flex gap-1 mb-4">
-                    <button className="link-button" onClick={() => {
-                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                        navigate(`${basePath}/user-dashboard`);
-                    }}>
-                        Dashboard
-                    </button>
-                    <span className="crumb">/ Posted Jobs</span>
-                </div>
 
-                <div className="projects-page-header">
-                    <div>
-                        <h1 className="projects-page-title">Posted Jobs</h1>
-                        <p className="projects-page-subtitle">
-                            Manage and track all positions you've posted to the talent pool.
-                        </p>
+                {/* Top cards for Posted Jobs */}
+
+                <div className="hero-card mb-4">
+                    <div className="hero-left">
+                        <div className="hero-pill">
+                            ✦ Posted Jobs
+                        </div>
+                        <h1 className="job-posting-title text-white">Posted Opportunities Board</h1>
+
+
+                        <div className="job-posting-header-info">
+
+                            <p className="job-posting-subtitle">
+                                Displaying all posted job opportunities with complete role details
+                            </p>
+                        </div>
                     </div>
-                    <button className="btn-primary" onClick={() => {
-                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                        navigate(`${basePath}/user-post-new-positions`);
-                    }}>
-                        Post New Job
-                    </button>
+
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <button
+                            onClick={() => setShowStats(!showStats)}
+                            className="routine-btn"
+                        >
+                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                navigate(`${basePath}/user-post-new-positions`);
+                            }}
+                            className="routine-btn"
+                        >
+                            <FiPlus size={16} />
+                            <span>Post New Job</span>
+                        </button>
+                    </div>
                 </div>
 
-                <StatsRow stats={jobStats} />
+                <div className={`metrics-slider ${showStats ? "show" : ""}`}>
+                    <StatsRow stats={jobStats} />
+                </div>
 
-                <div className="view-content mt-4">
+                <div className="view-content">
                     <div className="upload-main">
                         <PostedJobs />
                     </div>
