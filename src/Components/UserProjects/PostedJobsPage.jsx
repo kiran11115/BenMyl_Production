@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import PostedJobs from "./PostedJobs";
 import StatsRow from "./StatsRow";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import "./Projects.css";
 
 export default function PostedJobsPage() {
     const navigate = useNavigate();
+    const [showStats, setShowStats] = useState(false);
     const userId = localStorage.getItem("CompanyId");
     const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
 
@@ -62,83 +63,51 @@ export default function PostedJobsPage() {
     return (
         <div className="projects-page-wrapper">
             <div className="projects-container">
-                <div className="profile-breadcrumb d-flex gap-1 mb-4">
-                    <button className="link-button" onClick={() => {
-                        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                        navigate(`${basePath}/user-dashboard`);
-                    }}>
-                        Dashboard
-                    </button>
-                    <span className="crumb">/ Posted Jobs</span>
-                </div>
 
-                <div
-                    style={{
-                        background: "linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%)",
-                        border: "1px solid #dbe3ef",
-                        borderRadius: "18px",
-                        padding: "18px 20px",
-                        marginBottom: "28px",
-                        boxShadow: "0 20px 45px rgba(92, 92, 230, 0.16)",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "16px",
-                    }}
-                >
-                    <div>
-                        <h1
-                            style={{
-                                fontSize: "24px",
-                                fontWeight: "700",
-                                color: "#ffffff",
-                                marginBottom: "8px",
-                                letterSpacing: "-0.5px",
-                              }}
-                        >
-                            Posted Jobs
-                        </h1>
-                        <p
-                            style={{
-                                color: "rgba(255, 255, 255, 0.6)",
-                                fontSize: "14px",
-                                fontWeight: "500",
-                                margin: 0,
-                            }}
-                        >
-                            Manage and track all positions you've posted to the talent pool.
-                        </p>
+                {/* Top cards for Posted Jobs */}
+
+                <div className="hero-card mb-4">
+                    <div className="hero-left">
+                        <div className="hero-pill">
+                            ✦ Posted Jobs
+                        </div>
+                        <h1 className="job-posting-title text-white">Posted Opportunities Board</h1>
+
+
+                        <div className="job-posting-header-info">
+
+                            <p className="job-posting-subtitle">
+                                Displaying all posted job opportunities with complete role details
+                            </p>
+                        </div>
                     </div>
-                    <button
-                        onClick={() => {
-                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                            navigate(`${basePath}/user-post-new-positions`);
-                        }}
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            backgroundColor: "#000000",
-                            border: "1px solid #000000",
-                            borderRadius: "8px",
-                            color: "#ffffff",
-                            padding: "10px 18px",
-                            fontWeight: "700",
-                            fontSize: "13px",
-                            cursor: "pointer",
-                            height: "38px",
-                            transition: "transform 0.2s ease",
-                        }}
-                    >
-                        <FiPlus size={16} />
-                        <span>Post New Job</span>
-                    </button>
+
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <button
+                            onClick={() => setShowStats(!showStats)}
+                            className="routine-btn"
+                        >
+                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                navigate(`${basePath}/user-post-new-positions`);
+                            }}
+                            className="routine-btn"
+                        >
+                            <FiPlus size={16} />
+                            <span>Post New Job</span>
+                        </button>
+                    </div>
                 </div>
 
-                <StatsRow stats={jobStats} />
+                <div className={`metrics-slider ${showStats ? "show" : ""}`}>
+                    <StatsRow stats={jobStats} />
+                </div>
 
-                <div className="view-content mt-4">
+                <div className="view-content">
                     <div className="upload-main">
                         <PostedJobs />
                     </div>

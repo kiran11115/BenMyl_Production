@@ -45,6 +45,7 @@ body{
   font-size:10px;
   font-weight:800;
   letter-spacing:.12em;
+  text-transform: uppercase !important;
 }
 
 .hero-left h1{
@@ -60,7 +61,7 @@ body{
   margin-top:16px;
   color:#d9ddff;
   max-width:720px;
-  font-size:15px;
+  font-size:12px;
   line-height:1.7;
 }
 
@@ -75,7 +76,7 @@ body{
   border:none;
   border-radius:14px;
   padding:0 22px;
-  font-size:14px;
+  font-size:12px;
   font-weight:700;
   display:flex;
   align-items:center;

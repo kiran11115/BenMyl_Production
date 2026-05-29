@@ -34,7 +34,7 @@ const AdminNotifications = () => {
                 aria-label="Notifications"
                 type="button"
             >
-                <Bell size={20} />
+                <Bell size={18} />
             </button>
 
             {/* To restore full notification navigation/list later, replace this popover with the previous notification panel. */}

@@ -100,7 +100,7 @@ function AdminHeader() {
                     {/* Brand */}
                     <a className="header-brand">
                         <img
-                            src="/Images/Benmyl White logo.svg"
+                            src="/Images/Benmyl-logo.svg"
                             alt="BenchSales Logo"
                             className="header-brand-logo"
                         />
@@ -241,7 +241,7 @@ function AdminHeader() {
                             className="header-action-btn"
                             aria-label="Settings"
                         >
-                            <Settings size={20} />
+                            <Settings size={16} />
                         </button>
                     </div>
 
@@ -254,7 +254,7 @@ function AdminHeader() {
                             aria-expanded={isMessagesPopoverOpen}
                             aria-label="Messages"
                         >
-                            <MessageCircleIcon size={20} />
+                            <MessageCircleIcon size={16} />
                         </button>
 
                         {/* To restore direct navigation later, use:
@@ -462,7 +462,7 @@ function AdminHeader() {
                             >
 
                                 <div className="routine-icon">
-                                    <Bell size={18} />
+                                    <Bell size={16} />
                                 </div>
 
                                 <h4>Schedule Interview</h4>
