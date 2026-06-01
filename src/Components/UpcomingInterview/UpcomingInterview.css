@@ -69,11 +69,12 @@
 
 /* Restored View Toggle Styles */
 .view-toggle1 {
-    display: inline-flex;
-    background: #f1f5f9;
-    padding: 3px;
+   display: inline-flex;
+    background: #5b5bd6;
+    padding: 10px !important;
     border-radius: 6px;
-    margin-bottom: 24px;
+    margin-bottom: 0 !important;
+    color: #fefefe;
 }
 
 .view-toggle1 .toggle {
@@ -92,11 +93,6 @@
     color: var(--slate-800);
 }
 
-.view-toggle1 .toggle.active {
-    background: var(--slate-800);
-    color: #fff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
 
 /* main content layout */
 .ui-main-content {
@@ -1977,4 +1973,4 @@
 }
 .skills-internal-scroll::-webkit-scrollbar-thumb:hover {
     background: var(--slate-400);
-}
+}

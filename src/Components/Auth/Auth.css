@@ -50,7 +50,7 @@
   flex-direction: column;
   justify-content: center;
   background: linear-gradient(135deg, #0f172a, #020617);
-  border-right: 1px solid rgba(15, 23, 42, 0.5);
+  /* border-right: 1px solid rgba(15, 23, 42, 0.5); */
   overflow: hidden;
 }
 

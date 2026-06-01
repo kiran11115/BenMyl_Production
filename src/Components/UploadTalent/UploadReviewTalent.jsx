@@ -5,6 +5,7 @@ import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
 import { FiArrowLeft } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
 import { toast } from "react-toastify";
@@ -13,9 +14,10 @@ import { Users, Briefcase } from "lucide-react";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 
-const UploadTalent = () => {
+const UploadReviewTalent = () => {
     const [showModal, setShowModal] = useState(false);
     const location = useLocation();
+
 
     const [searchQuery, setSearchQuery] = useState("");
     const [pendingReviewCount, setPendingReviewCount] = useState(0);
@@ -23,6 +25,7 @@ const UploadTalent = () => {
     const [refreshKey, setRefreshKey] = useState(0);
     const [showUploading, setShowUploading] = useState(false);
     const [showStats, setShowStats] = useState(false);
+    const [showUploadSection, setShowUploadSection] = useState(true);
     const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
     const [showUploadError, setShowUploadError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
@@ -188,32 +191,57 @@ const UploadTalent = () => {
                 <div className="hero-card mb-4">
                     <div className="hero-left">
                         <div className="hero-pill">
-                            ✦ Talent Management
+                            ✦ Upload & Review
                         </div>
-                        <h1 className="job-posting-title text-white">Admin Talent Hub</h1>
+                        <h1 className="job-posting-title text-white">Upload & Review Talent</h1>
 
                         <div className="job-posting-header-info">
                             <p className="job-posting-subtitle">
-                                Manage and review your uploaded talent profiles effectively.
+                                Upload new talent resumes and review extracted AI profiles.
                             </p>
                         </div>
                     </div>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                        {/* Google-themed search bar */}
+                        <div style={{
+                            display: "flex", alignItems: "center", gap: 8,
+                            background: "#fff", border: "1.5px solid #e2e8f0",
+                            borderRadius: 10, padding: "6px 12px", minWidth: 240,
+                            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                        }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4285F4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="Search by Resume Name..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{
+                                    border: "none", outline: "none", background: "transparent",
+                                    fontSize: 12, color: "#1e293b", width: "100%",
+                                    fontWeight: 500,
+                                }}
+                            />
+                            {searchQuery && (
+                                <button onClick={() => setSearchQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, lineHeight: 1 }}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            )}
+                        </div>
                         <button
                             onClick={() => setShowStats(!showStats)}
                             className="routine-btn"
+                            style={{ background: showStats ? "" : undefined }}
                         >
-                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
+                            {showStats ? "Hide Metrics" : "Show Metrics"}
                         </button>
                         <button
+                            onClick={() => setShowUploadSection(!showUploadSection)}
                             className="routine-btn"
-                            onClick={() => {
-                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
-                                navigate(`${basePath}/upload-review-talent`);
-                            }}
+                            style={{ background: !showUploadSection ? "linear-gradient(135deg, #8b6ff7, #b07df8)" : undefined }}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            <span>Upload Talent</span>
+                            {showUploadSection ? "Hide Upload Area" : "Upload Resumes"}
                         </button>
                     </div>
                 </div>
@@ -223,23 +251,49 @@ const UploadTalent = () => {
                 </div>
 
                 {/* CONTENT */}
-                <div className="view-content mt-3">
-                    <div className="upload-main">
-                        {talentsData && talentsData.length > 0 ? (
-                            <UserTalentProfiles searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                        ) : (
-                            <div
-                                style={{
-                                    minHeight: "320px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    width: "100%"
-                                }}
-                            >
-                                <NoData text="No talent profiles available" />
-                            </div>
-                        )}
+                <div className="view-content">
+                    {/* INLINE UPLOAD SECTION */}
+                    <div style={{
+                        marginTop: showUploadSection ? '20px' : '0',
+                        maxHeight: showUploadSection ? '800px' : '0',
+                        opacity: showUploadSection ? 1 : 0,
+                        overflow: 'hidden',
+                        transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
+                    }}>
+                        <UploadTalentModal
+                            inline={true}
+                            onSuccess={handleUploadSuccess}
+                            onUploading={(isUploading) => setShowUploading(!!isUploading)}
+                            waitingForRefresh={waitingForRefresh}
+                            countdown={countdown}
+                            uploadCount={uploadCount}
+                        />
+                    </div>
+
+                    {/* REVIEW TAB */}
+                    <div className="upload-main mt-3">
+                            {talentsData && talentsData.length > 0 ? (
+                                <UploadTalentTable
+                                    talents={talentsData}
+                                    selectedEmails={selectedEmails}
+                                    onToggleSelect={toggleSelect}
+                                    refreshKey={refreshKey}
+                                    externalLoading={waitingForRefresh}
+                                    searchQuery={searchQuery}
+                                    onDeleted={handleDeleteSuccess}
+                                />
+                            ) : (
+                                <div
+                                    style={{
+                                        minHeight: "320px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <NoData text="No talent profiles to review yet" />
+                                </div>
+                            )}
                     </div>
                 </div>
             </div>
@@ -247,4 +301,4 @@ const UploadTalent = () => {
     );
 };
 
-export default UploadTalent;
+export default UploadReviewTalent;

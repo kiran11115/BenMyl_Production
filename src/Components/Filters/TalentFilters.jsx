@@ -1,4 +1,5 @@
 // TalentFilters.jsx
+import { Weight } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
@@ -364,7 +365,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           </div>
           <span
             className="checkbox-label"
-            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: '14px' }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: '10px' }}
           >
             <GiCheckMark size={14} color="#059669" /> Verified Profiles Only
           </span>
@@ -560,9 +561,16 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
         )}
       </div>
 
-      <button onClick={applyFilters} className="apply-btn mt-3">
+      <button onClick={applyFilters} className="apply-btn mt-3 mb-3">
         Apply Filters
       </button>
+
+      {/* Note Card */}
+      <div className="note-card" style={{ background: '#fffdf2ff', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #f6bb3bff' }}>
+        <p style={{ margin: 0, fontWeight: "600", fontSize: '10px', color: '#e28f29ff', lineHeight: 1.5 }}>
+          <strong>Note:</strong> Selecting a job from "Find for Jobs" is necessary to view its details and shortlist talent.
+        </p>
+      </div>
 
       {/* Styles reused from original snippet */}
       <style jsx>{`

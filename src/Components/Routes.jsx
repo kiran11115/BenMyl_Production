@@ -27,6 +27,7 @@ import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import EditTalentProfile from "./UploadTalent/EditTalentProfile";
+import UploadReviewTalent from "./UploadTalent/UploadReviewTalent";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
 import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
@@ -94,6 +95,7 @@ const routes = createBrowserRouter(
           <Route path="admin-posted-jobs" element={<PostedJobsPage />} />
           <Route path="admin-jobs" element={<UserJobs />} />
           <Route path="admin-upload-talent" element={<UploadTalent />} />
+          <Route path="upload-review-talent" element={<UploadReviewTalent />} />
 
           <Route path="user-talent-profile" element={<TalentProfile />} />
           <Route path="talent-profile" element={<UploadTalentProfile />} />
@@ -128,6 +130,7 @@ const routes = createBrowserRouter(
             <Route path="talent-profile" element={<UploadTalentProfile />} />
             <Route path="edit-talent-profile" element={<EditTalentProfile />} />
             <Route path="user-upload-talent" element={<UploadTalent />} />
+            <Route path="upload-review-talent" element={<UploadReviewTalent />} />
             <Route path="review-talent" element={<ReviewTalent />} />
           </Route>
 

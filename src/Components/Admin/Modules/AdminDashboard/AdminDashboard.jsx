@@ -137,7 +137,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="ai-dashboard-wrapper container">
+    <div className="ai-dashboard-wrapper">
 
       {/* TOAST */}
 
