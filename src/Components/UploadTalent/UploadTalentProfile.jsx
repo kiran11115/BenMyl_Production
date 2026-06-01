@@ -145,6 +145,7 @@ const UploadTalentProfile = () => {
       summary: apiData?.bio || "N/A",
       email: apiData?.emailAddress || "N/A",
       phoneNo: apiData?.phoneNo || "N/A",
+      isshortlisted : apiData?.isshortlisted,
       skills: apiData?.skills ? apiData?.skills.split(",") : [],
       workExperience: apiData?.workexperiences?.map(w => ({
         role: w.position || "N/A",
@@ -510,7 +511,7 @@ const UploadTalentProfile = () => {
             </div>
           <div className="tp-card-premium">
             <h3 className="tp-card-title" style={{ marginBottom: "1.5rem" }}><FiStar /> Recommended Jobs</h3>
-            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} />
+            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} isShortlisted={profileData?.isshortlisted} />
           </div>
         </div>
 
@@ -577,7 +578,7 @@ const UploadTalentProfile = () => {
             <h3 className="tp-card-title">Education</h3>
             {profileData?.education?.length > 0 ? profileData.education.map((edu, index) => (
               <div key={index} className="tp-info-block" style={{ marginBottom: '16px' }}>
-                <div className="tp-info-icon-box" style={{ background: '#fff7ed', color: '#f5810c' }}><FiBookOpen size={18} /></div>
+                <div className="tp-info-icon-box" style={{ background: '#edf2ffff', color: '#5b5bd6' }}><FiBookOpen size={18} /></div>
                 <div className="tp-info-content-box">
                   <div className="tp-info-value-md">{edu.degree}{edu.field && ` in ${edu.field}`}</div>
                   <div className="tp-info-label-sm">{edu.school}</div>

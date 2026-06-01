@@ -369,16 +369,21 @@ const JobOverview = () => {
     }
   };
 
-  const handleViewProfile = (cand) => {
+  const handleViewProfile = (bid) => {
     const from = location.pathname + location.search;
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+
     navigate(
       `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
       {
         state: {
-          employeeID: cand.id,
-          candidate: cand,
-          jobId: jobId
+          employeeID: bid.EmployeeID,
+          candidate: {
+            id: bid.EmployeeID,
+            name: bid.FullName,
+            status: "Verified",
+          },
+          jobId: jobId,
         },
       }
     );
@@ -814,7 +819,7 @@ const JobOverview = () => {
                     {/* Actions */}
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       {/* View Profile Eye Icon */}
-                      <button className="action-btn icon-only" onClick={() => handleViewProfile(bid.EmployeeID)} title="View Profile">
+                      <button className="action-btn icon-only" onClick={() => handleViewProfile(bid)} title="View Profile">
                         <FiEye size={16} />
                       </button>
 
