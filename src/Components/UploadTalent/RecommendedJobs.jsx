@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useGetRecommendJobsListMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
+import { toast } from "react-toastify";
 
-const RecommendedJobs = ({ role, skills, employeeId }) => {
+const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
   const navigate = useNavigate();
   const [selectedJob, setSelectedJob] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
@@ -51,15 +52,11 @@ const RecommendedJobs = ({ role, skills, employeeId }) => {
   }, [role, skills, getRecommendedJobs]);
 
   const handleAddTalentClick = (job) => {
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
-    
-    navigate(targetPath, { 
-      state: { 
-        autoOpenJobId: job.id,
-        initialSelectedTalentId: employeeId
-      } 
-    });
+    if (isShortlisted) {
+  toast.warning("This candidate is already shortlisted");
+  return;
+}
+    setSelectedJob(job);
   };
 
   const handleViewMoreJobs = () => {
@@ -156,7 +153,7 @@ const RecommendedJobs = ({ role, skills, employeeId }) => {
                   <div className="name-row w-100">
                     <h4 className="name" title={job.title}>{job.title}</h4>
                   </div>
-                  <div className="role" style={{ color: 'var(--orange-primary)', fontWeight: '600' }}>
+                  <div className="role" style={{ color: '#5b5bd6', fontWeight: '600' }}>
                     {job.company}
                   </div>
                   {/* Department badge */}
@@ -243,7 +240,11 @@ const RecommendedJobs = ({ role, skills, employeeId }) => {
       </div>
 
       {selectedJob && (
-        <JobModal job={selectedJob} onClose={() => setSelectedJob(null)} />
+        <JobModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          initialSelectedTalentId={employeeId ? Number(employeeId) : undefined}
+        />
       )}
     </div>
   );

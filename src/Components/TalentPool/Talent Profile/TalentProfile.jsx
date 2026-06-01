@@ -52,16 +52,19 @@ const TalentProfile = () => {
   const query = new URLSearchParams(location.search);
   const from = query.get("from");
 
+  const { state } = useLocation();
+  const employeeId = state?.employeeID;
+  const jobId = state?.jobId;
+ 
   const handleBack = () => {
     if (from) {
-      navigate(decodeURIComponent(from));
+      navigate(decodeURIComponent(from), {
+        state: { jobId }
+      });
     } else {
       navigate(-1);
     }
   };
-  const { state } = useLocation();
-  const employeeId = state?.employeeID;
-  const jobId = state?.jobId;
 
   const [isShortlisted, setIsShortlisted] = React.useState(false);
 
