@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { ContractContext, mapApiContractToUI } from './ContractContext';
 import { useGetContractsByBenchsalesQuery } from '../../State-Management/Api/ContractApiSlice';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
-import { FiFileText, FiPlus, FiSearch } from "react-icons/fi";
+import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
 import { Home } from "lucide-react";
 import './contract.css';
 import jsPDF from 'jspdf';
@@ -363,7 +363,33 @@ const ContractForm = () => {
 
   return (
     <div className="contract-page">
-      <ModuleHeader
+      <div className="hero-card mb-4">
+                  <div className="hero-left">
+                    <div className="hero-pill">
+                              ✦ Find contracts
+                            </div>
+                  <h1 className="job-posting-title text-white">Contract Management</h1>
+                  
+                   
+                  <div className="job-posting-header-info">
+                  
+                  <p className="job-posting-subtitle">
+                   Showing contracts based on your interactive filters
+                  </p>
+                  </div>
+                  </div>
+                   
+                   <button
+  className="routine-btn"
+  onClick={() =>
+    navigate(`${basePath}/contract-create`)
+  }
+>
+  <FiPlus size={16} />
+  New Work Order
+</button>
+                  </div>
+      {/* <ModuleHeader
         breadcrumb="C2C Contracts"
         title="Contract Management"
         description="Manage Company-to-Company Work Orders and E-Signatures"
@@ -380,7 +406,7 @@ const ContractForm = () => {
             onClick: () => navigate(`${basePath}/contract-create`)
           }
         ]}
-      />
+      /> */}
 
       <div className="contract-stats-grid">
         <StatCard icon={<Building size={20} />} label="Total Agreements" value={stats.total} colorClass="card-blue" />

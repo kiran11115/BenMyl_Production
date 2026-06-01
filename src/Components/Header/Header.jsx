@@ -14,6 +14,7 @@ import MobileTopBar from "./MobileTopBar";
 import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
 import TrialPopover from "./TrialPopover";
 import ProfileSideModal from "./ProfileSideModal";
+import ScrollToTop from "../ScrollToTop";
 
 
 function Header() {
@@ -175,6 +176,7 @@ function Header() {
 
   return (
     <>
+    <ScrollToTop />
       {/* Mobile Top Bar */}
       <MobileTopBar
         user={user}

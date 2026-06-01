@@ -348,6 +348,7 @@
 .job-header-left {
   display: flex;
   gap: 14px;
+  min-width: 0;
 }
 
 .job-company-logo {
@@ -394,6 +395,7 @@
   justify-content: center;
   cursor: pointer;
   transition: color 0.2s;
+  flex-shrink: 0;
 }
 
 .job-eye-icon:hover {
@@ -404,7 +406,7 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 18px;
+  margin-top: 0px;
 }
 
 .job-card-footer {

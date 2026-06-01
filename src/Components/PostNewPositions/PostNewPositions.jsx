@@ -983,8 +983,8 @@ navigate(targetPath);
             </div>
 
             {/* FOOTER */}
-            <div className="d-flex justify-content-between align-items-center mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
-              <label className="share-linkedin-container">
+            <div className="d-flex justify-content-end align-items-center mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
+              {/* <label className="share-linkedin-container">
                 <input
                   type="checkbox"
                   checked={shareToLinkedIn}
@@ -992,7 +992,7 @@ navigate(targetPath);
                 />
                 <span className="linkedin-icon-blue"><FiLinkedin style={{ marginRight: '4px' }} /></span>
                 <span>Share with social network (LinkedIn)</span>
-              </label>
+              </label> */}
               
               <div className="d-flex gap-3">
                 {/* <button type="button" className="btn-create-post" onClick={handleSaveDraft}>
