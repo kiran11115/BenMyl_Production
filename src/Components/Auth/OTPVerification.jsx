@@ -131,93 +131,95 @@ function OTPVerification() {
     <div className="auth-container">
       <div className="auth-card">
         {/* LEFT SIDE */}
-        <div className="auth-brand-side">
-          <span className="auth-brand-accent-circle" />
-          <div className="auth-brand-title">
-            <h2 className="auth-title">Verify your account</h2>
-            <p className="auth-subtitle">
-              A quick security check so we can keep your workspace safe.
-            </p>
+        {/* LEFT FORM SIDE */}
+        <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2.5rem 3rem' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', marginTop: '-1rem' }}>
+            <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, height: 150, objectFit: 'contain' }} />
           </div>
 
-          <div
-            style={{
-              marginTop: "2.25rem",
-              padding: "1.25rem 1.5rem",
-              borderRadius: "0.75rem",
-              background:
-                "linear-gradient(135deg, rgba(15,23,42,0.8), rgba(15,23,42,0.6))",
-              border: "1px solid rgba(148,163,184,0.35)",
-              maxWidth: "360px",
-            }}
-          >
-            <p style={{ color: "#facc15", marginBottom: "0.75rem" }}>★★★★★</p>
-            <p
-              style={{
-                color: "#e5e7eb",
-                fontStyle: "italic",
-                lineHeight: 1.5,
-              }}
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
+            The Autonomous <span style={{ color: '#5b5bd6' }}>Talent Platform</span>
+          </h1>
+
+          <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '400px' }}>
+            Unite high-speed neural candidate screenings with premium collaborative sourcing desks. Designed for elite recruiters, sales squads, and enterprise staffing partners.
+          </p>
+
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: '#5b5bd6' }}>❖</span> COLLABORATIVE HUB STATUS
+              </div>
+              <div style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span> ONLINE
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#ffffff', padding: '12px', borderRadius: '8px', marginBottom: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5b5bd6' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>Human Networks Sync</div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Sourcing & placements running 4.5x faster</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#ffffff', padding: '12px', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '8px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5b5bd6' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>Multi-Role Workspace</div>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>ClickUp-inspired adaptive agent layouts</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <button
+              type="button"
+              onClick={() => navigate("/sign-up")}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: 0 }}
             >
-              “BENMYL gives our teams ready-to-use components, so we ship faster
-              without sacrificing quality.”
-            </p>
-          </div>
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div className="auth-form-side">
-          <img
-            src="/Images/Loader-copy.gif"
-            alt="BenMyl Logo"
-            className="auth-logo"
-          />
-
-          <button
-            type="button"
-            onClick={() => navigate("/sign-up")}
-            className="auth-link"
-            style={{ display: "flex", gap: "5px", marginBottom: "1rem" }}
-          >
-            <ArrowLeft size={16} /> Back to Sign Up
-          </button>
-
-          <div className="auth-header">
-            <h2 className="auth-title">Verify OTP</h2>
-            <p className="auth-subtitle">
+              <ArrowLeft size={16} /> Back to Sign Up
+            </button>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginTop: '1rem', marginBottom: '0.5rem' }}>Verify OTP</h2>
+            <p style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.5, marginBottom: '0.25rem' }}>
               Enter the 6-digit code sent to your email.
             </p>
-            <p className="auth-subtitle">
+            <p style={{ color: '#64748b', fontSize: '12px', lineHeight: 1.5, fontStyle: 'italic', marginBottom: '1rem' }}>
               <strong>Note:</strong> If you do not receive the OTP, please check your Spam/Junk folder.
             </p>
 
             {timer > 0 ? (
-              <p className="auth-tagline">Resend available in {timer}s</p>
+              <p style={{ fontSize: '13px', color: '#10b981', fontWeight: 600 }}>Resend available in {timer}s</p>
             ) : (
               <button
                 type="button"
-                className="auth-link"
                 disabled={resendLoading}
                 onClick={handleResend}
+                style={{ background: 'none', border: 'none', color: '#5b5bd6', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
               >
                 {resendLoading ? "Resending..." : "Resend OTP"}
               </button>
             )}
 
             {resendMsg && (
-              <p className="auth-info-msg" style={{ textAlign: "center" }}>
+              <p style={{ fontSize: '12px', color: resendMsg.includes("success") ? '#10b981' : '#ef4444', marginTop: '0.5rem', fontWeight: 600 }}>
                 {resendMsg}
               </p>
             )}
           </div>
 
-          <form onSubmit={formik.handleSubmit}>
+          <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1rem' }}>
             <div
               style={{
                 display: "flex",
-                gap: "1rem",
-                justifyContent: "center",
-                margin: "2rem 0",
+                gap: "0.5rem",
+                justifyContent: "space-between",
+                marginBottom: "1rem",
               }}
             >
               {formik.values.otp.map((digit, index) => (
@@ -228,31 +230,169 @@ function OTPVerification() {
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
-                  className="auth-input auth-otp-input"
+                  style={{
+                    width: '3rem',
+                    height: '3.5rem',
+                    textAlign: 'center',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    background: '#f8fafc',
+                    color: '#0f172a',
+                    outline: 'none',
+                    transition: 'border-color 0.2s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#5b5bd6'}
+                  onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                 />
               ))}
             </div>
 
             {formik.errors.otp && (
-              <p className="auth-error-msg" style={{ textAlign: "center" }}>
+              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
                 {formik.errors.otp}
               </p>
             )}
 
             {otpErrorMsg && (
-              <p className="auth-error-msg" style={{ textAlign: "center" }}>
+              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
                 {otpErrorMsg}
               </p>
             )}
 
             <button
               type="submit"
-              className="auth-btn-primary"
               disabled={!isOtpComplete || isLoading}
+              style={{ background: (!isOtpComplete || isLoading) ? '#94a3b8' : '#5b5bd6', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: (!isOtpComplete || isLoading) ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
             >
-              {isLoading ? "Verifying..." : "Verify Code"}
+              {isLoading ? "Verifying..." : "Verify Code →"}
             </button>
           </form>
+
+          <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '1.5rem', color: '#94a3b8', fontSize: '10px', fontWeight: 700, letterSpacing: '0.5px' }}>
+            <span style={{ color: '#10b981' }}>⬡</span> SOC-2 TYPE II CERTIFIED WORKSPACE INTEGRITY
+          </div>
+        </div>
+
+        {/* RIGHT BRAND SIDE */}
+        <div className="auth-brand-side" style={{ background: '#f4f7f9', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2, marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#5b5bd6' }}></div>
+              BENMYL PREVIEW UNIT
+            </div>
+            <div style={{ background: '#5b5bd6', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(91, 91, 214, 0.3)' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              Matching Candidates Live
+            </div>
+          </div>
+
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2 }}>
+            <div style={{ background: '#ffffff', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '420px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)' }}>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e2e8f0' }}></div>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e2e8f0' }}></div>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e2e8f0' }}></div>
+                </div>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8' }}>BenMyl Collaboration Hub</div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px' }}>
+                NEURAL PIPELINE FEED
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5b5bd6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#5b5bd6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>AR</div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Alex Reid</div>
+                      <div style={{ fontSize: '11px', color: '#94a3b8' }}>Staffing Lead</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: 40, height: 4, background: '#5b5bd6', borderRadius: '2px' }}></div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, background: '#f3e8ff', color: '#5b5bd6', padding: '4px 8px', borderRadius: '4px', letterSpacing: '0.5px' }}>98.7% MATCH</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#8b5cf6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>MC</div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Marcus Chen</div>
+                      <div style={{ fontSize: '11px', color: '#94a3b8' }}>Solutions Architect</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: 20, height: 4, background: '#8b5cf6', borderRadius: '2px' }}></div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, background: '#f1f5f9', color: '#64748b', padding: '4px 10px', borderRadius: '4px', letterSpacing: '0.5px' }}>SOURCED</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#3b82f6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>SJ</div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Sarah Jenkins</div>
+                      <div style={{ fontSize: '11px', color: '#94a3b8' }}>Full-Stack Lead</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: 30, height: 4, background: '#3b82f6', borderRadius: '2px' }}></div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, background: '#eff6ff', color: '#3b82f6', padding: '4px 10px', borderRadius: '4px', letterSpacing: '0.5px' }}>INTERVIEW</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div style={{ fontSize: '10px', fontWeight: 800, color: '#5b5bd6', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.5px' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    INTELLIGENT INSIGHTS
+                  </div>
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#3b82f6', letterSpacing: '0.5px' }}>LIVE AI STREAM</div>
+                </div>
+                <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
+                  Matched applicant <strong>Alex Reid</strong> to Senior React Specialist position with <strong>98.7%</strong> accuracy index.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style={{ zIndex: 2, display: 'flex', gap: '12px', marginTop: '2rem' }}>
+            <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+              <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>DAILY MATCH ENGINE</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>98.4%</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981', background: '#d1fae5', padding: '2px 6px', borderRadius: '10px' }}>+2.1K</div>
+              </div>
+            </div>
+            <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+              <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>ACTIVE JOB GIGS</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>24 Live</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981' }}>+4 today</div>
+              </div>
+            </div>
+            <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+              <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>SOURCED PROFILES</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>14.2K</div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981' }}>+1.3K today</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(91,91,214,0.05) 0%, rgba(244,247,249,0) 70%)', zIndex: 1 }}></div>
+          <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, rgba(244,247,249,0) 70%)', zIndex: 1 }}></div>
+
         </div>
       </div>
     </div>

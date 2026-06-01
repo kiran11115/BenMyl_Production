@@ -27,8 +27,8 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  max-width: 960px;
-  min-height: 560px;
+  max-width: 80rem;
+  min-height: 35rem;
   border-radius: 1rem;
   border: 1px solid #e2e8f0;
 
@@ -201,7 +201,7 @@
 
 /* Links */
 .auth-link {
-  color: #f5810c;
+  color: #5b5bd6;
   font-weight: 600;
   text-decoration: none;
   background: none;
@@ -238,7 +238,7 @@
 }
 
 .auth-input:focus {
-  border-color: #f5810c;
+  border-color: #5b5bd6;
   box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
 }
 
@@ -265,15 +265,15 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  background-color: #f5810c;
+  background-color: #5b5bd6;
   color: #ffffff;
-  border: 1px solid #f5810c;
+  border: 1px solid #5b5bd6;
   transition: all 0.2s ease;
 }
 
 .auth-btn-primary:hover {
-  background-color: #f5810c;
-  border-color: #f5810c;
+  background-color: #5b5bd6;
+  border-color: #5b5bd6;
   box-shadow: 0 8px 15px -5px rgba(245, 129, 12, 0.4);
 }
 
@@ -366,7 +366,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #f5810c;
+  accent-color: #5b5bd6;
   margin: 0;
 }
 
