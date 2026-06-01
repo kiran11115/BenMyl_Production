@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus } from "lucide-react";
 import "./AdminHeader.css";
-import AdminNotifications from "./AdminNotifications";
+import Notifications from "../../Header/Notifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
 import TrialPopover from "../../Header/TrialPopover";
+import ProfileSideModal from "../../Header/ProfileSideModal";
 
 
 function AdminHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
-    const [isMessagesPopoverOpen, setIsMessagesPopoverOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showRoutineModal, setShowRoutineModal] = useState(false);
     const profileRef = useRef(null);
     const aiPopoverRef = useRef(null);
-    const messagesPopoverRef = useRef(null);
     const dropdownRef = useRef(null);
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
@@ -34,8 +34,9 @@ function AdminHeader() {
 
         return {
             logo: apiData.companylogo,
+            name: apiData.companyname || company,
         };
-    }, [apiData]);
+    }, [apiData, company]);
 
 
     // Initialize navigation hook
@@ -46,7 +47,7 @@ function AdminHeader() {
     };
 
     const toggleProfile = () => {
-        setIsProfileOpen(!isProfileOpen);
+        setIsProfileModalOpen(true);
     };
 
     // --- Navigation Handlers ---
@@ -63,6 +64,15 @@ function AdminHeader() {
         navigate("/sign-in"); // Redirect to login
     };
 
+      const getInitials = (name = "") => {
+    return name
+      .trim()
+      .split(" ")
+      .slice(0, 2)
+      .map(word => word[0]?.toUpperCase())
+      .join("");
+  };
+
     // Close profile dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -71,9 +81,6 @@ function AdminHeader() {
             }
             if (aiPopoverRef.current && !aiPopoverRef.current.contains(event.target)) {
                 setIsAiPopoverOpen(false);
-            }
-            if (messagesPopoverRef.current && !messagesPopoverRef.current.contains(event.target)) {
-                setIsMessagesPopoverOpen(false);
             }
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpenDropdown(null);
@@ -114,14 +121,14 @@ function AdminHeader() {
                             { path: "/Admin/admin-posted-jobs", label: "Projects" },
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
-                            { path: "/Admin/admin-upload-talent", label: "Talent Management" },
-                            {
-                                label: "Interviews",
-                                subItems: [
-                                    { label: "Create Interview", path: "/Admin/user-schedule-interview" },
-                                    { label: "Schedule Interview", path: "/Admin/admin-upcoming-interview" },
-                                ]
-                            },
+                            { path: "/Admin/admin-upload-talent", label: "Resource Management" },
+                            // {
+                            //     label: "Interviews",
+                            //     subItems: [
+                            //         { label: "Create Interview", path: "/Admin/user-schedule-interview" },
+                            //         { label: "Schedule Interview", path: "/Admin/admin-upcoming-interview" },
+                            //     ]
+                            // },
                             { path: "/Admin/contract-listing", label: "Contracts" },
                         ].map((link) => (
                             <div key={link.label} className="nav-item-container">
@@ -246,38 +253,21 @@ function AdminHeader() {
                     </div>
 
                     {/* Messages Icon */}
-                    <div className="admin-message-popover-wrapper" ref={messagesPopoverRef}>
+                    <div className="admin-message-popover-wrapper">
                         <button
-                            onClick={() => setIsMessagesPopoverOpen((prev) => !prev)}
+                            onClick={() => navigate("/Admin/admin-messages")}
                             type="button"
-                            className={`header-action-btn ${isMessagesPopoverOpen ? "active" : ""}`}
-                            aria-expanded={isMessagesPopoverOpen}
+                            className="header-action-btn"
                             aria-label="Messages"
                         >
                             <MessageCircleIcon size={16} />
                         </button>
-
-                        {/* To restore direct navigation later, use:
-                            onClick={() => navigate("/user/user-messages")}
-                        */}
-                        {isMessagesPopoverOpen && (
-                            <div className="ai-coming-soon-popover">
-                                <div className="ai-cs-icon">
-                                    <MessageCircleIcon size={28} color="#8b5cf6" />
-                                </div>
-                                <div className="ai-cs-content">
-                                    <span className="ai-cs-badge">Coming Soon</span>
-                                    <p className="ai-cs-title">Messages</p>
-                                    <p className="ai-cs-desc">Team conversations and admin message alerts will be available here soon.</p>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* Notification Bell */}
-                    <AdminNotifications />
+                    <Notifications targetPath="/Admin/notifications-page" />
 
-                    {/* User Profile Dropdown */}
+                    {/* User Profile Trigger */}
                     <div className="header-profile-wrapper" ref={profileRef}>
                         <div
                             className="header-profile"
@@ -285,50 +275,27 @@ function AdminHeader() {
                             role="button"
                             tabIndex={0}
                         >
-                            <img
-                                src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=150"}
-                                alt="Company Logo"
-                                className="profile-avatar"
-                            />
+                            {companyData?.logo ? (
+                <img
+                  src={
+                    companyData.logo.startsWith("http")
+                      ? `${companyData.logo}?t=${Date.now()}`
+                      : `https://webapidev.benmyl.com/${companyData.logo}?t=${Date.now()}`
+                  }
+                  alt="Company Logo"
+                  className="avatar-initials-premium"
+                />
+              ) : (
+                <div className="avatar-initials-premium">
+                  {getInitials(company || companyData?.name)}
+                </div>
+              )}
                             <div className="profile-info">
-                                <span className="profile-name">{company}</span>
+                                <span className="profile-name">{company || companyData?.name}</span>
                                 <span className="profile-role">{role}</span>
                             </div>
-                            <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
+                            <ChevronDown size={16} className="profile-chevron" />
                         </div>
-
-                        {/* Popover Menu */}
-                        {isProfileOpen && (
-                            <div className="profile-popover">
-                                <div className="popover-header">
-                                    {/* <p className="popover-name">John Smith</p> */}
-                                    <p className="popover-email">{emailid}</p>
-                                </div>
-                                <div className="popover-menu">
-                                    <button className="popover-item" onClick={handleViewProfile}>
-                                        <User size={16} />
-                                        View Profile
-                                    </button>
-                                    <button className="popover-item" onClick={() => navigate("/Admin/admin-analytics")}>
-                                        <File size={16} />
-                                        Analytics
-                                    </button>
-                                    <button className="popover-item" onClick={() => { setIsProfileOpen(false); navigate("/Admin/account-settings", { state: { activeTab: "team" } }); }}>
-                                        <Users size={16} />
-                                        Invite Team
-                                    </button>
-                                    {/* <button className="popover-item" onClick={() => navigate("/user/account-settings")}>
-                                        <Settings size={16} />
-                                        Account Settings
-                                    </button> */}
-                                    <div className="popover-divider"></div>
-                                    <button className="popover-item text-red" onClick={handleSignOut}>
-                                        <LogOut size={16} />
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </header>
@@ -481,6 +448,34 @@ function AdminHeader() {
 
             )}
             <TrialPopover />
+
+            {/* Profile Side Modal */}
+            <ProfileSideModal
+                isOpen={isProfileModalOpen}
+                onClose={() => setIsProfileModalOpen(false)}
+                onEditClick={() => {
+                    setIsProfileModalOpen(false);
+                    navigate("/Admin/edit-profile");
+                }}
+                onSignOut={handleSignOut}
+                profile={{
+                    name: company || emailid,
+                    role: role,
+                    email: emailid,
+                    avatar: companyData?.logo,
+                    companyName: apiData?.companyname || apiData?.companyName,
+                    phone: apiData?.phone,
+                    location: [apiData?.city, apiData?.state, apiData?.country].filter(Boolean).join(", "),
+                    description: apiData?.description,
+                    industry: apiData?.industry,
+                    companyDescription: apiData?.description || "Providing innovative solutions for the future.",
+                    totalEmployees: apiData?.companySize || "11-50 employees",
+                    founded: apiData?.foundedYear || "2020",
+                    website: apiData?.websiteURL || "https://benmyl.com",
+                    subscriptionType: "Enterprise Plan",
+                    tokens: "150",
+                }}
+            />
 
         </>
     );

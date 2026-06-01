@@ -62,7 +62,7 @@ const fmtTime = (dateString) => {
 /* ════════════════════════════════════════
    Component
 ════════════════════════════════════════ */
-const Notifications = () => {
+const Notifications = ({ targetPath = "/User/notifications-page" }) => {
   const [open, setOpen]         = useState(false);
   const [hoverId, setHoverId]   = useState(null);
   const containerRef            = useRef(null);
@@ -357,7 +357,7 @@ const Notifications = () => {
                   }}
                 >
                   <button
-                    onClick={() => { setOpen(false); navigate("/User/notifications-page"); }}
+                    onClick={() => { setOpen(false); navigate(targetPath); }}
                     type="button"
                     style={{
                       width:        "100%",

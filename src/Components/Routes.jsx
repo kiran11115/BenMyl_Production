@@ -75,6 +75,7 @@ const routes = createBrowserRouter(
           <Route path="account-settings" element={<AccountSettings />} />
           <Route path="edit-profile" element={<AdminProfileEdit />} />
           <Route path="admin-analytics" element={<Analytics />} />
+          <Route path="notifications-page" element={<NotificationsPage />} />
 
           {/* New Admin Modules */}
           <Route path="control-center" element={<AdminControlCenter />} />

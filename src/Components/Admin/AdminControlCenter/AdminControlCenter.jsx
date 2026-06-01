@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-    ShieldCheck, CheckCircle, Database, Bell, CreditCard, ArrowRight, Settings2, Search, LayoutDashboard
+    ShieldCheck, CheckCircle, Database, Bell, CreditCard, ArrowRight, Settings2, Search, LayoutDashboard, UserPlus
 } from "lucide-react";
 import "./AdminControlCenter.css";
 
@@ -12,6 +12,15 @@ const ADMIN_MODULES = [
         description: "Control access levels and permissions for Hiring Managers, Bench Sales, and Custom roles.",
         icon: <ShieldCheck size={20} />,
         path: "/Admin/role-configuration",
+        category: "Governance"
+    },
+    {
+        id: "create-user",
+        title: "Create User / Team Member",
+        description: "Invite new team members, assign initial roles, and configure seat allocations.",
+        icon: <UserPlus size={20} />,
+        path: "/Admin/account-settings",
+        state: { activeTab: "team" },
         category: "Governance"
     },
     /* {
@@ -97,33 +106,33 @@ function AdminControlCenter() {
                     <div className="search-wrapper">
                         <Search size={16} />
                         <input 
-                            type="text" 
-                            placeholder="Search modules..." 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <div className="category-stats">
-                        {Object.keys(groupedModules).length} Categories Active
-                    </div>
-                </div>
-            </header>
-
-            <div className="admin-cc-content">
-                {Object.keys(groupedModules).sort().map((category) => (
-                    <section key={category} className="category-section">
-                        <div className="category-header">
-                            <div className="category-status"></div>
-                            <h2>{category}</h2>
-                            <span className="module-count">{groupedModules[category].length} Modules</span>
-                        </div>
-                        <div className="admin-cc-grid">
-                            {groupedModules[category].map((module) => (
-                                <div 
-                                    key={module.id} 
-                                    className="module-card"
-                                    onClick={() => navigate(module.path)}
-                                >
+                             type="text" 
+                             placeholder="Search modules..." 
+                             value={searchTerm}
+                             onChange={(e) => setSearchTerm(e.target.value)}
+                         />
+                     </div>
+                     <div className="category-stats">
+                         {Object.keys(groupedModules).length} Categories Active
+                     </div>
+                 </div>
+             </header>
+ 
+             <div className="admin-cc-content">
+                 {Object.keys(groupedModules).sort().map((category) => (
+                     <section key={category} className="category-section">
+                         <div className="category-header">
+                             <div className="category-status"></div>
+                             <h2>{category}</h2>
+                             <span className="module-count">{groupedModules[category].length} Modules</span>
+                         </div>
+                         <div className="admin-cc-grid">
+                             {groupedModules[category].map((module) => (
+                                 <div 
+                                     key={module.id} 
+                                     className="module-card"
+                                     onClick={() => navigate(module.path, { state: module.state })}
+                                 >
                                     <div className="card-top">
                                         <div className="module-icon">
                                             {module.icon}

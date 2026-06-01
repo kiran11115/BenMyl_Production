@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom"; // Added useNavigate
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play } from "lucide-react";
 import VideoGuidePopover from "../Guide/VideoGuidePopover";
 import { videoGuides } from "../Guide/guideData";
 import "./Header.css";
 import Notifications from "./Notifications";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
+import { useGetCompanyProfileEditQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MobileBottomNav from "./MobileBottomNav";
 import MobileTopBar from "./MobileTopBar";
 import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
 import TrialPopover from "./TrialPopover";
+import ProfileSideModal from "./ProfileSideModal";
 
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
   const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
   const profileRef = useRef(null);
@@ -31,6 +34,10 @@ function Header() {
     useGetRecruiterProfileQuery(Number(userId), {
       skip: !userId,
     });
+
+  const { data: companyApiData } = useGetCompanyProfileEditQuery(email, {
+    skip: !email,
+  });
 
   const { hasPermission, isLoading: isPermLoading } = usePermissions();
 
@@ -119,7 +126,7 @@ function Header() {
   };
 
   const toggleProfile = () => {
-    setIsProfileOpen(!isProfileOpen);
+    setIsProfileModalOpen(true);
   };
 
   // --- Navigation Handlers ---
@@ -307,7 +314,7 @@ function Header() {
           {/* Notification Bell */}
           <Notifications />
 
-          {/* User Profile Dropdown */}
+          {/* User Profile Trigger */}
           <div className="header-profile-wrapper" ref={profileRef}>
             <div
               className="header-profile"
@@ -335,32 +342,8 @@ function Header() {
                 <span className="profile-name">{user}</span>
                 <span className="profile-role">{role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role === "Recruiter2" ? "Recruiter" : role}</span>
               </div>
-              <ChevronDown size={16} className={`profile-chevron ${isProfileOpen ? 'rotate' : ''}`} />
+              <ChevronDown size={16} className="profile-chevron" />
             </div>
-
-            {/* Popover Menu */}
-            {isProfileOpen && (
-              <div className="profile-popover">
-                <div className="popover-header">
-                  <p className="popover-email">{email}</p>
-                </div>
-                <div className="popover-menu">
-                  <button className="popover-item" onClick={handleViewProfile}>
-                    <User size={16} />
-                    View Profile
-                  </button>
-                  <button className="popover-item" onClick={() => navigate("/user/user-analytics")}>
-                    <File size={16} />
-                    Analytics
-                  </button>
-                  <div className="popover-divider"></div>
-                  <button className="popover-item text-red" onClick={handleSignOut}>
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -383,6 +366,43 @@ function Header() {
         isOpen={isVideoGuideOpen}
         onClose={() => setIsVideoGuideOpen(false)}
         videoGuides={videoGuides}
+      />
+
+      {/* Profile Side Modal */}
+      <ProfileSideModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onEditClick={() => {
+          setIsProfileModalOpen(false);
+          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+          navigate(`${basePath}/edit-profile`);
+        }}
+        onSignOut={handleSignOut}
+        profile={apiData ? {
+          name: apiData.fullName,
+          role: role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role === "Recruiter2" ? "Recruiter" : role,
+          email: apiData.emailid,
+          phone: apiData.phone,
+          avatar: apiData.profilePhoto,
+          location: [apiData.city, apiData.state, apiData.country].filter(Boolean).join(", "),
+          companyName: apiData.companyName,
+          industry: apiData.role,
+          jobtitle: apiData.jobtitle,
+          company: apiData.company,
+          experience: apiData.experience,
+          education: apiData.education,
+          linkedinUrl: apiData.linkedinURL,
+          description: apiData.description,
+          languagesSpoken: apiData.languagesSpoken
+            ? apiData.languagesSpoken.split(",").map(l => l.trim()).filter(Boolean)
+            : [],
+          companyDescription: companyApiData?.description || "Providing innovative solutions for the future.",
+          totalEmployees: companyApiData?.companySize || "11-50 employees",
+          founded: companyApiData?.foundedYear || "2020",
+          website: companyApiData?.websiteURL || "https://benmyl.com",
+          subscriptionType: "Enterprise Plan",
+          tokens: "150",
+        } : { name: user, role, email, subscriptionType: "Enterprise Plan", tokens: "150" }}
       />
     </>
   );

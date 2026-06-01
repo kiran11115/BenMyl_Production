@@ -96,6 +96,29 @@ body{
   backdrop-filter:blur(12px);
 }
 
+
+.routine-btn-2{
+  height:52px;
+  border:none;
+  border-radius:14px;
+  padding:0 22px;
+  font-size:12px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  background: #797ad7;
+  color: #ffffff;
+  backdrop-filter:blur(12px);
+}
+
+.routine-btn-2:hover{
+  background: #797ad7;
+  border-color: #797ad7;
+  color: #ffffff;
+}
+
 .spin-icon{
   animation:spin 1s linear infinite;
 }

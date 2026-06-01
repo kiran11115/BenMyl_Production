@@ -999,6 +999,16 @@
   color:#00b67a;
 }
 
+.job-chip.orange{
+  background:#ffedd5;
+  color:#f5810c;
+}
+
+.job-chip.pink{
+  background:#fef2f2;
+  color:#DC2626;
+}
+
 /* =========================================
    RESPONSIVE
 ========================================= */
