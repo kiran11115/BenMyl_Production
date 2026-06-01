@@ -277,8 +277,8 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
      UI
   ========================= */
   return (
-    <div className="modal-overlay">
-      <div className="modal-window" style={{ position: "relative" }}>
+    <div className="offcanvas-overlay" onClick={onClose}>
+      <div className="offcanvas-panel" onClick={(e) => e.stopPropagation()}>
 
         {/* LOADING OVERLAY */}
         {status === "loading" && (
@@ -292,13 +292,14 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
           className="modal-close"
           onClick={onClose}
           disabled={status === "loading"}
+          style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
         >
           <FiX />
         </button>
 
-        <div className="modal-inner">
-          {/* LEFT SIDE */}
-          <div className="modal-left">
+        <div className="offcanvas-inner">
+          {/* MAIN CONTENT */}
+          <div className="offcanvas-main">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <div>
                 <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#1e293b", margin: 0 }}>{isEdit ? "Edit Job Preview" : "Job Preview"}</h2>
@@ -577,8 +578,8 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
             )}
           </div>
 
-          {/* RIGHT SIDE */}
-          <aside className="modal-right">
+          {/* SHARE SECTION */}
+          <aside className="offcanvas-aside">
             <div className="share-card">
               <h4 className="share-title">Share this Job</h4>
 
@@ -629,7 +630,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
                 </label>
               </div>
 
-              <div className="vendor-section">
+              {/* <div className="vendor-section">
                 <button className="vendor-header" onClick={toggleVendorSection}>
                   <div className="vendor-header-left">
                     <FaPuzzlePiece className="puzzle-icon" />
@@ -657,13 +658,13 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
                     </label>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </aside>
         </div>
 
         {/* FOOTER ACTIONS */}
-        <div className="modal-actions-left gap-3" style={{ padding: 24 }}>
+        <div className="offcanvas-footer">
           <button
             className="btn-secondary"
             onClick={onClose}
