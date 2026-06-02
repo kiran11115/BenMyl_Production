@@ -262,7 +262,7 @@ function OTPVerification() {
             <button
               type="submit"
               disabled={!isOtpComplete || isLoading}
-              style={{ background: (!isOtpComplete || isLoading) ? '#94a3b8' : '#f5810c', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: (!isOtpComplete || isLoading) ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
+              style={{ background: (!isOtpComplete || isLoading) ? '#94a3b8' : '#5a5de8', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: (!isOtpComplete || isLoading) ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
             >
               {isLoading ? "Verifying..." : "Verify Code →"}
             </button>

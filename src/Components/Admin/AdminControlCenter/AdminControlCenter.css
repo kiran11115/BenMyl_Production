@@ -21,7 +21,7 @@
 .header-icon-badge {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    background: linear-gradient(135deg, #5a5de8 0%, #ea580c 100%);
     color: white;
     border-radius: 12px;
     display: flex;
@@ -75,14 +75,14 @@
 }
 
 .search-wrapper input:focus {
-    border-color: #f97316;
+    border-color: #5a5de8;
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
 .category-stats {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #f97316;
+    color: #5a5de8;
     background-color: #fff7ed;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -112,7 +112,7 @@
 .category-status {
     width: 6px;
     height: 6px;
-    background-color: #f97316;
+    background-color: #5a5de8;
     border-radius: 50%;
     box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
 }
@@ -157,7 +157,7 @@
 
 .module-card:hover {
     transform: translateY(-4px);
-    border-color: #f9731666;
+    border-color: #5a5de866;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
@@ -176,7 +176,7 @@
 
 .module-card:hover .module-icon {
     background-color: #fff7ed;
-    color: #f97316;
+    color: #5a5de8;
 }
 
 .card-content h3 {
@@ -208,7 +208,7 @@
 }
 
 .module-card:hover .configure-text {
-    color: #f97316;
+    color: #5a5de8;
 }
 
 .arrow-icon {
@@ -217,7 +217,7 @@
 }
 
 .module-card:hover .arrow-icon {
-    color: #f97316;
+    color: #5a5de8;
     transform: translateX(4px);
 }
 

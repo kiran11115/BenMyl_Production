@@ -82,7 +82,7 @@ function BillingControl() {
                 <div className="overview-card seats-usage">
                     <div className="seats-header">
                         <div className="title-group">
-                            <Users size={20} color="#f97316" />
+                            <Users size={20} color="#5a5de8" />
                             <h3>Seat Allocation</h3>
                         </div>
                         <span className="usage-text">18 / 25 Used</span>

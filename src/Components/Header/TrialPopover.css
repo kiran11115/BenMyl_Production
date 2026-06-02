@@ -47,7 +47,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #f5810c 0%, #ff9f43 100%);
+  background: linear-gradient(90deg, #f5810c 0%, #e11d48 50%, #7c3aed 100%);
 }
 
 /* Header Row: Badge & Close Button */

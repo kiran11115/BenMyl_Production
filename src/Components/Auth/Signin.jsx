@@ -137,12 +137,12 @@ function Signin() {
             Sign In to BenMyl.
           </h1>
 
-          <p style={{ color: '#64748b', fontSize: '12px', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '400px' }}>
-            The Autonomous <span style={{ color: '#f5810c' }}>Talent Platform</span>
+          <p style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.6, maxWidth: '400px' }}>
+            The Autonomous <span style={{ color: '#5a5de8' }}>Talent Platform</span>
           </p>
 
           <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', flexDirection: 'column' }}>
               <div style={{ flex: '1 1 calc(50% - 0.5rem)' }}>
                 <input
                   type="email"
@@ -183,14 +183,14 @@ function Signin() {
                   name="rememberMe"
                   checked={formik.values.rememberMe}
                   onChange={formik.handleChange}
-                  style={{ accentColor: '#f5810c', width: 16, height: 16 }}
+                  style={{ accentColor: '#5a5de8', width: 16, height: 16 }}
                 />
                 Remember Me
               </label>
               <button
                 type="button"
                 onClick={() => navigate("/forgot-password")}
-                style={{ color: '#f5810c', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                style={{ color: '#5a5de8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}
               >
                 Forgot Password?
               </button>
@@ -199,23 +199,30 @@ function Signin() {
             <button
               type="submit"
               disabled={formik.isSubmitting || isLoading}
-              style={{ background: '#f5810c', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
+              style={{ background: '#5a5de8', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
             >
               {isLoading ? "Signing In..." : "Sign In →"}
             </button>
 
-            <button
+            {/* <button
               type="button"
               onClick={() => navigate("/sign-up")}
               style={{ background: '#ffffff', color: '#0f172a', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' }}
             >
               Create Account
-            </button>
+            </button> */}
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '1.5rem', color: '#94a3b8', fontSize: '10px', fontWeight: 700, letterSpacing: '0.5px' }}>
-            <span style={{ color: '#10b981' }}>⬡</span> SOC-2 TYPE II CERTIFIED WORKSPACE INTEGRITY
-          </div>
+           <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '14px', color: '#94a3b8' }}>
+              Want to Join a BenMyl workspace?{' '}
+              <button
+                type="button"
+                onClick={() => navigate("/sign-up")}
+                style={{ color: '#5a5de8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: 0, textDecoration: 'none', fontSize: '14px' }}
+              >
+                Create Account
+              </button>
+            </div>
         </div>
 
           {/* RIGHT BRAND SIDE (Replaced) */}
@@ -223,10 +230,10 @@ function Signin() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2, marginBottom: '2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#f5810c' }}></div>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#5a5de8' }}></div>
                 BENMYL PREVIEW UNIT
               </div>
-              <div style={{ background: '#f5810c', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(91, 91, 214, 0.3)' }}>
+              <div style={{ background: '#5a5de8', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(91, 91, 214, 0.3)' }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 Matching Candidates Live
               </div>
@@ -246,22 +253,22 @@ function Signin() {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px' }}>
                   NEURAL PIPELINE FEED
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5810c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a5de8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
                   {/* Candidate 1 */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f5810c', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>AR</div>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#5a5de8', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>AR</div>
                       <div>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Alex Reid</div>
                         <div style={{ fontSize: '11px', color: '#94a3b8' }}>Staffing Lead</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: 40, height: 4, background: '#f5810c', borderRadius: '2px' }}></div>
-                      <div style={{ fontSize: '11px', fontWeight: 700, background: '#f3e8ff', color: '#f5810c', padding: '4px 8px', borderRadius: '4px', letterSpacing: '0.5px' }}>98.7% MATCH</div>
+                      <div style={{ width: 40, height: 4, background: '#5a5de8', borderRadius: '2px' }}></div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, background: '#f3e8ff', color: '#5a5de8', padding: '4px 8px', borderRadius: '4px', letterSpacing: '0.5px' }}>98.7% MATCH</div>
                     </div>
                   </div>
 

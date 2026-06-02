@@ -89,7 +89,7 @@
 }
 
 .app-card:hover {
-    border-color: #f9731633;
+    border-color: #5a5de833;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
@@ -174,7 +174,7 @@
 }
 
 .app-settings:hover {
-    color: #f97316;
+    color: #5a5de8;
 }
 
 /* API Section */
@@ -316,7 +316,7 @@ code {
 
 /* Global components override */
 .btn-primary {
-    background-color: #f97316;
+    background-color: #5a5de8;
     color: white;
     border: none;
     padding: 0.625rem 1.25rem;

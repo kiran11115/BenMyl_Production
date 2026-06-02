@@ -68,17 +68,6 @@ export default function PostedJobsPage() {
 
                 <div
     className="hero-card mb-4"
-    style={{
-        backgroundImage: `url("/images/posted-jobs.jpeg")`, // your image path
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        minHeight: "220px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "24px",
-    }}
 >
     <div className="hero-left">
         <div className="hero-pill">

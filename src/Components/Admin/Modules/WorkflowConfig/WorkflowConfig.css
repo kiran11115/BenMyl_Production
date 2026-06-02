@@ -126,7 +126,7 @@
 
 .mandatory-tag {
     font-size: 0.6875rem;
-    color: #f97316;
+    color: #5a5de8;
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -160,8 +160,8 @@
 }
 
 .add-stage-node:hover {
-    border-color: #f97316;
-    color: #f97316;
+    border-color: #5a5de8;
+    color: #5a5de8;
     background-color: #fff7ed;
 }
 
@@ -189,7 +189,7 @@
 
 .btn-save {
     padding: 0.625rem 1.25rem;
-    background-color: #f97316;
+    background-color: #5a5de8;
     color: white;
     border: none;
     border-radius: 8px;
@@ -246,7 +246,7 @@
 }
 
 .stage-cell input:focus {
-    border-color: #f97316;
+    border-color: #5a5de8;
     background-color: white;
     outline: none;
 }
@@ -377,7 +377,7 @@
 }
 
 input:checked + .slider {
-    background-color: #f97316;
+    background-color: #5a5de8;
 }
 
 input:checked + .slider:before {

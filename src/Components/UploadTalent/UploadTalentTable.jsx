@@ -156,7 +156,7 @@ useEffect(() => {
       .toUpperCase();
 
   const getAvatarColor = (name = "") => {
-    const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#f97316"];
+    const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#5a5de8"];
     return colors[name.length % colors.length];
   };
 

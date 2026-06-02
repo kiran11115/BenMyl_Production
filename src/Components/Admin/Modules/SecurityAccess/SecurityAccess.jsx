@@ -45,7 +45,7 @@ function SecurityAccess() {
             <div className="security-grid">
                 <section className="policy-section authenticator">
                     <div className="section-title">
-                        <Smartphone size={20} color="#f97316" />
+                        <Smartphone size={20} color="#5a5de8" />
                         <h3>Multi-Factor Authentication</h3>
                     </div>
                     <div className="policy-cards">

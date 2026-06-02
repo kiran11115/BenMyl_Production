@@ -63,7 +63,7 @@ function TeamMembersTable() {
   };
 
   const getAvatarColor = (username) => {
-    const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316"];
+    const colors = ["#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#5a5de8"];
     const safe = username || "";
     return colors[safe.length % colors.length];
   };

@@ -151,7 +151,7 @@ function WorkflowConfig() {
 
                 <div className="automation-rules">
                     <div className="rules-header">
-                        <AlertCircle size={18} color="#f97316" />
+                        <AlertCircle size={18} color="#5a5de8" />
                         <h3>Smart Transitions</h3>
                     </div>
                     <div className="rules-grid">

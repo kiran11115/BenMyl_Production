@@ -77,7 +77,6 @@
 .metrics-slider.show {
   max-height: 180px;
   opacity: 1;
-  margin-bottom: 28px;
 }
 
 @media(max-width: 1200px) {
@@ -627,7 +626,7 @@
 .progress-fill {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #f5810c 0%, #f97316 50%, #ea580c 100%);
+  background: linear-gradient(90deg, #f5810c 0%, #5a5de8 50%, #ea580c 100%);
   transition: width 0.4s ease;
 }
 
@@ -672,8 +671,8 @@
 
 .btn-upload {
   align-items: center;
-  background-color: #f97316;
-  border: 1px solid #f97316;
+  background-color: #5a5de8;
+  border: 1px solid #5a5de8;
   border-radius: 8px;
   color: #fff;
   cursor: pointer;

@@ -23,7 +23,7 @@
 }
 
 .back-btn:hover {
-    color: #f97316;
+    color: #5a5de8;
 }
 
 .coming-soon-content {
@@ -80,7 +80,7 @@
 .pulse {
     width: 8px;
     height: 8px;
-    background-color: #f97316;
+    background-color: #5a5de8;
     border-radius: 50%;
     animation: pulse 2s infinite;
 }

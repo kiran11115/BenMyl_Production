@@ -52,7 +52,7 @@ function MatchingRules() {
             <div className="matching-content">
                 <div className="weightage-section">
                     <div className="section-title-group">
-                        <Calculator size={20} color="#f97316" />
+                        <Calculator size={20} color="#5a5de8" />
                         <h3>Core Weightage (%)</h3>
                         <div className="total-badge" style={{ backgroundColor: (weights.skills + weights.experience + weights.rate + weights.availability === 100) ? "#dcfce7" : "#fee2e2", color: (weights.skills + weights.experience + weights.rate + weights.availability === 100) ? "#166534" : "#991b1b" }}>
                             Total: {weights.skills + weights.experience + weights.rate + weights.availability}%

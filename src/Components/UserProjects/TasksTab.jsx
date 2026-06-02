@@ -52,7 +52,7 @@ let idSeed = 200;
 ───────────────────────────────────────────────────────────────── */
 const priorityColor = (p) => {
     if (p === "Urgent") return { bg: "#fef2f2", color: "#ef4444" };
-    if (p === "High") return { bg: "#fff7ed", color: "#f97316" };
+    if (p === "High") return { bg: "#fff7ed", color: "#5a5de8" };
     if (p === "Normal") return { bg: "#eff6ff", color: "#3b82f6" };
     return { bg: "#f0fdf4", color: "#22c55e" };
 };

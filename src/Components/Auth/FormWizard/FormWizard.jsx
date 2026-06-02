@@ -403,7 +403,7 @@ const FormWizard = () => {
                 </button>
               )}
               {currentStep < 4 && (
-                <button type="button" className="btn-primary" onClick={nextStep} style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: '#f5810c', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto' }}>
+                <button type="button" className="btn-primary" onClick={nextStep} style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: '#5a5de8', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto' }}>
                   Next Step
                 </button>
               )}

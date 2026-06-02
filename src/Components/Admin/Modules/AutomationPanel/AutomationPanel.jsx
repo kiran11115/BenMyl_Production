@@ -47,7 +47,7 @@ function AutomationPanel() {
                     <div className="logic-step trigger">
                         <div className="step-label">IF (Trigger)</div>
                         <div className="step-content">
-                            <AlertCircle size={20} color="#f97316" />
+                            <AlertCircle size={20} color="#5a5de8" />
                             <select defaultValue="talent_created">
                                 <option value="talent_created">Talent Profile Created</option>
                                 <option value="job_posted">New Job Posted</option>

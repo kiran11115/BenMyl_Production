@@ -32,7 +32,7 @@
 }
 
 .breadcrumb-link:hover {
-    color: #f97316;
+    color: #5a5de8;
 }
 
 .breadcrumb-separator {
@@ -90,7 +90,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    background-color: #f97316;
+    background-color: #5a5de8;
     color: white;
     border: none;
 }

@@ -137,7 +137,7 @@ function ComplianceAudit() {
 
             <section className="track-policies">
                 <div className="section-title">
-                    <AlertCircle size={20} color="#f97316" />
+                    <AlertCircle size={20} color="#5a5de8" />
                     <h3>Automated Tracking Policies</h3>
                 </div>
                 <div className="policy-grid">

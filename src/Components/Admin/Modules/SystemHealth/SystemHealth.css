@@ -230,7 +230,7 @@
 
 .bar {
     flex: 1;
-    background: linear-gradient(to top, #f97316, #fb923c);
+    background: linear-gradient(to top, #5a5de8, #fb923c);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     opacity: 0.2;

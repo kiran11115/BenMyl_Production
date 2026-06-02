@@ -140,7 +140,7 @@ function SignUp() {
           </div>
 
           <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
-            The Autonomous <span style={{ color: '#f5810c', fontSize: '18px' }}>Talent Platform</span>
+            The Autonomous <span style={{ color: '#5a5de8', fontSize: '18px' }}>Talent Platform</span>
           </h1>
           {/* <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
@@ -280,7 +280,7 @@ function SignUp() {
             <button
               type="submit"
               disabled={isLoading}
-              style={{ background: '#f5810c', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
+              style={{ background: '#5a5de8', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
             >
               {isLoading ? "Creating Account..." : "Create Account →"}
             </button>
@@ -290,7 +290,7 @@ function SignUp() {
               <button
                 type="button"
                 onClick={() => navigate("/sign-in")}
-                style={{ color: '#f5810c', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: 0, textDecoration: 'none', fontSize: '14px' }}
+                style={{ color: '#5a5de8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, padding: 0, textDecoration: 'none', fontSize: '14px' }}
               >
                 Sign In Instead
               </button>
@@ -306,7 +306,7 @@ function SignUp() {
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#5b5bd6' }}></div>
               BENMYL PREVIEW UNIT
             </div>
-            <div style={{ background: '#f5810c', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(91, 91, 214, 0.3)' }}>
+            <div style={{ background: '#5a5de8', color: 'white', padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(91, 91, 214, 0.3)' }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
               Matching Candidates Live
             </div>
