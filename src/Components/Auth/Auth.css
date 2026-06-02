@@ -4,32 +4,35 @@
 
 .auth-container-signup {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .auth-container {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
   position: relative;
   z-index: 1;
-  height: 100vh;
+  box-sizing: border-box;
 }
 
 .auth-card {
   display: flex;
   flex-direction: row;
   width: 100%;
-  max-width: 80rem;
-  min-height: 35rem;
-  border-radius: 1rem;
+  max-width: 72rem;
+  min-height: 38rem;
+  border-radius: 1.25rem;
   border: 1px solid #e2e8f0;
 
   /* Glassmorphism card */
@@ -50,7 +53,6 @@
   flex-direction: column;
   justify-content: center;
   background: linear-gradient(135deg, #0f172a, #020617);
-  border-right: 1px solid rgba(15, 23, 42, 0.5);
   overflow: hidden;
 }
 
@@ -123,28 +125,55 @@
 /* --- Form Panel (Right) --- */
 .auth-form-side {
   flex: 1;
-  padding: 2.5rem 2.75rem;
+  padding: 2.5rem 2.75rem !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: #ffffff;
 }
 
-@media (max-width: 768px) {
+/* ── Tablet (landscape tablets & small laptops) ── */
+@media (max-width: 1024px) {
+
+  .auth-container,
+  .auth-container-signup {
+    padding: 1rem;
+    align-items: center;
+  }
+
+  .auth-card {
+    width: 92%;
+    max-width: 52rem;
+    min-height: auto;
+    border-radius: 1rem;
+  }
+
+  .auth-brand-side {
+    display: none;
+  }
+
+  .auth-form-side {
+    width: 100%;
+    flex: 1;
+    padding: 2.5rem 2.5rem !important;
+    justify-content: center;
+  }
+}
+
+/* ── Mobile (phones) ── */
+@media (max-width: 640px) {
 
   .auth-container,
   .auth-container-signup {
     padding: 0;
-    height: auto;
-    min-height: 100vh;
+    align-items: flex-start;
     background: #ffffff;
   }
 
   .auth-card {
-    max-width: 100%;
     width: 100%;
+    max-width: 100%;
     min-height: 100vh;
-    flex-direction: column;
     border-radius: 0;
     border: none;
     box-shadow: none;
@@ -156,12 +185,12 @@
 
   .auth-form-side {
     width: 100%;
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.25rem !important;
     justify-content: flex-start;
   }
 
   .auth-logo {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .auth-options-row {
@@ -180,7 +209,7 @@
   color: #0f172a;
   font-weight: 700;
   margin-bottom: 0.4rem;
-  font-size: 1.75rem;
+  font-size: 11px;
 }
 
 .auth-subtitle {
@@ -262,7 +291,7 @@
   gap: 6px;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   background-color: #5b5bd6;
@@ -292,7 +321,7 @@
   gap: 8px;
   padding: 0.75rem;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
   background-color: transparent;
@@ -357,7 +386,7 @@
   gap: 0.5rem;
   color: #64748b;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 11px;
   cursor: pointer;
   padding: 4px 0;
 }

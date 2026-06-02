@@ -14,7 +14,7 @@ function OTPVerification() {
   const location = useLocation();
   const emailID = location.state?.emailID;
   const role = location.state?.role;
-  console.log("Role:",role);
+  console.log("Role:", role);
 
   const [timer, setTimer] = useState(60);
   const [otpErrorMsg, setOtpErrorMsg] = useState("");
@@ -68,16 +68,16 @@ function OTPVerification() {
         }
 
         if (role === "Recruiter" || role === "Benchsales" || role === "Recruiter2") {
-  navigate("/sign-in");
-} else {
-  navigate("/User-details", {
-    state: {
-      emailID,
-      fullName: location.state?.fullName,
-      companyName: location.state?.companyName,
-    },
-  });
-}
+          navigate("/sign-in");
+        } else {
+          navigate("/User-details", {
+            state: {
+              emailID,
+              fullName: location.state?.fullName,
+              companyName: location.state?.companyName,
+            },
+          });
+        }
 
       } catch (err) {
         console.error("OTP verification failed:", err);
@@ -132,21 +132,20 @@ function OTPVerification() {
       <div className="auth-card">
         {/* LEFT SIDE */}
         {/* LEFT FORM SIDE */}
-        <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2.5rem 3rem' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', marginTop: '-1rem' }}>
+        <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, height: 150, objectFit: 'contain' }} />
           </div>
+          <button
+            type="button"
+            onClick={() => navigate("/sign-in")}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', fontSize: '11px', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            <ArrowLeft size={16} /> Back to Sign In
+          </button>
 
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
-            The Autonomous <span style={{ color: '#5b5bd6' }}>Talent Platform</span>
-          </h1>
-
-          <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '400px' }}>
-            Unite high-speed neural candidate screenings with premium collaborative sourcing desks. Designed for elite recruiters, sales squads, and enterprise staffing partners.
-          </p>
-
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
+          {/* <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ color: '#5b5bd6' }}>❖</span> COLLABORATIVE HUB STATUS
@@ -175,39 +174,33 @@ function OTPVerification() {
                 <div style={{ fontSize: '11px', color: '#94a3b8' }}>ClickUp-inspired adaptive agent layouts</div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <button
-              type="button"
-              onClick={() => navigate("/sign-up")}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: 0 }}
-            >
-              <ArrowLeft size={16} /> Back to Sign Up
-            </button>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginTop: '1rem', marginBottom: '0.5rem' }}>Verify OTP</h2>
-            <p style={{ color: '#64748b', fontSize: '13px', lineHeight: 1.5, marginBottom: '0.25rem' }}>
+
+            <h2 style={{ fontSize: '30px', fontWeight: 800, color: '#1e293b', marginTop: '1rem', marginBottom: '0.5rem' }}>Verify OTP</h2>
+            <p style={{ color: '#64748b', fontSize: '11px', lineHeight: 1.5, marginBottom: '0.25rem' }}>
               Enter the 6-digit code sent to your email.
             </p>
-            <p style={{ color: '#64748b', fontSize: '12px', lineHeight: 1.5, fontStyle: 'italic', marginBottom: '1rem' }}>
+            <p style={{ color: '#64748b', fontSize: '14px', lineHeight: 1.5, fontStyle: 'italic', marginBottom: '1rem' }}>
               <strong>Note:</strong> If you do not receive the OTP, please check your Spam/Junk folder.
             </p>
 
             {timer > 0 ? (
-              <p style={{ fontSize: '13px', color: '#10b981', fontWeight: 600 }}>Resend available in {timer}s</p>
+              <p style={{ fontSize: '12px', color: '#10b981', fontWeight: 600 }}>Resend available in {timer}s</p>
             ) : (
               <button
                 type="button"
                 disabled={resendLoading}
                 onClick={handleResend}
-                style={{ background: 'none', border: 'none', color: '#5b5bd6', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                style={{ background: 'none', border: 'none', color: '#5b5bd6', fontSize: '11px', fontWeight: 600, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
               >
                 {resendLoading ? "Resending..." : "Resend OTP"}
               </button>
             )}
 
             {resendMsg && (
-              <p style={{ fontSize: '12px', color: resendMsg.includes("success") ? '#10b981' : '#ef4444', marginTop: '0.5rem', fontWeight: 600 }}>
+              <p style={{ fontSize: '11px', color: resendMsg.includes("success") ? '#10b981' : '#ef4444', marginTop: '0.5rem', fontWeight: 600 }}>
                 {resendMsg}
               </p>
             )}
@@ -217,9 +210,10 @@ function OTPVerification() {
             <div
               style={{
                 display: "flex",
-                gap: "0.5rem",
+                gap: "clamp(0.3rem, 1.5vw, 0.75rem)",
                 justifyContent: "space-between",
                 marginBottom: "1rem",
+                width: '100%',
               }}
             >
               {formik.values.otp.map((digit, index) => (
@@ -227,21 +221,25 @@ function OTPVerification() {
                   key={index}
                   id={`otp-${index}`}
                   type="text"
+                  inputMode="numeric"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   style={{
-                    width: '3rem',
-                    height: '3.5rem',
+                    flex: '1 1 0',
+                    minWidth: 0,
+                    maxWidth: '3.5rem',
+                    height: 'clamp(2.75rem, 8vw, 3.5rem)',
                     textAlign: 'center',
-                    fontSize: '1.25rem',
+                    fontSize: '11px',
                     fontWeight: 700,
                     borderRadius: '8px',
                     border: '1px solid #e2e8f0',
                     background: '#f8fafc',
                     color: '#0f172a',
                     outline: 'none',
-                    transition: 'border-color 0.2s'
+                    transition: 'border-color 0.2s',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#5b5bd6'}
                   onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
@@ -250,13 +248,13 @@ function OTPVerification() {
             </div>
 
             {formik.errors.otp && (
-              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
+              <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
                 {formik.errors.otp}
               </p>
             )}
 
             {otpErrorMsg && (
-              <p style={{ fontSize: '12px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
+              <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '-0.5rem', fontWeight: 500 }}>
                 {otpErrorMsg}
               </p>
             )}
@@ -264,20 +262,16 @@ function OTPVerification() {
             <button
               type="submit"
               disabled={!isOtpComplete || isLoading}
-              style={{ background: (!isOtpComplete || isLoading) ? '#94a3b8' : '#5b5bd6', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: (!isOtpComplete || isLoading) ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
+              style={{ background: (!isOtpComplete || isLoading) ? '#94a3b8' : '#f5810c', color: '#fff', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: (!isOtpComplete || isLoading) ? 'not-allowed' : 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginTop: '8px' }}
             >
               {isLoading ? "Verifying..." : "Verify Code →"}
             </button>
           </form>
-
-          <div style={{ textAlign: 'center', marginTop: 'auto', paddingTop: '1.5rem', color: '#94a3b8', fontSize: '10px', fontWeight: 700, letterSpacing: '0.5px' }}>
-            <span style={{ color: '#10b981' }}>⬡</span> SOC-2 TYPE II CERTIFIED WORKSPACE INTEGRITY
-          </div>
         </div>
 
         {/* RIGHT BRAND SIDE */}
         <div className="auth-brand-side" style={{ background: '#f4f7f9', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-          
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2, marginBottom: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px' }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#5b5bd6' }}></div>
@@ -291,7 +285,7 @@ function OTPVerification() {
 
           <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2 }}>
             <div style={{ background: '#ffffff', borderRadius: '16px', padding: '24px', width: '100%', maxWidth: '420px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)' }}>
-              
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e2e8f0' }}></div>
@@ -309,9 +303,9 @@ function OTPVerification() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#5b5bd6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>AR</div>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#5b5bd6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>AR</div>
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Alex Reid</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Alex Reid</div>
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Staffing Lead</div>
                     </div>
                   </div>
@@ -323,9 +317,9 @@ function OTPVerification() {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#8b5cf6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>MC</div>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#8b5cf6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>MC</div>
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Marcus Chen</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Marcus Chen</div>
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Solutions Architect</div>
                     </div>
                   </div>
@@ -337,9 +331,9 @@ function OTPVerification() {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#3b82f6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700 }}>SJ</div>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#3b82f6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>SJ</div>
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Sarah Jenkins</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e293b', marginBottom: '2px' }}>Sarah Jenkins</div>
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Full-Stack Lead</div>
                     </div>
                   </div>
@@ -358,7 +352,7 @@ function OTPVerification() {
                   </div>
                   <div style={{ fontSize: '9px', fontWeight: 700, color: '#3b82f6', letterSpacing: '0.5px' }}>LIVE AI STREAM</div>
                 </div>
-                <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
+                <div style={{ fontSize: '11px', color: '#334155', lineHeight: 1.6 }}>
                   Matched applicant <strong>Alex Reid</strong> to Senior React Specialist position with <strong>98.7%</strong> accuracy index.
                 </div>
               </div>
@@ -370,26 +364,26 @@ function OTPVerification() {
             <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
               <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>DAILY MATCH ENGINE</div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>98.4%</div>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>98.4%</div>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981', background: '#d1fae5', padding: '2px 6px', borderRadius: '10px' }}>+2.1K</div>
               </div>
             </div>
             <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
               <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>ACTIVE JOB GIGS</div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>24 Live</div>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>24 Live</div>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981' }}>+4 today</div>
               </div>
             </div>
             <div style={{ flex: 1, background: '#ffffff', borderRadius: '12px', padding: '14px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
               <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', marginBottom: '6px', letterSpacing: '0.5px' }}>SOURCED PROFILES</div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>14.2K</div>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>14.2K</div>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#10b981' }}>+1.3K today</div>
               </div>
             </div>
           </div>
-          
+
           <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(91,91,214,0.05) 0%, rgba(244,247,249,0) 70%)', zIndex: 1 }}></div>
           <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, rgba(244,247,249,0) 70%)', zIndex: 1 }}></div>
 
