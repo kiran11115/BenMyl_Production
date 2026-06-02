@@ -58,6 +58,7 @@ import AutomationPanel from "./Admin/Modules/AutomationPanel/AutomationPanel";
 import NotificationPolicy from "./Admin/Modules/NotificationPolicy/NotificationPolicy";
 import BillingControl from "./Admin/Modules/BillingControl/BillingControl";
 import AdminDashboard from "./Admin/Modules/AdminDashboard/AdminDashboard";
+import ActiveRoutines from "./Admin/Modules/AdminDashboard/ActiveRoutines";
 import ModuleProtectedRoute from "./Admin/Modules/RoleConfiguration/ModuleProtectedRoute";
 
 const routes = createBrowserRouter(
@@ -81,6 +82,7 @@ const routes = createBrowserRouter(
           {/* New Admin Modules */}
           <Route path="control-center" element={<AdminControlCenter />} />
           <Route path="overview-dashboard" element={<AdminDashboard />} />
+          <Route path="active-routines" element={<ActiveRoutines />} />
           <Route path="role-configuration" element={<RoleConfiguration />} />
           <Route path="workflow-configuration" element={<WorkflowConfig />} />
           <Route path="approval-control" element={<ApprovalPanel />} />

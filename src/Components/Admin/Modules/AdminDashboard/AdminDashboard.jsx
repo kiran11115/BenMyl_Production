@@ -75,8 +75,6 @@ function AdminDashboard() {
 
   const [showUploadModal, setShowUploadModal] =
     useState(false);
-  const [showRoutineModal, setShowRoutineModal] =
-    useState(false);
 
   const { data: rolesData = [] } =
     useRoleListDetailsQuery();
@@ -196,7 +194,7 @@ function AdminDashboard() {
           <button
             className="routine-btn"
             onClick={() =>
-              setShowRoutineModal(true)
+              navigate("/Admin/active-routines")
             }
           >
             View Active Routines
@@ -721,150 +719,6 @@ function AdminDashboard() {
           setShowUploadModal(false)
         }
       />
-
-      {/* ROUTINE MODAL */}
-
-      {showRoutineModal && (
-
-        <div className="routine-modal-overlay">
-
-          <div className="routine-modal">
-
-            {/* HEADER */}
-
-            <div className="routine-header">
-
-              <div className="routine-title">
-
-                <Sparkles size={18} />
-
-                <span>
-                  EXPRESS DISPATCH CONSOLE
-                </span>
-
-              </div>
-
-              <button
-                className="routine-close"
-                onClick={() =>
-                  setShowRoutineModal(false)
-                }
-              >
-                ✕
-              </button>
-
-            </div>
-
-            <div className="routine-divider"></div>
-
-            <p className="routine-subtitle">
-
-              Instantly execute workspace
-              workflows. Select your
-              operations parameter matching
-              standard staffing lifecycle:
-
-            </p>
-
-            {/* GRID */}
-
-            <div className="routine-grid">
-
-              {/* UPLOAD BENCH */}
-
-              <div
-                className="routine-card"
-                onClick={() => {
-                  setShowRoutineModal(false);
-                  setShowUploadModal(true);
-                }}
-              >
-
-                <div className="routine-icon">
-                  <Upload size={18} />
-                </div>
-
-                <h4>Upload Bench</h4>
-
-                <span>
-                  Ingress candidates
-                </span>
-
-              </div>
-
-              {/* REVIEW RESUMES */}
-
-              <div
-                className="routine-card"
-                onClick={() => {
-                  navigate("/Admin/review-talent");
-                  setShowRoutineModal(false);
-                }}
-              >
-
-                <div className="routine-icon">
-                  <Cpu size={18} />
-                </div>
-
-                <h4>Review Resumes</h4>
-
-                <span>
-                  AI Parsers splitscreen
-                </span>
-
-              </div>
-
-              {/* MATCHING JOBS */}
-
-              <div
-                className="routine-card"
-                onClick={() => {
-                  navigate("/Admin/admin-talentpool");
-                  setShowRoutineModal(false);
-                }}
-              >
-
-                <div className="routine-icon">
-                  <Compass size={18} />
-                </div>
-
-                <h4>Matching Jobs</h4>
-
-                <span>
-                  Run fit test indices
-                </span>
-
-              </div>
-
-              {/* AI ASSISTANT */}
-
-              <div
-                className="routine-card"
-                onClick={() => {
-                  navigate("/user/AI-screen");
-                  setShowRoutineModal(false);
-                }}
-              >
-
-                <div className="routine-icon">
-                  <Sparkles size={18} />
-                </div>
-
-                <h4>AI Assistant</h4>
-
-                <span>
-                  Holographic Oracle chat
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
 
     </div>
   );
