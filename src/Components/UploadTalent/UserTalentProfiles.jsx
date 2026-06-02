@@ -236,31 +236,43 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
             </div>
 
             <div className="ut-actions-group d-flex align-items-start">
-              {/* SORT DROPDOWN */}
-              <div className="sort-wrapper">
-                <select
-                  className="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="recommended">Sort by: Recommended</option>
-                  <option value="rating_high">Rating: High to Low</option>
-                  <option value="exp_high">Experience: High to Low</option>
-                  <option value="exp_low">Experience: Low to High</option>
-                  <option value="rate_low">Hourly Rate: Low to High</option>
-                </select>
-                <FiChevronDown className="sort-icon" />
-              </div>
-
               {/* SEARCH */}
-              <div className="ut-search-wrapper">
-                <FiSearch className="ut-search-icon" />
+              <div
+                className="ut-search-wrapper"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  background: "#ffffff",
+                  borderRadius: "14px",
+                  padding: "0 16px",
+                  height: "36px",
+                  width: "150px !important",
+                  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+                }}
+              >
+                <FiSearch
+                  style={{
+                    color: "#3b82f6",
+                    fontSize: "18px",
+                    flexShrink: 0,
+                  }}
+                />
+
                 <input
                   type="text"
                   placeholder="Search by Talent Name..."
-                  className="ut-search-input"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    marginLeft: "14px",
+                    width: "100%",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: "#475569",
+                  }}
                 />
               </div>
 
@@ -277,21 +289,67 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
               </button>
 
               {/* VIEW TOGGLE */}
-              <div className="vs-results-right ut-view-toggle">
-                <div className="view-toggle1">
-                  <button
-                    className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <FiGrid />
-                  </button>
-                  <button
-                    className={`view-btn ${viewMode === "table" ? "toggle active" : ""}`}
-                    onClick={() => setViewMode("table")}
-                  >
-                    <FiList />
-                  </button>
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  background: "#f4f8ff",
+                  border: "1px solid #d9e6ff",
+                  borderRadius: "10px",
+                  padding: "3px",
+                  gap: "2px",
+                  height: "40px",
+                }}
+              >
+                <button
+                  onClick={() => setViewMode("grid")}
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    border: "none",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    background:
+                      viewMode === "grid"
+                        ? "#3b82f6"
+                        : "transparent",
+                    color:
+                      viewMode === "grid"
+                        ? "#ffffff"
+                        : "#64748b",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <FiGrid size={14} />
+                </button>
+
+                <button
+                  onClick={() => setViewMode("table")}
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    border: "none",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    background:
+                      viewMode === "table"
+                        ? "#3b82f6"
+                        : "transparent",
+                    color:
+                      viewMode === "table"
+                        ? "#ffffff"
+                        : "#64748b",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <FiList size={14} />
+                </button>
               </div>
             </div>
           </div>

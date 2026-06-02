@@ -123,10 +123,18 @@ function Signin() {
 
 
   return (
+    <div className="auth-container">
+      <div className="auth-card">
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' }}>
       <div className="auth-container">
         <div className="auth-card" style={{ height: "100%" }}>
 
+        {/* LEFT FORM SIDE */}
+        <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2.5rem 3rem' }}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '20px', paddingTop: '20px' }}>
+            <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, objectFit: 'contain' }} />
+          </div>
           {/* LEFT FORM SIDE */}
           <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2.5rem 3rem', marginRight: '2rem' }}>
             <div style={{ width: '100%', maxWidth: '400px' }}>
@@ -140,10 +148,52 @@ function Signin() {
                 </div>
               </div>
 
+          <h1 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
+            The Autonomous <span style={{ color: '#5b5bd6' }}>Talent Platform</span>
+          </h1>
               <h1 style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '0.75rem' }}>
                 Sign In to <span style={{ color: '#f5810c' }}>BenMyl</span>
               </h1>
 
+          <p style={{ color: '#64748b', fontSize: '12px', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '400px' }}>
+            Unite high-speed neural candidate screenings with premium collaborative sourcing desks. Designed for elite recruiters, sales squads, and enterprise staffing partners.
+          </p>
+
+
+          <form onSubmit={formik.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 calc(50% - 0.5rem)' }}>
+                <input
+                  type="email"
+                  {...formik.getFieldProps("email")}
+                  className="auth-input"
+                  placeholder="Email Address"
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '14px' }}
+                />
+                {formik.touched.email && formik.errors.email && (
+                  <div className="auth-error-msg" style={{ fontSize: '11px', marginTop: '4px' }}>{formik.errors.email}</div>
+                )}
+              </div>
+              <div style={{ flex: '1 1 calc(50% - 0.5rem)', position: 'relative' }}>
+                <input
+                  type={isVisible ? "text" : "password"}
+                  {...formik.getFieldProps("password")}
+                  className="auth-input"
+                  placeholder="Password"
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '14px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsVisible(!isVisible)}
+                  style={{ position: 'absolute', right: '12px', top: '12px', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
+                >
+                  {isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+                {formik.touched.password && formik.errors.password && (
+                  <div className="auth-error-msg" style={{ fontSize: '11px', marginTop: '4px' }}>{formik.errors.password}</div>
+                )}
+              </div>
+            </div>
               <p style={{ color: '#64748b', fontSize: '11px', lineHeight: 1.6, marginBottom: '2rem' }}>
                 Enter your credentials to securely access your BenMyl node workspace.
               </p>
@@ -188,6 +238,25 @@ function Signin() {
                   )}
                 </div>
 
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', padding: '0 4px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', cursor: 'pointer', fontWeight: 500, fontSize: '11px' }}>
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  checked={formik.values.rememberMe}
+                  onChange={formik.handleChange}
+                  style={{ accentColor: '#5b5bd6', width: 16, height: 16 }}
+                />
+                Remember Me
+              </label>
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                style={{ color: '#5b5bd6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0, fontSize: '11px' }}
+              >
+                Forgot Password?
+              </button>
+            </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', padding: '0 4px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', cursor: 'pointer', fontWeight: 500, fontSize: '14px' }}>
                     <input
@@ -367,7 +436,6 @@ function Signin() {
           />
         )}
       </div>
-    </div>
   );
 }
 

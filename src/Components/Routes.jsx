@@ -27,6 +27,7 @@ import UploadTalent from "./UploadTalent/UploadTalent";
 import AIScreen from "./Header/AI Screen/AIScreen";
 import UploadTalentProfile from "./UploadTalent/UploadTalentProfile";
 import EditTalentProfile from "./UploadTalent/EditTalentProfile";
+import UploadReviewTalent from "./UploadTalent/UploadReviewTalent";
 import ReviewTalent from "./UploadTalent/ReviewTalent";
 import AdminHeader from "./Admin/AdminHeader/AdminHeader";
 import AdminProfile from "./Admin/AdminProfile/AdminProfile";
@@ -57,6 +58,7 @@ import AutomationPanel from "./Admin/Modules/AutomationPanel/AutomationPanel";
 import NotificationPolicy from "./Admin/Modules/NotificationPolicy/NotificationPolicy";
 import BillingControl from "./Admin/Modules/BillingControl/BillingControl";
 import AdminDashboard from "./Admin/Modules/AdminDashboard/AdminDashboard";
+import ActiveRoutines from "./Admin/Modules/AdminDashboard/ActiveRoutines";
 import ModuleProtectedRoute from "./Admin/Modules/RoleConfiguration/ModuleProtectedRoute";
 
 const routes = createBrowserRouter(
@@ -80,6 +82,7 @@ const routes = createBrowserRouter(
           {/* New Admin Modules */}
           <Route path="control-center" element={<AdminControlCenter />} />
           <Route path="overview-dashboard" element={<AdminDashboard />} />
+          <Route path="active-routines" element={<ActiveRoutines />} />
           <Route path="role-configuration" element={<RoleConfiguration />} />
           <Route path="workflow-configuration" element={<WorkflowConfig />} />
           <Route path="approval-control" element={<ApprovalPanel />} />
@@ -94,6 +97,7 @@ const routes = createBrowserRouter(
           <Route path="admin-posted-jobs" element={<PostedJobsPage />} />
           <Route path="admin-jobs" element={<UserJobs />} />
           <Route path="admin-upload-talent" element={<UploadTalent />} />
+          <Route path="upload-review-talent" element={<UploadReviewTalent />} />
 
           <Route path="user-talent-profile" element={<TalentProfile />} />
           <Route path="talent-profile" element={<UploadTalentProfile />} />
@@ -128,6 +132,7 @@ const routes = createBrowserRouter(
             <Route path="talent-profile" element={<UploadTalentProfile />} />
             <Route path="edit-talent-profile" element={<EditTalentProfile />} />
             <Route path="user-upload-talent" element={<UploadTalent />} />
+            <Route path="upload-review-talent" element={<UploadReviewTalent />} />
             <Route path="review-talent" element={<ReviewTalent />} />
           </Route>
 

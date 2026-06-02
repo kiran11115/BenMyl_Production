@@ -68,6 +68,7 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
   const mappedJobs = useMemo(() => {
     return allJobs.map((job) => ({
       id: job.jobID || job.id,
+      userId: job.userId || job.jobUserId || job.jobuserid,
       title: job.jobTitle || job.title,
       company: job.companyName || job.company,
       location: job.location || "N/A",

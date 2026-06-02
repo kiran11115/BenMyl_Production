@@ -18,6 +18,7 @@ import { GiCheckMark } from "react-icons/gi";
 import TalentGridView from "./TalentGrid";
 import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
+import "../UserJobs/Jobs.css";
 import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
@@ -307,6 +308,107 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
   );
 };
 
+// --- JOB DETAILS DRAWER ---
+const JobDetailsDrawer = ({ isOpen, onClose, allJobOverviewData }) => {
+  return (
+    <>
+      <div
+        className={`drawer-overlay ${isOpen ? "open" : ""}`}
+        onClick={onClose}
+      />
+      <div className={`drawer-panel-right ${isOpen ? "open" : ""}`}>
+        <div className="drawer-header">
+          <h3>Job Details Overview</h3>
+          <button className="close-btn" onClick={onClose}>
+            <FiX size={20} />
+          </button>
+        </div>
+
+        <div className="drawer-content">
+          {allJobOverviewData.length === 0 ? (
+            <div className="empty-state">No jobs selected to view details.</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
+              {allJobOverviewData.map((jobData) => (
+                <JobOverviewCard
+                  key={jobData.id}
+                  job={jobData}
+                  isExpanded={true}
+                  onToggle={() => { }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style jsx>{`
+        .drawer-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 998;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
+        }
+        .drawer-overlay.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .drawer-panel-right {
+          position: fixed;
+          top: 75px;
+          right: 5px;
+          width: 480px;
+          height: 90vh;
+          border-radius: 12px;
+          background: white;
+          z-index: 999;
+          transform: translateX(110%);
+          transition: transform 0.3s;
+          box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+        }
+        .drawer-panel-right.open {
+          transform: translateX(0);
+        }
+        .drawer-header {
+          padding: 20px;
+          border-bottom: 1px solid #e2e8f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .drawer-header h3 {
+          margin: 0;
+          font-size: 18px;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+        }
+        .drawer-content {
+          padding: 20px;
+          flex: 1;
+          overflow-y: auto;
+        }
+        .empty-state {
+          color: #94a3b8;
+          text-align: center;
+          margin-top: 40px;
+          font-size: 14px;
+        }
+      `}</style>
+    </>
+  );
+};
+
 // --- MAIN COMPONENT ---
 const TalentPool = () => {
   const navigate = useNavigate();
@@ -326,6 +428,7 @@ const TalentPool = () => {
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isJobDetailsDrawerOpen, setIsJobDetailsDrawerOpen] = useState(false);
   const [successJobId, setSuccessJobId] = useState(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("name_asc");
@@ -346,6 +449,7 @@ const TalentPool = () => {
   const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
   const [getFindTalent, { data, isLoading }] =
     useTalentPoolMutation();
@@ -561,18 +665,18 @@ const TalentPool = () => {
 
   const filtersReady = useMemo(() => {
     const hasURLParams = searchParams.toString().length > 0;
- 
+
     // If coming from "Find Talent" (with preselectedJobTitle in state),
     // wait until the job is matched and appliedFilters is set.
     if (preselectedJobTitle && appliedFilters === null) {
       return false;
     }
- 
+
     // If URL has filters but appliedFilters not restored yet → wait
     if (hasURLParams && appliedFilters === null) {
       return false;
     }
- 
+
     return true;
   }, [searchParams, appliedFilters, preselectedJobTitle]);
 
@@ -778,7 +882,13 @@ const TalentPool = () => {
     setSearchParams(params);
   };
 
-
+  useEffect(() => {
+    setMinTimeElapsed(false);
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [appliedFilters, activeJobId]);
 
 
   const handleProfileClick = (candidate) => {
@@ -840,222 +950,290 @@ const TalentPool = () => {
   };
 
   return (
-    <div className="vs-page">
-      <div className="projects-container d-flex flex-column gap-3">
-        {/* Heading */}
-        {/* Heading */}
+    <div
+      style={{
+        background: "#f5f7fb",
+        minHeight: "100vh",
+        padding: "18px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: "22px",
+          alignItems: "flex-start",
+        }}
+      >
+        {/* LEFT FILTER */}
 
-<div className="talentpool-header">
-          <div>
-            <h1 className="section-title" style={{ fontSize: "24px", marginBottom: "8px",color:'#fff' }}>
-              Find Talent
-            </h1>
-            <p style={{ color: "#64748b", fontSize: "14px", margin: 0 }}>
-              Search and manage your Talent network.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "12px",
-              flex: 1,
-              maxWidth: "700px",
-              justifyContent: "flex-end",
-              alignItems: "start",
+        <aside
+        >
+          <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
+        </aside>
+        <FilterBottomSheet
+          isOpen={isMobileFilterOpen}
+          onClose={() => setIsMobileFilterOpen(false)}
+          title="Filters"
+        >
+          <TalentFilters
+            onApplyFilters={(filters) => {
+              handleApplyFilter(filters);
+              setIsMobileFilterOpen(false);
             }}
-          >
-            {/* Sort */}
-            <div className="sort-wrapper">
-              <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            skillsList={allSkills}
+            jobs={jobs}
+            selectedJobId={selectedJobId}
+            appliedFilters={appliedFilters}
+          />
+        </FilterBottomSheet>
 
-                <option value="rating_high">Rating: High to Low</option>
-                <option value="exp_high">Experience: High to Low</option>
-                <option value="exp_low">Experience: Low to High</option>
-                <option value="rate_low">Hourly Rate: Low to High</option>
-                <option value="name_asc">Name: A - Z</option>
-              </select>
-              <FiChevronDown className="sort-icon" />
-            </div>
+        {/* RIGHT */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
-            <button
-              className="filters-applied"
-              onClick={() => setIsMobileFilterOpen(true)}
-            >
-              <FiFilter /> Filters
-            </button>
+          {/* Sticky header */}
+          <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
 
-            <button
-              className="btn-upload"
-              onClick={() => setIsDrawerOpen(true)}
-              style={{ display: "flex", alignItems: "center", gap: "8px",backgroundColor:'#000',border: '1px solid #000' }}
-            >
-              <FiBriefcase />
-              <span>View Shortlisted</span>
-            </button>
+            <div className="hero-card mb-4">
+              <div className="hero-left">
+                <div className="hero-pill">
+                  ✦ Find Talent
+                </div>
+                <h1 className="job-posting-title text-white">Talent Network Board</h1>
 
-            <div className="vs-results-right">
-              <div className="view-toggle1">
-                <button
-                  className={`view-btn ${viewMode === "grid" ? "toggle active" : ""}`}
-                  onClick={() => setViewMode("grid")}
+
+                <div className="job-posting-header-info">
+
+                  <p className="job-posting-subtitle">
+                    Search and manage your Talent network.
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    flex: 1,
+                    maxWidth: "700px",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
                 >
-                  <FiGrid />
-                </button>
-                <button
-                  className={`view-btn ${viewMode === "table" ? "toggle active" : ""}`}
-                  onClick={() => setViewMode("table")}
-                >
-                  <FiList />
-                </button>
+
+                  <button
+                    className="filters-applied"
+                    onClick={() => setIsMobileFilterOpen(true)}
+                  >
+                    <FiFilter /> Filters
+                  </button>
+
+                  <button
+                    className="routine-btn"
+                    onClick={() => setIsJobDetailsDrawerOpen(true)}
+                  >
+                    <FiBriefcase />
+                    <span>View Job Details</span>
+                  </button>
+
+                  <button
+                    className="routine-btn"
+                    onClick={() => setIsDrawerOpen(true)}
+
+                  >
+                    <FiBriefcase />
+                    <span>View Shortlisted</span>
+                  </button>
+
+                  <div className="vs-results-right">
+                    {/* VIEW TOGGLE */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        background: "#f4f8ff",
+                        border: "1px solid #d9e6ff",
+                        borderRadius: "10px",
+                        padding: "3px",
+                        gap: "2px",
+                        height: "40px",
+                      }}
+                    >
+                      <button
+                        onClick={() => setViewMode("grid")}
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          border: "none",
+                          borderRadius: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          background:
+                            viewMode === "grid"
+                              ? "#3b82f6"
+                              : "transparent",
+                          color:
+                            viewMode === "grid"
+                              ? "#ffffff"
+                              : "#64748b",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        <FiGrid size={14} />
+                      </button>
+
+                      <button
+                        onClick={() => setViewMode("table")}
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          border: "none",
+                          borderRadius: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          background:
+                            viewMode === "table"
+                              ? "#3b82f6"
+                              : "transparent",
+                          color:
+                            viewMode === "table"
+                              ? "#ffffff"
+                              : "#64748b",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        <FiList size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Layout */}
-        <div className="d-flex gap-3" style={{
-          display: "flex",
-          gap: "16px",
-          height: "calc(100vh - 10px)", // SAME HEIGHT for both
-        }}>
-          <aside className="vs-filters-sidebar hide-scrollbar" style={{
-            overflowY: "auto",
-          }}>
-            <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
-          </aside>
 
-          <FilterBottomSheet
-            isOpen={isMobileFilterOpen}
-            onClose={() => setIsMobileFilterOpen(false)}
-            title="Filters"
-          >
-            <TalentFilters
-              onApplyFilters={(filters) => {
-                handleApplyFilter(filters);
-                setIsMobileFilterOpen(false);
+
+            {/* Layout */}
+            <div
+              ref={resultsRef}
+              style={{
+                height: "calc(100vh - 140px)",
+                overflowY: "auto",
+                paddingRight: "4px",
               }}
-              skillsList={allSkills}
-              jobs={jobs}
-              selectedJobId={selectedJobId}
-              appliedFilters={appliedFilters}
-            />
-          </FilterBottomSheet>
-
-          <section className="vs-results hide-scrollbar" ref={resultsRef} style={{
-            height: "calc(100vh - 0px)", // adjust if header height differs
-            overflowY: "auto",
-            overflowX: "hidden",
-            width: "600px"
-          }}>
-            {/* Render overview cards for all selected jobs */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
-              {allJobOverviewData.map((jobData) => (
-                <JobOverviewCard
-                  key={jobData.id}
-                  job={jobData}
-                  isExpanded={expandedCardId === jobData.id}
-                  onToggle={() => toggleCard(jobData.id)}
-                />
-              ))}
-              {allJobOverviewData.length === 0 && (
-                <JobOverviewCard job={null} />
+            >
+              {(isLoading || !minTimeElapsed) && allCandidates.length === 0 ? (
+                <div className="jobs-screen-loader">
+                  <div className="jobs-loader-ring">
+                    <div className="jobs-loader-icon">
+                      <FiBriefcase size={18} />
+                    </div>
+                  </div>
+                  <p className="jobs-loader-text">Searching for candidates...</p>
+                  <span className="jobs-loader-sub">Matching candidates based on your filters</span>
+                </div>
+              ) : (
+                <>
+                  {!isLoading && sortedCandidates.length === 0 ? (
+                    <div
+                      style={{
+                        minHeight: "320px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <NoData text="No Matching Profiles found" />
+                    </div>
+                  ) : viewMode === "grid" ? (
+                    <TalentGridView
+                      candidates={sortedCandidates}
+                      onShortlist={handleShortlist}
+                      activeJobId={activeJobId}
+                      activeJobColor={activeJobColor}
+                      shortlistedMap={shortlistedMap}
+                      onProfileClick={handleProfileClick}
+                      hasMore={hasMore}
+                    />
+                  ) : (
+                    <TalentTableView
+                      candidates={sortedCandidates}
+                      onShortlist={handleShortlist}
+                      activeJobId={activeJobId}
+                      activeJobColor={activeJobColor}
+                      shortlistedMap={shortlistedMap}
+                      onProfileClick={handleProfileClick}
+                      hasMore={hasMore}
+                    />
+                  )}
+                </>
               )}
             </div>
-            {isLoading && (
-              <div style={{ textAlign: "center", padding: "12px", color: "#64748b" }}>
-                Loading candidates...
-              </div>
-            )}
-
-            {!isLoading && sortedCandidates.length === 0 ? (
-              <div
-                style={{
-                  minHeight: "320px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <NoData text="No Matching Profiles found" />
-              </div>
-            ) : viewMode === "grid" ? (
-              <TalentGridView
-                candidates={sortedCandidates}
-                onShortlist={handleShortlist}
-                activeJobId={activeJobId}
-                activeJobColor={activeJobColor}
-                shortlistedMap={shortlistedMap}
-                onProfileClick={handleProfileClick}
-                hasMore={hasMore}
-              />
-            ) : (
-              <TalentTableView
-                candidates={sortedCandidates}
-                onShortlist={handleShortlist}
-                activeJobId={activeJobId}
-                activeJobColor={activeJobColor}
-                shortlistedMap={shortlistedMap}
-                onProfileClick={handleProfileClick}
-                hasMore={hasMore}
-              />
-            )}
-
-          </section>
-        </div>
-      </div>
-
-      {isDrawerOpen ? (
-        <ShortlistDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          shortlistedMap={shortlistedMap}
-          onRemove={handleRemoveFromDrawer}
-          jobs={jobs}
-          userId={userId}
-          refreshTalents={fetchTalents}
-          clearShortlistForJob={clearShortlistForJob}
-          onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
-        />
-      ) : null}
-
-      {successJobId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => { }}>
-          <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
-            <div style={{ marginBottom: '24px' }}>
-              <FiCheckCircle size={60} color="#059669" />
-            </div>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
-
-            <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
-              <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
-                <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button
-                style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                onClick={() => {
-                  const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                  const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
-                  navigate(targetPath, { state: { preSelectedJobId: successJobId } });
-                }}
-              >
-                Schedule Interview
-              </button>
-              <button
-                style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                onClick={() => setSuccessJobId(null)}
-              >
-                Continue to Talentpool
-              </button>
-            </div>
           </div>
         </div>
-      )}
 
-      <style jsx>{`
+        {isDrawerOpen ? (
+          <ShortlistDrawer
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+            shortlistedMap={shortlistedMap}
+            onRemove={handleRemoveFromDrawer}
+            jobs={jobs}
+            userId={userId}
+            refreshTalents={fetchTalents}
+            clearShortlistForJob={clearShortlistForJob}
+            onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
+          />
+        ) : null}
+
+        {isJobDetailsDrawerOpen ? (
+          <JobDetailsDrawer
+            isOpen={isJobDetailsDrawerOpen}
+            onClose={() => setIsJobDetailsDrawerOpen(false)}
+            allJobOverviewData={allJobOverviewData}
+          />
+        ) : null}
+
+        {successJobId && (
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => { }}>
+            <div style={{ background: 'white', width: '90%', maxWidth: '440px', borderRadius: '24px', padding: '40px', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'modalFadeIn 0.3s ease-out' }} onClick={e => e.stopPropagation()}>
+              <div style={{ marginBottom: '24px' }}>
+                <FiCheckCircle size={60} color="#059669" />
+              </div>
+              <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', marginBottom: '24px' }}>Invite Sent Successfully!</h2>
+
+              <div style={{ background: '#eff6ff', borderLeft: '4px solid #3b82f6', padding: '12px 16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
+                <p style={{ margin: 0, fontSize: '13px', color: '#1e40af', lineHeight: 1.5 }}>
+                  <strong>Note:</strong> Selected candidates have been notified successfully. You can now proceed to schedule an interview with them.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <button
+                  style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                  onClick={() => {
+                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
+                    navigate(targetPath, { state: { preSelectedJobId: successJobId } });
+                  }}
+                >
+                  Schedule Interview
+                </button>
+                <button
+                  style={{ width: '100%', padding: '14px', background: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                  onClick={() => setSuccessJobId(null)}
+                >
+                  Continue to Talentpool
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <style jsx>{`
         .sort-wrapper {
           position: relative;
           margin-right: 8px;
@@ -1099,6 +1277,7 @@ const TalentPool = () => {
   -ms-overflow-style: none;
 }
       `}</style>
+      </div>
     </div>
   );
 };

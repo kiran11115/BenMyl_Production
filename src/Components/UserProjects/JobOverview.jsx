@@ -456,16 +456,16 @@ const JobOverview = () => {
 
             <div className="job-header-info">
               <h3 className="job-title">
-                {job?.jobTitle || "Senior Frontend Developer"}
+                {job?.jobTitle || "Job Title"}
               </h3>
               <p className="company-name">
-                {job?.companyName || "Tech Solutions Inc."}
+                {job?.companyName || "Company Name"}
               </p>
 
               <div className="d-flex gap-3">
                 <div className="meta-item">
                   <FiMapPin size={12} />
-                  {job?.location || "Visakhapatnam"}
+                  {job?.location || "Location"}
                 </div>
 
                 <div className="meta-item">

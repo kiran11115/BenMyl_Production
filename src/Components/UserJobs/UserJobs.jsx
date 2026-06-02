@@ -328,18 +328,6 @@ const UserJobs = () => {
           {/* LEFT FILTER */}
 
         <aside
-          style={{
-            width: "310px",
-            minWidth: "310px",
-            background: "#fff",
-            borderRadius: "28px",
-            padding: "24px",
-            border: "1px solid #e7ebf3",
-            height: "fit-content",
-            overflowY: "auto",
-            position: "sticky",
-            top: "20px",
-          }}
         >
           <JobFilters
             initialFilters={filters}

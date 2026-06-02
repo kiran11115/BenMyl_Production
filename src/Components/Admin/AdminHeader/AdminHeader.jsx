@@ -6,6 +6,7 @@ import Notifications from "../../Header/Notifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
 import TrialPopover from "../../Header/TrialPopover";
 import ProfileSideModal from "../../Header/ProfileSideModal";
+import ScrollToTop from "../../ScrollToTop";
 
 
 function AdminHeader() {
@@ -95,6 +96,7 @@ function AdminHeader() {
 
     return (
         <>
+         <ScrollToTop />
             <header className="header-container">
                 {/* Left Section: Brand & Nav */}
                 <div className="header-left">
@@ -129,7 +131,7 @@ function AdminHeader() {
                             //         { label: "Schedule Interview", path: "/Admin/admin-upcoming-interview" },
                             //     ]
                             // },
-                            { path: "/Admin/contract-listing", label: "Contracts" },
+                            // { path: "/Admin/contract-listing", label: "Contracts" },
                         ].map((link) => (
                             <div key={link.label} className="nav-item-container">
                                 {link.subItems ? (
@@ -363,7 +365,7 @@ function AdminHeader() {
                                 <h4>Create Job</h4>
 
                                 <span>
-                                    Create hiring requirements
+                                    Create hiring requirements.
                                 </span>
 
                             </div>
@@ -374,7 +376,7 @@ function AdminHeader() {
                                 className="routine-card"
                                 onClick={() => {
                                     navigate(
-                                        "/Admin/admin-upload-talent"
+                                        "/Admin/upload-review-talent"
                                     );
                                     setShowRoutineModal(false);
                                 }}
@@ -387,7 +389,7 @@ function AdminHeader() {
                                 <h4>Upload Talent</h4>
 
                                 <span>
-                                    AI parser candidate upload
+                                    AI parser candidate upload.
                                 </span>
 
                             </div>
@@ -398,7 +400,7 @@ function AdminHeader() {
                                 className="routine-card"
                                 onClick={() => {
                                     navigate(
-                                        "/Admin/admin-talentpool"
+                                        "/Admin/contract-listing"
                                     );
                                     setShowRoutineModal(false);
                                 }}
@@ -408,10 +410,10 @@ function AdminHeader() {
                                     <Users size={18} />
                                 </div>
 
-                                <h4>Talent Pool</h4>
+                                <h4>Create Contract</h4>
 
                                 <span>
-                                    Manage candidate profiles
+                                    Manage contract listings.
                                 </span>
 
                             </div>

@@ -582,6 +582,13 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
         Apply Filters
       </button>
 
+          {/* Note Card */}
+      <div className="note-card mt-3" style={{ background: '#fffdf2ff', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #f6bb3bff' }}>
+        <p style={{ margin: 0, fontWeight: "600", fontSize: '10px', color: '#e28f29ff', lineHeight: 1.5 }}>
+          <strong>Note:</strong> Selecting a role from "Find by Roles" is necessary to view its details and offer talent to matching job requirement.
+        </p>
+      </div>
+
 
       {/* INLINE STYLES */}
       <style jsx>{`
