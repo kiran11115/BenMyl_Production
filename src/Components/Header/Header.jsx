@@ -15,6 +15,7 @@ import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermission
 import TrialPopover from "./TrialPopover";
 import ProfileSideModal from "./ProfileSideModal";
 import ScrollToTop from "../ScrollToTop";
+import { Plus, Users } from "lucide-react";
 
 
 function Header() {
@@ -23,6 +24,7 @@ function Header() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
   const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
+  const [showRoutineModal, setShowRoutineModal] = useState(false);
   const profileRef = useRef(null);
   const aiPopoverRef = useRef(null);
 
@@ -51,20 +53,13 @@ function Header() {
       {
         label: "Projects",
         module: "Projects",
-        subItems: [
-          { label: "Posted Jobs", path: "/user/user-posted-jobs" },
-          { label: "Create Job", path: "/user/user-post-new-positions" },
-          { label: "Ongoing Projects", path: "/user/user-projects" },
-        ],
+        path: "/user/user-posted-jobs"
       },
       { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },
       {
         label: "Interviews",
         module: "Interviews",
-        subItems: [
-          { label: "Create Interview", path: "/user/user-schedule-interview" },
-          { label: "Schedule Interview", path: "/user/user-upcoming-interview" },
-        ],
+        path: "/user/user-upcoming-interview"
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
 
@@ -82,20 +77,17 @@ function Header() {
       {
         label: "Projects",
         module: "Projects",
-        subItems: [
-          { label: "Posted Jobs", path: "/user/user-posted-jobs" },
-          { label: "Create Job", path: "/user/user-post-new-positions" },
-          { label: "Ongoing Projects", path: "/user/user-projects" },
-        ],
+        path: "/user/user-posted-jobs"
       },
       { label: "Talentpool", path: "/user/user-talentpool", module: "Talent Pool" },
       {
         label: "Interviews",
         module: "Interviews",
-        subItems: [
-          { label: "Create Interview", path: "/user/user-schedule-interview" },
-          { label: "Schedule Interview", path: "/user/user-upcoming-interview" },
-        ],
+        path: "/user/user-upcoming-interview"
+        // subItems: [
+        //   { label: "Create Interview", path: "/user/user-schedule-interview" },
+        //   { label: "Schedule Interview", path: "/user/user-upcoming-interview" },
+        // ],
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
       { label: "Talent Management", path: "/user/user-upload-talent", module: "Talent Pool" },
@@ -253,8 +245,17 @@ function Header() {
 
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
+          {role === "Recruiter2" && (
+  <button
+    className="quick-create-btn"
+    onClick={() => setShowRoutineModal(true)}
+  >
+    <Plus size={14} />
+    Quick Create
+  </button>
+)}
           {/* AI Assistant Pill with Coming Soon Popover */}
-          <div className="ai-pill-wrapper" ref={aiPopoverRef}>
+          {/* <div className="ai-pill-wrapper" ref={aiPopoverRef}>
             <button
               className="ai-pill-btn"
               onClick={() => setIsAiPopoverOpen((prev) => !prev)}
@@ -295,7 +296,7 @@ function Header() {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Video Guide Icon */}
           <button
@@ -360,6 +361,146 @@ function Header() {
       <MobileBottomNav />
 
       <ToastContainer position="top-right" autoClose={3000} />
+      {showRoutineModal && (
+      
+                      <div className="routine-modal-overlay">
+      
+                          <div className="routine-modal">
+      
+                              <div className="routine-header">
+      
+                                  <div className="routine-title">
+      
+                                      <span>
+                                          EXPRESS DISPATCH CONSOLE
+                                      </span>
+      
+                                  </div>
+      
+                                  <button
+                                      className="routine-close"
+                                      onClick={() =>
+                                          setShowRoutineModal(false)
+                                      }
+                                  >
+                                      ✕
+                                  </button>
+      
+                              </div>
+      
+                              <div className="routine-divider"></div>
+      
+                              <p className="routine-subtitle">
+      
+                                  Instantly execute workspace workflows.
+      
+                              </p>
+      
+                              <div className="routine-grid">
+      
+                                  {/* CREATE JOB */}
+      
+                                  <div
+                                      className="routine-card"
+                                      onClick={() => {
+                                          navigate(
+                                              "/user/user-post-new-positions"
+                                          );
+                                          setShowRoutineModal(false);
+                                      }}
+                                  >
+      
+                                      <div className="routine-icon">
+                                          <File size={18} />
+                                      </div>
+      
+                                      <h4>Create Job</h4>
+      
+                                      <span>
+                                          Create hiring requirements.
+                                      </span>
+      
+                                  </div>
+      
+                                  {/* UPLOAD TALENT */}
+      
+                                  <div
+                                      className="routine-card"
+                                      onClick={() => {
+                                          navigate(
+                                              "/user/upload-review-talent"
+                                          );
+                                          setShowRoutineModal(false);
+                                      }}
+                                  >
+      
+                                      <div className="routine-icon">
+                                          <Users size={18} />
+                                      </div>
+      
+                                      <h4>Upload Talent</h4>
+      
+                                      <span>
+                                          AI parser candidate upload.
+                                      </span>
+      
+                                  </div>
+      
+                                  {/* TALENT POOL */}
+      
+                                  <div
+                                      className="routine-card"
+                                      onClick={() => {
+                                          navigate(
+                                              "/user/contract-listing"
+                                          );
+                                          setShowRoutineModal(false);
+                                      }}
+                                  >
+      
+                                      <div className="routine-icon">
+                                          <Users size={18} />
+                                      </div>
+      
+                                      <h4>Create Contract</h4>
+      
+                                      <span>
+                                          Manage contract listings.
+                                      </span>
+      
+                                  </div>
+      
+                                  {/* INTERVIEW */}
+      
+                                  <div
+                                      className="routine-card"
+                                      onClick={() => {
+                                          navigate(
+                                              "/user/user-schedule-interview"
+                                          );
+                                          setShowRoutineModal(false);
+                                      }}
+                                  >
+      
+                                      <div className="routine-icon">
+                                          <Bell size={16} />
+                                      </div>
+      
+                                      <h4>Schedule Interview</h4>
+      
+                                      <span>
+                                          Coordinate interview flow
+                                      </span>
+      
+                                  </div>
+      
+                              </div>
+      
+                          </div>
+      
+                      </div>
+      
+                  )}
 
       <TrialPopover />
 
