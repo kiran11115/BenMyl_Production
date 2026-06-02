@@ -394,7 +394,7 @@ function AdminHeader() {
 
                             </div>
 
-                            {/* TALENT POOL */}
+                            {/* CONTRACT */}
 
                             <div
                                 className="routine-card"
@@ -424,7 +424,7 @@ function AdminHeader() {
                                 className="routine-card"
                                 onClick={() => {
                                     navigate(
-                                        "/Admin/user-schedule-interview"
+                                        "/Admin/admin-upcoming-interview"
                                     );
                                     setShowRoutineModal(false);
                                 }}

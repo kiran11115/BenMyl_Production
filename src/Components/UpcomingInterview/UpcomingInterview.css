@@ -1974,3 +1974,123 @@
 .skills-internal-scroll::-webkit-scrollbar-thumb:hover {
     background: var(--slate-400);
 }
+
+/* Disable hover lift on interview cards */
+.ui-no-hover:hover {
+    transform: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03) !important;
+    border-color: #e7ebf3 !important;
+}
+
+/* Next Interview Metrics Layout */
+.next-interview-metrics-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.next-interview-metrics-container.hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    transform: translateY(-20px);
+}
+
+
+
+.ui-metric-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    justify-content: stretch;
+}
+
+.ui-metric-card {
+    background: var(--white);
+    border: 1px solid var(--slate-200);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui-metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.ui-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ui-metric-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-500);
+}
+
+.ui-metric-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ui-metric-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ui-metric-value {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--slate-800);
+    line-height: 1;
+}
+
+.ui-metric-badge.badge-green {
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.ui-metric-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--slate-100);
+    padding-top: 12px;
+    margin-top: 4px;
+}
+
+.ui-metric-footer-text {
+    font-size: 11px;
+    color: var(--slate-400);
+    font-weight: 500;
+}
+
+.ui-metric-footer-link {
+    font-size: 11px;
+    font-weight: 600;
+    color: #10b981;
+    cursor: pointer;
+}

@@ -8,11 +8,13 @@ import {
     FiChevronLeft,
     FiChevronRight,
     FiMapPin,
-    FiX
+    FiX,
+    FiEyeOff
 
 } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
+import "../UserJobs/Jobs.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
@@ -22,6 +24,7 @@ import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { Home } from "lucide-react";
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { FiEye } from "react-icons/fi";
+import ScheduleInterviewDrawer from "../ScheduleInterview/ScheduleInterviewDrawer";
 
 const formatDateToDisplay = (value) => {
   if (!value) return "";
@@ -43,12 +46,13 @@ export default function UpcomingInterview() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedInterview, setSelectedInterview] = useState(null);
     const [view, setView] = useState("list"); // list | detail
-    const [activeTab, setActiveTab] = useState("scheduled"); // scheduled | completed | cancelled | rescheduled
     const [meetingLinkInput, setMeetingLinkInput] = useState("");
     const [isJobExpanded, setIsJobExpanded] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isNextInterviewHidden, setIsNextInterviewHidden] = useState(false);
 
     const recruiterId = localStorage.getItem("CompanyId");
     const userRole = localStorage.getItem("Role");
@@ -138,6 +142,9 @@ export default function UpcomingInterview() {
         }).sort((a, b) => a.date - b.date);
     }, [apiInterviews, fetchedJobs]);
 
+    const totalScheduled = interviews.filter(it => it.status === "scheduled").length;
+    const totalCompleted = interviews.filter(it => it.status === "completed").length;
+
     const nextInterview = useMemo(() => {
         const upcoming = interviews.filter(it => it.status === "scheduled");
         if (upcoming.length === 0) return null;
@@ -147,8 +154,8 @@ export default function UpcomingInterview() {
     const filteredInterviews = useMemo(() => {
         let list = interviews;
 
-        // Filter by Tab
-        list = list.filter(it => it.status === activeTab);
+        // Only display scheduled interviews
+        list = list.filter(it => it.status === "scheduled");
 
         // Filter by Search Query
         if (searchQuery.trim()) {
@@ -167,7 +174,8 @@ export default function UpcomingInterview() {
             it.date.getMonth() === selectedDate.getMonth() &&
             it.date.getFullYear() === selectedDate.getFullYear()
         );
-    }, [interviews, selectedDate, activeTab, searchQuery]);
+      
+    }, [interviews, selectedDate, searchQuery]);
 
     const handleViewDetail = (interview) => {
         const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
@@ -213,105 +221,134 @@ export default function UpcomingInterview() {
 
     return (
         <div className="ui-page">
-            <ModuleHeader
-                breadcrumb="Upcoming Interviews"
-                title="Upcoming Interviews"
-                description="Manage your scheduled interviews and meeting links"
-                badgeText="Interview Management"
-                icon={FiCalendar}
-                customBreadcrumbs={[
-                    { label: "Dashboard", path: isUser ? '/user/user-dashboard' : '/Admin/overview-dashboard', icon: <Home size={14} /> }
-                ]}
-                actions={userRole === 'Benchsales' ? [] : [
-                    {
-                        label: "Add New Interview",
-                        icon: <FiPlus size={16} />,
-                        type: "primary",
-                        onClick: () => navigate(`${basePath}/user-schedule-interview`)
-                    }
-                ]}
-            />
+            {/* Hero Header with Blue Gradient */}
+            <div className="hero-card mb-4">
+                <div className="hero-left">
+                    <div className="hero-pill">
+                        ✦ Interview Management
+                    </div>
+                    <h1 className="text-white">
+                        Upcoming Interviews
+                    </h1>
+                    <p className="hero-subtitle">
+                        Manage your scheduled interviews, track candidate availability, and monitor upcoming meetings.
+                    </p>
+                </div>
 
-            {nextInterview && !selectedDate && !searchQuery && activeTab === "scheduled" && (
-                <div className="hero-next-interview mb-4">
-                    <div className="hero-content">
-                        <div className="hero-label-row d-flex align-items-center gap-2">
-                            <div className="hero-label">
-                                <span className="live-dot"></span> Next Interview
-                            </div>
+                {userRole !== 'Benchsales' && (
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <button
+                            onClick={() => setIsNextInterviewHidden(!isNextInterviewHidden)}
+                            className="routine-btn"
+                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
+                        >
+                            {isNextInterviewHidden ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                            <span>{isNextInterviewHidden ? "Show Interviews" : "Hide Interviews"}</span>
+                        </button>
+                        <button
+                            onClick={() => setIsDrawerOpen(true)}
+                            className="routine-btn"
+                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
+                        >
+                            <FiPlus size={16} />
+                            <span>Add New Interview</span>
+                        </button>
+                    </div>
+                )}
+            </div>
 
-                        </div>
-                        <div className="hero-main">
-                            <div className="hero-info">
-                                <h2 className="hero-candidate-name">{nextInterview.name}</h2>
-                                <p className="hero-candidate-role">{nextInterview.role} • {nextInterview.vendorName}</p>
-                                <div className="hero-time-box d-flex gap-2">
-                                    <FiCalendar className="icon" /> {nextInterview.dateLabel}
-                                    <FiClock className="icon ms-3" /> {nextInterview.time}
+            {nextInterview && !selectedDate && !searchQuery && (
+                <div className={`next-interview-metrics-container ${isNextInterviewHidden ? 'hidden' : ''}`}>
+                    <div className="hero-next-interview" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <div className="hero-content">
+                            <div className="hero-label-row d-flex align-items-center gap-2 mb-2">
+                                <div className="hero-label" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                                    <span className="live-dot"></span> Next Interview
                                 </div>
                             </div>
-                            <div className="hero-actions">
-                                {nextInterview.meetingLink ? (
-                                    <button
-                                        onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")}
-                                        className="hero-join-btn"
-                                    >
-                                        Join Meeting
+                            <div className="hero-main" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div className="hero-info" style={{ flex: 1 }}>
+                                    <h2 className="hero-candidate-name" style={{ fontSize: '16px', marginBottom: '4px',color: "white" }}>{nextInterview.name}</h2>
+                                    <p className="hero-candidate-role" style={{ fontSize: '11px', marginBottom: '8px' }}>{nextInterview.role} • {nextInterview.vendorName}</p>
+                                    <div className="hero-time-box d-flex gap-2" style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                        <FiCalendar className="icon" /> {nextInterview.dateLabel}
+                                        <FiClock className="icon ms-2" /> {nextInterview.time}
+                                    </div>
+                                </div>
+                                <div className="hero-actions" style={{ flexDirection: 'column', gap: '8px', minWidth: '130px', marginLeft: '16px' }}>
+                                    {nextInterview.meetingLink ? (
+                                        <button
+                                            onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")}
+                                            className="hero-join-btn"
+                                            style={{ padding: '8px 12px', fontSize: '12px' }}
+                                        >
+                                            Join Meeting
+                                        </button>
+                                    ) : (
+                                        <button className="hero-join-btn disabled" disabled style={{ padding: '8px 12px', fontSize: '12px' }}>
+                                            Link Pending
+                                        </button>
+                                    )}
+                                    <button className="hero-details-btn" onClick={() => handleViewDetail(nextInterview)} style={{ padding: '8px 12px', fontSize: '12px' }}>
+                                        View Details
                                     </button>
-                                ) : (
-                                    <button className="hero-join-btn disabled" disabled>
-                                        Link Pending
-                                    </button>
-                                )}
-                                <button className="hero-details-btn" onClick={() => handleViewDetail(nextInterview)}>
-                                    View Details
-                                </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="hero-bg-accent"></div>
+                    </div>
+
+                    <div className="ui-metric-cards">
+                        <div className="ui-metric-card">
+                            <div className="ui-metric-header">
+                                <span className="ui-metric-title">Total Scheduled</span>
+                                <div className="ui-metric-icon" style={{ background: '#f8fafc', color: '#6366f1' }}>
+                                    <FiCalendar size={18} />
+                                </div>
+                            </div>
+                            <div className="ui-metric-body">
+                                <span className="ui-metric-value">{totalScheduled}</span>
+                                <span className="ui-metric-badge badge-green">+100%</span>
+                            </div>
+                            <div className="ui-metric-footer">
+                                <span className="ui-metric-footer-text">Updated just now</span>
+                                <span className="ui-metric-footer-link">↗ View All</span>
+                            </div>
+                        </div>
+                        <div className="ui-metric-card">
+                            <div className="ui-metric-header">
+                                <span className="ui-metric-title">Total Completed</span>
+                                <div className="ui-metric-icon" style={{ background: '#f8fafc', color: '#10b981' }}>
+                                    <GiCheckMark size={18} />
+                                </div>
+                            </div>
+                            <div className="ui-metric-body">
+                                <span className="ui-metric-value">{totalCompleted}</span>
+                                <span className="ui-metric-badge badge-green">+100%</span>
+                            </div>
+                            <div className="ui-metric-footer">
+                                <span className="ui-metric-footer-text">Updated just now</span>
+                                <span className="ui-metric-footer-link">↗ View All</span>
                             </div>
                         </div>
                     </div>
-                    <div className="hero-bg-accent"></div>
                 </div>
             )}
 
-            <div className="view-toggle1 mb-4">
-                <button
-                    className={`toggle ${activeTab === "scheduled" ? "active" : ""}`}
-                    onClick={() => setActiveTab("scheduled")}
-                >
-                    Scheduled
-                </button>
-                <button
-                    className={`toggle ${activeTab === "completed" ? "active" : ""}`}
-                    onClick={() => setActiveTab("completed")}
-                >
-                    Interviews Done
-                </button>
-                <button
-                    className={`toggle ${activeTab === "cancelled" ? "active" : ""}`}
-                    onClick={() => setActiveTab("cancelled")}
-                >
-                    Cancelled
-                </button>
-                <button
-                    className={`toggle ${activeTab === "rescheduled" ? "active" : ""}`}
-                    onClick={() => setActiveTab("rescheduled")}
-                >
-                    Rescheduled
-                </button>
-            </div>
+            {/* ── Tabs Removed ── */}
 
             {/* ── BENTO GRID V2: Main Feed | Sidebar ── */}
             <div className="ui-bento-grid-v2">
 
                 {/* LEFT: Interviews Feed — Big Panel */}
-                <div className="ui-bento-cell ui-cell-feed project-card">
+                <div className="">
                     <div className="bento-cell-header">
                         <div className="bento-cell-icon-wrap"><FiCalendar size={14} /></div>
                         <div className="d-flex flex-column gap-0">
                             <h3 className="fg-title m-0">
                                 {selectedDate
                                     ? `Interviews: ${formatDateToDisplay(selectedDate)}`
-                                    : `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Feed`}
+                                    : `Scheduled Feed`}
                             </h3>
                             <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 600 }}>
                                 {filteredInterviews.length} Sessions Found
@@ -321,69 +358,98 @@ export default function UpcomingInterview() {
 
                     <div className="interviews-stack hide-scrollbar">
                         {isLoading ? (
-                            <div className="loading-state p-5 text-center">
-                                <div className="spinner-border text-primary mb-3" role="status"></div>
-                                <p style={{ color: '#64748b', fontWeight: 600 }}>Synchronizing your schedule...</p>
+                            <div className="loading-state d-flex flex-column align-items-center justify-content-center p-5" style={{ minHeight: '300px' }}>
+                                <div className="spinner-border mb-3" style={{ color: '#5b5bd6', width: '3rem', height: '3rem', borderWidth: '0.3em' }} role="status"></div>
+                                <h5 style={{ color: '#1e293b', fontWeight: 800 }}>Loading Schedule...</h5>
+                                <p style={{ color: '#64748b', fontWeight: 500, fontSize: '13px' }}>Synchronizing your upcoming interviews.</p>
                             </div>
                         ) : isError ? (
                             <div className="error-state p-5 text-center">
                                 <p className="text-danger fw-bold">Unable to fetch interviews</p>
                             </div>
                         ) : filteredInterviews.length > 0 ? (
-                            <div className="interviews-grid-v2">
-                                {filteredInterviews.map((interview) => (
-                                    <div key={interview.id} className="interview-card-v2">
-                                        <div className="card-accent-bar"></div>
-                                        <div className="card-header-row">
-                                            <div className="status-pill-v2">
-                                                <span className={`dot ${interview.status.toLowerCase()}`}></span>
-                                                {interview.status}
-                                            </div>
-                                            <div className="time-badge">
-                                                <FiClock size={12} /> {interview.time}
-                                            </div>
-                                        </div>
-
-                                        <div className="card-profile-section">
-                                            {interview.avatar ? (
-                                                <img src={interview.avatar} alt={interview.name} className="avatar-initials-premium" />
-                                            ) : (
-                                                <div className="avatar-initials-premium">
-                                                    {getInitials(interview.name)}
+                            <div className="jobs-wrapper" style={{ padding: 0 }}>
+                                <div className="jobs-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+                                    {filteredInterviews.map((interview) => (
+                                        <div 
+                                            key={interview.id} 
+                                            className="job-card justify-content-between ui-no-hover"
+                                            onClick={() => handleViewDetail(interview)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <div className="d-flex flex-column gap-3">
+                                                {/* TOP */}
+                                                <div className="job-card-header">
+                                                    <div className="job-header-left">
+                                                        <div className="job-company-logo" style={{ overflow: 'hidden' }}>
+                                                            {interview.avatar ? (
+                                                                <img src={interview.avatar} alt={interview.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                            ) : (
+                                                                getInitials(interview.name)
+                                                            )}
+                                                        </div>
+                                                        <div className="job-header-info">
+                                                            <h3 className="job-title" title={interview.name}>{interview.name}</h3>
+                                                            <p className="company-name">{interview.role}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="job-eye-icon">
+                                                        <FiEye size={22} />
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <div className="profile-details">
-                                                <h4 className="candidate-name">{interview.name}</h4>
-                                                <p className="candidate-role">{interview.role}</p>
-                                            </div>
-                                        </div>
 
-                                        <div className="card-meta-grid">
-                                            <div className="meta-pill">
-                                                <FiCalendar size={12} /> <span>{interview.dateLabel}</span>
-                                            </div>
-                                            <div className="meta-pill">
-                                                <FiMapPin size={12} /> <span>{interview.location}</span>
-                                            </div>
-                                        </div>
+                                                {/* TAGS */}
+                                                <div className="job-tags-row">
+                                                    <span className={`job-chip ${interview.status.toLowerCase() === 'completed' ? 'green' : interview.status.toLowerCase() === 'cancelled' ? 'red' : 'purple'}`}>
+                                                        {interview.status}
+                                                    </span>
+                                                    <span className="job-chip mint">
+                                                        <FiClock size={12} style={{ marginRight: '4px' }} />
+                                                        {interview.time}
+                                                    </span>
+                                                </div>
 
-                                        <div className="card-actions-v2">
-                                            <button className="btn-v2-outline" onClick={() => handleViewDetail(interview)}>
-                                                Details
-                                            </button>
-                                            {interview.meetingLink ? (
-                                                <button
-                                                    className="btn-v2-primary"
-                                                    onClick={() => window.open(interview.meetingLink, "_blank")}
-                                                >
-                                                    Join Session
-                                                </button>
-                                            ) : (
-                                                <button className="btn-v2-disabled" disabled>Pending Link</button>
-                                            )}
+                                                {/* ACTIONS */}
+                                                <div className="job-desc-block">
+                                                    <div className="d-flex gap-2">
+                                                        {interview.meetingLink ? (
+                                                            <button
+                                                                className="job-view-more-btn flex-grow-1"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    window.open(interview.meetingLink, "_blank");
+                                                                }}
+                                                            >
+                                                                Join Session
+                                                            </button>
+                                                        ) : (
+                                                            <button className="job-view-more-btn disabled flex-grow-1" disabled style={{ opacity: 0.6 }}>
+                                                                Pending Link
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                {/* FOOTER */}
+                                                <div className="job-card-footer">
+                                                    <div className="job-rate" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
+                                                        <FiCalendar size={14} />
+                                                        {interview.dateLabel}
+                                                    </div>
+
+                                                    <div className="meta-pill">
+                                                        <FiMapPin size={12} />
+                                                        <span title={interview.location} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>
+                                                            {interview.location ? interview.location.split(',')[0].trim() : "Remote"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <div className="empty-feed-state">
@@ -488,6 +554,11 @@ export default function UpcomingInterview() {
                     </div>
                 </div>
             )}
+            <ScheduleInterviewDrawer 
+                isOpen={isDrawerOpen} 
+                onClose={() => setIsDrawerOpen(false)} 
+                onSuccess={() => {}}
+            />
         </div>
     );
 }

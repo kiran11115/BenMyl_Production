@@ -188,7 +188,7 @@
 /* Apply Button */
 .apply-btn {
   width: 100%;
-  background: #5B5BD6;
+  background: #f97316;
   color: #fff;
   border: none;
   padding: 12px;
@@ -200,5 +200,5 @@
 }
 
 .apply-btn:hover {
-  background: #5B5BD6;
+  background: #ff8e3c;
 }

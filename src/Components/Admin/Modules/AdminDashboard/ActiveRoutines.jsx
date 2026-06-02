@@ -509,7 +509,7 @@ function ActiveRoutines() {
         <div className="routines-modal-header">
           <div className="routines-header-title-area">
             <div className="routines-header-glow"></div>
-            <h1 style={{ fontSize: '20px' }}>Workflow Automation Orchestrator</h1>
+            <h1 className="job-title" style={{ fontSize: '18px' }}>Workflow Automation Orchestrator</h1>
             <p style={{ fontSize: '12px' }}>Execute background scheduling parameters, coordinate system automated operations pipelines, and configure triggers</p>
           </div>
           

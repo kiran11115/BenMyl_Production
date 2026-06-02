@@ -1,0 +1,701 @@
+/* ScheduleInterviewDrawer.css
+   Palette mirrors Jobs.css / JobOverview.css exactly — soft slate, no harsh colors
+*/
+
+/* ── Overlay ── */
+.sid-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(3px);
+    z-index: 2000;
+    opacity: 0;
+    animation: sidFadeIn 0.28s forwards;
+    display: flex;
+    justify-content: flex-end;
+}
+.sid-overlay.closing { animation: sidFadeOut 0.28s forwards; }
+
+@keyframes sidFadeIn  { to { opacity: 1; } }
+@keyframes sidFadeOut { to { opacity: 0; } }
+
+/* ── Drawer shell ── */
+.sid-container {
+    height: 100vh;
+    background: #f8fafc;            /* --slate-50 page bg */
+    box-shadow: -8px 0 32px rgba(15,23,42,0.10);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition:
+        width   0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+.sid-container.open { transform: translateX(0); }
+
+.sid-width-40 { width: 46vw; min-width: 560px; }
+.sid-width-60 { width: 80vw; min-width: 900px; }
+
+/* ── Header — matches talentpool-header gradient ── */
+.sid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
+    border-bottom: none;
+    flex-shrink: 0;
+}
+.sid-header-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex; align-items: center; gap: 10px;
+}
+.sid-close-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.85);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sid-close-btn:hover { background: rgba(255,255,255,0.25); color: #ffffff; }
+
+/* ── Body wrapper ── */
+.sid-body-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* ── Main panel ── */
+.sid-main-panel {
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px;
+    gap: 14px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sid-container.sid-width-60 .sid-main-panel {
+    width: 25%;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* ── Preview panel ── */
+.sid-preview-panel {
+    width: 75%;
+    flex-grow: 1;
+    background: #ffffff;
+    overflow-y: auto;
+    display: none;
+    padding: 24px;
+}
+.sid-container.sid-width-60 .sid-preview-panel { display: block; }
+
+/* ── SECTION CARDS — exact .job-card from Jobs.css ── */
+.sid-section {
+    background: #ffffff;
+    border-radius: 28px;            /* .job-card uses 28px */
+    border: 1px solid #e7ebf3;      /* exact .job-card border */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;              /* popovers must escape */
+}
+/* Removed section hover effects as requested */
+
+/* Disabled/dim state for locked sections */
+.sid-section.sid-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Section label — matches drawer-section h4 muted style */
+.sid-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+}
+
+/* ── Grid helpers ── */
+.sid-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.sid-datetime-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+}
+/* Squeeze on expand */
+.sid-container.sid-width-60 .sid-form-grid    { grid-template-columns: 1fr; }
+.sid-container.sid-width-60 .sid-datetime-grid { grid-template-columns: 1fr; }
+
+/* ── Dropdown trigger — elegant and solid ── */
+.sid-dropdown-target {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    min-height: 42px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.sid-dropdown-target:hover:not(:disabled) { 
+    border-color: #cbd5e1; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+.sid-dropdown-target:focus {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 3px rgba(148,163,184,0.15);
+    outline: none;
+}
+.sid-dropdown-target:disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+    box-shadow: none;
+}
+.sid-dropdown-target.has-value {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    font-weight: 600;
+}
+.sid-dropdown-placeholder { color: #94a3b8; font-size: 13px; font-weight: 400; }
+.sid-dropdown-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── Popover — Solid, Elevated, Elegant ── */
+.sid-popover {
+    position: absolute;
+    z-index: 9999;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 12px 24px -4px rgba(15,23,42,0.12), 0 4px 12px -2px rgba(15,23,42,0.08);
+    width: 100%;
+    margin-top: 6px;
+    max-height: 280px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(10px); /* Just in case, but background is white */
+}
+.sid-popover-search {
+    padding: 8px;
+    border-bottom: 1px solid #f1f5f9;
+    position: relative;
+}
+.sid-popover-search input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 13px;
+    outline: none;
+    color: #1e293b;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f8fafc;
+}
+.sid-popover-search input:focus { 
+    border-color: #94a3b8;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(148,163,184,0.1);
+}
+.sid-search-icon {
+    position: absolute;
+    left: 20px; top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+.sid-popover-list { overflow-y: auto; padding: 6px 0; }
+.sid-popover-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: background 0.15s ease;
+}
+.sid-popover-item:hover   { background: #f8fafc; }
+.sid-popover-item.selected { background: #f1f5f9; }
+
+/* ── Skeletons ── */
+.sid-skeleton {
+    animation: sidPulse 1.4s ease-in-out infinite;
+    background: #e2e8f0;
+    border-radius: 4px;
+}
+.sid-skeleton-item {
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 10px;
+}
+@keyframes sidPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+
+/* ── IMAGE-MATCHING CALENDAR CONTAINER ── */
+.sid-calendar-container {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.sid-cal-header {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.sid-cal-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: #fff7ed; /* light orange */
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #ffedd5;
+}
+
+.sid-cal-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.05em;
+}
+
+.sid-cal-body {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Override DatePicker within our specific container to match image */
+.sid-cal-body .react-datepicker {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    width: 100%;
+}
+.sid-cal-body .react-datepicker__header {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+.sid-cal-body .react-datepicker__current-month {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: left;
+    margin-bottom: 16px;
+}
+.sid-cal-body .react-datepicker__navigation {
+    top: 0;
+    width: 32px; height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+}
+.sid-cal-body .react-datepicker__navigation--previous { left: auto; right: 42px; }
+.sid-cal-body .react-datepicker__navigation--next { right: 0; }
+.sid-cal-body .react-datepicker__navigation-icon::before {
+    border-color: #64748b;
+    border-width: 2px 2px 0 0;
+    width: 6px; height: 6px;
+    top: 11px;
+}
+.sid-cal-body .react-datepicker__day-names {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+.sid-cal-body .react-datepicker__day-name {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    width: 32px;
+}
+.sid-cal-body .react-datepicker__month { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.sid-cal-body .react-datepicker__week { display: flex; justify-content: space-between; }
+.sid-cal-body .react-datepicker__day {
+    width: 32px; height: 32px;
+    line-height: 32px;
+    margin: 0;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+.sid-cal-body .react-datepicker__day:hover:not(.react-datepicker__day--disabled) {
+    background: #f1f5f9;
+}
+.sid-cal-body .react-datepicker__day--selected {
+    background: #f5810c !important;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(245,129,12,0.3);
+}
+.sid-cal-body .react-datepicker__day--disabled { color: #cbd5e1; }
+.sid-cal-body .react-datepicker__day--outside-month { opacity: 0; pointer-events: none; } /* Hide outside days completely */
+
+.sid-cal-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 20px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+.sid-cal-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #f5810c;
+}
+
+.sid-cal-reset {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sid-cal-reset:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+/* ── Time Picker ── */
+.sid-time-picker-block { display: flex; flex-direction: column; }
+
+.sid-time-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+}
+.sid-time-tab {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 16px;
+    transition: all 0.18s;
+}
+.sid-time-tab:hover { background: #f1f5f9; }
+.sid-time-tab.active { color: #1e293b; background: #f1f5f9; }
+
+.sid-time-slots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+}
+.sid-container:not(.sid-width-60) .sid-time-slots {
+    grid-template-columns: repeat(3, 1fr);
+}
+.sid-time-slot {
+    padding: 6px 8px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.sid-time-slot:hover { border-color: #94a3b8; background: #f8fafc; color: #1e293b; }
+.sid-time-slot.active {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #1e293b;
+    box-shadow: 0 4px 8px rgba(30,41,59,0.15);
+}
+
+/* ── Elegant Custom Time Formatting (Auth-Input Style) ── */
+.sid-custom-time-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #ffffff;
+    border: 1px solid #e7ebf3;
+    padding: 20px;
+    border-radius: 16px;
+}
+.sid-custom-time-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.sid-custom-time-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.sid-custom-time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sid-time-colon {
+    font-weight: 700;
+    color: #94a3b8;
+    font-size: 16px;
+}
+.sid-auth-input {
+    flex: 1;
+    height: 44px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1.41%200L6%204.58L10.59%200L12%201.41L6%207.41L0%201.41L1.41%200Z%22%20fill%3D%22%2394a3b8%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 32px;
+}
+.sid-auth-input:focus {
+    border-color: #5b5bd6;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(91,91,214,0.1);
+}
+.sid-auth-ampm {
+    flex: 0.8;
+}
+
+/* ── Addon row (preferences) ── */
+.sid-addon-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-top: 10px;
+    border: 1px solid #f1f5f9;
+}
+.sid-addon-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    display: flex; align-items: center; gap: 6px;
+}
+
+/* ── Footer — matches attached image ── */
+.sid-footer {
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.03);
+    gap: 12px;
+}
+
+/* Left: calendar icon + meta */
+.sid-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Mini calendar block (like image) */
+.sid-footer-calendar-icon {
+    width: 40px;
+    height: 42px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.sid-footer-cal-top {
+    background: #f5810c;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+    padding: 3px 0;
+    border-bottom: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.sid-footer-cal-bottom {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.sid-footer-meta { display: flex; flex-direction: column; gap: 4px; }
+
+.sid-footer-time-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sid-footer-time-text {
+    font-size: 14px;
+    font-weight: 800;
+    color: #f5810c;
+    letter-spacing: -0.4px;
+    white-space: nowrap;
+}
+
+/* Green badge */
+.sid-footer-badge {
+    background: #f0fdf4;
+    color: #059669;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 4px;
+    border: 1px solid #a7f3d0;
+    white-space: nowrap;
+}
+
+/* Sub-row: candidate info */
+.sid-footer-sub-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+.sid-footer-sub-item {
+    display: flex; align-items: center; gap: 4px;
+}
+
+/* Recruiter block in footer — coral-red avatar like job cards */
+.sid-footer-recruiter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    flex-shrink: 0;
+    border-left: 1px solid #d5d5d5;
+}
+.sid-footer-rec-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #f8f1ee;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #fde8e8;
+}
+.sid-footer-rec-photo {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e2e8f0;
+}
+.sid-footer-rec-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.sid-footer-rec-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+}
+.sid-footer-rec-role {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+
+
+/* ── Preview panel header ── */
+.sid-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.sid-preview-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}

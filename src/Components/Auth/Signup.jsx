@@ -139,17 +139,8 @@ function SignUp() {
             <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, height: 150, objectFit: 'contain' }} />
           </div>
 
-          <div style={{marginTop: '-2rem' }}>
-            <button
-              type="button"
-              onClick={() => navigate("/sign-in")}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', fontSize: '14px', fontWeight: 600, cursor: 'pointer', padding: 0 }}
-            >
-              <ArrowLeft size={16} /> Back to Sign In
-            </button>
-          </div>
-          <h1 style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
-            The Autonomous <span style={{ color: '#f5810c', fontSize: '26px' }}>Talent Platform</span>
+          <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
+            The Autonomous <span style={{ color: '#f5810c', fontSize: '18px' }}>Talent Platform</span>
           </h1>
           {/* <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
@@ -192,10 +183,10 @@ function SignUp() {
                   className="auth-input"
                   placeholder="Full Name"
                   readOnly={!!invitedFullName}
-                  style={{ background: '#f8fafc', padding: '12px', fontSize: '11px' }}
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '13px' }}
                 />
                 {formik.touched.fullName && formik.errors.fullName && (
-                  <div className="auth-error-msg" style={{ fontSize: '11px', marginTop: '4px' }}>{formik.errors.fullName}</div>
+                  <div className="auth-error-msg" style={{ fontSize: '10px', marginTop: '4px' }}>{formik.errors.fullName}</div>
                 )}
               </div>
               <div style={{ flex: '1 1 calc(50% - 0.5rem)' }}>
@@ -205,10 +196,10 @@ function SignUp() {
                   className="auth-input"
                   placeholder="Company Name"
                   readOnly={!!invitedCompanyName}
-                  style={{ background: '#f8fafc', padding: '12px', fontSize: '11px' }}
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '13px' }}
                 />
                 {formik.touched.companyName && formik.errors.companyName && (
-                  <div className="auth-error-msg" style={{ fontSize: '11px', marginTop: '4px' }}>{formik.errors.companyName}</div>
+                  <div className="auth-error-msg" style={{ fontSize: '10px', marginTop: '4px' }}>{formik.errors.companyName}</div>
                 )}
               </div>
             </div>
@@ -221,10 +212,10 @@ function SignUp() {
                   className="auth-input"
                   placeholder="Email Address"
                   readOnly={!!invitedEmail}
-                  style={{ background: '#f8fafc', padding: '12px', fontSize: '11px' }}
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '13px' }}
                 />
                 {formik.touched.email && formik.errors.email && (
-                  <div className="auth-error-msg" style={{ fontSize: '11px', marginTop: '4px' }}>{formik.errors.email}</div>
+                  <div className="auth-error-msg" style={{ fontSize: '10px', marginTop: '4px' }}>{formik.errors.email}</div>
                 )}
               </div>
             </div>
@@ -236,7 +227,7 @@ function SignUp() {
                   {...formik.getFieldProps("password")}
                   className="auth-input"
                   placeholder="Password"
-                  style={{ background: '#f8fafc', padding: '12px', fontSize: '11px' }}
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '13px' }}
                 />
                 <button
                   type="button"
@@ -255,7 +246,7 @@ function SignUp() {
                   {...formik.getFieldProps("confirmPassword")}
                   className="auth-input"
                   placeholder="Confirm password"
-                  style={{ background: '#f8fafc', padding: '12px', fontSize: '11px' }}
+                  style={{ background: '#f8fafc', padding: '12px', fontSize: '13px' }}
                 />
                 <button
                   type="button"
@@ -270,14 +261,14 @@ function SignUp() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', padding: '0 4px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', padding: '0 4px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', cursor: 'pointer', fontWeight: 500, fontSize:"11px" }}>
                 <input
                   type="checkbox"
                   name="acceptTerms"
                   checked={formik.values.acceptTerms}
                   onChange={formik.handleChange}
-                  style={{ accentColor: '#5b5bd6', width: 16, height: 16 }}
+                  style={{width: 16, height: 16 }}
                 />
                 I agree to the Terms & Conditions
               </label>

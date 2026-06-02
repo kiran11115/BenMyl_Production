@@ -66,42 +66,61 @@ export default function PostedJobsPage() {
 
                 {/* Top cards for Posted Jobs */}
 
-                <div className="hero-card mb-4">
-                    <div className="hero-left">
-                        <div className="hero-pill">
-                            ✦ Posted Jobs
-                        </div>
-                        <h1 className="job-posting-title text-white">Posted Opportunities Board</h1>
+                <div
+    className="hero-card mb-4"
+    style={{
+        backgroundImage: `url("/images/posted-jobs.jpeg")`, // your image path
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "220px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "24px",
+    }}
+>
+    <div className="hero-left">
+        <div className="hero-pill">
+            ✦ Posted Jobs
+        </div>
 
+        <h1 className="job-posting-title text-white">
+            Posted Opportunities Board
+        </h1>
 
-                        <div className="job-posting-header-info">
+        <div className="job-posting-header-info">
+            <p className="job-posting-subtitle">
+                Displaying all posted job opportunities with complete role details
+            </p>
+        </div>
+    </div>
 
-                            <p className="job-posting-subtitle">
-                                Displaying all posted job opportunities with complete role details
-                            </p>
-                        </div>
-                    </div>
+    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <button
+            onClick={() => setShowStats(!showStats)}
+            className="routine-btn"
+        >
+            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
+        </button>
 
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <button
-                            onClick={() => setShowStats(!showStats)}
-                            className="routine-btn"
-                        >
-                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
-                        </button>
+        <button
+            onClick={() => {
+                const basePath = window.location.pathname
+                    .toLowerCase()
+                    .startsWith('/admin')
+                    ? '/Admin'
+                    : '/user';
 
-                        <button
-                            onClick={() => {
-                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                                navigate(`${basePath}/user-post-new-positions`);
-                            }}
-                            className="routine-btn"
-                        >
-                            <FiPlus size={16} />
-                            <span>Post New Job</span>
-                        </button>
-                    </div>
-                </div>
+                navigate(`${basePath}/user-post-new-positions`);
+            }}
+            className="routine-btn"
+        >
+            <FiPlus size={16} />
+            <span>Post New Job</span>
+        </button>
+    </div>
+</div>
 
                 <div className={`metrics-slider ${showStats ? "show" : ""}`}>
                     <StatsRow stats={jobStats} />

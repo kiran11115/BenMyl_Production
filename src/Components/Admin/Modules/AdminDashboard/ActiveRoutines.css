@@ -47,14 +47,6 @@
   pointer-events: none;
 }
 
-.routines-header-title-area h1 {
-  font-size: 26px;
-  font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.5px;
-  margin: 0 0 6px 0;
-  font-family: 'Inter', sans-serif;
-}
 
 .routines-header-title-area p {
   font-size: 13.5px;
