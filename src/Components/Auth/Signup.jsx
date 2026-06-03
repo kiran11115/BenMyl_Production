@@ -8,6 +8,7 @@ import "./Auth.css";
 import { useRegisterMutation } from "../../State-Management/Api/SignupApiSlice";
 import { toast } from "react-toastify";
 import { SubmissionErrorModal } from "./SigninAlert";
+import TermsModal from "./TermsModal";
 
 /* =========================
    Validation Schema
@@ -41,7 +42,7 @@ const signUpValidationSchema = Yup.object({
 
   acceptTerms: Yup.boolean().oneOf(
     [true],
-    "You must accept Terms & Conditions"
+    "You must accept Terms & Conditions and Cookie Policy"
   ),
 });
 
@@ -51,6 +52,7 @@ function SignUp() {
 
   const [isVisible, setIsVisible] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   // Alert State
   const [showError, setShowError] = useState(false);
@@ -270,7 +272,9 @@ function SignUp() {
                   onChange={formik.handleChange}
                   style={{width: 16, height: 16 }}
                 />
-                I agree to the Terms & Conditions
+                <span>
+                  I agree to the <span style={{ color: '#5a5de8', textDecoration: 'underline' }} onClick={(e) => { e.preventDefault(); setShowTermsModal(true); }}>Terms & Conditions and Cookie Policy</span>
+                </span>
               </label>
             </div>
             {formik.touched.acceptTerms && formik.errors.acceptTerms && (
@@ -449,6 +453,11 @@ function SignUp() {
               : null
           }
         />
+      )}
+      
+      {/* TERMS MODAL */}
+      {showTermsModal && (
+        <TermsModal onClose={() => setShowTermsModal(false)} />
       )}
     </div>
   );
