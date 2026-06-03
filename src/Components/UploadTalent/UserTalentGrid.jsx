@@ -1,6 +1,5 @@
 import React, { memo } from "react";
-import { FiMapPin, FiBriefcase, FiClock, FiDollarSign, FiUser,FiEye } from "react-icons/fi";
-import { FaStar } from "react-icons/fa";
+import { FiMapPin, FiBriefcase, FiDollarSign, FiEye } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import "../TalentPool/TalentPool.css";

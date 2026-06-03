@@ -65,8 +65,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.375rem 0.75rem;
-    background-color: #fff7ed;
-    color: #ea580c;
+    background-color: #e8e8ff;
+    color: #5a5de8;
     border-radius: 99px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -85,8 +85,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem 1.25rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -96,8 +96,7 @@
 }
 
 .module-header-standard .btn-primary:hover {
-    background-color: #ea580c;
-    box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);
+    background-color: #5a5de8;
 }
 
 @media (max-width: 768px) {

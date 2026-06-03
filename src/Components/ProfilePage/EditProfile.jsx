@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiX, FiSave, FiImage, FiArrowLeft } from "react-icons/fi";
+import { FiX, FiSave, FiImage, FiArrowLeft, FiBriefcase, FiMapPin, FiMail, FiGlobe } from "react-icons/fi";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -8,6 +8,7 @@ import {
   useGetRecruiterProfileQuery,
 } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import "./EditProfile.css";
+import ProfilePreviewPanel from "../Admin/AdminProfile/ProfilePreviewPanel";
 import "../PostNewPositions/PostNewPositions.css";
 import { State, City } from "country-state-city";
 
@@ -349,6 +350,16 @@ function EditProfile() {
 
   const formData = formik.values;
 
+  // Live preview data mapped from formik values
+  const previewData = {
+    companyname: formData.companyname,
+    Emailid: formData.contact?.email,
+    City: formData.headquarters?.city,
+    State: formData.headquarters?.state,
+    Country: formData.headquarters?.country,
+    Description: formData.description,
+  };
+
   const handleChange = useCallback(
     (e) => {
       formik.handleChange(e);
@@ -429,7 +440,7 @@ function EditProfile() {
 
   const handleCancel = () => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-profile` : `${basePath}/user-profile`;
+    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/overview-dashboard` : `${basePath}/user-dashboard`;
     navigate(targetPath);
   };
 
@@ -470,11 +481,11 @@ function EditProfile() {
         </div>
       </div>
 
-      <div className="dashboard-layout" style={{ gridTemplateColumns: '1fr' }}>
+      <div className="dashboard-layout" style={{ gridTemplateColumns: '6fr 4fr', gap: '24px' }}>
         <div className="dashboard-column-main">
-          <div className="premium-card">
-            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Configure Profile Blueprint
+          <div className="premium-card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "8px" }}>
+              <FiBriefcase /> Identity & Branding
             </h2>
             <p className="muted small mb-4" style={{ fontSize: "12px", color: "#6B7280" }}>
               Fields indicated with a red asterisk (<span style={{ color: '#ef4444' }}>*</span>) are mandatory values.
@@ -575,9 +586,12 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Work Experience */}
-            <div style={{ marginBottom: '40px' }}>
-              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Work Experience</span>
+          </div>
+
+          <div className="premium-card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "8px" }}>
+              <FiBriefcase /> Work Experience
+            </h2>
 
               {formData.workExperience.map((exp, index) => (
                 <div key={index} className="ep-exp-item mb-4" style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', position: 'relative' }}>
@@ -703,9 +717,10 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Address */}
-            <div style={{ marginBottom: '40px' }}>
-              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Address</span>
+          <div className="premium-card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "8px" }}>
+              <FiMapPin /> Location & Headquarters
+            </h2>
               <div className="grid-2">
                 <div>
                   <label className="auth-label">Street Address 1<span style={{ color: '#ef4444' }}> *</span></label>
@@ -840,9 +855,10 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Contact Information */}
-            <div style={{ marginBottom: '40px' }}>
-              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Contact Information</span>
+          <div className="premium-card" style={{ padding: '16px', marginBottom: '24px' }}>
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "8px" }}>
+              <FiMail /> Primary Contact
+            </h2>
               <div className="grid-3">
                 <div>
                   <label className="auth-label">Email<span style={{ color: '#ef4444' }}> *</span></label>
@@ -884,9 +900,10 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Additional Information */}
-            <div style={{ marginBottom: '40px' }}>
-              <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#eef2f6', color: '#5B5BD6', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>Additional Information</span>
+          <div className="premium-card" style={{ padding: '16px' }}>
+            <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "8px" }}>
+              <FiGlobe /> Additional Information
+            </h2>
               <div className="grid-2">
                 <div>
                   <label className="auth-label">Job Title<span style={{ color: '#ef4444' }}> *</span></label>
@@ -1001,20 +1018,28 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="ep-footer">
-              <button type="button" onClick={handleCancel} className="ep-cancel-btn">
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="ep-save-btn"
-                disabled={isSaving || !formik.isValid}
-              >
-                {isSaving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '24px' }}>
+            <button type="button" className="btn-secondary" onClick={handleCancel}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={isSaving || !formik.isValid}
+            >
+              <FiSave style={{ marginRight: '8px' }} /> {isSaving ? "Saving..." : "Save Changes"}
+            </button>
           </div>
+        </div>
+
+        {/* PREVIEW PANEL */}
+        <div className="dashboard-column-side" style={{ position: 'sticky', top: '24px' }}>
+          <ProfilePreviewPanel
+            data={previewData}
+            logoPreview={logoPreview}
+            roleBadge="RECRUITER"
+          />
         </div>
       </div>
     </form>

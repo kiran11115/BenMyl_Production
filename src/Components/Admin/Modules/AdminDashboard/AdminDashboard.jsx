@@ -16,7 +16,23 @@ import {
   Compass,
   Search,
   Command,
+  CreditCard,
 } from "lucide-react";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+
 
 import UploadTalentModal from "../../../UploadTalent/UploadTalentModal";
 
@@ -33,6 +49,17 @@ import {
   useTalentPoolMutation,
 } from "../../../../State-Management/Api/TalentPoolApiSlice";
 import { useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 const QUICK_ACTIONS = [
   {
@@ -55,6 +82,18 @@ const QUICK_ACTIONS = [
     icon: <Sparkles size={20} />,
     path: "/Admin/admin-talentpool",
   },
+  {
+    title: "Billing Console",
+    desc: "Manage enterprise billing and active subscriptions.",
+    icon: <CreditCard size={20} />,
+    path: "/Admin/account-settings",
+  },
+  {
+    title: "Security Setup",
+    desc: "Configure network policies and role access.",
+    icon: <ShieldCheck size={20} />,
+    path: "/Admin/role-configuration",
+  },
 ];
 
 function AdminDashboard() {
@@ -73,7 +112,6 @@ function AdminDashboard() {
   const [toast, setToast] = useState(null);
 
   const [talentCount, setTalentCount] = useState(0);
-  const [chartType, setChartType] = useState("hiringManagers");
 
   const [showUploadModal, setShowUploadModal] =
     useState(false);
@@ -166,46 +204,76 @@ function AdminDashboard() {
     }, 1000);
   };
 
-const width = 1000;
-const height = 240;
+  const chartData = {
+    labels: graphData.map(d => d.month),
+    datasets: [
+      {
+        label: "Hiring Managers",
+        data: graphData.map(d => d.hiringManagers),
+        borderColor: "#5a5de8",
+        backgroundColor: "rgba(90, 93, 232, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#5a5de8",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: "Bench Sales",
+        data: graphData.map(d => d.benchSales),
+        borderColor: "#00b67a",
+        backgroundColor: "rgba(0, 182, 122, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#00b67a",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      }
+    ]
+  };
 
-const values = graphData.map(
-  (item) => item[chartType]
-);
-
-const maxValue =
-  Math.max(...values, 1);
-
-const points = graphData.map(
-  (item, index) => {
-    const x =
-      (index /
-        Math.max(
-          graphData.length - 1,
-          1
-        )) *
-      width;
-
-    const y =
-      height -
-      (item[chartType] / maxValue) *
-        180 -
-      20;
-
-    return {
-      x,
-      y,
-      month: item.month,
-      value: item[chartType],
-    };
-  }
-);
-
-const pathData = points
-  .map((point, index) =>
-    `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`
-  )
-  .join(" ");
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        align: 'end',
+        labels: {
+          usePointStyle: true,
+          boxWidth: 6,
+          font: { size: 11, family: 'Inter' }
+        }
+      },
+      tooltip: {
+        backgroundColor: '#0f172a',
+        padding: 10,
+        cornerRadius: 8,
+        titleFont: { size: 13, family: 'Inter' },
+        bodyFont: { size: 12, family: 'Inter' }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11, family: 'Inter' }, color: '#94a3b8' }
+      },
+      y: {
+        grid: { borderDash: [4, 4], color: '#f1f5f9' },
+        ticks: { font: { size: 11, family: 'Inter' }, color: '#94a3b8' },
+        beginAtZero: true
+      }
+    }
+  };
 
   return (
     <div className="ai-dashboard-wrapper">
@@ -512,87 +580,11 @@ const pathData = points
 
             </div>
 
-            <div className="graph-tabs">
-  <button
-    className={`graph-tab ${
-      chartType === "hiringManagers"
-        ? "active"
-        : ""
-    }`}
-    onClick={() =>
-      setChartType("hiringManagers")
-    }
-  >
-    Hiring Managers
-  </button>
-
-  <button
-    className={`graph-tab ${
-      chartType === "benchSales"
-        ? "active"
-        : ""
-    }`}
-    onClick={() =>
-      setChartType("benchSales")
-    }
-  >
-    Bench Sales
-  </button>
-</div>
-
           </div>
 
-          <div className="graph-area">
-  <svg
-    viewBox="0 0 1000 380"
-    className="graph-svg"
-  >
-    <path
-      d={pathData}
-      fill="none"
-      stroke="#5a5de8"
-      strokeWidth="5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-
-    {points.map((point, index) => (
-      <g key={index}>
-        <circle
-          cx={point.x}
-          cy={point.y}
-          r="8"
-          fill="#5a5de8"
-          stroke="#fff"
-          strokeWidth="3"
-        />
-
-        <text
-          x={point.x}
-          y={point.y - 18}
-          textAnchor="middle"
-          fontSize="12"
-          fill="#0f172a"
-        >
-          {point.value}
-        </text>
-      </g>
-    ))}
-
-    {points.map((point, index) => (
-      <text
-        key={`label-${index}`}
-        x={point.x}
-        y="250"
-        textAnchor="middle"
-        fontSize="14"
-        fill="#94a3b8"
-      >
-        {point.month}
-      </text>
-    ))}
-  </svg>
-</div>
+          <div className="graph-area" style={{ padding: "10px" }}>
+            <Line data={chartData} options={chartOptions} />
+          </div>
 
           <div className="graph-footer">
 

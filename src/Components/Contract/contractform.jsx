@@ -366,9 +366,9 @@ const ContractForm = () => {
       <div className="hero-card mb-4">
                   <div className="hero-left">
                     <div className="hero-pill">
-                              ✦ Find contracts
+                              ✦ Contract Management
                             </div>
-                  <h1 className="job-posting-title text-white">Contract Management</h1>
+                  <h1 className="job-posting-title text-white">Manage Contract Lifecycle</h1>
                   
                    
                   <div className="job-posting-header-info">

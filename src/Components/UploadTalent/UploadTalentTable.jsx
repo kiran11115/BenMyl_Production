@@ -16,7 +16,6 @@ const UploadTalentTable = ({ refreshKey, externalLoading, isDashboard = false, s
   const [talents, setTalents] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [tableLoading, setTableLoading] = useState(false);
   const hasMoreRef = useRef(true);
 const isLoadingRef = useRef(false);
 const pageNumberRef = useRef(1);

@@ -204,10 +204,7 @@ label {
   /* Bright white when active */
 }
 
-/* Optional: hover effect for inactive icons */
-.tt-th.sortable:hover .tt-sort-icon:not(.active) {
-  opacity: 0.7;
-}
+
 
 /* --- Row Styles --- */
 .tt-row {

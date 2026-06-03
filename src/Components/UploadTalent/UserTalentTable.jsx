@@ -2,7 +2,6 @@ import React, { memo, useState, useMemo } from "react";
 import {
   FiBriefcase,
   FiMapPin,
-  FiMoreVertical,
   FiChevronUp,
   FiChevronDown,
   FiEye,
@@ -126,7 +125,6 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
 
 /* ---------------- MAIN TABLE ---------------- */
 const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
-  const navigate = useNavigate();
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",

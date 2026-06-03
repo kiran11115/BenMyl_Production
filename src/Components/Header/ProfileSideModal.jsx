@@ -226,9 +226,11 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
           <button className="psm-btn psm-btn-primary" onClick={onEditClick}>
             <FiEdit2 size={14} /> Edit Profile
           </button>
-          <button className="psm-btn psm-btn-secondary" onClick={handleAddUsersClick}>
-            <FiUsers size={14} /> Add Users
-          </button>
+          {profile?.role === "Admin" && (
+            <button className="psm-btn psm-btn-secondary" onClick={handleAddUsersClick}>
+              <FiUsers size={14} /> Add Users
+            </button>
+          )}
           <button className="psm-btn psm-btn-danger" onClick={onSignOut}>
             <FiLogOut size={14} /> Sign Out
           </button>

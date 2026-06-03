@@ -262,15 +262,15 @@ export default function UpcomingInterview() {
                     <div className="hero-next-interview" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                         <div className="hero-content">
                             <div className="hero-label-row d-flex align-items-center gap-2 mb-2">
-                                <div className="hero-label" style={{ fontSize: '11px', padding: '4px 10px' }}>
-                                    <span className="live-dot"></span> Next Interview
+                                <div className="hero-pill" style={{ fontSize: '11px', padding: '4px 10px' }}>
+                                    ✦ Next Interview
                                 </div>
                             </div>
                             <div className="hero-main" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div className="hero-info" style={{ flex: 1 }}>
-                                    <h2 className="hero-candidate-name" style={{ fontSize: '16px', marginBottom: '4px',color: "white" }}>{nextInterview.name}</h2>
+                                    <h2 className="hero-candidate-name" style={{ fontSize: '16px', marginBottom: '4px',color: "white", textTransform:"uppercase", lineHeight:"10px" }}>{nextInterview.name}</h2>
                                     <p className="hero-candidate-role" style={{ fontSize: '11px', marginBottom: '8px' }}>{nextInterview.role} • {nextInterview.vendorName}</p>
-                                    <div className="hero-time-box d-flex gap-2" style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                    <div className="hero-time-box d-flex gap-2" style={{ fontSize: '12px', padding: '6px 12px', marginTop:"15px" }}>
                                         <FiCalendar className="icon" /> {nextInterview.dateLabel}
                                         <FiClock className="icon ms-2" /> {nextInterview.time}
                                     </div>
@@ -279,8 +279,8 @@ export default function UpcomingInterview() {
                                     {nextInterview.meetingLink ? (
                                         <button
                                             onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")}
-                                            className="hero-join-btn"
-                                            style={{ padding: '8px 12px', fontSize: '12px' }}
+                                            className="routine-btn"
+                                            style={{ padding: '8px 12px', fontSize: '12px', display:"block" }}
                                         >
                                             Join Meeting
                                         </button>
@@ -295,7 +295,6 @@ export default function UpcomingInterview() {
                                 </div>
                             </div>
                         </div>
-                        <div className="hero-bg-accent"></div>
                     </div>
 
                     <div className="ui-metric-cards">

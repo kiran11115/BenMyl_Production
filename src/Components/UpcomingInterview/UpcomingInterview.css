@@ -105,13 +105,17 @@
 /* next interview hero */
 .hero-next-interview {
     position: relative;
-    background: var(--dark-gradient);
+    background: linear-gradient(
+    90deg,
+    #07132d 0%,
+    #2b3669 48%,
+    #7b78f3 100%
+  );
     border-radius: 24px;
     padding: 40px;
     color: white;
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
 }
 
@@ -180,7 +184,7 @@
 }
 
 .hero-time-box .icon {
-    color: var(--primary);
+    color: #10b981;
 }
 
 .hero-actions {
@@ -2059,7 +2063,7 @@
 
 .ui-metric-value {
     font-size: 24px;
-    font-weight: 400;
+    font-weight: 900;
     color: var(--slate-800);
     line-height: 1;
 }

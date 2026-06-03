@@ -58,7 +58,7 @@
 
 .box-header .search-box input:focus {
     background-color: white;
-    border-color: #f5810c;
+    border-color: #5a5de8;
     outline: none;
 }
 
@@ -76,7 +76,7 @@
 
 .trigger-cat {
     font-size: 10px;
-    color: #f5810c;
+    color: #0b825d;
     text-transform: uppercase;
     font-weight: 800;
     letter-spacing: 0.05em;
@@ -118,8 +118,8 @@
 }
 
 .pref-checkbox input:checked ~ .check-box {
-    background-color: #fff7ed;
-    color: #f5810c;
+    background-color: #e8e8ff;
+    color: #5a5de8;
     border: 1px solid rgba(245, 129, 12, 0.1);
 }
 

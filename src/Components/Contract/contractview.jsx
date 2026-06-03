@@ -454,33 +454,45 @@ const ContractView = () => {
   };
 
   return (
-    <div className="contract-page">
-      <ModuleHeader
-        breadcrumb="Document Viewer"
-        title={contract.contractTitle}
-        description={`Formal Work Order Agreement • Ref ID: ${contract.id}`}
-        badgeText="Legal Management"
-        icon={FiFileText}
-        customBreadcrumbs={[
-          { label: "Dashboard", path: basePath === '/Admin' ? '/Admin/overview-dashboard' : '/user/user-dashboard', icon: <Home size={14} /> },
-          { label: "Agreements", path: `${basePath}/contract-listing` }
-        ]}
-        actions={[
-          {
-            label: isDownloading ? 'Preparing...' : 'Export Formal PDF',
-            icon: <FiDownload size={18} />,
-            type: "primary",
-            onClick: handleDownload,
-            disabled: isDownloading
-          },
-          {
-            label: "Print Document",
-            icon: <FiPrinter size={18} />,
-            type: "secondary",
-            onClick: () => window.print()
-          }
-        ]}
-      />
+    <div className="ai-dashboard-wrapper contract-page">
+      {/* HEADER CARD */}
+      <div className="hero-card mb-4">
+        <div className="hero-left">
+          <div className="hero-pill">
+            ✦ Document Viewer
+          </div>
+          <h1 className="job-posting-title text-white">{contract.contractTitle}</h1>
+          <div className="job-posting-header-info">
+            <p className="job-posting-subtitle">
+              Formal Work Order Agreement • Ref ID: {contract.id}
+            </p>
+          </div>
+        </div>
+        <div className="hero-buttons">
+          <button
+            type="button"
+            className="routine-btn"
+            onClick={() => navigate(`${basePath}/contract-listing`)}
+          >
+            <FiArrowLeft style={{ marginRight: '8px' }} /> Back
+          </button>
+          <button
+            type="button"
+            className="routine-btn"
+            onClick={handleDownload}
+            disabled={isDownloading}
+          >
+            <FiDownload style={{ marginRight: '8px' }} /> {isDownloading ? 'Preparing...' : 'Export Formal PDF'}
+          </button>
+          <button
+            type="button"
+            className="routine-btn"
+            onClick={() => window.print()}
+          >
+            <FiPrinter style={{ marginRight: '8px' }} /> Print
+          </button>
+        </div>
+      </div>
 
       <div className="formal-document-view-container">
         {/* SIDEBAR */}

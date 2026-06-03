@@ -1,7 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { FiGrid, FiList, FiSearch, FiChevronDown } from "react-icons/fi";
-import { GiCheckMark } from "react-icons/gi";
-import { useNavigate } from "react-router-dom";
+import { FiGrid, FiList, FiSearch, FiBriefcase } from "react-icons/fi";
 
 // --- Sub-Components ---
 import UserTalentGrid from "./UserTalentGrid";
@@ -9,6 +7,7 @@ import UserTalentTable from "./UserTalentTable";
 import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
 import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import NoData from "./NoData";
+import "../UserJobs/Jobs.css";
 
 // --- SORTING FUNCTION ---
 const sortCandidates = (candidates, sortBy) => {
@@ -55,11 +54,10 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
   const PAGE_SIZE = 50;
 
   const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("recommended");
+  const [sortBy] = useState("recommended");
 
   const [candidatesMock, setCandidatesMock] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
@@ -74,7 +72,6 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
   useEffect(() => {
     setCandidatesMock([]);
     setPageNumber(1);
-    setHasMore(true);
     hasMoreRef.current = true;
     pageNumberRef.current = 1;
   }, []);
@@ -133,7 +130,6 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
 
         // ✅ Stop further calls if we got fewer than a full page
         const moreAvailable = mappedData.length >= PAGE_SIZE;
-        setHasMore(moreAvailable);
         hasMoreRef.current = moreAvailable;
       } catch (err) {
         console.error("GET MY BENCH FAILED 👉", err);
@@ -357,15 +353,14 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
           <div className="d-flex gap-3">
             <section className="vs-results">
               {isLoading && (
-                <div
-                  style={{
-                    padding: "40px",
-                    textAlign: "center",
-                    color: "#64748b",
-                    fontSize: "14px",
-                  }}
-                >
-                  Loading Talent Profiles...
+                <div className="jobs-screen-loader">
+                  <div className="jobs-loader-ring">
+                    <div className="jobs-loader-icon">
+                      <FiBriefcase size={18} />
+                    </div>
+                  </div>
+                  <p className="jobs-loader-text">Searching for candidates...</p>
+                  <span className="jobs-loader-sub">Matching candidates based on your filters</span>
                 </div>
               )}
 

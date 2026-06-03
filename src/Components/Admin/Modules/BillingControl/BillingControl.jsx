@@ -60,11 +60,11 @@ function BillingControl() {
             />
 
             <div className="billing-overview">
-                <div className="overview-card main-plan">
+                <div className="hero-card">
                     <div className="plan-info">
-                        <span className="current-badge">CURRENT PLAN</span>
-                        <h2>Professional Tier</h2>
-                        <p>Renews on May 12, 2024</p>
+                        <span className="hero-pill">✦ CURRENT PLAN</span>
+                        <h2 className="job-posting-title text-white">Professional Tier</h2>
+                        <p className="job-posting-subtitle">Renews on May 12, 2024</p>
                     </div>
                     <div className="plan-stats">
                         <div className="stat">
@@ -131,7 +131,7 @@ function BillingControl() {
                                     </li>
                                 ))}
                             </ul>
-                            <button className={`plan-btn ${plan.current ? "btn-current" : "btn-outline"}`}>
+                            <button className={`btn-primary ${plan.current ? "btn-primary" : "btn-outline"}`}>
                                 {plan.current ? "Manage Plan" : "Switch to " + plan.name}
                             </button>
                         </div>

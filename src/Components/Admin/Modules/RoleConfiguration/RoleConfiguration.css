@@ -49,7 +49,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f5810c;
+    background-color: #5a5de8;
     color: white;
     border: none;
     border-radius: 6px;
@@ -112,12 +112,12 @@
 }
 
 .role-item:hover {
-    background-color: #f8fafc;
+    background-color: #e8e8ff;
 }
 
 .role-item.active {
-    background-color: #fff7ed;
-    border-color: #f5810c;
+    background-color: #e8e8ff;
+    border-color: #5a5de8;
 }
 
 .role-icon {
@@ -133,7 +133,7 @@
 }
 
 .role-item.active .role-icon {
-    background-color: #f5810c;
+    background-color: #5a5de8;
     color: white;
 }
 
@@ -162,7 +162,7 @@
 
 .role-item.active .chevron {
     opacity: 1;
-    color: #f5810c;
+    color: #5a5de8;
 }
 
 /* Main Content Styles */

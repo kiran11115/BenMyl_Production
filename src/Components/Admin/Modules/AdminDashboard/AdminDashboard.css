@@ -666,12 +666,16 @@ body{
 .quick-grid{
   margin-top:24px;
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:20px;
 }
 
 .quick-item{
-  min-height:140px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
   border-radius:18px;
   border:1px solid #dbe2f2;
   padding:20px;
@@ -695,6 +699,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  margin: 0 auto;
 }
 
 .quick-item h4{

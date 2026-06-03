@@ -3,8 +3,6 @@ import { createPortal } from "react-dom";
 import { 
   FiX, 
   FiCheck, 
-  FiLoader, 
-  FiMapPin, 
   FiClock, 
   FiDollarSign, 
   FiBriefcase,

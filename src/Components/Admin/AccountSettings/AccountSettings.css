@@ -29,34 +29,40 @@
   font-size: 1rem;
 }
 
-/* Premium Navigation Toggle */
-.view-toggle1 {
+/* Elegant Tabs */
+.elegant-tabs-container {
   display: flex;
-  gap: 0.5rem;
-  background: var(--slate-100);
-  padding: 0.5rem;
-  border-radius: 12px;
-  width: fit-content;
+  gap: 2rem;
+  background: transparent;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  width: 100%;
 }
 
-.view-toggle1 .toggle {
+.elegant-tabs-container .tab-item {
   display: flex;
   align-items: center;
-  padding: 0.6rem 1.25rem;
-  border-radius: 8px;
+  padding: 0.75rem 0;
+  border-radius: 0;
   border: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  color: var(--slate-600);
+  color: var(--slate-500);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 12px;
   transition: all 0.2s ease;
+  margin-bottom: -1px;
 }
 
-.view-toggle1 .toggle:hover {
+.elegant-tabs-container .tab-item:hover {
   color: var(--slate-900);
-  background: rgba(255, 255, 255, 0.5);
 }
 
+.elegant-tabs-container .tab-item.active {
+  /* color and border are set inline dynamically, just ensure font-weight is bolder */
+  font-weight: 700;
+}
 
 /* Card Premium - Redefined for consistency */
 .card-premium {
