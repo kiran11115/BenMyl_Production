@@ -32,6 +32,7 @@ import {
   useGetGroupedJobTitlesQuery,
   useTalentPoolMutation,
 } from "../../../../State-Management/Api/TalentPoolApiSlice";
+import { useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
 
 const QUICK_ACTIONS = [
   {
@@ -72,6 +73,7 @@ function AdminDashboard() {
   const [toast, setToast] = useState(null);
 
   const [talentCount, setTalentCount] = useState(0);
+  const [chartType, setChartType] = useState("hiringManagers");
 
   const [showUploadModal, setShowUploadModal] =
     useState(false);
@@ -94,6 +96,36 @@ function AdminDashboard() {
 
   const [getFindTalent] =
     useTalentPoolMutation();
+
+    const { data: dashboardStats = {} } =
+  useGetDashboardStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+    const { data: recruiterGraph = [] } =
+  useGetRecruiterGraphQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const {
+  activeRecruiters = 0,
+  openRequirements = 0,
+  candidateSubmissions = 0,
+  hiringSuccessRate = 0,
+} = dashboardStats;
+
+  const graphData = useMemo(() => {
+  if (!Array.isArray(recruiterGraph))
+    return [];
+
+  return recruiterGraph.map((item) => ({
+    month: item.monthName?.slice(0, 3),
+    benchSales: Number(item.benchSales || 0),
+    hiringManagers: Number(
+      item.hiringManagers || 0
+    ),
+  }));
+}, [recruiterGraph]);
 
   useEffect(() => {
     if (companyId) {
@@ -134,6 +166,47 @@ function AdminDashboard() {
     }, 1000);
   };
 
+const width = 1000;
+const height = 240;
+
+const values = graphData.map(
+  (item) => item[chartType]
+);
+
+const maxValue =
+  Math.max(...values, 1);
+
+const points = graphData.map(
+  (item, index) => {
+    const x =
+      (index /
+        Math.max(
+          graphData.length - 1,
+          1
+        )) *
+      width;
+
+    const y =
+      height -
+      (item[chartType] / maxValue) *
+        180 -
+      20;
+
+    return {
+      x,
+      y,
+      month: item.month,
+      value: item[chartType],
+    };
+  }
+);
+
+const pathData = points
+  .map((point, index) =>
+    `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`
+  )
+  .join(" ");
+
   return (
     <div className="ai-dashboard-wrapper">
 
@@ -156,11 +229,11 @@ function AdminDashboard() {
             ✦ ENTERPRISE AI PORTAL ENABLED
           </div>
 
-          <h1 style={{ fontSize: '30px' }}>
+          <h1>
             Welcome Back to BenMyl
           </h1>
 
-          <p style={{ fontSize: '14px' }}>
+          <p>
             Your autonomous recruitment workflow
             is calibrated and running. AI neural
             screens completed
@@ -275,7 +348,7 @@ function AdminDashboard() {
           </div>
 
           <div className="stat-number">
-            {teamMembers.length}
+            {activeRecruiters}
           </div>
 
           <div className="stat-footer-row">
@@ -314,7 +387,7 @@ function AdminDashboard() {
           </div>
 
           <div className="stat-number">
-            {apiJobs.length}
+            {openRequirements}
           </div>
 
           <div className="stat-footer-row">
@@ -353,7 +426,7 @@ function AdminDashboard() {
           </div>
 
           <div className="stat-number">
-            {talentCount}
+            {candidateSubmissions}
           </div>
 
           <div className="stat-footer-row">
@@ -392,7 +465,7 @@ function AdminDashboard() {
           </div>
 
           <div className="stat-number">
-            94.2%
+            {hiringSuccessRate}
           </div>
 
           <div className="stat-footer-row">
@@ -440,55 +513,86 @@ function AdminDashboard() {
             </div>
 
             <div className="graph-tabs">
-
-  <button className="graph-tab active">
-    Pipeline Volume
+  <button
+    className={`graph-tab ${
+      chartType === "hiringManagers"
+        ? "active"
+        : ""
+    }`}
+    onClick={() =>
+      setChartType("hiringManagers")
+    }
+  >
+    Hiring Managers
   </button>
 
-  <button className="graph-tab">
-    Revenue Stream (k$)
+  <button
+    className={`graph-tab ${
+      chartType === "benchSales"
+        ? "active"
+        : ""
+    }`}
+    onClick={() =>
+      setChartType("benchSales")
+    }
+  >
+    Bench Sales
   </button>
-
 </div>
 
           </div>
 
           <div className="graph-area">
+  <svg
+    viewBox="0 0 1000 380"
+    className="graph-svg"
+  >
+    <path
+      d={pathData}
+      fill="none"
+      stroke="#5a5de8"
+      strokeWidth="5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
 
-            <svg
-              viewBox="0 0 1000 240"
-              className="graph-svg"
-            >
+    {points.map((point, index) => (
+      <g key={index}>
+        <circle
+          cx={point.x}
+          cy={point.y}
+          r="8"
+          fill="#5a5de8"
+          stroke="#fff"
+          strokeWidth="3"
+        />
 
-              <path
-                d="M0 220 C120 70 240 70 360 130 C480 180 580 190 700 100 C790 40 860 30 1000 100"
-                fill="none"
-                stroke="#5a5de8"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
+        <text
+          x={point.x}
+          y={point.y - 18}
+          textAnchor="middle"
+          fontSize="12"
+          fill="#0f172a"
+        >
+          {point.value}
+        </text>
+      </g>
+    ))}
 
-              <circle
-                cx="390"
-                cy="135"
-                r="10"
-                fill="#5a5de8"
-                stroke="#fff"
-                strokeWidth="5"
-              />
-
-              <circle
-                cx="810"
-                cy="40"
-                r="12"
-                fill="#ef4444"
-                stroke="#fff"
-                strokeWidth="5"
-              />
-
-            </svg>
-
-          </div>
+    {points.map((point, index) => (
+      <text
+        key={`label-${index}`}
+        x={point.x}
+        y="250"
+        textAnchor="middle"
+        fontSize="14"
+        fill="#94a3b8"
+      >
+        {point.month}
+      </text>
+    ))}
+  </svg>
+</div>
 
           <div className="graph-footer">
 
