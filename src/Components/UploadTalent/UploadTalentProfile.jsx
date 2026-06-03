@@ -4,6 +4,7 @@ import { BsDribbble, BsBuilding } from "react-icons/bs";
 import { FaGem } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./../TalentPool/Talent Profile/TalentProfile.css";
+import "../UserJobs/Jobs.css";
 import {
   useAddEmployeeProfessionalDetailsMutation,
   useGetEmployeeProfessionalDetailsQuery,
@@ -251,362 +252,274 @@ const UploadTalentProfile = () => {
 
   if (isLoading || !showContent) {
     return (
-      <div className="projects-container">
-        <div className="profile-breadcrumb">
-          <div className="skeleton-text" style={{ width: "150px", height: "24px" }}></div>
-        </div>
-        <div className="tp-hero-card">
-          <div className="tp-avatar-wrapper">
-            <div className="skeleton-circle" style={{ width: "120px", height: "120px" }}></div>
-          </div>
-          <div className="tp-info-main">
-            <div className="skeleton-text" style={{ width: "250px", height: "32px", marginBottom: "12px" }}></div>
-            <div className="skeleton-text" style={{ width: "180px", height: "20px", marginBottom: "16px" }}></div>
-            <div className="tp-meta-strip">
-              <div className="skeleton-text" style={{ width: "100px", height: "16px" }}></div>
-              <div className="skeleton-text" style={{ width: "100px", height: "16px" }}></div>
-              <div className="skeleton-text" style={{ width: "100px", height: "16px" }}></div>
-            </div>
-          </div>
-          <div className="tp-sidebar-actions">
-            <div className="skeleton-text" style={{ width: "160px", height: "40px", borderRadius: "8px" }}></div>
-            <div className="skeleton-text" style={{ width: "160px", height: "40px", borderRadius: "8px" }}></div>
+      <div className="posted-jobs-loader" style={{ minHeight: '60vh' }}>
+        <div className="jobs-loader-ring">
+          <div className="jobs-loader-icon">
+            <FiUser size={18} />
           </div>
         </div>
-        <div className="tp-details-grid">
-          <div className="tp-column-main">
-            <div className="tp-card-premium">
-              <div className="skeleton-text" style={{ width: "200px", height: "24px", marginBottom: "20px" }}></div>
-              <div className="skeleton-text" style={{ width: "100%", height: "16px", marginBottom: "8px" }}></div>
-              <div className="skeleton-text" style={{ width: "95%", height: "16px", marginBottom: "8px" }}></div>
-            </div>
-            <div className="tp-square-sections-grid">
-              <div className="tp-square-card expanded">
-                <div className="tp-square-card-header"><div className="skeleton-text" style={{ width: "150px", height: "24px" }}></div></div>
-                <div className="tp-scrollable-area grid-view">
-                  {[1, 2].map(i => (
-                    <div key={i} className="tp-item-card"><div className="tp-card-body"><div className="skeleton-text" style={{ width: "100%", height: "100px" }}></div></div></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="tp-column-side">
-            <div className="tp-card-premium sidebar-card"><div className="skeleton-text" style={{ width: "100%", height: "200px" }}></div></div>
-          </div>
-        </div>
+        <p className="jobs-loader-text">Loading profile...</p>
+        <span className="jobs-loader-sub">Fetching candidate details</span>
       </div>
     );
   }
 
   return (
-    <div className="projects-container">
-      <div className="profile-breadcrumb">
-        <button className="breadcrumb-back" onClick={() => {
-          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-          const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
-          navigate(targetPath);
-        }}>
-          <FiArrowLeft /> Talent Profile
-        </button>
-        <span>/ Profile Page</span>
+    <div className="ai-dashboard-wrapper">
+      <div className="hero-card mb-4">
+        <div className="hero-left">
+          <div className="hero-pill">✦ Talent Profile</div>
+          <h1 className="job-posting-title text-white">{profileData?.name}</h1>
+          <div className="job-posting-header-info">
+            <p className="job-posting-subtitle">
+              {profileData?.role} &nbsp;•&nbsp; {profileData?.location}
+            </p>
+          </div>
+        </div>
+        <div className="hero-buttons">
+          <button className="routine-btn" onClick={() => {
+            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+            navigate(targetPath);
+          }}>
+            <FiArrowLeft style={{ marginRight: '6px' }} /> Back
+          </button>
+        </div>
       </div>
 
-      <div className="tp-hero-card">
-        <div className="tp-avatar-wrapper">
+      <div className="premium-card tp-identity-strip mb-4">
+        <div className="tp-avatar-col">
           {profileData?.profileImage ? (
-            <img src={profileData.profileImage} alt={profileData?.name} className="avatar-initials-premium" style={{ width: '120px', height: '120px', fontSize: '32px' }} />
+            <img src={profileData.profileImage} alt={profileData?.name} className="tp-avatar-sm" />
           ) : (
-            <div className="avatar-initials-premiums" style={{ width: '10px', height: '10px', fontSize: '32px' }}>{initials}</div>
+            <div className="tp-avatar-sm tp-avatar-initials">{initials}</div>
           )}
         </div>
-        <div className="tp-info-main">
-          <div className="tp-name-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <div className="d-flex align-items-center gap-2">
-              <h1>{profileData?.name}</h1>
-              <FiCheckCircle color="#10b981" size={24} />
-            </div>
+        <div className="tp-identity-info">
+          <div className="tp-identity-name">
+            {profileData?.name}
+            <FiCheckCircle size={14} style={{ color: '#10b981', marginLeft: 8 }} />
           </div>
-          <div className="tp-role-subtitle">{profileData?.role}</div>
-          <div className="tp-meta-strip">
-            <div className="tp-meta-item"><FiMapPin /> {profileData?.location}</div>
-            <div className="tp-meta-item"><FiBriefcase /> {profileData?.experience}</div>
-            <div className="tp-meta-item"><FiAward /> {profileData?.status}</div>
+          <div className="tp-identity-role">{profileData?.role}</div>
+          <div className="tp-meta-pills">
+            <span className="tp-meta-pill"><FiMapPin size={11} /> {profileData?.location}</span>
+            <span className="tp-meta-pill"><FiBriefcase size={11} /> {profileData?.experience}</span>
+            <span className="tp-meta-pill"><FiAward size={11} /> {profileData?.status}</span>
             {profileData?.uploadedByName !== "N/A" && (
-              <div className="tp-meta-item"><FiUser /> Uploaded By: {profileData?.uploadedByName}</div>
+              <span className="tp-meta-pill"><FiUser size={11} /> By: {profileData?.uploadedByName}</span>
             )}
           </div>
         </div>
-        <div className="tp-sidebar-actions">
-          <div 
-            className="tp-card-premium sidebar-card mb-0" 
-            style={{ 
-              background: 'linear-gradient(135deg, #eff6ff 0%, #fff 100%)',
-              border: '1px solid #dbeafe',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              padding: '20px'
-            }}
+        <div className="tp-identity-actions" style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <button 
+            className="tp-util-btn" 
+            style={{ background: '#eff6ff', color: '#1e3a8a', borderColor: '#dbeafe' }}
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
               const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
               navigate(targetPath, { state: { role: profileData?.role } });
             }}
           >
-            <div className="d-flex align-items-center gap-3">
-              <div style={{ 
-                width: '44px', 
-                height: '44px', 
-                background: '#3b82f6', 
-                borderRadius: '12px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)'
-              }}>
-                <FiBriefcase size={22} />
-              </div>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#1e3a8a' }}>Explore Jobs</h4>
-                <p style={{ margin: 0, fontSize: '12px', color: '#60a5fa', fontWeight: '600' }}>Find matches for {profileData?.role}</p>
-              </div>
-            </div>
-          </div>
-
-            <button 
-              className="btn-primary" 
-              onClick={handleEditClick}
-              style={{ 
-                width: 'auto', 
-                padding: '8px 16px', 
-                fontSize: '14px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                borderRadius: '8px',
-                fontWeight: '600'
-              }}
-            >
-              <FiEdit2 size={16} /> Edit Profile Details
-            </button>
+            <FiBriefcase size={13} style={{ marginRight: '4px' }} /> Explore Jobs
+          </button>
+          <button 
+            className="tp-util-btn"
+            style={{ background: '#5B5BD6', color: '#fff', borderColor: '#5B5BD6' }}
+            onClick={handleEditClick}
+          >
+            <FiEdit2 size={13} style={{ marginRight: '4px' }} /> Edit Profile
+          </button>
         </div>
       </div>
 
-      <div className="tp-details-grid">
-        <div className="tp-column-main">
-          <div className="tp-card-premium">
-            <h3 className="tp-card-title" style={{ borderBottom: "1px solid #f8fafc", paddingBottom: "1.25rem" }}><FiUser /> Professional Summary</h3>
-            <p className="summary-text">{profileData?.summary}</p>
+      <div className="tp-content-grid">
+        <div className="tp-col-main">
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading"><FiUser size={13} /> Professional Summary</div>
+            <p className="tp-summary-text">{profileData?.summary}</p>
           </div>
-            <div className="tp-square-sections-grid">
-              {/* Work Experience Square Card */}
-              <div className={`tp-square-card ${expExpanded ? "expanded" : "collapsed"}`}>
-                <div className="tp-square-card-header">
-                  <h3 className="tp-card-title mb-0"><FiTrendingUp /> Work Experience</h3>
-                  <button 
-                    className="tp-view-toggle" 
-                    onClick={() => setExpExpanded(!expExpanded)}
-                  >
-                    {expExpanded ? "Show Less" : "View All"}
-                  </button>
-                </div>
-                
-                <div className="tp-square-card-content">
-                  {expExpanded ? (
-                    <div className="tp-scrollable-area grid-view">
-                      {profileData?.workExperience?.length > 0 ? (
-                        profileData.workExperience.map((job, idx) => (
-                          <div key={idx} className="tp-item-card">
-                            <div className="tp-card-body">
-                              <div className="tp-timeline-icon"><FiBriefcase /></div>
-                              <div className="tp-card-info">
-                                <div className="tp-card-header-row"><h4>{job.role}</h4><span className="tp-card-badge">{job.company}</span></div>
-                                <div className="tp-timeline-period"><FiCalendar size={12} /> {job.period} • <FiMapPin size={12} /> {job.location}</div>
-                                <p className="timeline-desc">{job.desc}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : <NoData text="No work experience added yet" />}
-                    </div>
-                  ) : (
-                    <div className="tp-latest-preview">
-                      {profileData?.workExperience?.length > 0 ? (
-                        <div className="tp-preview-item">
-                          <div className="tp-preview-header">
-                            <div className="tp-timeline-icon sm"><FiBriefcase /></div>
-                            <div className="tp-preview-main">
-                              <h4>{profileData.workExperience[0].role}</h4>
-                              <div className="tp-timeline-company">{profileData.workExperience[0].company}</div>
-                            </div>
-                          </div>
-                          <p className="tp-preview-desc">{profileData.workExperience[0].desc}</p>
-                          <div className="tp-preview-footer">
-                            <span>{profileData.workExperience[0].period}</span>
-                            <span>Latest Role</span>
-                          </div>
-                        </div>
-                      ) : <NoData text="No experience added" />}
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Project Portfolio Square Card */}
-              <div className={`tp-square-card ${portfolioExpanded ? "expanded" : "collapsed"}`}>
-                <div className="tp-square-card-header">
-                  <h3 className="tp-card-title mb-0"><FiFileText /> Project Portfolio</h3>
-                  <button 
-                    className="tp-view-toggle" 
-                    onClick={() => setPortfolioExpanded(!portfolioExpanded)}
-                  >
-                    {portfolioExpanded ? "Show Less" : "View All"}
-                  </button>
-                </div>
-                
-                <div className="tp-square-card-content">
-                  {portfolioExpanded ? (
-                    <div className="tp-scrollable-area grid-view">
-                      {profileData?.portfolio?.length > 0 ? (
-                        profileData.portfolio.map((item, idx) => (
-                          <div key={idx} className="tp-item-card">
-                            <div className="tp-card-body">
-                              <div className="tp-timeline-icon"><FiExternalLink /></div>
-                              <div className="tp-card-info">
-                                <div className="tp-card-header-row"><h4>{item.title}</h4><span className="tp-card-badge secondary">{item.role}</span></div>
-                                <div className="tp-timeline-period"><FiCalendar size={12} /> {item.period}</div>
-                                <p className="timeline-desc">{item.description}</p>
-                              <div className="tp-tags-wrapper mt-3">
-                                {item.tags?.map((tag, tIdx) => <span key={tIdx} className="tp-tag-pill">{tag}</span>)}
-                              </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : <NoData text="No projects added yet" />}
-                    </div>
-                  ) : (
-                    <div className="tp-latest-preview">
-                      {profileData?.portfolio?.length > 0 ? (
-                        <div className="tp-preview-item">
-                          <div className="tp-preview-header">
-                            <div className="tp-timeline-icon sm"><FiExternalLink /></div>
-                            <div className="tp-preview-main">
-                              <h4>{profileData.portfolio[0].title}</h4>
-                              <div className="tp-card-badge secondary">{profileData.portfolio[0].role}</div>
-                            </div>
-                          </div>
-                          <p className="tp-preview-desc">{profileData.portfolio[0].description}</p>
-                          <div className="tp-preview-footer">
-                            <span>{profileData.portfolio[0].period}</span>
-                            <span>Featured Project</span>
-                          </div>
-                        </div>
-                      ) : <NoData text="No projects added" />}
-                    </div>
-                  )}
-                </div>
-              </div>
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading-row">
+              <span className="tp-section-heading"><FiTrendingUp size={13} /> Work Experience</span>
+              <button className="tp-toggle-btn" onClick={() => setExpExpanded(!expExpanded)}>
+                {expExpanded ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: expExpanded ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+              </button>
             </div>
-          <div className="tp-card-premium">
-            <h3 className="tp-card-title" style={{ marginBottom: "1.5rem" }}><FiStar /> Recommended Jobs</h3>
+            {expExpanded ? (
+              <div className="tp-exp-list">
+                {profileData?.workExperience?.length > 0 ? (
+                  profileData.workExperience.map((job, idx) => (
+                    <div key={idx} className="tp-exp-item">
+                      <div className="tp-exp-icon"><FiBriefcase size={13} /></div>
+                      <div className="tp-exp-body">
+                        <div className="tp-exp-title-row">
+                          <span className="tp-exp-role">{job.role}</span>
+                          <span className="tp-exp-badge">{job.company}</span>
+                        </div>
+                        <div className="tp-exp-period">
+                          <FiCalendar size={11} /> {job.period} &nbsp;•&nbsp; <FiMapPin size={11} /> {job.location}
+                        </div>
+                        <p className="tp-exp-desc">{job.desc}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <NoData text="No work experience added yet" />
+                )}
+              </div>
+            ) : (
+              profileData?.workExperience?.length > 0 ? (
+                <div className="tp-exp-preview">
+                  <span className="tp-exp-role">{profileData.workExperience[0].role}</span>
+                  <span className="tp-exp-badge">{profileData.workExperience[0].company}</span>
+                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
+                    {profileData.workExperience[0].desc.slice(0, 120)}…
+                  </p>
+                </div>
+              ) : <NoData text="No experience added" />
+            )}
+          </div>
+
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading-row" style={{ borderBottom: 'none', marginBottom: 0 }}>
+              <span className="tp-section-heading" style={{ borderBottom: 'none', margin: 0, padding: 0 }}><FiFileText size={13} /> Project Portfolio ({profileData?.portfolio?.length || 0})</span>
+              <button className="tp-toggle-btn" onClick={() => setPortfolioExpanded(!portfolioExpanded)}>
+                {portfolioExpanded ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: portfolioExpanded ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+              </button>
+            </div>
+            
+            {portfolioExpanded ? (
+              <div className="tp-portfolio-grid mt-3">
+                {profileData?.portfolio?.length > 0 ? (
+                  profileData.portfolio.map((item, idx) => (
+                    <div key={idx} className="tp-port-card">
+                      <div className="tp-port-info">
+                        <h4 className="tp-port-title">{item.title}</h4>
+                        <div className="tp-exp-period mb-2">
+                          <FiCalendar size={11} /> {item.period}
+                        </div>
+                        <p className="tp-exp-desc mb-2">{item.description}</p>
+                        <div className="tp-tag-row" style={{ marginBottom: 0 }}>
+                          {item.tags?.map((tag, tIdx) => (
+                            <span key={tIdx} className="tp-tag">{tag}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <NoData text="No projects added yet" />
+                )}
+              </div>
+            ) : (
+              profileData?.portfolio?.length > 0 ? (
+                <div className="tp-exp-preview mt-3">
+                  <span className="tp-exp-role">{profileData.portfolio[0].title}</span>
+                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
+                    {profileData.portfolio[0].description.slice(0, 120)}…
+                  </p>
+                </div>
+              ) : <NoData text="No projects added" />
+            )}
+          </div>
+
+          <div className="premium-card">
+            <div className="tp-section-heading mb-3"><FiStar size={13} /> Recommended Jobs</div>
             <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} isShortlisted={profileData?.isshortlisted} />
           </div>
         </div>
 
-        <div className="tp-column-side">
-         
+        <div className="tp-col-side">
 
-          <div className="tp-card-premium sidebar-card">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="tp-card-title mb-0">Quick Information</h3>
-              <button 
-                className="btn-secondary" 
-                onClick={() => setShowEditModal(true)}
-                style={{ 
-                  padding: "6px 12px", 
-                  fontSize: "11px", 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '6px',
-                  width: 'auto',
-                  minWidth: 'fit-content'
-                }}
-              >
-                <FiEdit2 size={12} /> Edit
+          <div className="premium-card mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="tp-section-heading mb-0" style={{ borderBottom: 'none', paddingBottom: 0 }}>Quick Information</div>
+              <button className="tp-util-btn" style={{ padding: "4px 8px", fontSize: "11px" }} onClick={() => setShowEditModal(true)}>
+                <FiEdit2 size={11} style={{ marginRight: '4px' }} /> Edit
               </button>
             </div>
-            <div className="tp-info-block">
-              <div className="tp-info-icon-box"><FiStar /></div>
-              <div className="tp-info-content-box">
-                <div className="tp-info-label-sm">Expected Salary</div>
-                <div className="tp-info-value-md">
+            
+            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
+              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                <FiStar size={14} />
+              </div>
+              <div>
+                <div className="tp-quick-lbl">Expected Salary</div>
+                <div className="tp-quick-val">
                   {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
                     ? `$${professionalData.expectedSalaryMin.toLocaleString()} - $${professionalData.expectedSalaryMax.toLocaleString()} / year`
                     : "Not specified"}
                 </div>
               </div>
             </div>
-            <div className="tp-info-block">
-              <div className="tp-info-icon-box"><FiBriefcase /></div>
-              <div className="tp-info-content-box">
-                <div className="tp-info-label-sm">Work Preference</div>
-                <div className="tp-info-value-md">{professionalData?.workPreference || "Not specified"}</div>
+            
+            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
+              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                <FiBriefcase size={14} />
+              </div>
+              <div>
+                <div className="tp-quick-lbl">Work Preference</div>
+                <div className="tp-quick-val">{professionalData?.workPreference || "Not specified"}</div>
               </div>
             </div>
-            <div className="tp-info-label-sm mb-2">Work Authorization</div>
-            <div className="tp-tags-wrapper mb-3">
-              {[professionalData?.isUSCitizen && "US Citizen", professionalData?.isGreenCard && "Green Card", professionalData?.isH1B && "H1B", professionalData?.isEAD && "EAD"].filter(Boolean).map((auth, index) => (
-                <span key={index} className="tp-tag-pill">{auth}</span>
-              )) || <span className="text-muted small">Not specified</span>}
+            
+            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
+              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                <FiMapPin size={14} />
+              </div>
+              <div>
+                <div className="tp-quick-lbl">Work Authorization</div>
+                <div className="tp-tag-row mt-1">
+                  {[professionalData?.isUSCitizen && "US Citizen", professionalData?.isGreenCard && "Green Card", professionalData?.isH1B && "H1B", professionalData?.isEAD && "EAD"].filter(Boolean).map((auth, index) => (
+                    <span key={index} className="tp-tag">{auth}</span>
+                  )) || <span className="tp-quick-val text-muted">Not specified</span>}
+                </div>
+              </div>
             </div>
-            <div className="tp-info-label-sm mb-2">Preferred Employment</div>
-            <div className="tp-tags-wrapper">
-              {[professionalData?.isCorpCorp && "Corp-Corp", professionalData?.isW2Permanent && "W2 Permanent", professionalData?.isW2Contract && "W2 Contract", professionalData?.is1099Contract && "1099 Contract", professionalData?.isContractToHire && "Contract to Hire"].filter(Boolean).map((emp, index) => (
-                <span key={index} className="tp-tag-pill" style={{ background: '#eff6ff', color: '#2563eb' }}>{emp}</span>
-              )) || <span className="text-muted small">Not specified</span>}
+            
+            <div className="tp-info-row">
+              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                <FiBriefcase size={14} />
+              </div>
+              <div>
+                <div className="tp-quick-lbl">Preferred Employment</div>
+                <div className="tp-tag-row mt-1">
+                  {[professionalData?.isCorpCorp && "Corp-Corp", professionalData?.isW2Permanent && "W2 Permanent", professionalData?.isW2Contract && "W2 Contract", professionalData?.is1099Contract && "1099 Contract", professionalData?.isContractToHire && "Contract to Hire"].filter(Boolean).map((emp, index) => (
+                    <span key={index} className="tp-tag" style={{ background: '#eff6ff', color: '#2563eb', borderColor: '#dbeafe' }}>{emp}</span>
+                  )) || <span className="tp-quick-val text-muted">Not specified</span>}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="tp-card-premium sidebar-card">
-            <h3 className="tp-card-title">Expertise</h3>
-            <div className="tp-tags-wrapper scrollable-skills">
-              {profileData?.skills?.length > 0 ? profileData.skills.map((skill, idx) => <span key={idx} className="tp-tag-pill">{skill.trim()}</span>) : <NoData text="No skills added" />}
+
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading">Expertise</div>
+            <div className="tp-tag-row">
+              {profileData?.skills?.length > 0 ? profileData.skills.map((skill, idx) => <span key={idx} className="tp-tag">{skill.trim()}</span>) : <NoData text="No skills added" />}
             </div>
           </div>
-          <div className="tp-card-premium sidebar-card">
-            <h3 className="tp-card-title">Education</h3>
+
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading">Contact Information</div>
+            <div className="tp-contact-list">
+              <div className="tp-contact-item"><FiMail /> <span style={{ wordBreak: 'break-all' }}>{profileData?.email}</span></div>
+              <div className="tp-contact-item"><FiPhone /> {profileData?.phoneNo}</div>
+            </div>
+          </div>
+
+          <div className="premium-card mb-3">
+            <div className="tp-section-heading">Education</div>
             {profileData?.education?.length > 0 ? profileData.education.map((edu, index) => (
-              <div key={index} className="tp-info-block" style={{ marginBottom: '16px' }}>
-                <div className="tp-info-icon-box" style={{ background: '#edf2ffff', color: '#5b5bd6' }}><FiBookOpen size={18} /></div>
-                <div className="tp-info-content-box">
-                  <div className="tp-info-value-md">{edu.degree}{edu.field && ` in ${edu.field}`}</div>
-                  <div className="tp-info-label-sm">{edu.school}</div>
-                  <div className="tp-timeline-period">{edu.year}</div>
+              <div key={index} className="tp-info-row" style={{ marginBottom: 12 }}>
+                <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}><FiBookOpen size={13} /></div>
+                <div>
+                  <div className="tp-info-value">{edu.degree}{edu.field && ` in ${edu.field}`}</div>
+                  <div className="tp-info-label">{edu.school}</div>
+                  <div className="tp-info-label" style={{ marginTop: 2 }}>{edu.year}</div>
                 </div>
               </div>
             )) : <NoData text="No education details" />}
-          </div>
-          <div className="tp-card-premium sidebar-card">
-            <h3 className="tp-card-title">Contact Information</h3>
-            <div className="tp-info-block">
-              <div className="tp-info-icon-box"><FiMail /></div>
-              <div className="tp-info-content-box" style={{ minWidth: 0, flex: 1 }}>
-                <div className="tp-info-label-sm">Email</div>
-                <div className="tp-info-value-md" style={{ wordBreak: 'break-all', fontSize: '0.85rem' }}>{profileData?.email}</div>
-              </div>
-            </div>
-            <div className="tp-info-block">
-              <div className="tp-info-icon-box"><FiPhone /></div>
-              <div className="tp-info-content-box">
-                <div className="tp-info-label-sm">Phone</div>
-                <div className="tp-info-value-md">{profileData?.phoneNo}</div>
-              </div>
-            </div>
-          </div>
-          <div className="d-flex justify-content-between px-2">
-            <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}><FiDownload size={14} /> Resume</button>
-            <button className="breadcrumb-back" style={{ fontSize: '0.85rem' }}><FiShare2 size={14} /> Share</button>
           </div>
         </div>
       </div>
@@ -632,12 +545,12 @@ const UploadTalentProfile = () => {
             className="ut-modal-content"
             style={{
               backgroundColor: "#ffffff",
-              borderRadius: "24px",
+              borderRadius: "20px",
               width: "100%",
-              maxWidth: "700px",
+              maxWidth: "600px",
               maxHeight: "90vh",
               overflow: "hidden",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+              boxShadow: "0 20px 40px -10px rgba(91, 91, 214, 0.15)",
               display: "flex",
               flexDirection: "column",
               animation: "slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
@@ -646,7 +559,7 @@ const UploadTalentProfile = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div style={{ padding: "32px 32px 24px", position: "relative", borderBottom: "1px solid #e2e8f0" }}>
+            <div style={{ padding: "24px 32px", position: "relative", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
               <button
                 onClick={handleCloseModal}
                 style={{
@@ -668,16 +581,16 @@ const UploadTalentProfile = () => {
                 <div style={{
                   width: "40px",
                   height: "40px",
-                  borderRadius: "12px",
-                  backgroundColor: "#fff7ed",
+                  borderRadius: "10px",
+                  background: "rgba(91,91,214,0.08)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#f5810c"
+                  color: "#5B5BD6"
                 }}>
-                  <FiEdit2 size={24} />
+                  <FiEdit2 size={20} />
                 </div>
-                <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#1e293b", margin: 0 }}>
+                <h2 style={{ fontSize: "18px", fontWeight: "700", color: "#0f172a", margin: 0 }}>
                   Edit Profile Information
                 </h2>
               </div>
@@ -687,12 +600,12 @@ const UploadTalentProfile = () => {
             <div style={{ padding: "32px", overflowY: "auto", flex: 1 }}>
               <div className="edit-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#475569' }}>Salary Range</label>
+                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Expected Salary Range</label>
                   <div className="salary-inputs" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <input type="number" name="expectedSalaryMin" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Min" value={editFormData.expectedSalaryMin} onChange={handleInputChange} />
-                    <span style={{ color: '#64748b' }}>to</span>
-                    <input type="number" name="expectedSalaryMax" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Max" value={editFormData.expectedSalaryMax} onChange={handleInputChange} />
-                    <select className="auth-input" name="salaryCurrency" style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', width: '100px' }} value={editFormData.salaryCurrency} onChange={handleInputChange}>
+                    <input type="number" name="expectedSalaryMin" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Min" value={editFormData.expectedSalaryMin} onChange={handleInputChange} />
+                    <span style={{ color: '#94a3b8', fontSize: '14px' }}>to</span>
+                    <input type="number" name="expectedSalaryMax" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Max" value={editFormData.expectedSalaryMax} onChange={handleInputChange} />
+                    <select className="auth-input" name="salaryCurrency" style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', width: '90px', outline: 'none' }} value={editFormData.salaryCurrency} onChange={handleInputChange}>
                       <option value="USD">USD</option>
                       <option value="EUR">EUR</option>
                       <option value="INR">INR</option>
@@ -701,8 +614,8 @@ const UploadTalentProfile = () => {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#475569' }}>Work Preference</label>
-                  <select name="workPreference" className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }} value={editFormData.workPreference} onChange={handleInputChange}>
+                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Work Preference</label>
+                  <select name="workPreference" className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} value={editFormData.workPreference} onChange={handleInputChange}>
                     <option value="">Select preference</option>
                     <option value="Full Time">Full Time</option>
                     <option value="Part Time">Part Time</option>
@@ -711,34 +624,34 @@ const UploadTalentProfile = () => {
                 </div>
 
                 <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#475569' }}>Languages</label>
-                  <input className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }} placeholder="Add language..." value={languageInput} onChange={(e) => setLanguageInput(e.target.value)} onKeyDown={handleAddLanguage} />
+                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Languages</label>
+                  <input className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Add language (press Enter)..." value={languageInput} onChange={(e) => setLanguageInput(e.target.value)} onKeyDown={handleAddLanguage} />
                   <div className="d-flex flex-wrap gap-2 mt-2">
                     {editFormData.languages?.map(lang => (
-                      <span key={lang} className="tp-tag-pill" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span key={lang} className="tp-tag" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f1f5f9' }}>
                         {lang} 
-                        <FiX size={12} style={{ cursor: 'pointer' }} onClick={() => removeLanguage(lang)} />
+                        <FiX size={12} style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={() => removeLanguage(lang)} />
                       </span>
                     ))}
                   </div>
                 </div>
 
                 <div style={{ gridColumn: 'span 1' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontWeight: '600', color: '#475569' }}>Work Authorization</label>
+                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Work Authorization</label>
                   {["US Citizen", "Green Card", "H1B", "EAD"].map(opt => (
                     <div key={opt} className="d-flex align-items-center gap-2 mb-2">
-                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#f5810c' }} checked={editFormData.workAuthorization.includes(opt)} onChange={() => handleWorkAuthChange(opt)} />
-                      <label className="mb-0" style={{ fontSize: '14px', color: '#475569' }}>{opt}</label>
+                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#5B5BD6' }} checked={editFormData.workAuthorization.includes(opt)} onChange={() => handleWorkAuthChange(opt)} />
+                      <label className="mb-0" style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{opt}</label>
                     </div>
                   ))}
                 </div>
 
                 <div style={{ gridColumn: 'span 1' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontWeight: '600', color: '#475569' }}>Employment Type</label>
+                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Employment Type</label>
                   {["Corp-Corp", "W2 Permanent", "W2 Contract", "1099 Contract"].map(opt => (
                     <div key={opt} className="d-flex align-items-center gap-2 mb-2">
-                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#f5810c' }} checked={editFormData.preferredEmployment.includes(opt)} onChange={() => handleEmploymentChange(opt)} />
-                      <label className="mb-0" style={{ fontSize: '14px', color: '#475569' }}>{opt}</label>
+                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#5B5BD6' }} checked={editFormData.preferredEmployment.includes(opt)} onChange={() => handleEmploymentChange(opt)} />
+                      <label className="mb-0" style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{opt}</label>
                     </div>
                   ))}
                 </div>
@@ -746,18 +659,18 @@ const UploadTalentProfile = () => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: "24px 32px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end", gap: "12px", backgroundColor: "#f8fafc" }}>
+            <div style={{ padding: "16px 32px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "flex-end", gap: "12px", backgroundColor: "#fff" }}>
               <button
                 onClick={handleCloseModal}
-                style={{ padding: "10px 24px", backgroundColor: "#ffffff", color: "#1e293b", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", fontWeight: "600", cursor: "pointer" }}
+                style={{ padding: "8px 20px", backgroundColor: "#ffffff", color: "#475569", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px", fontWeight: "600", cursor: "pointer", transition: "0.2s" }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                style={{ padding: "10px 28px", backgroundColor: "#f5810c", color: "#ffffff", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: "600", cursor: "pointer", boxShadow: "0 4px 12px rgba(245, 129, 12, 0.2)" }}
+                style={{ padding: "8px 24px", background: "linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)", color: "#ffffff", border: "none", borderRadius: "8px", fontSize: "13px", fontWeight: "600", cursor: "pointer", boxShadow: "0 4px 12px rgba(91, 91, 214, 0.2)", transition: "0.2s" }}
               >
-                <FiSave style={{ marginRight: '8px' }} /> Save Changes
+                <FiSave style={{ marginRight: '6px' }} /> Save Changes
               </button>
             </div>
           </div>

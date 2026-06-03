@@ -120,8 +120,14 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
 
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center p-5 w-100">
-        <FiLoader className="loading-spinner" />
+      <div className="posted-jobs-loader" style={{ minHeight: '30vh', width: '100%' }}>
+        <div className="jobs-loader-ring">
+          <div className="jobs-loader-icon">
+            <FiBriefcase size={18} />
+          </div>
+        </div>
+        <p className="jobs-loader-text">Loading recommended jobs...</p>
+        <span className="jobs-loader-sub">Finding the best opportunities</span>
       </div>
     );
   }
@@ -218,7 +224,7 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
                 className="btn-primary w-100"
                 onClick={() => handleAddTalentClick(job)}
               >
-                <FiPlus size={16} /> Add Talent
+                <FiPlus size={16} /> Apply
               </button>
             </div>
           </div>
