@@ -137,8 +137,8 @@ function SignUp() {
         <div className="auth-form-side" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2.5rem 3rem' }}>
 
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, height: 150, objectFit: 'contain' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '-1rem' }}>
+            <img src="/Images/Benmyl-logo.svg" alt="BenMyl Logo" style={{ width: 150, height: 80, objectFit: 'contain' }} />
           </div>
 
           <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, marginBottom: '1rem' }}>
