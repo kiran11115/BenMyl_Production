@@ -56,6 +56,133 @@ const validationSchema = Yup.object().shape({
   termsAndConditions: Yup.string().required('Required'),
 });
 
+// Custom PDF rendering component using pdf.js to render PDF content on HTML5 canvas elements
+const CustomPdfViewer = ({ file }) => {
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!file) return;
+
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+    setPages([]);
+
+    const loadPdfJS = async () => {
+      if (!window.pdfjsLib) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+        await new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Failed to load PDF script."));
+        });
+      }
+      
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    };
+
+    const renderPdf = async () => {
+      try {
+        await loadPdfJS();
+        
+        const fileReader = new FileReader();
+        fileReader.onload = async function() {
+          try {
+            const typedarray = new Uint8Array(this.result);
+            const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
+            
+            if (!isMounted) return;
+            
+            const numPages = pdf.numPages;
+            const renderedPages = Array.from({ length: numPages }, (_, i) => i + 1);
+            
+            setPages(renderedPages);
+            setLoading(false);
+            
+            // Render pages
+            setTimeout(() => {
+              renderedPages.forEach(async (pageNum) => {
+                try {
+                  const page = await pdf.getPage(pageNum);
+                  const canvas = document.getElementById(`pdf-canvas-${pageNum}`);
+                  if (!canvas) return;
+                  
+                  const context = canvas.getContext('2d');
+                  const viewport = page.getViewport({ scale: 1.5 });
+                  
+                  canvas.height = viewport.height;
+                  canvas.width = viewport.width;
+                  
+                  const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                  };
+                  await page.render(renderContext).promise;
+                } catch (pageErr) {
+                  console.error(`Error rendering page ${pageNum}:`, pageErr);
+                }
+              });
+            }, 100);
+          } catch (pdfErr) {
+            console.error("Error parsing PDF document:", pdfErr);
+            if (isMounted) {
+              setError("Could not parse PDF. Please verify it is a valid PDF document.");
+              setLoading(false);
+            }
+          }
+        };
+        fileReader.readAsArrayBuffer(file);
+      } catch (err) {
+        console.error("Error loading pdf.js library:", err);
+        if (isMounted) {
+          setError("Failed to initialize PDF renderer.");
+          setLoading(false);
+        }
+      }
+    };
+
+    renderPdf();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [file]);
+
+  if (loading) {
+    return (
+      <div className="text-center p-5 text-muted">
+        <div className="spinner-border mb-3" role="status" style={{ width: '3rem', height: '3rem', color: '#f5810c' }}>
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <div>Parsing & rendering legal document data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger m-3 text-center" role="alert">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', padding: '10px 0' }}>
+      {pages.map((pageNum) => (
+        <div key={pageNum} style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.08)', background: '#fff', borderRadius: '8px', padding: '16px', border: '1px solid #e2e8f0', width: '100%', maxWidth: '600px' }}>
+          <canvas id={`pdf-canvas-${pageNum}`} style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto' }} />
+          <div style={{ textAlign: 'center', fontSize: '12px', color: '#94a3b8', marginTop: '12px', fontWeight: 600 }}>Page {pageNum} of {pages.length}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const ContractCreate = () => {
   const navigate = useNavigate();
   const { addContract } = useContext(ContractContext);
@@ -69,6 +196,103 @@ const ContractCreate = () => {
 
   const [signatureType, setSignatureType] = useState('draw');
   const [signatureData, setSignatureData] = useState(null);
+  const [legalDocument, setLegalDocument] = useState(null);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  // Manage PDF preview URL lifecycle
+  useEffect(() => {
+    if (!legalDocument) {
+      setPdfUrl(null);
+      return;
+    }
+    const isPdf = legalDocument.type === 'application/pdf' || legalDocument.name.toLowerCase().endsWith('.pdf');
+    if (isPdf) {
+      const url = URL.createObjectURL(legalDocument);
+      setPdfUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    }
+  }, [legalDocument]);
+
+  const extractPdfText = async (file) => {
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) return;
+
+    try {
+      if (!window.pdfjsLib) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+        await new Promise((resolve) => {
+          script.onload = resolve;
+        });
+      }
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+      const fileReader = new FileReader();
+      fileReader.onload = async function() {
+        try {
+          const typedarray = new Uint8Array(this.result);
+          const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
+          let fullText = "";
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + "\n";
+          }
+
+          fullText = fullText.trim();
+          if (fullText) {
+            let terms = "";
+            let confidentiality = "";
+
+            const lowerText = fullText.toLowerCase();
+            const complianceIdx = lowerText.indexOf("article ii");
+            const ndaIdx = lowerText.indexOf("article iii");
+            
+            if (complianceIdx !== -1 && ndaIdx !== -1 && complianceIdx < ndaIdx) {
+              terms = fullText.substring(complianceIdx + 20, ndaIdx).trim();
+              const signatureIdx = lowerText.indexOf("signature", ndaIdx);
+              if (signatureIdx !== -1) {
+                confidentiality = fullText.substring(ndaIdx + 22, signatureIdx).trim();
+              } else {
+                confidentiality = fullText.substring(ndaIdx + 22).trim();
+              }
+            } else {
+              const confIdx = lowerText.indexOf("confidentiality");
+              if (confIdx !== -1) {
+                terms = fullText.substring(0, confIdx).trim();
+                confidentiality = fullText.substring(confIdx).trim();
+              } else {
+                terms = fullText;
+              }
+            }
+
+            if (terms) {
+              // Clean up any remaining leading formatting characters (e.g. colons or spaces)
+              terms = terms.replace(/^[:\s\-*]+/i, "").trim();
+              formik.setFieldValue('termsAndConditions', terms);
+            }
+            if (confidentiality) {
+              confidentiality = confidentiality.replace(/^[:\s\-*]+/i, "").trim();
+              formik.setFieldValue('confidentialityClause', confidentiality);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to parse text from PDF file:", err);
+        }
+      };
+      fileReader.readAsArrayBuffer(file);
+    } catch (err) {
+      console.error("Error setting up PDF parser:", err);
+    }
+  };
+
   const canvasRef = useRef(null);
   const isDrawing = useRef(false);
 
@@ -351,6 +575,9 @@ const ContractCreate = () => {
       formData.append("NoticePeriod", formik.values.noticePeriod || "");
       formData.append("TermsAndConditions", formik.values.termsAndConditions || "");
       formData.append("AgreementStatus", "Shared");
+      if (legalDocument) {
+  formData.append("ContractDocument", legalDocument);
+}
 
       // Signature Blob conversion
       const sigBlob = dataURLtoBlob(signatureData);
@@ -852,6 +1079,72 @@ const ContractCreate = () => {
                     <label>Confidentiality Clause</label>
                     <textarea className="auth-input" rows="2" name="confidentialityClause" {...formik.getFieldProps('confidentialityClause')}></textarea>
                   </div>
+                  <div className="cw-field mb-3">
+  <label>Supporting Legal Document</label>
+
+  <input
+    type="file"
+    id="legalDocument"
+    accept=".pdf,.doc,.docx"
+    style={{ display: "none" }}
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setLegalDocument(file);
+        extractPdfText(file);
+      }
+    }}
+  />
+
+  <label
+    htmlFor="legalDocument"
+    className="cw-upload-box"
+  >
+    <Upload size={20} />
+    <div>
+      <div className="fw-semibold">
+        {legalDocument
+          ? legalDocument.name
+          : "Upload Agreement / NDA / Legal Document"}
+      </div>
+      <small className="text-muted">
+        PDF, DOC, DOCX (Max 10 MB)
+      </small>
+    </div>
+  </label>
+
+  {legalDocument && (
+    <div className="cw-upload-preview">
+      <div className="d-flex align-items-center gap-2">
+        <FileText size={16} />
+        <span>{legalDocument.name}</span>
+      </div>
+      {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
+        <button
+          type="button"
+          className="btn-v2-primary"
+          style={{
+            background: "#f5810c",
+            color: "#fff",
+            border: "none",
+            padding: "6px 14px",
+            borderRadius: "6px",
+            fontSize: "12px",
+            fontWeight: "700",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            transition: "all 0.2s"
+          }}
+          onClick={() => setShowPdfPreview(true)}
+        >
+          View PDF
+        </button>
+      )}
+    </div>
+  )}
+</div>
                 </div>
               </div>
 
@@ -926,6 +1219,36 @@ const ContractCreate = () => {
                 </h3>
                 <span className="text-muted" style={{ fontSize: 12 }}>Pre-execution Draft</span>
               </div>
+
+              {legalDocument && (
+                <div className="d-flex justify-content-between align-items-center mb-4 p-3 border rounded-3" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
+                  <div className="d-flex align-items-center gap-2">
+                    <FileText size={18} style={{ color: '#f5810c' }} />
+                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
+                      Uploaded Legal Document: <strong>{legalDocument.name}</strong>
+                    </span>
+                  </div>
+                  {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
+                    <button
+                      type="button"
+                      className="btn-v2-primary"
+                      style={{
+                        background: "#f5810c",
+                        color: "#fff",
+                        border: "none",
+                        padding: "6px 14px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: "700",
+                        cursor: "pointer"
+                      }}
+                      onClick={() => setShowPdfPreview(true)}
+                    >
+                      View PDF
+                    </button>
+                  )}
+                </div>
+              )}
 
               <div className="cw-legal-doc">
                 <div className="cw-legal-watermark">CONFIDENTIAL DRAFT</div>
@@ -1286,6 +1609,37 @@ const ContractCreate = () => {
           </div>
         )}
       </div>
+
+      {/* PDF Preview Offcanvas Panel */}
+      {showPdfPreview && (
+        <>
+          <div className="cw-offcanvas-overlay" onClick={() => setShowPdfPreview(false)} />
+          <div className="cw-offcanvas-panel">
+            <div className="cw-offcanvas-header">
+              <h4 className="cw-offcanvas-title">
+                <FileText size={18} style={{ color: '#f5810c' }} />
+                Legal Document Preview: {legalDocument?.name}
+              </h4>
+              <button
+                type="button"
+                className="cw-offcanvas-close"
+                onClick={() => setShowPdfPreview(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="cw-offcanvas-body">
+              {legalDocument ? (
+                <CustomPdfViewer file={legalDocument} />
+              ) : (
+                <div className="text-center p-5 text-muted">
+                  No legal document uploaded.
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

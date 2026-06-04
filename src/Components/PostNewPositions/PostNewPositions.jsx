@@ -160,13 +160,16 @@ useEffect(() => {
   const user = localStorage.getItem("CompanyId");
   const companyname = localStorage.getItem("CompanyName");
 
+const autoFillRole =
+  location.state?.autoFillRole || "";
+
   /* =========================
      FORMIK
   ========================= */
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      jobTitle: editData?.jobTitle || '',
+      jobTitle: editData?.jobTitle || autoFillRole || '',
       companyName: editData?.companyName || companyname,
       location: editData?.location || '',
       employmentType: editData?.employeeType || '',
