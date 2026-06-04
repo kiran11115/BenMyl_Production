@@ -48,7 +48,7 @@ import {
   useGetGroupedJobTitlesQuery,
   useTalentPoolMutation,
 } from "../../../../State-Management/Api/TalentPoolApiSlice";
-import { useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
+import { useGetAutonomousActivityLogQuery, useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
 
 ChartJS.register(
   CategoryScale,
@@ -144,6 +144,27 @@ function AdminDashboard() {
   useGetRecruiterGraphQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
+
+  const { data: activityLogs = [], isLoading: logsLoading } =
+  useGetAutonomousActivityLogQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval:1000
+  });
+
+  const getTimeAgo = (dateString) => {
+  const diff = Date.now() - new Date(dateString).getTime();
+
+  const mins = Math.floor(diff / 60000);
+
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins} mins ago`;
+
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} hours ago`;
+
+  const days = Math.floor(hrs / 24);
+  return `${days} days ago`;
+};
 
   const {
   activeRecruiters = 0,
@@ -646,90 +667,39 @@ function AdminDashboard() {
           </div>
 
           <div className="log-list">
+  {logsLoading ? (
+    <div className="text-center py-3">
+      Loading activity logs...
+    </div>
+  ) : activityLogs?.length > 0 ? (
+    activityLogs.slice(0, 10).map((log, index) => (
+      <div className="log-item" key={index}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <span className="log-tag">
+            {log.activityType}
+          </span>
 
-            <div className="log-item">
-              <div style={{display:'flex',justifyContent:'space-between'}}>
-              <span className="log-tag">
-                Sourcing Engine
-              </span>
-              <small style={{fontSize:11}}>
-                2 mins ago
-              </small>
-              </div>
+          <small style={{ fontSize: 11 }}>
+            {getTimeAgo(log.activityDate)}
+          </small>
+        </div>
 
-              <p style={{fontSize:'11px'}}>
-                AI-Match paired Candidate
-                "Nolan V." with Staffing
-                Requirement #4019 (98.2%
-                Match Score)
-              </p>
-
-              
-
-            </div>
-
-            <div className="log-item">
-              <div style={{display:'flex',justifyContent:'space-between'}}>
-              <span className="log-tag">
-                Submission Gateway
-              </span>
-              <small style={{fontSize:11}}>
-                14 mins ago
-              </small>
-              </div>
-
-              <p style={{fontSize:'11px'}}>
-                Recruiter Samantha Chen
-                submitted 4 candidates to
-                "Cloud Solutions Engineer"
-              </p>
-
-              
-
-            </div>
-
-            <div className="log-item">
-               <div style={{display:'flex',justifyContent:'space-between'}}>
-              <span className="log-tag">
-                Client Mapping
-              </span>
-              <small style={{fontSize:11}}>
-                1 hour ago
-              </small>
-              </div>
-
-              <p style={{fontSize:'11px'}}>
-                New Priority requirement
-                added: Senior DevOps
-                Specialist
-              </p>
-
-              
-
-            </div>
-
-            <div className="log-item">
-
-              <div style={{display:'flex',justifyContent:'space-between'}}>
-              <span className="log-tag">
-                Bench Validation
-              </span>
-              <small style={{fontSize:11}}>
-                2 hours ago
-              </small>
-              </div>
-
-              <p style={{fontSize:'11px'}}>
-                Vendor "Synapse Sourcing"
-                updated 8 hot-list bench
-                profiles
-              </p>
-
-              
-
-            </div>
-
-          </div>
+        <p style={{ fontSize: "11px",marginBottom:0 }}>
+          {log.activityMessage}
+        </p>
+      </div>
+    ))
+  ) : (
+    <div className="text-center py-3">
+      No activity logs found
+    </div>
+  )}
+</div>
 
           <div className="security-box">
 

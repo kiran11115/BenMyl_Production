@@ -16,7 +16,14 @@ getDashboardStats: builder.query({
   }),
 }),
 
+getAutonomousActivityLog: builder.query({
+  query: () => ({
+    url: "api/uatcompany/GetAutonomousActivityLog",
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
-export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery } = DashboardApiSlice;
+export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery } = DashboardApiSlice;

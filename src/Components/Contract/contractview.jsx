@@ -192,9 +192,9 @@ const ContractView = () => {
     return mapApiContractToUI(apiResponse.data);
   }, [apiResponse]);
 
-  const role = (localStorage.getItem('Role') || '').toLowerCase();
+  const role = localStorage.getItem('Role');
   // BenchSales role can be stored with varying casing
-  const isBS = role === 'benchsales' || role === 'bench sales' || role === 'bench_sales';
+  const isBS = role === 'Benchsales' || role === 'Admin' || role === 'Recruiter2';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
 
   if (isApiLoading) {
