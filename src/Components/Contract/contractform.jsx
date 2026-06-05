@@ -194,10 +194,25 @@ const ContractForm = () => {
   };
 
   const sortedContracts = [...contracts].sort((a, b) => {
-    if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'asc' ? -1 : 1;
-    if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'asc' ? 1 : -1;
-    return 0;
-  });
+  if (sortConfig.key === "createdDate") {
+    const dateA = new Date(a.createdDate);
+    const dateB = new Date(b.createdDate);
+
+    return sortConfig.direction === "asc"
+      ? dateA - dateB
+      : dateB - dateA;
+  }
+
+  if (a[sortConfig.key] < b[sortConfig.key]) {
+    return sortConfig.direction === "asc" ? -1 : 1;
+  }
+
+  if (a[sortConfig.key] > b[sortConfig.key]) {
+    return sortConfig.direction === "asc" ? 1 : -1;
+  }
+
+  return 0;
+});
 
   const filtered = sortedContracts.filter(c => {
     const matchSearch = !search ||

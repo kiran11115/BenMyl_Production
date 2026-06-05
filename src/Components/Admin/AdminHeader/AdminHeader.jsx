@@ -65,14 +65,14 @@ function AdminHeader() {
         navigate("/sign-in"); // Redirect to login
     };
 
-      const getInitials = (name = "") => {
-    return name
-      .trim()
-      .split(" ")
-      .slice(0, 2)
-      .map(word => word[0]?.toUpperCase())
-      .join("");
-  };
+    const getInitials = (name = "") => {
+        return name
+            .trim()
+            .split(" ")
+            .slice(0, 2)
+            .map(word => word[0]?.toUpperCase())
+            .join("");
+    };
 
     // Close profile dropdown when clicking outside
     useEffect(() => {
@@ -96,7 +96,7 @@ function AdminHeader() {
 
     return (
         <>
-         <ScrollToTop />
+            <ScrollToTop />
             <header className="header-container">
                 {/* Left Section: Brand & Nav */}
                 <div className="header-left">
@@ -278,20 +278,20 @@ function AdminHeader() {
                             tabIndex={0}
                         >
                             {companyData?.logo ? (
-                <img
-                  src={
-                    companyData.logo.startsWith("http")
-                      ? `${companyData.logo}?t=${Date.now()}`
-                      : `https://webapidev.benmyl.com/${companyData.logo}?t=${Date.now()}`
-                  }
-                  alt="Company Logo"
-                  className="avatar-initials-premium"
-                />
-              ) : (
-                <div className="avatar-initials-premium">
-                  {getInitials(company || companyData?.name)}
-                </div>
-              )}
+                                <img
+                                    src={
+                                        companyData.logo.startsWith("http")
+                                            ? `${companyData.logo}?t=${Date.now()}`
+                                            : `https://webapidev.benmyl.com/${companyData.logo}?t=${Date.now()}`
+                                    }
+                                    alt="Company Logo"
+                                    className="avatar-initials-premium"
+                                />
+                            ) : (
+                                <div className="avatar-initials-premium">
+                                    {getInitials(company || companyData?.name)}
+                                </div>
+                            )}
                             <div className="profile-info">
                                 <span className="profile-name">{company || companyData?.name}</span>
                                 <span className="profile-role">{role}</span>
@@ -320,7 +320,7 @@ function AdminHeader() {
                             <div className="routine-title">
 
                                 <span>
-                                    EXPRESS DISPATCH CONSOLE
+                                    QUICK LAUNCH
                                 </span>
 
                             </div>

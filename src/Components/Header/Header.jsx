@@ -168,7 +168,7 @@ function Header() {
 
   return (
     <>
-    <ScrollToTop />
+      <ScrollToTop />
       {/* Mobile Top Bar */}
       <MobileTopBar
         user={user}
@@ -246,14 +246,14 @@ function Header() {
         {/* Right Section: Tools & Profile */}
         <div className="header-right">
           {role === "Recruiter2" && (
-  <button
-    className="quick-create-btn"
-    onClick={() => setShowRoutineModal(true)}
-  >
-    <Plus size={14} />
-    Quick Create
-  </button>
-)}
+            <button
+              className="quick-create-btn"
+              onClick={() => setShowRoutineModal(true)}
+            >
+              <Plus size={14} />
+              Quick Create
+            </button>
+          )}
           {/* AI Assistant Pill with Coming Soon Popover */}
           {/* <div className="ai-pill-wrapper" ref={aiPopoverRef}>
             <button
@@ -362,145 +362,145 @@ function Header() {
 
       <ToastContainer position="top-right" autoClose={3000} />
       {showRoutineModal && (
-      
-                      <div className="routine-modal-overlay">
-      
-                          <div className="routine-modal">
-      
-                              <div className="routine-header">
-      
-                                  <div className="routine-title">
-      
-                                      <span>
-                                          EXPRESS DISPATCH CONSOLE
-                                      </span>
-      
-                                  </div>
-      
-                                  <button
-                                      className="routine-close"
-                                      onClick={() =>
-                                          setShowRoutineModal(false)
-                                      }
-                                  >
-                                      ✕
-                                  </button>
-      
-                              </div>
-      
-                              <div className="routine-divider"></div>
-      
-                              <p className="routine-subtitle">
-      
-                                  Instantly execute workspace workflows.
-      
-                              </p>
-      
-                              <div className="routine-grid">
-      
-                                  {/* CREATE JOB */}
-      
-                                  <div
-                                      className="routine-card"
-                                      onClick={() => {
-                                          navigate(
-                                              "/user/user-post-new-positions"
-                                          );
-                                          setShowRoutineModal(false);
-                                      }}
-                                  >
-      
-                                      <div className="routine-icon">
-                                          <File size={18} />
-                                      </div>
-      
-                                      <h4>Create Job</h4>
-      
-                                      <span>
-                                          Create hiring requirements.
-                                      </span>
-      
-                                  </div>
-      
-                                  {/* UPLOAD TALENT */}
-      
-                                  <div
-                                      className="routine-card"
-                                      onClick={() => {
-                                          navigate(
-                                              "/user/upload-review-talent"
-                                          );
-                                          setShowRoutineModal(false);
-                                      }}
-                                  >
-      
-                                      <div className="routine-icon">
-                                          <Users size={18} />
-                                      </div>
-      
-                                      <h4>Upload Talent</h4>
-      
-                                      <span>
-                                          AI parser candidate upload.
-                                      </span>
-      
-                                  </div>
-      
-                                  {/* TALENT POOL */}
-      
-                                  <div
-                                      className="routine-card"
-                                      onClick={() => {
-                                          navigate(
-                                              "/user/contract-listing"
-                                          );
-                                          setShowRoutineModal(false);
-                                      }}
-                                  >
-      
-                                      <div className="routine-icon">
-                                          <Users size={18} />
-                                      </div>
-      
-                                      <h4>Create Contract</h4>
-      
-                                      <span>
-                                          Manage contract listings.
-                                      </span>
-      
-                                  </div>
-      
-                                  {/* INTERVIEW */}
-      
-                                  <div
-                                      className="routine-card"
-                                      onClick={() => {
-                                          navigate(
-                                              "/user/user-schedule-interview"
-                                          );
-                                          setShowRoutineModal(false);
-                                      }}
-                                  >
-      
-                                      <div className="routine-icon">
-                                          <Bell size={16} />
-                                      </div>
-      
-                                      <h4>Schedule Interview</h4>
-      
-                                      <span>
-                                          Coordinate interview flow
-                                      </span>
-      
-                                  </div>
-      
-                              </div>
-      
-                          </div>
-      
-                      </div>
-      
-                  )}
+
+        <div className="routine-modal-overlay">
+
+          <div className="routine-modal">
+
+            <div className="routine-header">
+
+              <div className="routine-title">
+
+                <span>
+                  QUICK LAUNCH
+                </span>
+
+              </div>
+
+              <button
+                className="routine-close"
+                onClick={() =>
+                  setShowRoutineModal(false)
+                }
+              >
+                ✕
+              </button>
+
+            </div>
+
+            <div className="routine-divider"></div>
+
+            <p className="routine-subtitle">
+
+              Instantly execute workspace workflows.
+
+            </p>
+
+            <div className="routine-grid">
+
+              {/* CREATE JOB */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/user/user-post-new-positions"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <File size={18} />
+                </div>
+
+                <h4>Create Job</h4>
+
+                <span>
+                  Create hiring requirements.
+                </span>
+
+              </div>
+
+              {/* UPLOAD TALENT */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/user/upload-review-talent"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Users size={18} />
+                </div>
+
+                <h4>Upload Talent</h4>
+
+                <span>
+                  AI parser candidate upload.
+                </span>
+
+              </div>
+
+              {/* TALENT POOL */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/user/contract-listing"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Users size={18} />
+                </div>
+
+                <h4>Create Contract</h4>
+
+                <span>
+                  Manage contract listings.
+                </span>
+
+              </div>
+
+              {/* INTERVIEW */}
+
+              <div
+                className="routine-card"
+                onClick={() => {
+                  navigate(
+                    "/user/user-schedule-interview"
+                  );
+                  setShowRoutineModal(false);
+                }}
+              >
+
+                <div className="routine-icon">
+                  <Bell size={16} />
+                </div>
+
+                <h4>Schedule Interview</h4>
+
+                <span>
+                  Coordinate interview flow
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
       <TrialPopover />
 

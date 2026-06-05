@@ -233,34 +233,40 @@
 /* =========================================
    4. Status Badges
    ========================================= */
+.contract-badge.badge-draft,
 .badge-draft {
-  background: #f1f5f9;
-  color: #475569;
+  background: #f1f5f9 !important;
+  color: #475569 !important;
 }
 
+.contract-badge.badge-pending,
 .badge-pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: #fef3c7 !important;
+  color: #92400e !important;
 }
 
+.contract-badge.badge-accepted,
 .badge-accepted {
-  background: #d1fae5;
-  color: #065f46;
+  background: #d1fae5 !important;
+  color: #065f46 !important;
 }
 
+.contract-badge.badge-rejected,
 .badge-rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #fee2e2 !important;
+  color: #991b1b !important;
 }
 
+.contract-badge.badge-completed,
 .badge-completed {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #dbeafe !important;
+  color: #1e40af !important;
 }
 
+.contract-badge.badge-shared,
 .badge-shared {
-  background: #ede9fe;
-  color: #5b21b6;
+  background: #ede9fe !important;
+  color: #5b21b6 !important;
 }
 
 .contract-badge {
