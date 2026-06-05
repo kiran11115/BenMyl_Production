@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import DatePicker from 'react-datepicker';
@@ -24,7 +24,10 @@ import {
   ArrowRight,
   RefreshCw,
   Info,
-  ChevronDown
+  ChevronDown,
+  Download,
+  Briefcase,
+  User
 } from 'lucide-react';
 import { FiArrowLeft, FiFilePlus } from 'react-icons/fi';
 import { Home } from 'lucide-react';
@@ -81,28 +84,28 @@ const CustomPdfViewer = ({ file }) => {
           script.onerror = () => reject(new Error("Failed to load PDF script."));
         });
       }
-      
+
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     };
 
     const renderPdf = async () => {
       try {
         await loadPdfJS();
-        
+
         const fileReader = new FileReader();
-        fileReader.onload = async function() {
+        fileReader.onload = async function () {
           try {
             const typedarray = new Uint8Array(this.result);
             const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
-            
+
             if (!isMounted) return;
-            
+
             const numPages = pdf.numPages;
             const renderedPages = Array.from({ length: numPages }, (_, i) => i + 1);
-            
+
             setPages(renderedPages);
             setLoading(false);
-            
+
             // Render pages
             setTimeout(() => {
               renderedPages.forEach(async (pageNum) => {
@@ -110,13 +113,13 @@ const CustomPdfViewer = ({ file }) => {
                   const page = await pdf.getPage(pageNum);
                   const canvas = document.getElementById(`pdf-canvas-${pageNum}`);
                   if (!canvas) return;
-                  
+
                   const context = canvas.getContext('2d');
                   const viewport = page.getViewport({ scale: 1.5 });
-                  
+
                   canvas.height = viewport.height;
                   canvas.width = viewport.width;
-                  
+
                   const renderContext = {
                     canvasContext: context,
                     viewport: viewport
@@ -233,7 +236,7 @@ const ContractCreate = () => {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
       const fileReader = new FileReader();
-      fileReader.onload = async function() {
+      fileReader.onload = async function () {
         try {
           const typedarray = new Uint8Array(this.result);
           const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
@@ -254,7 +257,7 @@ const ContractCreate = () => {
             const lowerText = fullText.toLowerCase();
             const complianceIdx = lowerText.indexOf("article ii");
             const ndaIdx = lowerText.indexOf("article iii");
-            
+
             if (complianceIdx !== -1 && ndaIdx !== -1 && complianceIdx < ndaIdx) {
               terms = fullText.substring(complianceIdx + 20, ndaIdx).trim();
               const signatureIdx = lowerText.indexOf("signature", ndaIdx);
@@ -294,6 +297,7 @@ const ContractCreate = () => {
   };
 
   const canvasRef = useRef(null);
+  const legalDocRef = useRef(null);
   const isDrawing = useRef(false);
 
   const userId = localStorage.getItem("CompanyId");
@@ -477,6 +481,63 @@ const ContractCreate = () => {
     setSignatureData(null);
   };
 
+  // Download contract preview as high-quality PDF using jsPDF + html2canvas
+  const downloadContractAsImage = async () => {
+    if (!legalDocRef.current) return;
+    try {
+      // Load html2canvas
+      if (!window.html2canvas) {
+        const s1 = document.createElement('script');
+        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        s1.async = true;
+        document.body.appendChild(s1);
+        await new Promise((res, rej) => { s1.onload = res; s1.onerror = rej; });
+      }
+      // Load jsPDF
+      if (!window.jspdf) {
+        const s2 = document.createElement('script');
+        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        s2.async = true;
+        document.body.appendChild(s2);
+        await new Promise((res, rej) => { s2.onload = res; s2.onerror = rej; });
+      }
+
+      const canvas = await window.html2canvas(legalDocRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let yPosition = 0;
+      let heightLeft = imgHeight;
+
+      pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        yPosition = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, yPosition, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`${formik.values.contractTitle || 'contract'}-preview.pdf`);
+      toast.success('Contract downloaded as PDF!');
+    } catch (err) {
+      console.error('Failed to download contract PDF:', err);
+      toast.error('Failed to generate PDF. Please try again.');
+    }
+  };
+
   const dataURLtoBlob = (dataurl) => {
     if (!dataurl) return null;
     const arr = dataurl.split(',');
@@ -576,8 +637,8 @@ const ContractCreate = () => {
       formData.append("TermsAndConditions", formik.values.termsAndConditions || "");
       formData.append("AgreementStatus", "Shared");
       if (legalDocument) {
-  formData.append("ContractDocument", legalDocument);
-}
+        formData.append("ContractDocument", legalDocument);
+      }
 
       // Signature Blob conversion
       const sigBlob = dataURLtoBlob(signatureData);
@@ -628,946 +689,1019 @@ const ContractCreate = () => {
 
   return (
     <div className="contract-page">
-      <ModuleHeader
-        breadcrumb="Guided Contract experience"
-        title="Benmyl Contract Wizard"
-        description="Premium, enterprise-grade 5-step contract generation & execution workflow."
-        badgeText="Contract Wizard"
-        icon={FiFilePlus}
-        customBreadcrumbs={[
-          { label: "Dashboard", path: basePath === '/Admin' ? '/Admin/overview-dashboard' : '/User/user-dashboard', icon: <Home size={14} /> },
-          { label: "Agreements", path: `${basePath}/contract-listing` }
-        ]}
-      />
+      {/* Hero Card – matching other pages */}
+      <div
+        className="hero-card mb-4"
+      >
+        <div className="hero-left">
+          <div className="hero-pill">
+            ✦ Create Contract
+          </div>
+
+          <h1 className="job-posting-title text-white">
+            Contract Wizard
+          </h1>
+
+          <div className="job-posting-header-info">
+            <p className="job-posting-subtitle">
+              Enterprise-grade 5-step contract generation &amp; execution workflow with digital signing.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <button className="routine-btn" onClick={() => navigate(-1)}>
+            <ChevronLeft />
+            <span>Back</span>
+          </button>
+        </div>
+      </div>
 
       <div className="cw-shell">
-        {/* Sticky Stepper Header */}
-        {step <= 5 && (
-          <div className="cw-progress-header">
-            <div className="cw-progress-row">
-              {[
-                { id: 1, label: 'Selection', sub: 'Job & Candidate' },
-                { id: 2, label: 'Details', sub: 'Terms & Conditions' },
-                { id: 3, label: 'Review', sub: 'Legal Document' },
-                { id: 4, label: 'Generation', sub: 'Progress Tracker' },
-                { id: 5, label: 'Execution', sub: 'Sign & Share' }
-              ].map((s, idx, arr) => (
-                <React.Fragment key={s.id}>
-                  <div className={`cw-progress-step ${step === s.id ? 'active' : ''} ${step > s.id ? 'done' : ''}`}>
-                    <div className="cw-progress-num">
-                      {step > s.id ? <Check size={16} /> : s.id}
-                    </div>
-                    <div className="cw-progress-info">
-                      <span className="cw-progress-label">{s.label}</span>
-                      <span className="cw-progress-sub">{s.sub}</span>
-                    </div>
-                  </div>
-                  {idx < arr.length - 1 && (
-                    <div className={`cw-progress-line ${step > s.id ? 'done' : ''} ${step === s.id ? 'active' : ''}`} />
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="cw-autosave">
           <span className="cw-autosave-dot"></span>
           <span>Draft Autosaved</span>
         </div>
 
-        {/* ── STEP 1: CANDIDATE SELECTION ── */}
-        {step === 1 && (
-          <div className="cw-layout">
-            <div className="cw-card">
-              <div className="cw-card-header">
-                <h3 className="cw-card-title">
-                  <div className="cw-card-title-icon"><Users size={18} /></div>
-                  Candidate & Position Selection
-                </h3>
+        {step <= 5 ? (
+          <div className="cw-checklist-container">
+            {/* Vertical Checklist Sidebar */}
+            <div className="cw-checklist-sidebar">
+              <h4 className="cw-checklist-header">Contract Setup</h4>
+              <div className="cw-checklist-steps">
+                {[
+                  { id: 1, label: 'Selection', sub: 'Job & Candidate', icon: Users },
+                  { id: 2, label: 'Details', sub: 'Terms & Conditions', icon: Building2 },
+                  { id: 3, label: 'Review', sub: 'Legal Document', icon: FileCheck },
+                  { id: 4, label: 'Generation', sub: 'Progress Tracker', icon: RefreshCw },
+                  { id: 5, label: 'Execution', sub: 'Sign & Share', icon: PenTool }
+                ].map((s, idx, arr) => {
+                  const StepIcon = s.icon;
+                  return (
+                    <div key={s.id} className={`cw-checklist-item ${step === s.id ? 'active' : ''} ${step > s.id ? 'done' : ''}`}>
+                      <div className="cw-checklist-item-indicator">
+                        <div className="cw-checklist-item-icon">
+                          {step > s.id ? <Check size={14} /> : <StepIcon size={14} />}
+                        </div>
+                        {idx < arr.length - 1 && <div className="cw-checklist-item-line"></div>}
+                      </div>
+                      <div className="cw-checklist-item-info">
+                        <span className="cw-checklist-item-label">{s.label}</span>
+                        <span className="cw-checklist-item-sub">{s.sub}</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
 
-<div className="d-flex gap-5 align-items-center mb-4">
+            {/* Main Content Area */}
+            <div className="cw-checklist-content">
+              {/* ── STEP 1: CANDIDATE SELECTION ── */}
+              {step === 1 && (
+                <div className="cw-layout">
+                  <div className="cw-card">
+                    <div className="cw-card-header">
+                      <h3 className="cw-card-title">
+                        <div className="cw-card-title-icon"><Users size={18} /></div>
+                        Candidate & Position Selection
+                      </h3>
+                    </div>
 
-              {/* Job selection dropdown */}
-              <div className="cw-field mb-4">
-                <label>Job Title / Open Position Role <span className="req">*</span></label>
-                <select
-                  className="auth-input w-100"
-                  value={formik.values.jobTitle}
-                  onChange={(e) => {
-                    const selectedVal = e.target.value;
-                    formik.setFieldValue('jobTitle', selectedVal);
-                    formik.setFieldValue('candidateName', '');
-                    formik.setFieldValue('candidateEmail', '');
-                    formik.setFieldValue('candidatePhone', '');
-                    formik.setFieldValue('companyName', 'BenMyl Staffing');
-                  }}
-                >
-                  <option value="">-- Select Open Position Role --</option>
-                  {isJobsLoading ? (
-                    <option disabled>Loading open roles...</option>
-                  ) : (
-                    jobs.map(j => (
-                      <option key={j.id} value={j.title}>{j.title} ({j.company})</option>
-                    ))
-                  )}
-                </select>
-              </div>
+                    {/* Job & Candidate Selection – two-column card layout */}
+                    <div className="cw-selection-grid">
+                      {/* Job Selector Card */}
+                      <div className="cw-select-card">
+                        <div className="cw-select-card-header">
+                          <div className="cw-select-card-icon"><Briefcase size={16} /></div>
+                          <div>
+                            <div className="cw-select-card-title">Open Position Role</div>
+                            <div className="cw-select-card-sub">Select the job to generate a contract for</div>
+                          </div>
+                        </div>
+                        <select
+                          className="cw-select-input"
+                          value={formik.values.jobTitle}
+                          onChange={(e) => {
+                            const selectedVal = e.target.value;
+                            formik.setFieldValue('jobTitle', selectedVal);
+                            formik.setFieldValue('candidateName', '');
+                            formik.setFieldValue('candidateEmail', '');
+                            formik.setFieldValue('candidatePhone', '');
+                            formik.setFieldValue('companyName', 'BenMyl Staffing');
+                          }}
+                        >
+                          <option value="">-- Select Open Position Role --</option>
+                          {isJobsLoading ? (
+                            <option disabled>Loading open roles...</option>
+                          ) : (
+                            jobs.map(j => (
+                              <option key={j.id} value={j.title}>{j.title} ({j.company})</option>
+                            ))
+                          )}
+                        </select>
+                        {formik.values.jobTitle && (
+                          <div className="cw-select-card-badge">
+                            <CheckCircle size={12} /> {formik.values.jobTitle}
+                          </div>
+                        )}
+                      </div>
 
-              {/* Candidate Selection dropdown (no personal emails shown) */}
-              {formik.values.jobTitle && (
-                <div className="cw-field mb-4 w-50">
-                  <label>Shortlisted Candidates for Role <span className="req">*</span></label>
-                  {isCandidatesLoading ? (
-                    <div className="text-muted p-2"><RefreshCw className="animate-spin inline me-2" size={14} /> Fetching candidates...</div>
-                  ) : candidates.length === 0 ? (
-                    <div className="alert-card info-theme p-3" style={{ fontSize: 13 }}>No shortlisted candidates are mapped to this job position.</div>
-                  ) : (
-                    <select
-                      className="auth-input w-100"
-                      value={formik.values.candidateName}
-                      onChange={(e) => {
-                        const selectedName = e.target.value;
-                        const c = candidates.find(cand => cand.name === selectedName);
-                        if (c) {
-                          formik.setFieldValue('candidateName', c.name);
-                          formik.setFieldValue('candidateEmail', c.email);
-                          formik.setFieldValue('candidatePhone', c.phone);
+                      {/* Candidate Selector Card */}
+                      <div className={`cw-select-card ${!formik.values.jobTitle ? 'cw-select-card-disabled' : ''}`}>
+                        <div className="cw-select-card-header">
+                          <div className="cw-select-card-icon candidate"><User size={16} /></div>
+                          <div>
+                            <div className="cw-select-card-title">Shortlisted Candidate</div>
+                            <div className="cw-select-card-sub">Only shortlisted candidates appear here</div>
+                          </div>
+                        </div>
+                        {!formik.values.jobTitle ? (
+                          <div className="cw-select-card-placeholder">
+                            <Users size={24} />
+                            <span>Select a job role first to see shortlisted candidates</span>
+                          </div>
+                        ) : isCandidatesLoading ? (
+                          <div className="cw-select-card-loading">
+                            <RefreshCw size={16} className="cw-spin" /> Fetching candidates...
+                          </div>
+                        ) : candidates.length === 0 ? (
+                          <div className="cw-select-card-empty">
+                            <AlertCircle size={16} />
+                            No shortlisted candidates mapped to this position.
+                          </div>
+                        ) : (
+                          <select
+                            className="cw-select-input"
+                            value={formik.values.candidateName}
+                            onChange={(e) => {
+                              const selectedName = e.target.value;
+                              const c = candidates.find(cand => cand.name === selectedName);
+                              if (c) {
+                                formik.setFieldValue('candidateName', c.name);
+                                formik.setFieldValue('candidateEmail', c.email);
+                                formik.setFieldValue('candidatePhone', c.phone);
+                                const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
+                                const candidateComp = c.uploadedByName || "BenMyl Staffing";
+                                const roleLower = userRoleRaw.toLowerCase();
+                                if (roleLower === 'benchsales') {
+                                  formik.setFieldValue('companyName', loggedInComp);
+                                  formik.setFieldValue('clientCompany', candidateComp);
+                                } else {
+                                  formik.setFieldValue('clientCompany', loggedInComp);
+                                  formik.setFieldValue('companyName', candidateComp);
+                                }
+                                if (c.workLocation) formik.setFieldValue('workLocation', c.workLocation);
+                              } else {
+                                formik.setFieldValue('candidateName', '');
+                                formik.setFieldValue('candidateEmail', '');
+                                formik.setFieldValue('candidatePhone', '');
+                                formik.setFieldValue('companyName', 'BenMyl Staffing');
+                              }
+                            }}
+                          >
+                            <option value="">-- Select Shortlisted Candidate --</option>
+                            {candidates.map(c => (
+                              <option key={c.id} value={c.name}>{c.name}</option>
+                            ))}
+                          </select>
+                        )}
+                        {formik.values.candidateName && (
+                          <div className="cw-select-card-badge candidate">
+                            <CheckCircle size={12} /> {formik.values.candidateName}
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                          // Determine roles & company name mappings
-                          const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
-                          const candidateComp = c.uploadedByName || "BenMyl Staffing";
-
-                          const roleLower = userRoleRaw.toLowerCase();
-                          if (roleLower === 'benchsales') {
-                            formik.setFieldValue('companyName', loggedInComp);
-                            formik.setFieldValue('clientCompany', candidateComp);
+                    {/* Sticky bottom block */}
+                    <div className="cw-footer-actions">
+                      <button type="button" className="btn-secondary" disabled>Back</button>
+                      <button
+                        type="button"
+                        className="btn-v2-primary"
+                        style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '10px' }}
+                        onClick={() => {
+                          if (formik.values.jobTitle && formik.values.candidateName) {
+                            setStep(2);
                           } else {
-                            formik.setFieldValue('clientCompany', loggedInComp);
-                            formik.setFieldValue('companyName', candidateComp);
+                            toast.error('Select both Job and Candidate to continue');
                           }
-
-                          if (c.workLocation) {
-                            formik.setFieldValue('workLocation', c.workLocation);
-                          }
-                        } else {
-                          formik.setFieldValue('candidateName', '');
-                          formik.setFieldValue('candidateEmail', '');
-                          formik.setFieldValue('candidatePhone', '');
-                          formik.setFieldValue('companyName', 'BenMyl Staffing');
-                        }
-                      }}
-                    >
-                      <option value="">-- Select Shortlisted Candidate --</option>
-                      {candidates.map(c => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              )}
-</div>
-              {/* Sticky bottom block */}
-              <div className="cw-footer-actions">
-                <button type="button" className="btn-secondary" disabled>Back</button>
-                <button
-                  type="button"
-                  className="btn-v2-primary"
-                  style={{ background: '#f5810c', color: '#fff', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '10px' }}
-                  onClick={() => {
-                    if (formik.values.jobTitle && formik.values.candidateName) {
-                      setStep(2);
-                    } else {
-                      toast.error('Select both Job and Candidate to continue');
-                    }
-                  }}
-                >
-                  Approve Candidate & Continue <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* SIDE PANEL: SUMMARY */}
-            <div className="cw-summary-panel">
-              <h4 className="cw-summary-title"><Building2 size={16} /> Selection Overview</h4>
-
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Selected Job:</span>
-                <span className={`cw-summary-value ${!formik.values.jobTitle ? 'empty' : ''}`}>
-                  {formik.values.jobTitle || 'None Selected'}
-                </span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Candidate Name:</span>
-                <span className={`cw-summary-value ${!formik.values.candidateName ? 'empty' : ''}`}>
-                  {formik.values.candidateName || 'None Selected'}
-                </span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Creator Company Name:</span>
-                <span className="cw-summary-value">{formik.values.clientCompany || '-'}</span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Vendor Company Name:</span>
-                <span className="cw-summary-value">{formik.values.companyName || '-'}</span>
-              </div>
-
-              <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '11px', color: '#94a3b8' }}>
-                <Info size={14} style={{ display: 'inline', marginRight: '6px', color: '#f5810c' }} />
-                Selecting a candidate pulls contract rates, job titles, and company relationships based on selection source. Candidate emails are kept confidential.
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 2: WORK ORDER DETAILS ── */}
-        {step === 2 && (
-          <div className="cw-layout">
-            <div className="cw-card">
-              <div className="cw-card-header">
-                <h3 className="cw-card-title">
-                  <div className="cw-card-title-icon"><Building2 size={18} /></div>
-                  Complete Work Order Terms
-                </h3>
-              </div>
-
-              {/* Validation Error Summary */}
-              {validationErrors.length > 0 && formik.submitCount > 0 && (
-                <div className="cw-validation-box">
-                  <div className="cw-validation-title">
-                    <AlertCircle size={16} /> Validation Errors Found ({validationErrors.length})
+                        }}
+                      >
+                        Approve Candidate & Continue <ChevronRight size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <ul className="cw-validation-list">
-                    {validationErrors.map((err, i) => (
-                      <li key={i}><strong>{err.field}</strong>: {err.message}</li>
-                    ))}
-                  </ul>
+
+                  {/* SIDE PANEL: SUMMARY */}
+                  <div className="cw-summary-panel">
+                    <h4 className="cw-summary-title"><Building2 size={16} /> Selection Overview</h4>
+
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Selected Job:</span>
+                      <span className={`cw-summary-value ${!formik.values.jobTitle ? 'empty' : ''}`}>
+                        {formik.values.jobTitle || 'None Selected'}
+                      </span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Candidate Name:</span>
+                      <span className={`cw-summary-value ${!formik.values.candidateName ? 'empty' : ''}`}>
+                        {formik.values.candidateName || 'None Selected'}
+                      </span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Creator Company Name:</span>
+                      <span className="cw-summary-value">{formik.values.clientCompany || '-'}</span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Vendor Company Name:</span>
+                      <span className="cw-summary-value">{formik.values.companyName || '-'}</span>
+                    </div>
+
+                    <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '11px', color: '#94a3b8' }}>
+                      <Info size={14} style={{ display: 'inline', marginRight: '6px', color: '#f5810c' }} />
+                      Selecting a candidate pulls contract rates, job titles, and company relationships based on selection source. Candidate emails are kept confidential.
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* 1. ORG INFO SECTION */}
-              <div className={`cw-section ${activeSection === 'org' ? 'open' : ''} ${!sectionStatus.org && formik.submitCount > 0 ? 'has-error' : ''}`}>
-                <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'org' ? '' : 'org')}>
-                  <div className="cw-section-head-left">
-                    <div className="cw-section-icon"><Building2 size={16} /></div>
-                    <div>
-                      <div className="cw-section-title">Organization Information</div>
-                      <div className="cw-section-desc">Client company, vendor entities, agreement title</div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`cw-section-badge ${sectionStatus.org ? 'complete' : 'incomplete'}`}>
-                      {sectionStatus.org ? 'Complete' : 'Incomplete'}
-                    </span>
-                    <ChevronDown size={18} className="cw-section-chevron" />
-                  </div>
-                </div>
-                <div className="cw-section-body">
-                  <div className="cw-grid-2">
-                    <div className="cw-field mb-3">
-                      <label>Contract Title <span className="req">*</span></label>
-                      <input className="auth-input" name="contractTitle" {...formik.getFieldProps('contractTitle')} placeholder="e.g. Senior Backend Dev - SOW" />
-                      {formik.touched.contractTitle && formik.errors.contractTitle && <div className="auth-error">{formik.errors.contractTitle}</div>}
-                    </div>
-                    <div className="cw-field mb-3">
-                      <label>Creator Company Name <span className="req">*</span></label>
-                      <input className="auth-input" name="clientCompany" {...formik.getFieldProps('clientCompany')} placeholder="e.g. Finance Inc." />
-                      {formik.touched.clientCompany && formik.errors.clientCompany && <div className="auth-error">{formik.errors.clientCompany}</div>}
-                    </div>
-                    <div className="cw-field mb-3">
-                      <label>Vendor Org (Opposite Company)</label>
-                      <input className="auth-input bg-light" name="companyName" {...formik.getFieldProps('companyName')} readOnly />
-                    </div>
-                    <div className="cw-field mb-3">
-                      <label>Creator Role</label>
-                      <input className="auth-input bg-light" value={displayCreatorRole} readOnly />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. RESOURCE INFO SECTION (Email Hidden, Phone Optional) */}
-              <div className={`cw-section ${activeSection === 'res' ? 'open' : ''} ${!sectionStatus.res && formik.submitCount > 0 ? 'has-error' : ''}`}>
-                <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'res' ? '' : 'res')}>
-                  <div className="cw-section-head-left">
-                    <div className="cw-section-icon"><Users size={16} /></div>
-                    <div>
-                      <div className="cw-section-title">Resource Information</div>
-                      <div className="cw-section-desc">Candidate name & optional contact details</div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`cw-section-badge ${sectionStatus.res ? 'complete' : 'incomplete'}`}>
-                      {sectionStatus.res ? 'Complete' : 'Incomplete'}
-                    </span>
-                    <ChevronDown size={18} className="cw-section-chevron" />
-                  </div>
-                </div>
-                <div className="cw-section-body">
-                  <div className="cw-grid-2">
-                    <div className="cw-field mb-3">
-                      <label>Candidate Name <span className="req">*</span></label>
-                      <input className="auth-input bg-light" {...formik.getFieldProps('candidateName')} readOnly />
-                    </div>
-                    <div className="cw-field mb-3">
-                      <label>Candidate Phone</label>
-                      <input className="auth-input" name="candidatePhone" {...formik.getFieldProps('candidatePhone')} placeholder="e.g. +1 555-0199" />
-                      {formik.touched.candidatePhone && formik.errors.candidatePhone && <div className="auth-error">{formik.errors.candidatePhone}</div>}
-                    </div>
-                  </div>
-                  {/* Hidden email input to preserve API payload integration */}
-                  <input type="hidden" name="candidateEmail" {...formik.getFieldProps('candidateEmail')} />
-                </div>
-              </div>
-
-              {/* 3. ENGAGEMENT INFO SECTION */}
-              <div className={`cw-section ${activeSection === 'eng' ? 'open' : ''} ${!sectionStatus.eng && formik.submitCount > 0 ? 'has-error' : ''}`}>
-                <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'eng' ? '' : 'eng')}>
-                  <div className="cw-section-head-left">
-                    <div className="cw-section-icon"><Calendar size={16} /></div>
-                    <div>
-                      <div className="cw-section-title">Engagement Information</div>
-                      <div className="cw-section-desc">Duration, rate, employment type, location</div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`cw-section-badge ${sectionStatus.eng ? 'complete' : 'incomplete'}`}>
-                      {sectionStatus.eng ? 'Complete' : 'Incomplete'}
-                    </span>
-                    <ChevronDown size={18} className="cw-section-chevron" />
-                  </div>
-                </div>
-                <div className="cw-section-body">
-                  <div className="cw-grid-3 mb-3">
-                    <div className="cw-field">
-                      <label>Project Role / Job Title <span className="req">*</span></label>
-                      <input className="auth-input bg-light" {...formik.getFieldProps('jobTitle')} readOnly />
-                    </div>
-                    <div className="cw-field">
-                      <label>Employment Type <span className="req">*</span></label>
-                      <select className="auth-input" name="employmentType" {...formik.getFieldProps('employmentType')}>
-                        <option value="">Select Type</option>
-                        <option value="W2-Contract">W2-Contract</option>
-                        <option value="Corp-Corp">Corp-Corp</option>
-                        <option value="1099-Contract">1099-Contract</option>
-                      </select>
-                      {formik.touched.employmentType && formik.errors.employmentType && <div className="auth-error">{formik.errors.employmentType}</div>}
-                    </div>
-                    <div className="cw-field">
-                      <label>Work Location <span className="req">*</span></label>
-                      <input className="auth-input" name="workLocation" {...formik.getFieldProps('workLocation')} placeholder="City, State / Remote" />
-                      {formik.touched.workLocation && formik.errors.workLocation && <div className="auth-error">{formik.errors.workLocation}</div>}
-                    </div>
-                  </div>
-
-                  <div className="cw-grid-3 mb-3">
-                    <div className="cw-field">
-                      <label>Start Date <span className="req">*</span></label>
-                      <div className="auth-password-wrapper">
-                        <DatePicker
-                          className="auth-input w-100"
-                          maxDate={new Date("2099-12-31")}
-                          selected={formik.values.startDate ? new Date(formik.values.startDate) : null}
-                          onChange={(date) => formik.setFieldValue("startDate", date ? date.toLocaleDateString("en-CA") : "")}
-                          dateFormat="dd-MMM-yyyy"
-                          placeholderText="dd-MMM-yyyy"
-                        />
-                        <Calendar size={16} className="auth-icon-left" />
-                      </div>
-                      {formik.touched.startDate && formik.errors.startDate && <div className="auth-error">{formik.errors.startDate}</div>}
+              {/* ── STEP 2: WORK ORDER DETAILS ── */}
+              {step === 2 && (
+                <div className="cw-layout">
+                  <div className="cw-card">
+                    <div className="cw-card-header">
+                      <h3 className="cw-card-title">
+                        <div className="cw-card-title-icon"><Building2 size={18} /></div>
+                        Complete Work Order Terms
+                      </h3>
                     </div>
 
-                    <div className="cw-field">
-                      <label>End Date <span className="req">*</span></label>
-                      <div className="auth-password-wrapper">
-                        <DatePicker
-                          className="auth-input w-100"
-                          maxDate={new Date("2099-12-31")}
-                          selected={formik.values.endDate ? new Date(formik.values.endDate) : null}
-                          onChange={(date) => formik.setFieldValue("endDate", date ? date.toLocaleDateString("en-CA") : "")}
-                          dateFormat="dd-MMM-yyyy"
-                          placeholderText="dd-MMM-yyyy"
-                        />
-                        <Calendar size={16} className="auth-icon-left" />
-                      </div>
-                      {formik.touched.endDate && formik.errors.endDate && <div className="auth-error">{formik.errors.endDate}</div>}
-                    </div>
-
-                    <div className="cw-field">
-                      <label>Salary / Rate <span className="req">*</span></label>
-                      <input className="auth-input" name="salary" {...formik.getFieldProps('salary')} placeholder="e.g. $85/hr" />
-                      {formik.touched.salary && formik.errors.salary && <div className="auth-error">{formik.errors.salary}</div>}
-                    </div>
-                  </div>
-
-                  <div className="cw-grid-2">
-                    <div className="cw-field">
-                      <label>Payment Cycle <span className="req">*</span></label>
-                      <select className="auth-input" name="paymentCycle" {...formik.getFieldProps('paymentCycle')}>
-                        <option value="Weekly">Weekly</option>
-                        <option value="Bi-Weekly">Bi-Weekly</option>
-                        <option value="Monthly">Monthly</option>
-                      </select>
-                    </div>
-                    {computedDuration && (
-                      <div className="cw-duration-bar">
-                        <Clock size={16} /> Calculated Contract Duration: {computedDuration}
+                    {/* Validation Error Summary */}
+                    {validationErrors.length > 0 && formik.submitCount > 0 && (
+                      <div className="cw-validation-box">
+                        <div className="cw-validation-title">
+                          <AlertCircle size={16} /> Validation Errors Found ({validationErrors.length})
+                        </div>
+                        <ul className="cw-validation-list">
+                          {validationErrors.map((err, i) => (
+                            <li key={i}><strong>{err.field}</strong>: {err.message}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
-                  </div>
-                </div>
-              </div>
 
-              {/* 4. MANAGEMENT INFORMATION */}
-              <div className={`cw-section ${activeSection === 'man' ? 'open' : ''} ${!sectionStatus.man && formik.submitCount > 0 ? 'has-error' : ''}`}>
-                <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'man' ? '' : 'man')}>
-                  <div className="cw-section-head-left">
-                    <div className="cw-section-icon"><Clock size={16} /></div>
-                    <div>
-                      <div className="cw-section-title">Management Information</div>
-                      <div className="cw-section-desc">Reporting manager & notice period constraints</div>
+                    {/* 1. ORG INFO SECTION */}
+                    <div className={`cw-section ${activeSection === 'org' ? 'open' : ''} ${!sectionStatus.org && formik.submitCount > 0 ? 'has-error' : ''}`}>
+                      <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'org' ? '' : 'org')}>
+                        <div className="cw-section-head-left">
+                          <div className="cw-section-icon"><Building2 size={16} /></div>
+                          <div>
+                            <div className="cw-section-title">Organization Information</div>
+                            <div className="cw-section-desc">Client company, vendor entities, agreement title</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className={`cw-section-badge ${sectionStatus.org ? 'complete' : 'incomplete'}`}>
+                            {sectionStatus.org ? 'Complete' : 'Incomplete'}
+                          </span>
+                          <ChevronDown size={18} className="cw-section-chevron" />
+                        </div>
+                      </div>
+                      <div className="cw-section-body">
+                        <div className="cw-grid-2">
+                          <div className="cw-field mb-3">
+                            <label>Contract Title <span className="req">*</span></label>
+                            <input className="auth-input" name="contractTitle" {...formik.getFieldProps('contractTitle')} placeholder="e.g. Senior Backend Dev - SOW" />
+                            {formik.touched.contractTitle && formik.errors.contractTitle && <div className="auth-error">{formik.errors.contractTitle}</div>}
+                          </div>
+                          <div className="cw-field mb-3">
+                            <label>Creator Company Name <span className="req">*</span></label>
+                            <input className="auth-input" name="clientCompany" {...formik.getFieldProps('clientCompany')} readOnly/>
+                            {/* {formik.touched.clientCompany && formik.errors.clientCompany && <div className="auth-error">{formik.errors.clientCompany}</div>} */}
+                          </div>
+                          <div className="cw-field mb-3">
+                            <label>Vendor Org (Opposite Company)</label>
+                            <input className="auth-input bg-light" name="companyName" {...formik.getFieldProps('companyName')} readOnly />
+                          </div>
+                          <div className="cw-field mb-3">
+                            <label>Creator Role</label>
+                            <input className="auth-input bg-light" value={displayCreatorRole} readOnly />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. RESOURCE INFO SECTION (Email Hidden, Phone Optional) */}
+                    <div className={`cw-section ${activeSection === 'res' ? 'open' : ''} ${!sectionStatus.res && formik.submitCount > 0 ? 'has-error' : ''}`}>
+                      <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'res' ? '' : 'res')}>
+                        <div className="cw-section-head-left">
+                          <div className="cw-section-icon"><Users size={16} /></div>
+                          <div>
+                            <div className="cw-section-title">Resource Information</div>
+                            <div className="cw-section-desc">Candidate name & optional contact details</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className={`cw-section-badge ${sectionStatus.res ? 'complete' : 'incomplete'}`}>
+                            {sectionStatus.res ? 'Complete' : 'Incomplete'}
+                          </span>
+                          <ChevronDown size={18} className="cw-section-chevron" />
+                        </div>
+                      </div>
+                      <div className="cw-section-body">
+                        <div className="cw-grid-2">
+                          <div className="cw-field mb-3">
+                            <label>Candidate Name <span className="req">*</span></label>
+                            <input className="auth-input bg-light" {...formik.getFieldProps('candidateName')} readOnly />
+                          </div>
+                          {/* <div className="cw-field mb-3">
+                            <label>Candidate Phone</label>
+                            <input className="auth-input" name="candidatePhone" {...formik.getFieldProps('candidatePhone')} placeholder="e.g. +1 555-0199" />
+                            {formik.touched.candidatePhone && formik.errors.candidatePhone && <div className="auth-error">{formik.errors.candidatePhone}</div>}
+                          </div> */}
+                        </div>
+                        {/* Hidden email input to preserve API payload integration */}
+                        <input type="hidden" name="candidateEmail" {...formik.getFieldProps('candidateEmail')} />
+                      </div>
+                    </div>
+
+                    {/* 3. ENGAGEMENT INFO SECTION */}
+                    <div className={`cw-section ${activeSection === 'eng' ? 'open' : ''} ${!sectionStatus.eng && formik.submitCount > 0 ? 'has-error' : ''}`}>
+                      <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'eng' ? '' : 'eng')}>
+                        <div className="cw-section-head-left">
+                          <div className="cw-section-icon"><Calendar size={16} /></div>
+                          <div>
+                            <div className="cw-section-title">Engagement Information</div>
+                            <div className="cw-section-desc">Duration, rate, employment type, location</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className={`cw-section-badge ${sectionStatus.eng ? 'complete' : 'incomplete'}`}>
+                            {sectionStatus.eng ? 'Complete' : 'Incomplete'}
+                          </span>
+                          <ChevronDown size={18} className="cw-section-chevron" />
+                        </div>
+                      </div>
+                      <div className="cw-section-body">
+                        <div className="cw-grid-3 mb-3">
+                          <div className="cw-field">
+                            <label>Project Role / Job Title <span className="req">*</span></label>
+                            <input className="auth-input bg-light" {...formik.getFieldProps('jobTitle')} readOnly />
+                          </div>
+                          <div className="cw-field">
+                            <label>Employment Type <span className="req">*</span></label>
+                            <select className="auth-input" name="employmentType" {...formik.getFieldProps('employmentType')}>
+                              <option value="">Select Type</option>
+                              <option value="W2-Contract">W2-Contract</option>
+                              <option value="Corp-Corp">Corp-Corp</option>
+                              <option value="1099-Contract">1099-Contract</option>
+                            </select>
+                            {formik.touched.employmentType && formik.errors.employmentType && <div className="auth-error">{formik.errors.employmentType}</div>}
+                          </div>
+                          <div className="cw-field">
+                            <label>Work Location <span className="req">*</span></label>
+                            <input className="auth-input" name="workLocation" {...formik.getFieldProps('workLocation')} placeholder="City, State / Remote" />
+                            {formik.touched.workLocation && formik.errors.workLocation && <div className="auth-error">{formik.errors.workLocation}</div>}
+                          </div>
+                        </div>
+
+                        <div className="cw-grid-3 mb-3">
+                          <div className="cw-field">
+                            <label>Start Date <span className="req">*</span></label>
+                            <div className="auth-password-wrapper">
+                              <DatePicker
+                                className="auth-input w-100"
+                                maxDate={new Date("2099-12-31")}
+                                selected={formik.values.startDate ? new Date(formik.values.startDate) : null}
+                                onChange={(date) => formik.setFieldValue("startDate", date ? date.toLocaleDateString("en-CA") : "")}
+                                dateFormat="dd-MMM-yyyy"
+                                placeholderText="dd-MMM-yyyy"
+                              />
+                              <Calendar size={16} className="auth-icon-left" />
+                            </div>
+                            {formik.touched.startDate && formik.errors.startDate && <div className="auth-error">{formik.errors.startDate}</div>}
+                          </div>
+
+                          <div className="cw-field">
+                            <label>End Date <span className="req">*</span></label>
+                            <div className="auth-password-wrapper">
+                              <DatePicker
+                                className="auth-input w-100"
+                                maxDate={new Date("2099-12-31")}
+                                selected={formik.values.endDate ? new Date(formik.values.endDate) : null}
+                                onChange={(date) => formik.setFieldValue("endDate", date ? date.toLocaleDateString("en-CA") : "")}
+                                dateFormat="dd-MMM-yyyy"
+                                placeholderText="dd-MMM-yyyy"
+                              />
+                              <Calendar size={16} className="auth-icon-left" />
+                            </div>
+                            {formik.touched.endDate && formik.errors.endDate && <div className="auth-error">{formik.errors.endDate}</div>}
+                          </div>
+
+                          <div className="cw-field">
+                            <label>Salary / Rate <span className="req">*</span></label>
+                            <input className="auth-input" name="salary" {...formik.getFieldProps('salary')} placeholder="e.g. $85/hr" />
+                            {formik.touched.salary && formik.errors.salary && <div className="auth-error">{formik.errors.salary}</div>}
+                          </div>
+                        </div>
+
+                        <div className="cw-grid-2">
+                          <div className="cw-field">
+                            <label>Payment Cycle <span className="req">*</span></label>
+                            <select className="auth-input" name="paymentCycle" {...formik.getFieldProps('paymentCycle')}>
+                              <option value="Weekly">Weekly</option>
+                              <option value="Bi-Weekly">Bi-Weekly</option>
+                              <option value="Monthly">Monthly</option>
+                            </select>
+                          </div>
+                          {computedDuration && (
+                            <div className="cw-duration-bar">
+                              <Clock size={16} /> Calculated Contract Duration: {computedDuration}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4. MANAGEMENT INFORMATION */}
+                    <div className={`cw-section ${activeSection === 'man' ? 'open' : ''} ${!sectionStatus.man && formik.submitCount > 0 ? 'has-error' : ''}`}>
+                      <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'man' ? '' : 'man')}>
+                        <div className="cw-section-head-left">
+                          <div className="cw-section-icon"><Clock size={16} /></div>
+                          <div>
+                            <div className="cw-section-title">Management Information</div>
+                            <div className="cw-section-desc">Reporting manager & notice period constraints</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className={`cw-section-badge ${sectionStatus.man ? 'complete' : 'incomplete'}`}>
+                            {sectionStatus.man ? 'Complete' : 'Incomplete'}
+                          </span>
+                          <ChevronDown size={18} className="cw-section-chevron" />
+                        </div>
+                      </div>
+                      <div className="cw-section-body">
+                        <div className="cw-grid-2">
+                          <div className="cw-field mb-3">
+                            <label>Reporting Manager <span className="req">*</span></label>
+                            <input className="auth-input" name="reportingManager" {...formik.getFieldProps('reportingManager')} placeholder="Reporting Manager Name" />
+                            {formik.touched.reportingManager && formik.errors.reportingManager && <div className="auth-error">{formik.errors.reportingManager}</div>}
+                          </div>
+                          <div className="cw-field mb-3">
+                            <label>Notice Period <span className="req">*</span></label>
+                            <input className="auth-input" name="noticePeriod" {...formik.getFieldProps('noticePeriod')} placeholder="e.g. 2 Weeks" />
+                            {formik.touched.noticePeriod && formik.errors.noticePeriod && <div className="auth-error">{formik.errors.noticePeriod}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 5. LEGAL TERMS */}
+                    <div className={`cw-section ${activeSection === 'leg' ? 'open' : ''} ${!sectionStatus.leg && formik.submitCount > 0 ? 'has-error' : ''}`}>
+                      <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'leg' ? '' : 'leg')}>
+                        <div className="cw-section-head-left">
+                          <div className="cw-section-icon"><ShieldCheck size={16} /></div>
+                          <div>
+                            <div className="cw-section-title">Legal Terms</div>
+                            <div className="cw-section-desc">Compliance scope, NDA clause, terms & conditions</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className={`cw-section-badge ${sectionStatus.leg ? 'complete' : 'incomplete'}`}>
+                            {sectionStatus.leg ? 'Complete' : 'Incomplete'}
+                          </span>
+                          <ChevronDown size={18} className="cw-section-chevron" />
+                        </div>
+                      </div>
+                      <div className="cw-section-body">
+                        {/* Elegant Legal Terms Layout */}
+                        <div className="cw-legal-terms-wrapper">
+                          <div className="cw-legal-terms-header">
+                            <ShieldCheck size={16} />
+                            <span>Legal Terms &amp; Conditions</span>
+                            <span className="cw-legal-terms-required">Required</span>
+                          </div>
+                          <div className="cw-field">
+                            <label>Terms &amp; Conditions <span className="req">*</span></label>
+                            <textarea
+                              className="auth-input cw-legal-textarea"
+                              rows="6"
+                              name="termsAndConditions"
+                              placeholder="Enter the terms and conditions that govern this agreement..."
+                              {...formik.getFieldProps('termsAndConditions')}
+                            />
+                            {formik.touched.termsAndConditions && formik.errors.termsAndConditions && <div className="auth-error">{formik.errors.termsAndConditions}</div>}
+                          </div>
+                          <div className="cw-field">
+                            <label>Confidentiality Clause</label>
+                            <textarea
+                              className="auth-input cw-legal-textarea"
+                              rows="3"
+                              name="confidentialityClause"
+                              placeholder="Describe the confidentiality obligations for both parties..."
+                              {...formik.getFieldProps('confidentialityClause')}
+                            />
+                          </div>
+                        </div>
+                        <div className="cw-field mb-3">
+                          <label>Supporting Legal Document</label>
+
+                          <input
+                            type="file"
+                            id="legalDocument"
+                            accept=".pdf,.doc,.docx"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setLegalDocument(file);
+                                extractPdfText(file);
+                              }
+                            }}
+                          />
+
+                          <label
+                            htmlFor="legalDocument"
+                            className="cw-upload-box"
+                          >
+                            <Upload size={20} />
+                            <div>
+                              <div className="fw-semibold">
+                                {legalDocument
+                                  ? legalDocument.name
+                                  : "Upload Agreement / NDA / Legal Document"}
+                              </div>
+                              <small className="text-muted">
+                                PDF, DOC, DOCX (Max 10 MB)
+                              </small>
+                            </div>
+                          </label>
+
+                          {legalDocument && (
+                            <div className="cw-upload-preview">
+                              <div className="d-flex align-items-center gap-2">
+                                <FileText size={16} />
+                                <span>{legalDocument.name}</span>
+                              </div>
+                              {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
+                                <button
+                                  type="button"
+                                  className="btn-v2-primary"
+                                  style={{
+                                    color: "#fff",
+                                    border: "none",
+                                    padding: "6px 14px",
+                                    borderRadius: "6px",
+                                    fontSize: "12px",
+                                    fontWeight: "700",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    transition: "all 0.2s"
+                                  }}
+                                  onClick={() => setShowPdfPreview(true)}
+                                >
+                                  View PDF
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="cw-footer-actions">
+                      <button type="button" className="btn-secondary" onClick={() => setStep(1)}>Back</button>
+                      <button type="button" className="btn-primary" onClick={() => {
+                        formik.submitForm();
+                      }}>
+                        Review Legal Document <ChevronRight size={16} />
+                      </button>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`cw-section-badge ${sectionStatus.man ? 'complete' : 'incomplete'}`}>
-                      {sectionStatus.man ? 'Complete' : 'Incomplete'}
-                    </span>
-                    <ChevronDown size={18} className="cw-section-chevron" />
-                  </div>
-                </div>
-                <div className="cw-section-body">
-                  <div className="cw-grid-2">
-                    <div className="cw-field mb-3">
-                      <label>Reporting Manager <span className="req">*</span></label>
-                      <input className="auth-input" name="reportingManager" {...formik.getFieldProps('reportingManager')} placeholder="Reporting Manager Name" />
-                      {formik.touched.reportingManager && formik.errors.reportingManager && <div className="auth-error">{formik.errors.reportingManager}</div>}
+
+                  {/* SIDE PANEL: LIVE PREVIEW */}
+                  <div className="cw-summary-panel">
+                    <h4 className="cw-summary-title"><FileText size={16} /> Live SOW Preview</h4>
+                    <div className="cw-preview-mini">
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Title</span>
+                        <span className="cw-preview-mini-value">{formik.values.contractTitle || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Creator Org</span>
+                        <span className="cw-preview-mini-value">{formik.values.clientCompany || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Vendor Org</span>
+                        <span className="cw-preview-mini-value">{formik.values.companyName || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Candidate</span>
+                        <span className="cw-preview-mini-value">{formik.values.candidateName || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Rate / Fee</span>
+                        <span className="cw-preview-mini-value">{formik.values.salary || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Location</span>
+                        <span className="cw-preview-mini-value">{formik.values.workLocation || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Notice</span>
+                        <span className="cw-preview-mini-value">{formik.values.noticePeriod || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">Start Date</span>
+                        <span className="cw-preview-mini-value">{formik.values.startDate || '-'}</span>
+                      </div>
+                      <div className="cw-preview-mini-row">
+                        <span className="cw-preview-mini-label">End Date</span>
+                        <span className="cw-preview-mini-value">{formik.values.endDate || '-'}</span>
+                      </div>
                     </div>
-                    <div className="cw-field mb-3">
-                      <label>Notice Period <span className="req">*</span></label>
-                      <input className="auth-input" name="noticePeriod" {...formik.getFieldProps('noticePeriod')} placeholder="e.g. 2 Weeks" />
-                      {formik.touched.noticePeriod && formik.errors.noticePeriod && <div className="auth-error">{formik.errors.noticePeriod}</div>}
+
+                    <div style={{ marginTop: '24px', fontSize: '11px', color: '#94a3b8' }}>
+                      <ShieldCheck size={14} style={{ display: 'inline', marginRight: '6px', color: '#10b981' }} />
+                      Values filled on the left populate in real-time onto the final Article-structured contract template.
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* 5. LEGAL TERMS */}
-              <div className={`cw-section ${activeSection === 'leg' ? 'open' : ''} ${!sectionStatus.leg && formik.submitCount > 0 ? 'has-error' : ''}`}>
-                <div className="cw-section-head" onClick={() => setActiveSection(activeSection === 'leg' ? '' : 'leg')}>
-                  <div className="cw-section-head-left">
-                    <div className="cw-section-icon"><ShieldCheck size={16} /></div>
-                    <div>
-                      <div className="cw-section-title">Legal Terms</div>
-                      <div className="cw-section-desc">Compliance scope, NDA clause, terms & conditions</div>
-                    </div>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span className={`cw-section-badge ${sectionStatus.leg ? 'complete' : 'incomplete'}`}>
-                      {sectionStatus.leg ? 'Complete' : 'Incomplete'}
-                    </span>
-                    <ChevronDown size={18} className="cw-section-chevron" />
-                  </div>
-                </div>
-                <div className="cw-section-body">
-                  <div className="cw-field mb-3">
-                    <label>Terms & Conditions <span className="req">*</span></label>
-                    <textarea className="auth-input" rows="4" name="termsAndConditions" {...formik.getFieldProps('termsAndConditions')}></textarea>
-                    {formik.touched.termsAndConditions && formik.errors.termsAndConditions && <div className="auth-error">{formik.errors.termsAndConditions}</div>}
-                  </div>
-                  <div className="cw-field mb-3">
-                    <label>Confidentiality Clause</label>
-                    <textarea className="auth-input" rows="2" name="confidentialityClause" {...formik.getFieldProps('confidentialityClause')}></textarea>
-                  </div>
-                  <div className="cw-field mb-3">
-  <label>Supporting Legal Document</label>
-
-  <input
-    type="file"
-    id="legalDocument"
-    accept=".pdf,.doc,.docx"
-    style={{ display: "none" }}
-    onChange={(e) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        setLegalDocument(file);
-        extractPdfText(file);
-      }
-    }}
-  />
-
-  <label
-    htmlFor="legalDocument"
-    className="cw-upload-box"
-  >
-    <Upload size={20} />
-    <div>
-      <div className="fw-semibold">
-        {legalDocument
-          ? legalDocument.name
-          : "Upload Agreement / NDA / Legal Document"}
-      </div>
-      <small className="text-muted">
-        PDF, DOC, DOCX (Max 10 MB)
-      </small>
-    </div>
-  </label>
-
-  {legalDocument && (
-    <div className="cw-upload-preview">
-      <div className="d-flex align-items-center gap-2">
-        <FileText size={16} />
-        <span>{legalDocument.name}</span>
-      </div>
-      {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
-        <button
-          type="button"
-          className="btn-v2-primary"
-          style={{
-            background: "#f5810c",
-            color: "#fff",
-            border: "none",
-            padding: "6px 14px",
-            borderRadius: "6px",
-            fontSize: "12px",
-            fontWeight: "700",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            transition: "all 0.2s"
-          }}
-          onClick={() => setShowPdfPreview(true)}
-        >
-          View PDF
-        </button>
-      )}
-    </div>
-  )}
-</div>
-                </div>
-              </div>
-
-              <div className="cw-footer-actions">
-                <button type="button" className="btn-secondary" onClick={() => setStep(1)}>Back</button>
-                <button type="button" className="btn-primary" onClick={() => {
-                  formik.submitForm();
-                }}>
-                  Review Legal Document <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* SIDE PANEL: LIVE PREVIEW */}
-            <div className="cw-summary-panel">
-              <h4 className="cw-summary-title"><FileText size={16} /> Live SOW Preview</h4>
-              <div className="cw-preview-mini">
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Title</span>
-                  <span className="cw-preview-mini-value">{formik.values.contractTitle || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Creator Org</span>
-                  <span className="cw-preview-mini-value">{formik.values.clientCompany || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Vendor Org</span>
-                  <span className="cw-preview-mini-value">{formik.values.companyName || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Candidate</span>
-                  <span className="cw-preview-mini-value">{formik.values.candidateName || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Rate / Fee</span>
-                  <span className="cw-preview-mini-value">{formik.values.salary || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Location</span>
-                  <span className="cw-preview-mini-value">{formik.values.workLocation || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Notice</span>
-                  <span className="cw-preview-mini-value">{formik.values.noticePeriod || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">Start Date</span>
-                  <span className="cw-preview-mini-value">{formik.values.startDate || '-'}</span>
-                </div>
-                <div className="cw-preview-mini-row">
-                  <span className="cw-preview-mini-label">End Date</span>
-                  <span className="cw-preview-mini-value">{formik.values.endDate || '-'}</span>
-                </div>
-              </div>
-
-              <div style={{ marginTop: '24px', fontSize: '11px', color: '#94a3b8' }}>
-                <ShieldCheck size={14} style={{ display: 'inline', marginRight: '6px', color: '#10b981' }} />
-                Values filled on the left populate in real-time onto the final Article-structured contract template.
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 3: CONTRACT REVIEW ── */}
-        {step === 3 && (
-          <div className="cw-layout-full">
-            <div className="cw-card mb-4">
-              <div className="cw-card-header">
-                <h3 className="cw-card-title">
-                  <div className="cw-card-title-icon"><ShieldCheck size={18} /></div>
-                  Legal Document Peer Review
-                </h3>
-                <span className="text-muted" style={{ fontSize: 12 }}>Pre-execution Draft</span>
-              </div>
-
-              {legalDocument && (
-                <div className="d-flex justify-content-between align-items-center mb-4 p-3 border rounded-3" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
-                  <div className="d-flex align-items-center gap-2">
-                    <FileText size={18} style={{ color: '#f5810c' }} />
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
-                      Uploaded Legal Document: <strong>{legalDocument.name}</strong>
-                    </span>
-                  </div>
-                  {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
-                    <button
-                      type="button"
-                      className="btn-v2-primary"
-                      style={{
-                        background: "#f5810c",
-                        color: "#fff",
-                        border: "none",
-                        padding: "6px 14px",
-                        borderRadius: "6px",
-                        fontSize: "12px",
-                        fontWeight: "700",
-                        cursor: "pointer"
-                      }}
-                      onClick={() => setShowPdfPreview(true)}
-                    >
-                      View PDF
-                    </button>
-                  )}
                 </div>
               )}
 
-              <div className="cw-legal-doc">
-                <div className="cw-legal-watermark">CONFIDENTIAL DRAFT</div>
-
-                <div className="cw-legal-header">
-                  <div>
-                    <span className="cw-legal-org-label">Creator Organization</span>
-                    <div className="cw-legal-org-name">{formik.values.clientCompany}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span className="cw-legal-org-label">Vendor Organization</span>
-                    <div className="cw-legal-org-name accent">{formik.values.companyName}</div>
-                  </div>
-                </div>
-
-                <div className="cw-legal-title-bar">
-                  {formik.values.contractTitle}
-                </div>
-
-                <div className="cw-legal-grid">
-                  <div>
-                    <span className="cw-legal-field-label">Designated Resource</span>
-                    <div className="cw-legal-field-value">{formik.values.candidateName}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Project Position</span>
-                    <div className="cw-legal-field-value">{formik.values.jobTitle}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Employment Terms</span>
-                    <div className="cw-legal-field-value">{formik.values.employmentType}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Location / Site</span>
-                    <div className="cw-legal-field-value">{formik.values.workLocation}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Effective Commencement</span>
-                    <div className="cw-legal-field-value">{formik.values.startDate}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">End Date Constraint</span>
-                    <div className="cw-legal-field-value">{formik.values.endDate}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Fees / Remittance Rate</span>
-                    <div className="cw-legal-field-value">{formik.values.salary}</div>
-                  </div>
-                  <div>
-                    <span className="cw-legal-field-label">Payment Cycle</span>
-                    <div className="cw-legal-field-value">{formik.values.paymentCycle}</div>
-                  </div>
-                </div>
-
-                <div className="cw-legal-article">
-                  <h4>Article I: Scope of Engagement</h4>
-                  <p>
-                    This statement of work outlines professional services provided by <strong>{formik.values.companyName}</strong> through the designated resource <strong>{formik.values.candidateName}</strong> to the Creator Organization <strong>{formik.values.clientCompany}</strong>. The scope of assignment maps directly to duties aligned under the position of {formik.values.jobTitle}.
-                  </p>
-                </div>
-
-                <div className="cw-legal-article">
-                  <h4>Article II: Compliance & Terms</h4>
-                  <div className="legal-quote">
-                    {formik.values.termsAndConditions}
-                  </div>
-                </div>
-
-                <div className="cw-legal-article">
-                  <h4>Article III: Confidentiality & NDAs</h4>
-                  <p>
-                    {formik.values.confidentialityClause}
-                  </p>
-                </div>
-
-                <div className="cw-legal-sig-grid">
-                  <div>
-                    <div className="cw-legal-sig-line"></div>
-                    <div className="cw-legal-sig-name">Authorized Client Signatory</div>
-                    <div className="cw-legal-sig-role">Hiring Manager representing {formik.values.clientCompany}</div>
-                  </div>
-                  <div>
-                    <div className="cw-legal-sig-line"></div>
-                    <div className="cw-legal-sig-name">Authorized Vendor Signatory</div>
-                    <div className="cw-legal-sig-role">Bench Sales representing {formik.values.companyName}</div>
-                  </div>
-                </div>
-
-                <div className="cw-legal-footer">
-                  <span>REF ID: SECURE-WIZ-DRAFT-{Date.now().toString().slice(-6)}</span>
-                  <span>CONFIDENTIAL MASTER SERVICE WORK ORDER</span>
-                  <span>PAGE 1 OF 1</span>
-                </div>
-              </div>
-
-              <div className="cw-footer-actions">
-                <button type="button" className="btn-secondary" onClick={() => setStep(2)}>Back</button>
-                <button type="button" className="btn-primary" onClick={runGenerationSimulation}>
-                  Build & Generate Contract <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 4: GENERATION PROGRESS ── */}
-        {step === 4 && (
-          <div className="cw-card">
-            <div className="cw-gen-container">
-              <div className="cw-gen-ring">
-                <div className="cw-gen-ring-inner">
-                  <FileText size={36} color="#f5810c" />
-                </div>
-              </div>
-              <h3 className="cw-gen-title">Secure Contract Assembly</h3>
-              <p className="cw-gen-sub">Compiling details, appending NDAs, verifying compliance policies...</p>
-
-              <div className="cw-gen-steps">
-                {[
-                  { label: 'Collecting Details', index: 0 },
-                  { label: 'Preparing Document Layout', index: 1 },
-                  { label: 'Generating Security Metadata & Trace ID', index: 2 },
-                  { label: 'Generating Legal PDF Representation', index: 3 },
-                  { label: 'Ready for Authentication & Execution', index: 4 }
-                ].map((s) => (
-                  <div
-                    key={s.index}
-                    className={`cw-gen-step ${generationStep === s.index ? 'active' : ''} ${generationStep > s.index ? 'done' : ''}`}
-                  >
-                    <div className="cw-gen-step-dot">
-                      {generationStep > s.index ? <Check size={14} /> : s.index + 1}
+              {/* ── STEP 3: CONTRACT REVIEW ── */}
+              {step === 3 && (
+                <div className="cw-layout-full">
+                  <div className="cw-card mb-4">
+                    <div className="cw-card-header">
+                      <h3 className="cw-card-title">
+                        <div className="cw-card-title-icon"><ShieldCheck size={18} /></div>
+                        Legal Document Peer Review
+                      </h3>
+                      <span className="text-muted" style={{ fontSize: 12 }}>Pre-execution Draft</span>
                     </div>
-                    <div className="cw-gen-step-label">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* ── STEP 5: APPROVAL & SIGNATURE ── */}
-        {step === 5 && (
-          <div className="cw-layout">
-            <div className="cw-card">
-              <div className="cw-card-header">
-                <h3 className="cw-card-title">
-                  <div className="cw-card-title-icon"><PenTool size={18} /></div>
-                  Authentication & Execution
-                </h3>
-              </div>
+                    {legalDocument && (
+                      <div className="d-flex justify-content-between align-items-center mb-4 p-3 border rounded-3" style={{ background: '#f8fafc', borderColor: '#e2e8f0' }}>
+                        <div className="d-flex align-items-center gap-2">
+                          <FileText size={18} style={{ color: '#f5810c' }} />
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
+                            Uploaded Legal Document: <strong>{legalDocument.name}</strong>
+                          </span>
+                        </div>
+                        {(legalDocument.type === "application/pdf" || legalDocument.name.toLowerCase().endsWith(".pdf")) && (
+                          <button
+                            type="button"
+                            className="btn-v2-primary"
+                            style={{
+                              color: "#fff",
+                              border: "none",
+                              padding: "6px 14px",
+                              borderRadius: "6px",
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              cursor: "pointer"
+                            }}
+                            onClick={() => setShowPdfPreview(true)}
+                          >
+                            View PDF
+                          </button>
+                        )}
+                      </div>
+                    )}
 
-              {/* Roles Summary Cards */}
-              <div className="cw-approval-grid">
-                <div className="cw-role-card">
-                  <div className="cw-role-avatar creator">HM</div>
-                  <div>
-                    <div className="cw-role-name">Hiring Side Signatory</div>
-                    <div className="cw-role-type">Creator: {displayCreatorRole}</div>
-                  </div>
-                  <span className="cw-role-badge active">Active</span>
-                </div>
-                <div className="cw-role-card">
-                  <div className="cw-role-avatar approver">BS</div>
-                  <div>
-                    <div className="cw-role-name">Vendor Side Signatory</div>
-                    <div className="cw-role-type">Approver: Bench Sales Representative</div>
-                  </div>
-                  <span className="cw-role-badge pending">Pending</span>
-                </div>
-              </div>
+                    {/* Template Picker removed – Executive style applied exclusively */}
 
-              {/* Consent alert banner */}
-              <div className="alert-card info-theme mb-4" style={{ textAlign: 'left', padding: '16px', borderRadius: '12px' }}>
-                <div className="d-flex gap-3">
-                  <ShieldCheck size={20} color="#3b82f6" />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 13 }}>Electronic Consent Declaration</div>
-                    <p style={{ margin: '4px 0 0', fontSize: 11 }}>By completing your signature below, you confirm absolute consent to executing this document digitally under active ESIGN compliance frameworks.</p>
-                  </div>
-                </div>
-              </div>
+                    <div ref={legalDocRef} className="cw-legal-doc template-executive">
+                      <div className="cw-legal-watermark">CONFIDENTIAL DRAFT</div>
 
-              {/* Signature tabs selector */}
-              <div className="sig-tabs">
-                <button
-                  className={`sig-tab ${signatureType === 'draw' ? 'active' : ''}`}
-                  onClick={() => setSignatureType('draw')}
-                >
-                  Draw Signature
-                </button>
-                <button
-                  className={`sig-tab ${signatureType === 'upload' ? 'active' : ''}`}
-                  onClick={() => setSignatureType('upload')}
-                >
-                  Upload File
-                </button>
-              </div>
+                      <div className="cw-legal-header">
+                        <div>
+                          <span className="cw-legal-org-label">Creator Organization</span>
+                          <div className="cw-legal-org-name">{formik.values.clientCompany}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span className="cw-legal-org-label">Vendor Organization</span>
+                          <div className="cw-legal-org-name accent">{formik.values.companyName}</div>
+                        </div>
+                      </div>
 
-              {/* Canvas / File area */}
-              {signatureType === 'draw' ? (
-                <div className="sig-canvas-wrapper" style={{ height: 180 }}>
-                  <canvas
-                    ref={canvasRef}
-                    className="sig-canvas"
-                    width={700}
-                    height={180}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseOut={stopDrawing}
-                    onTouchStart={startDrawing}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDrawing}
-                  />
-                  {!signatureData && (
-                    <div className="sig-canvas-placeholder">
-                      <PenTool size={20} />
-                      <span>Draw signature inside this canvas frame</span>
+                      <div className="cw-legal-title-bar">
+                        {formik.values.contractTitle}
+                      </div>
+
+                      <div className="cw-legal-grid">
+                        <div>
+                          <span className="cw-legal-field-label">Designated Resource</span>
+                          <div className="cw-legal-field-value">{formik.values.candidateName}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Project Position</span>
+                          <div className="cw-legal-field-value">{formik.values.jobTitle}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Employment Terms</span>
+                          <div className="cw-legal-field-value">{formik.values.employmentType}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Location / Site</span>
+                          <div className="cw-legal-field-value">{formik.values.workLocation}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Effective Commencement</span>
+                          <div className="cw-legal-field-value">{formik.values.startDate}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">End Date Constraint</span>
+                          <div className="cw-legal-field-value">{formik.values.endDate}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Fees / Remittance Rate</span>
+                          <div className="cw-legal-field-value">{formik.values.salary}</div>
+                        </div>
+                        <div>
+                          <span className="cw-legal-field-label">Payment Cycle</span>
+                          <div className="cw-legal-field-value">{formik.values.paymentCycle}</div>
+                        </div>
+                      </div>
+
+                      <div className="cw-legal-article">
+                        <h4>Article I: Scope of Engagement</h4>
+                        <p>
+                          This statement of work outlines professional services provided by <strong>{formik.values.companyName}</strong> through the designated resource <strong>{formik.values.candidateName}</strong> to the Creator Organization <strong>{formik.values.clientCompany}</strong>. The scope of assignment maps directly to duties aligned under the position of {formik.values.jobTitle}.
+                        </p>
+                      </div>
+
+                      <div className="cw-legal-article">
+                        <h4>Article II: Compliance & Terms</h4>
+                        <div className="legal-quote">
+                          {formik.values.termsAndConditions}
+                        </div>
+                      </div>
+
+                      <div className="cw-legal-article">
+                        <h4>Article III: Confidentiality & NDAs</h4>
+                        <p>
+                          {formik.values.confidentialityClause}
+                        </p>
+                      </div>
+
+                      <div className="cw-legal-sig-grid">
+                        <div>
+                          <div className="cw-legal-sig-line"></div>
+                          <div className="cw-legal-sig-name">Authorized Client Signatory</div>
+                          <div className="cw-legal-sig-role">Hiring Manager representing {formik.values.clientCompany}</div>
+                        </div>
+                        <div>
+                          <div className="cw-legal-sig-line"></div>
+                          <div className="cw-legal-sig-name">Authorized Vendor Signatory</div>
+                          <div className="cw-legal-sig-role">Bench Sales representing {formik.values.companyName}</div>
+                        </div>
+                      </div>
+
+                      <div className="cw-legal-footer">
+                        <span>REF ID: SECURE-WIZ-DRAFT-{Date.now().toString().slice(-6)}</span>
+                        <span>CONFIDENTIAL MASTER SERVICE WORK ORDER</span>
+                        <span>PAGE 1 OF 1</span>
+                      </div>
                     </div>
-                  )}
-                  <button className="btn-secondary" style={{ position: 'absolute', right: 12, bottom: 12, padding: '4px 12px', fontSize: 11 }} onClick={clearSignature}>Clear</button>
-                </div>
-              ) : (
-                <div className="sig-canvas-wrapper" style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-                  {signatureData ? (
-                    <img src={signatureData} alt="Signature Upload Preview" className="sig-preview" style={{ maxWidth: 260 }} />
-                  ) : (
-                    <Upload size={28} color="#cbd5e1" />
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => setSignatureData(reader.result);
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    id="sig-upload-wizard"
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="sig-upload-wizard" className="btn-secondary" style={{ cursor: 'pointer' }}>
-                    {signatureData ? 'Replace Image' : 'Select Image File'}
-                  </label>
+
+                    <div className="cw-footer-actions">
+                      <button type="button" className="btn-secondary" onClick={() => setStep(2)}>Back</button>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <button type="button" className="cw-download-btn" onClick={downloadContractAsImage}>
+                          <Download size={14} /> Download Preview
+                        </button>
+                        <button type="button" className="btn-primary" onClick={runGenerationSimulation}>
+                          Build & Generate Contract <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Mutual acceptance audit trail timeline */}
-              <div className="cw-audit">
-                <h4 className="cw-audit-title"><Clock size={16} /> Audit Trail & History</h4>
+              {/* ── STEP 4: GENERATION PROGRESS ── */}
+              {step === 4 && (
+                <div className="cw-card">
+                  <div className="cw-gen-container">
+                    <div className="cw-gen-ring">
+                      <div className="cw-gen-ring-inner">
+                        <FileText size={36} color="#f5810c" />
+                      </div>
+                    </div>
+                    <h3 className="cw-gen-title">Secure Contract Assembly</h3>
+                    <p className="cw-gen-sub">Compiling details, appending NDAs, verifying compliance policies...</p>
 
-                <div className="cw-audit-item done">
-                  <div className="cw-audit-dot"><Check size={12} /></div>
-                  <div className="cw-audit-content">
-                    <div className="cw-audit-text">Hiring Manager created work order terms</div>
-                    <div className="cw-audit-time">Just now • {new Date().toLocaleTimeString()}</div>
+                    <div className="cw-gen-steps">
+                      {[
+                        { label: 'Collecting Details', index: 0 },
+                        { label: 'Preparing Document Layout', index: 1 },
+                        { label: 'Generating Security Metadata & Trace ID', index: 2 },
+                        { label: 'Generating Legal PDF Representation', index: 3 },
+                        { label: 'Ready for Authentication & Execution', index: 4 }
+                      ].map((s) => (
+                        <div
+                          key={s.index}
+                          className={`cw-gen-step ${generationStep === s.index ? 'active' : ''} ${generationStep > s.index ? 'done' : ''}`}
+                        >
+                          <div className="cw-gen-step-dot">
+                            {generationStep > s.index ? <Check size={14} /> : s.index + 1}
+                          </div>
+                          <div className="cw-gen-step-label">{s.label}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="cw-audit-item active">
-                  <div className="cw-audit-dot"><PenTool size={12} /></div>
-                  <div className="cw-audit-content">
-                    <div className="cw-audit-text">Hiring Manager authentication verification</div>
-                    <div className="cw-audit-time">In progress</div>
+              {/* ── STEP 5: APPROVAL & SIGNATURE ── */}
+              {step === 5 && (
+                <div className="cw-layout">
+                  <div className="cw-card">
+                    <div className="cw-card-header">
+                      <h3 className="cw-card-title">
+                        <div className="cw-card-title-icon"><PenTool size={18} /></div>
+                        Authentication & Execution
+                      </h3>
+                    </div>
+
+                    {/* Roles Summary Cards */}
+                    <div className="cw-approval-grid">
+                      <div className="cw-role-card">
+                        <div className="cw-role-avatar creator">HM</div>
+                        <div>
+                          <div className="cw-role-name">Hiring Side Signatory</div>
+                          <div className="cw-role-type">Creator: {displayCreatorRole}</div>
+                        </div>
+                        <span className="cw-role-badge active">Active</span>
+                      </div>
+                      <div className="cw-role-card">
+                        <div className="cw-role-avatar approver">BS</div>
+                        <div>
+                          <div className="cw-role-name">Vendor Side Signatory</div>
+                          <div className="cw-role-type">Approver: Bench Sales Representative</div>
+                        </div>
+                        <span className="cw-role-badge pending">Pending</span>
+                      </div>
+                    </div>
+
+                    {/* Consent alert banner */}
+                    <div className="alert-card info-theme mb-4" style={{ textAlign: 'left', padding: '16px', borderRadius: '12px' }}>
+                      <div className="d-flex gap-3">
+                        <ShieldCheck size={20} color="#3b82f6" />
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13 }}>Electronic Consent Declaration</div>
+                          <p style={{ margin: '4px 0 0', fontSize: 11 }}>By completing your signature below, you confirm absolute consent to executing this document digitally under active ESIGN compliance frameworks.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Signature tabs selector */}
+                    <div className="sig-tabs">
+                      <button
+                        className={`sig-tab ${signatureType === 'draw' ? 'active' : ''}`}
+                        onClick={() => setSignatureType('draw')}
+                      >
+                        Draw Signature
+                      </button>
+                      <button
+                        className={`sig-tab ${signatureType === 'upload' ? 'active' : ''}`}
+                        onClick={() => setSignatureType('upload')}
+                      >
+                        Upload File
+                      </button>
+                    </div>
+
+                    {/* Canvas / File area */}
+                    {signatureType === 'draw' ? (
+                      <div className="sig-canvas-wrapper" style={{ height: 180 }}>
+                        <canvas
+                          ref={canvasRef}
+                          className="sig-canvas"
+                          width={700}
+                          height={180}
+                          onMouseDown={startDrawing}
+                          onMouseMove={draw}
+                          onMouseUp={stopDrawing}
+                          onMouseOut={stopDrawing}
+                          onTouchStart={startDrawing}
+                          onTouchMove={draw}
+                          onTouchEnd={stopDrawing}
+                        />
+                        {!signatureData && (
+                          <div className="sig-canvas-placeholder">
+                            <PenTool size={20} />
+                            <span>Draw signature inside this canvas frame</span>
+                          </div>
+                        )}
+                        <button className="btn-secondary" style={{ position: 'absolute', right: 12, bottom: 12, padding: '4px 12px', fontSize: 11 }} onClick={clearSignature}>Clear</button>
+                      </div>
+                    ) : (
+                      <div className="sig-canvas-wrapper" style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+                        {signatureData ? (
+                          <img src={signatureData} alt="Signature Upload Preview" className="sig-preview" style={{ maxWidth: 260 }} />
+                        ) : (
+                          <Upload size={28} color="#cbd5e1" />
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => setSignatureData(reader.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          id="sig-upload-wizard"
+                          style={{ display: 'none' }}
+                        />
+                        <label htmlFor="sig-upload-wizard" className="btn-secondary" style={{ cursor: 'pointer' }}>
+                          {signatureData ? 'Replace Image' : 'Select Image File'}
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Mutual acceptance audit trail timeline */}
+                    <div className="cw-audit">
+                      <h4 className="cw-audit-title"><Clock size={16} /> Audit Trail & History</h4>
+
+                      <div className="cw-audit-item done">
+                        <div className="cw-audit-dot"><Check size={12} /></div>
+                        <div className="cw-audit-content">
+                          <div className="cw-audit-text">Hiring Manager created work order terms</div>
+                          <div className="cw-audit-time">Just now • {new Date().toLocaleTimeString()}</div>
+                        </div>
+                      </div>
+
+                      <div className="cw-audit-item active">
+                        <div className="cw-audit-dot"><PenTool size={12} /></div>
+                        <div className="cw-audit-content">
+                          <div className="cw-audit-text">Hiring Manager authentication verification</div>
+                          <div className="cw-audit-time">In progress</div>
+                        </div>
+                      </div>
+
+                      <div className="cw-audit-item">
+                        <div className="cw-audit-dot"><Lock size={12} /></div>
+                        <div className="cw-audit-content">
+                          <div className="cw-audit-text">Vendor Bench Sales signature request</div>
+                          <div className="cw-audit-time">Awaiting shared stage</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="cw-footer-actions">
+                      <button type="button" className="btn-secondary" onClick={() => setStep(3)}>Back</button>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={handleSaveContractSubmit}
+                        disabled={isSavingContract}
+                      >
+                        {isSavingContract ? 'Publishing SOW...' : 'Approve & Execute Contract'} <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* SIDE PANEL: AUDIT HISTORY */}
+                  <div className="cw-summary-panel">
+                    <h4 className="cw-summary-title"><ShieldCheck size={16} /> Security Metadata</h4>
+
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Trace Status</span>
+                      <span className="cw-summary-value text-success">Compliant</span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Hashing</span>
+                      <span className="cw-summary-value">SHA-256 Enabled</span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">Signature Standard</span>
+                      <span className="cw-summary-value">ESIGN & UETA</span>
+                    </div>
+                    <div className="cw-summary-row">
+                      <span className="cw-summary-label">IP Logging</span>
+                      <span className="cw-summary-value">Automated</span>
+                    </div>
+
+                    <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>
+                      <Lock size={14} style={{ display: 'inline', marginRight: '6px', color: '#f5810c' }} />
+                      Once fully executed, all parties receive an automated mail notifications containing trace keys to view secure PDF files.
+                    </div>
                   </div>
                 </div>
-
-                <div className="cw-audit-item">
-                  <div className="cw-audit-dot"><Lock size={12} /></div>
-                  <div className="cw-audit-content">
-                    <div className="cw-audit-text">Vendor Bench Sales signature request</div>
-                    <div className="cw-audit-time">Awaiting shared stage</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="cw-footer-actions">
-                <button type="button" className="btn-secondary" onClick={() => setStep(3)}>Back</button>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={handleSaveContractSubmit}
-                  disabled={isSavingContract}
-                >
-                  {isSavingContract ? 'Publishing SOW...' : 'Approve & Execute Contract'} <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* SIDE PANEL: AUDIT HISTORY */}
-            <div className="cw-summary-panel">
-              <h4 className="cw-summary-title"><ShieldCheck size={16} /> Security Metadata</h4>
-
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Trace Status</span>
-                <span className="cw-summary-value text-success">Compliant</span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Hashing</span>
-                <span className="cw-summary-value">SHA-256 Enabled</span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">Signature Standard</span>
-                <span className="cw-summary-value">ESIGN & UETA</span>
-              </div>
-              <div className="cw-summary-row">
-                <span className="cw-summary-label">IP Logging</span>
-                <span className="cw-summary-value">Automated</span>
-              </div>
-
-              <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>
-                <Lock size={14} style={{ display: 'inline', marginRight: '6px', color: '#f5810c' }} />
-                Once fully executed, all parties receive an automated mail notifications containing trace keys to view secure PDF files.
-              </div>
+              )}
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* ── STEP 6: CONFIRMATION ── */}
         {step === 6 && (
@@ -1617,7 +1751,7 @@ const ContractCreate = () => {
           <div className="cw-offcanvas-panel">
             <div className="cw-offcanvas-header">
               <h4 className="cw-offcanvas-title">
-                <FileText size={18} style={{ color: '#f5810c' }} />
+                <FileText size={12} style={{ color: '#5a5de8' }} />
                 Legal Document Preview: {legalDocument?.name}
               </h4>
               <button

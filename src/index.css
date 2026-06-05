@@ -168,19 +168,17 @@ select {
   padding: 9px;
   border-radius: 10px;
   border: none;
-  background: #5a5de8;
+  background: #5a5de8 !important;
   color: #ffffff;
   font-size: 12px;
   font-weight: 700;
   font-family: "Inter", sans-serif;
   cursor: pointer;
   transition: all 0.18s ease;
-  box-shadow: 0 4px 12px rgba(91, 91, 214, 0.2);
 }
 
 .btn-v2-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(91, 91, 214, 0.3);
 }
 
 .btn-v2-disabled {

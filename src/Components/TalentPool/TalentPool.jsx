@@ -442,7 +442,7 @@ const TalentPool = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [showCreateJobModal, setShowCreateJobModal] = useState(false);
-const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
 
   const activeJobId = selectedJobId;
@@ -788,11 +788,11 @@ const [selectedCandidate, setSelectedCandidate] = useState(null);
         candidate.role?.toLowerCase().trim()
     );
 
-     if (!matchingJob) {
-    setSelectedCandidate(candidate);
-    setShowCreateJobModal(true);
-    return;
-  }
+    if (!matchingJob) {
+      setSelectedCandidate(candidate);
+      setShowCreateJobModal(true);
+      return;
+    }
     if (!activeJobId) {
       toast.error("Please select a Job from the filters first to shortlist.");
       return;
@@ -1212,117 +1212,117 @@ const [selectedCandidate, setSelectedCandidate] = useState(null);
         ) : null}
 
         {showCreateJobModal && (
-  <div
-    style={{
-      position: "fixed",
-      inset: 0,
-      background: "rgba(15,23,42,0.55)",
-      backdropFilter: "blur(4px)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-    }}
-  >
-    <div
-      style={{
-        width: "420px",
-        background: "#fff",
-        borderRadius: "20px",
-        padding: "28px",
-        boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
-      }}
-    >
-      <div
-        style={{
-          width: "64px",
-          height: "64px",
-          borderRadius: "50%",
-          background: "#fff7ed",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "0 auto 16px",
-        }}
-      >
-        <FiBriefcase size={28} color="#f97316" />
-      </div>
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(15,23,42,0.55)",
+              backdropFilter: "blur(4px)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            <div
+              style={{
+                width: "420px",
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "28px",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.15) !important",
+              }}
+            >
+              <div
+                style={{
+                  width: "64px",
+                  height: "64px",
+                  borderRadius: "50%",
+                  background: "#5a5de8",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <FiBriefcase size={28} color="#ffffffff" />
+              </div>
 
-      <h3
-        style={{
-          textAlign: "center",
-          fontWeight: 700,
-          marginBottom: "10px",
-          color: "#0f172a",
-        }}
-      >
-        Job Not Found
-      </h3>
+              <h3
+                style={{
+                  textAlign: "center",
+                  fontWeight: 700,
+                  marginBottom: "10px",
+                  color: "#0f172a",
+                }}
+              >
+                Job Not Found
+              </h3>
 
-      <p
-        style={{
-          textAlign: "center",
-          color: "#64748b",
-          marginBottom: "24px",
-          lineHeight: "1.6",
-        }}
-      >
-        <strong>{selectedCandidate?.role}</strong> job role is not available.
-        <br />
-        Would you like to create a new job posting?
-      </p>
+              <p
+                style={{
+                  textAlign: "center",
+                  color: "#64748b",
+                  marginBottom: "24px",
+                  lineHeight: "1.6",
+                }}
+              >
+                <strong>{selectedCandidate?.role}</strong> job role is not available.
+                <br />
+                Would you like to create a new job posting?
+              </p>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-        }}
-      >
-        <button
-          onClick={() => {
-            setShowCreateJobModal(false);
-            setSelectedCandidate(null);
-          }}
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "10px",
-            border: "1px solid #e2e8f0",
-            background: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Cancel
-        </button>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                }}
+              >
+                <button
+                  onClick={() => {
+                    setShowCreateJobModal(false);
+                    setSelectedCandidate(null);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "1px solid #e2e8f0",
+                    background: "#fff",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
 
-        <button
-          onClick={() => {
-            navigate("/Admin/user-post-new-positions", {
-              state: {
-                autoFillRole: selectedCandidate?.role,
-              },
-            });
+                <button
+                  onClick={() => {
+                    navigate("/Admin/user-post-new-positions", {
+                      state: {
+                        autoFillRole: selectedCandidate?.role,
+                      },
+                    });
 
-            setShowCreateJobModal(false);
-          }}
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "10px",
-            border: "none",
-            background: "#f5810c",
-            color: "#fff",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Create Job
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                    setShowCreateJobModal(false);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#5a5de8",
+                    color: "#fff",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Create Job
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {successJobId && (
           <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2100 }} onClick={() => { }}>

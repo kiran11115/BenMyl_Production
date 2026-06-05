@@ -1,7 +1,195 @@
 /* =====================================================================
    contractwizard.css – 5-Step Contract Wizard
-   Extends BenMyl design system (Orange #f5810c + Slate #1e293b)
+   Extends BenMyl design system (Orange #5a5de8 + Slate #1e293b)
    ===================================================================== */
+
+/* ════════════════════════════════════════════════════
+   HERO CARD – matches other page headers
+═══════════════════════════════════════════════════ */
+.cw-hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f2044 100%);
+  border-radius: 20px;
+  padding: 32px 40px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18);
+}
+.cw-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90,93,232,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cw-hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cw-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.cw-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(90, 93, 232, 0.2);
+  border: 1px solid rgba(90, 93, 232, 0.35);
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a5b4fc;
+  width: fit-content;
+}
+
+.cw-hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.cw-hero-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.cw-hero-right {
+  display: flex;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.cw-hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  min-width: 80px;
+}
+.cw-hero-stat-num {
+  font-size: 18px;
+  font-weight: 900;
+  color: #e2e8f0;
+  letter-spacing: -0.02em;
+}
+.cw-hero-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* breadcrumb-nav used inside hero */
+.cw-hero-left .breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cw-hero-left .breadcrumb-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.cw-hero-left .breadcrumb-link:hover { color: #a5b4fc; }
+.cw-hero-left .breadcrumb-separator { color: #334155; }
+.cw-hero-left .breadcrumb-current {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+@media(max-width: 768px) {
+  .cw-hero-card { flex-direction: column; align-items: flex-start; gap: 24px; padding: 24px; }
+  .cw-hero-right { width: 100%; justify-content: space-around; }
+  .cw-hero-title { font-size: 22px; }
+}
+
+/* ════════════════════════════════════════════════════
+   LEGAL TERMS WRAPPER – Step 2 elegant section
+═══════════════════════════════════════════════════ */
+.cw-legal-terms-wrapper {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cw-legal-terms-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cw-legal-terms-header svg { color: #5a5de8; }
+.cw-legal-terms-required {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  background: #fef2f2;
+  color: #ef4444;
+  border-radius: 20px;
+  border: 1px solid #fecaca;
+}
+
+.cw-legal-textarea {
+  font-size: 13.5px !important;
+  line-height: 1.75 !important;
+  min-height: 120px;
+  resize: vertical;
+  font-family: 'Inter', 'Segoe UI', sans-serif !important;
+  letter-spacing: 0.01em;
+  padding: 14px 16px !important;
+  border-radius: 10px !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cw-legal-textarea:focus {
+  border-color: #5a5de8 !important;
+  box-shadow: 0 0 0 3px rgba(90, 93, 232, 0.1) !important;
+}
 
 /* ── 1. Wizard Shell ── */
 .cw-shell { margin: 0 auto; padding-bottom: 80px; }
@@ -45,7 +233,7 @@
 .cw-progress-line.done { background: #10b981; }
 .cw-progress-line.active::after {
   content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 50%;
-  background: linear-gradient(90deg, #f5810c, #10b981);
+  background: linear-gradient(90deg, #5a5de8, #10b981);
   animation: cwLinePulse 1.8s ease-in-out infinite;
 }
 @keyframes cwLinePulse { 0%,100%{width:30%} 50%{width:70%} }
@@ -61,8 +249,140 @@
 }
 @keyframes cwPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
 
-/* ── 3. Layout: Main + Sidebar ── */
-.cw-layout { display: grid; grid-template-columns: 1fr 380px; gap: 28px; }
+/* ── 3. Checklist Layout ── */
+.cw-checklist-container {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  align-items: flex-start;
+}
+
+@media(max-width:992px) {
+  .cw-checklist-container { flex-direction: column; }
+}
+
+.cw-checklist-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+  box-shadow: 0 4px 20px -4px rgba(15,23,42,.06);
+}
+
+@media(max-width:992px) {
+  .cw-checklist-sidebar { width: 100%; position: static; display: flex; flex-direction: column; }
+  .cw-checklist-steps { display: flex; overflow-x: auto; padding-bottom: 8px; gap: 16px; }
+  .cw-checklist-item { flex-direction: column; align-items: center; text-align: center; }
+  .cw-checklist-item-indicator { flex-direction: row; align-items: center; }
+  .cw-checklist-item-line { width: 40px; height: 2px; margin: 0 8px; }
+}
+
+.cw-checklist-header {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cw-checklist-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.cw-checklist-item:last-child .cw-checklist-item-line {
+  display: none;
+}
+
+.cw-checklist-item-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cw-checklist-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.cw-checklist-item-line {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  background: #e2e8f0;
+  margin: 4px 0;
+  transition: all 0.3s ease;
+}
+
+.cw-checklist-item.active .cw-checklist-item-icon {
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
+  box-shadow: 0 4px 14px rgba(30,41,59,.25);
+  transform: scale(1.05);
+}
+
+.cw-checklist-item.done .cw-checklist-item-icon {
+  background: #10b981;
+  color: #fff;
+  border-color: #10b981;
+}
+
+.cw-checklist-item.done .cw-checklist-item-line {
+  background: #10b981;
+}
+
+.cw-checklist-item-info {
+  padding-top: 6px;
+  padding-bottom: 24px;
+}
+
+.cw-checklist-item-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.cw-checklist-item-sub {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.cw-checklist-item.active .cw-checklist-item-label {
+  color: #1e293b;
+}
+
+.cw-checklist-item.done .cw-checklist-item-label {
+  color: #10b981;
+}
+
+.cw-checklist-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Layout: Main + Sidebar ── */
+.cw-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
 .cw-layout-full { display: block; }
 @media(max-width:1100px){ .cw-layout{grid-template-columns:1fr} }
 
@@ -89,7 +409,7 @@
 .cw-card-title-icon {
   width: 32px; height: 32px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(245,129,12,.08); color: #f5810c;
+  background: #3b82f6; color: #ffffff;
 }
 
 /* ── Section Completion Badge ── */
@@ -120,7 +440,7 @@
 .cw-section-icon {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(245,129,12,.08); color: #f5810c; flex-shrink: 0;
+  background: 5a5de8; color: #ffffff; flex-shrink: 0;
 }
 .cw-section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
 .cw-section-desc { font-size: 11px; color: #64748b; }
@@ -187,20 +507,20 @@
   border: 2px solid #e2e8f0; border-radius: 14px; padding: 18px;
   cursor: pointer; transition: all .25s; position: relative; background: #fff;
 }
-.cw-candidate-card:hover { border-color: #f5810c; transform: translateY(-2px); box-shadow: 0 8px 20px -6px rgba(245,129,12,.12); }
+.cw-candidate-card:hover { border-color: #5a5de8; transform: translateY(-2px); box-shadow: 0 8px 20px -6px rgba(245,129,12,.12); }
 .cw-candidate-card.selected {
-  border-color: #f5810c; background: linear-gradient(135deg,#fff7ed,#fff);
+  border-color: #5a5de8; background: linear-gradient(135deg,#fff7ed,#fff);
   box-shadow: 0 0 0 3px rgba(245,129,12,.12);
 }
 .cw-candidate-card.selected::after {
   content: '✓'; position: absolute; top: 10px; right: 10px;
-  width: 22px; height: 22px; border-radius: 50%; background: #f5810c; color: #fff;
+  width: 22px; height: 22px; border-radius: 50%; background: #5a5de8; color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 800;
 }
 .cw-candidate-avatar {
   width: 44px; height: 44px; border-radius: 12px;
-  background: linear-gradient(135deg,#f5810c,#ea580c); color: #fff;
+  background: linear-gradient(135deg,#5a5de8,#ea580c); color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; font-weight: 800; margin-bottom: 10px;
 }
@@ -214,38 +534,87 @@
   border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 16px;
   cursor: pointer; transition: all .2s; background: #fff;
 }
-.cw-job-card:hover { border-color: #f5810c; }
-.cw-job-card.selected { border-color: #f5810c; background: #fff7ed; }
+.cw-job-card:hover { border-color: #5a5de8; }
+.cw-job-card.selected { border-color: #5a5de8; background: #fff7ed; }
 .cw-job-card-title { font-size: 13px; font-weight: 700; color: #1e293b; }
 .cw-job-card-company { font-size: 11px; color: #64748b; }
 
 /* Summary Panel */
 .cw-summary-panel {
-  background: linear-gradient(135deg,#0f172a,#1e293b);
-  border-radius: 16px; padding: 24px; color: #fff;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 28px;
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 .cw-summary-title {
-  font-size: 13px; font-weight: 800; color: #f5810c;
-  text-transform: uppercase; letter-spacing: .05em; margin-bottom: 16px;
-  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 800; color: #818cf8;
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
 }
 .cw-summary-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06);
-  font-size: 12px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 13px;
 }
 .cw-summary-row:last-child { border-bottom: none; }
-.cw-summary-label { color: #94a3b8; font-weight: 500; }
-.cw-summary-value { color: #fff; font-weight: 700; }
-.cw-summary-value.empty { color: #475569; font-style: italic; }
+.cw-summary-label { color: #cbd5e1; font-weight: 500; }
+.cw-summary-value { color: #f8fafc; font-weight: 700; text-align: right; max-width: 60%; }
+.cw-summary-value.empty { color: #64748b; font-style: italic; }
 
-/* ── 8. Step 3: Contract Review ── */
+/* ── 8. Step 3: Contract Review Templates ── */
 .cw-legal-doc {
-  background: #fff; border: 1px solid #d1d5db; border-radius: 4px;
-  padding: 48px 56px; font-family: 'Georgia','Times New Roman',serif;
+  background: #fff; border-radius: 12px;
+  padding: 48px 56px; font-family: 'Inter', sans-serif;
   color: #1e293b; position: relative; min-height: 600px;
-  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+  box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  transition: all 0.4s ease;
+  border: 1px solid #e2e8f0;
 }
+
+/* Template: Standard (Default) */
+.template-standard {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  border-radius: 4px;
+}
+.template-standard .cw-legal-header { border-bottom: 3px double #1e293b; }
+.template-standard .cw-legal-title-bar {
+  background: #1e293b; color: #fff; border-radius: 4px;
+}
+.template-standard .cw-legal-sig-line { background: #1e293b; }
+
+/* Template: Modern */
+.template-modern {
+  font-family: 'Inter', sans-serif;
+  border-left: 6px solid #5a5de8;
+  border-radius: 12px;
+}
+.template-modern .cw-legal-header { border-bottom: 1px solid #e2e8f0; }
+.template-modern .cw-legal-title-bar {
+  background: #f8fafc; color: #1e293b; border-left: 4px solid #5a5de8;
+  text-align: left; padding-left: 20px;
+}
+.template-modern .cw-legal-article h4 { color: #5a5de8; }
+.template-modern .cw-legal-sig-line { background: #e2e8f0; }
+
+/* Template: Executive */
+.template-executive {
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  background: #fafaf9;
+  border: 1px solid #d6d3d1;
+  box-shadow: 0 10px 40px rgba(0,0,0,.1);
+}
+.template-executive .cw-legal-header { border-bottom: 2px solid #a8a29e; }
+.template-executive .cw-legal-title-bar {
+  background: transparent; color: #292524; border: 1px solid #a8a29e;
+  letter-spacing: 0.1em; font-weight: 400;
+}
+.template-executive .cw-legal-sig-line { background: #57534e; }
+.template-executive .cw-legal-quote { border-left-color: #a8a29e; background: #f5f5f4; }
+
 .cw-legal-watermark {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-30deg);
   font-size: 72px; font-weight: 900; color: rgba(245,129,12,.04);
@@ -253,19 +622,18 @@
 }
 .cw-legal-header {
   display: flex; justify-content: space-between; align-items: flex-start;
-  padding-bottom: 20px; border-bottom: 3px double #1e293b; margin-bottom: 28px;
+  padding-bottom: 20px; margin-bottom: 28px; transition: all 0.3s;
 }
 .cw-legal-org-label {
   font-size: 9px; font-weight: 700; color: #94a3b8;
   text-transform: uppercase; letter-spacing: .12em;
 }
 .cw-legal-org-name { font-size: 18px; font-weight: 700; color: #1e293b; margin-top: 2px; }
-.cw-legal-org-name.accent { color: #f5810c; }
+.cw-legal-org-name.accent { color: #5a5de8; }
 .cw-legal-title-bar {
-  background: linear-gradient(135deg,#1e293b,#334155);
-  color: #fff; text-align: center; padding: 14px 24px;
+  text-align: center; padding: 14px 24px;
   font-size: 15px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .06em; border-radius: 4px; margin-bottom: 28px;
+  letter-spacing: .06em; margin-bottom: 28px; transition: all 0.3s;
 }
 .cw-legal-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; margin-bottom: 32px;
@@ -280,29 +648,27 @@
 }
 .cw-legal-article h4 {
   font-size: 13px; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .04em; color: #1e293b; margin-bottom: 8px;
-  font-family: 'Inter','Segoe UI',sans-serif;
+  letter-spacing: .04em; margin-bottom: 8px;
 }
 .cw-legal-article p {
   font-size: 13px; line-height: 1.7; color: #475569;
 }
 .cw-legal-article .legal-quote {
-  background: #f8fafc; border-left: 3px solid #f5810c;
+  background: #f8fafc; border-left: 3px solid #5a5de8;
   padding: 14px 18px; border-radius: 0 8px 8px 0;
-  font-style: italic; margin-top: 8px;
+  font-style: italic; margin-top: 8px; transition: all 0.3s;
 }
 .cw-legal-sig-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px;
-  padding-top: 32px; border-top: 2px solid #1e293b;
+  padding-top: 32px;
 }
-.cw-legal-sig-line { height: 1px; background: #1e293b; margin: 40px 0 8px; }
+.cw-legal-sig-line { height: 1px; margin: 40px 0 8px; transition: all 0.3s; }
 .cw-legal-sig-name { font-size: 12px; font-weight: 700; color: #1e293b; }
 .cw-legal-sig-role { font-size: 10px; color: #64748b; }
 .cw-legal-footer {
   margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0;
   display: flex; justify-content: space-between;
   font-size: 9px; color: #cbd5e1; letter-spacing: .04em;
-  font-family: 'Inter','Segoe UI',sans-serif;
 }
 
 /* ── 9. Step 4: Generation Progress ── */
@@ -313,7 +679,7 @@
 }
 .cw-gen-ring {
   width: 120px; height: 120px; border-radius: 50%;
-  border: 4px solid #f1f5f9; border-top-color: #f5810c;
+  border: 4px solid #f1f5f9; border-top-color: #5a5de8;
   animation: cwSpin 1.2s linear infinite;
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 32px; position: relative;
@@ -344,7 +710,7 @@
   background: #e2e8f0; color: #94a3b8; font-size: 12px; font-weight: 700;
   flex-shrink: 0; transition: all .3s;
 }
-.cw-gen-step.active .cw-gen-step-dot { background: #f5810c; color: #fff; }
+.cw-gen-step.active .cw-gen-step-dot { background: #5a5de8; color: #fff; }
 .cw-gen-step.done .cw-gen-step-dot { background: #10b981; color: #fff; }
 .cw-gen-step-label { font-size: 13px; font-weight: 600; color: #475569; }
 .cw-gen-step.active .cw-gen-step-label { color: #1e293b; font-weight: 700; }
@@ -363,7 +729,7 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0;
 }
-.cw-role-avatar.creator { background: linear-gradient(135deg,#f5810c,#ea580c); }
+.cw-role-avatar.creator { background: linear-gradient(135deg,#5a5de8,#ea580c); }
 .cw-role-avatar.approver { background: linear-gradient(135deg,#3b82f6,#2563eb); }
 .cw-role-name { font-size: 13px; font-weight: 700; color: #1e293b; }
 .cw-role-type { font-size: 11px; color: #64748b; }
@@ -384,7 +750,7 @@
   display: flex; gap: 14px; padding-bottom: 18px; position: relative;
 }
 .cw-audit-item.done .cw-audit-dot { background: #d1fae5; color: #10b981; }
-.cw-audit-item.active .cw-audit-dot { background: #fff7ed; color: #f5810c; border: 2px solid #f5810c; }
+.cw-audit-item.active .cw-audit-dot { background: #fff7ed; color: #5a5de8; border: 2px solid #5a5de8; }
 .cw-audit-text { font-size: 13px; font-weight: 600; color: #1e293b; }
 .cw-audit-time { font-size: 11px; color: #94a3b8; }
 
@@ -470,7 +836,7 @@
 }
 
 .cw-upload-box:hover {
-  border-color: #f5810c;
+  border-color: #5a5de8;
   background: #fff8f0;
 }
 
@@ -555,7 +921,7 @@
 }
 
 .cw-offcanvas-close:hover {
-  color: #f5810c;
+  color: #5a5de8;
 }
 
 .cw-offcanvas-body {
@@ -621,7 +987,7 @@
 }
 
 .cw-preview-org-name.accent {
-  color: #f5810c;
+  color: #5a5de8;
 }
 
 .cw-preview-title-bar {
@@ -682,7 +1048,7 @@
 
 .cw-preview-quote {
   background: #f8fafc;
-  border-left: 3px solid #f5810c;
+  border-left: 3px solid #5a5de8;
   padding: 14px 18px;
   border-radius: 0 8px 8px 0;
   font-style: italic;
@@ -744,4 +1110,404 @@
   font-family: 'Inter', sans-serif;
 }
 
+
+/* ════════════════════════════════════════════════════
+   STEP 1: SELECTION UI – Job & Candidate Cards
+═══════════════════════════════════════════════════ */
+.cw-selection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+@media(max-width: 768px) { .cw-selection-grid { grid-template-columns: 1fr; } }
+
+.cw-select-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  position: relative;
+}
+.cw-select-card:hover {
+  border-color: #5a5de8;
+  box-shadow: 0 4px 20px rgba(90, 93, 232, 0.08);
+}
+.cw-select-card-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+  background: #f8fafc;
+}
+
+.cw-select-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.cw-select-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5a5de8, #6366f1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cw-select-card-icon.candidate {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.cw-select-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+.cw-select-card-sub {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.cw-select-input {
+  width: 100%;
+  height: 44px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 13px;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+.cw-select-input:focus {
+  outline: none;
+  border-color: #5a5de8;
+  box-shadow: 0 0 0 3px rgba(90, 93, 232, 0.1);
+  background-color: #fff;
+}
+
+.cw-select-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+}
+.cw-select-card-badge.candidate {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.cw-select-card-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  color: #cbd5e1;
+  font-size: 12px;
+  text-align: center;
+  border: 1.5px dashed #e2e8f0;
+}
+.cw-select-card-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+.cw-select-card-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Spin animation for loading */
+@keyframes cwSpin { to { transform: rotate(360deg); } }
+.cw-spin { animation: cwSpin 0.9s linear infinite; }
+
+
+/* ════════════════════════════════════════════════════
+   STEP 3: TEMPLATE PICKER
+═══════════════════════════════════════════════════ */
+.cw-template-picker {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 24px;
+}
+
+.cw-template-picker-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.cw-template-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media(max-width: 768px) { .cw-template-cards { grid-template-columns: 1fr; } }
+
+.cw-template-card {
+  background: #fff;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  user-select: none;
+}
+.cw-template-card:hover {
+  border-color: #a5b4fc;
+  box-shadow: 0 4px 16px rgba(90, 93, 232, 0.08);
+  transform: translateY(-2px);
+}
+.cw-template-card.selected {
+  border-color: #5a5de8;
+  background: linear-gradient(135deg, #eff0ff, #fff);
+  box-shadow: 0 0 0 3px rgba(90, 93, 232, 0.12), 0 8px 24px rgba(90, 93, 232, 0.1);
+}
+
+.cw-template-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cw-template-card-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.cw-template-card.selected .cw-template-card-check {
+  background: #5a5de8;
+  border-color: #5a5de8;
+  color: #fff;
+}
+.cw-template-card-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+.cw-template-card.selected .cw-template-card-badge {
+  background: #5a5de8;
+  color: #fff;
+}
+
+/* Mini doc preview lines */
+.cw-template-card-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.cw-template-card-lines span {
+  display: block;
+  height: 4px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  width: 100%;
+}
+.cw-template-card.selected .cw-template-card-lines span {
+  background: #c7d2fe;
+}
+
+.cw-template-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+.cw-template-card-sub {
+  font-size: 10px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+
+/* ════════════════════════════════════════════════════
+   DOWNLOAD BUTTON
+═══════════════════════════════════════════════════ */
+.cw-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.cw-download-btn:hover {
+  border-color: #5a5de8;
+  color: #5a5de8;
+  background: #eff0ff;
+  box-shadow: 0 4px 12px rgba(90, 93, 232, 0.1);
+}
+
+
+/* ════════════════════════════════════════════════════
+   ELEGANT LEGAL DOC – Article / Terms Section
+═══════════════════════════════════════════════════ */
+.cw-legal-doc {
+  /* Override for more breathing room */
+  padding: 56px 68px;
+}
+@media(max-width: 768px) { .cw-legal-doc { padding: 28px 24px; } }
+
+/* Article container */
+.cw-legal-article {
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.cw-legal-article:last-of-type {
+  border-bottom: none;
+}
+
+/* Article header */
+.cw-legal-article h4 {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5a5de8;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eff0ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.template-standard .cw-legal-article h4 { color: #1e293b; border-bottom-color: #e2e8f0; }
+.template-executive .cw-legal-article h4 { color: #44403c; border-bottom-color: #e7e5e4; }
+
+/* Article body text */
+.cw-legal-article p {
+  font-size: 14px;
+  line-height: 1.85;
+  color: #334155;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Blockquote / legal-quote box */
+.cw-legal-article .legal-quote,
+.cw-legal-article .cw-legal-quote {
+  background: #fafbff;
+  border-left: 4px solid #5a5de8;
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
+  margin-top: 12px;
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: #334155;
+  font-style: normal;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.template-modern .cw-legal-article .legal-quote  { border-left-color: #6366f1; background: #eff6ff; }
+.template-executive .cw-legal-article .legal-quote { border-left-color: #78716c; background: #fafaf9; }
+
+/* Data grid fields */
+.cw-legal-grid {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 36px;
+}
+.cw-legal-field-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.cw-legal-field-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+/* Signature grid – elegant bottom section */
+.cw-legal-sig-grid {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-top: 48px;
+  border: 1px solid #e2e8f0;
+}
+.cw-legal-sig-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-top: 4px;
+}
+.cw-legal-sig-role {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Title bar */
+.cw-legal-title-bar {
+  margin-bottom: 32px;
+  border-radius: 8px;
+}
+
+/* Legal footer */
+.cw-legal-footer {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.04em;
+}
 
