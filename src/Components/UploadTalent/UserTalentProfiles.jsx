@@ -62,6 +62,10 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
 
+  // Debounced search — API is called only after user stops typing for 300ms
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debounceRef = useRef(null);
+
   const [getMyBench, { isLoading }] = useGetMyBenchMutation();
 
   // Refs to always hold latest values inside scroll/async callbacks
@@ -69,12 +73,22 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
   const isLoadingRef = useRef(false);
   const pageNumberRef = useRef(1);
 
+  // Debounce: whenever searchQuery changes, wait 300ms then apply
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchQuery]);
+
+  // When the debounced search changes → reset list and go back to page 1
   useEffect(() => {
     setCandidatesMock([]);
     setPageNumber(1);
     hasMoreRef.current = true;
     pageNumberRef.current = 1;
-  }, []);
+  }, [debouncedSearch]);
 
   /* ================= FETCH ================= */
   useEffect(() => {
@@ -83,11 +97,22 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
 
     const fetchBench = async () => {
       try {
+        // Build filters using the API's expected format
+        const filters = debouncedSearch
+          ? [
+              {
+                filterName: "title",
+                filterOperator: "Contains",
+                filterValue: [debouncedSearch],
+              },
+            ]
+          : [];
+
         const payload = {
           companyid: Number(localStorage.getItem("logincompanyid")),
           pageNumber,
           pageSize: PAGE_SIZE,
-          filters: [],
+          filters,
         };
 
         const res = await getMyBench(payload).unwrap();
@@ -119,18 +144,16 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
           uploadedByName: item.uploadedByName,
           status: item.status?.toUpperCase() || "NEW",
           rating: 4.5,
-          avatar:
-            item.profilepicture || "",
+          avatar: item.profilepicture || "",
         }));
 
-        // ✅ Page 1 replace, Page 2+ append
+        // Page 1 → replace, Page 2+ → append
         setCandidatesMock((prev) =>
           pageNumber === 1 ? mappedData : [...prev, ...mappedData],
         );
 
-        // ✅ Stop further calls if we got fewer than a full page
-        const moreAvailable = mappedData.length >= PAGE_SIZE;
-        hasMoreRef.current = moreAvailable;
+        // Stop infinite scroll if we got fewer than a full page
+        hasMoreRef.current = mappedData.length >= PAGE_SIZE;
       } catch (err) {
         console.error("GET MY BENCH FAILED 👉", err);
       } finally {
@@ -143,9 +166,9 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
     return () => {
       isMounted = false;
     };
-    // Only re-run when pageNumber changes - hasMore is tracked via ref
+    // Re-run when pageNumber OR debouncedSearch changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNumber]);
+  }, [pageNumber, debouncedSearch]);
 
   /* ================= WINDOW SCROLL ================= */
   useEffect(() => {
@@ -175,6 +198,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
 
 
   /* ================= MEMOS ================= */
+  // Client-side filter acts as a fast visual refinement while API re-fetches
   const filteredCandidates = useMemo(() => {
     if (!searchQuery.trim()) return candidatesMock;
     const query = searchQuery.toLowerCase();
@@ -182,7 +206,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
       c.name?.toLowerCase().includes(query) ||
       c.email?.toLowerCase().includes(query) ||
       c.role?.toLowerCase().includes(query) ||
-      c.skills?.some(skill => skill.toLowerCase().includes(query)) ||
+      c.skills?.some((skill) => skill.toLowerCase().includes(query)) ||
       c.location?.toLowerCase().includes(query)
     );
   }, [candidatesMock, searchQuery]);
@@ -256,7 +280,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
 
                 <input
                   type="text"
-                  placeholder="Search by Talent Name..."
+                  placeholder="Search by Job Title..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -265,7 +289,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                     background: "transparent",
                     marginLeft: "14px",
                     width: "100%",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: 500,
                     color: "#475569",
                   }}

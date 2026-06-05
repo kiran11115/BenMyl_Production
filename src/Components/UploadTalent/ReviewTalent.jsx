@@ -1748,7 +1748,7 @@ const ReviewTalent = () => {
             fontWeight: 600,
           }}
         >
-          <FiArrowLeft /> Talent Management
+          <FiArrowLeft /> Resource  Management
         </button>
         <span className="auth-subtitle" style={{ color: "#94a3b8" }}>
           / Review Talent

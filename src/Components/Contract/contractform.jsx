@@ -480,7 +480,7 @@ const ContractForm = () => {
                       <td>
                         <div className="d-flex gap-2 justify-content-center">
                           <button className="tbl-btn tbl-btn-view" onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}>
-                            <Eye size={12} /> View & Sign
+                            <Eye size={12} /> {String(c.createdBy) === String(userId) ? 'View' : 'View & Sign'}
                           </button>
                           <button className="tbl-btn tbl-btn-download" onClick={() => handleDownload(c)} disabled={isDownloading === c.id}>
                             {isDownloading === c.id ? <div className="contract-spinner" style={{ width: 10, height: 10 }} /> : <Download size={12} />}

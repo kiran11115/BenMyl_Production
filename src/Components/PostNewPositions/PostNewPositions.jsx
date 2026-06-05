@@ -74,7 +74,6 @@ const PostNewPositions = () => {
   // Preferred Employment states
   const [preferredEmployment, setPreferredEmployment] = useState({
     "Corp-Corp": false,
-    "W2-Permanent": false,
     "W2-Contract": false,
     "1099-Contract": false,
     "Contract to Hire": false
@@ -242,7 +241,6 @@ const autoFillRole =
 
     // 🔹 Preferred Employment
     fd.append("IsCorpToCorp", preferredEmployment["Corp-Corp"]);
-    fd.append("IsW2Permanent", preferredEmployment["W2-Permanent"]);
     fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
     fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
@@ -294,7 +292,6 @@ const autoFillRole =
 
     // 🔹 Preferred Employment
     fd.append("IsCorpToCorp", preferredEmployment["Corp-Corp"]);
-    fd.append("IsW2Permanent", preferredEmployment["W2-Permanent"]);
     fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
     fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
@@ -327,7 +324,6 @@ const autoFillRole =
 
       const updatedEmployment = {
         "Corp-Corp": false,
-        "W2-Permanent": false,
         "W2-Contract": false,
         "1099-Contract": false,
         "Contract to Hire": false
@@ -513,7 +509,6 @@ const autoFillRole =
     },
     preferredEmployment: {
       corpCorp: preferredEmployment["Corp-Corp"],
-      w2Permanent: preferredEmployment["W2-Permanent"],
       w2Contract: preferredEmployment["W2-Contract"],
       contract1099: preferredEmployment["1099-Contract"],
       contractToHire: preferredEmployment["Contract to Hire"]

@@ -181,6 +181,7 @@ export const mapApiContractToUI = (item) => {
     benchSalesAccepted: item.signatureStatus_B === 'Signed' || !!(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales),
     hiringManagerSignature: item.signatureImagePath || null,
     benchSalesSignature: item.signatureImagePatbenchsales || item.signatureimagePatbenchsales || null,
+    createdBy: item.createdBy || null,
   };
 };
 

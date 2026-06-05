@@ -188,7 +188,7 @@ const UploadTalent = () => {
                 <div className="hero-card mb-4">
                     <div className="hero-left">
                         <div className="hero-pill">
-                            ✦ Talent Management
+                            ✦ Resource Management
                         </div>
                         <h1 className="job-posting-title text-white">Admin Talent Hub</h1>
 

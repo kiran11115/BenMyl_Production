@@ -174,6 +174,7 @@ const mapApiContractToUI = (item) => {
     // Resolve full image URLs for signatures with cache buster
     hiringManagerSignature: resolveImagePath(item.signatureImagePath, buster),
     benchSalesSignature: resolveImagePath(item.signatureImagePatbenchsales || item.signatureimagePatbenchsales, buster),
+    createdBy: item.createdBy || null,
   };
 };
 
@@ -196,6 +197,9 @@ const ContractView = () => {
   // BenchSales role can be stored with varying casing
   const isBS = role === 'Benchsales' || role === 'Admin' || role === 'Recruiter2';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
+  
+  const userCompanyId = localStorage.getItem("CompanyId");
+  const isCreator = contract && userCompanyId && String(contract.createdBy) === String(userCompanyId);
 
   if (isApiLoading) {
     return (
@@ -638,14 +642,14 @@ const ContractView = () => {
             </div>
           </div>
 
-          {showSignBox && (
+          {showSignBox && !isCreator && (
             <SignatureSection
               onComplete={handleAccept}
               onCancel={() => setShowSignBox(false)}
             />
           )}
 
-          {!contract.benchSalesAccepted && isBS && contract.status !== 'Rejected' && !showSignBox && (
+          {!contract.benchSalesAccepted && isBS && contract.status !== 'Rejected' && !showSignBox && !isCreator && (
             <div className="mt-5 text-center d-flex justify-content-center gap-3">
               <button className="btn-primary" onClick={() => setShowSignBox(true)} style={{ minWidth: '240px', height: '54px', fontSize: 16, fontWeight: 800, borderRadius: '12px', boxShadow: '0 10px 20px rgba(245,129,12,0.2)' }}>
                 <PenTool size={20} className="me-2" /> Accept & Sign Work Order

@@ -605,7 +605,7 @@ export default function PublishTalentModal({
               <button
                 className="btn-primary"
                 onClick={handlePublish}
-                disabled={status === "loading" || selectedTalents.length === 0}
+                disabled={status === "loading" || selectedTalents.length === 0 || !showHotlist || !showPreview}
                 style={{ padding: "9px 22px" }}
               >
                 {status === "loading" ? (
