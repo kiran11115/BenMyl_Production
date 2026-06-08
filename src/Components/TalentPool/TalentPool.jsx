@@ -1298,14 +1298,20 @@ const TalentPool = () => {
 
                 <button
                   onClick={() => {
-                    navigate("/Admin/user-post-new-positions", {
-                      state: {
-                        autoFillRole: selectedCandidate?.role,
-                      },
-                    });
+  const basePath = window.location.pathname
+    .toLowerCase()
+    .startsWith("/admin")
+    ? "/Admin"
+    : "/user";
 
-                    setShowCreateJobModal(false);
-                  }}
+  navigate(`${basePath}/user-post-new-positions`, {
+    state: {
+      autoFillRole: selectedCandidate?.role,
+    },
+  });
+
+  setShowCreateJobModal(false);
+}}
                   style={{
                     flex: 1,
                     padding: "12px",

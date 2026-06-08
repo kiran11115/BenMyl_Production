@@ -431,7 +431,39 @@ export default function PublishTalentModal({
 
           {/* ── BODY ── */}
           <div className="ptm-body">
+              {/* Publish Instructions */}
+<div
+  style={{
+    background: "#eff6ff",
+    border: "1px solid #bfdbfe",
+    borderRadius: "10px",
+    padding: "12px 14px",
+    marginBottom: "0px",
+  }}
+>
+  <div
+    style={{
+      fontSize: "13px",
+      fontWeight: 600,
+      color: "#1d4ed8",
+      marginBottom: "4px",
+    }}
+  >
+    📢 Before Publishing
+  </div>
 
+  <div
+    style={{
+      fontSize: "12px",
+      color: "#475569",
+      lineHeight: "1.5",
+    }}
+  >
+    Select candidates, click <strong>Create Post</strong>, review the
+    <strong> Preview</strong>, choose a platform, and then publish your talent
+    hotlist.
+  </div>
+</div>
             {/* ── SECTION: CANDIDATES ── */}
             <div className="ptm-section">
               <div className="ptm-section-header">
@@ -588,6 +620,7 @@ export default function PublishTalentModal({
 
           {/* ── FOOTER ── */}
           <div className="ptm-footer" style={{ justifyContent: "space-between" }}>
+            
             <div style={{ fontSize: "12px", color: "#64748b", fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
               {selectedPlatforms.length > 0 && showHotlist ? (
                 <>

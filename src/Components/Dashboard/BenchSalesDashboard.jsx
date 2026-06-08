@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Briefcase,
@@ -41,6 +41,7 @@ import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSli
 import { CandidateCard } from "../UploadTalent/UserTalentGrid";
 import Guide from "../Guide/Guide";
 import "../Admin/Modules/AdminDashboard/AdminDashboard.css";
+import { useGetMonthlyAnalyticsQuery } from "../../State-Management/Api/DashboardApiSlice";
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler);
 
@@ -108,6 +109,7 @@ const BenchSalesDashboard = () => {
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
   const [getTalentJobs, { isLoading: isJobsLoading }] = useGetFindJobsMutation();
+  const { data: analyticsData } = useGetMonthlyAnalyticsQuery();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -243,6 +245,90 @@ const BenchSalesDashboard = () => {
     },
   ];
 
+  const graphData = useMemo(() => {
+  return analyticsData?.data?.map((item) => ({
+    month: item.monthName?.slice(0, 3),
+    uploads: Number(item.resumeUploads || 0),
+    reviews: Number(item.reviews || 0),
+  })) || [];
+}, [analyticsData]);
+
+const chartData = {
+  labels: graphData.map((d) => d.month),
+  datasets: [
+    {
+      label: "Resume Uploads",
+      data: graphData.map((d) => d.uploads),
+      borderColor: "#5a5de8",
+      backgroundColor: "rgba(90,93,232,0.12)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#fff",
+      pointBorderColor: "#5a5de8",
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    },
+    {
+      label: "Reviews",
+      data: graphData.map((d) => d.reviews),
+      borderColor: "#00b67a",
+      backgroundColor: "rgba(0,182,122,0.12)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#fff",
+      pointBorderColor: "#00b67a",
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    },
+  ],
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: "index",
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      display: true,
+      position: "top",
+      align: "end",
+      labels: {
+        usePointStyle: true,
+        boxWidth: 6,
+        font: {
+          size: 11,
+          family: "Inter",
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: "#94a3b8",
+      },
+    },
+    y: {
+      beginAtZero: true,
+      grid: {
+        borderDash: [4, 4],
+        color: "#f1f5f9",
+      },
+      ticks: {
+        color: "#94a3b8",
+      },
+    },
+  },
+};
+
   return (
     <div className="ai-dashboard-wrapper">
 
@@ -306,6 +392,14 @@ const BenchSalesDashboard = () => {
             onClick={() => handleNavigate('/user-Jobs')}
           >
             Discover Open Jobs
+            <ArrowUpRight size={16} />
+          </button>
+
+          <button
+            className="routine-btn"
+            onClick={() => navigate('/User/active-routines')}
+          >
+            View Active Routines
             <ArrowUpRight size={16} />
           </button>
 
@@ -437,25 +531,24 @@ const BenchSalesDashboard = () => {
               </p>
             </div>
 
-            <div className="graph-tabs">
+            {/* <div className="graph-tabs">
               <button className="graph-tab active">Placement Volume</button>
               <button className="graph-tab">Revenue Stream (k$)</button>
-            </div>
+            </div> */}
           </div>
 
-          <div className="graph-area">
-            <svg viewBox="0 0 1000 240" className="graph-svg">
-              <path
-                d="M0 220 C120 70 240 70 360 130 C480 180 580 190 700 100 C790 40 860 30 1000 100"
-                fill="none"
-                stroke="#5a5de8"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
-              <circle cx="390" cy="135" r="10" fill="#5a5de8" stroke="#fff" strokeWidth="5" />
-              <circle cx="810" cy="40" r="12" fill="#ef4444" stroke="#fff" strokeWidth="5" />
-            </svg>
-          </div>
+          <div
+  className="graph-area"
+  style={{
+    height: "320px",
+    padding: "10px",
+  }}
+>
+  <Line
+    data={chartData}
+    options={chartOptions}
+  />
+</div>
 
           <div className="graph-footer">
             <div>
@@ -463,12 +556,12 @@ const BenchSalesDashboard = () => {
               <strong style={{ fontSize: 14 }}>{totalTalentCount} Candidates</strong>
             </div>
             <div>
-              <span>OPEN VACANCIES</span>
-              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>{matchedJobsCount} Matched</strong>
+              <span>RESUME UPLOADS</span>
+              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>{graphData.reduce((a, b) => a + b.uploads, 0)}</strong>
             </div>
             <div>
-              <span>AI PLACEMENT RATE</span>
-              <strong style={{ fontSize: 14, color: '#009966' }}>95% Accuracy</strong>
+              <span>TOTAL REVIEWS</span>
+              <strong style={{ fontSize: 14, color: '#009966' }}>{graphData.reduce((a, b) => a + b.reviews, 0)}</strong>
             </div>
           </div>
         </div>

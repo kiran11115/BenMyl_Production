@@ -48,6 +48,7 @@ import { CandidateCard } from "../UploadTalent/UserTalentGrid";
 import Guide from "../Guide/Guide";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
 import "../Admin/Modules/AdminDashboard/AdminDashboard.css";
+import { useGetPostedMonthlyAnalyticsQuery } from "../../State-Management/Api/DashboardApiSlice";
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler);
 
@@ -124,6 +125,7 @@ const HiringManagerDashboard = () => {
   const [dashboardProjects, setDashboardProjects] = useState([]);
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
+  const { data: monthlyAnalytics } = useGetPostedMonthlyAnalyticsQuery(undefined,{refetchOnMountOrArgChange:true});
 
   useEffect(() => {
     setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
@@ -280,6 +282,89 @@ const HiringManagerDashboard = () => {
     },
   ];
 
+  const graphData =
+  monthlyAnalytics?.data?.map((item) => ({
+    month: item.monthName?.slice(0, 3),
+    posted: Number(item.totalJobsPosted || 0),
+    active: Number(item.activeJobs || 0),
+  })) || [];
+
+  const chartData = {
+  labels: graphData.map((d) => d.month),
+  datasets: [
+    {
+      label: "Posted Jobs",
+      data: graphData.map((d) => d.posted),
+      borderColor: "#5a5de8",
+      backgroundColor: "rgba(90,93,232,0.12)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#fff",
+      pointBorderColor: "#5a5de8",
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    },
+    {
+      label: "Active Jobs",
+      data: graphData.map((d) => d.active),
+      borderColor: "#00b67a",
+      backgroundColor: "rgba(0,182,122,0.12)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#fff",
+      pointBorderColor: "#00b67a",
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    },
+  ],
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: "index",
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      display: true,
+      position: "top",
+      align: "end",
+      labels: {
+        usePointStyle: true,
+        boxWidth: 6,
+        font: {
+          size: 11,
+          family: "Inter",
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: "#94a3b8",
+      },
+    },
+    y: {
+      beginAtZero: true,
+      grid: {
+        borderDash: [4, 4],
+        color: "#f1f5f9",
+      },
+      ticks: {
+        color: "#94a3b8",
+      },
+    },
+  },
+};
+
   return (
     <div className="ai-dashboard-wrapper">
 
@@ -343,6 +428,14 @@ const HiringManagerDashboard = () => {
           >
             <Upload size={16} />
             Upload Talent
+          </button>
+
+          <button
+            className="routine-btn"
+            onClick={() => navigate('/User/active-routines')}
+          >
+            View Active Routines
+            <ArrowUpRight size={16} />
           </button>
         </div>
       </div>
@@ -467,26 +560,19 @@ const HiringManagerDashboard = () => {
                 Real-time mapping of applicant pipelines & revenue capture
               </p>
             </div>
-
-            <div className="graph-tabs">
-              <button className="graph-tab active">Pipeline Volume</button>
-              <button className="graph-tab">Revenue Stream (k$)</button>
-            </div>
           </div>
-
-          <div className="graph-area">
-            <svg viewBox="0 0 1000 240" className="graph-svg">
-              <path
-                d="M0 220 C120 70 240 70 360 130 C480 180 580 190 700 100 C790 40 860 30 1000 100"
-                fill="none"
-                stroke="#5a5de8"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
-              <circle cx="390" cy="135" r="10" fill="#5a5de8" stroke="#fff" strokeWidth="5" />
-              <circle cx="810" cy="40" r="12" fill="#ef4444" stroke="#fff" strokeWidth="5" />
-            </svg>
-          </div>
+          <div
+                      className="graph-area"
+                      style={{
+                        height: "320px",
+                        padding: "10px",
+                      }}
+                    >
+                      <Line
+                        data={chartData}
+                        options={chartOptions}
+                      />
+                    </div>
 
           <div className="graph-footer">
             <div>

@@ -159,6 +159,7 @@ const routes = createBrowserRouter(
           </Route>
 
 
+          <Route path="active-routines" element={<ActiveRoutines />} />
           <Route path="user-messages" element={<Messages />} />
           <Route path="user-profile" element={<ProfilePage />} />
           <Route path="edit-profile" element={<EditProfile />} />

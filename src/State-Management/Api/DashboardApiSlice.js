@@ -23,7 +23,21 @@ getAutonomousActivityLog: builder.query({
   }),
 }),
 
+getMonthlyAnalytics: builder.query({
+  query: () => ({
+    url: "api/uatcompany/monthly-analytics",
+    method: "GET",
+  }),
+}),
+
+getPostedMonthlyAnalytics: builder.query({
+      query: () => ({
+        url: "api/uatcompany/monthly-analytics_hiringmanager",
+        method: "GET",
+      }),
+    }),
+
   }),
 });
 
-export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery } = DashboardApiSlice;
+export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery,useGetMonthlyAnalyticsQuery,useGetPostedMonthlyAnalyticsQuery } = DashboardApiSlice;
