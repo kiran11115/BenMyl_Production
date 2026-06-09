@@ -52,6 +52,9 @@ const PostNewPositions = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [skillInput, setSkillInput] = useState('');
   const [skills, setSkills] = useState([]);
+  const [skillsTouched, setSkillsTouched] = useState(false);
+  const [showCurrencyPopover, setShowCurrencyPopover] = useState(false);
+  const currencyRef = useRef(null);
   const [generateAI, { isLoading: isAiLoading }] =
     useGenerateJobDescriptionAIMutation();
   const location = useLocation();
@@ -81,6 +84,25 @@ const PostNewPositions = () => {
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isEmpOpen, setIsEmpOpen] = useState(false);
+  const [showDeptPopover, setShowDeptPopover] = useState(false);
+  const [showEduPopover, setShowEduPopover] = useState(false);
+  const [showDurationPopover, setShowDurationPopover] = useState(false);
+  const [showCountryPopover, setShowCountryPopover] = useState(false);
+  const [showStatePopover, setShowStatePopover] = useState(false);
+  const [showCityPopover, setShowCityPopover] = useState(false);
+  const [showWorkModelPopover, setShowWorkModelPopover] = useState(false);
+  const [showExpPopover, setShowExpPopover] = useState(false);
+
+  const deptRef = useRef(null);
+  const eduRef = useRef(null);
+  const durationRef = useRef(null);
+  const countryRef = useRef(null);
+  const stateRef = useRef(null);
+  const cityRef = useRef(null);
+  const workModelRef = useRef(null);
+  const expRef = useRef(null);
+
+  const currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR'];
   const [shareToLinkedIn, setShareToLinkedIn] = useState(false);
 
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -145,6 +167,18 @@ useEffect(() => {
     if (empRef.current && !empRef.current.contains(event.target)) {
       setIsEmpOpen(false);
     }
+
+    if (currencyRef.current && !currencyRef.current.contains(event.target)) {
+      setShowCurrencyPopover(false);
+    }
+    if (deptRef.current && !deptRef.current.contains(event.target)) setShowDeptPopover(false);
+    if (eduRef.current && !eduRef.current.contains(event.target)) setShowEduPopover(false);
+    if (durationRef.current && !durationRef.current.contains(event.target)) setShowDurationPopover(false);
+    if (countryRef.current && !countryRef.current.contains(event.target)) setShowCountryPopover(false);
+    if (stateRef.current && !stateRef.current.contains(event.target)) setShowStatePopover(false);
+    if (cityRef.current && !cityRef.current.contains(event.target)) setShowCityPopover(false);
+    if (workModelRef.current && !workModelRef.current.contains(event.target)) setShowWorkModelPopover(false);
+    if (expRef.current && !expRef.current.contains(event.target)) setShowExpPopover(false);
   };
 
   document.addEventListener("mousedown", handleClickOutside);
@@ -153,6 +187,8 @@ useEffect(() => {
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, []);
+
+
 
   const [postJob] = usePostJobMutation();
   const [saveJobDraft] = useSaveJobDraftMutation();
@@ -188,9 +224,31 @@ const autoFillRole =
     validationSchema,
     // ✅ ONLY OPEN PREVIEW
     onSubmit: () => {
+      setSkillsTouched(true);
+      if (skills.length === 0) return;
       setShowPreview(true);
     },
   });
+
+  // Auto-select department based on jobTitle
+  useEffect(() => {
+    const title = formik.values.jobTitle?.toLowerCase() || '';
+    if (!title) return;
+    
+    if (title.includes('engineer') || title.includes('developer') || title.includes('programmer') || title.includes('tech') || title.includes('architect')) {
+      formik.setFieldValue('department', 'Engineering');
+    } else if (title.includes('design') || title.includes('ui') || title.includes('ux') || title.includes('art')) {
+      formik.setFieldValue('department', 'Design');
+    } else if (title.includes('product') || title.includes('manager')) {
+      formik.setFieldValue('department', 'Product');
+    } else if (title.includes('sales') || title.includes('account') || title.includes('business')) {
+      formik.setFieldValue('department', 'Sales');
+    } else if (title.includes('market') || title.includes('seo')) {
+      formik.setFieldValue('department', 'Marketing');
+    } else if (title.includes('hr') || title.includes('human resources') || title.includes('recruit') || title.includes('talent')) {
+      formik.setFieldValue('department', 'Human Resources');
+    }
+  }, [formik.values.jobTitle, formik.setFieldValue]);
 
   /* =========================
      POST JOB (API CALL)
@@ -520,19 +578,21 @@ const autoFillRole =
     return name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
   };
 
+  const currencySymbols = { USD: '$', EUR: '€', GBP: '£', CAD: 'CA$', AUD: 'A$', INR: '₹' };
+
   const getSalaryString = () => {
     const min = formik.values.salaryMin;
     const max = formik.values.salaryMax;
     const type = formik.values.salaryType;
-    const curr = formik.values.salaryCurrency === "USD" ? "$" : "€";
-    if (!min && !max) return "$120 - $160 / hr (Hourly)";
+    const curr = currencySymbols[formik.values.salaryCurrency] || '$';
+    if (!min && !max) return null;
     if (type === 'entireBudget') return `${curr}${min} (Fixed)`;
     return `${curr}${min || '0'} - ${curr}${max || '0'} / hr (${type === 'perHour' ? 'Hourly' : 'Monthly'})`;
   };
 
   const getDurationString = () => {
     const dur = formik.values.jobDuration;
-    if (!dur) return "6 Months Term";
+    if (!dur) return null;
     if (dur === "0") return "Ongoing Term";
     if (dur === "12") return "1 Year Term";
     return `${dur} Months Term`;
@@ -540,7 +600,7 @@ const autoFillRole =
 
   const getEmploymentTypeString = () => {
     const type = formik.values.employmentType;
-    if (!type) return "Regular Full-time";
+    if (!type) return null;
     return type.split(",")[0];
   };
 
@@ -614,15 +674,45 @@ navigate(targetPath);
 
                 <div>
                   <label className="auth-label">Duration</label>
-                  <select className="auth-input placeholder-text" name="jobDuration"
-                    value={formik.values.jobDuration} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select duration</option>
-                    <option value="1">1 Month</option>
-                    <option value="3">3 Months</option>
-                    <option value="6">6 Months</option>
-                    <option value="12">1 Year</option>
-                    <option value="0">Ongoing</option>
-                  </select>
+                  <div className="currency-popover-anchor" ref={durationRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowDurationPopover(v => !v)}
+                    >
+                      <span style={{ fontSize: '14px', color: formik.values.jobDuration !== "" ? '#0f172a' : '#94a3b8' }}>
+                        {formik.values.jobDuration !== "" ? (
+                          { "1": "1 Month", "3": "3 Months", "6": "6 Months", "12": "1 Year", "0": "Ongoing" }[formik.values.jobDuration] || 'Select duration'
+                        ) : 'Select duration'}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showDurationPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showDurationPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {[
+                          { v: "1", l: "1 Month" },
+                          { v: "3", l: "3 Months" },
+                          { v: "6", l: "6 Months" },
+                          { v: "12", l: "1 Year" },
+                          { v: "0", l: "Ongoing" }
+                        ].map(d => (
+                          <button
+                            key={d.v}
+                            type="button"
+                            className={`currency-option ${formik.values.jobDuration === d.v ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('jobDuration', d.v);
+                              setShowDurationPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{d.l}</span>
+                            {formik.values.jobDuration === d.v && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {err("jobDuration")}
                 </div>
 
@@ -682,56 +772,113 @@ navigate(targetPath);
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
                   <div className="placeholder-text">
                     <label className="auth-label">Select Country</label>
-                    <select
-                      className="auth-input placeholder-text"
-                      value={selectedCountry}
-                      onChange={(e) => handleCountryChange(e.target.value)}
-                    >
-                      <option value="">Select Country</option>
-                      {countries.map((c) => (
-                        <option key={c.isoCode} value={c.isoCode}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="currency-popover-anchor" ref={countryRef} style={{ width: '100%' }}>
+                      <button
+                        type="button"
+                        className="auth-input placeholder-text"
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                        onClick={() => setShowCountryPopover(v => !v)}
+                      >
+                        <span style={{ fontSize: '14px', color: selectedCountry ? '#0f172a' : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {selectedCountry ? countries.find(c => c.isoCode === selectedCountry)?.name : 'Select Country'}
+                        </span>
+                        <ChevronDown size={16} className={`chevron ${showCountryPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
+                      </button>
+                      {showCountryPopover && (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
+                          {countries.map(c => (
+                            <button
+                              key={c.isoCode}
+                              type="button"
+                              className={`currency-option ${selectedCountry === c.isoCode ? 'selected' : ''}`}
+                              onClick={() => {
+                                handleCountryChange(c.isoCode);
+                                setShowCountryPopover(false);
+                              }}
+                            >
+                              <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{c.name}</span>
+                              {selectedCountry === c.isoCode && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6', minWidth: '12px' }} />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="placeholder-text">
                     <label className="auth-label">Select State</label>
-                    <select
-                      className="auth-input placeholder-text"
-                      value={selectedState}
-                      onChange={(e) => handleStateChange(e.target.value)}
-                      disabled={!selectedCountry || states.length === 0}
-                    >
-                      <option value="">Select State</option>
-                      {states.map((s) => (
-                        <option key={s.isoCode} value={s.isoCode}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className={`currency-popover-anchor ${!selectedCountry || states.length === 0 ? 'disabled-opacity' : ''}`} ref={stateRef} style={{ width: '100%' }}>
+                      <button
+                        type="button"
+                        className="auth-input placeholder-text"
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: (!selectedCountry || states.length === 0) ? 'not-allowed' : 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                        disabled={!selectedCountry || states.length === 0}
+                        onClick={() => setShowStatePopover(v => !v)}
+                      >
+                        <span style={{ fontSize: '14px', color: selectedState ? '#0f172a' : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {selectedState ? states.find(s => s.isoCode === selectedState)?.name : 'Select State'}
+                        </span>
+                        <ChevronDown size={16} className={`chevron ${showStatePopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
+                      </button>
+                      {showStatePopover && states.length > 0 && (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
+                          {states.map(s => (
+                            <button
+                              key={s.isoCode}
+                              type="button"
+                              className={`currency-option ${selectedState === s.isoCode ? 'selected' : ''}`}
+                              onClick={() => {
+                                handleStateChange(s.isoCode);
+                                setShowStatePopover(false);
+                              }}
+                            >
+                              <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{s.name}</span>
+                              {selectedState === s.isoCode && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6', minWidth: '12px' }} />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="placeholder-text">
                     <label className="auth-label">Select City</label>
-                    <select
-                      className="auth-input placeholder-text"
-                      value={selectedCity}
-                      onChange={(e) => handleCityChange(e.target.value)}
-                      disabled={!selectedState || cities.length === 0}
-                    >
-                      <option value="">Select City</option>
-                      {cities.map((c) => (
-                        <option key={c.name} value={c.name}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className={`currency-popover-anchor ${!selectedState || cities.length === 0 ? 'disabled-opacity' : ''}`} ref={cityRef} style={{ width: '100%' }}>
+                      <button
+                        type="button"
+                        className="auth-input placeholder-text"
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: (!selectedState || cities.length === 0) ? 'not-allowed' : 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                        disabled={!selectedState || cities.length === 0}
+                        onClick={() => setShowCityPopover(v => !v)}
+                      >
+                        <span style={{ fontSize: '14px', color: selectedCity ? '#0f172a' : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {selectedCity || 'Select City'}
+                        </span>
+                        <ChevronDown size={16} className={`chevron ${showCityPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
+                      </button>
+                      {showCityPopover && cities.length > 0 && (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
+                          {cities.map(c => (
+                            <button
+                              key={c.name}
+                              type="button"
+                              className={`currency-option ${selectedCity === c.name ? 'selected' : ''}`}
+                              onClick={() => {
+                                handleCityChange(c.name);
+                                setShowCityPopover(false);
+                              }}
+                            >
+                              <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{c.name}</span>
+                              {selectedCity === c.name && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6', minWidth: '12px' }} />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 {err("location")}
               </fieldset>
 
-              <div className="grid-4">
+              <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)', gap: '20px', marginBottom: '24px', alignItems: 'end' }}>
                 <div>
                   <label className="auth-label">Work Authorization/Visa</label>
                   <div className="vendor-section" ref={authRef}>
@@ -763,7 +910,7 @@ navigate(targetPath);
                   </div>
                 </div>
 
-                <div>
+                <div className='mb-3'>
                   <label className="auth-label">Salary Frequency<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="salary-frequency-segmented">
                     <button
@@ -790,47 +937,78 @@ navigate(targetPath);
                   </div>
                 </div>
 
-                  {/* Rates container box */}
-              <div className="">
-                <div style={{ display: 'grid', gridTemplateColumns: formik.values.salaryType === 'entireBudget' ? '1fr' : '1fr 1fr', gap: '20px' }}>
-                  <div>
-                    <label className="auth-label">Min Rate<span style={{ color: '#ef4444' }}> *</span></label>
-                    <div className="rate-input-container">
-                      <span className="rate-prefix">USD</span>
+                {/* Currency selector */}
+                <div className="salary-currency-row mb-3">
+                  <label className="auth-label" style={{ marginBottom: 4 }}>Currency</label>
+                  <div className="currency-popover-anchor" ref={currencyRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowCurrencyPopover(v => !v)}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: '#0f172a', fontWeight: '500' }}>
+                        <span style={{ color: '#5B5BD6', fontWeight: 'bold' }}>{currencySymbols[formik.values.salaryCurrency] || '$'}</span>
+                        {formik.values.salaryCurrency}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showCurrencyPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showCurrencyPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {currencies.map(c => (
+                          <button
+                            key={c}
+                            type="button"
+                            className={`currency-option ${formik.values.salaryCurrency === c ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('salaryCurrency', c);
+                              setShowCurrencyPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-code">{c}</span>
+                            <span className="currency-option-sym">{currencySymbols[c]}</span>
+                            {formik.values.salaryCurrency === c && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className='mb-3'>
+                  <label className="auth-label">{formik.values.salaryType === 'entireBudget' ? 'Budget' : 'Min Rate'}<span style={{ color: '#ef4444' }}> *</span></label>
+                  <div className="auth-input-wrapper">
+                    <input
+                      type="number"
+                      className="auth-input"
+                      name="salaryMin"
+                      placeholder="e.g. 110"
+                      value={formik.values.salaryMin}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  </div>
+                  {err("salaryMin")}
+                </div>
+
+                {formik.values.salaryType !== 'entireBudget' && (
+                  <div className='mb-3'>
+                    <label className="auth-label">Max Rate<span style={{ color: '#ef4444' }}> *</span></label>
+                    <div className="auth-input-wrapper">
                       <input
                         type="number"
-                        className="rate-input"
-                        name="salaryMin"
-                        placeholder="c.g. 110"
-                        value={formik.values.salaryMin}
+                        className="auth-input"
+                        name="salaryMax"
+                        placeholder="e.g. 160"
+                        value={formik.values.salaryMax}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                       />
                     </div>
-                    {err("salaryMin")}
+                    {err("salaryMax")}
                   </div>
-
-                  {formik.values.salaryType !== 'entireBudget' && (
-                    <div>
-                      <label className="auth-label">Max Rate<span style={{ color: '#ef4444' }}> *</span></label>
-                      <div className="rate-input-container">
-                        <span className="rate-prefix">USD</span>
-                        <input
-                          type="number"
-                          className="rate-input"
-                          name="salaryMax"
-                          placeholder="c.g. 160"
-                          value={formik.values.salaryMax}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                        />
-                      </div>
-                      {err("salaryMax")}
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-              </div>   
             </div>
 
             {/* JOB DETAILS & REQUIREMENTS */}
@@ -840,44 +1018,151 @@ navigate(targetPath);
               <div className="grid-4">
                 <div>
                   <label className="auth-label">Work Model<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input placeholder-text" name="workModel" value={formik.values.workModel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select model</option>
-                    <option value="Remote">Remote</option>
-                    <option value="On-site">On-site</option>
-                    <option value="Hybrid">Hybrid</option>
-                  </select>
+                  <div className="currency-popover-anchor" ref={workModelRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowWorkModelPopover(v => !v)}
+                    >
+                      <span style={{ fontSize: '14px', color: formik.values.workModel ? '#0f172a' : '#94a3b8' }}>
+                        {formik.values.workModel || 'Select model'}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showWorkModelPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showWorkModelPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {["Remote", "On-site", "Hybrid"].map(m => (
+                          <button
+                            key={m}
+                            type="button"
+                            className={`currency-option ${formik.values.workModel === m ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('workModel', m);
+                              setShowWorkModelPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{m}</span>
+                            {formik.values.workModel === m && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {err("workModel")}
                 </div>
 
                 <div>
                   <label className="auth-label">Department<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input placeholder-text" name="department" value={formik.values.department} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select department</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Design">Design</option>
-                    <option value="Product">Product</option>
-                  </select>
+                  <div className="currency-popover-anchor" ref={deptRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowDeptPopover(v => !v)}
+                    >
+                      <span style={{ fontSize: '14px', color: formik.values.department ? '#0f172a' : '#94a3b8' }}>
+                        {formik.values.department || 'Select department'}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showDeptPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showDeptPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {["Engineering", "Design", "Product", "Sales", "Marketing", "Human Resources"].map(d => (
+                          <button
+                            key={d}
+                            type="button"
+                            className={`currency-option ${formik.values.department === d ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('department', d);
+                              setShowDeptPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{d}</span>
+                            {formik.values.department === d && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {err("department")}
                 </div>
 
                 <div>
                   <label className="auth-label">Experience<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input placeholder-text" name="experienceLevel" value={formik.values.experienceLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select level</option>
-                    <option value="Junior">Junior</option>
-                    <option value="Mid-Level">Mid-Level</option>
-                    <option value="Senior">Senior</option>
-                  </select>
+                  <div className="currency-popover-anchor" ref={expRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowExpPopover(v => !v)}
+                    >
+                      <span style={{ fontSize: '14px', color: formik.values.experienceLevel ? '#0f172a' : '#94a3b8' }}>
+                        {formik.values.experienceLevel || 'Select level'}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showExpPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showExpPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {["Junior", "Mid-Level", "Senior"].map(e => (
+                          <button
+                            key={e}
+                            type="button"
+                            className={`currency-option ${formik.values.experienceLevel === e ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('experienceLevel', e);
+                              setShowExpPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{e}</span>
+                            {formik.values.experienceLevel === e && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {err("experienceLevel")}
                 </div>
 
                 <div>
                   <label className="auth-label">Education<span style={{ color: '#ef4444' }}> *</span></label>
-                  <select className="auth-input placeholder-text" name="educationLevel" value={formik.values.educationLevel} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                    <option value="">Select education</option>
-                    <option value="Bachelors">Bachelor's</option>
-                    <option value="Masters">Master's</option>
-                  </select>
+                  <div className="currency-popover-anchor" ref={eduRef} style={{ width: '100%' }}>
+                    <button
+                      type="button"
+                      className="auth-input placeholder-text"
+                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                      onClick={() => setShowEduPopover(v => !v)}
+                    >
+                      <span style={{ fontSize: '14px', color: formik.values.educationLevel ? '#0f172a' : '#94a3b8' }}>
+                        {formik.values.educationLevel === "Bachelors" ? "Bachelor's" : formik.values.educationLevel === "Masters" ? "Master's" : formik.values.educationLevel || 'Select education'}
+                      </span>
+                      <ChevronDown size={16} className={`chevron ${showEduPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                    </button>
+                    {showEduPopover && (
+                      <div className="currency-popover" style={{ width: '100%' }}>
+                        {[
+                          { value: "Bachelors", label: "Bachelor's" },
+                          { value: "Masters", label: "Master's" },
+                          { value: "PhD", label: "PhD" },
+                          { value: "High School", label: "High School" },
+                          { value: "None", label: "None Required" }
+                        ].map(e => (
+                          <button
+                            key={e.value}
+                            type="button"
+                            className={`currency-option ${formik.values.educationLevel === e.value ? 'selected' : ''}`}
+                            onClick={() => {
+                              formik.setFieldValue('educationLevel', e.value);
+                              setShowEduPopover(false);
+                            }}
+                          >
+                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{e.label}</span>
+                            {formik.values.educationLevel === e.value && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {err("educationLevel")}
                 </div>
               </div>
@@ -912,15 +1197,19 @@ navigate(targetPath);
                 <div className="auth-form-group" style={{ marginBottom: 0 }}>
                   <label className="auth-label">Required Skills (Press Enter)<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
-                    className="auth-input"
+                    className={`auth-input ${skillsTouched && skills.length === 0 ? 'input-error-border' : ''}`}
                     placeholder="Add skills (Press Enter)"
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={handleAddSkill}
+                    onBlur={() => setSkillsTouched(true)}
                   />
                   <p style={{ fontSize: "11px", color: "#64748b", marginTop: "4px" }}>
                     Type a skill and press <b>Enter</b> to add it. Repeat to add multiple skills.
                   </p>
+                  {skillsTouched && skills.length === 0 && (
+                    <div className="auth-error">At least one Required Skill must be added</div>
+                  )}
                   <div className="modal-tags-row mt-2">
                     {skills.map((skill) => (
                       <span key={skill} className="status-tag status-progress">
@@ -1015,39 +1304,41 @@ navigate(targetPath);
               <div className="preview-card-logo-row">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div className="preview-company-logo">
-                    {getInitials(formik.values.companyName)}
+                    {formik.values.companyName ? getInitials(formik.values.companyName) : '?'}
                   </div>
-                  <span className="preview-company-name">
-                    {formik.values.companyName || "MYLAS RECRUITING SOLUTIONS"}
+                  <span className={`preview-company-name ${!formik.values.companyName ? 'preview-placeholder-text' : ''}`}>
+                    {formik.values.companyName || "Company Name"}
                   </span>
                 </div>
-                {/* <span className="preview-badge-remote">Remote</span> */}
+                {formik.values.workModel && (
+                  <span className="preview-badge-remote">{formik.values.workModel}</span>
+                )}
               </div>
 
-              <h3 className="preview-job-title">
-                {formik.values.jobTitle || "Senior Full Stack Dev"}
+              <h3 className={`preview-job-title ${!formik.values.jobTitle ? 'preview-placeholder-title' : ''}`}>
+                {formik.values.jobTitle || "Job Title Preview"}
               </h3>
 
               <div className="preview-metas-grid">
                 
-                <div className="preview-meta-item">
+                <div className={`preview-meta-item ${!formik.values.location ? 'preview-meta-placeholder' : ''}`}>
                   <span className="preview-meta-icon"><MapPin size={14} /></span>
-                  <span>Remote Available</span>
+                  <span>{formik.values.location || 'Location'}</span>
                 </div>
 
-                <div className="preview-meta-item rate-highlight">
-                  <span className="preview-meta-icon rate-highlight"><DollarSign size={14} /></span>
-                  <span>{getSalaryString()}</span>
+                <div className={`preview-meta-item ${!getSalaryString() ? 'preview-meta-placeholder' : 'rate-highlight'}`}>
+                  <span className={`preview-meta-icon ${getSalaryString() ? 'rate-highlight' : ''}`}><DollarSign size={14} /></span>
+                  <span>{getSalaryString() || 'Salary Range'}</span>
                 </div>
 
-                <div className="preview-meta-item">
+                <div className={`preview-meta-item ${!getDurationString() ? 'preview-meta-placeholder' : ''}`}>
                   <span className="preview-meta-icon"><Clock size={14} /></span>
-                  <span>{getDurationString()}</span>
+                  <span>{getDurationString() || 'Duration'}</span>
                 </div>
 
-                <div className="preview-meta-item">
+                <div className={`preview-meta-item ${!getEmploymentTypeString() ? 'preview-meta-placeholder' : ''}`}>
                   <span className="preview-meta-icon"><Briefcase size={14} /></span>
-                  <span>{getEmploymentTypeString()}</span>
+                  <span>{getEmploymentTypeString() || 'Employment Type'}</span>
                 </div>
 
               </div>
@@ -1068,9 +1359,9 @@ navigate(targetPath);
                     ))
                   ) : (
                     <>
-                      <span className="preview-tech-pill">React</span>
-                      <span className="preview-tech-pill">TypeScript</span>
-                      <span className="preview-tech-pill">Node.js</span>
+                      <span className="preview-tech-pill preview-tech-pill-placeholder">Skill 1</span>
+                      <span className="preview-tech-pill preview-tech-pill-placeholder">Skill 2</span>
+                      <span className="preview-tech-pill preview-tech-pill-placeholder">Skill 3</span>
                     </>
                   )}
                 </div>
@@ -1081,12 +1372,12 @@ navigate(targetPath);
                 <p className="preview-section-title">
                   Description abstract:
                 </p>
-                <p className="preview-description-abstract">
+                <p className={`preview-description-abstract ${!formik.values.description ? 'preview-placeholder-text' : ''}`}>
                   {formik.values.description 
                     ? (formik.values.description.length > 150 
                        ? formik.values.description.slice(0, 150) + "..." 
                        : formik.values.description)
-                    : "Configure fields on the left and trigger AI Generation tool to compose full text."}
+                    : "Configure fields on the left to see the job description preview here..."}
                 </p>
               </div>
 

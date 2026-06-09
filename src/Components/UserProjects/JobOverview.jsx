@@ -116,7 +116,7 @@ const JobOverview = () => {
       toast.success(`Shortlisted invite sent to ${selectedBids.length} candidate(s) successfully!`);
 
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-      navigate(`${basePath}/user-schedule-interview`, {
+      navigate(`${basePath}/user-upcoming-interview`, {
         state: { preSelectedJobId: jobId }
       });
     } catch (err) {
@@ -155,7 +155,7 @@ const JobOverview = () => {
       toast.success(`Invite successfully sent to ${bid.FullName}!`);
 
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-      navigate(`${basePath}/user-schedule-interview`, {
+      navigate(`${basePath}/user-upcoming-interview`, {
         state: { preSelectedJobId: jobId }
       });
     } catch (err) {

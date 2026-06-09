@@ -107,7 +107,7 @@ const routes = createBrowserRouter(
           <Route path="job-overview" element={<JobOverview />} />
           <Route path="create-project" element={<CreateProject />} />
           <Route path="user-post-new-positions" element={<PostNewPositions />} />
-          <Route path="user-schedule-interview" element={<ScheduleInterview />} />
+          {/* <Route path="user-schedule-interview" element={<ScheduleInterview />} /> */}
           <Route path="admin-upcoming-interview" element={<UpcomingInterview />} />
           <Route path="admin-interview-details" element={<InterviewDetails />} />
           <Route path="admin-messages" element={<Messages />} />
@@ -165,7 +165,7 @@ const routes = createBrowserRouter(
           <Route path="edit-profile" element={<EditProfile />} />
           <Route path="user-invite-bid" element={<InviteBid />} />
           <Route path="user-upcoming-interview" element={<UpcomingInterview />} />
-          <Route path="user-schedule-interview" element={<ScheduleInterview />} />
+          {/* <Route path="user-schedule-interview" element={<ScheduleInterview />} /> */}
           <Route path="user-interview-details" element={<InterviewDetails />} />
           <Route path="contract-listing" element={<ContractForm />} />
           <Route path="contract-create" element={<ContractCreate />} />
