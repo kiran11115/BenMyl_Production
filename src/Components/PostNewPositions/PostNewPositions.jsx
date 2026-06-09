@@ -883,7 +883,7 @@ navigate(targetPath);
                   <label className="auth-label">Work Authorization/Visa</label>
                   <div className="vendor-section" ref={authRef}>
                     <div className="auth-input placeholder-text" onClick={() => setIsAuthOpen(!isAuthOpen)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                      <span className="placeholder-text">Select Work Authorization</span>
+                      <span className="placeholder-text">Select Visa</span>
                       <ChevronDown size={16} className={`chevron ${isAuthOpen ? 'rotate' : ''}`} />
                     </div>
                     {isAuthOpen && (
