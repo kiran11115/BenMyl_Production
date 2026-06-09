@@ -25,18 +25,18 @@ function useOutsideClick(ref, cb) {
 const getInitials = (name = '') =>
     name.trim().split(' ').slice(0, 2).map(w => w[0]?.toUpperCase()).join('');
 
-const DAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /* ── Component ── */
 const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
-    const [isClosing, setIsClosing]               = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
     const [isJobPreviewExpanded, setIsJobPreviewExpanded] = useState(false);
 
     /* Auth */
-    const userId    = localStorage.getItem('CompanyId');
+    const userId = localStorage.getItem('CompanyId');
     const companyId = localStorage.getItem('logincompanyid');
-    const userName  = localStorage.getItem('UserName') || 'Recruiter';
-    const userRole  = localStorage.getItem('Role') || 'Recruiter';
+    const userName = localStorage.getItem('UserName') || 'Recruiter';
+    const userRole = localStorage.getItem('Role') || 'Recruiter';
 
     /* Recruiter profile for footer photo */
     const { data: recruiterProfile } = useGetRecruiterProfileQuery(Number(userId), { skip: !userId });
@@ -47,37 +47,37 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
         : null;
 
     /* Form */
-    const [selectedJob,       setSelectedJob]       = useState(null);
+    const [selectedJob, setSelectedJob] = useState(null);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
-    const [selectedDate,      setSelectedDate]      = useState(new Date());
-    const [timeSlotId,        setTimeSlotId]        = useState('09:00');
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [timeSlotId, setTimeSlotId] = useState('09:00');
     const [startTime, setStartTime] = useState({ hr: '09', min: '00', ampm: 'AM' });
-    const [endTime,   setEndTime]   = useState({ hr: '10', min: '00', ampm: 'AM' });
-    const [timeMode,    setTimeMode]    = useState('quick');
+    const [endTime, setEndTime] = useState({ hr: '10', min: '00', ampm: 'AM' });
+    const [timeMode, setTimeMode] = useState('quick');
     const [isRangeMode, setIsRangeMode] = useState(false);
 
     /* Preferences (UI-only) */
-    const [sendReminder,   setSendReminder]   = useState(true);
-    const [interviewMode,  setInterviewMode]  = useState('Video Call');
+    const [sendReminder, setSendReminder] = useState(true);
+    const [interviewMode, setInterviewMode] = useState('Video Call');
 
     /* Popovers */
-    const [jobPopoverOpen,       setJobPopoverOpen]       = useState(false);
+    const [jobPopoverOpen, setJobPopoverOpen] = useState(false);
     const [candidatePopoverOpen, setCandidatePopoverOpen] = useState(false);
-    const [jobSearch,       setJobSearch]       = useState('');
+    const [jobSearch, setJobSearch] = useState('');
     const [candidateSearch, setCandidateSearch] = useState('');
 
-    const jobRef       = useRef();
+    const jobRef = useRef();
     const candidateRef = useRef();
-    useOutsideClick(jobRef,       () => setJobPopoverOpen(false));
+    useOutsideClick(jobRef, () => setJobPopoverOpen(false));
     useOutsideClick(candidateRef, () => setCandidatePopoverOpen(false));
 
     /* API */
     const { data: fetchedJobs, isLoading: isJobsLoading } =
         useGetGroupedJobTitlesQuery(userId, { skip: !userId || !isOpen });
-    const [getFindTalent]      = useTalentPoolMutation();
+    const [getFindTalent] = useTalentPoolMutation();
     const [scheduleInterview, { isLoading: isSubmitting }] = useScheduleInterviewMutation();
 
-    const [candidates,         setCandidates]         = useState([]);
+    const [candidates, setCandidates] = useState([]);
     const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
 
     /* Map API jobs */
@@ -124,10 +124,10 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                 if (Array.isArray(res)) {
                     setCandidates(
                         res.filter(i => i.isshortlisted && !i.isSchedules).map(i => ({
-                            id:     i.employeeID,
-                            name:   `${i.firstName} ${i.lastName}`,
-                            role:   i.title || '—',
-                            email:  i.emailAddress,
+                            id: i.employeeID,
+                            name: `${i.firstName} ${i.lastName}`,
+                            role: i.title || '—',
+                            email: i.emailAddress,
                             avatar: i.profilePicture || '',
                         }))
                     );
@@ -152,16 +152,16 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
 
     /* Time slots */
     const TIME_SLOTS = [
-        { id: '09:00', label: '9:00 AM',  hr: '09', min: '00', ampm: 'AM' },
+        { id: '09:00', label: '9:00 AM', hr: '09', min: '00', ampm: 'AM' },
         { id: '10:00', label: '10:00 AM', hr: '10', min: '00', ampm: 'AM' },
         { id: '11:00', label: '11:00 AM', hr: '11', min: '00', ampm: 'AM' },
         { id: '12:00', label: '12:00 PM', hr: '12', min: '00', ampm: 'PM' },
-        { id: '14:00', label: '2:00 PM',  hr: '02', min: '00', ampm: 'PM' },
-        { id: '15:00', label: '3:00 PM',  hr: '03', min: '00', ampm: 'PM' },
-        { id: '16:00', label: '4:00 PM',  hr: '04', min: '00', ampm: 'PM' },
-        { id: '17:00', label: '5:00 PM',  hr: '05', min: '00', ampm: 'PM' },
+        { id: '14:00', label: '2:00 PM', hr: '02', min: '00', ampm: 'PM' },
+        { id: '15:00', label: '3:00 PM', hr: '03', min: '00', ampm: 'PM' },
+        { id: '16:00', label: '4:00 PM', hr: '04', min: '00', ampm: 'PM' },
+        { id: '17:00', label: '5:00 PM', hr: '05', min: '00', ampm: 'PM' },
     ];
-    const HOURS   = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+    const HOURS = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const MINUTES = ['00', '15', '30', '45'];
 
     const handleQuickSlot = (slot) => {
@@ -178,7 +178,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
     const formattedRange = `${startTime.hr}:${startTime.min} ${startTime.ampm} – ${endTime.hr}:${endTime.min} ${endTime.ampm}`;
 
     /* Footer date display */
-    const footerDay  = DAY_SHORT[selectedDate?.getDay() ?? 0];
+    const footerDay = DAY_SHORT[selectedDate?.getDay() ?? 0];
     const footerDate = selectedDate?.getDate() ?? '';
 
     /* Submit — no changes to existing API payload */
@@ -190,22 +190,22 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
         try {
             const interviewDate = selectedDate.toLocaleDateString('en-CA');
             const fd = new FormData();
-            fd.append('InterviewId',          0);
-            fd.append('RecruiterID',          Number(userId));
-            fd.append('RecruiterName',        userName);
-            fd.append('CompanyName',          selectedJob.company);
-            fd.append('JobTitle',             selectedJob.title);
-            fd.append('CandidateName',        selectedCandidate.name);
-            fd.append('InterviewDate',        interviewDate);
-            fd.append('InterviewTime',        `${startTime.hr}:${startTime.min} ${startTime.ampm} to ${endTime.hr}:${endTime.min} ${endTime.ampm}`);
-            fd.append('InterviewMode',        'Online');
-            fd.append('InterviewLocation',    selectedJob.location);
-            fd.append('InterviewerName',      userName);
-            fd.append('InterviewLink',        'Google.com');
-            fd.append('CandidateID',          selectedCandidate.id);
-            fd.append('CandidateEmailid',     selectedCandidate.email);
-            fd.append('Salary',               selectedJob.budget);
-            fd.append('SalaryType',           selectedJob.salaryType);
+            fd.append('InterviewId', 0);
+            fd.append('RecruiterID', Number(userId));
+            fd.append('RecruiterName', userName);
+            fd.append('CompanyName', selectedJob.company);
+            fd.append('JobTitle', selectedJob.title);
+            fd.append('CandidateName', selectedCandidate.name);
+            fd.append('InterviewDate', interviewDate);
+            fd.append('InterviewTime', `${startTime.hr}:${startTime.min} ${startTime.ampm} to ${endTime.hr}:${endTime.min} ${endTime.ampm}`);
+            fd.append('InterviewMode', 'Online');
+            fd.append('InterviewLocation', selectedJob.location);
+            fd.append('InterviewerName', userName);
+            fd.append('InterviewLink', 'Google.com');
+            fd.append('CandidateID', selectedCandidate.id);
+            fd.append('CandidateEmailid', selectedCandidate.email);
+            fd.append('Salary', selectedJob.budget);
+            fd.append('SalaryType', selectedJob.salaryType);
             fd.append('CandidtateRecruiterid', 0);
 
             await scheduleInterview(fd).unwrap();
@@ -416,7 +416,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                         </div>
                                         <span className="sid-cal-title">CALENDAR</span>
                                     </div>
-                                    
+
                                     {/* React DatePicker */}
                                     <div className="sid-cal-body">
                                         <DatePicker
@@ -434,7 +434,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                     </div>
 
                                     {/* Reset Button */}
-                                    <button 
+                                    <button
                                         className="sid-cal-reset"
                                         onClick={() => setSelectedDate(new Date())}
                                     >
@@ -471,16 +471,16 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                         <div className="sid-custom-time-container">
                                             {[
                                                 { label: 'Start Time', time: startTime, setTime: (v) => { setStartTime(v); setIsRangeMode(true); } },
-                                                { label: 'End Time',   time: endTime,   setTime: (v) => { setEndTime(v);   setIsRangeMode(true); } },
+                                                { label: 'End Time', time: endTime, setTime: (v) => { setEndTime(v); setIsRangeMode(true); } },
                                             ].map(({ label, time, setTime }) => (
                                                 <div key={label} className="sid-custom-time-group">
                                                     <label className="sid-custom-time-label">{label}</label>
                                                     <div className="sid-custom-time-inputs">
-                                                        <select className="sid-auth-input" value={time.hr}   onChange={e => setTime({ ...time, hr: e.target.value })}>
+                                                        <select className="sid-auth-input" value={time.hr} onChange={e => setTime({ ...time, hr: e.target.value })}>
                                                             {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
                                                         </select>
                                                         <span className="sid-time-colon">:</span>
-                                                        <select className="sid-auth-input" value={time.min}  onChange={e => setTime({ ...time, min: e.target.value })}>
+                                                        <select className="sid-auth-input" value={time.min} onChange={e => setTime({ ...time, min: e.target.value })}>
                                                             {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
                                                         </select>
                                                         <select className="sid-auth-input sid-auth-ampm" value={time.ampm} onChange={e => setTime({ ...time, ampm: e.target.value })}>
@@ -530,7 +530,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                 <JobOverviewCard
                                     job={selectedJob}
                                     isExpanded={true}
-                                    onToggle={() => {}}
+                                    onToggle={() => { }}
                                 />
                             )
                             : (
@@ -599,7 +599,13 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                             )}
                             <div className="sid-footer-rec-info">
                                 <span className="sid-footer-rec-name">{userName}</span>
-                                <span className="sid-footer-rec-role">{userRole}</span>
+                                <span className="sid-footer-rec-role">
+                                    {userRole === "Recruiter"
+                                        ? "Hiring Manager"
+                                        : userRole === "Recruiter2"
+                                            ? "Recruiter"
+                                            : userRole}
+                                </span>
                             </div>
                         </div>
 
