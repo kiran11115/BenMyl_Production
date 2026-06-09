@@ -1,11 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
 import { State, City } from "country-state-city";
+import { FiFile } from "react-icons/fi";
 
 const countryIsoMap = {
   USA: "US",
   India: "IN",
   UK: "GB",
   UAE: "AE"
+};
+
+/* ── Required documents per country ── */
+const uploadTypeOptions = {
+  USA: [
+    "IRS EIN Confirmation Letter (CP 575 or 147C)",
+    "Government ID",
+    "Proof of Business Address"
+  ],
+  India: [
+    "GST Registration Certificate",
+    "PAN Card Copy",
+    "Government ID",
+    "Proof of Business Address"
+  ],
+  UK: [
+    "Certificate of Incorporation",
+    "VAT Registration Certificate",
+    "Government ID",
+    "Proof of Business Address"
+  ],
+  UAE: [
+    "Trade License Copy",
+    "TRN Certificate",
+    "Government ID",
+    "Proof of Business Address"
+  ]
+};
+
+/* ── Format hints per license type ── */
+const licenseFormatHint = {
+  EIN:   "Format: XX-XXXXXXX  (e.g. 12-3456789)",
+  PAN:   "Format: AAAAA9999A  (5 letters · 4 digits · 1 letter)",
+  GSTIN: "Format: 29AACCC1234D1Z5",
+  UDYAM: "Format: UDYAM-XX-00-0000000",
+  FSSAI: "14-digit number",
+  CRN:   "Format: 12345678",
+  VAT:   "Format: GB123456789",
+  TL:    "Enter Trade License number",
+  TRN:   "Format: 100-xxxx-xxxxxxx",
 };
 
 const StepVerify = ({
@@ -48,6 +89,61 @@ const StepVerify = ({
     const cityName = e.target.value;
     setFieldValue("city", cityName);
   };
+
+  /* ── Local state for file preview ── */
+  const [previewUrl, setPreviewUrl] = React.useState(null);
+  const [previewType, setPreviewType] = React.useState(null);
+
+  /* ── Local state for upload progress ── */
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+
+  React.useEffect(() => {
+    if (formData.verificationFile) {
+      const file = formData.verificationFile;
+      if (file.type === "application/pdf") {
+        setPreviewUrl(URL.createObjectURL(file));
+        setPreviewType("pdf");
+      } else if (file.type?.startsWith("image/")) {
+        setPreviewUrl(URL.createObjectURL(file));
+        setPreviewType("image");
+      }
+    } else {
+      setPreviewUrl(null);
+      setPreviewType(null);
+    }
+  }, [formData.verificationFile]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    // Save fake event since synthetic event may be nullified
+    const fakeEvent = { target: { files: [file] } };
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 25;
+      setUploadProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setIsUploading(false);
+          handleFileUpload(fakeEvent);
+        }, 300);
+      }
+    }, 200);
+  };
+
+  const clearFile = () => {
+    setPreviewUrl(null);
+    setPreviewType(null);
+    setFieldValue("verificationFile", null);
+  };
+
   return (
     <div className="animate-fade-in">
       {/* ================= BUSINESS VERIFICATION ================= */}
@@ -69,7 +165,7 @@ const StepVerify = ({
                 onBlur={handleBlur}
               >
                 <option value="USA">United States</option>
-                 <option value="India">India</option>
+                <option value="India">India</option>
                 <option value="UK">United Kingdom</option>
                 <option value="UAE">UAE</option>
               </select>
@@ -93,43 +189,205 @@ const StepVerify = ({
               onChange={handleInputChange}
               onBlur={handleBlur}
             />
+            {/* Format hint */}
+            {licenseFormatHint[formData.licenseType] && (
+              <small style={{ color: "#64748b", fontSize: "11px", marginTop: "4px", display: "block" }}>
+                {licenseFormatHint[formData.licenseType]}
+              </small>
+            )}
             {touched.licenseNumber && errors.licenseNumber && (
               <small className="auth-error">{errors.licenseNumber}</small>
             )}
           </div>
 
-          {/* FILE UPLOAD (USA ONLY) */}
+          {/* FILE UPLOAD */}
           <div className="auth-group auth-action-group">
-            {formData.country === "USA" ? (
-              <div className="auth-upload-wrapper">
+            <label className="auth-label">Verification Document</label>
+
+            {/* Document Type Selector */}
+            <div className="auth-select-wrapper" style={{ marginBottom: "12px" }}>
+              <select
+                name="docUploadType"
+                className={`auth-input auth-select ${
+                  touched.docUploadType && errors.docUploadType ? "is-invalid" : ""
+                }`}
+                value={formData.docUploadType || ""}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+              >
+                <option value="">Select Document Type</option>
+                {(uploadTypeOptions[formData.country] || []).map((doc) => (
+                  <option key={doc} value={doc}>
+                    {doc}
+                  </option>
+                ))}
+              </select>
+              {touched.docUploadType && errors.docUploadType && (
+                <small className="auth-error mt-1 d-block" style={{ marginTop: "4px" }}>
+                  {errors.docUploadType}
+                </small>
+              )}
+            </div>
+
+            {isUploading ? (
+              <div
+                style={{
+                  border: "2px solid #e2e8f0",
+                  borderRadius: "10px",
+                  padding: "24px 14px",
+                  textAlign: "center",
+                  background: "#f8faff",
+                }}
+              >
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "#5b5bd6", marginBottom: "12px" }}>
+                  Verifying &amp; Uploading Document...
+                </div>
+                <div style={{ height: "6px", background: "#e2e8f0", borderRadius: "10px", overflow: "hidden", margin: "0 auto", width: "80%" }}>
+                  <div style={{ height: "100%", width: `${uploadProgress}%`, background: "#5b5bd6", transition: "width 0.25s ease" }} />
+                </div>
+                <div style={{ fontSize: "11px", color: "#64748b", marginTop: "8px" }}>
+                  {uploadProgress}% Complete
+                </div>
+              </div>
+            ) : !previewUrl ? (
+              /* Drop / Upload zone */
+              <div
+                style={{
+                  border: "2px dashed #c7d2fe",
+                  borderRadius: "10px",
+                  padding: "18px 14px",
+                  textAlign: "center",
+                  background: "#f8faff",
+                  cursor: "pointer",
+                  position: "relative",
+                }}
+                onClick={() => document.getElementById("file-upload").click()}
+              >
                 <input
                   type="file"
-                  name="verificationFile"      // ✅ VERY IMPORTANT
+                  name="verificationFile"
                   id="file-upload"
                   className="auth-file-input-hidden"
-                  accept=".pdf,.jpg,.png"
-                  onChange={handleFileUpload}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
                   onBlur={handleBlur}
+                  style={{ display: "none" }}
                 />
-                <label htmlFor="file-upload" className="btn-secondary">
-                  Upload Doc
-                </label>
-
-                {fileName && (
-                  <span className="auth-file-name">{fileName}</span>
-                )}
-
-                {touched.verificationFile && errors.verificationFile && (
-                  <small className="auth-error d-block mt-1">
-                    {errors.verificationFile}
-                  </small>
-                )}
+                <div style={{ fontSize: "22px", marginBottom: "6px", color: "#5b5bd6" }}> <FiFile/> </div>
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "#5b5bd6" }}>
+                  Click to upload
+                </div>
+                <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px" }}>
+                  PDF supported · JPG / PNG also accepted
+                </div>
               </div>
             ) : (
-              <button type="button" className="auth-btn-secondary auth-btn-sm">
-                Validate Now
-              </button>
+              /* Preview area */
+              <div
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  background: "#f8faff",
+                  position: "relative",
+                }}
+              >
+                {previewType === "pdf" ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "16px",
+                      gap: "8px",
+                    }}
+                  >
+                    <div style={{ fontSize: "28px", color: "#5b5bd6" }}> <FiFile/> </div>
+                    <span style={{ fontSize: "12px", color: "#334155", fontWeight: 600, wordBreak: "break-all", textAlign: "center" }}>
+                      {fileName}
+                    </span>
+                    <a
+                      href={previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: "11px", color: "#5b5bd6", textDecoration: "underline" }}
+                    >
+                      Preview PDF
+                    </a>
+                  </div>
+                ) : (
+                  <img
+                    src={previewUrl}
+                    alt="Uploaded doc"
+                    style={{ width: "100%", maxHeight: "120px", objectFit: "contain", display: "block", padding: "8px" }}
+                  />
+                )}
+                {/* Clear button */}
+                <button
+                  type="button"
+                  onClick={clearFile}
+                  style={{
+                    position: "absolute",
+                    top: "6px",
+                    right: "8px",
+                    background: "#ef4444",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "20px",
+                    height: "20px",
+                    fontSize: "11px",
+                    color: "#fff",
+                    cursor: "pointer",
+                    lineHeight: "20px",
+                    textAlign: "center",
+                    padding: 0,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
             )}
+
+            {touched.verificationFile && errors.verificationFile && (
+              <small className="auth-error d-block mt-1">
+                {errors.verificationFile}
+              </small>
+            )}
+
+            {/* PDF note */}
+            <small
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "11px",
+                color: "#94a3b8",
+                marginTop: "6px",
+              }}
+            >
+              <span style={{ color: "#ef4444" }}>*</span> PDF format is recommended for best compatibility
+            </small>
+
+            {/* Document requirement hint */}
+            <div
+              style={{
+                marginTop: "12px",
+                padding: "10px",
+                background: "#f8faff",
+                border: "1px solid #c7d2fe",
+                borderRadius: "6px",
+                fontSize: "11px",
+                color: "#475569",
+                lineHeight: "1.5"
+              }}
+            >
+              <strong style={{ color: "#5b5bd6" }}>Accepted Documents (Upload ANY ONE):</strong><br />
+              <ul style={{ margin: "4px 0 0 0", paddingLeft: "20px" }}>
+                {(uploadTypeOptions[formData.country] || []).map((doc, idx) => (
+                  <li key={idx} style={{ marginBottom: "2px" }}>{doc}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 

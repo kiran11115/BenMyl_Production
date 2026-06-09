@@ -427,7 +427,7 @@ function AdminDashboard() {
           <div className="stat-header-row">
 
             <div className="stat-title">
-              Active Recruiters
+              Active Users
             </div>
 
             <div className="stat-icon-box">

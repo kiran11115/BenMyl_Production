@@ -1195,7 +1195,7 @@ navigate(targetPath);
                 </div>
 
                 <div className="auth-form-group" style={{ marginBottom: 0 }}>
-                  <label className="auth-label">Required Skills (Press Enter)<span style={{ color: '#ef4444' }}> *</span></label>
+                  <label className="auth-label">Required Skills<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
                     className={`auth-input ${skillsTouched && skills.length === 0 ? 'input-error-border' : ''}`}
                     placeholder="Add skills (Press Enter)"

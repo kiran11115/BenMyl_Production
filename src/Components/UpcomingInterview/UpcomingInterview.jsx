@@ -457,7 +457,7 @@ export default function UpcomingInterview() {
                                 </div>
                                 <h3>No Interviews Scheduled</h3>
                                 <p>Relax! You don't have any sessions booked for this criteria.</p>
-                                <button className="btn-v2-primary mt-3" onClick={() => navigate(`${basePath}/user-schedule-interview`)}>
+                                <button className="btn-v2-primary mt-3"  onClick={() => setIsDrawerOpen(true)}>
                                     <FiPlus size={16} /> Schedule Now
                                 </button>
                             </div>

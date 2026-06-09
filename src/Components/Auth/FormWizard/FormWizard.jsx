@@ -68,13 +68,32 @@ const FormWizard = () => {
     () => ({
       1: Yup.object({
         companyName: Yup.string().required("Company name is required"),
-        phone: Yup.string().required("Business phone is required"),
+        phone: Yup.string()
+          .required("Business phone is required")
+          .test("phone-length", "Phone must have 10–15 digits", (val) => {
+            if (!val) return false;
+            const digits = val.replace(/\D/g, "");
+            return digits.length >= 10 && digits.length <= 15;
+          }),
         email: Yup.string().email().required("Email is required"),
       }),
       2: Yup.object({
         country: Yup.string().required(),
         licenseType: Yup.string().required(),
-        licenseNumber: Yup.string().required(),
+        licenseNumber: Yup.string()
+          .required("License number is required")
+          .test("license-format", "Invalid format", function(value) {
+            if (!value) return false;
+            const type = this.parent.licenseType;
+            if (type === "EIN") return /^\d{2}-\d{7}$/.test(value);
+            if (type === "PAN") return /^[A-Z]{5}\d{4}[A-Z]$/.test(value);
+            if (type === "GSTIN") return /^[0-9A-Z]{15}$/.test(value);
+            if (type === "FSSAI") return /^\d{14}$/.test(value);
+            if (type === "CRN") return /^[0-9A-Z]{8}$/.test(value);
+            if (type === "TRN") return /^\d{3}-\d{4}-\d{7}$/.test(value);
+            if (type === "UDYAM") return value.length >= 10;
+            return true;
+          }),
         street: Yup.string().required(),
         city: Yup.string().required(),
         state: Yup.string().when("country", {
@@ -82,10 +101,8 @@ const FormWizard = () => {
           then: (s) => s.required(),
         }),
         zipCode: Yup.string().required(),
-        verificationFile: Yup.mixed().when("country", {
-          is: "USA",
-          then: (s) => s.required("Document required"),
-        }),
+        docUploadType: Yup.string().required("Please select document type"),
+        verificationFile: Yup.mixed().required("Document required"),
       }),
       3: Yup.object({
         subscriptionPlan: Yup.string().required(),
@@ -106,12 +123,14 @@ const FormWizard = () => {
       companyName: companyNameFromOTP || "",
       fullName: fullNameFromOTP || "",
       email: emailID || "",
+      countryCode: "+1",
       phone: "",
       notifications: false,
 
       country: "USA",
       licenseType: "EIN",
       licenseNumber: "",
+      docUploadType: "",
       verificationFile: null,
 
       street: "",
@@ -153,6 +172,12 @@ const FormWizard = () => {
       return;
     }
 
+    if (name === "phone") {
+      const formatted = value.replace(/[^\d\s\+\-\(\)]/g, "");
+      formik.setFieldValue(name, formatted);
+      return;
+    }
+
     if (name === "cardNumber") {
       const raw = value.replace(/\D/g, "").slice(0, 16);
       formik.setFieldValue(name, raw.replace(/(\d{4})(?=\d)/g, "$1 "));
@@ -168,6 +193,60 @@ const FormWizard = () => {
       return;
     }
 
+    if (name === "licenseNumber") {
+      const licenseType = formik.values.licenseType;
+      
+      if (licenseType === "EIN") {
+        const raw = value.replace(/\D/g, "").slice(0, 9);
+        formik.setFieldValue(name, raw.length >= 2 ? raw.slice(0, 2) + "-" + raw.slice(2) : raw);
+        return;
+      }
+      if (licenseType === "PAN") {
+        const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "GSTIN") {
+        const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 15);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "FSSAI") {
+        const raw = value.replace(/\D/g, "").slice(0, 14);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "CRN") {
+        const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "VAT") {
+        const raw = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 15);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "UDYAM") {
+        const raw = value.toUpperCase().replace(/[^A-Z0-9\-]/g, "").slice(0, 19);
+        formik.setFieldValue(name, raw);
+        return;
+      }
+      if (licenseType === "TRN") {
+        const raw = value.replace(/\D/g, "").slice(0, 15);
+        let formatted = raw;
+        if (raw.length > 3 && raw.length <= 7) {
+          formatted = `${raw.slice(0,3)}-${raw.slice(3)}`;
+        } else if (raw.length > 7) {
+          formatted = `${raw.slice(0,3)}-${raw.slice(3,7)}-${raw.slice(7)}`;
+        }
+        formik.setFieldValue(name, formatted);
+        return;
+      }
+      
+      formik.setFieldValue(name, value.toUpperCase().slice(0, 25));
+      return;
+    }
+
     formik.handleChange(e);
   };
 
@@ -175,6 +254,7 @@ const FormWizard = () => {
     const c = e.target.value;
     formik.setFieldValue("country", c);
     formik.setFieldValue("licenseType", licenseOptions[c]?.[0]?.value || "GSTIN");
+    formik.setFieldValue("docUploadType", "");
     formik.setFieldValue("state", "");
     formik.setFieldValue("city", "");
     formik.setFieldValue("zipCode", "");
@@ -185,6 +265,7 @@ const FormWizard = () => {
     if (!file) return;
     setFileName(file.name);
     formik.setFieldValue("verificationFile", file);
+    formik.setFieldError("verificationFile", undefined);
     formik.setFieldTouched("verificationFile", true);
   };
 
@@ -202,6 +283,7 @@ const FormWizard = () => {
         "country",
         "licenseType",
         "licenseNumber",
+        "docUploadType",
         "verificationFile",
         "street",
         "city",
@@ -230,7 +312,7 @@ const FormWizard = () => {
     fd.append("FullName", v.fullName);
     fd.append("EmailID", v.email);
     fd.append("companyname", v.companyName);
-    fd.append("BusinessPhone", v.phone);
+    fd.append("BusinessPhone", `${v.countryCode} ${v.phone}`);
     fd.append("Notification", v.notifications);
 
     const countryMap = { USA: 1, INDIA: 2, UK: 3, UAE: 4 };
@@ -273,12 +355,18 @@ const FormWizard = () => {
   };
 
   /* ================= SUBMIT ================= */
-  const handleAccountCreation = async () => {
-    const fields = getStepFields(4);
-    touchFields(fields);
-
-    const errors = await formik.validateForm();
-    if (Object.keys(errors).length > 0) return;
+  const handleAccountCreation = async (isSkipped = false) => {
+    if (!isSkipped) {
+      const fields = getStepFields(4);
+      touchFields(fields);
+      const errors = await formik.validateForm();
+      if (Object.keys(errors).length > 0) return;
+    } else {
+      const errors = await formik.validateForm();
+      const step4Fields = getStepFields(4);
+      const remainingErrors = Object.keys(errors).filter(k => !step4Fields.includes(k));
+      if (remainingErrors.length > 0) return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -340,6 +428,7 @@ const FormWizard = () => {
               <StepAccount
                 formData={formData}
                 handleInputChange={handleInputChange}
+                handleBlur={formik.handleBlur}
                 errors={formik.errors}
                 touched={formik.touched}
               />
@@ -408,15 +497,26 @@ const FormWizard = () => {
                 </button>
               )}
               {currentStep === 4 && (
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={handleAccountCreation}
-                  disabled={isSubmitting}
-                  style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: '#5b5bd6', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto', opacity: isSubmitting ? 0.7 : 1 }}
-                >
-                  {isSubmitting ? "Creating..." : "Create Account"}
-                </button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem' }}>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => handleAccountCreation(true)}
+                    disabled={isSubmitting}
+                    style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: 'transparent', color: '#64748b', border: '1px solid #e2e8f0', fontWeight: 600, cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Skip for Now
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={() => handleAccountCreation(false)}
+                    disabled={isSubmitting}
+                    style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: '#5b5bd6', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    {isSubmitting ? "Creating..." : "Create Account"}
+                  </button>
+                </div>
               )}
             </footer>
           </form>
