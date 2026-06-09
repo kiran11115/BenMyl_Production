@@ -162,27 +162,6 @@ const TalentProfile = () => {
     };
     localStorage.setItem("shortlistedMap", JSON.stringify(updated));
     setIsShortlisted(!exists);
-
-    // ── After shortlisting navigate back with matched job role ──
-    if (!exists) {
-      const candidateRole = (profileData.role || "").toLowerCase().trim();
-      const matchedJob = jobTitles.find(
-        (j) => (j.jobTitle || "").toLowerCase().trim() === candidateRole
-      );
-
-      if (matchedJob) {
-        // Navigate back to Talent Pool — TalentPool already handles preselectedJobTitle
-        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-        const talentPoolPath = `${basePath}/talent-pool`;
-        toast.success(`Shortlisted! Returning to Talent Pool — "${matchedJob.jobTitle}" selected.`);
-        setTimeout(() => {
-          navigate(talentPoolPath, { state: { jobTitle: matchedJob.jobTitle } });
-        }, 800);
-      } else {
-        // No matching job found — show the modal
-        setShowNoJobModal(true);
-      }
-    }
   };
 
   if (isLoading) return (

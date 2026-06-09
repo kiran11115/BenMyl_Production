@@ -37,6 +37,10 @@ const SortIcon = ({ active, direction }) => {
   );
 };
 
+// --- Helper: getInitials ---
+const getInitials = (name = "") =>
+  name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join("");
+
 // --- Sub-component: Table Row ---
 // Modified to accept shortlist props and render the button in the Action column
 const CandidateRow = memo(
@@ -49,7 +53,28 @@ const CandidateRow = memo(
         </td>
         <td className="tt-td">
           <div className="tt-candidate-flex">
-            <img src={candidate.avatar} alt="" className="tt-avatar" />
+            {candidate.avatar ? (
+              <img src={candidate.avatar} alt="" className="tt-avatar" />
+            ) : (
+              <div 
+                className="profile-avatar initials"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f1f1ff",
+                  color: "#5B5BD6",
+                  fontWeight: "700",
+                  fontSize: "14px",
+                  border: "1.5px solid #f1f1ff",
+                }}
+              >
+                {getInitials(candidate.name)}
+              </div>
+            )}
             <div className="tt-info-col">
               <span className="tt-name">{candidate.name}</span>
             </div>

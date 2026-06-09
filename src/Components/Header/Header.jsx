@@ -476,7 +476,7 @@ function Header() {
                 className="routine-card"
                 onClick={() => {
                   navigate(
-                    "/user/user-schedule-interview"
+                    "/user/user-upcoming-interview"
                   );
                   setShowRoutineModal(false);
                 }}

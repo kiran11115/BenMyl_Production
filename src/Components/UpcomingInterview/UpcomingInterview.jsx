@@ -223,14 +223,27 @@ export default function UpcomingInterview() {
         <div className="ui-page">
             {/* Hero Header with Blue Gradient */}
             <div className="hero-card mb-4">
+                <FiCalendar 
+                    size={240} 
+                    style={{
+                        position: 'absolute',
+                        right: '30%',
+                        top: '50%',
+                        transform: 'translateY(-50%) rotate(-10deg)',
+                        color: '#ffffff',
+                        opacity: 0.04,
+                        zIndex: 1,
+                        pointerEvents: 'none'
+                    }}
+                />
                 <div className="hero-left">
                     <div className="hero-pill">
                         ✦ Interview Management
                     </div>
-                    <h1 className="text-white">
+                    <h1 className="text-white" style={{ position: 'relative', zIndex: 2 }}>
                         Upcoming Interviews
                     </h1>
-                    <p className="hero-subtitle">
+                    <p className="hero-subtitle" style={{ position: 'relative', zIndex: 2 }}>
                         Manage your scheduled interviews, track candidate availability, and monitor upcoming meetings.
                     </p>
                 </div>

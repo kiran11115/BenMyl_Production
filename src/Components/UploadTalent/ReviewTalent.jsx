@@ -14,7 +14,18 @@ import {
   Users,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiMapPin,
+  FiBriefcase,
+  FiFileText,
+  FiCalendar,
+  FiUser,
+  FiBookOpen,
+  FiTrendingUp,
+  FiExternalLink
+} from "react-icons/fi";
+import "../../Components/TalentPool/Talent Profile/TalentProfile.css";
 import { toast } from "react-toastify";
 import "./UploadTalent.css";
 import DatePicker from "react-datepicker";
@@ -109,145 +120,139 @@ const parseDateSafe = (value) => {
 const PDFResumePreview = ({ data }) => {
   if (!data) return null;
 
-  const initials = `${data.firstName?.[0] ?? ""}${data.lastName?.[0] ?? ""}`.toUpperCase();
+  const location = `${data.city ?? ""}, ${data.state ?? ""}, ${data.country ?? ""}`.trim().replace(/^,\s*|\s*,\s*$/g, '') || "";
 
   return (
-    <div className="premium-resume-card">
-      {/* Header Section */}
-      <div className="resume-header-section">
-        <div className="resume-avatar-row">
-          <div className="resume-avatar">{initials}</div>
-          <div>
-            <h1 className="resume-name">
-              {data.firstName} {data.lastName}
-            </h1>
-            {data.position && (
-              <p className="resume-position">{data.position}</p>
-            )}
-          </div>
-        </div>
-        <div className="resume-contact-bar">
-          {data.emailAddress && (
-            <span className="resume-contact-chip">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
-              {data.emailAddress}
-            </span>
-          )}
-          {data.phoneNo && (
-            <span className="resume-contact-chip">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 4.18 2 2 0 012.18 2h3.07a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 9.14a16 16 0 006.95 6.95l1.5-1.5a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" /></svg>
-              {data.phoneNo}
-            </span>
-          )}
-          {data.city && (
-            <span className="resume-contact-chip">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
-              {data.city}{data.state ? `, ${data.state}` : ""}
-            </span>
-          )}
+    <div style={{
+      background: "#ffffff",
+      padding: "40px 48px",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      fontFamily: "'Times New Roman', Times, serif",
+      color: "#000000",
+      lineHeight: 1.6,
+      maxWidth: "800px",
+      margin: "0 auto",
+      minHeight: "1050px" /* A4 approximate height */
+    }}>
+
+      {/* HEADER: Name & Contact */}
+      <div style={{ textAlign: "center", marginBottom: "24px" }}>
+        <h1 style={{ fontSize: "28px", fontWeight: "bold", margin: "0 0 8px 0", textTransform: "uppercase", letterSpacing: "1px" }}>
+          {data.firstName} {data.lastName}
+        </h1>
+        {data.position && (
+          <h2 style={{ fontSize: "14px", fontWeight: "normal", margin: "0 0 8px 0", fontStyle: "italic", color: "#333" }}>
+            {data.position}
+          </h2>
+        )}
+        <div style={{ fontSize: "13px", color: "#333", display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          {data.emailAddress && <span>{data.emailAddress}</span>}
+          {data.emailAddress && data.phoneNo && <span>|</span>}
+          {data.phoneNo && <span>{data.phoneNo}</span>}
+          {((data.emailAddress || data.phoneNo) && location) && <span>|</span>}
+          {location && <span>{location}</span>}
         </div>
       </div>
 
-      {/* Summary */}
+      {/* SUMMARY */}
       {data.bio && (
-        <div className="resume-section">
-          <h3 className="resume-section-title">
-            <span className="resume-section-dot" />
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", textTransform: "uppercase", borderBottom: "1px solid #000", paddingBottom: "4px", marginBottom: "8px" }}>
             Professional Summary
           </h3>
-          <p className="resume-summary-text">{data.bio}</p>
+          <p style={{ fontSize: "13px", margin: 0, textAlign: "justify" }}>
+            {data.bio}
+          </p>
         </div>
       )}
 
-      {/* Experience */}
+      {/* CORE COMPETENCIES */}
+      {data.skills && (
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", textTransform: "uppercase", borderBottom: "1px solid #000", paddingBottom: "4px", marginBottom: "8px" }}>
+            Core Competencies
+          </h3>
+          <p style={{ fontSize: "13px", margin: 0 }}>
+            {data.skills.split(",").map(s => s.trim()).join(" • ")}
+          </p>
+        </div>
+      )}
+
+      {/* EXPERIENCE */}
       {data.workexperiences && data.workexperiences.length > 0 && (
-        <div className="resume-section">
-          <h3 className="resume-section-title">
-            <span className="resume-section-dot" />
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", textTransform: "uppercase", borderBottom: "1px solid #000", paddingBottom: "4px", marginBottom: "12px" }}>
             Professional Experience
           </h3>
-          {data.workexperiences.map((e, i) => (
-            <div key={i} className="resume-item">
-              <div className="resume-item-header">
-                <div className="resume-item-main">{e.companyName}</div>
-                <div className="resume-date-badge">
-                  {formatDateToDisplay(e.startDate)} - {e.endDate ? formatDateToDisplay(e.endDate) : "Present"}
-                </div>
+          {data.workexperiences.map((job, idx) => (
+            <div key={idx} style={{ marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "2px" }}>
+                <strong style={{ fontSize: "14px" }}>{job.position || "N/A"}</strong>
+                <span style={{ fontSize: "13px", fontStyle: "italic" }}>
+                  {job.startDate ? formatDateToDisplay(job.startDate) : "N/A"} - {job.endDate ? formatDateToDisplay(job.endDate) : "Present"}
+                </span>
               </div>
-              <div className="resume-item-sub">{e.position}</div>
-              <ul className="resume-list">
-                {e.description
-                  ?.split(".")
-                  .map((d, idx) => d.trim() && <li key={idx}>{d}</li>)}
+              <div style={{ fontSize: "14px", fontStyle: "italic", marginBottom: "6px" }}>
+                {job.companyName || "N/A"}
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px" }}>
+                {job.description?.split(".").map((desc, i) => desc.trim() && (
+                  <li key={i} style={{ marginBottom: "4px", textAlign: "justify" }}>
+                    {desc.trim()}{(desc.trim().endsWith(".") || desc.trim() === "") ? "" : "."}
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
       )}
 
-      {/* Education */}
+      {/* EDUCATION */}
       {data.employee_Heighers && data.employee_Heighers.length > 0 && (
-        <div className="resume-section">
-          <h3 className="resume-section-title">
-            <span className="resume-section-dot" />
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", textTransform: "uppercase", borderBottom: "1px solid #000", paddingBottom: "4px", marginBottom: "12px" }}>
             Education
           </h3>
-          {data.employee_Heighers.map((e, i) => (
-            <div key={i} className="resume-item">
-              <div className="resume-item-header">
-                <div className="resume-item-main">{e.university}</div>
-                <div className="resume-date-badge">
-                  {formatDateToDisplay(e.startDate)} - {e.endDate ? formatDateToDisplay(e.endDate) : "Present"}
-                </div>
+          {data.employee_Heighers.map((edu, idx) => (
+            <div key={idx} style={{ marginBottom: "8px", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <div>
+                <strong style={{ fontSize: "13px" }}>{edu.highestQualification} {edu.fieldofstudy && `- ${edu.fieldofstudy}`}</strong>
+                <div style={{ fontSize: "13px" }}>{edu.university}</div>
               </div>
-              <div className="resume-item-sub">
-                {e.highestQualification}{e.fieldofstudy && ` • ${e.fieldofstudy}`}{e.percentage && ` (${e.percentage})`}
+              <div style={{ fontSize: "13px", fontStyle: "italic", whiteSpace: "nowrap" }}>
+                {edu.startDate ? formatDateToDisplay(edu.startDate) : "N/A"} - {edu.endDate ? formatDateToDisplay(edu.endDate) : "Present"}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Projects */}
+      {/* PROJECTS */}
       {data.employeeprojects && data.employeeprojects.length > 0 && (
-        <div className="resume-section">
-          <h3 className="resume-section-title">
-            <span className="resume-section-dot" />
+        <div style={{ marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "14px", fontWeight: "bold", textTransform: "uppercase", borderBottom: "1px solid #000", paddingBottom: "4px", marginBottom: "12px" }}>
             Key Projects
           </h3>
-          {data.employeeprojects.map((p, i) => (
-            <div key={i} className="resume-item">
-              <div className="resume-item-header">
-                <div className="resume-item-main">{p.projectName}</div>
-                <div className="resume-date-badge">
-                  {formatDateToDisplay(p.startDate)} - {p.endDate ? formatDateToDisplay(p.endDate) : "Present"}
-                </div>
+          {data.employeeprojects.map((proj, idx) => (
+            <div key={idx} style={{ marginBottom: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "2px" }}>
+                <strong style={{ fontSize: "13px" }}>{proj.projectName}</strong>
+                <span style={{ fontSize: "13px", fontStyle: "italic" }}>
+                  {proj.startDate ? formatDateToDisplay(proj.startDate) : "N/A"} - {proj.endDate ? formatDateToDisplay(proj.endDate) : "Present"}
+                </span>
               </div>
-              <p className="resume-summary-text" style={{ marginBottom: "10px" }}>{p.description}</p>
-              <div className="resume-skills-grid">
-                {p.skills?.split(",").map((s, idx) => (
-                  <span key={idx} className="resume-skill-pill">{s.trim()}</span>
-                ))}
-              </div>
+              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px" }}>
+                <li style={{ marginBottom: "4px", textAlign: "justify" }}>{proj.description}</li>
+                {proj.skills && (
+                  <li style={{ marginBottom: "4px" }}><em>Technologies:</em> {proj.skills.split(",").map(s => s.trim()).join(", ")}</li>
+                )}
+              </ul>
             </div>
           ))}
         </div>
       )}
 
-      {/* Skills */}
-      {data.skills && (
-        <div className="resume-section">
-          <h3 className="resume-section-title">
-            <span className="resume-section-dot" />
-            Core Competencies
-          </h3>
-          <div className="resume-skills-grid">
-            {data.skills.split(",").map((s, i) => (
-              <span key={i} className="resume-skill-pill">{s.trim()}</span>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
@@ -610,7 +615,7 @@ const EditableField = ({
 
   return (
     <div className="field-group">
-      <label className="field-label">
+      <label className="auth-label">
         {label}
         {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
@@ -629,13 +634,13 @@ const EditableField = ({
               dateFormat="dd-MMM-yyyy"
               placeholderText="dd-MMM-yyyy"
               maxDate={new Date("2099-12-31")}
-              className={`field-input ${hasValidationError ? "error-border" : ""}`}
+              className={`auth-input ${hasValidationError ? "error-border" : ""}`}
               autoFocus
             />
           ) : (
             <input
               type="text"
-              className={`field-input ${hasValidationError ? "error-border" : ""}`}
+              className={`auth-input ${hasValidationError ? "error-border" : ""}`}
               value={temp}
               onChange={handleChange}
               autoFocus
@@ -681,14 +686,14 @@ const EditableTextarea = ({
 
   return (
     <div className="field-group">
-      <label className="field-label">
+      <label className="auth-label">
         {label}
         {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
       {editing ? (
         <div style={{ position: "relative" }}>
           <textarea
-            className={`field-input ${hasValidationError ? "error-border" : ""}`}
+            className={`auth-input ${hasValidationError ? "error-border" : ""}`}
             style={{ minHeight: 120 }}
             value={temp}
             onChange={handleChange}
@@ -747,14 +752,14 @@ const EditableTags = ({
 
   return (
     <div className="field-group">
-      <label className="field-label">
+      <label className="auth-label">
         {label}
         {required && <span style={{ color: "#ef4444" }}> *</span>}
       </label>
       {editing ? (
         <div style={{ position: "relative" }}>
           <textarea
-            className={`field-input ${hasValidationError ? "error-border" : ""}`}
+            className={`auth-input ${hasValidationError ? "error-border" : ""}`}
             style={{ minHeight: 100 }}
             value={temp}
             onChange={handleChange}
@@ -767,12 +772,12 @@ const EditableTags = ({
           )}
         </div>
       ) : (
-        <div className="tag-container">
+        <div className="skills-cloud">
           {values.length === 0 ? (
             <span className="auth-subtitle">No items</span>
           ) : (
             values.map((v, i) => (
-              <span key={i} className="status-tag status-progress">
+              <span key={i} className="job-chip orange">
                 {v}
               </span>
             ))
@@ -1617,8 +1622,19 @@ const ReviewTalent = () => {
     });
   }, [data]);
 
-  if (isLoading || !talent)
-    return <div style={{ padding: 40 }}>Loading profile…</div>;
+  if (isLoading || !talent) {
+    return (
+      <div className="posted-jobs-loader">
+        <div className="jobs-loader-ring">
+          <div className="jobs-loader-icon">
+            <User size={18} />
+          </div>
+        </div>
+        <p className="jobs-loader-text">Loading profile data...</p>
+        <span className="jobs-loader-sub">Parsing and verifying extracted resume details</span>
+      </div>
+    );
+  }
 
   const addEducation = () =>
     setTalent((p) => ({
@@ -1733,62 +1749,67 @@ const ReviewTalent = () => {
           width: 100%;
         }
       `}</style>
-      <div className="d-flex gap-2 mb-4 align-items-center">
-        <button
-          className="auth-link"
-          onClick={() => {
-            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
-            navigate(targetPath);
-          }}
+      {/* FULL WIDTH HERO CARD */}
+      <div className="hero-card mb-4" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '24px 36px', borderRadius: '28px', minHeight: '140px', position: 'relative', overflow: 'hidden' }}>
+        <Users
+          size={240}
+          strokeWidth={0.5}
           style={{
+            position: 'absolute',
+            right: '30%',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(-10deg)',
+            color: '#ffffff',
+            opacity: 0.04,
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}
+        />
+        <div className="hero-left" style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div className="hero-pill" style={{ margin: 0 }}>
+              ✦ Review & Edit
+            </div>
+          </div>
+          <h1 className="job-posting-title text-white">
+            Review Extracted Profile
+          </h1>
+          <p className="job-posting-subtitle">
+            Please verify the AI-extracted information before saving to your talent pool.
+          </p>
+        </div>
+        <div className="d-flex">
+        <button
+          className="routine-btn"
+          onClick={() => navigate(-1)}
+        >
+          <FiArrowLeft size={16} /> Go Back
+        </button>
+        {/* <div
+          style={{
+            background: "rgba(255, 255, 255, 0.12)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            backdropFilter: "blur(10px)",
+            color: "#ffffff",
+            padding: "10px 18px",
+            borderRadius: "12px",
+            fontSize: "13px",
+            fontWeight: 600,
             display: "flex",
             alignItems: "center",
             gap: "8px",
-            fontWeight: 600,
+            position: 'relative',
+            zIndex: 2,
           }}
         >
-          <FiArrowLeft /> Resource  Management
-        </button>
-        <span className="auth-subtitle" style={{ color: "#94a3b8" }}>
-          / Review Talent
-        </span>
+          <CheckCircle size={16} /> AI Processing Complete
+        </div> */}
+        </div>
       </div>
 
       <div className="review-talent-layout">
         {/* LEFT: INFORMATION REVIEW */}
         <div className="review-left-panel">
-          <div className="review-header-top mb-4">
-            <div>
-              <h2
-                className="header-title"
-                style={{ fontSize: "24px", fontWeight: 700 }}
-              >
-                Review & Edit
-              </h2>
-              <p
-                style={{ color: "#64748b", fontSize: "14px", marginTop: "4px" }}
-              >
-                Please verify the extracted information before saving.
-              </p>
-            </div>
-            <div
-              style={{
-                background: "#f4f0ff",
-                color: "#f5810c",
-                padding: "8px 16px",
-                borderRadius: "100px",
-                fontSize: "12px",
-                fontWeight: 600,
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <CheckCircle size={14} /> AI Processing Complete
-            </div>
-          </div>
-
           <div style={{ flex: 1, overflowY: "auto", paddingRight: "4px" }}>
             {/* ===== BASIC INFORMATION ===== */}
             <div
@@ -1802,7 +1823,7 @@ const ReviewTalent = () => {
                   <div className="header-icon-wrapper">
                     <User size={18} />
                   </div>
-                  <h5 className="header-title">Basic Information</h5>
+                  <h3 className="header-title">Basic Information</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {!editingSections.includes("basicInfo") &&
@@ -1822,7 +1843,7 @@ const ReviewTalent = () => {
                     size={20}
                     style={{
                       color: openAccordions.includes("basicInfo")
-                        ? "#f5810c"
+                        ? "#3b82f6"
                         : "#94a3b8",
                       transform: openAccordions.includes("basicInfo")
                         ? "rotate(180deg)"
@@ -1924,7 +1945,7 @@ const ReviewTalent = () => {
                   <div className="header-icon-wrapper">
                     <Info size={18} />
                   </div>
-                  <h5 className="header-title">Personal Information</h5>
+                  <h3 className="header-title">Additional Details</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {!editingSections.includes("personalInfo") &&
@@ -1944,7 +1965,7 @@ const ReviewTalent = () => {
                     size={20}
                     style={{
                       color: openAccordions.includes("personalInfo")
-                        ? "#f5810c"
+                        ? "#3b82f6"
                         : "#94a3b8",
                       transform: openAccordions.includes("personalInfo")
                         ? "rotate(180deg)"
@@ -1979,13 +2000,13 @@ const ReviewTalent = () => {
 
                     {/* Country Dropdown */}
                     <div className="field-group">
-                      <label className="field-label">
+                      <label className="auth-label">
                         Country
                         <span style={{ color: "#ef4444" }}> *</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
                         <select
-                          className="field-input"
+                          className="auth-input"
                           value={selectedCountry}
                           onChange={(e) => handleCountryChange(e.target.value)}
                         >
@@ -2005,13 +2026,13 @@ const ReviewTalent = () => {
 
                     {/* State Dropdown */}
                     <div className="field-group">
-                      <label className="field-label">
+                      <label className="auth-label">
                         State
                         <span style={{ color: "#ef4444" }}> *</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
                         <select
-                          className="field-input"
+                          className="auth-input"
                           value={selectedState}
                           onChange={(e) => handleStateChange(e.target.value)}
                           disabled={!selectedCountry || states.length === 0}
@@ -2032,13 +2053,13 @@ const ReviewTalent = () => {
 
                     {/* City Dropdown */}
                     <div className="field-group">
-                      <label className="field-label">
+                      <label className="auth-label">
                         City
                         <span style={{ color: "#ef4444" }}> *</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
                         <select
-                          className="field-input"
+                          className="auth-input"
                           value={selectedCity}
                           onChange={(e) => handleCityChange(e.target.value)}
                           disabled={!selectedState || cities.length === 0}
@@ -2128,7 +2149,7 @@ const ReviewTalent = () => {
                   <div className="header-icon-wrapper">
                     <GraduationCap size={18} />
                   </div>
-                  <h5 className="header-title">Education</h5>
+                  <h3 className="header-title">Education History</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {!editingSections.includes("education") &&
@@ -2148,7 +2169,7 @@ const ReviewTalent = () => {
                     size={20}
                     style={{
                       color: openAccordions.includes("education")
-                        ? "#f5810c"
+                        ? "#3b82f6"
                         : "#94a3b8",
                       transform: openAccordions.includes("education")
                         ? "rotate(180deg)"
@@ -2311,7 +2332,7 @@ const ReviewTalent = () => {
                   <div className="header-icon-wrapper">
                     <Briefcase size={18} />
                   </div>
-                  <h5 className="header-title">Experience</h5>
+                  <h3 className="header-title">Work Experience</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {!editingSections.includes("experience") &&
@@ -2331,7 +2352,7 @@ const ReviewTalent = () => {
                     size={20}
                     style={{
                       color: openAccordions.includes("experience")
-                        ? "#f5810c"
+                        ? "#3b82f6"
                         : "#94a3b8",
                       transform: openAccordions.includes("experience")
                         ? "rotate(180deg)"
@@ -2515,7 +2536,7 @@ const ReviewTalent = () => {
                   <div className="header-icon-wrapper">
                     <Layers size={18} />
                   </div>
-                  <h5 className="header-title">Projects</h5>
+                  <h3 className="header-title">Project Portfolio</h3>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   {!editingSections.includes("projects") &&
@@ -2535,7 +2556,7 @@ const ReviewTalent = () => {
                     size={20}
                     style={{
                       color: openAccordions.includes("projects")
-                        ? "#f5810c"
+                        ? "#3b82f6"
                         : "#94a3b8",
                       transform: openAccordions.includes("projects")
                         ? "rotate(180deg)"

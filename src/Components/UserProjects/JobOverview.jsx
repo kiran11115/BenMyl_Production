@@ -116,7 +116,8 @@ const JobOverview = () => {
       toast.success(`Shortlisted invite sent to ${selectedBids.length} candidate(s) successfully!`);
 
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-      navigate(`${basePath}/user-upcoming-interview`, {
+      const interviewPath = window.location.pathname.toLowerCase().startsWith('/admin') ? 'admin-upcoming-interview' : 'user-upcoming-interview';
+      navigate(`${basePath}/${interviewPath}`, {
         state: { preSelectedJobId: jobId }
       });
     } catch (err) {
@@ -155,7 +156,8 @@ const JobOverview = () => {
       toast.success(`Invite successfully sent to ${bid.FullName}!`);
 
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-      navigate(`${basePath}/user-upcoming-interview`, {
+      const interviewPath = window.location.pathname.toLowerCase().startsWith('/admin') ? 'admin-upcoming-interview' : 'user-upcoming-interview';
+      navigate(`${basePath}/${interviewPath}`, {
         state: { preSelectedJobId: jobId }
       });
     } catch (err) {
@@ -404,12 +406,25 @@ const JobOverview = () => {
     <div className="jobs-container">
       {/* HEADER */}
       <div className="hero-card mb-4">
+        <FiBriefcase 
+            size={240} 
+            style={{
+                position: 'absolute',
+                right: '30%',
+                top: '50%',
+                transform: 'translateY(-50%) rotate(-10deg)',
+                color: '#ffffff',
+                opacity: 0.04,
+                zIndex: 1,
+                pointerEvents: 'none'
+            }}
+        />
         <div className="hero-left">
           <div className="hero-pill">
             ✦ Job overview
           </div>
-          <h1 className="job-posting-title">Posted Job Overview Board</h1>
-          <p className="job-posting-subtitle">
+          <h1 className="job-posting-title" style={{ position: 'relative', zIndex: 2 }}>Posted Job Overview Board</h1>
+          <p className="job-posting-subtitle" style={{ position: 'relative', zIndex: 2 }}>
             A detailed overview of posted job opportunities, including role requirements, responsibilities, and hiring status.
           </p>
         </div>

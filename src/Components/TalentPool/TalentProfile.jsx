@@ -169,7 +169,7 @@ const TalentProfile = () => {
           {role !== 'Benchsales' && (
             <button className="tp-util-btn" style={{ background: '#5B5BD6', color: '#fff', borderColor: '#5B5BD6' }} onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(`${basePath}/user-schedule-interview`);
+              navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`);
             }}>
               Schedule Interview
             </button>

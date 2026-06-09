@@ -189,57 +189,44 @@ const UploadReviewTalent = () => {
         <div className="projects-page-wrapper">
             <div className="projects-container">
                 <div className="hero-card mb-4">
+                    <Users 
+                        size={240} 
+                        strokeWidth={0.5}
+                        style={{
+                            position: 'absolute',
+                            right: '30%',
+                            top: '50%',
+                            transform: 'translateY(-50%) rotate(-10deg)',
+                            color: '#ffffff',
+                            opacity: 0.04,
+                            zIndex: 1,
+                            pointerEvents: 'none'
+                        }}
+                    />
                     <div className="hero-left">
                         <div className="hero-pill">
                             ✦ Upload & Review
                         </div>
-                        <h1 className="job-posting-title text-white">Upload & Review Talent</h1>
+                        <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Upload & Review Talent</h1>
 
-                        <div className="job-posting-header-info">
+                        <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
                             <p className="job-posting-subtitle">
                                 Upload new talent resumes and review extracted AI profiles.
                             </p>
                         </div>
                     </div>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                        {/* Google-themed search bar */}
-                        <div style={{
-                            display: "flex", alignItems: "center", gap: 8,
-                            background: "#fff", border: "1.5px solid #e2e8f0",
-                            borderRadius: 10, padding: "6px 12px", minWidth: 240,
-                            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                        }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4285F4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder="Search by Resume Name..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                style={{
-                                    border: "none", outline: "none", background: "transparent",
-                                    fontSize: 12, color: "#1e293b", width: "100%",
-                                    fontWeight: 500,
-                                }}
-                            />
-                            {searchQuery && (
-                                <button onClick={() => setSearchQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, lineHeight: 1 }}>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                </button>
-                            )}
-                        </div>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center", position: 'relative', zIndex: 2 }}>
                         <button
                             onClick={() => setShowStats(!showStats)}
                             className="routine-btn"
-                            style={{ background: showStats ? "" : undefined }}
+                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
                         >
                             {showStats ? "Hide Metrics" : "Show Metrics"}
                         </button>
                         <button
                             onClick={() => setShowUploadSection(!showUploadSection)}
                             className="routine-btn"
-                            style={{ background: !showUploadSection ? "linear-gradient(135deg, #8b6ff7, #b07df8)" : undefined }}
+                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
                         >
                             {showUploadSection ? "Hide Upload Area" : "Upload Resumes"}
                         </button>
@@ -255,6 +242,7 @@ const UploadReviewTalent = () => {
                     {/* INLINE UPLOAD SECTION */}
                     <div style={{
                         marginTop: showUploadSection ? '20px' : '0',
+                        marginBottom: showUploadSection ? '24px' : '0',
                         maxHeight: showUploadSection ? '800px' : '0',
                         opacity: showUploadSection ? 1 : 0,
                         overflow: 'hidden',
@@ -270,7 +258,41 @@ const UploadReviewTalent = () => {
                         />
                     </div>
 
-                    {/* REVIEW TAB */}
+                    {/* REVIEW TAB HEADER WITH SEARCH */}
+                    <div className="bento-cell-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: '#fff', padding: '16px 20px', borderRadius: '16px', border: '1px solid #e4e8f5', flexWrap: 'wrap', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="bento-cell-icon-wrap" style={{ background: '#f0f4ff', color: '#5b5bd6', padding: '8px', borderRadius: '10px' }}><Users size={16} /></div>
+                            <div className="d-flex flex-column gap-0">
+                                <h3 className="fg-title m-0" style={{ fontSize: '16px', fontWeight: '800', color: '#1e293b' }}>AI Extracted Profiles</h3>
+                                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Review parsed data before confirming</span>
+                            </div>
+                        </div>
+
+                        <div style={{
+                            display: "flex", alignItems: "center", gap: 8,
+                            background: "#f8fafc", border: "1px solid #e2e8f0",
+                            borderRadius: 10, padding: "8px 14px", minWidth: 280,
+                            boxShadow: "inset 0 1px 2px rgba(0,0,0,0.02)",
+                        }}>
+                            <FiSearch size={16} color="#94a3b8" />
+                            <input
+                                type="text"
+                                placeholder="Search extracted resumes..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{
+                                    border: "none", outline: "none", background: "transparent",
+                                    fontSize: 13, color: "#1e293b", width: "100%",
+                                    fontWeight: 500,
+                                }}
+                            />
+                            {searchQuery && (
+                                <button onClick={() => setSearchQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, display: "flex" }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
                     <div className="upload-main mt-3">
                             {talentsData && talentsData.length > 0 ? (
                                 <UploadTalentTable

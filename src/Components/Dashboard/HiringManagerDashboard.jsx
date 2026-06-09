@@ -237,7 +237,11 @@ const HiringManagerDashboard = () => {
 
   const handleNavigate = (path) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
-    navigate(`${basePath}${path}`);
+    let finalPath = path;
+    if (basePath === '/Admin' && path === '/user-upcoming-interview') {
+      finalPath = '/admin-upcoming-interview';
+    }
+    navigate(`${basePath}${finalPath}`);
   };
 
   const handleSubmissionAction = (candidateName, actionType, role) => {
@@ -272,7 +276,7 @@ const HiringManagerDashboard = () => {
       title: "Schedule Interviews",
       desc: "Coordinate calendar slots with candidates.",
       icon: <Calendar size={20} />,
-      path: '/user-schedule-interview',
+      path: '/user-upcoming-interview',
     },
     {
       title: "Active Projects",
@@ -385,8 +389,21 @@ const chartOptions = {
 
       <Guide ref={guideRef} />
 
-      {/* HERO */}
       <div className="hero-card">
+        <LayoutGrid 
+          size={240} 
+          strokeWidth={0.5} 
+          style={{
+            position: 'absolute',
+            right: '30%',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(-10deg)',
+            color: '#ffffff',
+            opacity: 0.04,
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}
+        />
         <div className="hero-left">
           <div className="hero-pill">
             ✦ HIRING MANAGER CONSOLE ACTIVE

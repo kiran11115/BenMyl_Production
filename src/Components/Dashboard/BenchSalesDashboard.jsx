@@ -197,7 +197,11 @@ const BenchSalesDashboard = () => {
 
   const handleNavigate = (path) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
-    navigate(`${basePath}${path}`);
+    let finalPath = path;
+    if (basePath === '/Admin' && path === '/user-upcoming-interview') {
+      finalPath = '/admin-upcoming-interview';
+    }
+    navigate(`${basePath}${finalPath}`);
   };
 
   const handlePitchCandidate = (candidateName, jobTitle, company) => {
@@ -359,8 +363,21 @@ const chartOptions = {
         </div>
       )}
 
-      {/* HERO */}
       <div className="hero-card">
+        <Briefcase 
+          size={240} 
+          strokeWidth={0.5} 
+          style={{
+            position: 'absolute',
+            right: '30%',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(-10deg)',
+            color: '#ffffff',
+            opacity: 0.04,
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}
+        />
         <div className="hero-left">
           <div className="hero-pill">
             ✦ BENCH SALES LEAD CONSOLE ACTIVE
@@ -387,13 +404,6 @@ const chartOptions = {
             {syncing ? "Syncing..." : "Sync Bench"}
           </button>
 
-          <button
-            className="routine-btn"
-            onClick={() => handleNavigate('/user-Jobs')}
-          >
-            Discover Open Jobs
-            <ArrowUpRight size={16} />
-          </button>
 
           <button
             className="routine-btn"

@@ -69,16 +69,29 @@ export default function PostedJobsPage() {
                 <div
                     className="hero-card mb-4"
                 >
+                    <FiBriefcase 
+                        size={240} 
+                        style={{
+                            position: 'absolute',
+                            right: '30%',
+                            top: '50%',
+                            transform: 'translateY(-50%) rotate(-10deg)',
+                            color: '#ffffff',
+                            opacity: 0.04,
+                            zIndex: 1,
+                            pointerEvents: 'none'
+                        }}
+                    />
                     <div className="hero-left">
                         <div className="hero-pill">
                             ✦ Posted Jobs
                         </div>
 
-                        <h1 className="job-posting-title text-white">
+                        <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>
                             Posted Opportunities Board
                         </h1>
 
-                        <div className="job-posting-header-info">
+                        <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
                             <p className="job-posting-subtitle">
                                 Displaying all posted job opportunities with complete role details
                             </p>

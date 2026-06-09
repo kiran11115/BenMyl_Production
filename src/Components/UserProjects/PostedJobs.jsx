@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { FiEye, FiMapPin, FiBriefcase } from "react-icons/fi";
+import { FiEye, FiMapPin, FiBriefcase, FiUsers } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetJobBidsQuery } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "../UploadTalent/NoData";
 import "../UserJobs/Jobs.css";
 
@@ -13,6 +14,154 @@ const getInitials = (name = "") => {
     .slice(0, 2)
     .map((n) => n[0].toUpperCase())
     .join("");
+};
+
+const JobCardItem = ({ job, navigate }) => {
+  const { data: bids = [] } = useGetJobBidsQuery(job.id, {
+    skip: !job.id,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const pendingBidsCount = bids.filter((bid) => bid.IsShortlisted === false).length;
+  const totalBidsCount = bids.length;
+  const allShortlisted = totalBidsCount > 0 && pendingBidsCount === 0;
+
+  return (
+    <div
+      className="job-card justify-content-between"
+      style={{ position: 'relative' }}
+      onClick={() => {
+        const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+        navigate(`${basePath}/job-overview`, {
+          state: { jobId: job.id },
+        });
+      }}
+    >
+      <div className="d-flex flex-column gap-3">
+        {/* TOP */}
+        <div className="job-card-header">
+          <div className="job-header-left">
+            <div className="job-company-logo">
+              {getInitials(job.company) || <BsBuilding size={20} />}
+            </div>
+
+            <div className="job-header-info">
+              <h3 className="job-title" title={job.title}>{job.title}</h3>
+              <p className="company-name">{job.company}</p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {pendingBidsCount > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "#f0f9ff",
+                  color: "#0284c7",
+                  padding: "4px 10px",
+                  borderRadius: "16px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  border: "1px solid #bae6fd"
+                }}
+                title="Pending Recruiter Bids"
+              >
+                <FiUsers size={14} />
+                {pendingBidsCount} {pendingBidsCount === 1 }
+              </div>
+            )}
+            {allShortlisted && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "#ecfdf5",
+                  color: "#047857",
+                  padding: "4px 10px",
+                  borderRadius: "16px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  border: "1px solid #a7f3d0"
+                }}
+                title="All Candidates Shortlisted"
+              >
+                Shortlisted
+              </div>
+            )}
+            <div className="job-eye-icon">
+              <FiEye size={22} />
+            </div>
+          </div>
+        </div>
+
+        {/* TAGS */}
+        <div className="job-tags-row">
+          {job.experienceLevel && (
+            <span className="job-chip purple">
+              {job.experienceLevel}
+            </span>
+          )}
+
+          {job.workModels && (
+            <span className="job-chip green">
+              {job.workModels}
+            </span>
+          )}
+
+          {job.type && (
+            <span className="job-chip mint">
+              {job.type.length > 12
+                ? `${job.type.slice(0, 12)}...`
+                : job.type}
+            </span>
+          )}
+        </div>
+
+        {/* DESC */}
+        <div className="job-desc-block">
+          <p className="job-description">
+            {job.description?.replace(/\*\*/g, "")}
+          </p>
+          <button
+            className="job-view-more-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+              navigate(`${basePath}/job-overview`, { state: { jobId: job.id } });
+            }}
+          >
+            View more
+          </button>
+        </div>
+
+      </div>
+
+      <div>
+        {/* FOOTER */}
+        <div className="job-card-footer">
+          <div className="job-rate">
+            {job.rateText}
+            <span className="job-rate-unit">
+              {job.budgetLabel}
+            </span>
+          </div>
+
+          <div className="meta-pill">
+            <FiMapPin size={12} />
+            <span
+              title={job.location}
+              style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+            >
+              {job.location ? job.location.split(',')[0].trim() : "N/A"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const PostedJobs = () => {
@@ -81,114 +230,7 @@ const PostedJobs = () => {
       ) : (
         <div className="jobs-grid">
           {jobs.map((job) => (
-            <div
-              key={job.id}
-              className="job-card justify-content-between"
-              onClick={() => {
-                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                navigate(`${basePath}/job-overview`, {
-                  state: { jobId: job.id },
-                });
-              }}
-            >
-              <div className="d-flex flex-column gap-3">
-                {/* TOP */}
-                <div className="job-card-header">
-                  <div className="job-header-left">
-                    <div className="job-company-logo">
-                      {getInitials(job.company) || <BsBuilding size={20} />}
-                    </div>
-
-                    <div className="job-header-info">
-                      <h3 className="job-title" title={job.title}>{job.title}</h3>
-                      <p className="company-name">{job.company}</p>
-                    </div>
-                  </div>
-
-                  <div className="job-eye-icon">
-                    <FiEye size={22} />
-                  </div>
-                </div>
-
-                {/* TAGS */}
-                <div className="job-tags-row">
-                  {job.experienceLevel && (
-                    <span className="job-chip purple">
-                      {job.experienceLevel}
-                    </span>
-                  )}
-
-                  {job.workModels && (
-                    <span className="job-chip green">
-                      {job.workModels}
-                    </span>
-                  )}
-
-                  {job.type && (
-                    <span className="job-chip mint">
-                      {job.type.length > 12
-                        ? `${job.type.slice(0, 12)}...`
-                        : job.type}
-                    </span>
-                  )}
-                </div>
-
-                {/* DESC */}
-                <div className="job-desc-block">
-                  <p className="job-description">
-                    {job.description?.replace(/\*\*/g, "")}
-                  </p>
-                  <button
-                    className="job-view-more-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                      navigate(`${basePath}/job-overview`, { state: { jobId: job.id } });
-                    }}
-                  >
-                    View more
-                  </button>
-                </div>
-
-              </div>
-
-              <div>
-                {/* FOOTER */}
-                <div className="job-card-footer">
-                  <div className="job-rate">
-                    {job.rateText}
-                    <span className="job-rate-unit">
-                      {job.budgetLabel}
-                    </span>
-                  </div>
-
-                  <div className="meta-pill">
-                    <FiMapPin size={12} />
-                    <span
-                      title={job.location}
-                      style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                    >
-                      {job.location ? job.location.split(',')[0].trim() : "N/A"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* VIEW DETAILS BUTTON */}
-                {/* <button
-                  className="btn-primary w-100 d-flex gap-2"
-                  style={{ marginTop: '16px' }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    navigate(`${basePath}/job-overview`, {
-                      state: { jobId: job.id },
-                    });
-                  }}
-                >
-                  <FiEye size={16} /> View Details
-                </button> */}
-              </div>
-            </div>
+            <JobCardItem key={job.id} job={job} navigate={navigate} />
           ))}
         </div>
       )}

@@ -11,6 +11,7 @@ import {
   FiCheckCircle,
   FiChevronDown,
   FiFilter,
+  FiUsers,
 } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
@@ -570,7 +571,7 @@ const TalentPool = () => {
     return allCandidates.map((item) => ({
       id: item.employeeID,
 
-      name: `${item.firstName} ${item.lastName}`,
+      name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
       inviteUserId: Number(item.insertBy),
 
       role: item.title || "-",
@@ -583,11 +584,7 @@ const TalentPool = () => {
         ? item.skills.split(",").map((s) => s.trim())
         : [],
 
-      avatar:
-        item.profilePicture ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          item.firstName
-        )}`,
+      avatar: item.profilePicture || "",
 
       rating: 4.5,
 
@@ -1008,15 +1005,26 @@ const TalentPool = () => {
           <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
 
             <div className="hero-card mb-4">
+              <FiUsers 
+                  size={240} 
+                  style={{
+                      position: 'absolute',
+                      right: '30%',
+                      top: '50%',
+                      transform: 'translateY(-50%) rotate(-10deg)',
+                      color: '#ffffff',
+                      opacity: 0.04,
+                      zIndex: 1,
+                      pointerEvents: 'none'
+                  }}
+              />
               <div className="hero-left">
                 <div className="hero-pill">
                   ✦ Find Talent
                 </div>
-                <h1 className="job-posting-title text-white">Talent Network Board</h1>
+                <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Talent Network Board</h1>
 
-
-                <div className="job-posting-header-info">
-
+                <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
                   <p className="job-posting-subtitle">
                     Search and manage your Talent network.
                   </p>
@@ -1349,7 +1357,7 @@ const TalentPool = () => {
                   style={{ width: '100%', padding: '14px', background: '#f5810c', color: 'white', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
                   onClick={() => {
                     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/user-schedule-interview` : `${basePath}/user-schedule-interview`;
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
                     navigate(targetPath, { state: { preSelectedJobId: successJobId } });
                   }}
                 >

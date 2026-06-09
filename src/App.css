@@ -46,8 +46,9 @@ body {
   height: 100vh;
 
   /* --- Background Setup --- */
-  background: linear-gradient(rgba(255, 255, 255, 0.9), rgb(242, 243, 245, 0.9)),
-    url(../public/Images/bg-background.svg);
+  /* background: linear-gradient(rgba(255, 255, 255, 0.9), rgb(242, 243, 245, 0.9)),
+    url(../public/Images/bg-background.svg); */
+  background: #f5f7fb !important;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
