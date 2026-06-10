@@ -314,7 +314,7 @@ const ContractCreate = () => {
   }, [userRoleRaw]);
 
   // Fetch Jobs
-  const { data: fetchedJobs, isLoading: isJobsLoading } = useGetGroupedJobTitlesQuery(userId, { skip: !userId });
+  const { data: fetchedJobs, isLoading: isJobsLoading } = useGetGroupedJobTitlesQuery(userId, { skip: !userId, refetchOnMountOrArgChange: true });
 
   const jobs = useMemo(() => {
     if (!fetchedJobs || !Array.isArray(fetchedJobs)) return [];
@@ -687,6 +687,26 @@ const ContractCreate = () => {
     message: formik.errors[key]
   }));
 
+  useEffect(() => {
+    if (!formik.values.jobTitle || !fetchedJobs?.length) return;
+
+    const selectedJob = fetchedJobs.find(
+      (job) => job.jobTitle === formik.values.jobTitle
+    );
+
+    if (selectedJob) {
+      formik.setFieldValue(
+        "employmentType",
+        selectedJob.employeeType || ""
+      );
+
+      formik.setFieldValue(
+        "workLocation",
+        selectedJob.location || ""
+      );
+    }
+  }, [formik.values.jobTitle, fetchedJobs]);
+
   return (
     <div className="contract-page">
       {/* Hero Card – matching other pages */}
@@ -978,7 +998,7 @@ const ContractCreate = () => {
                           </div>
                           <div className="cw-field mb-3">
                             <label>Creator Company Name <span className="req">*</span></label>
-                            <input className="auth-input" name="clientCompany" {...formik.getFieldProps('clientCompany')} readOnly/>
+                            <input className="auth-input" name="clientCompany" {...formik.getFieldProps('clientCompany')} readOnly />
                             {/* {formik.touched.clientCompany && formik.errors.clientCompany && <div className="auth-error">{formik.errors.clientCompany}</div>} */}
                           </div>
                           <div className="cw-field mb-3">
@@ -1052,17 +1072,22 @@ const ContractCreate = () => {
                           </div>
                           <div className="cw-field">
                             <label>Employment Type <span className="req">*</span></label>
-                            <select className="auth-input" name="employmentType" {...formik.getFieldProps('employmentType')}>
-                              <option value="">Select Type</option>
-                              <option value="W2-Contract">W2-Contract</option>
-                              <option value="Corp-Corp">Corp-Corp</option>
-                              <option value="1099-Contract">1099-Contract</option>
-                            </select>
+                            <input
+                              className="auth-input bg-light"
+                              name="employmentType"
+                              value={formik.values.employmentType}
+                              readOnly
+                            />
                             {formik.touched.employmentType && formik.errors.employmentType && <div className="auth-error">{formik.errors.employmentType}</div>}
                           </div>
                           <div className="cw-field">
                             <label>Work Location <span className="req">*</span></label>
-                            <input className="auth-input" name="workLocation" {...formik.getFieldProps('workLocation')} placeholder="City, State / Remote" />
+                            <input
+                              className="auth-input bg-light"
+                              name="workLocation"
+                              value={formik.values.workLocation}
+                              readOnly
+                            />
                             {formik.touched.workLocation && formik.errors.workLocation && <div className="auth-error">{formik.errors.workLocation}</div>}
                           </div>
                         </div>
