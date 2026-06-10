@@ -108,7 +108,7 @@ function EditProfile() {
 
       phone: Yup.string()
         .trim()
-        .matches(/^[0-9+()-]{8,15}$/, "Invalid phone number")
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
         .required("Phone number is required"),
 
       linkedinUrl: Yup.string()
@@ -877,15 +877,27 @@ function EditProfile() {
                 </div>
 
                 <div>
-                  <label className="auth-label">Phone<span style={{ color: '#ef4444' }}> *</span></label>
-                  <input
-                    className="auth-input"
-                    name="contact.phone"
-                    value={formData.contact.phone}
-                    onChange={handleChange}
-                    placeholder="Phone"
-                  />
-                </div>
+  <label className="auth-label">
+    Phone<span style={{ color: "#ef4444" }}> *</span>
+  </label>
+
+  <input
+    className="auth-input"
+    name="contact.phone"
+    value={formData.contact.phone}
+    onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    formik.setFieldValue("contact.phone", value);
+  }}
+    onBlur={formik.handleBlur}
+    placeholder="Phone"
+  />
+
+  <FormError
+    error={formik.errors.contact?.phone}
+    touched={formik.touched.contact?.phone}
+  />
+</div>
 
                 <div>
                   <label className="auth-label">Linkedin Url<span style={{ color: '#ef4444' }}> *</span></label>
