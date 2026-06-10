@@ -1056,6 +1056,7 @@
    TALENT CARD PREMIUM DESIGN
    ========================================================= */
 
+/*
 .talent-card-premium {
   background: #ffffff;
   border: 1px solid #e7ebf3;
@@ -1092,6 +1093,13 @@
 
 .talent-card-premium:hover::after {
   opacity: 1;
+}
+*/
+
+.talent-card-premium .job-chip.more {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 }
 
 /* Header Row */
@@ -1340,5 +1348,22 @@
 }
 .btn-v2-primary.shortlisted:hover {
   background: #059669 !important;
+}
+
+/* 3 columns grid layout overrides for Talent Pool */
+.talent-grid-3-col {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+@media (max-width: 1200px) {
+  .talent-grid-3-col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .talent-grid-3-col {
+    grid-template-columns: 1fr !important;
+  }
 }
 

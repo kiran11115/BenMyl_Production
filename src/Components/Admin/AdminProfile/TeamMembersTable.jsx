@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { FiEdit2, FiCheck, FiX, FiChevronUp, FiChevronDown, FiUserX, FiMail } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
+import { CustomConfirm } from "../../Common/CustomAlert";
+
 
 function TeamMembersTable({ teammembers = [], isLoading }) {
   const [editingRow, setEditingRow] = useState(null);
+  const [customConfirm, setCustomConfirm] = useState(null);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -58,9 +61,16 @@ function TeamMembersTable({ teammembers = [], isLoading }) {
   };
 
   const handleDeactivate = (email) => {
-    if (window.confirm(`Are you sure you want to deactivate ${email}?`)) {
-      console.log("Deactivating user:", email);
-    }
+    setCustomConfirm({
+      title: "Deactivate User?",
+      message: `Are you sure you want to deactivate ${email}? This action will revoke their login access immediately.`,
+      confirmText: "Yes, Deactivate",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        setCustomConfirm(null);
+        console.log("Deactivating user:", email);
+      }
+    });
   };
 
   const handleEdit = (member) => {
@@ -232,6 +242,17 @@ function TeamMembersTable({ teammembers = [], isLoading }) {
           </tbody>
         </table>
       </div>
+      {customConfirm && (
+        <CustomConfirm
+          title={customConfirm.title}
+          message={customConfirm.message}
+          confirmText={customConfirm.confirmText}
+          cancelText={customConfirm.cancelText}
+          onConfirm={customConfirm.onConfirm}
+          onCancel={() => setCustomConfirm(null)}
+          onClose={() => setCustomConfirm(null)}
+        />
+      )}
     </>
   );
 }

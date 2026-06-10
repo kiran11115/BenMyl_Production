@@ -627,7 +627,7 @@ body{
   width:8px;
   height:8px;
   border-radius:50%;
-  background:#5a5de8;
+  background:#e8745a;
 }
 
 .log-tag{
@@ -636,8 +636,8 @@ body{
   height:26px;
   padding:0 12px;
   border-radius:999px;
-  background:#efefff;
-  color:#5a5de8;
+  background:#fff7da;
+  color:#e8745a;
   font-size:10px;
   font-weight:800;
 }

@@ -34,6 +34,15 @@ const parseExperience = (expStr) => {
   return match ? parseInt(match[0], 10) : 0;
 };
 
+const getInitials = (name = "") => {
+  return name
+    .trim()
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
+};
+
 // --- SHORTLIST DRAWER (unchanged) ---
 const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob, onInviteSuccess }) => {
   const [offerStatus, setOfferStatus] = useState({});
@@ -44,6 +53,16 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
 
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("Talent Pool", "edit");
+
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 280);
+  };
 
   const handleSendInvite = async (jobId) => {
     setOfferStatus((prev) => ({ ...prev, [jobId]: "loading" }));
@@ -87,22 +106,26 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
     (list) => Array.isArray(list) && list.length > 0
   );
 
+  if (!isOpen && !isClosing) return null;
 
   return (
     <>
       <div
-        className={`drawer-overlay ${isOpen ? "open" : ""}`}
-        onClick={onClose}
+        className={`drawer-overlay ${isOpen && !isClosing ? "open" : ""} ${isClosing ? "closing" : ""}`}
+        onClick={handleClose}
       />
-      <div className={`drawer-panel ${isOpen ? "open" : ""}`}>
+      <div className={`drawer-panel ${isOpen && !isClosing ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
-          <h3>Shortlisted Candidates</h3>
-          <button className="close-btn" onClick={onClose}>
-            <FiX size={20} />
+          <h2 className="drawer-header-title">
+            <FiUsers size={16} color="rgba(255,255,255,0.8)" style={{ marginRight: "8px" }} />
+            Shortlisted Candidates
+          </h2>
+          <button className="close-btn" onClick={handleClose}>
+            <FiX size={18} />
           </button>
         </div>
 
-        <div className="drawer-content">
+        <div className="drawer-content hide-scrollbar">
           {!hasAnyShortlistedCandidates ? (
             <div className="empty-state">No candidates shortlisted yet.</div>
           ) : (
@@ -125,7 +148,13 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
 
                   {candidates.map((cand) => (
                     <div key={cand.id} className="mini-card">
-                      <img src={cand.avatar} className="mini-avatar" alt="" />
+                      {cand.avatar ? (
+                        <img src={cand.avatar} className="mini-avatar" alt="" />
+                      ) : (
+                        <div className="mini-avatar-initials">
+                          {getInitials(cand.name)}
+                        </div>
+                      )}
                       <div className="mini-info">
                         <div className="mini-name">{cand.name}</div>
                         <div className="mini-role">{cand.role}</div>
@@ -177,51 +206,75 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
           position: fixed;
           top: 0;
           left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 998;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(15, 23, 42, 0.45);
+          backdrop-filter: blur(3px);
+          z-index: 2000;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.3s;
+          transition: opacity 0.28s ease;
+          display: flex;
+          justify-content: flex-end;
         }
         .drawer-overlay.open {
           opacity: 1;
           pointer-events: auto;
         }
+        .drawer-overlay.closing {
+          opacity: 0;
+        }
         .drawer-panel {
           position: fixed;
-          top: 75px;
-          right: 5px;
-          width: 350px;
-          height: 90vh;
-          border-radius: 12px;
-          background: white;
-          z-index: 999;
+          top: 0;
+          right: 0;
+          width: 380px;
+          height: 100vh;
+          background: #f8fafc;
+          z-index: 2001;
           transform: translateX(100%);
-          transition: transform 0.3s;
-          box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: -8px 0 32px rgba(15,23,42,0.10);
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
         .drawer-panel.open {
           transform: translateX(0);
         }
         .drawer-header {
-          padding: 20px;
-          border-bottom: 1px solid #e2e8f0;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: 20px 24px;
+          background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
+          border-bottom: none;
+          flex-shrink: 0;
         }
-        .drawer-header h3 {
+        .drawer-header-title {
           margin: 0;
-          font-size: 18px;
+          font-size: 14px;
+          font-weight: 700;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
         }
         .close-btn {
-          background: none;
-          border: none;
+          background: rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.2);
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: rgba(255,255,255,0.85);
           cursor: pointer;
+          transition: all 0.2s;
+        }
+        .close-btn:hover {
+          background: rgba(255,255,255,0.25);
+          color: #ffffff;
         }
         .drawer-content {
           padding: 20px;
@@ -229,57 +282,101 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
           overflow-y: auto;
         }
         .job-group {
-          margin-bottom: 24px;
-          border-bottom: 1px solid #f1f5f9;
-          padding-bottom: 16px;
+          background: #ffffff;
+          border-radius: 16px;
+          border: 1px solid #e7ebf3;
+          padding: 16px;
+          margin-bottom: 16px;
+          display: flex;
+          flex-direction: column;
         }
         .job-header {
           background: #f8fafc;
+          border-radius: 8px;
           padding: 8px 12px;
           margin-bottom: 10px;
-          font-weight: 600;
-          font-size: 14px;
+          font-weight: 700;
+          font-size: 13px;
+          color: #1e293b;
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
+        .job-title {
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .job-header .badge {
+          background: #e2e8f0;
+          color: #475569;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          font-size: 11px;
+          font-weight: 700;
+        }
         .mini-card {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 8px 0;
-          border-bottom: 1px solid #f1f5f9;
+          gap: 12px;
+          padding: 10px;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          background: #ffffff;
+          margin-bottom: 8px;
+          transition: all 0.2s ease;
         }
-        .mini-avatar {
-          width: 32px;
-          height: 32px;
+        .mini-card:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .mini-avatar, .mini-avatar-initials {
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
           object-fit: cover;
+        }
+        .mini-avatar-initials {
+          background: #f1f1ff;
+          color: #5B5BD6;
+          font-size: 12px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
         .mini-info {
           flex: 1;
         }
         .mini-name {
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 700;
+          color: #1e293b;
         }
         .mini-role {
-          font-size: 12px;
+          font-size: 11px;
           color: #64748b;
+          font-weight: 500;
         }
         .remove-btn {
-          background: none;
+          background: #fef2f2;
           border: none;
           color: #ef4444;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
-          opacity: 0.6;
-          transition: opacity 0.2s;
+          transition: all 0.2s;
         }
         .remove-btn:hover:not(:disabled) {
-          opacity: 1;
+          background: #fee2e2;
+          color: #dc2626;
         }
         .remove-btn:disabled {
-          opacity: 0.2;
+          opacity: 0.3;
           cursor: not-allowed;
         }
         .empty-state {
@@ -293,9 +390,6 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
           display: flex;
           justify-content: flex-end;
         }
-        .btn-primary.sent {
-          background-color: #10b981;
-        }
         .spin-icon {
           animation: spin 1s linear infinite;
         }
@@ -304,6 +398,14 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
             transform: rotate(360deg);
           }
         }
+        .hide-scrollbar::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+        .hide-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
       `}</style>
     </>
   );
@@ -311,21 +413,36 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
 
 // --- JOB DETAILS DRAWER ---
 const JobDetailsDrawer = ({ isOpen, onClose, allJobOverviewData }) => {
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 280);
+  };
+
+  if (!isOpen && !isClosing) return null;
+
   return (
     <>
       <div
-        className={`drawer-overlay ${isOpen ? "open" : ""}`}
-        onClick={onClose}
+        className={`drawer-overlay ${isOpen && !isClosing ? "open" : ""} ${isClosing ? "closing" : ""}`}
+        onClick={handleClose}
       />
-      <div className={`drawer-panel-right ${isOpen ? "open" : ""}`}>
+      <div className={`drawer-panel-right ${isOpen && !isClosing ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
-          <h3>Job Details Overview</h3>
-          <button className="close-btn" onClick={onClose}>
-            <FiX size={20} />
+          <h2 className="drawer-header-title">
+            <FiBriefcase size={16} color="rgba(255,255,255,0.8)" style={{ marginRight: '8px' }} />
+            Job Details Overview
+          </h2>
+          <button className="close-btn" onClick={handleClose}>
+            <FiX size={18} />
           </button>
         </div>
 
-        <div className="drawer-content">
+        <div className="drawer-content hide-scrollbar">
           {allJobOverviewData.length === 0 ? (
             <div className="empty-state">No jobs selected to view details.</div>
           ) : (
@@ -348,51 +465,75 @@ const JobDetailsDrawer = ({ isOpen, onClose, allJobOverviewData }) => {
           position: fixed;
           top: 0;
           left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 998;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(15, 23, 42, 0.45);
+          backdrop-filter: blur(3px);
+          z-index: 2000;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.3s;
+          transition: opacity 0.28s ease;
+          display: flex;
+          justify-content: flex-end;
         }
         .drawer-overlay.open {
           opacity: 1;
           pointer-events: auto;
         }
+        .drawer-overlay.closing {
+          opacity: 0;
+        }
         .drawer-panel-right {
           position: fixed;
-          top: 75px;
-          right: 5px;
-          width: 480px;
-          height: 90vh;
-          border-radius: 12px;
-          background: white;
-          z-index: 999;
+          top: 0;
+          right: 0;
+          width: 900px;
+          height: 100vh;
+          background: #f8fafc;
+          z-index: 2001;
           transform: translateX(110%);
-          transition: transform 0.3s;
-          box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: -8px 0 32px rgba(15,23,42,0.10);
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
         .drawer-panel-right.open {
           transform: translateX(0);
         }
         .drawer-header {
-          padding: 20px;
-          border-bottom: 1px solid #e2e8f0;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: 20px 24px;
+          background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
+          border-bottom: none;
+          flex-shrink: 0;
         }
-        .drawer-header h3 {
+        .drawer-header-title {
           margin: 0;
-          font-size: 18px;
+          font-size: 14px;
+          font-weight: 700;
+          color: #ffffff;
+          display: flex;
+          align-items: center;
         }
         .close-btn {
-          background: none;
-          border: none;
+          background: rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.2);
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: rgba(255,255,255,0.85);
           cursor: pointer;
+          transition: all 0.2s;
+        }
+        .close-btn:hover {
+          background: rgba(255,255,255,0.25);
+          color: #ffffff;
         }
         .drawer-content {
           padding: 20px;
@@ -404,6 +545,14 @@ const JobDetailsDrawer = ({ isOpen, onClose, allJobOverviewData }) => {
           text-align: center;
           margin-top: 40px;
           font-size: 14px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+        .hide-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
       `}</style>
     </>
@@ -989,7 +1138,6 @@ const TalentPool = () => {
           <TalentFilters
             onApplyFilters={(filters) => {
               handleApplyFilter(filters);
-              setIsMobileFilterOpen(false);
             }}
             skillsList={allSkills}
             jobs={jobs}
@@ -1197,27 +1345,23 @@ const TalentPool = () => {
           </div>
         </div>
 
-        {isDrawerOpen ? (
-          <ShortlistDrawer
-            isOpen={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            shortlistedMap={shortlistedMap}
-            onRemove={handleRemoveFromDrawer}
-            jobs={jobs}
-            userId={userId}
-            refreshTalents={fetchTalents}
-            clearShortlistForJob={clearShortlistForJob}
-            onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
-          />
-        ) : null}
+        <ShortlistDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          shortlistedMap={shortlistedMap}
+          onRemove={handleRemoveFromDrawer}
+          jobs={jobs}
+          userId={userId}
+          refreshTalents={fetchTalents}
+          clearShortlistForJob={clearShortlistForJob}
+          onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
+        />
 
-        {isJobDetailsDrawerOpen ? (
-          <JobDetailsDrawer
-            isOpen={isJobDetailsDrawerOpen}
-            onClose={() => setIsJobDetailsDrawerOpen(false)}
-            allJobOverviewData={allJobOverviewData}
-          />
-        ) : null}
+        <JobDetailsDrawer
+          isOpen={isJobDetailsDrawerOpen}
+          onClose={() => setIsJobDetailsDrawerOpen(false)}
+          allJobOverviewData={allJobOverviewData}
+        />
 
         {showCreateJobModal && (
           <div

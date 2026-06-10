@@ -11,9 +11,13 @@ import {
 } from "react-icons/fi";
 import "./InviteBid.css";
 import { useNavigate } from "react-router-dom";
+import { CustomAlert } from "../Common/CustomAlert";
+
 
 export default function InviteBid() {
     const navigate = useNavigate();
+    const [customAlert, setCustomAlert] = useState(null);
+
     const [services, setServices] = useState({
         interview: false,
         onboarding: false,
@@ -29,7 +33,14 @@ export default function InviteBid() {
     const onSend = () => {
         // placeholder: integrate API here
         console.log({ project, services, budget, deadline, instructions });
-        alert("Invite sent (demo)");
+        setCustomAlert({
+            title: "Bid Invitation Sent",
+            message: "Your bid invitation has been successfully transmitted to the vendor for review.",
+            type: "success",
+            onConfirm: () => {
+                navigate("/user/user-dashboard");
+            }
+        });
     };
 
     return (
@@ -183,6 +194,15 @@ export default function InviteBid() {
                     </div>
                 </aside>
             </div>
+            {customAlert && (
+                <CustomAlert
+                    title={customAlert.title}
+                    message={customAlert.message}
+                    type={customAlert.type}
+                    onConfirm={customAlert.onConfirm}
+                    onClose={() => setCustomAlert(null)}
+                />
+            )}
         </div>
     );
 }

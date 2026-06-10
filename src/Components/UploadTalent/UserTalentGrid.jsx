@@ -3,16 +3,10 @@ import { FiMapPin, FiBriefcase, FiDollarSign, FiEye } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import "../TalentPool/TalentPool.css";
+import "../UserProjects/Projects.css";
 
 
-/* Premium chip color palettes for skill tags */
-const CHIP_PALETTES = [
-  { bg: "#eff6ff", color: "#1d4ed8", border: "#dbeafe" }, // blue
-  { bg: "#f5f3ff", color: "#6d28d9", border: "#ede9fe" }, // purple
-  { bg: "#f0fdf4", color: "#15803d", border: "#dcfce7" }, // green
-  { bg: "#fff7ed", color: "#c2410c", border: "#ffedd5" }, // orange
-  { bg: "#fdf2f8", color: "#be185d", border: "#fce7f3" }, // pink
-];
+
 
 export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryAction, primaryActionLabel, small = false }) => {
   const navigate = useNavigate();
@@ -42,21 +36,19 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
 
   return (
     <div
-      className={`talent-card-premium ${small ? 'small-variant' : ''}`}
+      className={`project-card talent-card-premium ${small ? 'small-variant' : ''}`}
       style={small ? { padding: '16px', gap: '12px' } : {}}
     >
       {/* Header: Status Pill, Match Badge, and Eye Icon */}
       <div className="card-header-row">
-        <div className="status-pill-v2">
-          <span className="dot" style={{ 
-            background: 
-              candidate.status === 'AVAILABLE' ? '#10b981' : 
-              candidate.status === 'SHORTLISTED' ? '#3b82f6' : 
-              candidate.status === 'INTERVIEWING' ? '#8b5cf6' : 
-              '#f59e0b' 
-          }}></span>
+        <span className={`job-chip ${
+          candidate.status === 'AVAILABLE' ? 'mint' : 
+          candidate.status === 'SHORTLISTED' ? 'green' : 
+          candidate.status === 'INTERVIEWING' ? 'purple' : 
+          'orange'
+        }`}>
           {candidate.status || (candidate.verified ? 'Verified' : 'Pending')}
-        </div>
+        </span>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {candidate.progress !== undefined && (
@@ -125,23 +117,19 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
       {!small && candidate.skills && (
         <div className="skills-row">
           {candidate.skills.slice(0, 3).map((skill, si) => {
-            const chip = CHIP_PALETTES[si % CHIP_PALETTES.length];
+            const colors = ["orange", "pink", "purple", "mint", "green"];
+            const colorClass = colors[si % colors.length];
             return (
               <span 
                 key={skill} 
-                className="skill-chip"
-                style={{
-                  background: chip.bg,
-                  color: chip.color,
-                  borderColor: chip.border,
-                }}
+                className={`job-chip ${colorClass}`}
               >
                 {skill}
               </span>
             );
           })}
           {candidate.skills.length > 3 && (
-            <span className="skill-chip more">
+            <span className="job-chip more">
               +{candidate.skills.length - 3}
             </span>
           )}
@@ -191,7 +179,7 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
 
 const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
   return (
-    <div className="candidate-grid">
+    <div className="projects-grid">
       {candidates.map((c) => (
         <CandidateCard
           key={c.id}

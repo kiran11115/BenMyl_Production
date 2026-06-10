@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronDown, FiStar, FiMapPin } from 'react-icons/fi';
 import '../Filters/FiltersSidebar.css';
 
@@ -21,22 +21,49 @@ const FilterSidebar = ({ onApplyFilters }) => {
   };
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
+  const debounceTimerRef = useRef(null);
 
-  const handleInputChange = (field, value) => {
-    setFilterInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
-  const applyFilters = () => {
-    if (onApplyFilters) {
-      onApplyFilters(filterInputs);
-    }
+  const handleInputChange = (field, value, isDebounced = false) => {
+    setFilterInputs(prev => {
+      const updated = {
+        ...prev,
+        [field]: value
+      };
+      if (onApplyFilters) {
+        if (isDebounced) {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          debounceTimerRef.current = setTimeout(() => {
+            onApplyFilters(updated);
+          }, 400);
+        } else {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          onApplyFilters(updated);
+        }
+      }
+      return updated;
+    });
   };
 
   const resetFilters = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setFilterInputs(initialFilters);
+    if (onApplyFilters) {
+      onApplyFilters(initialFilters);
+    }
   };
 
   return (
@@ -87,7 +114,7 @@ const FilterSidebar = ({ onApplyFilters }) => {
                </button>
              );
            })}
-        </div>
+         </div>
       </div>
 
       {/* Location */}
@@ -100,7 +127,7 @@ const FilterSidebar = ({ onApplyFilters }) => {
             className="location-input"
             placeholder="e.g. New York" 
             value={filterInputs.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
+            onChange={(e) => handleInputChange('location', e.target.value, true)}
           />
         </div>
       </div>
@@ -134,18 +161,13 @@ const FilterSidebar = ({ onApplyFilters }) => {
            max="50000" 
            step="1000"
            value={filterInputs.maxBudget} 
-           onChange={(e) => handleInputChange('maxBudget', Number(e.target.value))}
+           onChange={(e) => handleInputChange('maxBudget', Number(e.target.value), true)}
          />
          <div className="budget-labels">
            <span>$0</span>
            <span>${(filterInputs.maxBudget / 100).toFixed(0)}/hr</span>
          </div>
       </div>
-
-      {/* Apply Button */}
-      <button onClick={applyFilters} className="apply-btn">
-        Apply Filters
-      </button>
     </div>
   );
 };

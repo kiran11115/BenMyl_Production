@@ -1,5 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { CustomConfirm } from '../Common/CustomAlert';
+
 import {
   FileText, ArrowLeft, Download, CheckCircle,
   XCircle, PenTool, Upload, ShieldCheck, Printer,
@@ -184,6 +186,8 @@ const ContractView = () => {
   const { updateContract } = useContext(ContractContext);
   const [showSignBox, setShowSignBox] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [customConfirm, setCustomConfirm] = useState(null);
+
 
   const { data: apiResponse, isLoading: isApiLoading } = useGetContractByIdQuery(id);
   const [saveContract, { isLoading: isSaving }] = useSaveContractMutation();
@@ -284,51 +288,62 @@ const ContractView = () => {
     }
   };
 
-  const handleReject = async () => {
-    if (window.confirm('Are you sure you want to decline this agreement? This action will be logged.')) {
-      try {
-        const formData = new FormData();
-        formData.append("contractID", apiResponse.data.contractID);
-        formData.append("JobID", apiResponse.data.jobID || "");
-        formData.append("CandidateID", apiResponse.data.candidateID || "");
-        formData.append("JobTitle", apiResponse.data.jobTitle || "");
-        formData.append("CandidateName", apiResponse.data.candidateName || "");
-        formData.append("ContractTitle", apiResponse.data.contractTitle || "");
-        formData.append("ClientCompanyName", apiResponse.data.clientCompanyName || "");
-        formData.append("VendorCompanyName", apiResponse.data.vendorCompanyName || "");
-        formData.append("WorkLocation", apiResponse.data.workLocation || "");
-        formData.append("CandidateEmail", apiResponse.data.candidateEmail || "");
-        formData.append("CandidatePhone", apiResponse.data.candidatePhone || "");
-        formData.append("EmploymentType", apiResponse.data.employmentType || "");
-        formData.append("StartDate", apiResponse.data.startDate || "");
-        formData.append("EndDate", apiResponse.data.endDate || "");
-        formData.append("SalaryRate", apiResponse.data.salaryRate || "");
-        formData.append("PaymentCycle", apiResponse.data.paymentCycle || "");
-        formData.append("ReportingManager", apiResponse.data.reportingManager || "");
-        formData.append("NoticePeriod", apiResponse.data.noticePeriod || "");
-        formData.append("TermsAndConditions", apiResponse.data.termsAndConditions || "");
-        formData.append("AgreementStatus", "Rejected");
+  const executeReject = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("contractID", apiResponse.data.contractID);
+      formData.append("JobID", apiResponse.data.jobID || "");
+      formData.append("CandidateID", apiResponse.data.candidateID || "");
+      formData.append("JobTitle", apiResponse.data.jobTitle || "");
+      formData.append("CandidateName", apiResponse.data.candidateName || "");
+      formData.append("ContractTitle", apiResponse.data.contractTitle || "");
+      formData.append("ClientCompanyName", apiResponse.data.clientCompanyName || "");
+      formData.append("VendorCompanyName", apiResponse.data.vendorCompanyName || "");
+      formData.append("WorkLocation", apiResponse.data.workLocation || "");
+      formData.append("CandidateEmail", apiResponse.data.candidateEmail || "");
+      formData.append("CandidatePhone", apiResponse.data.candidatePhone || "");
+      formData.append("EmploymentType", apiResponse.data.employmentType || "");
+      formData.append("StartDate", apiResponse.data.startDate || "");
+      formData.append("EndDate", apiResponse.data.endDate || "");
+      formData.append("SalaryRate", apiResponse.data.salaryRate || "");
+      formData.append("PaymentCycle", apiResponse.data.paymentCycle || "");
+      formData.append("ReportingManager", apiResponse.data.reportingManager || "");
+      formData.append("NoticePeriod", apiResponse.data.noticePeriod || "");
+      formData.append("TermsAndConditions", apiResponse.data.termsAndConditions || "");
+      formData.append("AgreementStatus", "Rejected");
 
-        formData.append("SignatureStatus_A", apiResponse.data.signatureStatus_A || "Signed");
-        formData.append("SignatureStatus_B", "Rejected");
-        formData.append("SignatureStatus_C", "");
-        formData.append("CreatedOn", apiResponse.data.createdOn || new Date().toISOString());
+      formData.append("SignatureStatus_A", apiResponse.data.signatureStatus_A || "Signed");
+      formData.append("SignatureStatus_B", "Rejected");
+      formData.append("SignatureStatus_C", "");
+      formData.append("CreatedOn", apiResponse.data.createdOn || new Date().toISOString());
 
-        // Preserve existing signature image path to prevent database null values
-        const existingPath = apiResponse.data.signatureImagePath || "";
-        formData.append("SignatureImagePath", existingPath);
-        formData.append("signatureImagePath", existingPath);
+      // Preserve existing signature image path to prevent database null values
+      const existingPath = apiResponse.data.signatureImagePath || "";
+      formData.append("SignatureImagePath", existingPath);
+      formData.append("signatureImagePath", existingPath);
 
-        formData.append("CreatedBy", apiResponse.data.createdBy || 0);
+      formData.append("CreatedBy", apiResponse.data.createdBy || 0);
 
-        await saveContract(formData).unwrap();
-        toast.error('Agreement declined.');
-        navigate(`${basePath}/contract-listing`);
-      } catch (err) {
-        console.error(err);
-        toast.error('Failed to submit reject status.');
-      }
+      await saveContract(formData).unwrap();
+      toast.error('Agreement declined.');
+      navigate(`${basePath}/contract-listing`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to submit reject status.');
     }
+  };
+
+  const handleReject = () => {
+    setCustomConfirm({
+      title: "Decline Agreement?",
+      message: "Are you sure you want to decline this agreement? This action will be logged in the execution audit logs.",
+      confirmText: "Yes, Decline",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        setCustomConfirm(null);
+        executeReject();
+      }
+    });
   };
 
   const handleDownload = async () => {
@@ -661,6 +676,17 @@ const ContractView = () => {
           )}
         </div>
       </div>
+      {customConfirm && (
+        <CustomConfirm
+          title={customConfirm.title}
+          message={customConfirm.message}
+          confirmText={customConfirm.confirmText}
+          cancelText={customConfirm.cancelText}
+          onConfirm={customConfirm.onConfirm}
+          onCancel={() => setCustomConfirm(null)}
+          onClose={() => setCustomConfirm(null)}
+        />
+      )}
     </div>
   );
 };

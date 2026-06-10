@@ -143,6 +143,15 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
   const userId = localStorage.getItem("logincompanyid");
   const [filterInputs, setFilterInputs] = useState(initialFilters);
   const [activeSection, setActiveSection] = useState('roles'); // Default to roles open
+  const debounceTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const selectedRole = filterInputs.roles?.[0];
   const { data: roleOptions = [] } = useGetAllRoleNamesQuery(userId);
@@ -170,8 +179,26 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
 
 
 
-  const handleInputChange = (field, value) => {
-    setFilterInputs(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field, value, isDebounced = false) => {
+    setFilterInputs((prev) => {
+      const updated = { ...prev, [field]: value };
+      if (onApplyFilters) {
+        if (isDebounced) {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          debounceTimerRef.current = setTimeout(() => {
+            onApplyFilters(updated);
+          }, 400);
+        } else {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          onApplyFilters(updated);
+        }
+      }
+      return updated;
+    });
   };
 
 
@@ -183,8 +210,10 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
         [field]: prev[field].filter(item => item !== value)
       };
 
-      // Immediately notify parent
       if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
         onApplyFilters(updatedFilters);
       }
 
@@ -200,6 +229,9 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
       };
 
       if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
         onApplyFilters(updatedFilters);
       }
 
@@ -222,23 +254,47 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
   }, []);
 
   const toggleOption = (option) => {
-    if (availability.includes(option)) {
-      setAvailability(availability.filter((item) => item !== option));
-    } else {
-      setAvailability([...availability, option]);
-    }
+    setAvailability((prevAvail) => {
+      const nextAvail = prevAvail.includes(option)
+        ? prevAvail.filter((item) => item !== option)
+        : [...prevAvail, option];
+      
+      const updatedFilters = {
+        ...filterInputs,
+        availability: nextAvail
+      };
+      if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        onApplyFilters(updatedFilters);
+      }
+      return nextAvail;
+    });
   };
 
   const removeAvailability = (option) => {
-    setAvailability(availability.filter((item) => item !== option));
-  };
-
-  const applyFilters = () => {
-    if (onApplyFilters) onApplyFilters(filterInputs);
+    setAvailability((prevAvail) => {
+      const nextAvail = prevAvail.filter((item) => item !== option);
+      const updatedFilters = {
+        ...filterInputs,
+        availability: nextAvail
+      };
+      if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        onApplyFilters(updatedFilters);
+      }
+      return nextAvail;
+    });
   };
 
 
  const resetFilters = () => {
+  if (debounceTimerRef.current) {
+    clearTimeout(debounceTimerRef.current);
+  }
   const resetValues = {
     keyword: "",
     locationType: "Any Type",
@@ -253,6 +309,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
   };
 
   setFilterInputs(resetValues);
+  setAvailability([]);
 
   // notify parent
   if (onApplyFilters) {
@@ -498,7 +555,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
               placeholder="Add Location..."
               value={filterInputs.location || ""}
               onChange={(e) =>
-                handleInputChange("location", e.target.value)
+                handleInputChange("location", e.target.value, true)
               }
             />
           </div>
@@ -522,7 +579,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
                 placeholder="Min"
                 value={filterInputs.minExperience || ""}
                 onChange={(e) =>
-                  handleInputChange("minExperience", e.target.value)
+                  handleInputChange("minExperience", e.target.value, true)
                 }
               />
 
@@ -532,7 +589,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
                 placeholder="Max"
                 value={filterInputs.maxExperience || ""}
                 onChange={(e) =>
-                  handleInputChange("maxExperience", e.target.value)
+                  handleInputChange("maxExperience", e.target.value, true)
                 }
               />
             </div>
@@ -558,7 +615,7 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
                 placeholder="Min Salary"
                 value={filterInputs.minSalary}
                 onChange={(e) =>
-                  handleInputChange("minSalary", e.target.value)
+                  handleInputChange("minSalary", e.target.value, true)
                 }
               />
 
@@ -568,19 +625,13 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
                 placeholder="Max Salary"
                 value={filterInputs.maxSalary}
                 onChange={(e) =>
-                  handleInputChange("maxSalary", e.target.value)
+                  handleInputChange("maxSalary", e.target.value, true)
                 }
               />
             </div>
           </div>
         )}
       </div>
-
-
-      {/* Apply Button */}
-      <button onClick={applyFilters} className="apply-btn mt-3">
-        Apply Filters
-      </button>
 
           {/* Note Card */}
       <div className="note-card mt-3" style={{ background: '#fffdf2ff', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #f6bb3bff' }}>

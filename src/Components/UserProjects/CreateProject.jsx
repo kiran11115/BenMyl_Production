@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { CustomConfirm } from "../Common/CustomAlert";
+
 import {
   FiArrowLeft,
   FiUser,
@@ -72,6 +74,7 @@ export default function CreateProject() {
   });
 
   const [isTeamConfirmed, setIsTeamConfirmed] = useState(false);
+  const [customConfirm, setCustomConfirm] = useState(null);
   const [roleSearch, setRoleSearch] = useState("");
 
   const ROLE_OPTIONS = [
@@ -143,24 +146,7 @@ export default function CreateProject() {
     setMilestones(next);
   };
 
-  const handleSave = () => {
-    if (!formData.title.trim()) {
-      toast.error("Please enter a project title to proceed.");
-      return;
-    }
-    if (formData.roles.length === 0) {
-      toast.error("Please select at least one core business role.");
-      return;
-    }
-    if (selectedTalentIds.length === 0) {
-      toast.error("Please assign at least one team member to this project.");
-      return;
-    }
-    if (!isTeamConfirmed) {
-      const proceed = window.confirm("The team selection has not been formally confirmed. Launch project anyway?");
-      if (!proceed) return;
-    }
-
+  const executeSave = () => {
     const selectedTeam = INTERVIEWED_TALENT.filter((t) =>
       selectedTalentIds.includes(t.id)
     );
@@ -196,6 +182,35 @@ export default function CreateProject() {
     );
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
     navigate(`${basePath}/user-projects`);
+  };
+
+  const handleSave = () => {
+    if (!formData.title.trim()) {
+      toast.error("Please enter a project title to proceed.");
+      return;
+    }
+    if (formData.roles.length === 0) {
+      toast.error("Please select at least one core business role.");
+      return;
+    }
+    if (selectedTalentIds.length === 0) {
+      toast.error("Please assign at least one team member to this project.");
+      return;
+    }
+    if (!isTeamConfirmed) {
+      setCustomConfirm({
+        title: "Unconfirmed Team Selection",
+        message: "The team selection has not been formally confirmed. Launch project anyway?",
+        confirmText: "Yes, Launch Anyway",
+        cancelText: "Cancel",
+        onConfirm: () => {
+          setCustomConfirm(null);
+          executeSave();
+        }
+      });
+      return;
+    }
+    executeSave();
   };
 
   /* ──────────────────────────────────────────── */
@@ -862,8 +877,16 @@ export default function CreateProject() {
                   if (isTeamConfirmed) {
                     setIsTeamConfirmed(false);
                   } else {
-                    const ok = window.confirm("Are you sure you want to confirm this team selection? This will prioritize these experts for the project launch.");
-                    if (ok) setIsTeamConfirmed(true);
+                    setCustomConfirm({
+                      title: "Confirm Team Selection",
+                      message: "Are you sure you want to confirm this team selection? This will prioritize these experts for the project launch.",
+                      confirmText: "Yes, Confirm Team",
+                      cancelText: "Cancel",
+                      onConfirm: () => {
+                        setCustomConfirm(null);
+                        setIsTeamConfirmed(true);
+                      }
+                    });
                   }
                 }}
               >
@@ -909,6 +932,17 @@ export default function CreateProject() {
         }
       `}</style>
 
+      {customConfirm && (
+        <CustomConfirm
+          title={customConfirm.title}
+          message={customConfirm.message}
+          confirmText={customConfirm.confirmText}
+          cancelText={customConfirm.cancelText}
+          onConfirm={customConfirm.onConfirm}
+          onCancel={() => setCustomConfirm(null)}
+          onClose={() => setCustomConfirm(null)}
+        />
+      )}
     </div>
   );
 }

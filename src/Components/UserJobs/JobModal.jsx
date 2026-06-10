@@ -12,6 +12,8 @@ import {
 } from "react-icons/fi";
 import { useGetEmployeesByTitleQuery, usePlaceBidMutation } from "../../State-Management/Api/ProjectApiSlice";
 import { useNavigate } from "react-router-dom";
+import { CustomAlert } from "../Common/CustomAlert";
+
 
 const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
   const title = job?.title;
@@ -28,6 +30,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
   const [selectedTalents, setSelectedTalents] = useState(initialSelectedTalentId ? [initialSelectedTalentId] : []);
   const [customNote, setCustomNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customAlert, setCustomAlert] = useState(null);
 
   const navigate = useNavigate();
 
@@ -54,12 +57,22 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
     const response = await placeBid(payload).unwrap();
 
     console.log("Bid placed:", response);
-    alert(response?.message);
-
-    onClose();
+    setCustomAlert({
+      title: "Bid Placed Successfully",
+      message: response?.message || "Your bid has been placed for the selected talent.",
+      type: "success",
+      onConfirm: () => {
+        onClose();
+      }
+    });
   } catch (error) {
     console.error("Place Bid Error:", error);
-    alert("Failed to place bid");
+    setCustomAlert({
+      title: "Failed to Place Bid",
+      message: error?.data?.message || "An error occurred while placing the bid. Please check your connection and try again.",
+      type: "error",
+      onConfirm: () => {}
+    });
   } finally {
     setIsSubmitting(false);
   }
@@ -592,6 +605,15 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         }
         .desc-textarea:focus { border-color: #1f2937; box-shadow: 0 0 0 4px rgba(245, 129, 12, 0.1); }
       `}</style>
+      {customAlert && (
+        <CustomAlert
+          title={customAlert.title}
+          message={customAlert.message}
+          type={customAlert.type}
+          onConfirm={customAlert.onConfirm}
+          onClose={() => setCustomAlert(null)}
+        />
+      )}
     </div>,
     document.body
   );

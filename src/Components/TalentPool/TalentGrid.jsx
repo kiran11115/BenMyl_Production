@@ -3,16 +3,10 @@ import { FiMapPin, FiBriefcase, FiUser, FiEye } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import NoData from "../UploadTalent/NoData";
 import "./TalentPool.css";
+import "../UserProjects/Projects.css";
 
 
-/* Premium chip color palettes for skill tags */
-const CHIP_PALETTES = [
-  { bg: "#eff6ff", color: "#1d4ed8", border: "#dbeafe" }, // blue
-  { bg: "#f5f3ff", color: "#6d28d9", border: "#ede9fe" }, // purple
-  { bg: "#f0fdf4", color: "#15803d", border: "#dcfce7" }, // green
-  { bg: "#fff7ed", color: "#c2410c", border: "#ffedd5" }, // orange
-  { bg: "#fdf2f8", color: "#be185d", border: "#fce7f3" }, // pink
-];
+
 
 const TalentGridView = ({
   candidates = [],
@@ -44,8 +38,8 @@ const TalentGridView = ({
         </div>
       )}
 
-      {/* ── grid uses same CSS class as jobs ── */}
-      <div className="jobs-grid" style={{ marginTop: 12 }}>
+      {/* ── grid uses projects-grid with 3 columns override ── */}
+      <div className="projects-grid talent-grid-3-col" style={{ marginTop: 12 }}>
         {visibleCandidates.map((candidate, idx) => {
           const isShortlisted = activeJobId && shortlistedMap?.[activeJobId]?.find((c) => c.id === candidate.id);
           const initials = getInitials(candidate.name);
@@ -53,11 +47,11 @@ const TalentGridView = ({
           /* Derive availability */
           const status = candidate.status || "AVAILABLE";
           const statusMap = {
-            AVAILABLE:    { label: "Available",    dot: "#10b981" },
-            SHORTLISTED:  { label: "Shortlisted",  dot: "#3b82f6" },
-            INTERVIEWING: { label: "Interviewing", dot: "#8b5cf6" },
-            BUSY:         { label: "Busy",         dot: "#f59e0b" },
-            UNAVAILABLE:  { label: "Unavailable",  dot: "#ef4444" },
+            AVAILABLE:    { label: "Available",    chipClass: "mint" },
+            SHORTLISTED:  { label: "Shortlisted",  chipClass: "green" },
+            INTERVIEWING: { label: "Interviewing", chipClass: "purple" },
+            BUSY:         { label: "Busy",         chipClass: "orange" },
+            UNAVAILABLE:  { label: "Unavailable",  chipClass: "pink" },
           };
           const s = statusMap[status.toUpperCase()] || statusMap.AVAILABLE;
 
@@ -72,16 +66,15 @@ const TalentGridView = ({
           return (
             <div
               key={candidate.id}
-              className="talent-card-premium"
+              className="project-card talent-card-premium"
               onClick={() => onProfileClick(candidate)}
               style={{ cursor: "pointer" }}
             >
               {/* ── Card header: status + match score + eye icon ── */}
               <div className="card-header-row">
-                <div className="status-pill-v2">
-                  <span className="dot" style={{ background: s.dot }} />
+                <span className={`job-chip ${s.chipClass}`}>
                   {s.label}
-                </div>
+                </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div className="match-badge">
                     {matchScore}% Match
@@ -133,23 +126,19 @@ const TalentGridView = ({
               {/* ── Skills Chips Row ── */}
               <div className="skills-row">
                 {candidate.skills.slice(0, 3).map((skill, si) => {
-                  const chip = CHIP_PALETTES[si % CHIP_PALETTES.length];
+                  const colors = ["orange", "pink", "purple", "mint", "green"];
+                  const colorClass = colors[si % colors.length];
                   return (
                     <span 
                       key={skill} 
-                      className="skill-chip"
-                      style={{
-                        background: chip.bg,
-                        color: chip.color,
-                        borderColor: chip.border,
-                      }}
+                      className={`job-chip ${colorClass}`}
                     >
                       {skill}
                     </span>
                   );
                 })}
                 {candidate.skills.length > 3 && (
-                  <span className="skill-chip more">
+                  <span className="job-chip more">
                     +{candidate.skills.length - 3}
                   </span>
                 )}

@@ -7,6 +7,7 @@ import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/Com
 import TrialPopover from "../../Header/TrialPopover";
 import ProfileSideModal from "../../Header/ProfileSideModal";
 import ScrollToTop from "../../ScrollToTop";
+import SupportButton from "../../Common/SupportButton";
 
 
 function AdminHeader() {
@@ -449,6 +450,7 @@ function AdminHeader() {
                 </div>
 
             )}
+            <SupportButton />
             <TrialPopover />
 
             {/* Profile Side Modal */}

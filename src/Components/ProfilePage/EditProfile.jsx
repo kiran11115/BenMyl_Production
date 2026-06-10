@@ -11,6 +11,8 @@ import "./EditProfile.css";
 import ProfilePreviewPanel from "../Admin/AdminProfile/ProfilePreviewPanel";
 import "../PostNewPositions/PostNewPositions.css";
 import { State, City } from "country-state-city";
+import { CustomAlert } from "../Common/CustomAlert";
+
 
 const countryIsoMap = {
   USA: "US",
@@ -30,6 +32,9 @@ function EditProfile() {
   const navigate = useNavigate();
   const [updateRecruiterProfile, { isLoading: isSaving }] =
     useUpdateRecruiterProfileMutation();
+
+  const [customAlert, setCustomAlert] = useState(null);
+
 
   /* ================= LOGO ================= */
   const [logoPreview, setLogoPreview] = useState(null);
@@ -409,12 +414,20 @@ function EditProfile() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      alert("Invalid file type");
+      setCustomAlert({
+        title: "Invalid File Type",
+        message: "Please select a valid image file (PNG, JPG, or SVG).",
+        type: "error"
+      });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Max size 5MB");
+      setCustomAlert({
+        title: "File Too Large",
+        message: "The selected logo file exceeds the maximum size limit of 5MB.",
+        type: "error"
+      });
       return;
     }
 
@@ -1054,6 +1067,15 @@ function EditProfile() {
           />
         </div>
       </div>
+      {customAlert && (
+        <CustomAlert
+          title={customAlert.title}
+          message={customAlert.message}
+          type={customAlert.type}
+          onConfirm={() => setCustomAlert(null)}
+          onClose={() => setCustomAlert(null)}
+        />
+      )}
     </form>
   );
 }

@@ -16,6 +16,7 @@ import TrialPopover from "./TrialPopover";
 import ProfileSideModal from "./ProfileSideModal";
 import ScrollToTop from "../ScrollToTop";
 import { Plus, Users } from "lucide-react";
+import SupportButton from "../Common/SupportButton";
 
 
 function Header() {
@@ -502,6 +503,7 @@ function Header() {
 
       )}
 
+      <SupportButton />
       <TrialPopover />
 
       {/* Video Guide Popover */}

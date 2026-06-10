@@ -505,7 +505,7 @@ function AdminDashboard() {
           <div className="stat-header-row">
 
             <span className="stat-title">
-              Candidate Submissions
+              Candidates Added
             </span>
 
             <div className="stat-icon-box">

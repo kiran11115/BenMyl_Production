@@ -87,14 +87,15 @@
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .sid-container.sid-width-60 .sid-main-panel {
-    width: 25%;
+    width: 38%;
+    min-width: 340px;
     border-right: 1px solid #e2e8f0;
 }
 
 /* ── Preview panel ── */
 .sid-preview-panel {
-    width: 75%;
-    flex-grow: 1;
+    flex: 1;
+    min-width: 0;
     background: #ffffff;
     overflow-y: auto;
     display: none;

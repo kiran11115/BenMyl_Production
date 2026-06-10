@@ -1,0 +1,363 @@
+/* ============================================
+   SUPPORT FLOATING BUTTON
+   ============================================ */
+
+/* FAB Button — gradient circle */
+.support-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 60%, #a855f7 100%);
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 16px rgba(79, 70, 229, 0.45),
+    0 1px 4px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  z-index: 3100;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
+  outline: none;
+}
+
+.support-fab:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 8px 28px rgba(79, 70, 229, 0.55),
+    0 3px 10px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.support-fab:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Hidden state — slides down and fades out when modal is open */
+.support-fab.hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.88);
+  pointer-events: none;
+}
+
+/* Pulse Ring — matches 52×52 circle exactly */
+.support-fab-pulse {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid rgba(124, 58, 237, 0.55);
+  animation: fab-pulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fab-pulse {
+  0%   { transform: scale(1);    opacity: 1;   }
+  70%  { transform: scale(1.7);  opacity: 0;   }
+  100% { transform: scale(1.7);  opacity: 0;   }
+}
+
+/* Icon circle inside FAB */
+.support-fab-icon-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   STANDARD SIDE DRAWER RULES (self-contained)
+   ============================================ */
+
+.sid-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(3px);
+  z-index: 3000;
+  opacity: 0;
+  animation: sidFadeIn 0.28s forwards;
+  display: flex;
+  justify-content: flex-end;
+}
+.sid-overlay.closing { animation: sidFadeOut 0.28s forwards; }
+
+@keyframes sidFadeIn  { to { opacity: 1; } }
+@keyframes sidFadeOut { to { opacity: 0; } }
+
+.sid-container {
+  height: 100vh;
+  background: #f8fafc;
+  box-shadow: -8px 0 32px rgba(15,23,42,0.10);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.sid-container.open { transform: translateX(0); }
+
+.sid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
+  border-bottom: none;
+  flex-shrink: 0;
+}
+.sid-header-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sid-close-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sid-close-btn:hover { background: rgba(255,255,255,0.25); color: #ffffff; }
+
+
+
+.support-sid-container {
+  width: 400px;
+  min-width: 340px;
+  max-width: 96vw;
+}
+
+/* ============================================
+   CHAT UI INSIDE THE DRAWER
+   ============================================ */
+
+/* Online badge in header */
+.support-online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  margin-left: 8px;
+}
+
+.support-online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 5px rgba(52, 211, 153, 0.8);
+  flex-shrink: 0;
+}
+
+/* Messages scroll area */
+.support-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 20px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #faf9ff;
+}
+
+.support-msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.support-msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.support-bot-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0dbff, #c7d2fe);
+  color: #4338ca;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  border: 1px solid #c4b5fd;
+}
+
+.support-bubble {
+  max-width: 80%;
+  padding: 11px 15px;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.support-bubble.bot {
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 4px 16px 16px 16px;
+  box-shadow: 0 1px 4px rgba(108,99,255,0.07);
+  border: 1px solid #ede9ff;
+}
+
+.support-bubble.user {
+  background: linear-gradient(135deg, #ede9ff, #ddd6fe);
+  color: #3730a3;
+  border-radius: 16px 4px 16px 16px;
+  border: 1px solid #d4ccff;
+}
+
+/* Options / Chips */
+.support-options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 4px 0 4px 38px;
+}
+
+.support-options-prefix {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.support-option-chip {
+  background: #ffffff;
+  border: 1.5px solid #e4deff;
+  color: #4f46e5;
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  outline: none;
+  line-height: 1.3;
+}
+
+.support-option-chip:hover {
+  background: #ede9ff;
+  border-color: #a5b4fc;
+  color: #3730a3;
+  transform: translateX(4px);
+}
+
+/* Input Row */
+.support-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-top: 1px solid #ede9ff;
+  flex-shrink: 0;
+}
+
+.support-input {
+  flex: 1;
+  border: 1.5px solid #e4deff;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #1e293b;
+  outline: none;
+  background: #faf9ff;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.support-input:focus {
+  border-color: #a5b4fc;
+  background: #ffffff;
+}
+
+.support-input::placeholder {
+  color: #b0aac8;
+}
+
+.support-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9ff, #c7d2fe);
+  border: 1.5px solid #c4b5fd;
+  color: #4338ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.18s, opacity 0.18s, background 0.18s;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.support-send-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+  background: linear-gradient(135deg, #ddd6fe, #a5b4fc);
+}
+
+.support-send-btn:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+/* Scrollbar hide */
+.support-messages.hide-scrollbar::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+.support-messages.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .support-sid-container {
+    width: 100vw;
+    min-width: unset;
+  }
+
+  .support-fab {
+    bottom: 16px;
+    right: 16px;
+    padding: 0 14px 0 12px;
+    height: 44px;
+    font-size: 12px;
+  }
+}

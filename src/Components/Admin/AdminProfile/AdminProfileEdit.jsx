@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiX, FiSave, FiImage, FiBriefcase, FiGlobe, FiMapPin, FiMail, FiArrowLeft, FiZap } from "react-icons/fi";
+import { CustomAlert } from "../../Common/CustomAlert";
+
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -30,6 +32,8 @@ const AdminProfileEdit = () => {
   const [updateCompanyProfile, { isLoading }] = useUpdateCompanyProfileMutation();
   const companyid = localStorage.getItem("logincompanyid");
   const emailId = localStorage.getItem("Email");
+  const [customAlert, setCustomAlert] = useState(null);
+
   
   const { data: companyData, refetch } = useGetCompanyProfileEditQuery(emailId, {
     refetchOnMountOrArgChange: true,
@@ -153,7 +157,11 @@ const AdminProfileEdit = () => {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      alert("Invalid file type");
+      setCustomAlert({
+        title: "Invalid File Type",
+        message: "Please upload a valid image file (PNG, JPG, or SVG) for the company logo.",
+        type: "error"
+      });
       return;
     }
     setLogoFile(file);
@@ -556,6 +564,15 @@ const AdminProfileEdit = () => {
           </aside>
         </div>
       </form>
+      {customAlert && (
+        <CustomAlert
+          title={customAlert.title}
+          message={customAlert.message}
+          type={customAlert.type}
+          onConfirm={() => setCustomAlert(null)}
+          onClose={() => setCustomAlert(null)}
+        />
+      )}
     </>
   );
 };

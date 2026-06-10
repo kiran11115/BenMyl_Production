@@ -127,6 +127,15 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('jobs'); // DEFAULT OPEN
   const jobDropdownRef = useRef(null);
+  const debounceTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -158,10 +167,40 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   }, [selectedJobId]);
 
 
-  const handleInputChange = (field, value) =>
-    setFilterInputs((prev) => ({ ...prev, [field]: value }));
-  const handleToggle = (field) =>
-    setFilterInputs((prev) => ({ ...prev, [field]: !prev[field] }));
+  const handleInputChange = (field, value, isDebounced = false) => {
+    setFilterInputs((prev) => {
+      const updated = { ...prev, [field]: value };
+      if (onApplyFilters) {
+        if (isDebounced) {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          debounceTimerRef.current = setTimeout(() => {
+            onApplyFilters(updated);
+          }, 400);
+        } else {
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          onApplyFilters(updated);
+        }
+      }
+      return updated;
+    });
+  };
+
+  const handleToggle = (field) => {
+    setFilterInputs((prev) => {
+      const updated = { ...prev, [field]: !prev[field] };
+      if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        onApplyFilters(updated);
+      }
+      return updated;
+    });
+  };
 
   const toggleJobSelection = (jobId) => {
     setFilterInputs((prev) => {
@@ -170,10 +209,17 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
         ? prev.selectedJobs.filter((id) => id !== jobId)
         : [...prev.selectedJobs, jobId];
 
-      return {
+      const updated = {
         ...prev,
         selectedJobs: newSelectedJobs,
       };
+      if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
+        onApplyFilters(updated);
+      }
+      return updated;
     });
   };
 
@@ -184,6 +230,9 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
         [field]: prev[field].filter((item) => item !== value),
       };
       if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
         onApplyFilters(updatedFilters);
       }
       return updatedFilters;
@@ -197,17 +246,19 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
         selectedJobs: prev.selectedJobs.filter((id) => id !== jobId),
       };
       if (onApplyFilters) {
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
+        }
         onApplyFilters(updatedFilters);
       }
       return updatedFilters;
     });
   };
 
-  const applyFilters = () => {
-    onApplyFilters(filterInputs);
-  };
-
   const resetFilters = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setFilterInputs(initialFilters);
     if (onApplyFilters) onApplyFilters(initialFilters);
   };
@@ -484,7 +535,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
               placeholder="Add Location..."
               value={filterInputs.location || ""}
               onChange={(e) =>
-                handleInputChange("location", e.target.value)
+                handleInputChange("location", e.target.value, true)
               }
             />
           </div>
@@ -509,7 +560,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
                 placeholder="Min"
                 value={filterInputs.minExperience || ""}
                 onChange={(e) =>
-                  handleInputChange("minExperience", e.target.value)
+                  handleInputChange("minExperience", e.target.value, true)
                 }
               />
               <input
@@ -518,7 +569,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
                 placeholder="Max"
                 value={filterInputs.maxExperience || ""}
                 onChange={(e) =>
-                  handleInputChange("maxExperience", e.target.value)
+                  handleInputChange("maxExperience", e.target.value, true)
                 }
               />
             </div>
@@ -544,7 +595,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
                 placeholder="Min Salary"
                 value={filterInputs.minSalary}
                 onChange={(e) =>
-                  handleInputChange("minSalary", e.target.value)
+                  handleInputChange("minSalary", e.target.value, true)
                 }
               />
               <input
@@ -553,7 +604,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
                 placeholder="Max Salary"
                 value={filterInputs.maxSalary}
                 onChange={(e) =>
-                  handleInputChange("maxSalary", e.target.value)
+                  handleInputChange("maxSalary", e.target.value, true)
                 }
               />
             </div>
@@ -561,12 +612,8 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
         )}
       </div>
 
-      <button onClick={applyFilters} className="apply-btn mt-3 mb-3">
-        Apply Filters
-      </button>
-
       {/* Note Card */}
-      <div className="note-card" style={{ background: '#fffdf2ff', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #f6bb3bff' }}>
+      <div className="note-card" style={{ background: '#fffdf2ff', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #f6bb3bff', marginTop: '16px' }}>
         <p style={{ margin: 0, fontWeight: "600", fontSize: '10px', color: '#e28f29ff', lineHeight: 1.5 }}>
           <strong>Note:</strong> Selecting a job from "Find for Jobs" is necessary to view its details and shortlist talent.
         </p>
