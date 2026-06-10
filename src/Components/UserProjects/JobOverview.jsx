@@ -69,65 +69,13 @@ const JobOverview = () => {
     refetchOnMountOrArgChange: true
   });
 
-  const handleToggleSelectBid = (employeeId, bid) => {
-  setSelectedBidIds((prev) => {
-    const isSelected = prev.includes(employeeId);
-
-    const stored = JSON.parse(
-      localStorage.getItem("shortlistedMap") || "{}"
+  const handleToggleSelectBid = (employeeId) => {
+    setSelectedBidIds(prev =>
+      prev.includes(employeeId)
+        ? prev.filter(id => id !== employeeId)
+        : [...prev, employeeId]
     );
-
-    const currentList = stored[jobId] || [];
-
-    if (isSelected) {
-      const updated = {
-        ...stored,
-        [jobId]: currentList.filter(
-          (c) => c.id !== employeeId
-        ),
-      };
-
-      localStorage.setItem(
-        "shortlistedMap",
-        JSON.stringify(updated)
-      );
-
-      return prev.filter((id) => id !== employeeId);
-    }
-
-    const updated = {
-      ...stored,
-      [jobId]: [
-        ...currentList,
-        {
-          id: employeeId,
-          name: bid.FullName,
-          inviteUserId: bid.logUserid,
-        },
-      ],
-    };
-
-    localStorage.setItem(
-      "shortlistedMap",
-      JSON.stringify(updated)
-    );
-
-    return [...prev, employeeId];
-  });
-};
-
-useEffect(() => {
-  if (!jobId) return;
-
-  const stored = JSON.parse(
-    localStorage.getItem("shortlistedMap") || "{}"
-  );
-
-  const ids =
-    stored[jobId]?.map((c) => c.id) || [];
-
-  setSelectedBidIds(ids);
-}, [jobId]);
+  };
 
   const handleSendBulkInvite = async () => {
     if (selectedBidIds.length === 0) return;
@@ -828,7 +776,7 @@ useEffect(() => {
                     <input
                       type="checkbox"
                       checked={selectedBidIds.includes(bid.EmployeeID)}
-                      onChange={() => handleToggleSelectBid(bid.EmployeeID, bid)}
+                      onChange={() => handleToggleSelectBid(bid.EmployeeID)}
                       disabled={inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading"}
                       style={{
                         width: "16px",
