@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { FiMapPin, FiBriefcase, FiDollarSign, FiEye } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiDollarSign, FiEye, FiUser, FiAward, FiStar, FiActivity, FiCpu, FiCode } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import "../TalentPool/TalentPool.css";
@@ -8,7 +8,7 @@ import "../UserProjects/Projects.css";
 
 
 
-export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryAction, primaryActionLabel, small = false }) => {
+export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryAction, primaryActionLabel, small = false, index = 0 }) => {
   const navigate = useNavigate();
   const handleProfileClick = (e) => {
     e.stopPropagation();
@@ -39,6 +39,13 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
       className={`project-card talent-card-premium ${small ? 'small-variant' : ''}`}
       style={small ? { padding: '16px', gap: '12px' } : {}}
     >
+      {(() => {
+        const icons = [FiUser, FiBriefcase, FiAward, FiStar, FiActivity, FiCpu, FiCode];
+        const colors = ["#f5810c", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#f59e0b", "#06b6d4"];
+        const IconComponent = icons[index % icons.length];
+        const iconColor = colors[index % colors.length];
+        return <IconComponent className="card-bg-icon" style={{ color: iconColor }} />;
+      })()}
       {/* Header: Status Pill, Match Badge, and Eye Icon */}
       <div className="card-header-row">
         <span className={`job-chip ${
@@ -180,12 +187,13 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
 const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
   return (
     <div className="projects-grid">
-      {candidates.map((c) => (
+      {candidates.map((c, index) => (
         <CandidateCard
           key={c.id}
           candidate={c}
           isSelected={selectedIds.has(c.id)}
           onToggle={onToggleSelect}
+          index={index}
         />
       ))}
     </div>

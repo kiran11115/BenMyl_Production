@@ -659,6 +659,7 @@ const ScheduleInterview = () => {
                                 job={selectedJob}
                                 isExpanded={true}
                                 onToggle={() => { }}
+                                hideShare={true}
                             />
                         </div>
                     </div>

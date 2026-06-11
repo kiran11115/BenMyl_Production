@@ -11,109 +11,172 @@
 }
 @keyframes tp-spin { to { transform: rotate(360deg); } }
 
-/* ── Identity Strip ── */
-.tp-identity-strip {
+/* ── Hero Profile Header (Banner) ── */
+.tp-banner {
+  min-height: 160px;
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 16px 20px !important;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 32px;
+  margin-bottom: 0;
 }
 
-.tp-avatar-col { flex-shrink: 0; }
+.tp-banner-back-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(4px);
+  padding: 8px 16px;
+  font-weight: 600;
+}
 
-.tp-avatar-sm {
-  width: 64px;
-  height: 64px;
+.tp-banner-back-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.tp-banner-primary-btn {
+  background: #ffffff !important;
+  color: #4f46e5 !important;
+  border: none !important;
+  font-weight: 700 !important;
+  padding: 8px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.tp-banner-primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ── Main Profile Overlap Card ── */
+.tp-main-profile-card {
+  margin: -60px 24px 24px 24px;
+  position: relative;
+  z-index: 10;
+  padding-bottom: 0;
+  border-radius: 20px;
+}
+
+
+.tp-avatar-large {
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
+  border: 4px solid #ffffff;
   object-fit: cover;
-  border: 2px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(91,91,214,0.12);
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.tp-avatar-initials {
-  background: linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%);
-  color: #fff;
+.tp-avatar-initials-large {
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+  color: #817dc4;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: 24px;
+  font-weight: 800;
 }
 
-.tp-identity-info { flex: 1; }
-
-.tp-identity-name {
-  font-size: 15px;
-  font-weight: 700;
+.tp-profile-name {
+  font-size: 18px;
+  font-weight: 800;
   color: #0f172a;
+  margin: 0 0 4px 0;
   display: flex;
   align-items: center;
-  margin-bottom: 2px;
+  gap: 8px;
 }
 
-.tp-identity-role {
-  font-size: 12px;
-  font-weight: 600;
-  color: #5B5BD6;
-  background: rgba(91,91,214,0.07);
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 20px;
-  margin-bottom: 8px;
+.tp-verified-icon {
+  color: #10b981;
 }
 
-.tp-meta-pills {
+.tp-profile-role {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.tp-profile-summary {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 800px;
+}
+
+.tp-meta-pills-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-}
-
-.tp-meta-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #475569;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.tp-identity-actions {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-  flex-shrink: 0;
+  margin-bottom: 32px;
 }
 
-.tp-util-btn {
+.tp-meta-pill-outline {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
   color: #475569;
-  background: #f8fafc;
+  background: #f1f5f9;
   border: 1px solid #e2e8f0;
-  padding: 6px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
+  padding: 4px 12px;
+  border-radius: 20px;
 }
-.tp-util-btn:hover {
-  background: #fff;
-  border-color: #cbd5e1;
+
+/* ── Image Style Tabs (Inside Overlap Card) ── */
+.tp-image-tabs {
+  display: flex;
+  gap: 32px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+  overflow-x: auto;
+}
+
+.tp-image-tab {
+  background: none;
+  border: none;
+  padding: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #64748b;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+
+.tp-image-tab:hover {
   color: #1e293b;
 }
 
-/* ── Shortlisted button state ── */
-.tp-shortlisted-btn {
-  background: #ecfdf5 !important;
-  color: #059669 !important;
-  border-color: rgba(16,185,129,0.3) !important;
+.tp-image-tab.active {
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
+}
+
+/* ── Main Content Wrapper ── */
+.tp-main-content-wrapper {
+  padding: 0 24px;
+}
+
+/* ── Section Headings ── */
+.tp-section-heading {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
 }
 
 /* ── Content Grid ── */
@@ -129,19 +192,11 @@
   .tp-col-side { order: -1; }
 }
 
-/* ── Section Headings ── */
-.tp-section-heading {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
+/* ── Shortlisted button state ── */
+.tp-shortlisted-btn {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border-color: rgba(16,185,129,0.3) !important;
 }
 
 .tp-section-heading-row {
@@ -394,6 +449,45 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(91,91,214,0.28);
 }
+
+/* ── Elegant Pill Tabs Navigation ── */
+.tp-tabs-nav {
+  display: inline-flex;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 24px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tp-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 8px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.tp-tab-btn:hover {
+  color: #1e293b;
+}
+
+.tp-tab-btn.active {
+  background: #ffffff;
+  color: #5B5BD6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.tp-tab-pane {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

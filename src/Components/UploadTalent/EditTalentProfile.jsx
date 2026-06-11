@@ -10,6 +10,7 @@ import {
   FiLayers,
   FiCalendar,
 } from "react-icons/fi";
+import { MapPin, Monitor, Phone } from 'lucide-react';
 import { useFormik, FieldArray, FormikProvider } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
@@ -382,18 +383,22 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                     padding-left: 2.5rem !important;
                 }
             `}</style>
-        <div className="post-job-form">
-          <div className="form-header">
-            <div className="vs-breadcrumbs mb-2 mt-3 d-flex gap-2">
-              <button type="button" className="link-button" onClick={onCancel}>
+        <div className="ai-dashboard-wrapper">
+          <div className="hero-card mb-4">
+            <div className="hero-left">
+              <div className="hero-pill">✦ Edit Talent Profile</div>
+              <h1 className="job-posting-title text-white">Talent Data Center</h1>
+              <div className="job-posting-header-info">
+                <p className="job-posting-subtitle">
+                  Update talent details and professional background.
+                </p>
+              </div>
+            </div>
+            <div className="hero-buttons">
+              <button type="button" className="routine-btn" onClick={onCancel}>
                 <FiArrowLeft /> Back to Profile
               </button>
-              <span className="crumb">/ Edit Profile</span>
             </div>
-            <h1>Edit Profile Page</h1>
-            <p className="muted">
-              Update talent details and professional background
-            </p>
           </div>
 
           <div className="dashboard-layout">
@@ -1043,72 +1048,92 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
 
             <div className="dashboard-column-side">
               <div className="sticky-preview">
-                <h3 className="section-title mb-3">Live Preview</h3>
-                <div className="project-card p-3">
-                  <div className="d-flex align-items-center gap-3 mb-3">
-                    <div className="avatar-initials-premium" style={{ width: '48px', height: '48px', fontSize: '18px' }}>
-                      {getInitials(
-                        initialData?.firstName,
-                        initialData?.lastName,
+                <div className="preview-card-dark">
+                  <div className="preview-card-logo-row">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div className="preview-company-logo">
+                        {getInitials(initialData?.firstName, initialData?.lastName)}
+                      </div>
+                      <span className="preview-company-name">
+                        {initialData?.firstName} {initialData?.lastName}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className={`preview-job-title ${!formik.values.title ? 'preview-placeholder-title' : ''}`}>
+                    {formik.values.title || "Professional Title"}
+                  </h3>
+
+                  <div className="preview-metas-grid">
+                    <div className="preview-meta-item">
+                      <span className="preview-meta-icon"><MapPin size={14} /></span>
+                      <span>{[formik.values.city, formik.values.state, formik.values.country].filter(Boolean).join(", ") || 'Location'}</span>
+                    </div>
+                    <div className="preview-meta-item">
+                      <span className="preview-meta-icon"><Monitor size={14} /></span>
+                      <span>{initialData?.emailAddress || 'Email Address'}</span>
+                    </div>
+                    <div className="preview-meta-item">
+                      <span className="preview-meta-icon"><Phone size={14} /></span>
+                      <span>{formik.values.phoneNo || 'Phone No'}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', backgroundColor: '#20273a', margin: '16px 0' }} />
+
+                  <div>
+                    <p className="preview-section-title">REQUIRED INTEL TECH STACK:</p>
+                    <div className="preview-tech-stack-container">
+                      {formik.values.skills ? (
+                        formik.values.skills.split(",").map((skill, idx) => (
+                          <span key={idx} className="preview-tech-pill">{skill.trim()}</span>
+                        ))
+                      ) : (
+                        <span className="preview-tech-pill preview-tech-pill-placeholder">No skills added</span>
                       )}
                     </div>
-                    <div>
-                      <h4 className="mb-0">
-                        {initialData?.firstName} {initialData?.lastName}
-                      </h4>
-                      <p className="small text-muted mb-0">
-                        {formik.values.title}
-                      </p>
-                      <p
-                        className="small text-muted mb-0"
-                        style={{ fontSize: "11px" }}
-                      >
-                        {initialData?.emailAddress}
-                      </p>
-                    </div>
                   </div>
-                  <div className="preview-meta small text-muted">
-                    <p className="mb-2 line-clamp-3">{formik.values.bio}</p>
-                    <div className="skills-cloud d-flex flex-wrap gap-1">
-                      {formik.values.skills &&
-                        formik.values.skills.split(",").map((s, i) => (
-                          <span
-                            key={i}
-                            className="status-tag status-progress"
-                            style={{ fontSize: 10 }}
-                          >
-                            {s.trim()}
-                          </span>
-                        ))}
-                    </div>
+
+                  <div>
+                    <p className="preview-section-title">Description abstract:</p>
+                    <p className={`preview-description-abstract ${!formik.values.bio ? 'preview-placeholder-text' : ''}`}>
+                      {formik.values.bio 
+                        ? (formik.values.bio.length > 150 
+                           ? formik.values.bio.slice(0, 150) + "..." 
+                           : formik.values.bio)
+                        : "No professional summary provided..."}
+                    </p>
                   </div>
-                  <hr />
+
+                  <div style={{ height: '1px', backgroundColor: '#20273a', margin: '16px 0' }} />
+
                   <div className="preview-sections">
                     <div className="mb-2">
-                      <h6 className="d-flex align-items-center gap-1">
-                        <FiBriefcase size={12} /> Experience
+                      <h6 className="d-flex align-items-center gap-2 text-white" style={{ fontSize: '13px' }}>
+                        <FiBriefcase size={14} style={{ color: '#8b5cf6' }} /> Experience
                       </h6>
-                      <p className="small mb-0">
+                      <p className="small mb-0" style={{ color: '#94a3b8', marginLeft: '22px' }}>
                         {formik.values.workexperiences.length} entries added
                       </p>
                     </div>
                     <div className="mb-2">
-                      <h6 className="d-flex align-items-center gap-1">
-                        <FiLayers size={12} /> Projects
+                      <h6 className="d-flex align-items-center gap-2 text-white" style={{ fontSize: '13px' }}>
+                        <FiLayers size={14} style={{ color: '#8b5cf6' }} /> Projects
                       </h6>
-                      <p className="small mb-0">
+                      <p className="small mb-0" style={{ color: '#94a3b8', marginLeft: '22px' }}>
                         {formik.values.employeeprojects.length} entries added
                       </p>
                     </div>
                     <div>
-                      <h6 className="d-flex align-items-center gap-1">
-                        <FiBookOpen size={12} /> Education
+                      <h6 className="d-flex align-items-center gap-2 text-white" style={{ fontSize: '13px' }}>
+                        <FiBookOpen size={14} style={{ color: '#8b5cf6' }} /> Education
                       </h6>
-                      <p className="small mb-0">
+                      <p className="small mb-0" style={{ color: '#94a3b8', marginLeft: '22px' }}>
                         {formik.values.employee_Heighers.length} entries added
                       </p>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMapPin, FiBriefcase, FiUser, FiEye } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiUser, FiEye, FiAward, FiStar, FiActivity, FiCpu, FiCode } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import NoData from "../UploadTalent/NoData";
 import "./TalentPool.css";
@@ -70,6 +70,13 @@ const TalentGridView = ({
               onClick={() => onProfileClick(candidate)}
               style={{ cursor: "pointer" }}
             >
+              {(() => {
+                const icons = [FiUser, FiBriefcase, FiAward, FiStar, FiActivity, FiCpu, FiCode];
+                const colors = ["#f5810c", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#f59e0b", "#06b6d4"];
+                const IconComponent = icons[idx % icons.length];
+                const iconColor = colors[idx % colors.length];
+                return <IconComponent className="card-bg-icon" style={{ color: iconColor }} />;
+              })()}
               {/* ── Card header: status + match score + eye icon ── */}
               <div className="card-header-row">
                 <span className={`job-chip ${s.chipClass}`}>

@@ -2,7 +2,7 @@ import React from "react";
 import { FiMapPin, FiDollarSign, FiClock, FiBriefcase, FiFileText, FiLayers } from "react-icons/fi";
 import ShareJobCard from "../UserProjects/ShareJobCard";
 
-const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
+const JobOverviewCard = ({ job, isExpanded, onToggle, hideShare }) => {
   const formatMarkdownToHtml = (text) => {
     if (!text) return "";
     let formatted = text;
@@ -99,9 +99,11 @@ const JobOverviewCard = ({ job, isExpanded, onToggle }) => {
         </div>
 
         {/* LinkedIn / Share — above stats */}
-        <div className="jov-linkedin-bar">
-          <ShareJobCard job={job} />
-        </div>
+        {!hideShare && (
+          <div className="jov-linkedin-bar">
+            <ShareJobCard job={job} />
+          </div>
+        )}
       </div>
 
       <div className="d-flex">

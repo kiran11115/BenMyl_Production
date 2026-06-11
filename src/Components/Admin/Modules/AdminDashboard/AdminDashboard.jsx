@@ -457,6 +457,7 @@ function AdminDashboard() {
             ↗ Optimal Flow
           </div>
 
+          <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Users size={120} /></div>
         </div>
 
         {/* CARD 2 */}
@@ -496,6 +497,7 @@ function AdminDashboard() {
             ↗ Optimal Flow
           </div>
 
+          <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Briefcase size={120} /></div>
         </div>
 
         {/* CARD 3 */}
@@ -535,6 +537,7 @@ function AdminDashboard() {
             ↗ Optimal Flow
           </div>
 
+          <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Layers3 size={120} /></div>
         </div>
 
         {/* CARD 4 */}
@@ -574,6 +577,7 @@ function AdminDashboard() {
             ↗ Optimal Flow
           </div>
 
+          <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><ShieldCheck size={120} /></div>
         </div>
 
       </div>

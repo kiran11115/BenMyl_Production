@@ -44,8 +44,8 @@ const formatDateToDisplay = (value) => {
 const TalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isExpOpen, setIsExpOpen] = React.useState(true);
-  const [isProjOpen, setIsProjOpen] = React.useState(true);
+  const [activeTab, setActiveTab] = React.useState("Overview");
+  const tabs = ["Overview", "Experience", "Projects", "Education"];
   const [showNoJobModal, setShowNoJobModal] = React.useState(false);
 
   const query = new URLSearchParams(location.search);
@@ -177,204 +177,197 @@ const TalentProfile = () => {
   return (
     <div className="ai-dashboard-wrapper">
 
-      {/* ── HERO HEADER CARD ── */}
-      <div className="hero-card mb-4">
-        <div className="hero-left">
-          <div className="hero-pill">✦ Talent Profile</div>
-          <h1 className="job-posting-title text-white">{profileData.name}</h1>
-          <div className="job-posting-header-info">
-            <p className="job-posting-subtitle">
-              {profileData.role} &nbsp;•&nbsp; {profileData.location}
+      {/* ── HERO HEADER CARD (COVER) ── */}
+      <div className="hero-card tp-banner">
+        <button type="button" className="routine-btn" onClick={handleBack} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }}>
+          <FiArrowLeft style={{ marginRight: '6px' }} /> Back
+        </button>
+        <button
+          type="button"
+          className={`routine-btn ${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
+          onClick={handleShortlistFromProfile}
+        >
+          {isShortlisted ? "✓ Shortlisted" : "Shortlist Talent"}
+        </button>
+      </div>
+
+      {/* ── MAIN PROFILE OVERLAP CARD ── */}
+      <div className="premium-card tp-main-profile-card">
+        <div className="d-flex align-items-start gap-4">
+          <div className="tp-avatar-wrapper mb-0 mt-1">
+            {employee?.profilePicture ? (
+              <img src={profileData.avatar} alt={profileData.name} className="tp-avatar-large" />
+            ) : (
+              <div className="tp-avatar-large tp-avatar-initials-large">{getInitials(profileData.name)}</div>
+            )}
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <h1 className="tp-profile-name">
+              {profileData.name}
+              <FiCheckCircle size={16} className="tp-verified-icon ms-2" />
+            </h1>
+            <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
+              <p className="tp-profile-role mb-0" style={{ color: '#64748b' }}>
+                {profileData.role} &nbsp;•&nbsp; {profileData.location}
+              </p>
+              <div className="tp-meta-pills-row mb-0">
+                <span className="job-chip orange py-1 px-2"><FiBriefcase size={12} /> {profileData.experience}</span>
+                <span className="job-chip purple py-1 px-2"><FiAward size={12} /> {profileData.status}</span>
+                {profileData.uploadedByName !== "N/A" && (
+                  <span className="tp-meta-pill-outline py-1 px-2" style={{ height: 'auto', lineHeight: 1 }}><FiUser size={12} /> By: {profileData.uploadedByName}</span>
+                )}
+              </div>
+            </div>
+            <p className="tp-exp-desc mb-4" style={{ color: '#64748b', maxWidth: '800px', lineHeight: '1.6' }}>
+              {profileData.summary}
             </p>
-          </div>
-        </div>
-        <div className="hero-buttons">
-          <button type="button" className="routine-btn" onClick={handleBack}>
-            <FiArrowLeft style={{ marginRight: '6px' }} /> Back
-          </button>
-          {/* <button
-            type="button"
-            className="routine-btn"
-            onClick={() => {
-              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(`${basePath}/`);
-            }}
-          >
-            Schedule Interview
-          </button> */}
-          <button
-            type="button"
-            className={`routine-btn${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
-            onClick={handleShortlistFromProfile}
-          >
-            {isShortlisted ? "✓ Shortlisted" : "Shortlist Talent"}
-          </button>
-        </div>
-      </div>
 
-      {/* ── PROFILE IDENTITY STRIP ── */}
-      <div className="premium-card tp-identity-strip mb-4">
-        <div className="tp-avatar-col">
-          {employee?.profilePicture ? (
-            <img src={profileData.avatar} alt={profileData.name} className="tp-avatar-sm" />
-          ) : (
-            <div className="tp-avatar-sm tp-avatar-initials">{getInitials(profileData.name)}</div>
-          )}
-        </div>
-        <div className="tp-identity-info">
-          <div className="tp-identity-name">
-            {profileData.name}
-            <FiCheckCircle size={14} style={{ color: '#10b981', marginLeft: 8 }} />
-          </div>
-          <div className="tp-identity-role">{profileData.role}</div>
-          <div className="tp-meta-pills">
-            <span className="tp-meta-pill"><FiMapPin size={11} /> {profileData.location}</span>
-            <span className="tp-meta-pill"><FiBriefcase size={11} /> {profileData.experience}</span>
-            <span className="tp-meta-pill"><FiAward size={11} /> {profileData.status}</span>
-            {profileData.uploadedByName !== "N/A" && (
-              <span className="tp-meta-pill"><FiUser size={11} /> By: {profileData.uploadedByName}</span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN CONTENT GRID ── */}
-      <div className="tp-content-grid">
-
-        {/* ─ LEFT COLUMN ─ */}
-        <div className="tp-col-main">
-
-          {/* Professional Summary */}
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading"><FiUser size={13} /> Professional Summary</div>
-            <p className="tp-summary-text">{profileData.summary}</p>
-          </div>
-
-          {/* Work Experience */}
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading-row">
-              <span className="tp-section-heading"><FiTrendingUp size={13} /> Work Experience</span>
-              <button className="tp-toggle-btn" onClick={() => setIsExpOpen(!isExpOpen)}>
-                {isExpOpen ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: isExpOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-              </button>
-            </div>
-            {isExpOpen ? (
-              <div className="tp-exp-list">
-                {profileData.workExperience.length > 0 ? (
-                  profileData.workExperience.map((job, idx) => (
-                    <div key={idx} className="tp-exp-item">
-                      <div className="tp-exp-icon"><FiBriefcase size={13} /></div>
-                      <div className="tp-exp-body">
-                        <div className="tp-exp-title-row">
-                          <span className="tp-exp-role">{job.role}</span>
-                          <span className="tp-exp-badge">{job.company}</span>
-                        </div>
-                        <div className="tp-exp-period">
-                          <FiCalendar size={11} /> {job.period} &nbsp;•&nbsp; <FiMapPin size={11} /> {job.location}
-                        </div>
-                        <p className="tp-exp-desc">{job.desc}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <NoData text="No work history provided" />
-                )}
-              </div>
-            ) : (
-              profileData.workExperience.length > 0 ? (
-                <div className="tp-exp-preview">
-                  <span className="tp-exp-role">{profileData.workExperience[0].role}</span>
-                  <span className="tp-exp-badge">{profileData.workExperience[0].company}</span>
-                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
-                    {profileData.workExperience[0].desc.slice(0, 120)}…
-                  </p>
-                </div>
-              ) : <NoData text="No work history" />
-            )}
-          </div>
-
-          {/* Project Portfolio */}
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading-row">
-              <span className="tp-section-heading"><FiFileText size={13} /> Project Portfolio</span>
-              <button className="tp-toggle-btn" onClick={() => setIsProjOpen(!isProjOpen)}>
-                {isProjOpen ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: isProjOpen ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-              </button>
-            </div>
-            {isProjOpen ? (
-              <div className="tp-proj-grid">
-                {projectsData.length > 0 ? (
-                  projectsData.map((data, idx) => (
-                    <div key={idx} className="tp-proj-item">
-                      <div className="tp-proj-icon"><FiExternalLink size={13} /></div>
-                      <div className="tp-exp-body">
-                        <div className="tp-exp-title-row">
-                          <span className="tp-exp-role">{data.projectName}</span>
-                          <span className="tp-exp-badge secondary">{data.role}</span>
-                        </div>
-                        <div className="tp-tag-row">
-                          {data.skills.map((skill, i) => (
-                            <span key={i} className="tp-tag">{skill}</span>
-                          ))}
-                        </div>
-                        <p className="tp-exp-desc">{data.description}</p>
-                        <div className="tp-exp-period">
-                          <FiCalendar size={11} /> {data.startDate} — {data.endDate}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <NoData text="No projects listed" />
-                )}
-              </div>
-            ) : (
-              projectsData.length > 0 ? (
-                <div className="tp-exp-preview">
-                  <span className="tp-exp-role">{projectsData[0].projectName}</span>
-                  <span className="tp-exp-badge secondary">{projectsData[0].role}</span>
-                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
-                    {projectsData[0].description.slice(0, 120)}…
-                  </p>
-                </div>
-              ) : <NoData text="No projects" />
-            )}
-          </div>
-        </div>
-
-        {/* ─ RIGHT SIDEBAR ─ */}
-        <div className="tp-col-side">
-
-          {/* Quick Info */}
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Quick Information</div>
-            <div className="tp-info-row">
-              <div className="tp-info-icon"><FiStar size={13} /></div>
-              <div>
-                <div className="tp-info-label">Expected Salary</div>
-                <div className="tp-info-value">$120k – $150k / yr</div>
-              </div>
-            </div>
-            <div className="tp-info-row">
-              <div className="tp-info-icon"><FiMapPin size={13} /></div>
-              <div>
-                <div className="tp-info-label">Work Model</div>
-                <div className="tp-info-value">Hybrid / Remote</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Skills */}
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Expertise</div>
-            <div className="tp-tag-row">
-              {profileData.skills.map((skill, idx) => (
-                <span key={idx} className="tp-tag">{skill}</span>
+            {/* ── IMAGE-STYLE TABS (Inside Card) ── */}
+            <div className="tp-image-tabs" style={{ flexWrap: 'wrap', overflowX: 'visible', borderTop: 'none', paddingBottom: '0' }}>
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`tp-image-tab ${activeTab === tab ? 'active' : ''}`}
+                >
+                  {tab}
+                </button>
               ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Education */}
+      {/* ── MAIN CONTENT ── */}
+      <div className="tp-main-content-wrapper">
+        {activeTab === "Overview" && (
+          <div className="tp-tab-pane" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+            
+            {/* Card 1: Salary */}
+            <div className="premium-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '220px' }}>
+              <div className="tp-info-icon" style={{ marginBottom: '12px', background: '#fef3c7', color: '#f59e0b', borderRadius: '50%' }}>
+                <FiStar size={20} />
+              </div>
+              <div className="tp-info-label" style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Expected Salary</div>
+              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>$120k – $150k / yr</div>
+            </div>
+
+            {/* Card 2: Work Model */}
+            <div className="premium-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '220px' }}>
+              <div className="tp-info-icon" style={{ marginBottom: '12px', background: '#eff6ff', color: '#3b82f6', borderRadius: '50%' }}>
+                <FiMapPin size={20} />
+              </div>
+              <div className="tp-info-label" style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Work Model</div>
+              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Hybrid / Remote</div>
+            </div>
+
+            {/* Card 3: Skills */}
+            <div className="premium-card" style={{ display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+              <div className="tp-section-heading" style={{ justifyContent: 'center', marginBottom: '12px' }}>Expertise</div>
+              <div className="tp-tag-row hide-scrollbar" style={{ justifyContent: 'center', marginTop: 'auto', marginBottom: 'auto', maxHeight: '130px', overflowY: 'auto', paddingRight: '4px' }}>
+                {profileData.skills.map((skill, idx) => {
+                  const colors = ["orange", "pink", "purple", "mint", "green"];
+                  const colorClass = colors[idx % colors.length];
+                  return (
+                    <span key={idx} className={`job-chip ${colorClass}`}>
+                      {skill}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Card 4: Contact Locked */}
+            <div className="premium-card tp-contact-locked" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '220px' }}>
+              <div className="tp-section-heading" style={{ justifyContent: 'center', marginBottom: '12px' }}>
+                <FiLock size={12} /> Contact Details
+              </div>
+              <div className="tp-lock-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div className="tp-lock-msg" style={{ marginBottom: '16px' }}>Unlock to view direct contact info</div>
+                <button className="tp-unlock-btn" style={{ padding: '8px 16px', borderRadius: '8px' }}>
+                  <FaGem size={12} /> Unlock Profile
+                </button>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+      {/* ── EXPERIENCE TAB ── */}
+      {activeTab === "Experience" && (
+        <div className="tp-tab-pane">
+          <div className="premium-card">
+            <div className="tp-section-heading"><FiTrendingUp size={14} /> Work Experience</div>
+            <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
+              {profileData.workExperience.length > 0 ? (
+                profileData.workExperience.map((job, idx) => (
+                  <div key={idx} className="tp-exp-item">
+                    <div className="tp-exp-icon"><FiBriefcase size={13} /></div>
+                    <div className="tp-exp-body">
+                      <div className="tp-exp-title-row">
+                        <span className="tp-exp-role">{job.role}</span>
+                        <span className="tp-exp-badge">{job.company}</span>
+                      </div>
+                      <div className="tp-exp-period">
+                        <FiCalendar size={11} /> {job.period} &nbsp;•&nbsp; <FiMapPin size={11} /> {job.location}
+                      </div>
+                      <p className="tp-exp-desc">{job.desc}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <NoData text="No work history provided" />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PROJECTS TAB ── */}
+      {activeTab === "Projects" && (
+        <div className="tp-tab-pane">
+          <div className="premium-card">
+            <div className="tp-section-heading"><FiFileText size={14} /> Project Portfolio</div>
+            <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
+              {projectsData.length > 0 ? (
+                projectsData.map((data, idx) => (
+                  <div key={idx} className="tp-exp-item">
+                    <div className="tp-exp-icon"><FiExternalLink size={13} /></div>
+                    <div className="tp-exp-body">
+                      <div className="tp-exp-title-row">
+                        <span className="tp-exp-role">{data.projectName}</span>
+                        <span className="tp-exp-badge secondary">{data.role}</span>
+                      </div>
+                      <div className="tp-exp-period">
+                        <FiCalendar size={11} /> {data.startDate} — {data.endDate}
+                      </div>
+                      <div className="tp-tag-row" style={{ marginTop: '8px', marginBottom: '12px' }}>
+                        {data.skills.map((skill, i) => {
+                          const colors = ["orange", "pink", "purple", "mint", "green"];
+                          const colorClass = colors[i % colors.length];
+                          return (
+                            <span key={i} className={`job-chip ${colorClass}`}>
+                              {skill}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <p className="tp-exp-desc">{data.description}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <NoData text="No projects listed" />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── EDUCATION TAB ── */}
+      {activeTab === "Education" && (
+        <div className="tp-tab-pane">
           <div className="premium-card mb-3">
             <div className="tp-section-heading">Education</div>
             {profileData.education.length > 0 ? (
@@ -394,17 +387,9 @@ const TalentProfile = () => {
               <NoData text="N/A" />
             )}
           </div>
-
-          {/* Contact Locked */}
-          <div className="premium-card mb-3 tp-contact-locked">
-            <div className="tp-section-heading"><FiLock size={12} /> Contact Details</div>
-            <div className="tp-lock-body">
-              <div className="tp-lock-msg">Unlock to view direct contact info</div>
-              <button className="tp-unlock-btn"><FaGem size={12} /> Unlock Profile</button>
-            </div>
-          </div>
-
         </div>
+      )}
+
       </div>
 
       {/* ── NO JOB FOUND MODAL ── */}

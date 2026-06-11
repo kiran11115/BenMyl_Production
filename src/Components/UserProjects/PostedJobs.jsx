@@ -54,18 +54,7 @@ const JobCardItem = ({ job, navigate }) => {
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             {pendingBidsCount > 0 && (
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  background: "#f0f9ff",
-                  color: "#0284c7",
-                  padding: "4px 10px",
-                  borderRadius: "16px",
-                  fontSize: "12px",
-                  fontWeight: "600",
-                  border: "1px solid #bae6fd"
-                }}
+                className="job-chip orange"
                 title="Pending Recruiter Bids"
               >
                 <FiUsers size={14} />
@@ -74,18 +63,7 @@ const JobCardItem = ({ job, navigate }) => {
             )}
             {allShortlisted && (
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  background: "#ecfdf5",
-                  color: "#047857",
-                  padding: "4px 10px",
-                  borderRadius: "16px",
-                  fontSize: "12px",
-                  fontWeight: "600",
-                  border: "1px solid #a7f3d0"
-                }}
+                className="job-chip green"
                 title="All Candidates Shortlisted"
               >
                 Shortlisted

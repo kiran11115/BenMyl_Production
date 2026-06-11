@@ -531,6 +531,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                     job={selectedJob}
                                     isExpanded={true}
                                     onToggle={() => { }}
+                                    hideShare={true}
                                 />
                             )
                             : (

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FiMapPin, FiBriefcase, FiDownload, FiShare2, FiMail, FiPhone, FiLinkedin, FiFileText, FiArrowLeft, FiEdit2, FiSave, FiX, FiPlus, FiArrowRight, FiCalendar, FiUser, FiCheckCircle, FiExternalLink, FiLoader, FiAward, FiBookOpen, FiStar, FiTrendingUp, FiLock, FiClock, FiChevronDown } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiDownload, FiShare2, FiMail, FiPhone, FiLinkedin, FiFileText, FiArrowLeft, FiEdit2, FiSave, FiX, FiPlus, FiArrowRight, FiCalendar, FiUser, FiCheckCircle, FiExternalLink, FiLoader, FiAward, FiBookOpen, FiStar, FiTrendingUp, FiLock, FiClock, FiChevronDown, FiCheck } from "react-icons/fi";
 import { BsDribbble, BsBuilding } from "react-icons/bs";
 import { FaGem } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSli
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
-import EditTalentProfile from "./EditTalentProfile";  
+import EditTalentProfile from "./EditTalentProfile";
 import StatsGrid from "../Dashboard/StatsGrid";
 import { Users, Briefcase } from "lucide-react";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
@@ -46,6 +46,8 @@ const UploadTalentProfile = () => {
   const [portfolioExpanded, setPortfolioExpanded] = useState(false);
   const [skillInput, setSkillInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
+  const [activeTab, setActiveTab] = useState("Recommended Jobs");
+  const tabs = ["Recommended Jobs", "Overview", "Experience", "Projects", "Education"];
   const [addEmployeeProfessionalDetails, { isLoading: isSaving }] = useAddEmployeeProfessionalDetailsMutation();
 
   const [getQueueManagement] = useGetQueueManagementMutation();
@@ -135,7 +137,7 @@ const UploadTalentProfile = () => {
   const profileData = useMemo(() => {
     if (!apiData) return null;
     const payloadCandidate = location.state?.candidate;
-    
+
     return {
       name: `${apiData?.firstName || "N/A"} ${apiData?.lastName || ""}`.trim(),
       role: apiData?.title || "N/A",
@@ -146,7 +148,7 @@ const UploadTalentProfile = () => {
       summary: apiData?.bio || "N/A",
       email: apiData?.emailAddress || "N/A",
       phoneNo: apiData?.phoneNo || "N/A",
-      isshortlisted : apiData?.isshortlisted,
+      isshortlisted: apiData?.isshortlisted,
       skills: apiData?.skills ? apiData?.skills.split(",") : [],
       workExperience: apiData?.workexperiences?.map(w => ({
         role: w.position || "N/A",
@@ -266,88 +268,209 @@ const UploadTalentProfile = () => {
 
   return (
     <div className="ai-dashboard-wrapper">
-      <div className="hero-card mb-4">
-        <div className="hero-left">
-          <div className="hero-pill">✦ Talent Profile</div>
-          <h1 className="job-posting-title text-white">{profileData?.name}</h1>
-          <div className="job-posting-header-info">
-            <p className="job-posting-subtitle">
-              {profileData?.role} &nbsp;•&nbsp; {profileData?.location}
-            </p>
-          </div>
-        </div>
-        <div className="hero-buttons">
-          <button className="routine-btn" onClick={() => {
-            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
-            navigate(targetPath);
-          }}>
-            <FiArrowLeft style={{ marginRight: '6px' }} /> Back
-          </button>
-        </div>
-      </div>
-
-      <div className="premium-card tp-identity-strip mb-4">
-        <div className="tp-avatar-col">
-          {profileData?.profileImage ? (
-            <img src={profileData.profileImage} alt={profileData?.name} className="tp-avatar-sm" />
-          ) : (
-            <div className="tp-avatar-sm tp-avatar-initials">{initials}</div>
-          )}
-        </div>
-        <div className="tp-identity-info">
-          <div className="tp-identity-name">
-            {profileData?.name}
-            <FiCheckCircle size={14} style={{ color: '#10b981', marginLeft: 8 }} />
-          </div>
-          <div className="tp-identity-role">{profileData?.role}</div>
-          <div className="tp-meta-pills">
-            <span className="tp-meta-pill"><FiMapPin size={11} /> {profileData?.location}</span>
-            <span className="tp-meta-pill"><FiBriefcase size={11} /> {profileData?.experience}</span>
-            <span className="tp-meta-pill"><FiAward size={11} /> {profileData?.status}</span>
-            {profileData?.uploadedByName !== "N/A" && (
-              <span className="tp-meta-pill"><FiUser size={11} /> By: {profileData?.uploadedByName}</span>
-            )}
-          </div>
-        </div>
-        <div className="tp-identity-actions" style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <button 
-            className="tp-util-btn" 
-            style={{ background: '#eff6ff', color: '#1e3a8a', borderColor: '#dbeafe' }}
+      {/* ── HERO HEADER CARD (COVER) ── */}
+      <div className="hero-card tp-banner">
+        <button className="routine-btn" onClick={() => {
+          const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+          const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
+          navigate(targetPath);
+        }} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }}>
+          <FiArrowLeft style={{ marginRight: '6px' }} /> Back
+        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            className="routine-btn"
+            style={{ background: '#fff', color: '#1e3a8a', border: 'none', fontWeight: 700 }}
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
               const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-jobs` : `${basePath}/user-jobs`;
               navigate(targetPath, { state: { role: profileData?.role } });
             }}
           >
-            <FiBriefcase size={13} style={{ marginRight: '4px' }} /> Explore Jobs
+            <FiBriefcase size={14} style={{ marginRight: '6px' }} /> Explore Jobs
           </button>
-          <button 
-            className="tp-util-btn"
-            style={{ background: '#5B5BD6', color: '#fff', borderColor: '#5B5BD6' }}
+          <button
+            className="routine-btn"
+            style={{ background: '#5B5BD6', color: '#fff', border: 'none', fontWeight: 700 }}
             onClick={handleEditClick}
           >
-            <FiEdit2 size={13} style={{ marginRight: '4px' }} /> Edit Profile
+            <FiEdit2 size={14} style={{ marginRight: '6px' }} /> Edit Profile
           </button>
         </div>
       </div>
 
-      <div className="tp-content-grid">
-        <div className="tp-col-main">
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading"><FiUser size={13} /> Professional Summary</div>
-            <p className="tp-summary-text">{profileData?.summary}</p>
+      {/* ── MAIN PROFILE OVERLAP CARD ── */}
+      <div className="premium-card tp-main-profile-card">
+        <div className="d-flex align-items-start gap-4">
+          <div className="tp-avatar-wrapper mb-0 mt-1">
+            {profileData?.profileImage ? (
+              <img src={profileData.profileImage} alt={profileData?.name} className="tp-avatar-large" />
+            ) : (
+              <div className="tp-avatar-large tp-avatar-initials-large">{initials}</div>
+            )}
           </div>
 
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading-row">
-              <span className="tp-section-heading"><FiTrendingUp size={13} /> Work Experience</span>
-              <button className="tp-toggle-btn" onClick={() => setExpExpanded(!expExpanded)}>
-                {expExpanded ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: expExpanded ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-              </button>
+          <div style={{ flex: 1 }}>
+            <h1 className="tp-profile-name">
+              {profileData?.name}
+              <FiCheckCircle size={16} className="tp-verified-icon ms-2" />
+            </h1>
+            <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
+              <p className="tp-profile-role mb-0" style={{ color: '#64748b' }}>
+                {profileData?.role} &nbsp;•&nbsp; {profileData?.location} &nbsp;•&nbsp; <FiMail size={12} className="ms-1 me-1" /> {profileData?.email} &nbsp;•&nbsp; <FiPhone size={12} className="ms-1 me-1" /> {profileData?.phoneNo}
+              </p>
+              <div className="tp-meta-pills-row mb-0">
+                <span className="job-chip orange py-1 px-2 gap-2"><FiBriefcase size={12} /> {profileData?.experience}</span>
+                <span className="job-chip purple py-1 px-2 gap-2"><FiAward size={12} /> {profileData?.status}</span>
+                {profileData?.uploadedByName !== "N/A" && (
+                  <span className="job-chip green py-1 px-2 gap-2" style={{ height: 'auto', lineHeight: 1 }}><FiUser size={12} /> By - {profileData?.uploadedByName}</span>
+                )}
+              </div>
             </div>
-            {expExpanded ? (
-              <div className="tp-exp-list">
+            <p className="tp-exp-desc mb-4" style={{ color: '#64748b', maxWidth: '800px', lineHeight: '1.6' }}>
+              {profileData?.summary}
+            </p>
+
+            {/* ── IMAGE-STYLE TABS (Inside Card) ── */}
+            <div className="tp-image-tabs" style={{ flexWrap: 'wrap', overflowX: 'visible', borderTop: 'none', paddingBottom: '0' }}>
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`tp-image-tab ${activeTab === tab ? 'active' : ''}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── MAIN CONTENT ── */}
+      <div className="tp-main-content-wrapper">
+        {/* ── RECOMMENDED JOBS TAB ── */}
+        {activeTab === "Recommended Jobs" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card">
+              <div className="tp-section-heading mb-3 d-flex align-items-center gap-2">
+                <span><FiStar size={13} /> Recommended Jobs</span>
+                <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal', textTransform: 'none', letterSpacing: 'normal' }}>
+                  (Click on card to apply the job)
+                </span>
+              </div>
+              <RecommendedJobs role={profileData?.role} skills={profileData?.skills?.join(",")} employeeId={employeeId} isShortlisted={profileData?.isshortlisted} />
+            </div>
+          </div>
+        )}
+
+        {/* ── OVERVIEW TAB ── */}
+        {activeTab === "Overview" && (
+          <div className="tp-tab-pane">
+            <div className="row g-4">
+
+              {/* DETAILS SECTION */}
+              <div className="col-lg-8">
+                <div className="premium-card h-100">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h6 className="tp-section-heading mb-0 d-flex align-items-center gap-2 text-uppercase" style={{ letterSpacing: '0.5px' }}>
+                      <FiUser size={16} /> Professional Details
+                    </h6>
+                    <button
+                      className="btn-secondary d-flex align-items-center gap-2"
+                      style={{ borderRadius: '8px', fontWeight: '500' }}
+                      onClick={() => setShowEditModal(true)}
+                    >
+                      <FiEdit2 size={12} /> Edit Details
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+
+                    {/* Expected Salary */}
+                    <div className="job-card d-flex flex-column p-3" style={{ minHeight: 'auto', borderRadius: "12px" }}>
+                      <div className="d-flex align-items-center gap-2 text-muted fw-bold small text-uppercase" style={{ letterSpacing: '0.5px' }}>
+                        <span className="d-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning p-1 rounded-2"><FiStar size={14} /></span> Expected Salary
+                      </div>
+                      <div className="fw-bold text-dark mt-auto" style={{ fontSize: '14px' }}>
+                        {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
+                          ? `$${professionalData.expectedSalaryMin.toLocaleString()} - $${professionalData.expectedSalaryMax.toLocaleString()}/yr`
+                          : "Not specified"}
+                      </div>
+                    </div>
+
+
+                    {/* Work Preference */}
+                    <div className="job-card d-flex flex-column p-3" style={{ minHeight: 'auto', borderRadius: "12px" }}>
+                      <div className="d-flex align-items-center gap-2 text-muted fw-bold small text-uppercase" style={{ letterSpacing: '0.5px' }}>
+                        <span className="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary p-1 rounded-2"><FiBriefcase size={14} /></span> Work Preference
+                      </div>
+                      <div className="fw-bold text-dark mt-auto" style={{ fontSize: '14px' }}>
+                        {professionalData?.workPreference || "Not specified"}
+                      </div>
+                    </div>
+
+                    {/* Languages */}
+                    <div className="job-card d-flex flex-column p-3" style={{ minHeight: 'auto', borderRadius: "12px" }}>
+                      <div className="d-flex align-items-center gap-2 text-muted fw-bold small text-uppercase" style={{ letterSpacing: '0.5px' }}>
+                        <span className="d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger p-1 rounded-2"><FiBookOpen size={14} /></span> Languages
+                      </div>
+                      <div className="d-flex flex-wrap gap-2 mt-auto">
+                        {editFormData.languages?.length > 0 ? editFormData.languages.map((lang, index) => (
+                          <span key={`lang-${index}`} className="job-chip orange">{lang}</span>
+                        )) : <span className="text-muted" style={{ fontSize: '14px', fontWeight: '500' }}>Not specified</span>}
+                      </div>
+                    </div>
+
+                    {/* Work Authorization & Employment Type */}
+                    <div className="job-card d-flex flex-column p-3" style={{ minHeight: 'auto', borderRadius: "12px" }}>
+                      <div className="d-flex align-items-center gap-2 text-muted fw-bold small text-uppercase" style={{ letterSpacing: '0.5px' }}>
+                        <span className="d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info p-1 rounded-2"><FiMapPin size={14} /></span> Work Auth & Type
+                      </div>
+                      <div className="d-flex flex-wrap gap-2 mt-auto">
+                        {[professionalData?.isUSCitizen && "US Citizen", professionalData?.isGreenCard && "Green Card", professionalData?.isH1B && "H1B", professionalData?.isEAD && "EAD"].filter(Boolean).map((auth, index) => (
+                          <span key={`auth-${index}`} className="job-chip mint">{auth}</span>
+                        ))}
+                        {[professionalData?.isCorpCorp && "Corp-Corp", professionalData?.isW2Permanent && "W2 Permanent", professionalData?.isW2Contract && "W2 Contract", professionalData?.is1099Contract && "1099 Contract", professionalData?.isContractToHire && "Contract to Hire"].filter(Boolean).map((emp, index) => (
+                          <span key={`emp-${index}`} className="job-chip purple">{emp}</span>
+                        ))}
+                        {(!professionalData?.isUSCitizen && !professionalData?.isGreenCard && !professionalData?.isH1B && !professionalData?.isEAD && !professionalData?.isCorpCorp && !professionalData?.isW2Permanent && !professionalData?.isW2Contract && !professionalData?.is1099Contract && !professionalData?.isContractToHire) && (
+                          <span className="text-muted" style={{ fontSize: '14px', fontWeight: '500' }}>Not specified</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* SKILLS SECTION */}
+              <div className="col-lg-4">
+                <div className="premium-card h-100">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h6 className="tp-section-heading mb-0 d-flex align-items-center gap-2">
+                      <FiStar size={16} /> Technical Expertise
+                    </h6>
+                  </div>
+
+                  <div className="d-flex flex-wrap gap-2 hide-scrollbar" style={{ maxHeight: '100px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {profileData?.skills?.length > 0 ? profileData.skills.map((skill, index) => {
+                      const colors = ["mint", "green", "pink", "purple", "orange"];
+                      return <span key={index} className={`job-chip ${colors[index % colors.length]}`}>{skill.trim()}</span>;
+                    }) : <span className="text-muted" style={{ fontSize: '14px' }}>Not specified</span>}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ── EXPERIENCE TAB ── */}
+        {activeTab === "Experience" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card">
+              <div className="tp-section-heading"><FiTrendingUp size={14} /> Work Experience</div>
+              <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
                 {profileData?.workExperience?.length > 0 ? (
                   profileData.workExperience.map((job, idx) => (
                     <div key={idx} className="tp-exp-item">
@@ -368,43 +491,40 @@ const UploadTalentProfile = () => {
                   <NoData text="No work experience added yet" />
                 )}
               </div>
-            ) : (
-              profileData?.workExperience?.length > 0 ? (
-                <div className="tp-exp-preview">
-                  <span className="tp-exp-role">{profileData.workExperience[0].role}</span>
-                  <span className="tp-exp-badge">{profileData.workExperience[0].company}</span>
-                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
-                    {profileData.workExperience[0].desc.slice(0, 120)}…
-                  </p>
-                </div>
-              ) : <NoData text="No experience added" />
-            )}
-          </div>
-
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading-row" style={{ borderBottom: 'none', marginBottom: 0 }}>
-              <span className="tp-section-heading" style={{ borderBottom: 'none', margin: 0, padding: 0 }}><FiFileText size={13} /> Project Portfolio ({profileData?.portfolio?.length || 0})</span>
-              <button className="tp-toggle-btn" onClick={() => setPortfolioExpanded(!portfolioExpanded)}>
-                {portfolioExpanded ? "Show Less" : "View All"} <FiChevronDown size={12} style={{ transform: portfolioExpanded ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
-              </button>
             </div>
-            
-            {portfolioExpanded ? (
-              <div className="tp-portfolio-grid mt-3">
+          </div>
+        )}
+
+        {/* ── PROJECTS TAB ── */}
+        {activeTab === "Projects" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card">
+              <div className="tp-section-heading"><FiFileText size={14} /> Project Portfolio</div>
+              <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
                 {profileData?.portfolio?.length > 0 ? (
                   profileData.portfolio.map((item, idx) => (
-                    <div key={idx} className="tp-port-card">
-                      <div className="tp-port-info">
-                        <h4 className="tp-port-title">{item.title}</h4>
-                        <div className="tp-exp-period mb-2">
+                    <div key={idx} className="tp-exp-item">
+                      <div className="tp-exp-icon"><FiExternalLink size={13} /></div>
+                      <div className="tp-exp-body">
+                        <div className="tp-exp-title-row">
+                          <span className="tp-exp-role">{item.title}</span>
+                          <span className="tp-exp-badge secondary">{item.role}</span>
+                        </div>
+                        <div className="tp-exp-period">
                           <FiCalendar size={11} /> {item.period}
                         </div>
-                        <p className="tp-exp-desc mb-2">{item.description}</p>
-                        <div className="tp-tag-row" style={{ marginBottom: 0 }}>
-                          {item.tags?.map((tag, tIdx) => (
-                            <span key={tIdx} className="tp-tag">{tag}</span>
-                          ))}
+                        <div className="tp-tag-row" style={{ marginTop: '8px', marginBottom: '12px' }}>
+                          {item.tags?.map((tag, i) => {
+                            const colors = ["orange", "pink", "purple", "mint", "green"];
+                            const colorClass = colors[i % colors.length];
+                            return (
+                              <span key={i} className={`job-chip ${colorClass}`}>
+                                {tag}
+                              </span>
+                            );
+                          })}
                         </div>
+                        <p className="tp-exp-desc">{item.description}</p>
                       </div>
                     </div>
                   ))
@@ -412,116 +532,29 @@ const UploadTalentProfile = () => {
                   <NoData text="No projects added yet" />
                 )}
               </div>
-            ) : (
-              profileData?.portfolio?.length > 0 ? (
-                <div className="tp-exp-preview mt-3">
-                  <span className="tp-exp-role">{profileData.portfolio[0].title}</span>
-                  <p className="tp-exp-desc" style={{ marginTop: 6 }}>
-                    {profileData.portfolio[0].description.slice(0, 120)}…
-                  </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── EDUCATION TAB ── */}
+        {activeTab === "Education" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card mb-3">
+              <div className="tp-section-heading">Education</div>
+              {profileData?.education?.length > 0 ? profileData.education.map((edu, index) => (
+                <div key={index} className="tp-info-row" style={{ marginBottom: 12 }}>
+                  <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}><FiBookOpen size={13} /></div>
+                  <div>
+                    <div className="tp-info-value">{edu.degree}{edu.field && ` in ${edu.field}`}</div>
+                    <div className="tp-info-label">{edu.school}</div>
+                    <div className="tp-info-label" style={{ marginTop: 2 }}>{edu.year}</div>
+                  </div>
                 </div>
-              ) : <NoData text="No projects added" />
-            )}
-          </div>
-
-          <div className="premium-card">
-            <div className="tp-section-heading mb-3"><FiStar size={13} /> Recommended Jobs</div>
-            <RecommendedJobs role={profileData?.role} skills={profileData?.skills} employeeId={employeeId} isShortlisted={profileData?.isshortlisted} />
-          </div>
-        </div>
-
-        <div className="tp-col-side">
-
-          <div className="premium-card mb-3">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="tp-section-heading mb-0" style={{ borderBottom: 'none', paddingBottom: 0 }}>Quick Information</div>
-              <button className="tp-util-btn" style={{ padding: "4px 8px", fontSize: "11px" }} onClick={() => setShowEditModal(true)}>
-                <FiEdit2 size={11} style={{ marginRight: '4px' }} /> Edit
-              </button>
-            </div>
-            
-            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
-              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
-                <FiStar size={14} />
-              </div>
-              <div>
-                <div className="tp-quick-lbl">Expected Salary</div>
-                <div className="tp-quick-val">
-                  {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
-                    ? `$${professionalData.expectedSalaryMin.toLocaleString()} - $${professionalData.expectedSalaryMax.toLocaleString()} / year`
-                    : "Not specified"}
-                </div>
-              </div>
-            </div>
-            
-            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
-              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
-                <FiBriefcase size={14} />
-              </div>
-              <div>
-                <div className="tp-quick-lbl">Work Preference</div>
-                <div className="tp-quick-val">{professionalData?.workPreference || "Not specified"}</div>
-              </div>
-            </div>
-            
-            <div className="tp-info-row" style={{ marginBottom: '16px' }}>
-              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
-                <FiMapPin size={14} />
-              </div>
-              <div>
-                <div className="tp-quick-lbl">Work Authorization</div>
-                <div className="tp-tag-row mt-1">
-                  {[professionalData?.isUSCitizen && "US Citizen", professionalData?.isGreenCard && "Green Card", professionalData?.isH1B && "H1B", professionalData?.isEAD && "EAD"].filter(Boolean).map((auth, index) => (
-                    <span key={index} className="tp-tag">{auth}</span>
-                  )) || <span className="tp-quick-val text-muted">Not specified</span>}
-                </div>
-              </div>
-            </div>
-            
-            <div className="tp-info-row">
-              <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
-                <FiBriefcase size={14} />
-              </div>
-              <div>
-                <div className="tp-quick-lbl">Preferred Employment</div>
-                <div className="tp-tag-row mt-1">
-                  {[professionalData?.isCorpCorp && "Corp-Corp", professionalData?.isW2Permanent && "W2 Permanent", professionalData?.isW2Contract && "W2 Contract", professionalData?.is1099Contract && "1099 Contract", professionalData?.isContractToHire && "Contract to Hire"].filter(Boolean).map((emp, index) => (
-                    <span key={index} className="tp-tag" style={{ background: '#eff6ff', color: '#2563eb', borderColor: '#dbeafe' }}>{emp}</span>
-                  )) || <span className="tp-quick-val text-muted">Not specified</span>}
-                </div>
-              </div>
+              )) : <NoData text="No education details" />}
             </div>
           </div>
+        )}
 
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Expertise</div>
-            <div className="tp-tag-row">
-              {profileData?.skills?.length > 0 ? profileData.skills.map((skill, idx) => <span key={idx} className="tp-tag">{skill.trim()}</span>) : <NoData text="No skills added" />}
-            </div>
-          </div>
-
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Contact Information</div>
-            <div className="tp-contact-list">
-              <div className="tp-contact-item"><FiMail /> <span style={{ wordBreak: 'break-all' }}>{profileData?.email}</span></div>
-              <div className="tp-contact-item"><FiPhone /> {profileData?.phoneNo}</div>
-            </div>
-          </div>
-
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Education</div>
-            {profileData?.education?.length > 0 ? profileData.education.map((edu, index) => (
-              <div key={index} className="tp-info-row" style={{ marginBottom: 12 }}>
-                <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}><FiBookOpen size={13} /></div>
-                <div>
-                  <div className="tp-info-value">{edu.degree}{edu.field && ` in ${edu.field}`}</div>
-                  <div className="tp-info-label">{edu.school}</div>
-                  <div className="tp-info-label" style={{ marginTop: 2 }}>{edu.year}</div>
-                </div>
-              </div>
-            )) : <NoData text="No education details" />}
-          </div>
-        </div>
       </div>
 
       {showEditModal && (
@@ -530,13 +563,9 @@ const UploadTalentProfile = () => {
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(15, 23, 42, 0.65)",
+            backgroundColor: "rgba(15, 23, 42, 0.4)",
             backdropFilter: "blur(4px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             zIndex: 10000,
-            padding: "20px",
             animation: "fadeIn 0.3s ease-out"
           }}
           onClick={handleCloseModal}
@@ -544,133 +573,145 @@ const UploadTalentProfile = () => {
           <div
             className="ut-modal-content"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "20px",
+              position: "absolute",
+              right: 0,
+              top: 0,
+              bottom: 0,
               width: "100%",
-              maxWidth: "600px",
-              maxHeight: "90vh",
-              overflow: "hidden",
-              boxShadow: "0 20px 40px -10px rgba(91, 91, 214, 0.15)",
+              maxWidth: "550px",
+              backgroundColor: "#ffffff",
+              boxShadow: "-10px 0 40px rgba(0, 0, 0, 0.1)",
               display: "flex",
               flexDirection: "column",
-              animation: "slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
-              position: "relative"
+              animation: "slideInRightDrawer 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div style={{ padding: "24px 32px", position: "relative", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
-              <button
-                onClick={handleCloseModal}
-                style={{
-                  position: "absolute",
-                  top: "24px",
-                  right: "24px",
-                  padding: "8px",
-                  borderRadius: "50%",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  color: "#64748b",
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                <FiX size={20} />
-              </button>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  background: "rgba(91,91,214,0.08)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#5B5BD6"
-                }}>
+            <div style={{ padding: "24px 32px", borderBottom: "1px solid #f1f5f9", background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "rgba(91,91,214,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#5B5BD6" }}>
                   <FiEdit2 size={20} />
                 </div>
-                <h2 style={{ fontSize: "18px", fontWeight: "700", color: "#0f172a", margin: 0 }}>
-                  Edit Profile Information
-                </h2>
+                <div>
+                  <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#0f172a", margin: 0 }}>Edit Details</h2>
+                  <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 0 0" }}>Update professional information</p>
+                </div>
               </div>
+              <button onClick={handleCloseModal} style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', backgroundColor: '#f1f5f9', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
+                <FiX size={18} />
+              </button>
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: "32px", overflowY: "auto", flex: 1 }}>
-              <div className="edit-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Expected Salary Range</label>
-                  <div className="salary-inputs" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <input type="number" name="expectedSalaryMin" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Min" value={editFormData.expectedSalaryMin} onChange={handleInputChange} />
-                    <span style={{ color: '#94a3b8', fontSize: '14px' }}>to</span>
-                    <input type="number" name="expectedSalaryMax" className="auth-input" style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Max" value={editFormData.expectedSalaryMax} onChange={handleInputChange} />
-                    <select className="auth-input" name="salaryCurrency" style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', width: '90px', outline: 'none' }} value={editFormData.salaryCurrency} onChange={handleInputChange}>
+            <div style={{ padding: "28px 32px", overflowY: "auto", flex: 1, backgroundColor: "#ffffff" }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                {/* Salary */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: '#1e293b' }}>Expected Salary Range</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: '14px', zIndex: 1 }}>$</span>
+                      <input type="number" name="expectedSalaryMin" className="auth-input" style={{ paddingLeft: '28px' }} placeholder="Min" value={editFormData.expectedSalaryMin} onChange={handleInputChange} />
+                    </div>
+                    <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: '500' }}>to</span>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: '14px', zIndex: 1 }}>$</span>
+                      <input type="number" name="expectedSalaryMax" className="auth-input" style={{ paddingLeft: '28px' }} placeholder="Max" value={editFormData.expectedSalaryMax} onChange={handleInputChange} />
+                    </div>
+                    <select className="auth-input" name="salaryCurrency" style={{ width: '90px', cursor: 'pointer' }} value={editFormData.salaryCurrency} onChange={handleInputChange}>
                       <option value="USD">USD</option>
                       <option value="EUR">EUR</option>
                       <option value="INR">INR</option>
                     </select>
                   </div>
                 </div>
+                <div className="d-flex justify-content-between gap-3">
+                  {/* Work Preference */}
+                  <div className="w-100">
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: '#1e293b' }}>Work Preference</label>
+                    <select name="workPreference" className="auth-input w-100" style={{ cursor: 'pointer' }} value={editFormData.workPreference} onChange={handleInputChange}>
+                      <option value="">Select preference</option>
+                      <option value="Full Time">Full Time</option>
+                      <option value="Part Time">Part Time</option>
+                      <option value="Contract">Contract</option>
+                    </select>
+                  </div>
 
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Work Preference</label>
-                  <select name="workPreference" className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} value={editFormData.workPreference} onChange={handleInputChange}>
-                    <option value="">Select preference</option>
-                    <option value="Full Time">Full Time</option>
-                    <option value="Part Time">Part Time</option>
-                    <option value="Contract">Contract</option>
-                  </select>
+                  {/* Languages */}
+                  <div className="w-100">
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '600', color: '#1e293b' }}>Languages</label>
+                    <input className="auth-input w-100" placeholder="Add language (press Enter)..." value={languageInput} onChange={(e) => setLanguageInput(e.target.value)} onKeyDown={handleAddLanguage} />
+                    <div className="d-flex flex-wrap gap-2 mt-3">
+                      {editFormData.languages?.map(lang => (
+                        <span key={lang} className="job-chip pink" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          {lang}
+                          <FiX size={12} style={{ cursor: 'pointer', opacity: 0.7 }} onClick={() => removeLanguage(lang)} />
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-
-                <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Languages</label>
-                  <input className="auth-input" style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b', outline: 'none' }} placeholder="Add language (press Enter)..." value={languageInput} onChange={(e) => setLanguageInput(e.target.value)} onKeyDown={handleAddLanguage} />
-                  <div className="d-flex flex-wrap gap-2 mt-2">
-                    {editFormData.languages?.map(lang => (
-                      <span key={lang} className="tp-tag" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f1f5f9' }}>
-                        {lang} 
-                        <FiX size={12} style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={() => removeLanguage(lang)} />
-                      </span>
-                    ))}
+                {/* Work Auth */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '10px', fontSize: '12px', fontWeight: '600', color: '#1e293b' }}>Work Authorization</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                    {["US Citizen", "Green Card", "H1B", "EAD"].map(opt => {
+                      const isChecked = editFormData.workAuthorization.includes(opt);
+                      return (
+                        <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '10px 14px', background: isChecked ? '#f5f3ff' : '#ffffff', border: `1px solid ${isChecked ? '#7c3aed' : '#e2e8f0'}`, borderRadius: '12px', transition: 'all 0.2s', boxShadow: isChecked ? '0 2px 8px rgba(124, 58, 237, 0.1)' : 'none' }}>
+                          <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: `2px solid ${isChecked ? '#7c3aed' : '#cbd5e1'}`, background: isChecked ? '#7c3aed' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                            {isChecked && <FiCheck size={12} color="#fff" strokeWidth={3} />}
+                          </div>
+                          <input type="checkbox" style={{ display: 'none' }} checked={isChecked} onChange={() => handleWorkAuthChange(opt)} />
+                          <span style={{ fontSize: '11px', color: isChecked ? '#4c1d95' : '#475569', fontWeight: '500' }}>{opt}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div style={{ gridColumn: 'span 1' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Work Authorization</label>
-                  {["US Citizen", "Green Card", "H1B", "EAD"].map(opt => (
-                    <div key={opt} className="d-flex align-items-center gap-2 mb-2">
-                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#5B5BD6' }} checked={editFormData.workAuthorization.includes(opt)} onChange={() => handleWorkAuthChange(opt)} />
-                      <label className="mb-0" style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{opt}</label>
-                    </div>
-                  ))}
+                {/* Employment Type */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '10px', fontSize: '12px', fontWeight: '600', color: '#1e293b' }}>Employment Type</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                    {["Corp-Corp", "W2 Permanent", "W2 Contract", "1099 Contract"].map(opt => {
+                      const isChecked = editFormData.preferredEmployment.includes(opt);
+                      return (
+                        <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '10px 14px', background: isChecked ? '#f5f3ff' : '#ffffff', border: `1px solid ${isChecked ? '#7c3aed' : '#e2e8f0'}`, borderRadius: '12px', transition: 'all 0.2s', boxShadow: isChecked ? '0 2px 8px rgba(124, 58, 237, 0.1)' : 'none' }}>
+                          <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: `2px solid ${isChecked ? '#7c3aed' : '#cbd5e1'}`, background: isChecked ? '#7c3aed' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                            {isChecked && <FiCheck size={12} color="#fff" strokeWidth={3} />}
+                          </div>
+                          <input type="checkbox" style={{ display: 'none' }} checked={isChecked} onChange={() => handleEmploymentChange(opt)} />
+                          <span style={{ fontSize: '11px', color: isChecked ? '#4c1d95' : '#475569', fontWeight: '500' }}>{opt}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div style={{ gridColumn: 'span 1' }}>
-                  <label className="auth-label" style={{ display: 'block', marginBottom: '12px', fontSize: '13px', fontWeight: '600', color: '#475569' }}>Employment Type</label>
-                  {["Corp-Corp", "W2 Permanent", "W2 Contract", "1099 Contract"].map(opt => (
-                    <div key={opt} className="d-flex align-items-center gap-2 mb-2">
-                      <input type="checkbox" style={{ width: '16px', height: '16px', accentColor: '#5B5BD6' }} checked={editFormData.preferredEmployment.includes(opt)} onChange={() => handleEmploymentChange(opt)} />
-                      <label className="mb-0" style={{ fontSize: '13px', color: '#475569', fontWeight: '500' }}>{opt}</label>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: "16px 32px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "flex-end", gap: "12px", backgroundColor: "#fff" }}>
+            <div style={{ padding: "20px 32px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "flex-end", gap: "12px", backgroundColor: "#ffffff" }}>
               <button
                 onClick={handleCloseModal}
-                style={{ padding: "8px 20px", backgroundColor: "#ffffff", color: "#475569", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px", fontWeight: "600", cursor: "pointer", transition: "0.2s" }}
+                style={{ padding: "10px 24px", backgroundColor: "#f8fafc", color: "#475569", border: "1px solid #e2e8f0", borderRadius: "10px", fontSize: "14px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                style={{ padding: "8px 24px", background: "linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)", color: "#ffffff", border: "none", borderRadius: "8px", fontSize: "13px", fontWeight: "600", cursor: "pointer", boxShadow: "0 4px 12px rgba(91, 91, 214, 0.2)", transition: "0.2s" }}
+                disabled={isSaving}
+                style={{ padding: "10px 28px", background: "linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)", color: "#ffffff", border: "none", borderRadius: "10px", fontSize: "14px", fontWeight: "600", cursor: isSaving ? "not-allowed" : "pointer", boxShadow: "0 4px 12px rgba(91, 91, 214, 0.25)", transition: "all 0.2s", display: "flex", alignItems: "center", opacity: isSaving ? 0.8 : 1 }}
               >
-                <FiSave style={{ marginRight: '6px' }} /> Save Changes
+                {isSaving ? (
+                  <><FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} size={16} /> Saving...</>
+                ) : (
+                  <><FiSave style={{ marginRight: '8px' }} size={16} /> Save Changes</>
+                )}
               </button>
             </div>
           </div>

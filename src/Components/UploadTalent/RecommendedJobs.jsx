@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FiMapPin, FiClock, FiArrowRight, FiLoader, FiDollarSign, FiBriefcase, FiPlus } from "react-icons/fi";
+import { FiMapPin, FiClock, FiArrowRight, FiLoader, FiDollarSign, FiBriefcase, FiPlus, FiEye } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useGetRecommendJobsListMutation } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -145,100 +145,100 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
       <div className="tp-scrollable-area grid-view" style={{ 
         padding: 0,
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '1.5rem'
       }}>
         {firstThreeJobs.map((job) => (
-          <div key={job.id} className="candidate-card">
-            <div className="d-flex flex-column gap-3">
-              {/* Header: Company Avatar + Title */}
-              <div className="card-header">
-                <div className="avatar-initials-premium">
-                    {getInitials(job.company)}
+          <div
+            key={job.id}
+            onClick={() => setSelectedJob(job)}
+            className="job-card d-flex flex-column"
+            style={{ cursor: "pointer" }}
+          >
+            {/* TOP */}
+            <div className="job-card-header">
+              <div className="job-header-left">
+                <div className="job-company-logo">
+                  {getInitials(job.company)}
                 </div>
-                <div className="header-info flex-column gap-0 align-items-start">
-                  <div className="name-row w-100">
-                    <h4 className="name" title={job.title}>{job.title}</h4>
-                  </div>
-                  <div className="role" style={{ color: '#5b5bd6', fontWeight: '600' }}>
-                    {job.company}
-                  </div>
-                  {/* Department badge */}
-                  {job.department && (
-                    <span style={{
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      color: 'var(--slate-500)',
-                      background: 'var(--slate-100)',
-                      padding: '2px 8px',
-                      borderRadius: '6px',
-                      marginTop: '4px',
-                      display: 'inline-block',
-                    }}>
-                      {job.department}
-                    </span>
-                  )}
+
+                <div className="job-header-info">
+                  <h3 className="job-title" title={job.title}>{job.title}</h3>
+                  <p className="company-name">{job.company}</p>
                 </div>
               </div>
 
-              {/* Meta Info: Salary, Exp Level, Location, Work Model */}
-              <div className="meta-info">
-                <div className="meta-item">
-                  <FiDollarSign size={14} />
-                  <span>{job.rateText}{job.salaryType ? ` ${job.salaryType}` : ''}</span>
-                </div>
-                <div className="meta-item">
-                  <FiBriefcase size={14} />
-                  <span>{job.experienceText}{job.yearsOfExperience ? ` · ${job.yearsOfExperience}yr` : ''}</span>
-                </div>
-                <div className="meta-item">
-                  <FiMapPin size={14} />
-                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{job.location}</span>
-                </div>
-                <div className="meta-item">
-                  <FiClock size={14} />
-                  <span>{job.workModel || job.type}</span>
-                </div>
-              </div>
-
-              {/* Skills Tags */}
-              <div className="tags-section">
-                <div className="tags-group">
-                  {job.skills?.slice(0, 3).map((skill) => (
-                    <span key={skill} className="tag-pill skill">
-                      {skill}
-                    </span>
-                  ))}
-                  {job.skills?.length > 3 && (
-                    <span className="tag-pill skill" style={{ color: 'var(--slate-400)' }}>
-                      +{job.skills.length - 3}
-                    </span>
-                  )}
-                </div>
+              <div className="job-eye-icon">
+                <FiEye size={22} />
               </div>
             </div>
 
-            {/* Action Button */}
-            <div className="mt-auto">
-              <button
-                className="btn-primary w-100"
-                onClick={() => handleAddTalentClick(job)}
-              >
-                <FiPlus size={16} /> Apply
-              </button>
+            {/* TAGS */}
+            <div className="job-tags-row">
+              {job.experienceText && job.experienceText !== "N/A" && (
+                <span className="job-chip purple">
+                  {job.experienceText}
+                </span>
+              )}
+              {job.workModel && job.workModel !== "N/A" && (
+                <span className="job-chip green">
+                  {job.workModel}
+                </span>
+              )}
+              {job.type && job.type !== "N/A" && (
+                <span className="job-chip mint">
+                  {job.type.length > 15 ? `${job.type.slice(0, 15)}...` : job.type}
+                </span>
+              )}
+            </div>
+
+            {/* DESC */}
+            <p className="job-description">
+              {job.description ? job.description.replace(/\*\*/g, "") : "No description provided."}
+            </p>
+
+            {/* FOOTER */}
+            <div className="job-card-footer mt-auto pt-3">
+              <div className="job-rate">
+                {job.rateText}
+                <span className="job-rate-unit">
+                  {job.salaryType ? ` ${job.salaryType}` : ""}
+                </span>
+              </div>
+
+              <div className="meta-pill">
+                <FiMapPin size={12} />
+                <span
+                  title={job.location}
+                  style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}
+                >
+                  {job.location ? job.location.split(',')[0].trim() : "N/A"}
+                </span>
+              </div>
             </div>
           </div>
         ))}
 
         {allJobs.length > 3 && (
-          <div className="tp-item-card" style={{ borderStyle: 'dashed', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '280px' }}>
-            <div className="tp-card-body text-center">
-              <div className="tp-timeline-icon mx-auto mb-3" style={{ background: '#f5f3ff', color: '#7c3aed', width: '56px', height: '56px' }}>
-                 <FiArrowRight size={28} />
-              </div>
-              <h4 className="mb-2" style={{ fontWeight: '700' }}>View All Opportunities</h4>
-              <p className="text-muted small mb-4">Discover more jobs matching your expertise</p>
-              <button className="btn-secondary w-100" onClick={handleViewMoreJobs} style={{ borderRadius: '10px', padding: '10px' }}>
+          <div 
+            className="job-card d-flex flex-column align-items-center justify-content-center text-center" 
+            style={{ cursor: 'pointer', border: '2px dashed #cbd5e1', background: '#f8fafc', boxShadow: 'none' }} 
+            onClick={handleViewMoreJobs}
+          >
+            <div className="mx-auto" style={{ background: '#f5f3ff', color: '#7c3aed', width: '56px', height: '56px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+               <FiArrowRight size={28} />
+            </div>
+            <h3 className="job-title mb-2">View All Opportunities</h3>
+            <p className="company-name mb-4">Discover more jobs matching your expertise</p>
+            <div className="mt-auto w-100 pt-3">
+              <button 
+                className="btn-secondary w-100" 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  handleViewMoreJobs(); 
+                }} 
+                style={{ borderRadius: '8px', padding: '8px 0' }}
+              >
                 Explore More Jobs
               </button>
             </div>

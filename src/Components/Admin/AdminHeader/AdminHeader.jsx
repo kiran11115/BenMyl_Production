@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight } from "lucide-react";
 import "./AdminHeader.css";
 import Notifications from "../../Header/Notifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
@@ -319,7 +319,7 @@ function AdminHeader() {
                         <div className="routine-header">
 
                             <div className="routine-title">
-
+                                <Zap size={18} className="icon-pulse-anim" />
                                 <span>
                                     QUICK LAUNCH
                                 </span>
@@ -359,16 +359,19 @@ function AdminHeader() {
                                 }}
                             >
 
-                                <div className="routine-icon">
-                                    <File size={18} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                    <div className="routine-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                                        <File size={18} />
+                                    </div>
+                                    <div className="routine-arrow"><ArrowRight size={16} /></div>
                                 </div>
 
-                                <h4>Create Job</h4>
+                                <h4 style={{ position: 'relative', zIndex: 1 }}>Create Job</h4>
 
                                 <span>
                                     Create hiring requirements.
                                 </span>
-
+                                <div className="routine-bg-icon" style={{ color: '#3b82f6' }}><File size={80} /></div>
                             </div>
 
                             {/* UPLOAD TALENT */}
@@ -383,16 +386,19 @@ function AdminHeader() {
                                 }}
                             >
 
-                                <div className="routine-icon">
-                                    <Users size={18} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                    <div className="routine-icon" style={{ background: '#f5f3ff', color: '#8b5cf6' }}>
+                                        <Users size={18} />
+                                    </div>
+                                    <div className="routine-arrow"><ArrowRight size={16} /></div>
                                 </div>
 
-                                <h4>Upload Talent</h4>
+                                <h4 style={{ position: 'relative', zIndex: 1 }}>Upload Talent</h4>
 
                                 <span>
                                     AI parser candidate upload.
                                 </span>
-
+                                <div className="routine-bg-icon" style={{ color: '#8b5cf6' }}><Users size={80} /></div>
                             </div>
 
                             {/* CONTRACT */}
@@ -407,16 +413,19 @@ function AdminHeader() {
                                 }}
                             >
 
-                                <div className="routine-icon">
-                                    <Users size={18} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                    <div className="routine-icon" style={{ background: '#ecfdf5', color: '#10b981' }}>
+                                        <Users size={18} />
+                                    </div>
+                                    <div className="routine-arrow"><ArrowRight size={16} /></div>
                                 </div>
 
-                                <h4>Create Contract</h4>
+                                <h4 style={{ position: 'relative', zIndex: 1 }}>Create Contract</h4>
 
                                 <span>
                                     Manage contract listings.
                                 </span>
-
+                                <div className="routine-bg-icon" style={{ color: '#10b981' }}><Users size={80} /></div>
                             </div>
 
                             {/* INTERVIEW */}
@@ -431,16 +440,19 @@ function AdminHeader() {
                                 }}
                             >
 
-                                <div className="routine-icon">
-                                    <Bell size={16} />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                    <div className="routine-icon" style={{ background: '#fff7ed', color: '#f97316' }}>
+                                        <Bell size={18} />
+                                    </div>
+                                    <div className="routine-arrow"><ArrowRight size={16} /></div>
                                 </div>
 
-                                <h4>Schedule Interview</h4>
+                                <h4 style={{ position: 'relative', zIndex: 1 }}>Schedule Interview</h4>
 
                                 <span>
                                     Coordinate interview flow
                                 </span>
-
+                                <div className="routine-bg-icon" style={{ color: '#f97316' }}><Bell size={80} /></div>
                             </div>
 
                         </div>

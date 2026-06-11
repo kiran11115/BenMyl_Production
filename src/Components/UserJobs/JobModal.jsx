@@ -8,9 +8,12 @@ import {
   FiBriefcase,
   FiBook,
   FiAward,
-  FiInfo
+  FiInfo,
+  FiLoader,
+  FiEye
 } from "react-icons/fi";
 import { useGetEmployeesByTitleQuery, usePlaceBidMutation } from "../../State-Management/Api/ProjectApiSlice";
+import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { useNavigate } from "react-router-dom";
 import { CustomAlert } from "../Common/CustomAlert";
 
@@ -124,93 +127,8 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         </button>
 
         <div className="modal-inner">
-          {/* LEFT: Project Overview */}
-          <div className="modal-left">
-            <div className="modal-header-section">
-              <div className="d-flex align-items-center gap-3">
-                <div className="modal-icon-badge">
-                  <FiBriefcase />
-                </div>
-                <div>
-                  <h2 className="modal-title">Job Details</h2>
-                  <p className="muted small">Review requirements and budget for {job.company}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="job-details-content">
-              <div className="job-main-info-card">
-                <div className="job-title-row">
-                  <h3>{job.title}</h3>
-                  <span className="type-badge">{job.type}</span>
-                </div>
-
-                <div className="job-meta-grid-modern">
-                  <div className="meta-card">
-                    <FiDollarSign className="meta-icon orange" />
-                    <div className="meta-text">
-                      <span className="label">Budget Rate</span>
-                      <span className="value">{job.rateText} {job.salaryType}</span>
-                    </div>
-                  </div>
-                  <div className="meta-card">
-                    <FiAward className="meta-icon blue" />
-                    <div className="meta-text">
-                      <span className="label">Experience</span>
-                      <span className="value">{job.experienceText}</span>
-                    </div>
-                  </div>
-                  <div className="meta-card">
-                    <FiBook className="meta-icon purple" />
-                    <div className="meta-text">
-                      <span className="label">Education</span>
-                      <span className="value">{job.educationLevel || "N/A"}</span>
-                    </div>
-                  </div>
-                  <div className="meta-card">
-                    <FiClock className="meta-icon green" />
-                    <div className="meta-text">
-                      <span className="label">Duration</span>
-                      <span className="value">{job.jobDuration === '0' ? 'Ongoing' : `${job.jobDuration} mo`}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="job-description-section">
-                  <h4><FiInfo /> Description</h4>
-                  <div 
-                    className="description-text"
-                    dangerouslySetInnerHTML={{ __html: formatMarkdownToHtml(job.description) }}
-                  />
-                </div>
-
-                {job.skills?.length > 0 && (
-                  <div className="job-skills-section">
-                    <h4>Skills Required</h4>
-                    <div className="skills-cloud">
-                      {job.skills.map(skill => (
-                        <span key={skill} className="skill-tag">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="notes-section">
-                <label className="desc-label">Internal Notes</label>
-                <textarea
-                  className="desc-textarea"
-                  placeholder="Add specific requirements or notes for this allocation..."
-                  value={customNote}
-                  onChange={(e) => setCustomNote(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT: Talent Selection */}
-          <aside className="modal-right">
+          {/* LEFT: Talent Selection */}
+          <aside className="modal-left">
             <div className="selection-header">
               <h4 className="selection-title">Select Talent</h4>
               <span className="count-badge">{selectedTalents.length} Selected</span>
@@ -227,49 +145,87 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
               ) : normalizedTalents.length === 0 ? (
                 <div className="empty-state">No talents matching this role</div>
               ) : (
-                <div className="talent-list">
-                  {normalizedTalents.map((talent) => {
-                    const isSelected = selectedTalents.includes(talent.id);
-                    return (
-                      <div 
-                        key={talent.id} 
-                        className={`talent-card-row selectable ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleToggleTalent(talent.id)}
-                      >
-                        <div className="selection-indicator">
-                          {isSelected ? <FiCheck /> : null}
-                        </div>
-
-                        <div className="initial-avatar">
-                          {talent.avatar ? (
-                            <img src={talent.avatar} alt={talent.name} />
-                          ) : (
-                            getInitials(talent.name)
-                          )}
-                        </div>
-
-                        <div className="t-info">
-                          <div className="t-header">
-                            <span className="t-name">{talent.name}</span>
-                          </div>
-                          <div className="t-role">{talent.role}</div>
-                        </div>
-
-                        <button 
-                          className="t-view-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                            navigate(`${basePath}/talent-profile`, {
-                              state: { employeeId: talent.id, jobId: job.id },
-                            });
-                          }}
+                <div className="talent-list d-flex flex-column gap-3">
+                  {/* Selected Candidates */}
+                  {normalizedTalents.filter(t => selectedTalents.includes(t.id)).length > 0 && (
+                    <div className="talent-group">
+                      <h5 style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.05em' }}>Selected Candidates</h5>
+                      {normalizedTalents.filter(t => selectedTalents.includes(t.id)).map(talent => (
+                        <div 
+                          key={talent.id} 
+                          className="talent-card-row selectable selected"
+                          onClick={() => handleToggleTalent(talent.id)}
                         >
-                          View
-                        </button>
-                      </div>
-                    );
-                  })}
+                          <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid #7c3aed', background: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(124, 58, 237, 0.2)' }}>
+                            <FiCheck size={12} color="#fff" strokeWidth={3} />
+                          </div>
+
+                          <div className="initial-avatar">
+                            {talent.avatar ? (
+                              <img src={talent.avatar} alt={talent.name} />
+                            ) : (
+                              getInitials(talent.name)
+                            )}
+                          </div>
+
+                          <div className="t-info">
+                            <div className="t-header">
+                              <span className="t-name">{talent.name}</span>
+                            </div>
+                            <div className="t-role">{talent.role}</div>
+                          </div>
+
+
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Recommended Candidates */}
+                  {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).length > 0 && (
+                    <div className="talent-group">
+                      <h5 style={{ fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', marginBottom: '12px', marginTop: '8px', letterSpacing: '0.05em' }}>Also Recommended Candidates</h5>
+                      {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).map(talent => (
+                        <div 
+                          key={talent.id} 
+                          className="talent-card-row selectable"
+                          onClick={() => handleToggleTalent(talent.id)}
+                        >
+                          <div style={{ width: '20px', height: '20px', borderRadius: '6px', border: '2px solid #cbd5e1', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
+                          </div>
+
+                          <div className="initial-avatar">
+                            {talent.avatar ? (
+                              <img src={talent.avatar} alt={talent.name} />
+                            ) : (
+                              getInitials(talent.name)
+                            )}
+                          </div>
+
+                          <div className="t-info">
+                            <div className="t-header">
+                              <span className="t-name">{talent.name}</span>
+                            </div>
+                            <div className="t-role">{talent.role}</div>
+                          </div>
+
+                          <button 
+                            className="t-view-btn"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                              navigate(`${basePath}/talent-profile`, {
+                                state: { employeeId: talent.id, jobId: job.id },
+                              });
+                            }}
+                          >
+                            <FiEye size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -282,11 +238,19 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
                 className="btn-primary" 
                 onClick={handleDone}
                 disabled={isSubmitting || selectedTalents.length === 0}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
               >
-                {isSubmitting ? "Processing..." : "Place Bid"}
+                {isSubmitting ? <><FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} size={16} /> Processing...</> : "Place Bid"}
               </button>
             </div>
           </aside>
+
+          {/* RIGHT: Project Overview */}
+          <div className="modal-right">
+            <div className="d-flex flex-column gap-4 pb-4">
+              <JobOverviewCard job={job} hideShare={true} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -304,37 +268,46 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         }
 
         .modal-window.job-modal-window {
-          width: 95vw;
-          max-width: 1100px;
-          height: 85vh;
+          width: 80vw;
+          max-width: none;
+          height: 100vh;
           background: #ffffff;
-          border-radius: 24px;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          position: relative;
+          border-radius: 24px 0 0 24px;
+          box-shadow: -25px 0 50px -12px rgba(0, 0, 0, 0.25);
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: slideInRightDrawer 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        @keyframes slideInRightDrawer {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
         }
 
         .modal-inner {
           display: grid;
-          grid-template-columns: 1fr 420px;
+          grid-template-columns: 420px 1fr;
           height: 100%;
           overflow: hidden;
         }
 
         .modal-left {
           padding: 32px;
-          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
           background: #f8fafc;
           border-right: 1px solid #e2e8f0;
+          height: 100%;
         }
 
         .modal-right {
           padding: 32px;
-          display: flex;
-          flex-direction: column;
+          overflow-y: auto;
           background: #ffffff;
           width: 100%;
         }
@@ -444,7 +417,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
         }
         .selection-title { font-size: 18px; font-weight: 700; color: #020618; margin: 0; }
         .count-badge {
-          background: #1f2937;
+          background: #3b82f6;
           color: white;
           padding: 4px 10px;
           border-radius: 20px;
@@ -476,8 +449,8 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
           transform: translateX(4px);
         }
         .talent-card-row.selected {
-          background: #fff7ed;
-          border-color: #1f2937;
+          background: #f5f3ff;
+          border-color: #7c3aed;
         }
 
         .selection-indicator {

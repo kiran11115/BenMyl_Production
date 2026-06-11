@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
-  FileText, X, Building2, Check, ChevronDown, Calendar, Clock
+  FileText, X, Building2, Check, ChevronDown, Calendar, Clock, Search
 } from 'lucide-react';
 import { FiArrowLeft, FiLinkedin } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -102,12 +102,16 @@ const PostNewPositions = () => {
   const workModelRef = useRef(null);
   const expRef = useRef(null);
 
-  const currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR'];
+  const [currencies, setCurrencies] = useState(['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR']);
   const [shareToLinkedIn, setShareToLinkedIn] = useState(false);
 
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+
+  const [countrySearch, setCountrySearch] = useState("");
+  const [stateSearch, setStateSearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -118,6 +122,7 @@ const PostNewPositions = () => {
     setSelectedCountry(countryCode);
     setSelectedState("");
     setSelectedCity("");
+    setCountrySearch("");
     if (countryCode) {
       setStates(State.getStatesOfCountry(countryCode));
     } else {
@@ -127,11 +132,20 @@ const PostNewPositions = () => {
     
     const countryObj = Country.getCountryByCode(countryCode);
     formik.setFieldValue("location", countryObj ? countryObj.name : "");
+
+    if (countryObj && countryObj.currency) {
+      const curr = countryObj.currency;
+      if (!currencies.includes(curr)) {
+        setCurrencies(prev => [...prev, curr]);
+      }
+      formik.setFieldValue("salaryCurrency", curr);
+    }
   };
 
   const handleStateChange = (stateCode) => {
     setSelectedState(stateCode);
     setSelectedCity("");
+    setStateSearch("");
     if (stateCode) {
       setCities(City.getCitiesOfState(selectedCountry, stateCode));
     } else {
@@ -147,6 +161,7 @@ const PostNewPositions = () => {
 
   const handleCityChange = (cityName) => {
     setSelectedCity(cityName);
+    setCitySearch("");
     
     const countryObj = Country.getCountryByCode(selectedCountry);
     const stateObj = State.getStateByCodeAndCountry(selectedState, selectedCountry);
@@ -785,8 +800,23 @@ navigate(targetPath);
                         <ChevronDown size={16} className={`chevron ${showCountryPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
                       </button>
                       {showCountryPopover && (
-                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
-                          {countries.map(c => (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ padding: '8px', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, borderBottom: '1px solid #e2e8f0' }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                              <Search size={14} style={{ position: 'absolute', left: '10px', color: '#64748b' }} />
+                              <input
+                                autoFocus
+                                type="text"
+                                placeholder="Search country..."
+                                value={countrySearch}
+                                onChange={(e) => setCountrySearch(e.target.value)}
+                                style={{ width: '100%', padding: '8px 8px 8px 30px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '13px', outline: 'none', color: '#0f172a', backgroundColor: '#f8fafc' }}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+                          </div>
+                          {countries.filter(c => c.name.toLowerCase().includes(countrySearch.toLowerCase())).map(c => (
                             <button
                               key={c.isoCode}
                               type="button"
@@ -820,8 +850,23 @@ navigate(targetPath);
                         <ChevronDown size={16} className={`chevron ${showStatePopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
                       </button>
                       {showStatePopover && states.length > 0 && (
-                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
-                          {states.map(s => (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ padding: '8px', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, borderBottom: '1px solid #e2e8f0' }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                              <Search size={14} style={{ position: 'absolute', left: '10px', color: '#64748b' }} />
+                              <input
+                                autoFocus
+                                type="text"
+                                placeholder="Search state..."
+                                value={stateSearch}
+                                onChange={(e) => setStateSearch(e.target.value)}
+                                style={{ width: '100%', padding: '8px 8px 8px 30px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '13px', outline: 'none', color: '#0f172a', backgroundColor: '#f8fafc' }}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+                          </div>
+                          {states.filter(s => s.name.toLowerCase().includes(stateSearch.toLowerCase())).map(s => (
                             <button
                               key={s.isoCode}
                               type="button"
@@ -855,8 +900,23 @@ navigate(targetPath);
                         <ChevronDown size={16} className={`chevron ${showCityPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8', minWidth: '16px' }} />
                       </button>
                       {showCityPopover && cities.length > 0 && (
-                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto' }}>
-                          {cities.map(c => (
+                        <div className="currency-popover" style={{ width: '100%', maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ padding: '8px', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1, borderBottom: '1px solid #e2e8f0' }}>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                              <Search size={14} style={{ position: 'absolute', left: '10px', color: '#64748b' }} />
+                              <input
+                                autoFocus
+                                type="text"
+                                placeholder="Search city..."
+                                value={citySearch}
+                                onChange={(e) => setCitySearch(e.target.value)}
+                                style={{ width: '100%', padding: '8px 8px 8px 30px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '13px', outline: 'none', color: '#0f172a', backgroundColor: '#f8fafc' }}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              />
+                            </div>
+                          </div>
+                          {cities.filter(c => c.name.toLowerCase().includes(citySearch.toLowerCase())).map(c => (
                             <button
                               key={c.name}
                               type="button"

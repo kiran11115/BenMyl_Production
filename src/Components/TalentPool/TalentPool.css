@@ -1096,6 +1096,29 @@
 }
 */
 
+.talent-card-premium .card-bg-icon {
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  width: 140px;
+  height: 140px;
+  opacity: 0.04;
+  z-index: 0;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.talent-card-premium:hover .card-bg-icon {
+  transform: scale(1.2) rotate(-10deg);
+  opacity: 0.08;
+  color: #f5810c;
+}
+
+.talent-card-premium > * {
+  position: relative;
+  z-index: 1;
+}
+
 .talent-card-premium .job-chip.more {
   background: #f8fafc;
   color: #64748b;
