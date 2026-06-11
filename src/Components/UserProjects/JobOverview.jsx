@@ -99,7 +99,9 @@ const JobOverview = () => {
         message: "Your talent has been shortlisted. Please check your mailbox.",
         uatUserId,
         uatfirstName: username,
-        companyName: companyname
+        companyName: companyname,
+        jobid: job?.jobID,
+        jobName: job?.jobTitle,
       };
 
       await sendInviteNotification(payload).unwrap();
@@ -359,7 +361,8 @@ const JobOverview = () => {
         message: `Your talent ${cand.name} has been shortlisted for ${job?.jobTitle}. Please check your mailbox.`,
         uatUserId: Number(userId),
         uatfirstName: username,
-        companyName: companyname
+        companyName: companyname,
+
       };
 
       await sendInviteNotification(payload).unwrap();
@@ -386,6 +389,7 @@ const JobOverview = () => {
             status: "Verified",
           },
           jobId: jobId,
+          fromJobOverview: true,
         },
       }
     );
@@ -406,18 +410,18 @@ const JobOverview = () => {
     <div className="jobs-container">
       {/* HEADER */}
       <div className="hero-card mb-4">
-        <FiBriefcase 
-            size={240} 
-            style={{
-                position: 'absolute',
-                right: '30%',
-                top: '50%',
-                transform: 'translateY(-50%) rotate(-10deg)',
-                color: '#ffffff',
-                opacity: 0.04,
-                zIndex: 1,
-                pointerEvents: 'none'
-            }}
+        <FiBriefcase
+          size={240}
+          style={{
+            position: 'absolute',
+            right: '30%',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(-10deg)',
+            color: '#ffffff',
+            opacity: 0.04,
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}
         />
         <div className="hero-left">
           <div className="hero-pill">
@@ -629,8 +633,8 @@ const JobOverview = () => {
         {/* RIGHT SIDEBAR - Candidates applied / Shortlisted / Sourcing */}
         {/* <div className="dashboard-column-side card-base profiles-sidebar"> */}
 
-          {/* Content Lists */}
-          {/* {activeTab === "applied" && (
+        {/* Content Lists */}
+        {/* {activeTab === "applied" && (
             <div className="candidates-list">
               {candidates.length === 0 ? (
                 <div className="no-candidates-box">
@@ -657,21 +661,21 @@ const JobOverview = () => {
                       </div>
 
                       {/* View & Connect mini buttons on the right */}
-                      {/* <div style={{ display: "flex", gap: "4px" }}>
+        {/* <div style={{ display: "flex", gap: "4px" }}>
                         <button className="action-btn icon-only" onClick={() => handleViewProfile(cand)} title="View Profile">
                           <FiEye size={16} />
                         </button>
                       </div>
                     </div> */}
 
-                    {/* Tags matching projects card layout */}
-                    {/* <div className="job-tags-row" style={{ display: "flex", gap: "6px", flexWrap: "wrap", margin: "4px 0" }}>
+        {/* Tags matching projects card layout */}
+        {/* <div className="job-tags-row" style={{ display: "flex", gap: "6px", flexWrap: "wrap", margin: "4px 0" }}>
                       <span className="job-chip purple">{cand.experience} Yrs Exp</span>
                       <span className="job-chip mint">{cand.location}</span>
                       <span className="job-chip green">{cand.salary}</span>
                     </div> */}
 
-                    {/* <div className="candidate-actions">
+        {/* <div className="candidate-actions">
                       <button className="action-btn shortlist" onClick={() => handleShortlist(cand)}>
                         Shortlist Candidate
                       </button>
@@ -679,167 +683,167 @@ const JobOverview = () => {
                         <FiTrash2 size={13} />
                       </button>
                     </div> */}
-                  {/* </div>
+        {/* </div>
                 ))
               )}
             </div>
           )} */}
 
-          {/* BIDS CARD */}
+        {/* BIDS CARD */}
+        <div
+          className="card-base"
+          style={{
+            padding: "18px",
+            marginBottom: "16px",
+            borderRadius: "20px",
+            background: "#fff",
+          }}
+        >
           <div
-            className="card-base"
             style={{
-              padding: "18px",
               marginBottom: "16px",
-              borderRadius: "20px",
-              background: "#fff",
+              borderBottom: "1px solid #eef2f7",
+              paddingBottom: "12px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <div
-              style={{
-                marginBottom: "16px",
-                borderBottom: "1px solid #eef2f7",
-                paddingBottom: "12px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <h5
-                  style={{
-                    margin: 0,
-                    fontWeight: 700,
-                    fontSize: "16px",
-                    color: "#0f172a",
-                  }}
-                >
-                  Bids From Recruiters
-                </h5>
-
-                <span
-                  style={{
-                    fontSize: "12px",
-                    color: "#64748b",
-                  }}
-                >
-                  {pendingBids.length} Candidate(s)
-                </span>
-              </div>
-
-              {/* Bulk Shortlist/Invite Button */}
-              {selectedBidIds.length > 0 && (
-                <button
-                  type="button"
-                  onClick={handleSendBulkInvite}
-                  disabled={isBulkInviting}
-                  className="routine-btn-2"
-                >
-                  {isBulkInviting ? (
-                    <>
-                      <div className="spinner-border spinner-border-sm text-light" style={{ width: "12px", height: "12px", borderWidth: "2px" }} />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <FiUserPlus size={14} />
-                      Shortlist ({selectedBidIds.length})
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
-
-            {pendingBids.length > 0 ? (
-              <div
+            <div>
+              <h5
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
+                  margin: 0,
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  color: "#0f172a",
                 }}
               >
-                {pendingBids.map((bid) => (
-                  <div
-                    key={bid.EmployeeID}
+                Bids From Recruiters
+              </h5>
+
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "#64748b",
+                }}
+              >
+                {pendingBids.length} Candidate(s)
+              </span>
+            </div>
+
+            {/* Bulk Shortlist/Invite Button */}
+            {selectedBidIds.length > 0 && (
+              <button
+                type="button"
+                onClick={handleSendBulkInvite}
+                disabled={isBulkInviting}
+                className="routine-btn-2"
+              >
+                {isBulkInviting ? (
+                  <>
+                    <div className="spinner-border spinner-border-sm text-light" style={{ width: "12px", height: "12px", borderWidth: "2px" }} />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <FiUserPlus size={14} />
+                    Shortlist ({selectedBidIds.length})
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          {pendingBids.length > 0 ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+              }}
+            >
+              {pendingBids.map((bid) => (
+                <div
+                  key={bid.EmployeeID}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    padding: "14px",
+                    border: "1px solid #eef2f7",
+                    borderRadius: "14px",
+                    background: "#fafbfc",
+                    transition: "all .2s ease",
+                  }}
+                >
+                  {/* Selection Checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={selectedBidIds.includes(bid.EmployeeID)}
+                    onChange={() => handleToggleSelectBid(bid.EmployeeID)}
+                    disabled={inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading"}
                     style={{
+                      width: "16px",
+                      height: "16px",
+                      borderRadius: "4px",
+                      border: "1px solid #cbd5e1",
+                      cursor: (inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading") ? "not-allowed" : "pointer",
+                      accentColor: "#7c3aed",
+                      marginRight: "4px",
+                    }}
+                  />
+                  {/* Avatar */}
+                  <div
+                    style={{
+                      width: "46px",
+                      height: "46px",
+                      borderRadius: "50%",
+                      background:
+                        "linear-gradient(135deg,#2563eb,#7c3aed)",
+                      color: "#fff",
                       display: "flex",
                       alignItems: "center",
-                      gap: "12px",
-                      padding: "14px",
-                      border: "1px solid #eef2f7",
-                      borderRadius: "14px",
-                      background: "#fafbfc",
-                      transition: "all .2s ease",
+                      justifyContent: "center",
+                      fontWeight: 700,
+                      fontSize: "16px",
+                      flexShrink: 0,
                     }}
                   >
-                    {/* Selection Checkbox */}
-                    <input
-                      type="checkbox"
-                      checked={selectedBidIds.includes(bid.EmployeeID)}
-                      onChange={() => handleToggleSelectBid(bid.EmployeeID)}
-                      disabled={inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading"}
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "4px",
-                        border: "1px solid #cbd5e1",
-                        cursor: (inviteStatuses[bid.EmployeeID] === "sent" || inviteStatuses[bid.EmployeeID] === "loading") ? "not-allowed" : "pointer",
-                        accentColor: "#7c3aed",
-                        marginRight: "4px",
-                      }}
-                    />
-                    {/* Avatar */}
+                    {bid.FullName?.charAt(0)?.toUpperCase()}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex: 1 }}>
                     <div
                       style={{
-                        width: "46px",
-                        height: "46px",
-                        borderRadius: "50%",
-                        background:
-                          "linear-gradient(135deg,#2563eb,#7c3aed)",
-                        color: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 700,
-                        fontSize: "16px",
-                        flexShrink: 0,
+                        fontWeight: 600,
+                        color: "#0f172a",
+                        fontSize: "14px",
                       }}
                     >
-                      {bid.FullName?.charAt(0)?.toUpperCase()}
+                      {bid.FullName}
                     </div>
 
-                    {/* Content */}
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          color: "#0f172a",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {bid.FullName}
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: "4px",
-                          fontSize: "12px",
-                          color: "#64748b",
-                        }}
-                      >
-                        {bid.companyName} Bid for your role.
-                      </div>
+                    <div
+                      style={{
+                        marginTop: "4px",
+                        fontSize: "12px",
+                        color: "#64748b",
+                      }}
+                    >
+                      {bid.companyName} Bid for your role.
                     </div>
+                  </div>
 
-                    {/* Actions */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {/* View Profile Eye Icon */}
-                      <button className="action-btn icon-only" onClick={() => handleViewProfile(bid)} title="View Profile">
-                        <FiEye size={16} />
-                      </button>
+                  {/* Actions */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    {/* View Profile Eye Icon */}
+                    <button className="action-btn icon-only" onClick={() => handleViewProfile(bid)} title="View Profile">
+                      <FiEye size={16} />
+                    </button>
 
-                      {/* Shortlist/Invite Icon */}
-                      {/* <button
+                    {/* Shortlist/Invite Icon */}
+                    {/* <button
                 type="button"
                 onClick={() => handleSendInvite(bid)}
                 disabled={inviteStatuses[bid.EmployeeID] === "loading" || inviteStatuses[bid.EmployeeID] === "sent"}
@@ -881,44 +885,44 @@ const JobOverview = () => {
                   <FiUserPlus size={18} />
                 )}
               </button> */}
-                    </div>
                   </div>
-                ))}
-              </div>
-            ) : (
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "40px 20px",
+                border: "1px dashed #dbe4ee",
+                borderRadius: "14px",
+                background: "#f8fafc",
+              }}
+            >
               <div
                 style={{
-                  textAlign: "center",
-                  padding: "40px 20px",
-                  border: "1px dashed #dbe4ee",
-                  borderRadius: "14px",
-                  background: "#f8fafc",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#64748b",
                 }}
               >
-                <div
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#64748b",
-                  }}
-                >
-                  No candidates selected for this role
-                </div>
-
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#94a3b8",
-                    marginTop: "6px",
-                  }}
-                >
-                  Recruiter bids will appear here
-                </div>
+                No candidates selected for this role
               </div>
-            )}
-          </div>
+
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#94a3b8",
+                  marginTop: "6px",
+                }}
+              >
+                Recruiter bids will appear here
+              </div>
+            </div>
+          )}
         </div>
       </div>
+    </div>
     // </div>
   );
 };

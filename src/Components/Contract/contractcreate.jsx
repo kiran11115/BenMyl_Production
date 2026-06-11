@@ -35,7 +35,7 @@ import { toast } from 'react-toastify';
 import { ContractContext, formatDate } from './ContractContext';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
-import { useSaveContractMutation } from "../../State-Management/Api/ContractApiSlice";
+import { useLazyGetNotificationsByJobIdQuery, useSaveContractMutation } from "../../State-Management/Api/ContractApiSlice";
 
 import './contractwizard.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -327,7 +327,7 @@ const ContractCreate = () => {
 
   const [candidates, setCandidates] = useState([]);
   const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
-  const [getFindTalent] = useTalentPoolMutation();
+  const [getNotificationsByJobId] = useLazyGetNotificationsByJobIdQuery();
   const [saveContract, { isLoading: isSavingContract }] = useSaveContractMutation();
 
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
@@ -390,19 +390,28 @@ const ContractCreate = () => {
           ],
         };
 
-        const res = await getFindTalent(payload).unwrap();
+        const selectedJob = fetchedJobs?.find(
+          j => j.jobTitle === formik.values.jobTitle
+        );
+
+        if (!selectedJob?.jobID) {
+          setCandidates([]);
+          return;
+        }
+
+        const res = await getNotificationsByJobId(
+          selectedJob.jobID
+        ).unwrap();
 
         if (Array.isArray(res)) {
-          // Filter shortlisted
-          const shortlisted = res.filter(item => item.isshortlisted).map(item => ({
-            id: item.employeeID,
-            name: `${item.firstName} ${item.lastName}`,
-            email: item.emailAddress,
-            phone: item.phoneNumber || "",
-            workLocation: item.workLocation || "",
-            uploadedByName: item.uploadedByName || "", // opposite company from which talent is posted
-          }));
-          setCandidates(shortlisted);
+          setCandidates(
+            res.map(item => ({
+              id: item.EmployeeId,
+              name: item.EmployeeName,
+              jobId: item.JobId,
+              jobTitle: item.JobName,
+            }))
+          );
         }
       } catch (err) {
         console.error("Failed to fetch shortlisted candidates:", err);
@@ -412,7 +421,7 @@ const ContractCreate = () => {
     };
 
     fetchShortlisted();
-  }, [formik.values.jobTitle, companyId, getFindTalent]);
+  }, [formik.values.jobTitle, companyId,getNotificationsByJobId]);
 
   // Load Autosave values on Mount
   useEffect(() => {

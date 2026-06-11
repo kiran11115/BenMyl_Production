@@ -31,12 +31,17 @@ export const ContractApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: (result, error, contractID) => [{ type: "Contracts", id: contractID }],
         }),
+        getNotificationsByJobId: builder.query({
+            query: (jobId) =>
+                `api/Account/GetNotificationsByJobId?jobId=${jobId}`,
+        }),
     }),
 });
 
-export const { 
-    useSaveContractMutation, 
-    useGetAllContractsQuery, 
-    useGetContractByIdQuery, 
-    useGetContractsByBenchsalesQuery 
+export const {
+    useSaveContractMutation,
+    useGetAllContractsQuery,
+    useGetContractByIdQuery,
+    useGetContractsByBenchsalesQuery,
+    useLazyGetNotificationsByJobIdQuery
 } = ContractApiSlice;

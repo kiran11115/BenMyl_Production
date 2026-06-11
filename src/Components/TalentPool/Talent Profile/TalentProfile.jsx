@@ -44,6 +44,7 @@ const formatDateToDisplay = (value) => {
 const TalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const fromJobOverview = state?.fromJobOverview;
   const [activeTab, setActiveTab] = React.useState("Overview");
   const tabs = ["Overview", "Experience", "Projects", "Education"];
   const [showNoJobModal, setShowNoJobModal] = React.useState(false);
@@ -182,13 +183,23 @@ const TalentProfile = () => {
         <button type="button" className="routine-btn" onClick={handleBack} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }}>
           <FiArrowLeft style={{ marginRight: '6px' }} /> Back
         </button>
-        <button
-          type="button"
-          className={`routine-btn ${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
-          onClick={handleShortlistFromProfile}
-        >
-          {isShortlisted ? "✓ Shortlisted" : "Shortlist Talent"}
-        </button>
+        {!fromJobOverview && (
+
+          <button
+
+            type="button"
+
+            className={`routine-btn${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
+
+            onClick={handleShortlistFromProfile}
+
+          >
+
+            {isShortlisted ? "✓ Shortlisted" : "Shortlist Talent"}
+
+          </button>
+
+        )}
       </div>
 
       {/* ── MAIN PROFILE OVERLAP CARD ── */}
@@ -243,7 +254,7 @@ const TalentProfile = () => {
       <div className="tp-main-content-wrapper">
         {activeTab === "Overview" && (
           <div className="tp-tab-pane" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
-            
+
             {/* Card 1: Salary */}
             <div className="premium-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '220px' }}>
               <div className="tp-info-icon" style={{ marginBottom: '12px', background: '#fef3c7', color: '#f59e0b', borderRadius: '50%' }}>
@@ -294,101 +305,101 @@ const TalentProfile = () => {
           </div>
         )}
 
-      {/* ── EXPERIENCE TAB ── */}
-      {activeTab === "Experience" && (
-        <div className="tp-tab-pane">
-          <div className="premium-card">
-            <div className="tp-section-heading"><FiTrendingUp size={14} /> Work Experience</div>
-            <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
-              {profileData.workExperience.length > 0 ? (
-                profileData.workExperience.map((job, idx) => (
-                  <div key={idx} className="tp-exp-item">
-                    <div className="tp-exp-icon"><FiBriefcase size={13} /></div>
-                    <div className="tp-exp-body">
-                      <div className="tp-exp-title-row">
-                        <span className="tp-exp-role">{job.role}</span>
-                        <span className="tp-exp-badge">{job.company}</span>
+        {/* ── EXPERIENCE TAB ── */}
+        {activeTab === "Experience" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card">
+              <div className="tp-section-heading"><FiTrendingUp size={14} /> Work Experience</div>
+              <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
+                {profileData.workExperience.length > 0 ? (
+                  profileData.workExperience.map((job, idx) => (
+                    <div key={idx} className="tp-exp-item">
+                      <div className="tp-exp-icon"><FiBriefcase size={13} /></div>
+                      <div className="tp-exp-body">
+                        <div className="tp-exp-title-row">
+                          <span className="tp-exp-role">{job.role}</span>
+                          <span className="tp-exp-badge">{job.company}</span>
+                        </div>
+                        <div className="tp-exp-period">
+                          <FiCalendar size={11} /> {job.period} &nbsp;•&nbsp; <FiMapPin size={11} /> {job.location}
+                        </div>
+                        <p className="tp-exp-desc">{job.desc}</p>
                       </div>
-                      <div className="tp-exp-period">
-                        <FiCalendar size={11} /> {job.period} &nbsp;•&nbsp; <FiMapPin size={11} /> {job.location}
+                    </div>
+                  ))
+                ) : (
+                  <NoData text="No work history provided" />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── PROJECTS TAB ── */}
+        {activeTab === "Projects" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card">
+              <div className="tp-section-heading"><FiFileText size={14} /> Project Portfolio</div>
+              <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
+                {projectsData.length > 0 ? (
+                  projectsData.map((data, idx) => (
+                    <div key={idx} className="tp-exp-item">
+                      <div className="tp-exp-icon"><FiExternalLink size={13} /></div>
+                      <div className="tp-exp-body">
+                        <div className="tp-exp-title-row">
+                          <span className="tp-exp-role">{data.projectName}</span>
+                          <span className="tp-exp-badge secondary">{data.role}</span>
+                        </div>
+                        <div className="tp-exp-period">
+                          <FiCalendar size={11} /> {data.startDate} — {data.endDate}
+                        </div>
+                        <div className="tp-tag-row" style={{ marginTop: '8px', marginBottom: '12px' }}>
+                          {data.skills.map((skill, i) => {
+                            const colors = ["orange", "pink", "purple", "mint", "green"];
+                            const colorClass = colors[i % colors.length];
+                            return (
+                              <span key={i} className={`job-chip ${colorClass}`}>
+                                {skill}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        <p className="tp-exp-desc">{data.description}</p>
                       </div>
-                      <p className="tp-exp-desc">{job.desc}</p>
+                    </div>
+                  ))
+                ) : (
+                  <NoData text="No projects listed" />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── EDUCATION TAB ── */}
+        {activeTab === "Education" && (
+          <div className="tp-tab-pane">
+            <div className="premium-card mb-3">
+              <div className="tp-section-heading">Education</div>
+              {profileData.education.length > 0 ? (
+                profileData.education.map((edu, idx) => (
+                  <div key={idx} className="tp-info-row" style={{ marginBottom: 12 }}>
+                    <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                      <FiBookOpen size={13} />
+                    </div>
+                    <div>
+                      <div className="tp-info-value">{edu.degree}</div>
+                      <div className="tp-info-label">{edu.school}</div>
+                      <div className="tp-info-label" style={{ marginTop: 2 }}>{edu.year}</div>
                     </div>
                   </div>
                 ))
               ) : (
-                <NoData text="No work history provided" />
+                <NoData text="N/A" />
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* ── PROJECTS TAB ── */}
-      {activeTab === "Projects" && (
-        <div className="tp-tab-pane">
-          <div className="premium-card">
-            <div className="tp-section-heading"><FiFileText size={14} /> Project Portfolio</div>
-            <div className="tp-exp-list hide-scrollbar" style={{ maxHeight: '450px', overflowY: 'auto', paddingRight: '8px' }}>
-              {projectsData.length > 0 ? (
-                projectsData.map((data, idx) => (
-                  <div key={idx} className="tp-exp-item">
-                    <div className="tp-exp-icon"><FiExternalLink size={13} /></div>
-                    <div className="tp-exp-body">
-                      <div className="tp-exp-title-row">
-                        <span className="tp-exp-role">{data.projectName}</span>
-                        <span className="tp-exp-badge secondary">{data.role}</span>
-                      </div>
-                      <div className="tp-exp-period">
-                        <FiCalendar size={11} /> {data.startDate} — {data.endDate}
-                      </div>
-                      <div className="tp-tag-row" style={{ marginTop: '8px', marginBottom: '12px' }}>
-                        {data.skills.map((skill, i) => {
-                          const colors = ["orange", "pink", "purple", "mint", "green"];
-                          const colorClass = colors[i % colors.length];
-                          return (
-                            <span key={i} className={`job-chip ${colorClass}`}>
-                              {skill}
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <p className="tp-exp-desc">{data.description}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <NoData text="No projects listed" />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── EDUCATION TAB ── */}
-      {activeTab === "Education" && (
-        <div className="tp-tab-pane">
-          <div className="premium-card mb-3">
-            <div className="tp-section-heading">Education</div>
-            {profileData.education.length > 0 ? (
-              profileData.education.map((edu, idx) => (
-                <div key={idx} className="tp-info-row" style={{ marginBottom: 12 }}>
-                  <div className="tp-info-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
-                    <FiBookOpen size={13} />
-                  </div>
-                  <div>
-                    <div className="tp-info-value">{edu.degree}</div>
-                    <div className="tp-info-label">{edu.school}</div>
-                    <div className="tp-info-label" style={{ marginTop: 2 }}>{edu.year}</div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <NoData text="N/A" />
-            )}
-          </div>
-        </div>
-      )}
+        )}
 
       </div>
 

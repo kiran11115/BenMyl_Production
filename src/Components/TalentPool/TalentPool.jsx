@@ -74,7 +74,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
       const userIds = shortlistedCandidates.map(
         (c) => Number(c.inviteUserId)
       );
-
+      const selectedJob = jobs.find((j) => j.id === jobId);
       const usernames = shortlistedCandidates.map((c) => c.name);
       const employeeIds = shortlistedCandidates.map((c) => c.id);
 
@@ -85,7 +85,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         message: "Your talent has been shortlisted. Please check your mailbox.",
         uatUserId: Number(userId),
         uatfirstName: username,
-        companyName: companyname
+        companyName: companyname,
+        jobid: selectedJob?.jobID,       
+        jobName: selectedJob?.title,
       };
 
       await sendInviteNotification(payload).unwrap();
@@ -1153,18 +1155,18 @@ const TalentPool = () => {
           <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
 
             <div className="hero-card mb-4">
-              <FiUsers 
-                  size={240} 
-                  style={{
-                      position: 'absolute',
-                      right: '30%',
-                      top: '50%',
-                      transform: 'translateY(-50%) rotate(-10deg)',
-                      color: '#ffffff',
-                      opacity: 0.04,
-                      zIndex: 1,
-                      pointerEvents: 'none'
-                  }}
+              <FiUsers
+                size={240}
+                style={{
+                  position: 'absolute',
+                  right: '30%',
+                  top: '50%',
+                  transform: 'translateY(-50%) rotate(-10deg)',
+                  color: '#ffffff',
+                  opacity: 0.04,
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }}
               />
               <div className="hero-left">
                 <div className="hero-pill">
@@ -1450,20 +1452,20 @@ const TalentPool = () => {
 
                 <button
                   onClick={() => {
-  const basePath = window.location.pathname
-    .toLowerCase()
-    .startsWith("/admin")
-    ? "/Admin"
-    : "/user";
+                    const basePath = window.location.pathname
+                      .toLowerCase()
+                      .startsWith("/admin")
+                      ? "/Admin"
+                      : "/user";
 
-  navigate(`${basePath}/user-post-new-positions`, {
-    state: {
-      autoFillRole: selectedCandidate?.role,
-    },
-  });
+                    navigate(`${basePath}/user-post-new-positions`, {
+                      state: {
+                        autoFillRole: selectedCandidate?.role,
+                      },
+                    });
 
-  setShowCreateJobModal(false);
-}}
+                    setShowCreateJobModal(false);
+                  }}
                   style={{
                     flex: 1,
                     padding: "12px",
