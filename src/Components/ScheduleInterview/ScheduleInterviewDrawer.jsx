@@ -28,7 +28,7 @@ const getInitials = (name = '') =>
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 /* ── Component ── */
-const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
+const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId, preSelectedCandidateId }) => {
     const [isClosing, setIsClosing] = useState(false);
     const [isJobPreviewExpanded, setIsJobPreviewExpanded] = useState(false);
 
@@ -122,16 +122,22 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                 };
                 const res = await getFindTalent(payload).unwrap();
                 if (Array.isArray(res)) {
-                    setCandidates(
-                        res.filter(i => i.isshortlisted && !i.isSchedules).map(i => ({
-                            id: i.employeeID,
-                            name: `${i.firstName} ${i.lastName}`,
-                            role: i.title || '—',
-                            email: i.emailAddress,
-                            avatar: i.profilePicture || '',
-                        }))
-                    );
-                    setSelectedCandidate(null);
+                    const fetchedCandidates = res.filter(i => i.isshortlisted && !i.isSchedules).map(i => ({
+                        id: i.employeeID,
+                        name: `${i.firstName} ${i.lastName}`,
+                        role: i.title || '—',
+                        email: i.emailAddress,
+                        avatar: i.profilePicture || '',
+                    }));
+                    setCandidates(fetchedCandidates);
+
+                    if (preSelectedCandidateId) {
+                        const preselected = fetchedCandidates.find(c => String(c.id) === String(preSelectedCandidateId));
+                        if (preselected) setSelectedCandidate(preselected);
+                        else setSelectedCandidate(null);
+                    } else {
+                        setSelectedCandidate(null);
+                    }
                 }
             } catch (err) {
                 console.error('Failed to fetch candidates:', err);
@@ -140,7 +146,17 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
             }
         };
         fetch();
-    }, [selectedJob, companyId, getFindTalent]);
+    }, [selectedJob, companyId, getFindTalent, preSelectedCandidateId]);
+
+    // Set pre-selected job when jobs are fetched
+    useEffect(() => {
+        if (preSelectedJobId && jobs.length > 0 && !selectedJob) {
+            const preselected = jobs.find(j => String(j.id) === String(preSelectedJobId));
+            if (preselected) {
+                setSelectedJob(preselected);
+            }
+        }
+    }, [jobs, preSelectedJobId, selectedJob]);
 
     /* Close with animation */
     const handleClose = () => {
@@ -148,21 +164,60 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
         setTimeout(() => { setIsClosing(false); onClose(); }, 280);
     };
 
-    if (!isOpen && !isClosing) return null;
-
     /* Time slots */
-    const TIME_SLOTS = [
-        { id: '09:00', label: '9:00 AM', hr: '09', min: '00', ampm: 'AM' },
-        { id: '10:00', label: '10:00 AM', hr: '10', min: '00', ampm: 'AM' },
-        { id: '11:00', label: '11:00 AM', hr: '11', min: '00', ampm: 'AM' },
-        { id: '12:00', label: '12:00 PM', hr: '12', min: '00', ampm: 'PM' },
-        { id: '14:00', label: '2:00 PM', hr: '02', min: '00', ampm: 'PM' },
-        { id: '15:00', label: '3:00 PM', hr: '03', min: '00', ampm: 'PM' },
-        { id: '16:00', label: '4:00 PM', hr: '04', min: '00', ampm: 'PM' },
-        { id: '17:00', label: '5:00 PM', hr: '05', min: '00', ampm: 'PM' },
-    ];
+    const TIME_SLOTS = useMemo(() => {
+        const slots = [
+            { id: '09:00', label: '9:00 AM', hr: '09', min: '00', ampm: 'AM' },
+            { id: '10:00', label: '10:00 AM', hr: '10', min: '00', ampm: 'AM' },
+            { id: '11:00', label: '11:00 AM', hr: '11', min: '00', ampm: 'AM' },
+            { id: '12:00', label: '12:00 PM', hr: '12', min: '00', ampm: 'PM' },
+            { id: '14:00', label: '2:00 PM', hr: '02', min: '00', ampm: 'PM' },
+            { id: '15:00', label: '3:00 PM', hr: '03', min: '00', ampm: 'PM' },
+            { id: '16:00', label: '4:00 PM', hr: '04', min: '00', ampm: 'PM' },
+            { id: '17:00', label: '5:00 PM', hr: '05', min: '00', ampm: 'PM' },
+        ];
+        if (!selectedDate) return slots;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            return slots.filter(slot => {
+                let slotHr = parseInt(slot.hr, 10);
+                if (slot.ampm === 'PM' && slotHr !== 12) slotHr += 12;
+                if (slot.ampm === 'AM' && slotHr === 12) slotHr = 0;
+                const slotTime = new Date(selectedDate);
+                slotTime.setHours(slotHr, parseInt(slot.min, 10), 0, 0);
+                return slotTime > today;
+            });
+        }
+        return slots;
+    }, [selectedDate]);
+
     const HOURS = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const MINUTES = ['00', '15', '30', '45'];
+
+    // Additional dynamic filtering for custom hours
+    const getFilteredHours = React.useCallback((ampm) => {
+        if (!selectedDate) return HOURS;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            const currentHour24 = today.getHours();
+            return HOURS.filter(h => {
+                let hNum = parseInt(h, 10);
+                if (ampm === 'PM' && hNum !== 12) hNum += 12;
+                if (ampm === 'AM' && hNum === 12) hNum = 0;
+                return hNum >= currentHour24;
+            });
+        }
+        return HOURS;
+    }, [selectedDate, HOURS]);
+
+    const isAMDisabled = useMemo(() => {
+        if (!selectedDate) return false;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            return today.getHours() >= 12;
+        }
+        return false;
+    }, [selectedDate]);
 
     const handleQuickSlot = (slot) => {
         setTimeSlotId(slot.id);
@@ -234,6 +289,8 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
         );
 
     const isSchedulingEnabled = !!(selectedJob && selectedCandidate);
+
+    if (!isOpen && !isClosing) return null;
 
     return (
         <div className={`sid-overlay ${isClosing ? 'closing' : ''}`}>
@@ -477,14 +534,14 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess }) => {
                                                     <label className="sid-custom-time-label">{label}</label>
                                                     <div className="sid-custom-time-inputs">
                                                         <select className="sid-auth-input" value={time.hr} onChange={e => setTime({ ...time, hr: e.target.value })}>
-                                                            {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
+                                                            {getFilteredHours(time.ampm).map(h => <option key={h} value={h}>{h}</option>)}
                                                         </select>
                                                         <span className="sid-time-colon">:</span>
                                                         <select className="sid-auth-input" value={time.min} onChange={e => setTime({ ...time, min: e.target.value })}>
                                                             {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
                                                         </select>
                                                         <select className="sid-auth-input sid-auth-ampm" value={time.ampm} onChange={e => setTime({ ...time, ampm: e.target.value })}>
-                                                            <option value="AM">AM</option>
+                                                            {!isAMDisabled && <option value="AM">AM</option>}
                                                             <option value="PM">PM</option>
                                                         </select>
                                                     </div>

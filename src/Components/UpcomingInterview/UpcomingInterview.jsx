@@ -15,7 +15,7 @@ import {
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
 import "../UserJobs/Jobs.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -42,6 +42,7 @@ const formatDateToDisplay = (value) => {
 
 export default function UpcomingInterview() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [navDate, setNavDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedInterview, setSelectedInterview] = useState(null);
@@ -51,7 +52,12 @@ export default function UpcomingInterview() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    
+    // Support auto-opening drawer and preselection from navigation state
+    const [isDrawerOpen, setIsDrawerOpen] = useState(location.state?.openDrawer || false);
+    const [preSelectedJobId, setPreSelectedJobId] = useState(location.state?.preSelectedJobId || null);
+    const [preSelectedCandidateId, setPreSelectedCandidateId] = useState(location.state?.preSelectedCandidateId || null);
+
     const [isNextInterviewHidden, setIsNextInterviewHidden] = useState(false);
 
     const recruiterId = localStorage.getItem("CompanyId");
@@ -259,7 +265,11 @@ export default function UpcomingInterview() {
                             <span>{isNextInterviewHidden ? "Show Interviews" : "Hide Interviews"}</span>
                         </button>
                         <button
-                            onClick={() => setIsDrawerOpen(true)}
+                            onClick={() => {
+                                setPreSelectedJobId(null);
+                                setPreSelectedCandidateId(null);
+                                setIsDrawerOpen(true);
+                            }}
                             className="routine-btn"
                             style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
                         >
@@ -470,7 +480,11 @@ export default function UpcomingInterview() {
                                 </div>
                                 <h3>No Interviews Scheduled</h3>
                                 <p>Relax! You don't have any sessions booked for this criteria.</p>
-                                <button className="btn-v2-primary mt-3"  onClick={() => setIsDrawerOpen(true)}>
+                                <button className="btn-v2-primary mt-3"  onClick={() => {
+                                    setPreSelectedJobId(null);
+                                    setPreSelectedCandidateId(null);
+                                    setIsDrawerOpen(true);
+                                }}>
                                     <FiPlus size={16} /> Schedule Now
                                 </button>
                             </div>
@@ -570,6 +584,8 @@ export default function UpcomingInterview() {
                 isOpen={isDrawerOpen} 
                 onClose={() => setIsDrawerOpen(false)} 
                 onSuccess={() => {}}
+                preSelectedJobId={preSelectedJobId}
+                preSelectedCandidateId={preSelectedCandidateId}
             />
         </div>
     );

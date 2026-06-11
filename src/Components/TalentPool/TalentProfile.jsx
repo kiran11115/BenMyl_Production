@@ -22,11 +22,15 @@ import {
   FiMessageSquare
 } from "react-icons/fi";
 import { BsDribbble } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const TalentProfile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const role = localStorage.getItem("Role");
+  
+  const candidateId = location.state?.employeeID || location.state?.candidate?.id || null;
+  const jobId = location.state?.jobId || null;
 
   const [isExpOpen, setIsExpOpen] = useState(true);
 
@@ -169,7 +173,13 @@ const TalentProfile = () => {
           {role !== 'Benchsales' && (
             <button className="tp-util-btn" style={{ background: '#5B5BD6', color: '#fff', borderColor: '#5B5BD6' }} onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`);
+              navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`, {
+                state: {
+                  openDrawer: true,
+                  preSelectedJobId: jobId,
+                  preSelectedCandidateId: candidateId
+                }
+              });
             }}>
               Schedule Interview
             </button>

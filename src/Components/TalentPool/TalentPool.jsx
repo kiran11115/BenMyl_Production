@@ -1504,7 +1504,7 @@ const TalentPool = () => {
                   onClick={() => {
                     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
                     const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
-                    navigate(targetPath, { state: { preSelectedJobId: successJobId } });
+                    navigate(targetPath, { state: { openDrawer: true, preSelectedJobId: successJobId } });
                   }}
                 >
                   Schedule Interview

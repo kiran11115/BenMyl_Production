@@ -120,7 +120,11 @@ const JobOverview = () => {
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
       const interviewPath = window.location.pathname.toLowerCase().startsWith('/admin') ? 'admin-upcoming-interview' : 'user-upcoming-interview';
       navigate(`${basePath}/${interviewPath}`, {
-        state: { preSelectedJobId: jobId }
+        state: { 
+          openDrawer: true, 
+          preSelectedJobId: jobId,
+          preSelectedCandidateId: selectedBids.length === 1 ? selectedBids[0].EmployeeID : null
+        }
       });
     } catch (err) {
       console.error("Bulk invite failed", err);
@@ -160,7 +164,11 @@ const JobOverview = () => {
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
       const interviewPath = window.location.pathname.toLowerCase().startsWith('/admin') ? 'admin-upcoming-interview' : 'user-upcoming-interview';
       navigate(`${basePath}/${interviewPath}`, {
-        state: { preSelectedJobId: jobId }
+        state: { 
+          openDrawer: true, 
+          preSelectedJobId: jobId,
+          preSelectedCandidateId: bid.EmployeeID
+        }
       });
     } catch (err) {
       console.error("Invite failed", err);
@@ -831,7 +839,7 @@ const JobOverview = () => {
                         color: "#64748b",
                       }}
                     >
-                      {bid.companyName} Bid for your role.
+                      {bid.companyName}
                     </div>
                   </div>
 
