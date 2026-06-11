@@ -44,7 +44,6 @@ const formatDateToDisplay = (value) => {
 const TalentProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const fromJobOverview = state?.fromJobOverview;
   const [activeTab, setActiveTab] = React.useState("Overview");
   const tabs = ["Overview", "Experience", "Projects", "Education"];
   const [showNoJobModal, setShowNoJobModal] = React.useState(false);
@@ -53,6 +52,7 @@ const TalentProfile = () => {
   const from = query.get("from");
 
   const { state } = useLocation();
+  const fromJobOverview = state?.fromJobOverview;
   const employeeId = state?.employeeID;
   const jobId = state?.jobId;
   const userId = localStorage.getItem("CompanyId");
