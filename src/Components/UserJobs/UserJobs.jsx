@@ -38,6 +38,20 @@ const UserJobs = () => {
   const roleFromProfile = location.state?.role;
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Search state (matching Talent Profile functionality)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debounceRef = useRef(null);
+
+  // Debounce search query
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchQuery]);
+
   // pagination
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -74,6 +88,15 @@ const UserJobs = () => {
   // =========================
   const buildApiFilters = (filters) => {
     const apiFilters = [];
+
+    // Job Title Search (Contains)
+    if (debouncedSearch) {
+      apiFilters.push({
+        filterName: "Job Title",
+        filterOperator: "Contains",
+        filterValue: [debouncedSearch],
+      });
+    }
 
     // Job Title
     if (filters.roles?.length) {
@@ -125,94 +148,102 @@ const UserJobs = () => {
 
     return apiFilters;
   };
-  const fetchJobs = async () => {
-    if (!hasMore) return;
-
-    const payload = {
-      ComponyID: Number(companyId), // ⚠ exact casing required
-      pageNumber,
-      pageSize: PAGE_SIZE,
-      filters: buildApiFilters(filters),
-    };
-
-    const res = await getTalentJobs(payload).unwrap();
-
-    if (!Array.isArray(res) || res.length === 0) {
-      setHasMore(false);
-      return;
-    }
-
-    setAllJobs((prev) =>
-      pageNumber === 1 ? res : [...prev, ...res]
-    );
-
-    if (res.length < PAGE_SIZE) {
-      setHasMore(false);
-    }
-
-    // Auto-open logic
-    const autoOpenJobId = location.state?.autoOpenJobId;
-    if (autoOpenJobId && pageNumber === 1) {
-      const jobToOpen = res.find(j => (j.jobID || j.id) === autoOpenJobId);
-      if (jobToOpen) {
-        // We need to map it to the UI format
-        const mappedJob = {
-          id: jobToOpen.jobID,
-          title: jobToOpen.jobTitle,
-          company: jobToOpen.companyName,
-          location: jobToOpen.location,
-          type: jobToOpen.employeeType,
-          workModel: jobToOpen.workModels,
-          department: jobToOpen.department,
-          jobDuration: jobToOpen.jobDuration,
-          userId: jobToOpen.userId,
-          jobDurationText: jobToOpen.jobDuration ? `${jobToOpen.jobDuration} ${jobToOpen.jobDuration_Unit || "Months"}` : null,
-          rateText: jobToOpen.salaryRange_Min && jobToOpen.salaryRange_Max
-            ? `$${jobToOpen.salaryRange_Min}-${jobToOpen.salaryRange_Max}`
-            : jobToOpen.salaryRange_Min
-              ? `$${jobToOpen.salaryRange_Min}`
-              : "N/A",
-          experienceText: jobToOpen.experienceLevel,
-          description: jobToOpen.jobDescription,
-          additionalRequirements: jobToOpen.additionalRequirements,
-          salaryType: (() => {
-            const t = (jobToOpen.salarType || "").toLowerCase();
-            if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
-            if (t.includes("month")) return "/month";
-            if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
-            return "/hr";
-          })(),
-          educationLevel: jobToOpen.educationLevel,
-          yearsOfExperience: jobToOpen.yearsOfExperience,
-          skills: jobToOpen.requiredSkills
-            ? jobToOpen.requiredSkills.split(",").map((s) => s.trim())
-            : [],
-          workAuthorization: [
-            jobToOpen.isUSCitizen && "US Citizen",
-            jobToOpen.isGC && "Green Card",
-            jobToOpen.isH1B && "H1B",
-            jobToOpen.isEAD && "EAD",
-            jobToOpen.isOPT && "OPT",
-            jobToOpen.isCPT && "CPT",
-            jobToOpen.isH4 && "H4",
-          ].filter(Boolean),
-          preferredEmployment: [
-            jobToOpen.isCorpToCorp && "Corp-Corp",
-            jobToOpen.isW2Permanent && "W2-Permanent",
-            jobToOpen.isW2Contract && "W2-Contract",
-            jobToOpen.is1099Contract && "1099-Contract",
-            jobToOpen.isContractToHire && "Contract to Hire",
-          ].filter(Boolean),
-        };
-        setSelectedJob(mappedJob);
-      }
-    }
-  };
-
   // initial + pagination fetch
   useEffect(() => {
+    let isMounted = true;
+
+    const fetchJobs = async () => {
+      if (pageNumber > 1 && !hasMore) return;
+
+      const payload = {
+        ComponyID: Number(companyId), // ⚠ exact casing required
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        filters: buildApiFilters(filters),
+      };
+
+      const res = await getTalentJobs(payload).unwrap();
+
+      if (!isMounted) return;
+
+      if (!Array.isArray(res) || res.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setAllJobs((prev) =>
+        pageNumber === 1 ? res : [...prev, ...res]
+      );
+
+      if (res.length < PAGE_SIZE) {
+        setHasMore(false);
+      }
+
+      // Auto-open logic
+      const autoOpenJobId = location.state?.autoOpenJobId;
+      if (autoOpenJobId && pageNumber === 1) {
+        const jobToOpen = res.find(j => (j.jobID || j.id) === autoOpenJobId);
+        if (jobToOpen) {
+          // We need to map it to the UI format
+          const mappedJob = {
+            id: jobToOpen.jobID,
+            title: jobToOpen.jobTitle,
+            company: jobToOpen.companyName,
+            location: jobToOpen.location,
+            type: jobToOpen.employeeType,
+            workModel: jobToOpen.workModels,
+            department: jobToOpen.department,
+            jobDuration: jobToOpen.jobDuration,
+            userId: jobToOpen.userId,
+            jobDurationText: jobToOpen.jobDuration ? `${jobToOpen.jobDuration} ${jobToOpen.jobDuration_Unit || "Months"}` : null,
+            rateText: jobToOpen.salaryRange_Min && jobToOpen.salaryRange_Max
+              ? `$${jobToOpen.salaryRange_Min}-${jobToOpen.salaryRange_Max}`
+              : jobToOpen.salaryRange_Min
+                ? `$${jobToOpen.salaryRange_Min}`
+                : "N/A",
+            experienceText: jobToOpen.experienceLevel,
+            description: jobToOpen.jobDescription,
+            additionalRequirements: jobToOpen.additionalRequirements,
+            salaryType: (() => {
+              const t = (jobToOpen.salarType || "").toLowerCase();
+              if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+              if (t.includes("month")) return "/month";
+              if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+              return "/hr";
+            })(),
+            educationLevel: jobToOpen.educationLevel,
+            yearsOfExperience: jobToOpen.yearsOfExperience,
+            skills: jobToOpen.requiredSkills
+              ? jobToOpen.requiredSkills.split(",").map((s) => s.trim())
+              : [],
+            workAuthorization: [
+              jobToOpen.isUSCitizen && "US Citizen",
+              jobToOpen.isGC && "Green Card",
+              jobToOpen.isH1B && "H1B",
+              jobToOpen.isEAD && "EAD",
+              jobToOpen.isOPT && "OPT",
+              jobToOpen.isCPT && "CPT",
+              jobToOpen.isH4 && "H4",
+            ].filter(Boolean),
+            preferredEmployment: [
+              jobToOpen.isCorpToCorp && "Corp-Corp",
+              jobToOpen.isW2Permanent && "W2-Permanent",
+              jobToOpen.isW2Contract && "W2-Contract",
+              jobToOpen.is1099Contract && "1099-Contract",
+              jobToOpen.isContractToHire && "Contract to Hire",
+            ].filter(Boolean),
+          };
+          setSelectedJob(mappedJob);
+        }
+      }
+    };
+
     fetchJobs();
-  }, [pageNumber, filters]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pageNumber, filters, debouncedSearch]);
 
   // =========================
   // SCROLL HANDLER (same as TalentPool)
@@ -290,6 +321,20 @@ const UserJobs = () => {
     }));
   }, [allJobs]);
 
+  // Client-side search filtering (fast visual refinement)
+  const filteredJobs = useMemo(() => {
+    if (!searchQuery.trim()) return jobs;
+    const query = searchQuery.toLowerCase();
+    return jobs.filter((job) =>
+      job.title?.toLowerCase().includes(query) ||
+      job.company?.toLowerCase().includes(query) ||
+      job.location?.toLowerCase().includes(query) ||
+      job.description?.toLowerCase().includes(query) ||
+      job.type?.toLowerCase().includes(query) ||
+      job.skills?.some((s) => s.toLowerCase().includes(query))
+    );
+  }, [jobs, searchQuery]);
+
   useEffect(() => {
     setAllJobs([]);
     setPageNumber(1);
@@ -299,7 +344,7 @@ const UserJobs = () => {
       setMinTimeElapsed(true);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [filters]);
+  }, [filters, debouncedSearch]);
 
 
   const updateFilters = (newFilters) => {
@@ -311,21 +356,21 @@ const UserJobs = () => {
   };
 
   return (
+    <div
+      style={{
+        background: "#f5f7fb",
+        minHeight: "100vh",
+        padding: "18px",
+      }}
+    >
       <div
         style={{
-          background: "#f5f7fb",
-          minHeight: "100vh",
-          padding: "18px",
+          display: "flex",
+          gap: "22px",
+          alignItems: "flex-start",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            gap: "22px",
-            alignItems: "flex-start",
-          }}
-        >
-          {/* LEFT FILTER */}
+        {/* LEFT FILTER */}
 
         <aside
         >
@@ -340,47 +385,72 @@ const UserJobs = () => {
           />
         </aside>
 
-          {/* RIGHT */}
+        {/* RIGHT */}
 
-          <div style={{ flex: 1 }}>
+        <div style={{ flex: 1 }}>
 
-            {/* TOP */}
+          {/* TOP */}
 
 
-                    <div className="hero-card mb-4">
-                  <div className="hero-left">
-                    <div className="hero-pill">
-                              ✦ Find jobs
-                            </div>
-                  <h1 className="job-posting-title text-white">Jobs & Openings Board</h1>
-                  
-                   
-                  <div className="job-posting-header-info">
-                  
-                  <p className="job-posting-subtitle">
-                   Showing {jobs.length} matches based on your interactive filters
-                  </p>
-                  </div>
-                  </div>
-                   
-                   <div style={{ position: "relative" }}>
-              <select className="routine-btn me-2"
-                defaultValue="Most recent"
-              >
-                <option value="Most recent">Most Recent</option>
-              </select>
-              <FiChevronDown
+          <div className="hero-card mb-4">
+            <div className="hero-left">
+              <div className="hero-pill">
+                ✦ Find jobs
+              </div>
+              <h1 className="job-posting-title text-white">Jobs & Openings Board</h1>
+
+
+              <div className="job-posting-header-info">
+
+                <p className="job-posting-subtitle">
+                  Showing {filteredJobs.length} matches based on your interactive filters
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="ut-search-wrapper"
+              style={{
+                display: "flex",
+                flex: "none",
+                alignItems: "center",
+                background: "rgba(255, 255, 255, 0.12)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                borderRadius: "12px",
+                padding: "0 12px",
+                height: "38px",      // reduced from 44px
+                width: "30%",      // reduced width to 140px
+                boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <FiSearch
                 style={{
-                  position: "absolute",
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#ffffffff",
-                  pointerEvents: "none",
+                  color: "rgba(255, 255, 255, 0.7)",
+                  fontSize: "14px",   // reduced from 18px
+                  flexShrink: 0,
+                }}
+              />
+
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="jobs-search-input"
+                style={{
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  marginLeft: "8px",
+                  width: "100%",
+                  fontSize: "11px",   // reduced from 12.5px
+                  fontWeight: 500,
+                  color: "#ffffff",
                 }}
               />
             </div>
-                  </div>
+          </div>
 
           {/* GRID */}
 
@@ -402,84 +472,96 @@ const UserJobs = () => {
                 <p className="jobs-loader-text">Searching for job opportunities...</p>
                 <span className="jobs-loader-sub">Matching roles based on your filters</span>
               </div>
+            ) : filteredJobs.length === 0 ? (
+              <div
+                style={{
+                  minHeight: "320px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%"
+                }}
+              >
+                <NoData text={searchQuery ? "No jobs matching your search" : "No jobs found"} />
+              </div>
             ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fill,minmax(320px,1fr))",
-                gap: "22px",
-                paddingTop:"8px"
-              }}
-            >
-              {jobs.map((job) => (
-                <div
-                  key={job.id}
-                  onClick={() => setSelectedJob(job)}
-                  className="job-card"
-                >
-                  {/* TOP */}
-                  <div className="job-card-header">
-                    <div className="job-header-left">
-                      <div className="job-company-logo">
-                        {getInitials(job.company)}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fill,minmax(320px,1fr))",
+                  gap: "22px",
+                  paddingTop: "8px"
+                }}
+              >
+                {filteredJobs.map((job) => (
+                  <div
+                    key={job.id}
+                    onClick={() => setSelectedJob(job)}
+                    className="job-card"
+                  >
+                    {/* TOP */}
+                    <div className="job-card-header">
+                      <div className="job-header-left">
+                        <div className="job-company-logo">
+                          {getInitials(job.company)}
+                        </div>
+
+                        <div className="job-header-info">
+                          <h3 className="job-title">{job.title}</h3>
+                          <p className="company-name">{job.company}</p>
+                        </div>
                       </div>
 
-                      <div className="job-header-info">
-                        <h3 className="job-title">{job.title}</h3>
-                        <p className="company-name">{job.company}</p>
+                      <div className="job-eye-icon">
+                        <FiEye size={22} />
                       </div>
                     </div>
 
-                    <div className="job-eye-icon">
-                      <FiEye size={22} />
-                    </div>
-                  </div>
-
-                  {/* TAGS */}
-                  <div className="job-tags-row">
-                    <span className="job-chip purple">
-                      {job.experienceText}
-                    </span>
+                    {/* TAGS */}
+                    <div className="job-tags-row">
+                      <span className="job-chip purple">
+                        {job.experienceText}
+                      </span>
 
                       <span className="job-chip green">
                         {job.workModel}
                       </span>
 
                       <span className="job-chip mint">
-                                          {job.type?.length > 12
-                                            ? `${job.type.slice(0, 12)}...`
-                                            : job.type}
-                                        </span>
+                        {job.type?.length > 12
+                          ? `${job.type.slice(0, 12)}...`
+                          : job.type}
+                      </span>
                     </div>
 
                     {/* DESC */}
                     <p className="job-description">
-                                      {job.description?.replace(/\*\*/g, "")}
-                                    </p>
+                      {job.description?.replace(/\*\*/g, "")}
+                    </p>
 
-                  {/* FOOTER */}
-                  <div className="job-card-footer">
-                    <div className="job-rate">
-                      {job.rateText}
-                      <span className="job-rate-unit">
-                        {job.salaryType}
-                      </span>
-                    </div>
+                    {/* FOOTER */}
+                    <div className="job-card-footer">
+                      <div className="job-rate">
+                        {job.rateText}
+                        <span className="job-rate-unit">
+                          {job.salaryType}
+                        </span>
+                      </div>
 
-                    <div className="meta-pill">
-                      <FiMapPin size={12} />
-                      <span
-                        title={job.location}
-                        style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                      >
-                        {job.location ? job.location.split(',')[0].trim() : ""}
-                      </span>
+                      <div className="meta-pill">
+                        <FiMapPin size={12} />
+                        <span
+                          title={job.location}
+                          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                        >
+                          {job.location ? job.location.split(',')[0].trim() : ""}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -494,6 +576,18 @@ const UserJobs = () => {
           }
         />
       )}
+      <style>{`
+        .jobs-search-input::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+          opacity: 1;
+        }
+        .jobs-search-input:-ms-input-placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+        .jobs-search-input::-ms-input-placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      `}</style>
     </div>
   );
 };

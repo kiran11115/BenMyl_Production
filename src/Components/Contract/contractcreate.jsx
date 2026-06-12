@@ -410,6 +410,7 @@ const ContractCreate = () => {
               name: item.EmployeeName,
               jobId: item.JobId,
               jobTitle: item.JobName,
+              CompanyName: item.CompanyName
             }))
           );
         }
@@ -871,7 +872,7 @@ const ContractCreate = () => {
                                 formik.setFieldValue('candidateEmail', c.email);
                                 formik.setFieldValue('candidatePhone', c.phone);
                                 const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
-                                const candidateComp = c.uploadedByName || "BenMyl Staffing";
+                                const candidateComp = c.CompanyName || c.uploadedByName || "BenMyl Staffing";
                                 const roleLower = userRoleRaw.toLowerCase();
                                 if (roleLower === 'benchsales') {
                                   formik.setFieldValue('companyName', loggedInComp);

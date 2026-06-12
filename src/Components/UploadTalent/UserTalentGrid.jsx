@@ -58,9 +58,9 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
         </span>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {candidate.progress !== undefined && (
+          {candidate.profileCompletionPercentage !== undefined && (
             <div className="match-badge">
-              {candidate.progress}% Match
+              {candidate.profileCompletionPercentage}% completed
             </div>
           )}
 

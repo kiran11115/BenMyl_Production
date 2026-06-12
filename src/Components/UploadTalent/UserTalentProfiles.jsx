@@ -145,6 +145,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
           status: item.status?.toUpperCase() || "NEW",
           rating: 4.5,
           avatar: item.profilepicture || "",
+          profileCompletionPercentage: item.profileCompletionPercentage,
         }));
 
         // Page 1 → replace, Page 2+ → append
