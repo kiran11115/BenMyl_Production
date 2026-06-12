@@ -441,14 +441,6 @@ const chartOptions = {
 
           <button
             className="routine-btn"
-            onClick={() => setShowUploadModal(true)}
-          >
-            <Upload size={16} />
-            Upload Talent
-          </button>
-
-          <button
-            className="routine-btn"
             onClick={() => navigate('/User/active-routines')}
           >
             View Active Routines

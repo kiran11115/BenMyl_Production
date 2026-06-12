@@ -17,15 +17,27 @@ const MobileTalentCard = ({ talent, onView, onDelete }) => {
       .join("")
       .toUpperCase();
 
+  const pct = parseInt(talent.confidence) || 75;
+
   return (
     <div className="mobile-talent-card">
       <div className="card-top">
         <div className="candidate-info">
           <div
-            className="mobile-avatar"
-            style={{ background: getAvatarColor(talent.fileName) }}
+            className="avatar-border-circle"
+            style={{ 
+              "--percent": pct,
+              "--gradient-start": pct < 40 ? "#fb923c" : pct > 80 ? "#34d399" : "#60a5fa",
+              "--gradient-mid": pct < 40 ? "#f97316" : pct > 80 ? "#10b981" : "#3b82f6",
+              "--gradient-end": pct < 40 ? "#ea580c" : pct > 80 ? "#059669" : "#2563eb"
+            }}
           >
-            {getInitials(talent.fileName)}
+            <div
+              className="mobile-avatar"
+              style={{ background: getAvatarColor(talent.fileName) }}
+            >
+              {getInitials(talent.fileName)}
+            </div>
           </div>
           <div className="text-content">
             <h4 className="file-name">{talent.fileName}</h4>
@@ -92,13 +104,31 @@ const MobileTalentCard = ({ talent, onView, onDelete }) => {
         .mobile-avatar {
           width: 44px; /* Increased slightly */
           height: 44px;
-          border-radius: 10px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
           font-weight: 700;
           font-size: 14px;
+          flex-shrink: 0;
+        }
+
+        .avatar-border-circle {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          padding: 3px;
+          background: conic-gradient(
+            var(--gradient-start, #60a5fa) 0%, 
+            var(--gradient-mid, #3b82f6) calc(var(--percent, 0) * 0.5%), 
+            var(--gradient-end, #2563eb) calc(var(--percent, 0) * 1%), 
+            #e2e8f0 calc(var(--percent, 0) * 1%), 
+            #e2e8f0 100%
+          );
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
         }
 

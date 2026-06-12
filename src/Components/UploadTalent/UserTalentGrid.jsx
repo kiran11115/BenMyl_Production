@@ -59,7 +59,7 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {candidate.profileCompletionPercentage !== undefined && (
-            <div className="match-badge">
+            <div className="job-chip green">
               {candidate.profileCompletionPercentage}% completed
             </div>
           )}
@@ -81,7 +81,16 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
         onClick={handleProfileClick}
         style={{ cursor: 'pointer' }}
       >
-        {candidate.avatar ? (
+        <div 
+          className="talent-avatar-border-circle"
+          style={{ 
+            "--percent": candidate.profileCompletionPercentage || 75,
+            "--gradient-start": (candidate.profileCompletionPercentage || 75) < 40 ? "#fb923c" : (candidate.profileCompletionPercentage || 75) > 80 ? "#34d399" : "#60a5fa",
+            "--gradient-mid": (candidate.profileCompletionPercentage || 75) < 40 ? "#f97316" : (candidate.profileCompletionPercentage || 75) > 80 ? "#10b981" : "#3b82f6",
+            "--gradient-end": (candidate.profileCompletionPercentage || 75) < 40 ? "#ea580c" : (candidate.profileCompletionPercentage || 75) > 80 ? "#059669" : "#2563eb"
+          }}
+        >
+          {candidate.avatar ? (
           <img
             src={candidate.avatar}
             alt={candidate.name}
@@ -96,6 +105,7 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
             {getInitials(candidate.name || candidate.title || candidate.company)}
           </div>
         )}
+        </div>
         <div className="profile-details">
           <h4 className="name" style={small ? { fontSize: '13.5px' } : {}}>{candidate.name || candidate.title}</h4>
           <p className="role" style={small ? { fontSize: '11px' } : {}}>{candidate.role || candidate.company}</p>

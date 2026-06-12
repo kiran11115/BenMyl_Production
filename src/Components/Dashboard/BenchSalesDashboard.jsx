@@ -413,10 +413,13 @@ const chartOptions = {
             <ArrowUpRight size={16} />
           </button>
 
-          <UploadTalentModal
-            onSuccess={(msg) => { setToastMessage(msg); setShowUploadedSuccess(true); setTimeout(() => setShowUploadedSuccess(false), 5000); }}
-            onUploading={(isUploading) => setShowUploading(!!isUploading)}
-          />
+          <button
+            className="routine-btn"
+            onClick={() => navigate('/User/upload-review-talent')}
+          >
+            Upload Talent
+            <Upload size={16} />
+          </button>
         </div>
       </div>
 

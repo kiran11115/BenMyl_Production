@@ -1,0 +1,2161 @@
+.subscription-page-wrapper {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+}
+
+.subscription-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.subscription-header h1 {
+  font-size: 36px;
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.subscription-header p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.subscription-plans-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.subscription-plans-container-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+@media (max-width: 1400px) {
+  .subscription-plans-container-4col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .subscription-plans-container-4col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Base Plan Card - combining Google UI & Job Card aesthetics */
+.subscription-plan-card {
+  background: #ffffff;
+  border-radius: 28px;
+  border: 1px solid #e7ebf3;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
+/* Hover lifts + elegant shadows + border colors */
+.subscription-plan-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  border-color: #cbd5e1;
+}
+
+/* Gradient bottom accent bar from Job Cards - animates on hover */
+.subscription-plan-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #f5810c 0%, #a855f7 60%, #ec4899 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.subscription-plan-card:hover::after {
+  opacity: 1;
+}
+
+/* Top accent color band - Google UI planning card feel */
+.plan-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+}
+
+/* Active Plan glowing states and dimensions */
+.subscription-plan-card.active-plan {
+  border-width: 1.5px;
+}
+
+/* Standalone active plan card in standard user view has a max-width */
+.subscription-main-section > .subscription-plan-card.active-plan {
+  max-width: 480px;
+  margin-bottom: 32px;
+}
+
+.subscription-plan-card.active-plan.plan-theme-free {
+  border-color: #22c55e;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.08);
+}
+
+.subscription-plan-card.active-plan.plan-theme-basic {
+  border-color: #f5810c;
+  box-shadow: 0 8px 30px rgba(245, 129, 12, 0.08);
+}
+
+.subscription-plan-card.active-plan.plan-theme-pro {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+}
+
+.subscription-plan-card.active-plan.plan-theme-enterprise {
+  border-color: #a855f7;
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.08);
+}
+
+/* Card Header */
+.plan-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.plan-header-left {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.plan-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.subscription-plan-card:hover .plan-icon-box {
+  transform: scale(1.05);
+}
+
+.plan-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.plan-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  font-weight: 500;
+}
+
+/* Plan Badge Statuses */
+.plan-badge-wrapper {
+  flex-shrink: 0;
+}
+
+.plan-status-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  display: inline-block;
+}
+
+.plan-status-badge.active {
+  background: rgba(59, 130, 246, 0.08);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.plan-status-badge.recommended {
+  background: rgba(168, 85, 247, 0.08);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.plan-status-badge.normal {
+  background: rgba(148, 163, 184, 0.08);
+  color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* Card Body */
+.plan-card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan-token-section {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 14px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plan-token-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.plan-token-breakdown {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Features list styling */
+.plan-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.feature-check-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Coming Soon overrides */
+.subscription-plan-card.coming-soon {
+  opacity: 0.92;
+}
+
+/* Card Footer */
+.plan-card-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.plan-price-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.price-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.3px;
+}
+
+/* Action Buttons */
+.plan-action-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.plan-action-btn.active-btn {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: default;
+}
+
+.plan-action-btn.coming-soon-btn {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.plan-action-btn.upgrade-btn {
+  background: #1e293b;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(30, 41, 59, 0.15);
+}
+
+.plan-action-btn.upgrade-btn:hover {
+  transform: translateY(-2px);
+  background: #0f172a;
+}
+
+.subscription-content-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.subscription-main-section {
+  flex: 2;
+}
+
+.subscription-side-section {
+  flex: 1;
+}
+
+.mt-5 {
+  margin-top: 32px;
+}
+
+.active-plan-card {
+  margin-bottom: 32px;
+}
+
+/* Integrated Hero Card Layout */
+.subscription-hero-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  padding: 28px 36px !important;
+}
+
+/* Glassmorphic Widget inside Dark Header Card */
+.hero-token-widget {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 18px 24px;
+  min-width: 340px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 5;
+}
+
+.hero-token-widget .widget-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-token-widget .widget-header svg {
+  color: #fbbf24; /* Golden glow */
+}
+
+.hero-token-widget .widget-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.hero-token-widget .widget-progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+  flex-grow: 1;
+}
+
+.hero-token-widget .widget-progress-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #f5810c 0%, #a855f7 50%, #ec4899 100%);
+  transition: width 0.4s ease;
+}
+
+.hero-token-widget .widget-progress-bar.warning {
+  background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);
+}
+
+.hero-token-widget .widget-percent {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+.hero-token-widget .widget-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.hero-token-widget .widget-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-token-widget .stat-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(217, 221, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.hero-token-widget .stat-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+/* Metrics Cards (Sidebar) */
+.metrics-card {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #e7ebf3;
+  box-shadow: 0 4px 10px rgba(16, 24, 40, 0.02);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metrics-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(16, 24, 40, 0.05);
+  border-color: #cbd5e1;
+}
+
+.metrics-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e7ebf3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+}
+
+.metrics-card-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.1px;
+}
+
+.metrics-card-header svg {
+  color: #64748b;
+}
+
+.metrics-card-body {
+  padding: 20px;
+}
+
+/* Tables and Usage List matching application standards */
+.candidates-table-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 550px;
+  padding: 0;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  text-align: left;
+  padding: 14px 18px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #ffffff;
+  font-weight: 700;
+  background-color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.custom-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.custom-table tr:last-child td {
+  border-bottom: none;
+}
+
+.custom-table tr {
+  transition: all 0.2s;
+}
+
+.custom-table tr:hover td {
+  background-color: #fafbfc;
+}
+
+/* Initial avatar styles */
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  flex-shrink: 0;
+  border: 1.5px solid #ffffff;
+}
+
+.profile-avatar.initials {
+  background: #f1f1ff;
+  color: #5B5BD6;
+  font-weight: 700;
+  border: 1.5px solid #f1f1ff;
+}
+
+/* Spinner Styles */
+.spinner-sm {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.approve-request-btn,
+.decline-request-btn {
+  transition: all 0.2s ease;
+}
+
+.approve-request-btn:hover {
+  background: #059669 !important;
+  transform: translateY(-1px);
+}
+
+.decline-request-btn:hover {
+  background: #dc2626 !important;
+  transform: translateY(-1px);
+}
+
+.approve-request-btn:disabled,
+.decline-request-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.user-info-td {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-details-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.u-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.u-role {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.token-usage-badge {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  display: inline-block;
+}
+
+.status-badge.paid {
+  background: rgba(34, 197, 94, 0.08);
+  color: #10b981;
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Invoice Download Button */
+.download-invoice-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-invoice-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* Payment Methods */
+.add-payment-btn {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.add-payment-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.payment-method-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e7ebf3;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.pm-icon-wrapper {
+  background: rgba(59, 130, 246, 0.08);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pm-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+
+.pm-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.pm-exp {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pm-badge.active {
+  background: rgba(34, 197, 94, 0.08);
+  color: #10b981;
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+/* User request side card layout */
+.request-desc {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.request-tokens-btn {
+  width: 100%;
+  background: #1e293b;
+  color: #ffffff;
+  border: none;
+  padding: 11px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(30, 41, 59, 0.15);
+}
+
+.request-tokens-btn:hover {
+  background: #0f172a;
+  transform: translateY(-1px);
+}
+
+/* Card Category Left Borders Indicators - elegant & premium */
+.metrics-card.admin-usage-card {
+  border-left: 4px solid #3b82f6; /* Blue indicator for user usage */
+}
+
+.metrics-card.admin-payment-card {
+  border-left: 4px solid #10b981; /* Green indicator for payment card */
+}
+
+.metrics-card.admin-history-card {
+  border-left: 4px solid #a855f7; /* Purple indicator for payment history */
+}
+
+.metrics-card.user-request-card {
+  border-left: 4px solid #f5810c; /* Orange indicator for token request */
+}
+
+/* Elegant Tabs matching AccountSettings.css */
+.elegant-tabs-container {
+  display: flex;
+  gap: 2rem;
+  background: transparent;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.elegant-tabs-container .tab-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-radius: 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.elegant-tabs-container .tab-item:hover {
+  color: #0f172a;
+}
+
+.elegant-tabs-container .tab-item.active {
+  font-weight: 700;
+}
+
+.elegant-tabs-container .tab-item svg {
+  transition: transform 0.2s ease;
+}
+
+.elegant-tabs-container .tab-item:hover svg {
+  transform: scale(1.1);
+}
+
+/* Two-column layout with stacked left section and aside right section */
+.billing-tab-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.billing-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.billing-aside-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .billing-tab-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Premium Card and Sections */
+.premium-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+.section-title-premium {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+}
+
+/* Payment Card Row Elements */
+.payment-card-row {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.payment-visa-badge {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+.payment-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+}
+
+.card-mask {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+}
+
+.card-expiry {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.payment-card-status {
+  flex-shrink: 0;
+}
+
+.primary-pill {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid #e2e8f0;
+}
+
+/* Checkboxes and Double arrows sorting indicators */
+.table-header-checkbox,
+.row-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  vertical-align: middle;
+}
+
+.sort-icon {
+  color: #94a3b8;
+  font-size: 10px;
+  margin-left: 2px;
+  display: inline-block;
+  user-select: none;
+}
+
+.invoice-link-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.invoice-link-btn:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+/* Tab Panels Content Containers */
+.subscription-tab-panel {
+  width: 100%;
+  animation: tabFadeIn 0.3s ease;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-content-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tab-grid-left {
+  flex: 1;
+}
+
+.tab-grid-right {
+  flex: 1.25;
+}
+
+.plans-section-full {
+  width: 100%;
+}
+
+/* Token stats dashboard rows inside utilization cards */
+.token-percent-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 6px;
+}
+
+.token-stats-details-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ts-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ts-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.ts-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+.font-green .ts-val {
+  color: #10b981;
+}
+
+.font-orange .ts-val {
+  color: #f5810c;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+  .tab-content-grid {
+    flex-direction: column;
+  }
+  
+  .tab-grid-left,
+  .tab-grid-right {
+    width: 100%;
+  }
+}
+
+/* Users tab 360px / 1fr Layout */
+.users-tab-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+.users-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.users-aside-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.subscription-standard-flow {
+  width: 100%;
+  animation: tabFadeIn 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .users-tab-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hero Token Widget Premium */
+.hero-token-widget-premium {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 16px 24px;
+  min-width: 280px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 5;
+}
+
+.widget-header-premium {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(217, 221, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.widget-value-premium {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.add-tokens-action-btn {
+  background: #ffffff;
+  color: #1e293b;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.add-tokens-action-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Stripe Form Styles */
+.stripe-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.stripe-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.stripe-input-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+}
+
+.stripe-input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.stripe-input:focus {
+  border-color: #5B5BD6;
+  box-shadow: 0 0 0 2px rgba(91, 91, 214, 0.1);
+}
+
+/* Token Package Cards */
+.token-pkg-card {
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.token-pkg-card:hover {
+  border-color: #5B5BD6 !important;
+  background: #fcfcff !important;
+}
+
+.token-pkg-card.selected {
+  border: 2px solid #5B5BD6;
+  background: linear-gradient(145deg, #fbfbff, #f3f3ff);
+  box-shadow: 0 4px 20px rgba(91, 91, 214, 0.08);
+}
+
+/* Payment Selector Card */
+.payment-selector-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.payment-selector-card:hover {
+  border-color: #a8a8f0;
+  background: #f8fafc;
+}
+
+.payment-selector-card.selected {
+  border-color: #5B5BD6;
+  background: #fcfcff;
+  box-shadow: 0 4px 12px rgba(91, 91, 214, 0.06);
+}
+
+/* Stripe Input Group Box */
+.stripe-input-group {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stripe-input-group:focus-within {
+  border-color: #5B5BD6;
+  box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.15);
+}
+
+.stripe-input-cell {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+.stripe-input-cell:not(:last-child) {
+  border-bottom: 1.5px solid #cbd5e1;
+}
+
+.stripe-input-row {
+  display: flex;
+  border-bottom: 1.5px solid #cbd5e1;
+}
+
+.stripe-input-row .stripe-input-cell {
+  flex: 1;
+  border-bottom: none !important;
+}
+
+.stripe-input-row .stripe-input-cell:first-child {
+  border-right: 1.5px solid #cbd5e1;
+}
+
+.stripe-input-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.stripe-input-field {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13.5px;
+  color: #1e293b;
+  font-weight: 600;
+  padding: 2px 0;
+  width: 100%;
+}
+
+.stripe-input-field::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Standalone inputs for Stripe form */
+.stripe-field-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.stripe-field-input {
+  padding: 10px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.stripe-field-input:focus {
+  border-color: #5B5BD6;
+  box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.15);
+}
+
+/* Request Toast Buttons Hover */
+.approve-toast-btn {
+  transition: all 0.2s ease !important;
+}
+
+.approve-toast-btn:hover {
+  background: #bbf7d0 !important;
+  transform: scale(1.08);
+}
+
+.decline-toast-btn {
+  transition: all 0.2s ease !important;
+}
+
+.decline-toast-btn:hover {
+  background: #fecaca !important;
+  transform: scale(1.08);
+}
+
+/* Thin Scrollbar support */
+.psm-body {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.psm-body::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.psm-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.psm-body::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.psm-body::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* 2x2 grid layout for packages */
+.token-packages-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.token-pkg-grid-card {
+  padding: 16px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.22s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.token-pkg-grid-card:hover {
+  border-color: #5B5BD6;
+  background: #fbfbff;
+  transform: translateY(-2px);
+}
+
+.token-pkg-grid-card.selected {
+  border: 2px solid #5B5BD6;
+  background: linear-gradient(145deg, #fbfbff, #f3f3ff);
+  box-shadow: 0 4px 16px rgba(91, 91, 214, 0.08);
+}
+
+.recommended-badge-mini {
+  position: absolute;
+  top: -8px;
+  background: #5B5BD6;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(91, 91, 214, 0.2);
+}
+
+.pkg-tokens-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+  font-family: 'Space Grotesk', sans-serif;
+  line-height: 1;
+}
+
+.pkg-tokens-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+.pkg-price-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #5B5BD6;
+  font-family: 'Space Grotesk', sans-serif;
+  line-height: 1;
+}
+
+.pkg-unit-price {
+  font-size: 9px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Requests from Users scrollable list container with background */
+.requests-scroll-container {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  max-height: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.requests-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.requests-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.requests-scroll-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.request-toast-alert-card {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.request-toast-alert-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+}
+
+/* Custom overlay alert cards (replaces Native Confirm Alerts) */
+.custom-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 20px;
+  animation: confirmFadeIn 0.2s ease-out;
+}
+
+.custom-confirm-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+  border: 1.5px solid #cbd5e1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@keyframes confirmFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.custom-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-confirm-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(91, 91, 214, 0.08);
+  color: #5b5bd6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.custom-confirm-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.custom-confirm-message {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.custom-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Dynamic package card hover transition */
+.token-pkg-grid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+/* Primary Button Styling */
+.btn-primary {
+  background-color: #5B5BD6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(91, 91, 214, 0.15) !important;
+  text-decoration: none !important;
+}
+
+.btn-primary:hover {
+  background-color: #4747c4 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(91, 91, 214, 0.25) !important;
+}
+
+.btn-primary:disabled {
+  background-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Secondary Button Styling */
+.btn-secondary {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1.5px solid #cbd5e1 !important;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none !important;
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* ==========================================================================
+   VIRTUAL CREDIT CARD & TOKEN USAGE & STRIPE SELECTORS STYLES
+   ========================================================================== */
+
+/* Virtual Credit Card Display */
+.virtual-credit-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 200px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #2e2a72 50%, #4338ca 100%);
+  border-radius: 20px;
+  padding: 24px;
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(49, 46, 129, 0.25), 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.virtual-credit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(49, 46, 129, 0.35), 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.card-glow {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(91, 91, 214, 0.4) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-chip {
+  width: 38px;
+  height: 28px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.card-chip::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.card-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.brand-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  font-style: italic;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.card-badge {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.card-middle-row {
+  margin: 12px 0;
+}
+
+.virtual-card-number {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  word-spacing: 0.1em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-holder-info, .card-expiry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-label-mini {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.card-value-text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Stripe Side Modal Card Selectors */
+.stripe-payment-selector-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stripe-payment-selector-card:hover {
+  border-color: #5B5BD6;
+  background: #fbfbff;
+}
+
+.stripe-payment-selector-card.selected {
+  border-color: #5B5BD6;
+  background: rgba(91, 91, 214, 0.04);
+  box-shadow: 0 2px 10px rgba(91, 91, 214, 0.05);
+}
+
+.selector-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo-icon {
+  width: 44px;
+  height: 28px;
+  background: #1e3a8a;
+  color: #ffffff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  font-style: italic;
+}
+
+.brand-logo-icon.new-card-icon {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px dashed #cbd5e1;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-desc {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.card-expiry-sub {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.check-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  transition: all 0.18s ease;
+}
+
+.check-indicator.active {
+  background: #5B5BD6;
+  border-color: #5B5BD6;
+  color: #ffffff;
+}
+
+/* Token Usage Layout */
+.token-usage-tab-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Usage Summary Grid */
+.usage-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .usage-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.usage-summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: all 0.25s ease;
+}
+
+.usage-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+  border-color: #cbd5e1;
+}
+
+.card-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon-box.orange {
+  background: rgba(245, 129, 12, 0.08);
+  color: #f5810c;
+}
+
+.card-icon-box.blue {
+  background: rgba(59, 130, 246, 0.08);
+  color: #3b82f6;
+}
+
+.card-icon-box.purple {
+  background: rgba(168, 85, 247, 0.08);
+  color: #a855f7;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Usage Search Filter Header */
+.usage-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.usage-table-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper .search-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-input {
+  padding: 8px 12px 8px 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e293b;
+  outline: none;
+  background: #ffffff;
+  width: 200px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #5B5BD6;
+  box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.1);
+}
+
+.role-filter-select {
+  padding: 8px 24px 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e293b;
+  outline: none;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-filter-select:focus {
+  border-color: #5B5BD6;
+}
+
+/* Compact Progress Bar */
+.usage-progress-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 220px;
+}
+
+.usage-numeric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.usage-slash {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.usage-limit {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.progress-bar-bg.compact {
+  height: 6px;
+  border-radius: 3px;
+}
+
+/* Percentage and Progress classes */
+.percent-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.percent-badge.success {
+  background: rgba(34, 197, 94, 0.08);
+  color: #16a34a;
+}
+
+.percent-badge.warning {
+  background: rgba(245, 129, 12, 0.08);
+  color: #d97706;
+}
+
+.percent-badge.danger {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+}
+
+/* Credit Card Details Panel next to Virtual Card */
+.credit-card-details-panel {
+  flex: 1;
+  min-width: 280px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+  transition: all 0.3s ease;
+}
+
+.credit-card-details-panel:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.details-panel-title {
+  margin: 0 0 16px 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.details-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.details-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.details-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Elegant gradients for utilization progress fills */
+.progress-bar-fill.success {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+}
+
+.progress-bar-fill.warning {
+  background: linear-gradient(90deg, #f5810c 0%, #d97706 100%) !important;
+}
+
+.progress-bar-fill.danger {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;
+}

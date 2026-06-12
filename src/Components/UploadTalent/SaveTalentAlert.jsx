@@ -331,6 +331,16 @@ export const SaveSuccessModal = ({ onClose }) => {
 
         <div className="custom-talent-alert-actions-row">
           <button
+            className="custom-talent-alert-secondary-btn"
+            onClick={() => {
+              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
+              navigate(`${basePath}/upload-review-talent`);
+              if (onClose) onClose();
+            }}
+          >
+            Continue Review
+          </button>
+          <button
             className="custom-talent-alert-primary-btn"
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';

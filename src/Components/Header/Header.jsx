@@ -63,7 +63,7 @@ function Header() {
         path: "/user/user-upcoming-interview"
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
-
+      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
     ],
     "Benchsales": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
@@ -71,7 +71,7 @@ function Header() {
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
       { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
-
+      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
     ],
     "Recruiter2": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
@@ -93,6 +93,7 @@ function Header() {
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
       { label: "Resource  Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
+      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
     ]
   };
 

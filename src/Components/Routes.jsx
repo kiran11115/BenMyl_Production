@@ -45,6 +45,7 @@ import PostedJobsPage from "./UserProjects/PostedJobsPage";
 import ContractForm from "./Contract/contractform";
 import ContractCreate from "./Contract/contractcreate";
 import ContractView from "./Contract/contractview";
+import SubscriptionPage from "./Subscription/SubscriptionPage";
 
 
 
@@ -114,6 +115,7 @@ const routes = createBrowserRouter(
           <Route path="contract-listing" element={<ContractForm />} />
           <Route path="contract-create" element={<ContractCreate />} />
           <Route path="contract-view/:id" element={<ContractView />} />
+          <Route path="admin-subscription" element={<SubscriptionPage />} />
 
 
         </Route>
@@ -170,6 +172,7 @@ const routes = createBrowserRouter(
           <Route path="contract-listing" element={<ContractForm />} />
           <Route path="contract-create" element={<ContractCreate />} />
           <Route path="contract-view/:id" element={<ContractView />} />
+          <Route path="user-subscription" element={<SubscriptionPage />} />
 
         </Route>
       </Route>

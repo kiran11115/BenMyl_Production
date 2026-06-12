@@ -63,6 +63,14 @@ const TalentGridView = ({
           const fullStars  = Math.floor(rating);
           const halfStar   = rating - fullStars >= 0.5;
 
+          const pct = matchScore || 75;
+          let gradientStart = "#60a5fa", gradientMid = "#3b82f6", gradientEnd = "#2563eb";
+          if (pct < 40) {
+            gradientStart = "#fb923c"; gradientMid = "#f97316"; gradientEnd = "#ea580c";
+          } else if (pct > 80) {
+            gradientStart = "#34d399"; gradientMid = "#10b981"; gradientEnd = "#059669";
+          }
+
           return (
             <div
               key={candidate.id}
@@ -83,7 +91,7 @@ const TalentGridView = ({
                   {s.label}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div className="match-badge">
+                  <div className="job-chip green">
                     {matchScore}% Match
                   </div>
                   <div
@@ -98,17 +106,27 @@ const TalentGridView = ({
 
               {/* ── Profile Section: avatar + name + role ── */}
               <div className="profile-section">
-                {candidate.avatar ? (
-                  <img
-                    src={candidate.avatar}
-                    alt={initials}
-                    className="profile-avatar"
-                  />
-                ) : (
-                  <div className="profile-avatar initials">
-                    {initials}
-                  </div>
-                )}
+                <div 
+                  className="talent-avatar-border-circle"
+                  style={{ 
+                    "--percent": pct,
+                    "--gradient-start": gradientStart,
+                    "--gradient-mid": gradientMid,
+                    "--gradient-end": gradientEnd
+                  }}
+                >
+                  {candidate.avatar ? (
+                    <img
+                      src={candidate.avatar}
+                      alt={initials}
+                      className="profile-avatar"
+                    />
+                  ) : (
+                    <div className="profile-avatar initials">
+                      {initials}
+                    </div>
+                  )}
+                </div>
 
                 <div className="profile-details">
                   <h4 className="name">{candidate.name}</h4>

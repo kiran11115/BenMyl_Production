@@ -312,6 +312,7 @@ useEffect(() => {
             )}
             {sortedTalents.map((talent, i) => {
               const isSelected = selectedEmails.has(talent.email);
+              const pct = parseInt(talent.confidence) || 75;
               return (
                 <tr key={i} className={isSelected ? "row-selected" : ""}>
                   {!isDashboard && (
@@ -328,10 +329,20 @@ useEffect(() => {
                   <td>
                     <div className="candidate-cell">
                       <div
-                        className="avatar"
-                        style={{ background: getAvatarColor(talent.fileName) }}
+                        className="avatar-border-circle"
+                        style={{ 
+                          "--percent": pct,
+                          "--gradient-start": pct < 40 ? "#fb923c" : pct > 80 ? "#34d399" : "#60a5fa",
+                          "--gradient-mid": pct < 40 ? "#f97316" : pct > 80 ? "#10b981" : "#3b82f6",
+                          "--gradient-end": pct < 40 ? "#ea580c" : pct > 80 ? "#059669" : "#2563eb"
+                        }}
                       >
-                        {getInitials(talent.fileName)}
+                        <div
+                          className="avatar"
+                          style={{ background: getAvatarColor(talent.fileName) }}
+                        >
+                          {getInitials(talent.fileName)}
+                        </div>
                       </div>
                       <div>
                         <div className="candidate-name">

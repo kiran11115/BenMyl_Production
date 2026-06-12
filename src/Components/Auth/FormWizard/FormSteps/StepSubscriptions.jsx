@@ -1,30 +1,15 @@
 import React from "react";
 import "./StepSubscriptions.css";
+import { subscriptionPlans } from "../../../Subscription/subscriptionData";
 
 const StepSubscriptions = ({ formData, handleSubscriptionChange }) => {
-  const plans = [
-    {
-      id: "free_trial",
-      name: "Free Trial",
-      description: "Valid for limited time. Get full access to our platform features for 20 days.",
-      price: "$0",
-      comingSoon: false,
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      description: "Advanced tools for growing teams.",
-      price: "$49/mo",
-      comingSoon: true,
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      description: "Custom solutions for large organizations.",
-      price: "Custom",
-      comingSoon: true,
-    },
-  ];
+  const plans = subscriptionPlans.map(plan => ({
+    id: plan.id,
+    name: plan.name,
+    description: `${plan.subtitle}. ${plan.tokens}`,
+    price: plan.price,
+    comingSoon: plan.comingSoon,
+  }));
 
   return (
     <div className="auth-step-content">
