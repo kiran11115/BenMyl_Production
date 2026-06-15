@@ -38,6 +38,13 @@ const ChatApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getFAQs: builder.query({
+  query: () => ({
+    url: "/api/uatcompany/FAQS_Answers",
+    method: "GET",
+  }),
+}),
+
   }),
 });
 
@@ -47,4 +54,5 @@ export const {
   useChatUsersListQuery,
   useStartConversationMutation,
   useSendMessageMutation,
+  useGetFAQsQuery
 } = ChatApiSlice;

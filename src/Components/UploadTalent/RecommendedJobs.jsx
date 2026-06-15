@@ -35,10 +35,13 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
       
       try {
         setIsLoading(true);
-        const payload = { 
-          role: role === "N/A" ? "" : role, 
-          skills: skills || [] 
-        };
+        const payload = {
+  role: role === "N/A" ? "" : role,
+  skills:
+    typeof skills === "string"
+      ? skills.split(",").map((s) => s.trim())
+      : skills || [],
+};
         const res = await getRecommendedJobs(payload).unwrap();
         setAllJobs(Array.isArray(res) ? res : []);
       } catch (error) {
