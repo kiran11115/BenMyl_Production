@@ -63,7 +63,7 @@ function Header() {
         path: "/user/user-upcoming-interview"
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
-      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
+      { label: "Subscription", path: "/user/user-subscription", module: "Subscription" },
     ],
     "Benchsales": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
@@ -71,7 +71,7 @@ function Header() {
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
       { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
-      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
+      { label: "Subscription", path: "/user/user-subscription", module: "Subscription" },
     ],
     "Recruiter2": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
@@ -93,14 +93,14 @@ function Header() {
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
       { label: "Resource  Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
-      { label: "Subscription", path: "/user/user-subscription", module: "Main Dashboard" },
+      { label: "Subscription", path: "/user/user-subscription", module: "Subscription" },
     ]
   };
 
   const navLinks = navigationData[role] || navigationData["Recruiter"];
 
   const filteredNavLinks = navLinks.filter(link => {
-    if (link.module === "Interviews" || link.module === "Contracts") return true; // Always show interviews and contracts for now
+    if (link.module === "Interviews" || link.module === "Contracts" || link.module === "Subscription") return true; // Always show interviews and contracts for now
     return hasPermission(link.module, 'view');
   });
 
