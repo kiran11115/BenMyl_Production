@@ -27,15 +27,15 @@ import { FiEye } from "react-icons/fi";
 import ScheduleInterviewDrawer from "../ScheduleInterview/ScheduleInterviewDrawer";
 
 const formatDateToDisplay = (value) => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (isNaN(date)) return value;
+    if (!value) return "";
+    const date = new Date(value);
+    if (isNaN(date)) return value;
 
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const year = date.getFullYear();
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
 
-  return `${day}-${month}-${year}`;
+    return `${day}-${month}-${year}`;
 };
 
 
@@ -52,7 +52,7 @@ export default function UpcomingInterview() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
-    
+
     // Support auto-opening drawer and preselection from navigation state
     const [isDrawerOpen, setIsDrawerOpen] = useState(location.state?.openDrawer || false);
     const [preSelectedJobId, setPreSelectedJobId] = useState(location.state?.preSelectedJobId || null);
@@ -67,8 +67,8 @@ export default function UpcomingInterview() {
     const isAdmin = userRole === "Admin" || window.location.pathname.toLowerCase().startsWith('/admin');
 
     const shouldFetchBoth = isRecruiter2 || isAdmin;
-    const shouldFetchNormal = !isBenchsales || shouldFetchBoth; 
-    const shouldFetchBench = isBenchsales || shouldFetchBoth; 
+    const shouldFetchNormal = !isBenchsales || shouldFetchBoth;
+    const shouldFetchBench = isBenchsales || shouldFetchBoth;
 
     const { data: apiInterviewsNormal = [], isLoading: isLoadingNormal, isError: isErrorNormal } = useSchedulesDetailsQuery(recruiterId, {
         skip: !recruiterId || !shouldFetchNormal,
@@ -180,7 +180,7 @@ export default function UpcomingInterview() {
             it.date.getMonth() === selectedDate.getMonth() &&
             it.date.getFullYear() === selectedDate.getFullYear()
         );
-      
+
     }, [interviews, selectedDate, searchQuery]);
 
     const handleViewDetail = (interview) => {
@@ -229,8 +229,8 @@ export default function UpcomingInterview() {
         <div className="ui-page">
             {/* Hero Header with Blue Gradient */}
             <div className="hero-card mb-4">
-                <FiCalendar 
-                    size={240} 
+                <FiCalendar
+                    size={240}
                     style={{
                         position: 'absolute',
                         right: '30%',
@@ -291,27 +291,38 @@ export default function UpcomingInterview() {
                             </div>
                             <div className="hero-main" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div className="hero-info" style={{ flex: 1 }}>
-                                    <h2 className="hero-candidate-name" style={{ fontSize: '16px', marginBottom: '4px',color: "white", textTransform:"uppercase", lineHeight:"10px" }}>{nextInterview.name}</h2>
+                                    <h2 className="hero-candidate-name" style={{ fontSize: '16px', marginBottom: '4px', color: "white", textTransform: "uppercase", lineHeight: "10px" }}>{nextInterview.name}</h2>
                                     <p className="hero-candidate-role" style={{ fontSize: '11px', marginBottom: '8px' }}>{nextInterview.role} • {nextInterview.vendorName}</p>
-                                    <div className="hero-time-box d-flex gap-2" style={{ fontSize: '12px', padding: '6px 12px', marginTop:"15px" }}>
+                                    <div className="hero-time-box d-flex gap-2" style={{ fontSize: '12px', padding: '6px 12px', marginTop: "15px" }}>
                                         <FiCalendar className="icon" /> {nextInterview.dateLabel}
                                         <FiClock className="icon ms-2" /> {nextInterview.time}
                                     </div>
                                 </div>
                                 <div className="hero-actions" style={{ flexDirection: 'column', gap: '8px', minWidth: '130px', marginLeft: '16px' }}>
-                                    {nextInterview.meetingLink ? (
-                                        <button
-                                            onClick={() => window.open(nextInterview.meetingLink, "_blank", "noopener,noreferrer")}
-                                            className="routine-btn"
-                                            style={{ padding: '8px 12px', fontSize: '12px', display:"block" }}
-                                        >
-                                            Join Meeting
-                                        </button>
-                                    ) : (
-                                        <button className="hero-join-btn disabled" disabled style={{ padding: '8px 12px', fontSize: '12px' }}>
-                                            Link Pending
-                                        </button>
-                                    )}
+                                    <button
+                                        className="routine-btn"
+                                        onClick={() => {
+                                            if (
+                                                !nextInterview.meetingLink ||
+                                                nextInterview.meetingLink === "null"
+                                            ) {
+                                                toast.warning(
+                                                    "Meeting link is not available. Please open Interview Details and share the meeting link."
+                                                );
+
+                                                handleViewDetail(nextInterview); // move to Interview Details page
+                                                return;
+                                            }
+
+                                            window.open(
+                                                nextInterview.meetingLink,
+                                                "_blank",
+                                                "noopener,noreferrer"
+                                            );
+                                        }}
+                                    >
+                                        Join Meeting
+                                    </button>
                                     <button className="hero-details-btn" onClick={() => handleViewDetail(nextInterview)} style={{ padding: '8px 12px', fontSize: '12px' }}>
                                         View Details
                                     </button>
@@ -393,8 +404,8 @@ export default function UpcomingInterview() {
                             <div className="jobs-wrapper" style={{ padding: 0 }}>
                                 <div className="jobs-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
                                     {filteredInterviews.map((interview) => (
-                                        <div 
-                                            key={interview.id} 
+                                        <div
+                                            key={interview.id}
                                             className="job-card justify-content-between ui-no-hover"
                                             onClick={() => handleViewDetail(interview)}
                                             style={{ cursor: "pointer" }}
@@ -434,21 +445,32 @@ export default function UpcomingInterview() {
                                                 {/* ACTIONS */}
                                                 <div className="job-desc-block">
                                                     <div className="d-flex gap-2">
-                                                        {interview.meetingLink ? (
-                                                            <button
-                                                                className="job-view-more-btn flex-grow-1"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    window.open(interview.meetingLink, "_blank");
-                                                                }}
-                                                            >
-                                                                Join Session
-                                                            </button>
-                                                        ) : (
-                                                            <button className="job-view-more-btn disabled flex-grow-1" disabled style={{ opacity: 0.6 }}>
-                                                                Pending Link
-                                                            </button>
-                                                        )}
+                                                        <button
+                                                            className="job-view-more-btn"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+
+                                                                if (
+                                                                    !interview.meetingLink ||
+                                                                    interview.meetingLink === "null"
+                                                                ) {
+                                                                    toast.warning(
+                                                                        "Meeting link is not available. Redirecting to Interview Details to share the meeting link."
+                                                                    );
+
+                                                                    handleViewDetail(interview);
+                                                                    return;
+                                                                }
+
+                                                                window.open(
+                                                                    interview.meetingLink,
+                                                                    "_blank",
+                                                                    "noopener,noreferrer"
+                                                                );
+                                                            }}
+                                                        >
+                                                            Join Session
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -480,7 +502,7 @@ export default function UpcomingInterview() {
                                 </div>
                                 <h3>No Interviews Scheduled</h3>
                                 <p>Relax! You don't have any sessions booked for this criteria.</p>
-                                <button className="btn-v2-primary mt-3"  onClick={() => {
+                                <button className="btn-v2-primary mt-3" onClick={() => {
                                     setPreSelectedJobId(null);
                                     setPreSelectedCandidateId(null);
                                     setIsDrawerOpen(true);
@@ -580,10 +602,10 @@ export default function UpcomingInterview() {
                     </div>
                 </div>
             )}
-            <ScheduleInterviewDrawer 
-                isOpen={isDrawerOpen} 
-                onClose={() => setIsDrawerOpen(false)} 
-                onSuccess={() => {}}
+            <ScheduleInterviewDrawer
+                isOpen={isDrawerOpen}
+                onClose={() => setIsDrawerOpen(false)}
+                onSuccess={() => { }}
                 preSelectedJobId={preSelectedJobId}
                 preSelectedCandidateId={preSelectedCandidateId}
             />
