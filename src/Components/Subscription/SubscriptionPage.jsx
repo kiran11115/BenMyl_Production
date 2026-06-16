@@ -97,7 +97,7 @@ const SubscriptionPage = () => {
   };
 
   // ── Team query & token allocation state ──
-  const { data: teamApiData = [], isLoading: isTeamLoading } = useGetTeamMembersQuery(emailID, { skip: !emailID || !isAdmin });
+  const { data: teamApiData, isLoading: isTeamLoading } = useGetTeamMembersQuery(emailID, { skip: !emailID || !isAdmin });
   const [teamUsers, setTeamUsers] = useState([]);
   const [allocateUserEmail, setAllocateUserEmail] = useState("");
   const [allocateTokensAmount, setAllocateTokensAmount] = useState("");
