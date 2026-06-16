@@ -32,7 +32,12 @@ export default function InterviewDetails() {
     const interview = location.state?.interview;
 
     const [isJobExpanded, setIsJobExpanded] = useState(true);
-    const [meetingLinkInput, setMeetingLinkInput] = useState(interview?.meetingLink || "");
+    const [meetingLinkInput, setMeetingLinkInput] = useState(
+  interview?.meetingLink &&
+  interview.meetingLink !== "null"
+    ? interview.meetingLink
+    : ""
+);
     const [addedPeople, setAddedPeople] = useState([]);
     const [newPersonEmail, setNewPersonEmail] = useState("");
     const [showEmailInput, setShowEmailInput] = useState(false);
@@ -151,6 +156,8 @@ export default function InterviewDetails() {
                 "Meeting link shared successfully!"
             );
 
+            navigate("/user/user-upcoming-interview");
+
         } catch (error) {
             console.error(error);
 
@@ -229,14 +236,23 @@ export default function InterviewDetails() {
                     >
                         <FiArrowLeft size={13} /> Back to Interviews
                     </button>
-                    {activeInterview.meetingLink && (
-                        <button
-                            className="routine-btn-2"
-                            onClick={() => window.open(activeInterview.meetingLink, '_blank', 'noopener,noreferrer')}
-                        >
-                            <FiVideo size={13} /> Join Meeting
-                        </button>
-                    )}
+                    <button
+  className="routine-btn-2"
+  onClick={() => {
+    const link = activeInterview?.meetingLink;
+
+    if (!link || link === "null") {
+      toast.warning(
+        "Meeting link is not available. Please share the meeting link below."
+      );
+      return;
+    }
+
+    window.open(link, "_blank", "noopener,noreferrer");
+  }}
+>
+  <FiVideo size={13} /> Join Meeting
+</button>
                 </div>
             </div>
 

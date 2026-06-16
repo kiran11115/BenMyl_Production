@@ -229,7 +229,7 @@ function AdminDashboard() {
     labels: graphData.map(d => d.month),
     datasets: [
       {
-        label: "Hiring Managers",
+        label: "Overall Jobs Posted",
         data: graphData.map(d => d.hiringManagers),
         borderColor: "#5a5de8",
         backgroundColor: "rgba(90, 93, 232, 0.1)",
@@ -242,7 +242,7 @@ function AdminDashboard() {
         pointHoverRadius: 6,
       },
       {
-        label: "Bench Sales",
+        label: "Resumes Uploaded",
         data: graphData.map(d => d.benchSales),
         borderColor: "#00b67a",
         backgroundColor: "rgba(0, 182, 122, 0.1)",
@@ -295,6 +295,28 @@ function AdminDashboard() {
       }
     }
   };
+
+  const latest = graphData[graphData.length - 1] || {};
+const previous = graphData[graphData.length - 2] || {};
+
+const totalJobs = graphData.reduce(
+  (sum, item) => sum + item.hiringManagers,
+  0
+);
+
+const totalResumes = graphData.reduce(
+  (sum, item) => sum + item.benchSales,
+  0
+);
+
+const growth =
+  previous.hiringManagers > 0
+    ? (
+        ((latest.hiringManagers - previous.hiringManagers) /
+          previous.hiringManagers) *
+        100
+      ).toFixed(1)
+    : 0;
 
   return (
     <div className="ai-dashboard-wrapper">
@@ -613,37 +635,39 @@ function AdminDashboard() {
 
           <div className="graph-footer">
 
-            <div>
-              <span>
-                AVG RECRUITMENT CYCLE
-              </span>
+  <div>
+    <span>TOTAL JOBS POSTED</span>
+    <strong style={{ fontSize: 14 }}>
+      {totalJobs}
+    </strong>
+  </div>
 
-              <strong style={{ fontSize: 14 }}>
-                11.4 Days
-              </strong>
-            </div>
+  <div>
+    <span>TOTAL RESUMES UPLOADED</span>
+    <strong
+      style={{
+        fontSize: 14,
+        color: "#5B5BD6",
+      }}
+    >
+      {totalResumes}
+    </strong>
+  </div>
 
-            <div>
-              <span>
-                AI SCORE SUCCESS RATE
-              </span>
+  <div>
+    <span>MONTHLY GROWTH</span>
+    <strong
+      style={{
+        fontSize: 14,
+        color: "#009966",
+      }}
+    >
+      {growth > 0 ? "+" : ""}
+      {growth}%
+    </strong>
+  </div>
 
-              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>
-                98.4% Accuracy
-              </strong>
-            </div>
-
-            <div>
-              <span>
-                YIELD INDEX GROWTH
-              </span>
-
-              <strong style={{ fontSize: 14, color: '#009966' }}>
-                +14% Growth
-              </strong>
-            </div>
-
-          </div>
+</div>
 
         </div>
 

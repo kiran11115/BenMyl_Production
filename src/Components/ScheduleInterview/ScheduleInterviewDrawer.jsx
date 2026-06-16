@@ -256,7 +256,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
             fd.append('InterviewMode', 'Online');
             fd.append('InterviewLocation', selectedJob.location);
             fd.append('InterviewerName', userName);
-            fd.append('InterviewLink', 'Google.com');
+            fd.append('InterviewLink', null);
             fd.append('CandidateID', selectedCandidate.id);
             fd.append('CandidateEmailid', selectedCandidate.email);
             fd.append('Salary', selectedJob.budget);

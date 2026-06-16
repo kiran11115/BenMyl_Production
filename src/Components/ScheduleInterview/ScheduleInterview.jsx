@@ -263,7 +263,7 @@ const ScheduleInterview = () => {
             formData.append("InterviewMode", "Online");
             formData.append("InterviewLocation", selectedJob.location);
             formData.append("InterviewerName", userName);
-            formData.append("InterviewLink", "Google.com");
+            formData.append("InterviewLink", null);
             formData.append("CandidateID", selectedCandidate.id);
             formData.append("CandidateEmailid", selectedCandidate.email);
             formData.append("Salary", selectedJob.budget);

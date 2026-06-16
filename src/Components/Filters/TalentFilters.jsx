@@ -202,26 +202,30 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
     });
   };
 
-  const toggleJobSelection = (jobId) => {
-    setFilterInputs((prev) => {
-      const isSelected = prev.selectedJobs.includes(jobId);
-      const newSelectedJobs = isSelected
-        ? prev.selectedJobs.filter((id) => id !== jobId)
-        : [...prev.selectedJobs, jobId];
+ const toggleJobSelection = (jobId) => {
+  setFilterInputs((prev) => {
+    const isSelected = prev.selectedJobs.includes(jobId);
 
-      const updated = {
-        ...prev,
-        selectedJobs: newSelectedJobs,
-      };
-      if (onApplyFilters) {
-        if (debounceTimerRef.current) {
-          clearTimeout(debounceTimerRef.current);
-        }
+    const newSelectedJobs = isSelected
+      ? prev.selectedJobs.filter((id) => id !== jobId)
+      : [...prev.selectedJobs, jobId];
+
+    const updated = {
+      ...prev,
+      selectedJobs: newSelectedJobs,
+    };
+
+    if (onApplyFilters) {
+      clearTimeout(debounceTimerRef.current);
+
+      debounceTimerRef.current = setTimeout(() => {
         onApplyFilters(updated);
-      }
-      return updated;
-    });
-  };
+      }, 500);
+    }
+
+    return updated;
+  });
+};
 
   const removeArrayItem = (field, value) => {
     setFilterInputs((prev) => {
