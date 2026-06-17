@@ -65,3 +65,8 @@
         display: flex;
     }
 }
+
+.mobile-nav-ai-sparkle {
+    color: #ffffff;
+    font-size: 16px;
+}

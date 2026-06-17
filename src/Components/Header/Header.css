@@ -115,6 +115,30 @@
   border-radius: 2px;
 }
 
+/* Active Navigation Icon styling */
+.header-nav-link .nav-active-icon,
+.dropdown-item .nav-active-icon {
+  display: none;
+}
+
+.header-nav-link.active .nav-active-icon,
+.dropdown-item.active .nav-active-icon {
+  display: inline-block;
+  margin-right: 4px;
+  animation: navIconFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes navIconFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(1px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* --- Right Section: Search & Profile --- */
 .header-right {
   display: flex;

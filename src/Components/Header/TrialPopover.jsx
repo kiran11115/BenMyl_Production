@@ -44,9 +44,9 @@ const TrialPopover = () => {
 
   const handleSubscribe = () => {
     handleHide();
-    // Assuming routing to billing or account settings
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    navigate(`${basePath}/billing-control`);
+    const isSharedAdmin = window.location.pathname.toLowerCase().startsWith('/admin');
+    const path = isSharedAdmin ? '/Admin/admin-subscription' : '/user/user-subscription';
+    navigate(path);
   };
 
   if (!isVisible) return null;

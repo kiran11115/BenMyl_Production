@@ -63,6 +63,7 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
 
         {/* ── Hero banner (Blue Card Area) ── */}
         <div className="psm-hero">
+          <div className="psm-drag-handle" />
           <div className="psm-hero-bg" />
 
           {/* Close button */}

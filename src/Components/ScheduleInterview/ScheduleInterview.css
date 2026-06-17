@@ -2164,3 +2164,39 @@
   gap: 6px;
   color: #64748b;
 }
+
+@media (max-width: 768px) {
+  .custom-modal-overlay,
+  .success-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .success-popover-modal,
+  .custom-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    margin: 0 !important;
+    max-height: 85vh !important;
+    animation: modalSlideUpMobile 0.35s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  }
+  .success-popover-modal::before,
+  .custom-modal-content::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    margin: -10px auto 16px;
+  }
+}
+
+@keyframes modalSlideUpMobile {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

@@ -355,12 +355,12 @@ const SubscriptionPage = () => {
         className={`subscription-plan-card ${theme.themeClass} ${isActive ? 'active-plan' : ''} ${plan.comingSoon ? 'coming-soon' : ''}`}
       >
         {/* Google UI color bar at the top */}
-        <div className="plan-top-bar" style={{ backgroundColor: theme.accentColor }}></div>
+        <div className="plan-top-bar"></div>
 
         {/* Card Header matching Job Card structure */}
         <div className="plan-card-header">
           <div className="plan-header-left">
-            <div className="plan-icon-box" style={{ color: theme.iconColor, backgroundColor: `${theme.accentColor}12` }}>
+            <div className="plan-icon-box">
               <PlanIcon size={20} />
             </div>
             <div className="plan-header-info">
@@ -384,7 +384,7 @@ const SubscriptionPage = () => {
           {/* Token Pills */}
           <div className="plan-token-section">
             <div className="plan-token-pill">
-              <Zap size={13} style={{ fill: "#f5810c", color: "#f5810c" }} />
+              <Zap size={13} className="plan-zap-icon" />
               <span>{plan.tokens}</span>
             </div>
             <p className="plan-token-breakdown">{plan.tokensBreakdown}</p>
@@ -394,7 +394,7 @@ const SubscriptionPage = () => {
           <ul className="plan-features-list">
             {plan.features.map((feature, idx) => (
               <li key={idx}>
-                <Check size={14} className="feature-check-icon" style={{ color: theme.accentColor }} />
+                <Check size={14} className="feature-check-icon" />
                 <span>{feature}</span>
               </li>
             ))}
@@ -407,7 +407,7 @@ const SubscriptionPage = () => {
             <span className="price-label">Price:</span>
             <span className="price-value">{priceDisplay}</span>
             {isYearlyBilling && plan.id !== "free_trial" && plan.id !== "enterprise" && (
-              <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 600, marginTop: '2px' }}>
+              <span className="plan-price-billed-info">
                 Billed annually (${plan.id === "basic" ? 468 : 1908}/yr)
               </span>
             )}
@@ -428,8 +428,8 @@ const SubscriptionPage = () => {
     <div className="projects-page-wrapper">
       <div className="projects-container">
         {/* HERO SECTION */}
-        <div className="hero-card mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
-          <div className="hero-left" style={{ flex: 1, minWidth: '280px' }}>
+        <div className="hero-card mb-4 sub-hero-container">
+          <div className="hero-left sub-hero-left">
             <div className="hero-pill">
               ✦ Subscriptions & Billing
             </div>
@@ -444,17 +444,17 @@ const SubscriptionPage = () => {
           </div>
           
           {/* Elegant widgets in top blue card */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <div className="sub-hero-widgets">
             {/* Plan Details Widget */}
             <div className="hero-token-widget-premium">
               <div className="widget-header-premium">
-                <Shield size={14} style={{ color: "#38bdf8" }} />
+                <Shield size={14} className="sub-shield-icon" />
                 <span>Current Subscription</span>
               </div>
-              <div className="widget-value-premium font-sans" style={{ fontSize: "16.5px", fontWeight: 700, margin: "6px 0", color: "#ffffff" }}>
+              <div className="widget-value-premium font-sans sub-widget-value">
                 Free Trial
               </div>
-              <div style={{ fontSize: "10px", color: "rgba(255, 255, 255, 0.7)", fontWeight: 600 }}>
+              <div className="sub-widget-expiry">
                 Exp: June 30, 2026
               </div>
             </div>
@@ -462,12 +462,12 @@ const SubscriptionPage = () => {
             {/* Tokens Pool Widget */}
             <div className="hero-token-widget-premium">
               <div className="widget-header-premium">
-                <Zap size={14} style={{ fill: "#fbbf24", color: "#fbbf24" }} />
+                <Zap size={14} className="sub-zap-icon" />
                 <span>{isAdmin ? "Available Tokens Pool" : "Your Available Tokens"}</span>
               </div>
               <div className="widget-value-premium">
                 {isAdmin ? adminTokensLeft.toLocaleString() : "200"}
-                <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.7)", fontWeight: 600, marginTop: "4px" }}>
+                <div className="sub-widget-allocated">
                   {isAdmin ? `Allocated: ${adminTotalPool.toLocaleString()}` : "Allocated: 1,000"}
                 </div>
               </div>
@@ -484,38 +484,34 @@ const SubscriptionPage = () => {
         {isAdmin && (
           <div className="elegant-tabs-container">
             <button 
-              className={`tab-item ${activeTab === 'users' ? 'active' : ''}`}
-              style={activeTab === 'users' ? { color: '#10b981', borderBottomColor: '#10b981' } : {}}
+              className={`tab-item tab-item-users ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
-              <Users size={13} style={{ marginRight: '8px' }} />
+              <Users size={13} className="tab-icon" />
               <span>Users</span>
             </button>
             
             <button 
-              className={`tab-item ${activeTab === 'billing' ? 'active' : ''}`}
-              style={activeTab === 'billing' ? { color: '#3b82f6', borderBottomColor: '#3b82f6' } : {}}
+              className={`tab-item tab-item-billing ${activeTab === 'billing' ? 'active' : ''}`}
               onClick={() => setActiveTab('billing')}
             >
-              <CreditCard size={13} style={{ marginRight: '8px' }} />
+              <CreditCard size={13} className="tab-icon" />
               <span>Billing & Payments</span>
             </button>
             
             <button 
-              className={`tab-item ${activeTab === 'plans' ? 'active' : ''}`}
-              style={activeTab === 'plans' ? { color: '#a855f7', borderBottomColor: '#a855f7' } : {}}
+              className={`tab-item tab-item-plans ${activeTab === 'plans' ? 'active' : ''}`}
               onClick={() => setActiveTab('plans')}
             >
-              <Layers size={13} style={{ marginRight: '8px' }} />
+              <Layers size={13} className="tab-icon" />
               <span>Subscription Plans</span>
             </button>
 
             <button 
-              className={`tab-item ${activeTab === 'usage' ? 'active' : ''}`}
-              style={activeTab === 'usage' ? { color: '#f5810c', borderBottomColor: '#f5810c' } : {}}
+              className={`tab-item tab-item-usage ${activeTab === 'usage' ? 'active' : ''}`}
               onClick={() => setActiveTab('usage')}
             >
-              <Activity size={13} style={{ marginRight: '8px' }} />
+              <Activity size={13} className="tab-icon" />
               <span>Token Usage</span>
             </button>
           </div>
@@ -531,45 +527,34 @@ const SubscriptionPage = () => {
                 {/* Left side: Allocate Tokens & Requests from Users (360px wide) */}
                 <div className="users-aside-content">
                   {/* Allocate Tokens Card (Accordion style) */}
-                  <div className="premium-card" style={{ padding: "20px" }}>
+                  <div className="premium-card premium-card-p20">
                     <h3 
                       onClick={() => setIsAllocateExpanded(!isAllocateExpanded)}
-                      style={{ 
-                        display: "flex", 
-                        justifyContent: "space-between", 
-                        alignItems: "center", 
-                        cursor: "pointer", 
-                        fontSize: "13px", 
-                        fontWeight: 700, 
-                        color: "#1F2937", 
-                        textTransform: "uppercase", 
-                        letterSpacing: "0.06em", 
-                        margin: 0
-                      }}
+                      className="allocate-accordion-trigger"
                     >
-                      <span className='section-title-premium' style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span className='section-title-premium allocate-title-flex'>
                         <DollarSign size={14} />
                         Allocate Tokens
                       </span>
                       <span>
                         {isAllocateExpanded ? (
-                          <ChevronUp size={14} style={{ color: "#64748b" }} />
+                          <ChevronUp size={14} />
                         ) : (
-                          <ChevronDown size={14} style={{ color: "#64748b" }} />
+                          <ChevronDown size={14} />
                         )}
                       </span>
                     </h3>
 
                     {isAllocateExpanded && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginTop: "16px" }}>
+                      <div className="allocate-form-container">
                         <div>
-                          <label style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "5px" }}>
+                          <label className="allocate-field-label">
                             Select User
                           </label>
                           <select 
                             value={allocateUserEmail} 
                             onChange={(e) => setAllocateUserEmail(e.target.value)}
-                            style={{ width: "100%", padding: "8px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px", color: "#1e293b", outline: "none", cursor: "pointer", background: "#ffffff" }}
+                            className="allocate-select"
                           >
                             {teamUsers.map(user => (
                               <option key={user.emailID} value={user.emailID}>
@@ -580,13 +565,13 @@ const SubscriptionPage = () => {
                         </div>
 
                         <div>
-                          <label style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "5px" }}>
+                          <label className="allocate-field-label">
                             User Role
                           </label>
                           <select 
                             value={selectedUserObject?.role || ""} 
                             disabled 
-                            style={{ width: "100%", padding: "8px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px", color: "#94a3b8", outline: "none", background: "#f8fafc" }}
+                            className="allocate-select-disabled"
                           >
                             {allRoles.map((roleName) => (
                               <option key={roleName} value={roleName}>
@@ -596,17 +581,17 @@ const SubscriptionPage = () => {
                           </select>
                         </div>
 
-                        <div style={{ background: "#f8fafc", padding: "10px 12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                          <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>
+                        <div className="allocate-pool-info">
+                          <span className="allocate-pool-label">
                             Tokens Left in Pool
                           </span>
-                          <span style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a", fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <span className="allocate-pool-value">
                             {adminTokensLeft.toLocaleString()}
                           </span>
                         </div>
 
                         <div>
-                          <label style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "5px" }}>
+                          <label className="allocate-field-label">
                             Tokens to Allocate
                           </label>
                           <input 
@@ -614,18 +599,17 @@ const SubscriptionPage = () => {
                             placeholder="Min 100" 
                             value={allocateTokensAmount} 
                             onChange={(e) => setAllocateTokensAmount(e.target.value)}
-                            style={{ width: "100%", padding: "8px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px", color: "#1e293b", outline: "none", background: "#ffffff" }}
+                            className="allocate-input"
                           />
                         </div>
 
                         <button 
-                          className="btn-primary" 
-                          style={{ width: "100%", marginTop: "6px" }}
+                          className="btn-primary allocate-submit-btn" 
                           onClick={handleAllocateTokens}
                           disabled={isAllocating}
                         >
                           {isAllocating ? (
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                            <div className="allocate-spinner-container">
                               <div className="spinner-sm"></div>
                               Allocating...
                             </div>
@@ -634,7 +618,7 @@ const SubscriptionPage = () => {
                           )}
                         </button>
 
-                        <p style={{ fontSize: "11px", color: "#dc2626", fontWeight: 600, margin: "4px 0 0 0", lineHeight: "1.4" }}>
+                        <p className="allocate-note-text">
                           * Note: Minimum tokens that can be shared/allocated are 100.
                         </p>
                       </div>
@@ -642,14 +626,14 @@ const SubscriptionPage = () => {
                   </div>
 
                   {/* Requests from Users Premium Cards Section (Styled as Toast Alerts in Scroll View) */}
-                  <div className="premium-card" style={{ padding: "20px" }}>
-                    <h3 className='section-title-premium mb-3' style={{ display: "flex", alignItems: "center", gap: "8px"}}>
+                  <div className="premium-card premium-card-p20">
+                    <h3 className='section-title-premium mb-3 sub-flex-center-gap8'>
                       <Bell size={14} />
                       Requests from Users
                     </h3>
                     <div className="requests-scroll-container">
                       {userRequests.length === 0 ? (
-                        <div style={{ padding: "16px", textAlign: "center", color: "#64748b", fontSize: "13px" }}>
+                        <div className="requests-empty">
                           No pending token requests
                         </div>
                       ) : (
@@ -658,63 +642,39 @@ const SubscriptionPage = () => {
                             key={req.id} 
                             className="request-toast-alert-card"
                           >
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flex: 1 }}>
+                            <div className="request-alert-main">
                               {getInitialsAvatar(req.name)}
-                              <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                                <span style={{ fontWeight: 700, fontSize: "12.5px", color: "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              <div className="request-alert-text">
+                                <span className="request-alert-name">
                                   {req.name}
                                 </span>
-                                <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 600 }}>
-                                  Req: <span style={{ color: "#f5810c", fontWeight: 700 }}>{req.tokensRequested}</span>
+                                <span className="request-alert-info">
+                                  Req: <span className="request-alert-tokens">{req.tokensRequested}</span>
                                 </span>
-                                <span style={{ fontSize: "9px", color: "#94a3b8", fontWeight: 500, marginTop: "2px" }}>
+                                <span className="request-alert-date">
                                   Requested on {req.date}
                                 </span>
                               </div>
                             </div>
                             
-                            <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                            <div className="request-alert-actions">
                               <button
-                                className="approve-toast-btn"
+                                className="approve-toast-btn request-btn-circle-success"
                                 disabled={approvingId !== null}
                                 onClick={() => handleApproveRequest(req)}
                                 title="Approve Request"
-                                style={{
-                                  background: "#dcfce7",
-                                  color: "#166534",
-                                  border: "none",
-                                  width: "28px",
-                                  height: "28px",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                }}
                               >
                                 {approvingId === req.id ? (
-                                  <div className="spinner-sm" style={{ width: "10px", height: "10px", borderTopColor: "#166534" }}></div>
+                                  <div className="spinner-sm request-spinner-success"></div>
                                 ) : (
                                   <Check size={14} />
                                 )}
                               </button>
                               <button
-                                className="decline-toast-btn"
+                                className="decline-toast-btn request-btn-circle-danger"
                                 disabled={approvingId !== null}
                                 onClick={() => handleDeclineRequest(req.id)}
                                 title="Decline Request"
-                                style={{
-                                  background: "#fee2e2",
-                                  color: "#991b1b",
-                                  border: "none",
-                                  width: "28px",
-                                  height: "28px",
-                                  borderRadius: "50%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  cursor: "pointer",
-                                }}
                               >
                                 <X size={14} />
                               </button>
@@ -729,10 +689,10 @@ const SubscriptionPage = () => {
                 {/* Right side: List of users with roles and tokens (1fr wide) */}
                 <div className="users-main-content">
                   {/* User List Premium Card */}
-                  <div className="premium-card" style={{ padding: "20px" }}>
+                  <div className="premium-card premium-card-p20">
                     <h2 className="section-title-premium mb-3">
-                      <Users size={15} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                      <span style={{ verticalAlign: 'middle' }}>User Management & Token Allocation</span>
+                      <Users size={15} className="sub-vertical-middle-mr8" />
+                      <span className="sub-vertical-middle">User Management & Token Allocation</span>
                     </h2>
                     <div className="candidates-table-wrapper">
                       <table className="custom-table">
@@ -759,7 +719,7 @@ const SubscriptionPage = () => {
                                 <span className="role-tag-sm">{user.role}</span>
                               </td>
                               <td>
-                                <span className="token-usage-badge" style={{ background: "rgba(16, 185, 129, 0.08)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.15)" }}>
+                                <span className="token-usage-badge usage-badge-allocated">
                                   {user.tokens} Tokens
                                 </span>
                               </td>
@@ -780,18 +740,18 @@ const SubscriptionPage = () => {
                 <div className="billing-main-content">
                   
                   {/* 1. Payment Methods Card */}
-                  <div className="premium-card mb-4" style={{ padding: "20px" }}>
+                  <div className="premium-card mb-4 premium-card-p20">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <h2 className="section-title-premium m-0">
-                        <CreditCard size={15} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                        <span style={{ verticalAlign: 'middle' }}>PAYMENT METHODS</span>
+                        <CreditCard size={15} className="sub-vertical-middle-mr8" />
+                        <span className="sub-vertical-middle">PAYMENT METHODS</span>
                       </h2>
-                      <button className="add-method-btn" style={{ background: "none", border: "none", color: "#475569", fontWeight: 700, fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}>
+                      <button className="add-method-btn sub-add-method">
                         <Plus size={13} /> Add Method
                       </button>
                     </div>
                     
-                    <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "stretch" }}>
+                    <div className="sub-methods-container">
                       <div className="virtual-credit-card">
                         <div className="card-glow"></div>
                         <div className="card-top-row">
@@ -845,15 +805,14 @@ const SubscriptionPage = () => {
                   </div>
 
                   {/* 2. Billing History Card */}
-                  <div className="premium-card" style={{ padding: "20px" }}>
+                  <div className="premium-card premium-card-p20">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h2 className="section-title-premium m-0">
-                        <Activity size={15} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                        <span style={{ verticalAlign: 'middle' }}>BILLING HISTORY</span>
+                        <Activity size={15} className="sub-vertical-middle-mr8" />
+                        <span className="sub-vertical-middle">BILLING HISTORY</span>
                       </h2>
                       <button
-                        className="btn-primary"
-                        style={{ padding: '8px 16px', fontSize: '12px', gap: '6px' }}
+                        className="btn-primary billing-history-btn"
                         onClick={handleDownloadBillingPDF}
                       >
                         <Download size={13} />
@@ -862,7 +821,7 @@ const SubscriptionPage = () => {
                     </div>
 
                     {/* Billing Summary — Admin Dashboard Style Cards */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
+                    <div className="billing-summary-grid">
 
                       {/* Card: Total Billed */}
                       <div className="stat-card">
@@ -876,7 +835,7 @@ const SubscriptionPage = () => {
                         </div>
                         <div className="green-badge">+3</div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
-                        <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><CreditCard size={120} /></div>
+                        <div className="stat-bg-icon stat-bg-blue"><CreditCard size={120} /></div>
                       </div>
 
                       {/* Card: Next Payment */}
@@ -891,7 +850,7 @@ const SubscriptionPage = () => {
                         </div>
                         <div className="green-badge">Aug</div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
-                        <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Clock size={120} /></div>
+                        <div className="stat-bg-icon stat-bg-blue"><Clock size={120} /></div>
                       </div>
 
                       {/* Card: Active Plan */}
@@ -900,13 +859,13 @@ const SubscriptionPage = () => {
                           <div className="stat-title">Active Plan</div>
                           <div className="stat-icon-box"><Sparkles size={16} /></div>
                         </div>
-                        <div className="stat-number" style={{ fontSize: '20px', letterSpacing: '-0.5px' }}>Professional</div>
+                        <div className="stat-number stat-number-pro">Professional</div>
                         <div className="stat-footer-row">
                           <span>Annual · Renews Jul 2026</span>
                         </div>
                         <div className="green-badge">Active</div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
-                        <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Sparkles size={120} /></div>
+                        <div className="stat-bg-icon stat-bg-blue"><Sparkles size={120} /></div>
                       </div>
 
                     </div>
@@ -925,14 +884,14 @@ const SubscriptionPage = () => {
                         <tbody>
                           {paymentHistoryData.map((ph, idx) => (
                             <tr key={idx}>
-                              <td style={{ fontWeight: 700, color: '#1e293b' }}>{ph.date}</td>
+                              <td className="ph-date-td">{ph.date}</td>
                               <td>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <FileText size={13} style={{ color: '#94a3b8', flexShrink: 0 }} />
+                                <div className="ph-desc-container">
+                                  <FileText size={13} className="ph-desc-icon" />
                                   {ph.description}
                                 </div>
                               </td>
-                              <td style={{ fontWeight: 700, color: '#0f172a', fontFamily: "'Space Grotesk', sans-serif" }}>
+                              <td className="ph-amount-td">
                                 {ph.amount}
                               </td>
                               <td>
@@ -940,8 +899,7 @@ const SubscriptionPage = () => {
                               </td>
                               <td>
                                 <button
-                                  className="invoice-link-btn"
-                                  style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                                  className="invoice-link-btn invoice-flex"
                                   onClick={() => toast.success(`Invoice ${ph.invoice} downloaded successfully!`)}
                                 >
                                   <Download size={11} />
@@ -959,13 +917,13 @@ const SubscriptionPage = () => {
 
                 {/* Right Column: Aside Custom Assistance Panel */}
                 <div className="billing-aside-content">
-                  <div className="premium-card" style={{ border: "1.5px dashed #cbd5e1", padding: "16px", background: "#f8fafc" }}>
-                    <h3 style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>
-                      <Sparkles size={14} style={{ color: "#a855f7" }} />
+                  <div className="premium-card sub-custom-aside">
+                    <h3 className="sub-custom-aside-title">
+                      <Sparkles size={14} className="sub-custom-aside-icon" />
                       Need customization?
                     </h3>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "14px", lineHeight: "1.5" }}>For custom seat counts, dedicated support, or white-label platforms, please contact our enterprise team.</p>
-                    <button className="btn-primary" style={{ width: "100%", fontSize: "13px", padding: "8px 14px" }} onClick={() => toast.info("Support request submitted!")}>Contact Support</button>
+                    <p className="sub-custom-aside-desc">For custom seat counts, dedicated support, or white-label platforms, please contact our enterprise team.</p>
+                    <button className="btn-primary sub-custom-aside-btn" onClick={() => toast.info("Support request submitted!")}>Contact Support</button>
                   </div>
                 </div>
 
@@ -975,44 +933,25 @@ const SubscriptionPage = () => {
             {/* TAB 4: SUBSCRIPTION PLANS (Last) */}
             {activeTab === 'plans' && (
               <div className="plans-section-full">
-                <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Layers size={18} style={{ color: "#a855f7" }} />
+                <h3 className="section-title sub-title-flex">
+                  <Layers size={18} className="sub-plans-icon" />
                   Available Subscription Plans
                 </h3>
                 
                 {/* Billing Cycle Toggle */}
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', margin: '24px 0 32px 0' }}>
-                  <span style={{ fontSize: '14px', fontWeight: isYearlyBilling ? 500 : 700, color: isYearlyBilling ? '#64748b' : '#0f172a' }}>Monthly Billing</span>
+                <div className="sub-cycle-toggle-container">
+                  <span className={`sub-cycle-text ${isYearlyBilling ? 'inactive' : 'active'}`}>Monthly Billing</span>
                   <button 
                     onClick={() => setIsYearlyBilling(!isYearlyBilling)}
-                    style={{
-                      width: '48px',
-                      height: '24px',
-                      borderRadius: '12px',
-                      background: '#5B5BD6',
-                      position: 'relative',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '2px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      transition: 'background 0.2s ease'
-                    }}
+                    className="sub-cycle-toggle-btn"
                   >
                     <div 
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        background: '#ffffff',
-                        transform: isYearlyBilling ? 'translateX(24px)' : 'translateX(0)',
-                        transition: 'transform 0.2s ease'
-                      }}
+                      className={`sub-cycle-toggle-dot ${isYearlyBilling ? 'yearly' : 'monthly'}`}
                     />
                   </button>
-                  <span style={{ fontSize: '14px', fontWeight: isYearlyBilling ? 700 : 500, color: isYearlyBilling ? '#0f172a' : '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span className={`sub-cycle-text-yearly ${isYearlyBilling ? 'active' : 'inactive'}`}>
                     Yearly Billing 
-                    <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', background: '#dcfce7', color: '#166534', borderRadius: '12px' }}>Save 20%</span>
+                    <span className="sub-cycle-save-badge">Save 20%</span>
                   </span>
                 </div>
 
@@ -1028,7 +967,7 @@ const SubscriptionPage = () => {
             {activeTab === 'usage' && (
               <div className="token-usage-tab-layout">
                 {/* Summary Stat Cards — Admin Dashboard Style */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
+                <div className="billing-summary-grid">
 
                   {/* Card: Total Used Tokens */}
                   <div className="stat-card">
@@ -1042,7 +981,7 @@ const SubscriptionPage = () => {
                     </div>
                     <div className="green-badge">+12%</div>
                     <div className="stat-bottom-link">↗ Optimal Flow</div>
-                    <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Zap size={120} /></div>
+                    <div className="stat-bg-icon stat-bg-blue"><Zap size={120} /></div>
                   </div>
 
                   {/* Card: Avg Tokens Per User */}
@@ -1057,7 +996,7 @@ const SubscriptionPage = () => {
                     </div>
                     <div className="green-badge">+8%</div>
                     <div className="stat-bottom-link">↗ Optimal Flow</div>
-                    <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Users size={120} /></div>
+                    <div className="stat-bg-icon stat-bg-blue"><Users size={120} /></div>
                   </div>
 
                   {/* Card: Top Consuming Role */}
@@ -1066,24 +1005,24 @@ const SubscriptionPage = () => {
                       <div className="stat-title">Top Consuming Role</div>
                       <div className="stat-icon-box"><Award size={16} /></div>
                     </div>
-                    <div className="stat-number" style={{ fontSize: '18px', letterSpacing: '-0.5px' }}>{topConsumingRole}</div>
+                    <div className="stat-number stat-number-role">{topConsumingRole}</div>
                     <div className="stat-footer-row">
                       <span>Highest token usage</span>
                     </div>
                     <div className="green-badge">+24%</div>
                     <div className="stat-bottom-link">↗ Optimal Flow</div>
-                    <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Award size={120} /></div>
+                    <div className="stat-bg-icon stat-bg-blue"><Award size={120} /></div>
                   </div>
 
                 </div>
 
                 {/* Table Card */}
-                <div className="premium-card" style={{ padding: "20px" }}>
+                <div className="premium-card premium-card-p20">
                   <div className="usage-table-header mb-4">
                     <div className="header-left">
                       <h2 className="section-title-premium m-0">
-                        <Activity size={15} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                        <span style={{ verticalAlign: 'middle' }}>Recorded Token Usage</span>
+                        <Activity size={15} className="sub-vertical-middle-mr8" />
+                        <span className="sub-vertical-middle">Recorded Token Usage</span>
                       </h2>
                     </div>
                   </div>
@@ -1102,7 +1041,7 @@ const SubscriptionPage = () => {
                       <tbody>
                         {tokenUsageLogs.length === 0 ? (
                           <tr>
-                            <td colSpan="5" style={{ textAlign: "center", padding: "24px", color: "#64748b" }}>
+                            <td colSpan="5" className="custom-table-empty">
                               No token usage records available.
                             </td>
                           </tr>
@@ -1147,7 +1086,7 @@ const SubscriptionPage = () => {
                                     {percent}%
                                   </span>
                                 </td>
-                                <td style={{ color: "#64748b", fontWeight: 600 }}>
+                                <td className="ph-date-td">
                                   {log.lastActive}
                                 </td>
                               </tr>
@@ -1168,17 +1107,17 @@ const SubscriptionPage = () => {
               {/* Left Column (Main Content) */}
               <div className="users-main-content">
                 {/* Request More Tokens */}
-                <div className="premium-card" style={{ padding: "24px" }}>
+                <div className="premium-card premium-card-p24">
                   <h2 className="section-title-premium mb-3">
-                    <Plus size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                    <span style={{ verticalAlign: 'middle' }}>REQUEST MORE TOKENS</span>
+                    <Plus size={16} className="sub-vertical-middle-mr8" />
+                    <span className="sub-vertical-middle">REQUEST MORE TOKENS</span>
                   </h2>
-                  <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "20px", lineHeight: "1.6" }}>
+                  <p className="sub-request-desc">
                     Running low on tokens for uploading talent profiles or job details? Submit a request to your administrator.
                   </p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
+                  <div className="sub-request-form-container">
                     <div>
-                      <label style={{ fontSize: "11px", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em", display: "block", marginBottom: "8px" }}>
+                      <label className="allocate-field-label">
                         Tokens Required
                       </label>
                       <input 
@@ -1197,18 +1136,16 @@ const SubscriptionPage = () => {
                             e.preventDefault();
                           }
                         }}
-                        className="no-spinner-input"
-                        style={{ width: "100%", padding: "12px 16px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", color: "#1e293b", outline: "none", background: "#f8fafc", transition: "all 0.2s" }}
+                        className="no-spinner-input sub-request-input"
                       />
                     </div>
                     <button 
-                      className="btn-primary" 
-                      style={{ padding: "12px 20px", height: "44px", width: "100%", fontSize: "14px" }} 
+                      className="btn-primary sub-request-submit-btn" 
                       onClick={handleRequestTokens}
                       disabled={isRequestingTokens}
                     >
                       {isRequestingTokens ? (
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                        <div className="sub-spinner-container">
                           <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ width: '1rem', height: '1rem', borderWidth: '0.15em' }}></span>
                           Submitting...
                         </div>
@@ -1223,11 +1160,11 @@ const SubscriptionPage = () => {
               {/* Right Column (Aside) */}
               <div className="users-aside-content">
                 {/* Single Section for Plan Details + Token Utilization */}
-                <div className="premium-card" style={{ padding: "20px" }}>
-                  <h2 className="section-title-premium mb-4" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: 'none', paddingBottom: 0 }}>
-                    <Activity size={16} style={{ color: "#3b82f6" }} /> YOUR TOKEN UTILIZATION
+                <div className="premium-card premium-card-p20">
+                  <h2 className="section-title-premium mb-4 sub-flex-center-gap8-border0">
+                    <Activity size={16} className="sub-shield-icon" /> YOUR TOKEN UTILIZATION
                   </h2>
-                  <div style={{ display: 'flex', gap: '14px', marginBottom: '24px' }}>
+                  <div className="sub-user-widgets-container">
                     <div className="stat-card w-100">
                       <div className="stat-header-row">
                         <div className="stat-title">Allocated Tokens</div>
@@ -1236,7 +1173,7 @@ const SubscriptionPage = () => {
                       <div className="stat-number">1,000</div>
                       <div className="stat-footer-row"><span>Total assigned to you</span></div>
                       <div className="green-badge">Max</div>
-                      <div className="stat-bg-icon" style={{ color: '#6b6ff0' }}><Zap size={120} /></div>
+                      <div className="stat-bg-icon stat-bg-blue"><Zap size={120} /></div>
                     </div>
                     
                     <div className="stat-card w-100">
@@ -1246,8 +1183,8 @@ const SubscriptionPage = () => {
                       </div>
                       <div className="stat-number">800</div>
                       <div className="stat-footer-row"><span>Tokens consumed</span></div>
-                      <div className="green-badge" style={{ background: '#fee2e2', color: '#991b1b' }}>80%</div>
-                      <div className="stat-bg-icon" style={{ color: '#ef4444' }}><Activity size={120} /></div>
+                      <div className="green-badge badge-red">80%</div>
+                      <div className="stat-bg-icon stat-bg-red"><Activity size={120} /></div>
                     </div>
                     
                     <div className="stat-card w-100">
@@ -1255,18 +1192,18 @@ const SubscriptionPage = () => {
                         <div className="stat-title">Remaining Tokens</div>
                         <div className="stat-icon-box"><Plus size={16} /></div>
                       </div>
-                      <div className="stat-number text-orange">200</div>
+                      <div className="stat-number stat-text-orange">200</div>
                       <div className="stat-footer-row"><span>Available for use</span></div>
-                      <div className="green-badge" style={{ background: '#fef3c7', color: '#d97706' }}>20%</div>
-                      <div className="stat-bg-icon" style={{ color: '#f59e0b' }}><Plus size={120} /></div>
+                      <div className="green-badge badge-amber">20%</div>
+                      <div className="stat-bg-icon stat-bg-amber"><Plus size={120} /></div>
                     </div>
                   </div>
 
-                  <hr style={{ border: 0, borderTop: "1px dashed #e2e8f0", margin: "24px 0" }} />
+                  <hr className="sub-divider-dashed" />
 
                   <h2 className="section-title-premium mb-3">
-                    <Shield size={15} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-                    <span style={{ verticalAlign: 'middle' }}>CURRENT PLAN DETAILS</span>
+                    <Shield size={15} className="sub-vertical-middle-mr8" />
+                    <span className="sub-vertical-middle">CURRENT PLAN DETAILS</span>
                   </h2>
                   <div className="mb-4">
                     {renderPlanCard(activePlan, true)}
@@ -1286,21 +1223,21 @@ const SubscriptionPage = () => {
             {/* Panel */}
             <div className="psm-panel">
               {/* Header */}
-              <div className="psm-hero" style={{ padding: "24px 28px" }}>
+              <div className="psm-hero sub-psm-hero-padding">
                 <button className="psm-close-btn" onClick={() => setIsAddTokensOpen(false)}>
                   &times;
                 </button>
-                <h2 className="psm-name" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "18px" }}>
-                  <Zap size={18} style={{ fill: "#fbbf24", color: "#fbbf24" }} />
+                <h2 className="psm-name sub-flex-center-gap8-fs18">
+                  <Zap size={18} className="sub-zap-icon" />
                   Add Tokens to Pool
                 </h2>
-                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px", margin: "6px 0 0 0" }}>
+                <p className="sub-psm-hero-desc">
                   Purchase additional tokens to distribute to your recruiters and hiring managers.
                 </p>
               </div>
               
               {/* Scrollable Body */}
-              <div className="psm-body" style={{ gap: "20px" }}>
+              <div className="psm-body psm-body-gap20">
                 
                 {/* Package Selection */}
                 <div>
@@ -1310,15 +1247,10 @@ const SubscriptionPage = () => {
                       <div 
                         key={pkg.tokens}
                         onClick={() => setSelectedPkg(pkg)}
-                        className={`token-pkg-grid-card ${selectedPkg.tokens === pkg.tokens ? 'selected' : ''}`}
-                        style={selectedPkg.tokens === pkg.tokens ? {
-                          borderColor: pkg.color,
-                          background: `linear-gradient(145deg, #ffffff, ${pkg.bgLight})`,
-                          boxShadow: `0 4px 16px ${pkg.color}20`
-                        } : {}}
+                        className={`token-pkg-grid-card pkg-${pkg.tokens} ${selectedPkg.tokens === pkg.tokens ? 'selected' : ''}`}
                       >
                         {pkg.recommended && (
-                          <span className="recommended-badge-mini" style={{ backgroundColor: pkg.color, boxShadow: `0 2px 4px ${pkg.color}30` }}>
+                          <span className="recommended-badge-mini">
                             Best Value
                           </span>
                         )}
@@ -1327,7 +1259,7 @@ const SubscriptionPage = () => {
                         </span>
                         <span className="pkg-tokens-lbl">Tokens</span>
                         
-                        <span className="pkg-price-value" style={{ color: pkg.color }}>${pkg.price}</span>
+                        <span className="pkg-price-value">${pkg.price}</span>
                         <span className="pkg-unit-price">
                           {(pkg.price / pkg.tokens * 1000).toFixed(2)}¢ / token
                         </span>
@@ -1337,9 +1269,9 @@ const SubscriptionPage = () => {
                 </div>
 
                 {/* Payment Method Selector */}
-                <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "16px" }}>
-                  <label className="stripe-label" style={{ marginBottom: "8px" }}>Payment Method</label>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="psm-divider-top">
+                  <label className="stripe-label mb-8">Payment Method</label>
+                  <div className="psm-flex-col-gap10">
                     <div 
                       onClick={() => setSelectedPaymentMethod("visa_4242")}
                       className={`stripe-payment-selector-card ${selectedPaymentMethod === "visa_4242" ? "selected" : ""}`}
@@ -1392,8 +1324,8 @@ const SubscriptionPage = () => {
 
                 {/* Stripe Credit Card Form */}
                 {selectedPaymentMethod === "new_card" && (
-                  <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "16px" }}>
-                    <label className="stripe-label" style={{ marginBottom: "8px" }}>New Card Details</label>
+                  <div className="psm-divider-top">
+                    <label className="stripe-label mb-8">New Card Details</label>
                     <div className="stripe-input-group">
                       {/* Card Number */}
                       <div className="stripe-input-cell">
@@ -1456,7 +1388,7 @@ const SubscriptionPage = () => {
                   </div>
                 )}
                 
-                <div style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div className="psm-summary-box">
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b" }}>Total Payment:</span>
                 <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", fontFamily: "'Space Grotesk', sans-serif" }}>${selectedPkg.price}.00</span>
               </div>
@@ -1493,7 +1425,7 @@ const SubscriptionPage = () => {
       {/* CUSTOM CONFIRMATION DIALOG OVERLAY */}
       {confirmModalConfig && (
         <>
-          <div className="psm-backdrop" style={{ zIndex: 10000 }}></div>
+          <div className="psm-backdrop z-10000"></div>
           <div className="custom-confirm-overlay">
             <div className="custom-confirm-card">
               <div className="custom-confirm-header">

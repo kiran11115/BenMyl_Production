@@ -391,6 +391,7 @@ export default function PublishTalentModal({
 
       {/* ── SIDE DRAWER ── */}
       <div className={`ptm-drawer${drawerExpanded ? " ptm-drawer--expanded" : ""}`}>
+        <div className="ptm-drag-handle" />
         {/* Loading Overlay */}
         {status === "loading" && (
           <div className="ptm-loading-overlay">
@@ -1315,10 +1316,69 @@ export default function PublishTalentModal({
         .ptm-btn-primary:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 8px rgba(245,129,12,0.3); }
         .ptm-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 
+        .ptm-drag-handle {
+          display: none;
+        }
+
+        @keyframes ptmSlideInUp {
+          from { transform: translateY(100%); }
+          to   { transform: translateY(0); }
+        }
+
         @media (max-width: 960px) {
           .ptm-drawer--expanded { width: 100vw; border-radius: 0; flex-direction: column-reverse; }
           .ptm-drawer-main { min-width: 100vw; width: 100vw; }
           .ptm-preview-panel { border-right: none; border-bottom: 1px solid #e2e8f0; }
+        }
+
+        @media (max-width: 768px) {
+          .ptm-backdrop {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+          }
+          .ptm-drawer {
+            top: auto;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100% !important;
+            max-height: 85vh;
+            height: auto;
+            border-radius: 24px 24px 0 0;
+            flex-direction: column;
+            box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.15);
+            animation: ptmSlideInUp 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+          .ptm-drawer-main {
+            width: 100% !important;
+            min-width: unset;
+            height: auto;
+            max-height: 85vh;
+            border-left: none;
+          }
+          .ptm-preview-panel {
+            width: 100% !important;
+            height: auto;
+            max-height: 50vh;
+            border-left: none;
+            border-bottom: 1px solid #e2e8f0;
+          }
+          .ptm-drag-handle {
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            flex-shrink: 0;
+          }
+          .ptm-header {
+            padding: 10px 20px 16px;
+          }
+          .ptm-body {
+            padding: 15px 20px;
+          }
         }
       `}</style>
     </>,

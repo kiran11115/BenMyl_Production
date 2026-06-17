@@ -57,3 +57,21 @@
         margin: 0 !important;
     }
 }
+
+.mobile-top-bar-ai-btn {
+    padding: 8px;
+    min-width: 40px;
+    justify-content: center;
+}
+
+.mobile-top-bar-ai-icon {
+    margin: 0;
+}
+
+.mobile-top-bar-play-btn {
+    color: #f5810c !important;
+}
+
+.mobile-top-bar-signout-btn {
+    color: #ef4444 !important;
+}

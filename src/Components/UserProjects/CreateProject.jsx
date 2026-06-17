@@ -218,14 +218,13 @@ export default function CreateProject() {
     <div className="detail-page-wrapper">
       <div className="detail-page-container">
         {/* Breadcrumb */}
-        <div className="profile-breadcrumb d-flex gap-2 mb-3" style={{ fontSize: "13px" }}>
+        <div className="profile-breadcrumb d-flex gap-2 mb-3 create-project-breadcrumb">
           <button
-            className="link-button d-flex align-items-center gap-1"
+            className="link-button d-flex align-items-center gap-1 create-project-breadcrumb-link"
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
               navigate(`${basePath}/user-projects`);
             }}
-            style={{ color: "#f5810c" }}
           >
             <FiArrowLeft size={13} /> Projects
           </button>
@@ -247,41 +246,24 @@ export default function CreateProject() {
         <div className="detail-main-layout">
 
           {/* ── LEFT: Form card ── */}
-          <div className="detail-card" style={{ padding: 0 }}>
+          <div className="detail-card">
             {/* Card header strip */}
-            <div
-              style={{
-                padding: "22px 28px",
-                borderBottom: "1px solid #f1f5f9",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "#0f172a" }}>
+            <div className="create-project-card-header">
+              <h3 className="m-0">
                 Project Configuration
               </h3>
 
-              <span
-                style={{
-                  fontSize: "11px", fontWeight: 700,
-                  background: "rgba(245,129,12,0.1)",
-                  color: "#f5810c",
-                  padding: "4px 12px",
-                  borderRadius: "20px",
-                  border: "1px solid rgba(245,129,12,0.2)",
-                }}
-              >
+              <span className="create-project-step-badge">
                 Step 1 of 2
               </span>
             </div>
 
             {/* Form body */}
-            <div style={{ padding: "28px" }}>
+            <div className="create-project-form-body">
               {/* Project title */}
-              <div style={{ marginBottom: "20px" }}>
+              <div className="create-project-field-group">
                 <label className="auth-label">
-                  Project Title <span style={{ color: "#ef4444" }}>*</span>
+                  Project Title <span className="create-project-required-star">*</span>
                 </label>
                 <input
                   type="text"
@@ -295,48 +277,11 @@ export default function CreateProject() {
               </div>
 
               {/* Budget + Due date */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "20px",
-                  marginBottom: "20px",
-                }}
-              >
+              <div className="create-project-grid-2col">
                 <div>
                   <label className="auth-label">Allocation Budget</label>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      background: "#fff",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "10px",
-                      overflow: "hidden",
-                      transition: "border-color 0.2s, box-shadow 0.2s",
-                    }}
-                    onFocusCapture={(e) => {
-                      e.currentTarget.style.borderColor = "#f5810c";
-                      e.currentTarget.style.boxShadow = "0 0 0 3px rgba(245, 129, 12, 0.1)";
-                    }}
-                    onBlurCapture={(e) => {
-                      e.currentTarget.style.borderColor = "#e2e8f0";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
-                  >
-                    <span
-                      style={{
-                        padding: "0 14px",
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        color: "#94a3b8",
-                        background: "#f8fafc",
-                        borderRight: "1px solid #e2e8f0",
-                        height: "44px",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
+                  <div className="create-project-budget-input-wrapper">
+                    <span className="create-project-budget-currency-symbol">
                       $
                     </span>
                     <input
@@ -346,16 +291,7 @@ export default function CreateProject() {
                       onChange={(e) =>
                         setFormData({ ...formData, budget: e.target.value })
                       }
-                      style={{
-                        flex: 1,
-                        border: "none",
-                        outline: "none",
-                        padding: "0 16px",
-                        height: "44px",
-                        fontSize: "14px",
-                        color: "#1e293b",
-                        background: "transparent",
-                      }}
+                      className="create-project-budget-input-field"
                     />
                   </div>
                 </div>
@@ -363,8 +299,7 @@ export default function CreateProject() {
                   <label className="auth-label">Target Completion Date</label>
                   <input
                     type="date"
-                    className="auth-input"
-                    style={{ height: "46px" }}
+                    className="auth-input create-project-date-input"
                     value={formData.dueDate}
                     onChange={(e) =>
                       setFormData({ ...formData, dueDate: e.target.value })
@@ -374,34 +309,23 @@ export default function CreateProject() {
               </div>
 
               {/* Searchable Multi-selectable Roles */}
-              <div style={{ marginBottom: "20px" }}>
+              <div className="create-project-field-group">
                 <label className="auth-label">Core Business Roles Required</label>
                 
                 {/* Selected Roles Pills */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                <div className="create-project-roles-pills">
                   {formData.roles.map((roleId) => {
                     const roleLabel = ROLE_OPTIONS.find(ro => ro.id === roleId)?.label;
                     return (
                       <span
                         key={roleId}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          padding: "6px 12px",
-                          background: "rgba(245, 129, 12, 0.1)",
-                          color: "#f5810c",
-                          borderRadius: "20px",
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          border: "1px solid rgba(245, 129, 12, 0.2)",
-                        }}
+                        className="create-project-role-pill"
                       >
                         {roleLabel}
                         <button
                           type="button"
                           onClick={() => toggleRole(roleId)}
-                          style={{ background: "none", border: "none", color: "#f5810c", cursor: "pointer", display: "flex", padding: 0 }}
+                          className="create-project-role-delete-btn"
                         >
                           <FiTrash2 size={12} />
                         </button>
@@ -411,19 +335,15 @@ export default function CreateProject() {
                 </div>
 
                 {/* Role Search Input */}
-                <div style={{ position: "relative" }}>
-                  <div style={{ position: "relative" }}>
+                <div className="create-project-search-input-wrapper">
+                  <div className="create-project-search-input-wrapper">
                     <FiSearch
                       size={14}
-                      style={{
-                        position: "absolute", left: "12px", top: "50%",
-                        transform: "translateY(-50%)", color: "#94a3b8"
-                      }}
+                      className="create-project-search-icon"
                     />
                     <input
                       type="text"
-                      className="auth-input"
-                      style={{ paddingLeft: "38px", height: "46px" }}
+                      className="auth-input create-project-search-input"
                       placeholder="Search and add project roles..."
                       value={roleSearch}
                       onChange={(e) => setRoleSearch(e.target.value)}
@@ -432,22 +352,7 @@ export default function CreateProject() {
 
                   {/* Dropdown Results */}
                   {roleSearch && filteredRoles.length > 0 && (
-                    <div
-                      className="role-dropdown-modern"
-                      style={{
-                        position: "absolute",
-                        top: "100%", left: 0, right: 0,
-                        background: "#fff",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "12px",
-                        marginTop: "8px",
-                        boxShadow: "0 12px 20px -5px rgba(15, 23, 42, 0.15)",
-                        zIndex: 100,
-                        maxHeight: "240px",
-                        overflowY: "auto",
-                        animation: "slideIn 0.2s ease",
-                      }}
-                    >
+                    <div className="role-dropdown-modern create-project-role-dropdown">
                       {filteredRoles.map(role => (
                         <div
                           key={role.id}
@@ -455,19 +360,9 @@ export default function CreateProject() {
                             toggleRole(role.id);
                             setRoleSearch("");
                           }}
-                          style={{
-                            padding: "12px 16px",
-                            cursor: "pointer",
-                            fontSize: "13.5px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            color: "#334155",
-                            transition: "all 0.2s",
-                          }}
-                          className="role-option-item"
+                          className="role-option-item create-project-role-option"
                         >
-                          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#f5810c", opacity: 0.5 }} />
+                          <div className="create-project-role-dot" />
                           {role.label}
                         </div>
                       ))}
@@ -481,83 +376,49 @@ export default function CreateProject() {
 
 
               {/* Description */}
-              <div style={{ marginBottom: "20px" }}>
+              <div className="create-project-field-group">
                 <label className="auth-label">
                   Project Scope & Objectives
                 </label>
                 <textarea
-                  className="auth-input"
+                  className="auth-input create-project-textarea"
                   rows="4"
                   placeholder="Provide a high-level overview of the project goals..."
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  style={{ height: "120px", resize: "vertical" }}
                 />
               </div>
 
               {/* Milestones */}
-              <div
-                style={{
-                  marginTop: "32px",
-                  paddingTop: "28px",
-                  borderTop: "1px solid #f1f5f9",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "16px",
-                  }}
-                >
-                  <h4
-                    style={{
-                      margin: 0,
-                      fontSize: "13.5px",
-                      fontWeight: 700,
-                      color: "#0f172a",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
+              <div className="create-project-milestones-section">
+                <div className="create-project-milestones-header">
+                  <h4 className="create-project-milestones-title">
                     <FiFlag style={{ color: "#f5810c" }} />
                     Key Milestones
                   </h4>
                   <button
                     type="button"
-                    className="btn-review"
-                    style={{ fontSize: "12px", padding: "6px 16px", gap: "6px", width: "160px" }}
-
+                    className="btn-review create-project-milestones-add-btn"
                     onClick={addMilestone}
                   >
                     <FiPlus size={13} /> Add Milestone
                   </button>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="create-project-milestone-list">
                   {milestones.map((m, i) => (
                     <div
                       key={i}
-                      style={{ display: "flex", gap: "10px", animation: "slideIn .25s ease" }}
+                      className="create-project-milestone-row"
                     >
-                      <div
-                        style={{
-                          width: "32px", height: "44px",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          color: "#94a3b8", fontSize: "12px", fontWeight: 800,
-                          flexShrink: 0,
-                        }}
-                      >
+                      <div className="create-project-milestone-number">
                         {String(i + 1).padStart(2, "0")}
                       </div>
                       <input
                         type="text"
-                        className="auth-input flex-grow-1"
-                        style={{ height: "44px", fontSize: "14px" }}
+                        className="auth-input flex-grow-1 create-project-milestone-input"
                         placeholder={`Milestone #${i + 1}`}
                         value={m}
                         onChange={(e) => updateMilestone(i, e.target.value)}
@@ -565,21 +426,7 @@ export default function CreateProject() {
                       <button
                         type="button"
                         onClick={() => removeMilestone(i)}
-                        style={{
-                          width: "44px", height: "44px", flexShrink: 0,
-                          borderRadius: "10px", border: "1px solid #fee2e2",
-                          background: "#fff", color: "#ef4444",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", transition: "all .2s",
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.background = "#fff5f5";
-                          e.currentTarget.style.borderColor = "#fecaca";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.background = "#fff";
-                          e.currentTarget.style.borderColor = "#fee2e2";
-                        }}
+                        className="create-project-milestone-delete-btn"
                       >
                         <FiTrash2 size={14} />
                       </button>
@@ -589,16 +436,7 @@ export default function CreateProject() {
               </div>
 
               {/* Footer CTAs */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "16px",
-                  marginTop: "36px",
-                  paddingTop: "28px",
-                  borderTop: "1px solid #f1f5f9",
-                }}
-              >
+              <div className="create-project-footer">
                 <button
                   type="button"
                   className="btn-review"
@@ -624,92 +462,42 @@ export default function CreateProject() {
 
 
           {/* ── RIGHT: Assign Team sidebar ── */}
-          <div
-            className="detail-card"
-            style={{
-              padding: 0,
-              position: "sticky",
-              top: "24px",
-            }}
-          >
+          <div className="detail-card create-project-sidebar">
 
             {/* Sidebar header */}
-            <div
-              style={{
-                padding: "20px 20px 16px",
-                borderBottom: "1px solid #f1f5f9",
-                background: "#f8fafc",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <h3
-                  style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "#0f172a" }}
-                >
+            <div className="create-project-sidebar-header">
+              <div className="create-project-sidebar-title-row">
+                <h3 className="create-project-sidebar-title">
                   Assign Team
                 </h3>
-                <div
-                  style={{
-                    background: "#f5810c",
-                    color: "#fff",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    width: "22px", height: "22px",
-                    borderRadius: "50%",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >
+                <div className="create-project-sidebar-counter">
                   {selectedTalentIds.length}
                 </div>
               </div>
-              <p
-                style={{
-                  fontSize: "12px", color: "#64748b", margin: "5px 0 0",
-                }}
-              >
+              <p className="create-project-sidebar-sub">
                 Select best talent for this project.
               </p>
             </div>
 
             {/* Search */}
-            <div style={{ padding: "14px 16px", borderBottom: "1px solid #f1f5f9" }}>
-              <div style={{ position: "relative" }}>
+            <div className="create-project-sidebar-search">
+              <div className="create-project-search-input-wrapper">
                 <FiSearch
                   size={13}
-                  style={{
-                    position: "absolute", left: "10px",
-                    top: "50%", transform: "translateY(-50%)",
-                    color: "#94a3b8", pointerEvents: "none",
-                  }}
+                  className="create-project-sidebar-search-icon"
                 />
                 <input
                   type="text"
-                  className="auth-input"
+                  className="auth-input create-project-sidebar-search-input"
                   placeholder="Search professionals..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{
-                    height: "38px", fontSize: "13px",
-                    paddingLeft: "32px", margin: 0,
-                  }}
                 />
               </div>
             </div>
 
             {/* Talent list */}
-            <div
-              style={{
-                height: "400px", // Fixed height
-                overflowY: "auto",
-                padding: "10px 16px",
-                borderBottom: "1px solid #e9e9e9ff",
-              }}
-            >
+            <div className="create-project-sidebar-list">
               {filteredTalent.length > 0 ? (
                 filteredTalent.map((talent) => {
                   const isSelected = selectedTalentIds.includes(talent.id);
@@ -717,73 +505,35 @@ export default function CreateProject() {
                     <div
                       key={talent.id}
                       onClick={() => !isTeamConfirmed && toggleTalent(talent.id)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "12px",
-                        padding: "12px",
-                        borderRadius: "12px",
-                        marginBottom: "8px",
-                        cursor: isTeamConfirmed ? "default" : "pointer",
-                        border: isSelected ? "1px solid rgba(245,129,12,0.3)" : "1px solid #f1f5f9",
-                        background: isSelected ? "rgba(245,129,12,0.05)" : "#fff",
-                        transition: "all .2s",
-                        opacity: isTeamConfirmed && !isSelected ? 0.5 : 1,
-                      }}
-                      onMouseOver={(e) => {
-                        if (!isSelected && !isTeamConfirmed) e.currentTarget.style.background = "#f8fafc";
-                      }}
-                      onMouseOut={(e) => {
-                        if (!isSelected && !isTeamConfirmed) e.currentTarget.style.background = "#fff";
-                      }}
+                      className={`create-project-talent-item ${isSelected ? "selected" : ""} ${isTeamConfirmed ? "confirmed" : ""} ${isTeamConfirmed && !isSelected ? "disabled" : ""}`}
                     >
                       {/* Avatar */}
-                      <div style={{ position: "relative", flexShrink: 0 }}>
+                      <div className="create-project-talent-avatar-wrapper">
                         <img
                           src={talent.avatar}
                           alt={talent.name}
-                          style={{
-                            width: "40px", height: "40px",
-                            borderRadius: "10px", objectFit: "cover",
-                            border: "1.5px solid #f1f5f9",
-                          }}
+                          className="create-project-talent-avatar"
                         />
                         {isSelected && (
-                          <div
-                            style={{
-                              position: "absolute", bottom: "-3px", right: "-3px",
-                              width: "16px", height: "16px", borderRadius: "50%",
-                              background: "#f5810c",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              border: "2px solid #fff",
-                            }}
-                          >
+                          <div className="create-project-talent-check">
                             <FiCheck size={9} color="#fff" />
                           </div>
                         )}
                       </div>
 
                       {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div
-                          style={{
-                            fontSize: "13px", fontWeight: 700, color: "#0f172a",
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          }}
-                        >
+                      <div className="create-project-talent-info">
+                        <div className="create-project-talent-name">
                           {talent.name}
                         </div>
-                        <div
-                          style={{
-                            fontSize: "11.5px", color: "#64748b",
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          }}
-                        >
+                        <div className="create-project-talent-role">
                           {talent.role}
                         </div>
                       </div>
 
                       {/* Matching Tag */}
                       {formData.roles.some(r => talent.role.includes(r)) && (
-                        <div style={{ background: "#ecfdf5", color: "#059669", fontSize: "10px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px" }}>
+                        <div className="create-project-talent-match-tag">
                           MATCH
                         </div>
                       )}
@@ -791,75 +541,53 @@ export default function CreateProject() {
                   );
                 })
               ) : (
-                <div
-                  style={{
-                    textAlign: "center", padding: "40px 0",
-                    color: "#94a3b8",
-                  }}
-                >
-                  <FiUser size={32} style={{ marginBottom: "8px", opacity: 0.3 }} />
-                  <p style={{ fontSize: "13px" }}>No professionals found</p>
+                <div className="create-project-empty-state">
+                  <FiUser size={32} className="create-project-empty-icon" />
+                  <p>No professionals found</p>
                 </div>
               )}
             </div>
 
             {/* Selected Team Summary - MOVED TO BOTTOM OF SIDEBAR */}
-            <div
-              style={{
-                padding: "20px 16px",
-                background: "#ffffff",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                <h4 style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>
+            <div className="create-project-sidebar-summary">
+              <div className="create-project-summary-header">
+                <h4 className="create-project-summary-title">
                   Assembled Team
                 </h4>
                 {selectedTalentIds.length > 0 && isTeamConfirmed && (
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: "#059669", background: "#ecfdf5", padding: "2px 8px", borderRadius: "20px" }}>
+                  <span className="create-project-summary-confirmed-badge">
                     CONFIRMED
                   </span>
                 )}
               </div>
 
               {selectedTalentIds.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="create-project-summary-list">
                   {INTERVIEWED_TALENT.filter(t => selectedTalentIds.includes(t.id)).map((member) => (
                     <div
                       key={member.id}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        padding: "8px", border: "1px solid #f1f5f9",
-                        borderRadius: "10px", background: "#f8fafc"
-                      }}
+                      className="create-project-summary-item"
                     >
                       <img
                         src={member.avatar}
                         alt={member.name}
-                        style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover" }}
+                        className="create-project-summary-avatar"
                       />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: "12px", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <div className="create-project-talent-info">
+                        <div className="create-project-summary-name">
                           {member.name}
                         </div>
-                        <div style={{ fontSize: "10px", color: "#64748b" }}>{member.role}</div>
+                        <div className="create-project-summary-role">{member.role}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div
-                  style={{
-                    padding: "24px 0",
-                    textAlign: "center",
-                    border: "1px dashed #e2e8f0",
-                    borderRadius: "12px",
-                    background: "#f8fafc",
-                  }}
-                >
-                  <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: 500 }}>
+                <div className="create-project-summary-empty">
+                  <p className="create-project-summary-empty-text">
                     No selected team
                   </p>
-                  <p style={{ margin: "4px 0 0", fontSize: "10.5px", color: "#cbd5e1" }}>
+                  <p className="create-project-summary-empty-subtext">
                     Select talent from the list above to assemble your project team.
                   </p>
                 </div>
@@ -867,12 +595,11 @@ export default function CreateProject() {
             </div>
 
             {/* Confirm Actions */}
-            <div style={{ padding: "16px", background: "#fff" }}>
+            <div className="create-project-sidebar-actions">
               <button
                 type="button"
-                className={isTeamConfirmed ? "btn-review" : "btn-upload"}
+                className={`${isTeamConfirmed ? "btn-review" : "btn-upload"} create-project-sidebar-btn`}
                 disabled={selectedTalentIds.length === 0}
-                style={{ width: "100%", height: "44px", fontSize: "13px", fontWeight: 700 }}
                 onClick={() => {
                   if (isTeamConfirmed) {
                     setIsTeamConfirmed(false);
@@ -901,16 +628,8 @@ export default function CreateProject() {
             </div>
 
             {/* Footer note */}
-            <div
-              style={{
-                padding: "12px 16px",
-                borderTop: "1px solid #f1f5f9",
-                background: "#f8fafc",
-                display: "flex", alignItems: "flex-start", gap: "8px",
-                fontSize: "11px", color: "#64748b",
-              }}
-            >
-              <FiInfo style={{ color: "#f5810c", flexShrink: 0, marginTop: "1px" }} />
+            <div className="create-project-sidebar-note-footer">
+              <FiInfo className="create-project-sidebar-note-icon" />
               <span>
                 Only showing members who have cleared all technical interview stages.
               </span>
@@ -920,17 +639,7 @@ export default function CreateProject() {
       </div>
 
 
-      <style>{`
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .role-option-item:hover {
-          background: #f8fafc;
-          color: #f5810c !important;
-          padding-left: 20px !important;
-        }
-      `}</style>
+
 
       {customConfirm && (
         <CustomConfirm

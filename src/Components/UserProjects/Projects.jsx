@@ -22,43 +22,37 @@ export default function Projects() {
       icon: Target,
       title: "Interactive Milestone Trackers",
       desc: "Monitor ongoing migrations, app deployments, and audits with visual progress tracking and live percentage indicators.",
-      color: "rgba(245, 129, 12, 0.1)",
-      iconColor: "#f5810c"
+      className: "icon-orange"
     },
     // {
     //   icon: Users,
     //   title: "Team Collaboration Workspace",
     //   desc: "Coordinate with developers and engineers directly inside the project space with activity indicators and contribution analytics.",
-    //   color: "rgba(59, 130, 246, 0.1)",
-    //   iconColor: "#3b82f6"
+    //   className: "icon-blue"
     // },
     {
       icon: ShieldCheck,
       title: "Automated Deliverable Reviews",
       desc: "Initiate client/manager review gates for code deliverables, verify compliance checklists, and secure sign-offs automatically.",
-      color: "rgba(34, 197, 94, 0.1)",
-      iconColor: "#22c55e"
+      className: "icon-green"
     },
     // {
     //   icon: DollarSign,
     //   title: "Budget & Burn Analytics",
     //   desc: "Track project financial health, burn charts, invoice milestones, and team resource utilization metrics seamlessly.",
-    //   color: "rgba(168, 85, 247, 0.1)",
-    //   iconColor: "#a855f7"
+    //   className: "icon-purple"
     // },
     {
       icon: Clock,
       title: "Dynamic Deadline Alerts",
       desc: "Stay on top of critical paths with automated countdowns, push alerts for upcoming key dates, and system warnings.",
-      color: "rgba(14, 165, 233, 0.1)",
-      iconColor: "#0ea5e9"
+      className: "icon-blue"
     },
     // {
     //   icon: GitBranch,
     //   title: "Version Control Integration",
     //   desc: "Connect your GitHub or GitLab repositories to automatically synchronize commit histories, build health, and milestones.",
-    //   color: "rgba(236, 72, 153, 0.1)",
-    //   iconColor: "#ec4899"
+    //   className: "icon-pink"
     // }
   ];
 
@@ -90,10 +84,7 @@ export default function Projects() {
           const IconComponent = feat.icon;
           return (
             <div key={index} className="cs-feature-card">
-              <div 
-                className="cs-icon-wrapper" 
-                style={{ backgroundColor: feat.color, color: feat.iconColor }}
-              >
+              <div className={`cs-icon-wrapper ${feat.className}`}>
                 <IconComponent size={24} />
               </div>
               <h3 className="cs-feature-title">{feat.title}</h3>

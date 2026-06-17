@@ -28,8 +28,8 @@ const MobileTopBar = ({ user, initials, handleSignOut, setOpenVideoGuide }) => {
             </div>
             <div className="mobile-actions">
                 <div className="ai-pill-wrapper" ref={aiPopoverRef}>
-                    <button onClick={() => setIsAiPopoverOpen((prev) => !prev)} className="ai-pill-btn" style={{ padding: '8px', minWidth: '40px', justifyContent: 'center' }}>
-                        <span className="ai-pill-icon" style={{ margin: 0 }}>
+                    <button onClick={() => setIsAiPopoverOpen((prev) => !prev)} className="ai-pill-btn mobile-top-bar-ai-btn">
+                        <span className="ai-pill-icon mobile-top-bar-ai-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill="url(#gemini-gradient-mobile)" />
                                 <defs>
@@ -67,11 +67,11 @@ const MobileTopBar = ({ user, initials, handleSignOut, setOpenVideoGuide }) => {
                 <button className="mobile-action-btn" onClick={() => navigate("/user/user-messages")}>
                     <MessageCircle size={20} />
                 </button>
-                <button className="mobile-action-btn" onClick={() => setOpenVideoGuide(true)} style={{ color: "#f5810c" }}>
+                <button className="mobile-action-btn mobile-top-bar-play-btn" onClick={() => setOpenVideoGuide(true)}>
                     <Play size={20} fill="currentColor" />
                 </button>
                 <Notifications />
-                <button className="mobile-action-btn" onClick={handleSignOut} style={{ color: '#ef4444' }}>
+                <button className="mobile-action-btn mobile-top-bar-signout-btn" onClick={handleSignOut}>
                     <LogOut size={20} />
                 </button>
             </div>

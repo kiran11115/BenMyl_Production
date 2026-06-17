@@ -2,15 +2,9 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   FiSearch,
   FiMapPin,
-  FiClock,
-  FiDollarSign,
-  FiUser,
-  FiPlus,
   FiFilter,
   FiBriefcase,
-  FiVideo,
   FiEye,
-  FiChevronDown,
 } from "react-icons/fi";
 import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
@@ -347,33 +341,13 @@ const UserJobs = () => {
   }, [filters, debouncedSearch]);
 
 
-  const updateFilters = (newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  };
 
-  const handleAddTalentClick = (job) => {
-    setSelectedJob(job);
-  };
 
   return (
-    <div
-      style={{
-        background: "#f5f7fb",
-        minHeight: "100vh",
-        padding: "18px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: "22px",
-          alignItems: "flex-start",
-        }}
-      >
+    <div className="user-jobs-page-wrapper">
+      <div className="user-jobs-main-content">
         {/* LEFT FILTER */}
-
-        <aside
-        >
+        <aside className="vs-filters-sidebar">
           <JobFilters
             initialFilters={filters}
             onApplyFilters={(appliedFilters) => {
@@ -385,82 +359,64 @@ const UserJobs = () => {
           />
         </aside>
 
+        <FilterBottomSheet
+          isOpen={isMobileFilterOpen}
+          onClose={() => setIsMobileFilterOpen(false)}
+          title="Filters"
+        >
+          <JobFilters
+            initialFilters={filters}
+            onApplyFilters={(appliedFilters) => {
+              setAllJobs([]);
+              setPageNumber(1);
+              setHasMore(true);
+              setFilters(appliedFilters);
+              setIsMobileFilterOpen(false);
+            }}
+          />
+        </FilterBottomSheet>
+
         {/* RIGHT */}
-
-        <div style={{ flex: 1 }}>
-
+        <div className="user-jobs-right-section">
           {/* TOP */}
-
-
           <div className="hero-card mb-4">
             <div className="hero-left">
               <div className="hero-pill">
                 ✦ Find jobs
               </div>
               <h1 className="job-posting-title text-white">Jobs & Openings Board</h1>
-
-
               <div className="job-posting-header-info">
-
                 <p className="job-posting-subtitle">
                   Showing {filteredJobs.length} matches based on your interactive filters
                 </p>
               </div>
             </div>
 
-            <div
-              className="ut-search-wrapper"
-              style={{
-                display: "flex",
-                flex: "none",
-                alignItems: "center",
-                background: "rgba(255, 255, 255, 0.12)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                borderRadius: "12px",
-                padding: "0 12px",
-                height: "38px",      // reduced from 44px
-                width: "30%",      // reduced width to 140px
-                boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
-                backdropFilter: "blur(12px)",
-              }}
-            >
-              <FiSearch
-                style={{
-                  color: "rgba(255, 255, 255, 0.7)",
-                  fontSize: "14px",   // reduced from 18px
-                  flexShrink: 0,
-                }}
-              />
+            <div className="hero-card-actions-wrapper">
+              <button
+                className="filters-applied"
+                onClick={() => setIsMobileFilterOpen(true)}
+              >
+                <FiFilter /> Filters
+              </button>
 
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="jobs-search-input"
-                style={{
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                  marginLeft: "8px",
-                  width: "100%",
-                  fontSize: "11px",   // reduced from 12.5px
-                  fontWeight: 500,
-                  color: "#ffffff",
-                }}
-              />
+              <div className="user-jobs-search-wrapper">
+                <FiSearch className="user-jobs-search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="jobs-search-input"
+                />
+              </div>
             </div>
           </div>
 
           {/* GRID */}
-
           <div
             ref={resultsRef}
-            style={{
-              height: "calc(100vh - 140px)",
-              overflowY: "auto",
-              paddingRight: "4px",
-            }}
+            className="user-jobs-results-container"
           >
             {(isLoading || !minTimeElapsed) && allJobs.length === 0 ? (
               <div className="jobs-screen-loader">
@@ -473,27 +429,11 @@ const UserJobs = () => {
                 <span className="jobs-loader-sub">Matching roles based on your filters</span>
               </div>
             ) : filteredJobs.length === 0 ? (
-              <div
-                style={{
-                  minHeight: "320px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%"
-                }}
-              >
+              <div className="user-jobs-empty-state-wrapper">
                 <NoData text={searchQuery ? "No jobs matching your search" : "No jobs found"} />
               </div>
             ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fill,minmax(320px,1fr))",
-                  gap: "22px",
-                  paddingTop: "8px"
-                }}
-              >
+              <div className="user-jobs-grid-layout">
                 {filteredJobs.map((job) => (
                   <div
                     key={job.id}
@@ -553,7 +493,7 @@ const UserJobs = () => {
                         <FiMapPin size={12} />
                         <span
                           title={job.location}
-                          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                          className="user-jobs-location-text"
                         >
                           {job.location ? job.location.split(',')[0].trim() : ""}
                         </span>
@@ -576,18 +516,6 @@ const UserJobs = () => {
           }
         />
       )}
-      <style>{`
-        .jobs-search-input::placeholder {
-          color: rgba(255, 255, 255, 0.6);
-          opacity: 1;
-        }
-        .jobs-search-input:-ms-input-placeholder {
-          color: rgba(255, 255, 255, 0.6);
-        }
-        .jobs-search-input::-ms-input-placeholder {
-          color: rgba(255, 255, 255, 0.6);
-        }
-      `}</style>
     </div>
   );
 };

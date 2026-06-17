@@ -608,6 +608,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
         className={`pjm-drawer${drawerExpanded ? " pjm-drawer--expanded" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="pjm-drag-handle" />
         {/* ── Loading Overlay (unchanged) ── */}
         {status === "loading" && (
           <div className="pjm-loading-overlay">
@@ -1199,6 +1200,62 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
           border-radius: 50%; animation: pjmSpin 0.8s linear infinite; vertical-align: middle; margin-right: 6px;
         }
         @keyframes pjmSpin { to { transform: rotate(360deg); } }
+
+        .pjm-drag-handle {
+          display: none;
+        }
+
+        @keyframes pjmSlideInUp {
+          from { transform: translateY(100%); }
+          to   { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+          .pjm-overlay {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+          }
+          .pjm-drawer {
+            top: auto;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100% !important;
+            max-height: 85vh;
+            height: auto;
+            border-radius: 24px 24px 0 0;
+            flex-direction: column;
+            box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.15);
+            animation: pjmSlideInUp 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+          .pjm-drawer-content {
+            flex-direction: column;
+            height: auto;
+            max-height: calc(85vh - 120px);
+            padding-bottom: 80px;
+          }
+          .pjm-main {
+            width: 100% !important;
+            min-width: unset;
+            height: auto;
+            border-right: none;
+          }
+          .pjm-preview-panel {
+            width: 100% !important;
+            height: auto;
+            border-top: 1px solid #e2e8f0;
+          }
+          .pjm-drag-handle {
+            display: block;
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            margin: 10px auto 0;
+            flex-shrink: 0;
+          }
+        }
       `}</style>
     </div>
   );

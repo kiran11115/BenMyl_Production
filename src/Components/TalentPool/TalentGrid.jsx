@@ -21,16 +21,9 @@ const TalentGridView = ({
     name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join("");
 
   const visibleCandidates = candidates.filter((c) => c.isshortlisted === false);
-  const matchingCount = visibleCandidates.length;
 
   return (
     <div>
-      {/* count row */}
-      <div className="grid-meta">
-        <div className="grid-count text-capitalize">
-          {matchingCount} Talent {matchingCount === 1 ? "profile" : "profiles"}
-        </div>
-      </div>
 
       {visibleCandidates.length === 0 && (
         <div style={{ minHeight: "320px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -91,9 +84,11 @@ const TalentGridView = ({
                   {s.label}
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div className="job-chip green">
-                    {matchScore}% Match
-                  </div>
+                  {activeJobId && (
+                    <div className="job-chip green">
+                      {matchScore}% Match
+                    </div>
+                  )}
                   <div
                     className="eye-icon-btn"
                     onClick={(e) => { e.stopPropagation(); onProfileClick(candidate); }}
@@ -108,11 +103,13 @@ const TalentGridView = ({
               <div className="profile-section">
                 <div 
                   className="talent-avatar-border-circle"
-                  style={{ 
+                  style={activeJobId ? { 
                     "--percent": pct,
                     "--gradient-start": gradientStart,
                     "--gradient-mid": gradientMid,
                     "--gradient-end": gradientEnd
+                  } : {
+                    background: "transparent"
                   }}
                 >
                   {candidate.avatar ? (

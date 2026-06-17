@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard } from "lucide-react";
 import VideoGuidePopover from "../Guide/VideoGuidePopover";
 import { videoGuides } from "../Guide/guideData";
 import "./Header.css";
@@ -17,6 +17,30 @@ import ProfileSideModal from "./ProfileSideModal";
 import ScrollToTop from "../ScrollToTop";
 import { Plus, Users } from "lucide-react";
 import SupportButton from "../Common/SupportButton";
+
+const getNavIcon = (label) => {
+  const cleanLabel = label.trim().toLowerCase().replace(/\s+/g, " ");
+  switch (cleanLabel) {
+    case "dashboard":
+      return LayoutDashboard;
+    case "projects":
+      return Briefcase;
+    case "talentpool":
+    case "talent pool":
+    case "resource management":
+      return Users;
+    case "find jobs":
+      return Search;
+    case "interviews":
+      return Calendar;
+    case "contracts":
+      return FileText;
+    case "subscription":
+      return CreditCard;
+    default:
+      return null;
+  }
+};
 
 
 function Header() {
@@ -206,6 +230,10 @@ function Header() {
                       className={`header-nav-link dropdown-trigger ${openDropdown === link.label ? "active" : ""}`}
                       onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
                     >
+                      {(() => {
+                        const Icon = getNavIcon(link.label);
+                        return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
+                      })()}
                       {link.label}
                       <ChevronDown size={14} className={`dropdown-icon ${openDropdown === link.label ? "rotate" : ""}`} />
                     </button>
@@ -223,6 +251,10 @@ function Header() {
                               setIsMenuOpen(false);
                             }}
                           >
+                            {(() => {
+                              const Icon = getNavIcon(sub.label);
+                              return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
+                            })()}
                             {sub.label}
                           </NavLink>
                         ))}
@@ -237,6 +269,10 @@ function Header() {
                       `header-nav-link ${isActive ? "active" : ""}`
                     }
                   >
+                    {(() => {
+                      const Icon = getNavIcon(link.label);
+                      return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
+                    })()}
                     {link.label}
                   </NavLink>
                 )}

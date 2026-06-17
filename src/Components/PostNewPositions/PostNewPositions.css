@@ -2318,3 +2318,49 @@ input[type=number].auth-input {
   -moz-appearance: textfield;
 }
 
+@media (max-width: 768px) {
+  .alert-overlay,
+  .modal-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  
+  .alert-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    margin: 0 !important;
+    max-height: 85vh !important;
+    animation: modalSlideUpMobile 0.35s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  }
+
+  .alert-card::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  .modal-window {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    margin: 0 !important;
+    height: 85vh !important;
+    animation: modalSlideUpMobile 0.35s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  }
+
+  .modal-window::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    margin: 10px auto 0;
+  }
+}
+

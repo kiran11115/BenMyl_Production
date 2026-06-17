@@ -10,14 +10,14 @@ const MobileBottomNav = () => {
         "Recruiter": [
             { path: "/user/user-dashboard", icon: <LayoutDashboard size={20} />, label: "Home" },
             { path: "/user/user-talentpool", icon: <Users size={20} />, label: "Pool" },
-            { path: "/user/AI-screen", icon: <div className="mobile-nav-ai-bubble"><span style={{ color: "#fff", fontSize: "16px" }}>✦</span></div>, label: "AI" },
+            { path: "/user/AI-screen", icon: <div className="mobile-nav-ai-bubble"><span className="mobile-nav-ai-sparkle">✦</span></div>, label: "AI" },
             { path: "/user/user-projects", icon: <Briefcase size={20} />, label: "Projects" },
             { path: "/user/user-profile", icon: <User size={20} />, label: "Profile" },
         ],
         "Benchsales": [
             { path: "/user/user-dashboard", icon: <LayoutDashboard size={20} />, label: "Home" },
             { path: "/user/user-upload-talent", icon: <Upload size={20} />, label: "Upload" },
-            { path: "/user/AI-screen", icon: <div className="mobile-nav-ai-bubble"><span style={{ color: "#fff", fontSize: "16px" }}>✦</span></div>, label: "AI" },
+            { path: "/user/AI-screen", icon: <div className="mobile-nav-ai-bubble"><span className="mobile-nav-ai-sparkle">✦</span></div>, label: "AI" },
             { path: "/user/user-Jobs", icon: <Briefcase size={20} />, label: "Jobs" },
             { path: "/user/user-profile", icon: <User size={20} />, label: "Profile" },
         ]

@@ -1831,6 +1831,41 @@
     .interviews-grid-v2 {
         grid-template-columns: 1fr;
     }
+
+    .custom-modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+    
+    .job-modal-content-v2,
+    .calendar-modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 24px 24px 0 0 !important;
+        margin: 0 !important;
+        max-height: 85vh !important;
+        animation: modalSlideUpMobile 0.35s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+    
+    .job-modal-content-v2::before,
+    .calendar-modal-content::before {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: #cbd5e1;
+        border-radius: 2px;
+        margin: 10px auto 0;
+    }
+}
+
+@keyframes modalSlideUpMobile {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
 
 /* ── Modals & Overlays ── */
