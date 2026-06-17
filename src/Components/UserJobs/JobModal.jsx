@@ -88,7 +88,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
     .filter((t) => !t.isShortlisted)
     .map((t) => ({
       id: t.employeeID,
-      name: `${t.firstName} ${t.lastName}`,
+      name: `${t.firstName} ${t.lastName ?? ""}`,
       role: title,
       email: t.emailAddress,
       avatar: t.profileImage, // Use actual profile image if available

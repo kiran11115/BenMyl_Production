@@ -388,6 +388,18 @@
   letter-spacing: 0.05em;
 }
 
+.psm-vdisplay-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #bfdbfe;
+}
+
 .psm-hero-contacts {
   display: flex;
   flex-wrap: wrap;

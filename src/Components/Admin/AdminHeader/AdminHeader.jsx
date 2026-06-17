@@ -149,7 +149,7 @@ function AdminHeader() {
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
                             { path: "/Admin/admin-upload-talent", label: "Resource Management" },
-                            { path: "/Admin/admin-subscription", label: "Subscription" },
+                            
                             // {
                             //     label: "Interviews",
                             //     subItems: [

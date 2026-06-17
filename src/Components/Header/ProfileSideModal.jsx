@@ -5,6 +5,7 @@ import {
   FiBriefcase, FiLinkedin, FiUser, FiCalendar, FiBook, FiGlobe, FiUsers, FiDollarSign
 } from "react-icons/fi";
 import "./ProfileSideModal.css";
+import packageJson from "../../../package.json";
 
 /**
  * ProfileSideModal
@@ -93,6 +94,7 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
               <span className="psm-role-badge">{profile?.role || "—"}</span>
               <span className="psm-sub-badge">{profile?.subscriptionType || "Enterprise Plan"}</span>
               <span className="psm-tokens-badge"><FiDollarSign size={12} /> {profile?.tokens ?? "150"} Tokens</span>
+               <span className="psm-vdisplay-badge">v{packageJson.version}</span>
             </div>
             </div>
 

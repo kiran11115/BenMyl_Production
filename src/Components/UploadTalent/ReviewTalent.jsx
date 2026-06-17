@@ -1252,7 +1252,7 @@ const ReviewTalent = () => {
     formData.append("BranchID", data.branchID ?? 0);
 
     formData.append("FirstName", talent.basicInfo.firstName);
-    formData.append("LastName", talent.basicInfo.lastName);
+    formData.append("LastName", talent.basicInfo.lastName ?? "");
     formData.append("Title", talent.basicInfo.position);
     formData.append("PhoneNo", talent.basicInfo.phone);
     formData.append("EmailAddress", talent.basicInfo.email);

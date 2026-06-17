@@ -86,7 +86,7 @@ const QUICK_ACTIONS = [
     title: "Billing Console",
     desc: "Manage enterprise billing and active subscriptions.",
     icon: <CreditCard size={20} />,
-    path: "/Admin/account-settings",
+    path: "/Admin/admin-subscription",
   },
   {
     title: "Security Setup",
@@ -229,7 +229,7 @@ function AdminDashboard() {
     labels: graphData.map(d => d.month),
     datasets: [
       {
-        label: "Overall Jobs Posted",
+        label: " Overall Jobs Posted",
         data: graphData.map(d => d.hiringManagers),
         borderColor: "#5a5de8",
         backgroundColor: "rgba(90, 93, 232, 0.1)",
@@ -242,7 +242,7 @@ function AdminDashboard() {
         pointHoverRadius: 6,
       },
       {
-        label: "Resumes Uploaded",
+        label: " Resumes Uploaded",
         data: graphData.map(d => d.benchSales),
         borderColor: "#00b67a",
         backgroundColor: "rgba(0, 182, 122, 0.1)",
@@ -272,6 +272,7 @@ function AdminDashboard() {
         labels: {
           usePointStyle: true,
           boxWidth: 6,
+          padding: 20,
           font: { size: 11, family: 'Inter' }
         }
       },
