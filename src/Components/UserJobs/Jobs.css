@@ -1813,10 +1813,20 @@
   line-height: 1.2;
 }
 
+.job-posting-header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
 .job-posting-subtitle {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.7);
-  margin-top: 4px;
+  margin: 0 !important;
+  text-align: left;
+  align-self: flex-start;
 }
 
 @media (max-width: 992px) {

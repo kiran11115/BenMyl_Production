@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   Edit2,
   Plus,
@@ -23,7 +23,9 @@ import {
   FiUser,
   FiBookOpen,
   FiTrendingUp,
-  FiExternalLink
+  FiExternalLink,
+  FiSearch,
+  FiChevronDown,
 } from "react-icons/fi";
 import "../../Components/TalentPool/Talent Profile/TalentProfile.css";
 import { toast } from "react-toastify";
@@ -340,19 +342,16 @@ const validateAddress = (val) => {
 
 const validateCountry = (val) => {
   if (!val || val.trim() === "") return "Country is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "Country should contain only letters";
   return null;
 };
 
 const validateState = (val) => {
   if (!val || val.trim() === "") return "State is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "State should contain only letters";
   return null;
 };
 
 const validateCity = (val) => {
   if (!val || val.trim() === "") return "City is required";
-  if (!/^[a-zA-Z\s]*$/.test(val)) return "City should contain only letters";
   return null;
 };
 
@@ -813,6 +812,17 @@ const fieldLabels = {
   role: "Role",
 };
 
+/* ── Outside-click helper ── */
+function useOutsideClick(ref, cb) {
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) cb();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [ref, cb]);
+}
+
 const ReviewTalent = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -833,6 +843,25 @@ const ReviewTalent = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+
+  /* Popover open states */
+  const [countryPopoverOpen, setCountryPopoverOpen] = useState(false);
+  const [statePopoverOpen, setStatePopoverOpen] = useState(false);
+  const [cityPopoverOpen, setCityPopoverOpen] = useState(false);
+
+  /* Search query states */
+  const [countrySearch, setCountrySearch] = useState("");
+  const [stateSearch, setStateSearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
+
+  /* Refs for outside-click */
+  const countryRef = useRef();
+  const stateRef = useRef();
+  const cityRef = useRef();
+
+  useOutsideClick(countryRef, useCallback(() => setCountryPopoverOpen(false), []));
+  useOutsideClick(stateRef, useCallback(() => setStatePopoverOpen(false), []));
+  useOutsideClick(cityRef, useCallback(() => setCityPopoverOpen(false), []));
 
   const [talent, setTalent] = useState(null);
 
@@ -1998,25 +2027,63 @@ const ReviewTalent = () => {
                       );
                     })}
 
-                    {/* Country Dropdown */}
-                    <div className="field-group">
+                    {/* Country Popover */}
+                    <div className="field-group" style={{ position: "relative" }} ref={countryRef}>
                       <label className="auth-label">
                         Country
-                        <span style={{ color: "#ef4444" }}> *</span>
+                        <span style={{ color: "#ef4444" }}>*</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
-                        <select
-                          className="auth-input"
-                          value={selectedCountry}
-                          onChange={(e) => handleCountryChange(e.target.value)}
-                        >
-                          <option value="">Select Country</option>
-                          {Country.getAllCountries().map((c) => (
-                            <option key={c.isoCode} value={c.isoCode}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </select>
+                        <>
+                          <button
+                            type="button"
+                            className={`rt-dropdown-target ${selectedCountry ? "has-value" : ""}`}
+                            onClick={() => {
+                              setCountryPopoverOpen((p) => !p);
+                              setStatePopoverOpen(false);
+                              setCityPopoverOpen(false);
+                            }}
+                          >
+                            {selectedCountry
+                              ? <span className="rt-dropdown-value">{Country.getCountryByCode(selectedCountry)?.name}</span>
+                              : <span className="rt-dropdown-placeholder">Select Country…</span>
+                            }
+                            <FiChevronDown size={14} color="#94a3b8" />
+                          </button>
+                          {countryPopoverOpen && (
+                            <div className="rt-popover">
+                              <div className="rt-popover-search">
+                                <FiSearch className="rt-popover-search-icon" size={13} />
+                                <input
+                                  autoFocus
+                                  type="text"
+                                  placeholder="Search countries…"
+                                  value={countrySearch}
+                                  onChange={(e) => setCountrySearch(e.target.value)}
+                                />
+                              </div>
+                              <div className="rt-popover-list">
+                                {Country.getAllCountries()
+                                  .filter((c) =>
+                                    c.name.toLowerCase().includes(countrySearch.toLowerCase())
+                                  )
+                                  .map((c) => (
+                                    <div
+                                      key={c.isoCode}
+                                      className={`rt-popover-item ${selectedCountry === c.isoCode ? "selected" : ""}`}
+                                      onClick={() => {
+                                        handleCountryChange(c.isoCode);
+                                        setCountryPopoverOpen(false);
+                                        setCountrySearch("");
+                                      }}
+                                    >
+                                      {c.name}
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div className="field-value">
                           {talent.personalInfo.country || "-"}
@@ -2024,26 +2091,69 @@ const ReviewTalent = () => {
                       )}
                     </div>
 
-                    {/* State Dropdown */}
-                    <div className="field-group">
+                    {/* State Popover */}
+                    <div className="field-group" style={{ position: "relative" }} ref={stateRef}>
                       <label className="auth-label">
                         State
-                        <span style={{ color: "#ef4444" }}> *</span>
+                        <span style={{ color: "#ef4444" }}>*</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
-                        <select
-                          className="auth-input"
-                          value={selectedState}
-                          onChange={(e) => handleStateChange(e.target.value)}
-                          disabled={!selectedCountry || states.length === 0}
-                        >
-                          <option value="">Select State</option>
-                          {states.map((s) => (
-                            <option key={s.isoCode} value={s.isoCode}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
+                        <>
+                          <button
+                            type="button"
+                            className={`rt-dropdown-target ${selectedState ? "has-value" : ""}`}
+                            disabled={!selectedCountry || states.length === 0}
+                            onClick={() => {
+                              setStatePopoverOpen((p) => !p);
+                              setCountryPopoverOpen(false);
+                              setCityPopoverOpen(false);
+                            }}
+                          >
+                            {selectedState
+                              ? <span className="rt-dropdown-value">{State.getStateByCodeAndCountry(selectedState, selectedCountry)?.name}</span>
+                              : <span className="rt-dropdown-placeholder">{!selectedCountry ? "Select country first…" : "Select State…"}</span>
+                            }
+                            <FiChevronDown size={14} color="#94a3b8" />
+                          </button>
+                          {statePopoverOpen && selectedCountry && (
+                            <div className="rt-popover">
+                              <div className="rt-popover-search">
+                                <FiSearch className="rt-popover-search-icon" size={13} />
+                                <input
+                                  autoFocus
+                                  type="text"
+                                  placeholder="Search states…"
+                                  value={stateSearch}
+                                  onChange={(e) => setStateSearch(e.target.value)}
+                                />
+                              </div>
+                              <div className="rt-popover-list">
+                                {states
+                                  .filter((s) =>
+                                    s.name.toLowerCase().includes(stateSearch.toLowerCase())
+                                  )
+                                  .map((s) => (
+                                    <div
+                                      key={s.isoCode}
+                                      className={`rt-popover-item ${selectedState === s.isoCode ? "selected" : ""}`}
+                                      onClick={() => {
+                                        handleStateChange(s.isoCode);
+                                        setStatePopoverOpen(false);
+                                        setStateSearch("");
+                                      }}
+                                    >
+                                      {s.name}
+                                    </div>
+                                  ))}
+                                {states.filter((s) =>
+                                  s.name.toLowerCase().includes(stateSearch.toLowerCase())
+                                ).length === 0 && (
+                                  <div className="rt-popover-empty">No states found.</div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div className="field-value">
                           {talent.personalInfo.state || "-"}
@@ -2051,26 +2161,83 @@ const ReviewTalent = () => {
                       )}
                     </div>
 
-                    {/* City Dropdown */}
-                    <div className="field-group">
+                    {/* City Popover */}
+                    <div className="field-group" style={{ position: "relative" }} ref={cityRef}>
                       <label className="auth-label">
                         City
-                        <span style={{ color: "#ef4444" }}> *</span>
+                        <span style={{ color: "#ef4444" }}>*</span>
                       </label>
                       {editingSections.includes("personalInfo") ? (
-                        <select
-                          className="auth-input"
-                          value={selectedCity}
-                          onChange={(e) => handleCityChange(e.target.value)}
-                          disabled={!selectedState || cities.length === 0}
-                        >
-                          <option value="">Select City</option>
-                          {cities.map((c) => (
-                            <option key={c.name} value={c.name}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </select>
+                        <>
+                          <button
+                            type="button"
+                            className={`rt-dropdown-target ${selectedCity ? "has-value" : ""}`}
+                            disabled={!selectedState}
+                            onClick={() => {
+                              setCityPopoverOpen((p) => !p);
+                              setCountryPopoverOpen(false);
+                              setStatePopoverOpen(false);
+                            }}
+                          >
+                            {selectedCity
+                              ? <span className="rt-dropdown-value">{selectedCity}</span>
+                              : <span className="rt-dropdown-placeholder">{!selectedState ? "Select state first…" : "Select or type City…"}</span>
+                            }
+                            <FiChevronDown size={14} color="#94a3b8" />
+                          </button>
+                          {cityPopoverOpen && selectedState && (
+                            <div className="rt-popover">
+                              <div className="rt-popover-search">
+                                <FiSearch className="rt-popover-search-icon" size={13} />
+                                <input
+                                  autoFocus
+                                  type="text"
+                                  placeholder="Search or type city…"
+                                  value={citySearch}
+                                  onChange={(e) => {
+                                    setCitySearch(e.target.value);
+                                    /* Allow typing a custom city not in the list */
+                                    handleCityChange(e.target.value);
+                                    setSelectedCity(e.target.value);
+                                  }}
+                                />
+                              </div>
+                              <div className="rt-popover-list">
+                                {cities
+                                  .filter((c) =>
+                                    c.name.toLowerCase().includes(citySearch.toLowerCase())
+                                  )
+                                  .map((c) => (
+                                    <div
+                                      key={c.name}
+                                      className={`rt-popover-item ${selectedCity === c.name ? "selected" : ""}`}
+                                      onClick={() => {
+                                        handleCityChange(c.name);
+                                        setSelectedCity(c.name);
+                                        setCityPopoverOpen(false);
+                                        setCitySearch("");
+                                      }}
+                                    >
+                                      {c.name}
+                                    </div>
+                                  ))}
+                                {cities.length === 0 && citySearch && (
+                                  <div
+                                    className="rt-popover-item"
+                                    onClick={() => {
+                                      handleCityChange(citySearch);
+                                      setSelectedCity(citySearch);
+                                      setCityPopoverOpen(false);
+                                      setCitySearch("");
+                                    }}
+                                  >
+                                    Use "{citySearch}"
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </>
                       ) : (
                         <div className="field-value">
                           {talent.personalInfo.city || "-"}

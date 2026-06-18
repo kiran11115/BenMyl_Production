@@ -748,20 +748,7 @@ const chartOptions = {
         </div>
       </div>
 
-      {/* PROJECTS SECTION */}
-      {dashboardProjects.length > 0 && (
-        <div className="quick-card" style={{ marginTop: 22 }}>
-          <div className="quick-header">
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>Active Job Postings</h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>Your recently posted vacancies and their status</p>
-            </div>
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <ProjectsSection projects={dashboardProjects} role="Recruiter" />
-          </div>
-        </div>
-      )}
+
 
       {/* Upload Talent Modal */}
       <UploadTalentModal

@@ -14,15 +14,15 @@ const embedParams = "rel=0&modestbranding=1&autoplay=1&mute=0&iv_load_policy=3&c
 export const videoGuides = [
     {
         id: "guide-1",
-        title: "Streamlined Hiring Workflow",
-        url: "https://youtu.be/gujfOe46-44",
-        embedUrl: `https://www.youtube.com/embed/gujfOe46-44?${embedParams}`
+        title: "Post a Job Flow",
+        url: "https://youtu.be/74dWHt7A7MU",
+        embedUrl: `https://www.youtube.com/embed/74dWHt7A7MU?${embedParams}`
     },
     {
         id: "guide-2",
-        title: "Talent-to-Opportunity Workflow",
-        url: "https://youtu.be/oQp7BYarXBw",
-        embedUrl: `https://www.youtube.com/embed/oQp7BYarXBw?${embedParams}`
+        title: "Upload Talent Flow",
+        url: "https://youtu.be/MileJSIIy3k",
+        embedUrl: `https://www.youtube.com/embed/MileJSIIy3k?${embedParams}`
     }
 ];
 

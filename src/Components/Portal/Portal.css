@@ -1,97 +1,273 @@
-/* Portal.css - Premium "Orange & Slate" Design System */
+/* Portal.css - Premium Design System matching BenMyl Dashboard layouts */
 
-.portal-container {
-  padding: 40px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: calc(100vh - 70px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+.portal-page-wrapper {
+  background: #f5f7fb;
+  min-height: calc(100vh - 80px);
+  padding: 24px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.portal-header {
-  margin-bottom: 48px;
-  text-align: center;
-  margin-top: 24px;
+.portal-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.portal-header h1 {
-  font-size: 32px;
+/* --- Hero Card (Top Blue Card) --- */
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 140px;
+  border-radius: 28px;
+  padding: 24px 36px;
+  position: relative;
+  overflow: hidden;
+  background-color: #07132d;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.06' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3Cpath fill='%23ffffff' fill-opacity='0.03' d='M0,160L48,165.3C96,171,192,181,288,160C384,139,480,85,576,96C672,107,768,181,864,181.3C960,181,1056,107,1152,80C1248,53,1344,75,1392,85.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"),
+    linear-gradient(135deg, #07132d 0%, #1c2759 40%, #5a5ce8 100%);
+  background-size: cover, cover;
+  background-position: bottom, center;
+  box-shadow: 0 20px 45px rgba(92, 92, 230, 0.16);
+  z-index: 1;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-pill {
+  width: max-content;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.job-posting-title {
+  font-size: 26px;
   font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 12px;
-  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+  color: #ffffff;
 }
 
-.portal-header p {
-  font-size: 16px;
-  color: #64748b;
+.job-posting-header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
 }
 
+.job-posting-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 !important;
+  line-height: 1.5;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.hero-card-actions-wrapper {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.portal-header-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.portal-header-badge span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+}
+
+/* --- Cards Grid: Exactly 4 in a row on widescreen --- */
 .admin-grid-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   width: 100%;
 }
 
+/* --- Elegant Module Card (familiarity with job-card) --- */
 .admin-module-card {
   background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  border: 1px solid #e7ebf3;
   padding: 24px;
+  min-height: 230px;
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  flex-direction: column;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
 }
 
 .admin-module-card:hover {
   transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
   border-color: #cbd5e1;
-  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Bottom decorative line - familiar interaction visual signature */
+.admin-module-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6 0%, #a855f7 60%, #ec4899 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.admin-module-card:hover::after {
+  opacity: 1;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .admin-module-icon-wrap {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
-  background: #f1f5f9;
-  color: #334155;
+  background: #f8fafc;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   transition: all 0.3s ease;
 }
 
 .admin-module-card:hover .admin-module-icon-wrap {
-  background: #fff7ed;
-  color: #f5810c;
+  background: #e8e8ff;
+  color: #5a5ce8;
   transform: scale(1.05);
+}
+
+.card-arrow-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  color: #cbd5e1;
+  transition: all 0.3s ease;
+}
+
+.admin-module-card:hover .arrow-icon {
+  color: #5a5ce8;
+  transform: translateX(4px);
 }
 
 .admin-module-content {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
 }
 
 .admin-module-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #0f172a;
-  margin: 0 0 6px 0;
-  line-height: 1.2;
+  margin: 0;
+  line-height: 1.3;
 }
 
 .admin-module-desc {
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+.card-footer-row {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.configure-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+.admin-module-card:hover .configure-text {
+  color: #5a5ce8;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 1200px) {
+  .admin-grid-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .portal-page-wrapper {
+    padding: 16px;
+  }
+  
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    border-radius: 16px;
+  }
+  
+  .job-posting-title {
+    font-size: 20px;
+  }
+  
+  .job-posting-subtitle {
+    font-size: 12px;
+  }
+  
+  .admin-grid-wrapper {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .admin-module-card {
+    border-radius: 20px;
+    min-height: auto;
+  }
+}

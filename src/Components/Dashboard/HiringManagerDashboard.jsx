@@ -273,12 +273,6 @@ const HiringManagerDashboard = () => {
       path: '/user-posted-jobs',
     },
     {
-      title: "Schedule Interviews",
-      desc: "Coordinate calendar slots with candidates.",
-      icon: <Calendar size={20} />,
-      path: '/user-upcoming-interview',
-    },
-    {
       title: "Active Projects",
       desc: `${activeProjectsCount} projects — track status & timelines.`,
       icon: <LayoutGrid size={20} />,
@@ -472,7 +466,6 @@ const chartOptions = {
           <span className="prompt-label">Quick Prompts:</span>
           <span>Find React developers with 5+ years</span>
           <span>Show pending submissions</span>
-          <span>Schedule interviews this week</span>
           <span>Active job postings summary</span>
         </div>
       </div>
@@ -677,20 +670,7 @@ const chartOptions = {
         </div>
       </div>
 
-      {/* PROJECTS SECTION */}
-      {dashboardProjects.length > 0 && (
-        <div className="quick-card" style={{ marginTop: 22 }}>
-          <div className="quick-header">
-            <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>Active Job Postings</h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>Your recently posted vacancies and their status</p>
-            </div>
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <ProjectsSection projects={dashboardProjects} role="Recruiter" />
-          </div>
-        </div>
-      )}
+
 
       {/* Upload Talent Modal */}
       <UploadTalentModal

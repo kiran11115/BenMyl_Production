@@ -68,7 +68,15 @@ const MobileTopBar = ({ user, initials, handleSignOut, setOpenVideoGuide }) => {
                     <MessageCircle size={20} />
                 </button>
                 <button className="mobile-action-btn mobile-top-bar-play-btn" onClick={() => setOpenVideoGuide(true)}>
-                    <Play size={20} fill="currentColor" />
+                    <svg width="0" height="0" style={{ position: "absolute" }}>
+                        <defs>
+                            <linearGradient id="video-btn-gradient-mobile" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#3b82f6" />
+                                <stop offset="100%" stopColor="#8b5cf6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <Play size={20} fill="url(#video-btn-gradient-mobile)" stroke="url(#video-btn-gradient-mobile)" />
                 </button>
                 <Notifications />
                 <button className="mobile-action-btn mobile-top-bar-signout-btn" onClick={handleSignOut}>

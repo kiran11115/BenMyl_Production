@@ -17,8 +17,8 @@ const ModuleHeader = ({
     const navigate = useNavigate();
 
     return (
-        <header className="module-header-standard">
-            <div className="header-left-content">
+        <div className="hero-card mb-4 module-hero-header">
+            <div className="hero-left">
                 <nav className="breadcrumb-nav">
                     {customBreadcrumbs.length > 0 ? (
                         customBreadcrumbs.map((cb, idx) => (
@@ -32,7 +32,7 @@ const ModuleHeader = ({
                         ))
                     ) : (
                         <>
-                            <div onClick={() => navigate(-1)} className="breadcrumb-link">
+                            <div onClick={() => navigate(-1)} className="breadcrumb-link" style={{ cursor: 'pointer' }}>
                                 <Home size={14} />
                                 Control Center
                             </div>
@@ -42,36 +42,38 @@ const ModuleHeader = ({
                     <span className="breadcrumb-current">{breadcrumb}</span>
                 </nav>
 
-                <div className="title-section">
+                <div className="title-section" style={{ marginTop: '12px' }}>
                     {badgeText && (
-                        <div className="header-badge-standard">
-                            {IconComponent && <IconComponent size={14} />}
+                        <div className="hero-pill mb-2">
+                            {IconComponent && <IconComponent size={14} style={{ marginRight: '6px' }} />}
                             {badgeText}
                         </div>
                     )}
-                    <h1>{title}</h1>
-                    <p>{description}</p>
+                    <h1 className="job-posting-title text-white">{title}</h1>
+                    <p className="job-posting-subtitle">{description}</p>
                 </div>
             </div>
 
-            <div className="header-right-actions">
-                {actions.map((action, index) => {
-                    if (action.customElement) {
-                        return <React.Fragment key={index}>{action.customElement}</React.Fragment>;
-                    }
-                    return (
-                        <button 
-                            key={index} 
-                            className={`btn-${action.type || 'secondary'}`} 
-                            onClick={action.onClick}
-                        >
-                            {action.icon}
-                            {action.label}
-                        </button>
-                    );
-                })}
+            <div className="hero-card-actions-wrapper">
+                <div className="header-right-actions">
+                    {actions.map((action, index) => {
+                        if (action.customElement) {
+                            return <React.Fragment key={index}>{action.customElement}</React.Fragment>;
+                        }
+                        return (
+                            <button 
+                                key={index} 
+                                className={`btn-${action.type || 'secondary'}`} 
+                                onClick={action.onClick}
+                            >
+                                {action.icon}
+                                {action.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
-        </header>
+        </div>
     );
 };
 

@@ -52,10 +52,10 @@
 
 .video-popover-icon {
     background: #eff6ff;
-    color: #f5810c;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    color: #5B5BD6;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +63,7 @@
 
 .video-popover-title {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #1e293b;
 }
@@ -108,7 +108,7 @@
 
 .video-popover-fullscreen:hover {
     background: #e2e8f0;
-    color: #f5810c;
+    color: #5B5BD6;
     transform: scale(1.1);
 }
 
@@ -128,7 +128,7 @@
 }
 
 .sidebar-title {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #94a3b8;
     text-transform: uppercase;
@@ -162,16 +162,16 @@
 
 .video-item.active {
     background: #eff6ff;
-    color: #f5810c;
+    color: #5B5BD6;
 }
 
 .video-item-title {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.82rem;
 }
 
 .video-item.active .video-item-title {
-    color: #f5810c;
+    color: #5B5BD6;
 }
 
 .video-item .chevron {
@@ -180,7 +180,7 @@
 }
 
 .video-item.active .chevron {
-    color: #f5810c;
+    color: #5B5BD6;
     transform: translateX(2px);
 }
 
@@ -321,7 +321,7 @@
 
 .video-popover-hint {
     margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     color: #94a3b8;
     text-align: center;
 }

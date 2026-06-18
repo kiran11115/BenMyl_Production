@@ -43,7 +43,7 @@ const InterviewsList = ({ interviews, isComingSoon }) => {
                     {int.time}
                   </div>
                   {int.tag && (
-                    <span className={`status-tag status-progress${getTagClass(int.tag)}`}>
+                    <span className={`status-tag status-progress ${getTagClass(int.tag)}`}>
                       {int.tag}
                     </span>
                   )}

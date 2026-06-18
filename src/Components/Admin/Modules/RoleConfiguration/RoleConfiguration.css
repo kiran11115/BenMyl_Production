@@ -13,10 +13,10 @@
     width: 300px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
     height: calc(100vh - 120px);
     position: sticky;
     top: 1.25rem;
@@ -58,7 +58,7 @@
 }
 
 .add-role-btn:hover {
-    background-color: #ea580c;
+    background-color: #4f46e5;
     transform: translateY(-1px);
 }
 
@@ -88,7 +88,7 @@
 
 .search-box input:focus {
     background-color: white;
-    border-color: #f5810c;
+    border-color: #5a5de8;
     outline: none;
 }
 
@@ -103,7 +103,7 @@
     align-items: center;
     gap: 0.875rem;
     padding: 0.75rem 1rem;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-bottom: 0.25rem;
@@ -169,10 +169,10 @@
 .role-config-main {
     flex: 1;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 24px;
     border: 1px solid #e2e8f0;
     padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
     overflow-y: auto;
 }
 
@@ -240,7 +240,7 @@
 }
 
 input:checked + .slider {
-    background-color: #f5810c;
+    background-color: #5a5de8;
 }
 
 input:checked + .slider:before {
@@ -271,7 +271,7 @@ input:checked + .slider:before {
     background-color: #f8fafc;
     padding: 1.25rem;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;

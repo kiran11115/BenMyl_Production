@@ -9,10 +9,10 @@
 .policy-matrix-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 24px;
     overflow: hidden;
     margin-bottom: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .box-header {
@@ -102,15 +102,16 @@
 }
 
 .check-box {
-    width: 28px;
-    height: 28px;
-    background-color: #f1f5f9;
-    border-radius: 6px;
+    width: 30px;
+    height: 30px;
+    background-color: #f8fafc;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #94a3b8;
     transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
 }
 
 .pref-checkbox:hover .check-box {
@@ -120,7 +121,7 @@
 .pref-checkbox input:checked ~ .check-box {
     background-color: #e8e8ff;
     color: #5a5de8;
-    border: 1px solid rgba(245, 129, 12, 0.1);
+    border: 1px solid rgba(90, 93, 232, 0.15);
 }
 
 /* Bottom Grid Cards */
@@ -153,13 +154,14 @@
 
 .escalation-card {
     background-color: white;
-    padding: 1rem 1.25rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e7ebf3;
+    border-radius: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.01);
 }
 
 .escalation-card:hover {
@@ -188,7 +190,7 @@
 }
 
 .btn-edit-rule:hover { 
-    color: #f5810c; 
+    color: #5a5de8; 
 }
 
 .roles-grid {
@@ -199,13 +201,14 @@
 
 .role-pref-card {
     background-color: white;
-    padding: 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e7ebf3;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.01);
 }
 
 .role-pref-card:hover {

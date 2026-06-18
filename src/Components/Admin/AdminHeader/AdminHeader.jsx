@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard, Play } from "lucide-react";
 import "./AdminHeader.css";
 import Notifications from "../../Header/Notifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
@@ -8,6 +8,8 @@ import TrialPopover from "../../Header/TrialPopover";
 import ProfileSideModal from "../../Header/ProfileSideModal";
 import ScrollToTop from "../../ScrollToTop";
 import SupportButton from "../../Common/SupportButton";
+import VideoGuidePopover from "../../Guide/VideoGuidePopover";
+import { videoGuides } from "../../Guide/guideData";
 
 const getNavIcon = (label) => {
   const cleanLabel = label.trim().toLowerCase().replace(/\s+/g, " ");
@@ -38,6 +40,7 @@ function AdminHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [isVideoGuideOpen, setIsVideoGuideOpen] = useState(false);
     const [isAiPopoverOpen, setIsAiPopoverOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showRoutineModal, setShowRoutineModal] = useState(false);
@@ -304,6 +307,27 @@ function AdminHeader() {
                         </button>
                     </div>
 
+                    {/* Video Guide Icon */}
+                    <div className="admin-message-popover-wrapper">
+                        <button
+                            onClick={() => setIsVideoGuideOpen(true)}
+                            type="button"
+                            className="header-action-btn"
+                            aria-label="Video Guide"
+                            title="Video Guide"
+                        >
+                            <svg width="0" height="0" style={{ position: "absolute" }}>
+                                <defs>
+                                    <linearGradient id="video-btn-gradient-admin" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#3b82f6" />
+                                        <stop offset="100%" stopColor="#8b5cf6" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <Play size={16} fill="url(#video-btn-gradient-admin)" stroke="url(#video-btn-gradient-admin)" />
+                        </button>
+                    </div>
+
                     {/* Notification Bell */}
                     <Notifications targetPath="/Admin/notifications-page" />
 
@@ -528,6 +552,13 @@ function AdminHeader() {
                     subscriptionType: "Enterprise Plan",
                     tokens: "150",
                 }}
+            />
+
+            {/* Video Guide Popover */}
+            <VideoGuidePopover
+                isOpen={isVideoGuideOpen}
+                onClose={() => setIsVideoGuideOpen(false)}
+                videoGuides={videoGuides}
             />
 
         </>

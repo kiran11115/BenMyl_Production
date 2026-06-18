@@ -19,12 +19,22 @@
   margin-bottom: 4px;
 }
 
+.job-posting-header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
 .job-posting-subtitle {
   color: #94a3b8;
   font-size: 12px; /* Strict Max */
   line-height: 1.4;
-  margin: 0;
+  margin: 0 !important;
   max-width: 600px;
+  text-align: left;
+  align-self: flex-start;
 }
 
 .hero-buttons {

@@ -9,7 +9,8 @@ import {
   FileCheck, 
   Zap, 
   BellRing, 
-  CreditCard 
+  CreditCard,
+  ArrowRight
 } from 'lucide-react';
 import './Portal.css';
 
@@ -25,27 +26,60 @@ const Portal = () => {
   ];
 
   return (
-    <div className="portal-container">
-      <div className="portal-header">
-        <h1>Control Center</h1>
-        <p>Manage platform configurations, security, and global settings</p>
-      </div>
-
-      <div className="admin-grid-wrapper">
-        {adminModules.map((module, index) => {
-          const Icon = module.icon;
-          return (
-            <div key={index} className="admin-module-card" onClick={() => navigate(module.path)}>
-              <div className="admin-module-icon-wrap">
-                <Icon size={28} className="admin-module-icon" />
-              </div>
-              <div className="admin-module-content">
-                <h3 className="admin-module-title">{module.name}</h3>
-                <p className="admin-module-desc">{module.description}</p>
-              </div>
+    <div className="portal-page-wrapper">
+      <div className="portal-container">
+        
+        {/* Top Blue Hero Card */}
+        <div className="hero-card mb-4">
+          <div className="hero-left">
+            <div className="hero-pill">
+              ✦ Control Center
             </div>
-          );
-        })}
+            <h1 className="job-posting-title text-white">Platform Settings & Control</h1>
+            <div className="job-posting-header-info">
+              <p className="job-posting-subtitle">
+                Configure user roles, notification preferences, billing structures, and system configurations.
+              </p>
+            </div>
+          </div>
+          <div className="hero-card-actions-wrapper">
+            <div className="portal-header-badge">
+              <span>Admin Portal</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="admin-grid-wrapper">
+          {adminModules.map((module, index) => {
+            const Icon = module.icon;
+            return (
+              <div 
+                key={index} 
+                className="admin-module-card" 
+                onClick={() => module.path !== '#' && navigate(module.path)}
+              >
+                <div className="card-top-row">
+                  <div className="admin-module-icon-wrap">
+                    <Icon size={24} className="admin-module-icon" />
+                  </div>
+                  <div className="card-arrow-wrap">
+                    <ArrowRight size={18} className="arrow-icon" />
+                  </div>
+                </div>
+                <div className="admin-module-content">
+                  <h3 className="admin-module-title">{module.name}</h3>
+                  <p className="admin-module-desc">{module.description}</p>
+                </div>
+                <div className="card-footer-row">
+                  <span className="configure-text">
+                    {module.path === '#' ? 'Coming Soon' : 'Configure Settings'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -202,7 +202,7 @@ function RoleConfiguration() {
                     ]}
                 />
 
-                <div className="team-assignment-section" style={{ marginBottom: '24px', backgroundColor: '#fff', padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <div className="team-assignment-section" style={{ marginBottom: '24px', backgroundColor: '#fff', padding: '20px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                         <Users size={18} style={{ color: '#0f172a' }} />
                         <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a', margin: 0 }}>Team Members in this Role</h3>

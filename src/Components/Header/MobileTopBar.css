@@ -69,7 +69,7 @@
 }
 
 .mobile-top-bar-play-btn {
-    color: #f5810c !important;
+    opacity: 0.9;
 }
 
 .mobile-top-bar-signout-btn {
