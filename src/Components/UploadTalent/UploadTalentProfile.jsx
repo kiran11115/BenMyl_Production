@@ -270,7 +270,7 @@ const UploadTalentProfile = () => {
     <div className="ai-dashboard-wrapper">
       {/* ── HERO HEADER CARD (COVER) ── */}
       <div className="hero-card tp-banner">
-        <button className="routine-btn" onClick={() => {
+        <button className="routine-btn mb-5" onClick={() => {
           const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
           const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
           navigate(targetPath);
@@ -279,7 +279,7 @@ const UploadTalentProfile = () => {
         </button>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button
-            className="routine-btn"
+            className="routine-btn mb-5"
             style={{ background: '#fff', color: '#1e3a8a', border: 'none', fontWeight: 700 }}
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
@@ -290,7 +290,7 @@ const UploadTalentProfile = () => {
             <FiBriefcase size={14} style={{ marginRight: '6px' }} /> Explore Jobs
           </button>
           <button
-            className="routine-btn"
+            className="routine-btn mb-5"
             style={{ background: '#5B5BD6', color: '#fff', border: 'none', fontWeight: 700 }}
             onClick={handleEditClick}
           >

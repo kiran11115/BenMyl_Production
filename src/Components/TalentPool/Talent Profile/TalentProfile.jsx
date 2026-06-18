@@ -180,7 +180,7 @@ const TalentProfile = () => {
 
       {/* ── HERO HEADER CARD (COVER) ── */}
       <div className="hero-card tp-banner">
-        <button type="button" className="routine-btn" onClick={handleBack} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }}>
+        <button type="button" className="routine-btn mb-5" onClick={handleBack} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', backdropFilter: 'blur(4px)' }}>
           <FiArrowLeft style={{ marginRight: '6px' }} /> Back
         </button>
         {!fromJobOverview && (
@@ -189,7 +189,7 @@ const TalentProfile = () => {
 
             type="button"
 
-            className={`routine-btn${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
+            className={`routine-btn mb-5${isShortlisted ? ' tp-shortlisted-btn' : ''}`}
 
             onClick={handleShortlistFromProfile}
 
