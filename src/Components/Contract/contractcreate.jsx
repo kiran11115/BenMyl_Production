@@ -199,6 +199,7 @@ const ContractCreate = () => {
 
   const [signatureType, setSignatureType] = useState('draw');
   const [signatureData, setSignatureData] = useState(null);
+  const [signatureError, setSignatureError] = useState('');
   const [legalDocument, setLegalDocument] = useState(null);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -218,6 +219,13 @@ const ContractCreate = () => {
       };
     }
   }, [legalDocument]);
+
+  // Clear signature error once signature data is captured
+  useEffect(() => {
+    if (signatureData) {
+      setSignatureError('');
+    }
+  }, [signatureData]);
 
   const extractPdfText = async (file) => {
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -489,6 +497,7 @@ const ContractCreate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     setSignatureData(null);
+    setSignatureError('Signature/upload image is required');
   };
 
   // Download contract preview as high-quality PDF using jsPDF + html2canvas
@@ -613,6 +622,7 @@ const ContractCreate = () => {
   // Submit and create contract integration
   const handleSaveContractSubmit = async () => {
     if (!signatureData) {
+      setSignatureError('Signature/upload image is required');
       toast.error('Please provide signature before sharing.');
       return;
     }
@@ -1661,6 +1671,13 @@ const ContractCreate = () => {
                         <label htmlFor="sig-upload-wizard" className="btn-secondary" style={{ cursor: 'pointer' }}>
                           {signatureData ? 'Replace Image' : 'Select Image File'}
                         </label>
+                      </div>
+                    )}
+
+                    {signatureError && (
+                      <div className="auth-error" style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '13px', fontWeight: '500' }}>
+                        <AlertCircle size={16} />
+                        <span>{signatureError}</span>
                       </div>
                     )}
 

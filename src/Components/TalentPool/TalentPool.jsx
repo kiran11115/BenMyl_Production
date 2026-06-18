@@ -96,7 +96,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
       clearShortlistForJob(jobId);
       await refreshTalents();
       onClose();
-      if (onInviteSuccess) onInviteSuccess(jobId);
+      if (onInviteSuccess) onInviteSuccess(selectedJob?.jobID,shortlistedCandidates[0]?.id);
     } catch (err) {
       console.error("Invite failed", err);
       setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
@@ -1356,7 +1356,12 @@ const TalentPool = () => {
           userId={userId}
           refreshTalents={fetchTalents}
           clearShortlistForJob={clearShortlistForJob}
-          onInviteSuccess={(jobId) => setSuccessJobId(jobId)}
+          onInviteSuccess={(jobId, candidateId) => {
+  setSuccessJobId({
+    jobId,
+    candidateId
+  });
+}}
         />
 
         <JobDetailsDrawer
@@ -1504,7 +1509,7 @@ const TalentPool = () => {
                   onClick={() => {
                     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
                     const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
-                    navigate(targetPath, { state: { openDrawer: true, preSelectedJobId: successJobId } });
+                    navigate(targetPath, { state: { openDrawer: true, preSelectedJobId: successJobId.jobId,preSelectedCandidateId: successJobId.candidateId } });
                   }}
                 >
                   Schedule Interview

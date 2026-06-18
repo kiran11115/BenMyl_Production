@@ -5,7 +5,8 @@ import { CustomConfirm } from '../Common/CustomAlert';
 import {
   FileText, ArrowLeft, Download, CheckCircle,
   XCircle, PenTool, Upload, ShieldCheck, Printer,
-  Lock, Clock, Building, User, Info, FileCheck, Check
+  Lock, Clock, Building, User, Info, FileCheck, Check,
+  AlertCircle
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ContractContext, formatDate } from './ContractContext';
@@ -19,6 +20,7 @@ import jsPDF from 'jspdf';
 const SignatureSection = ({ onComplete, onCancel }) => {
   const [type, setType] = useState('draw');
   const [data, setData] = useState(null);
+  const [signatureError, setSignatureError] = useState('');
   const canvasRef = useRef(null);
   const isDrawing = useRef(false);
 
@@ -32,8 +34,16 @@ const SignatureSection = ({ onComplete, onCancel }) => {
     }
   }, [type]);
 
+  // Clear signature error once data is set
+  useEffect(() => {
+    if (data) {
+      setSignatureError('');
+    }
+  }, [data]);
+
   const startDrawing = (e) => {
     isDrawing.current = true;
+    setSignatureError('');
     draw(e);
   };
 
@@ -62,6 +72,17 @@ const SignatureSection = ({ onComplete, onCancel }) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     setData(null);
+    setSignatureError('Signature/upload image is required');
+  };
+
+  const handleSignSubmit = () => {
+    if (!data) {
+      setSignatureError('Signature/upload image is required');
+      toast.error('Legal signature is required to proceed.');
+      return;
+    }
+    setSignatureError('');
+    onComplete(data);
   };
 
   return (
@@ -95,8 +116,15 @@ const SignatureSection = ({ onComplete, onCancel }) => {
         </div>
       )}
 
+      {signatureError && (
+        <div className="auth-error" style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '13px', fontWeight: '500' }}>
+          <AlertCircle size={16} />
+          <span>{signatureError}</span>
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-        <button className="btn-primary" style={{ flex: 1, height: '48px', fontSize: 14 }} onClick={() => onComplete(data)}>Sign & Execute Contract</button>
+        <button className="btn-primary" style={{ flex: 1, height: '48px', fontSize: 14 }} onClick={handleSignSubmit}>Sign & Execute Contract</button>
         <button className="btn-secondary" onClick={onCancel}>Cancel</button>
       </div>
     </div>
