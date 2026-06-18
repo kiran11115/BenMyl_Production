@@ -140,6 +140,16 @@ const UserJobs = () => {
       });
     }
 
+    // Work Models (Job Type)
+    if (filters.locationType && filters.locationType !== "Any Type") {
+      const apiVal = filters.locationType === "On-Site" ? "On-site" : filters.locationType;
+      apiFilters.push({
+        filterName: "workModels",
+        filterOperator: "string",
+        filterValue: [apiVal],
+      });
+    }
+
     return apiFilters;
   };
   // initial + pagination fetch
