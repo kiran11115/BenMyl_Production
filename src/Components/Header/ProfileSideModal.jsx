@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiX, FiEdit2, FiLogOut, FiMail, FiPhone, FiMapPin,
-  FiBriefcase, FiLinkedin, FiUser, FiCalendar, FiBook, FiGlobe, FiUsers, FiDollarSign
+  FiBriefcase, FiLinkedin, FiUser, FiCalendar, FiBook, FiGlobe, FiUsers, FiDollarSign,
+  FiCreditCard
 } from "react-icons/fi";
 import "./ProfileSideModal.css";
 import packageJson from "../../../package.json";
@@ -52,6 +53,12 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
     onClose();
     // Directs to page with list of users created as team members (activeTab = team)
     navigate("/Admin/account-settings", { state: { activeTab: "team" } });
+  };
+
+  const handleSubscriptionClick = () => {
+    onClose();
+    // Directs to page with list of users created as team members (activeTab = team)
+    navigate("/user/user-subscription");
   };
 
   return (
@@ -229,6 +236,14 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
           <button className="psm-btn psm-btn-primary" onClick={onEditClick}>
             <FiEdit2 size={14} /> Edit Profile
           </button>
+          {profile?.role !== "Admin" && (
+    <button
+      className="psm-btn psm-btn-primary"
+      onClick={handleSubscriptionClick}
+    >
+      <FiCreditCard size={14} /> Subscription
+    </button>
+  )}
           {profile?.role === "Admin" && (
             <button className="psm-btn psm-btn-secondary" onClick={handleAddUsersClick}>
               <FiUsers size={14} /> Add Users
