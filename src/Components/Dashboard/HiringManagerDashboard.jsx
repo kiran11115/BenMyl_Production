@@ -67,7 +67,7 @@ const topTalent = [
 const earningsData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
   datasets: [{
-    label: "Earnings",
+    label: " Earnings",
     data: [30000, 45000, 42000, 60000, 55000, 75000],
     borderColor: "#3b82f6",
     backgroundColor: "rgba(59, 130, 246, 0.2)",
@@ -94,7 +94,7 @@ const getInitials = (name = "") => {
 const pipelineLineData = {
   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   datasets: [{
-    label: "Applications",
+    label: " Applications",
     data: [26, 35, 40, 32, 50, 60, 55],
     borderWidth: 2,
     tension: 0.4,
@@ -291,7 +291,7 @@ const HiringManagerDashboard = () => {
   labels: graphData.map((d) => d.month),
   datasets: [
     {
-      label: "Posted Jobs",
+      label: " Posted Jobs",
       data: graphData.map((d) => d.posted),
       borderColor: "#5a5de8",
       backgroundColor: "rgba(90,93,232,0.12)",
@@ -304,7 +304,7 @@ const HiringManagerDashboard = () => {
       pointHoverRadius: 6,
     },
     {
-      label: "Active Jobs",
+      label: "  Active Jobs",
       data: graphData.map((d) => d.active),
       borderColor: "#00b67a",
       backgroundColor: "rgba(0,182,122,0.12)",
@@ -413,7 +413,7 @@ const chartOptions = {
         </div>
 
         <div className="hero-buttons">
-          <button
+          {/* <button
             className="launch-btn"
             onClick={triggerSync}
           >
@@ -422,7 +422,7 @@ const chartOptions = {
               className={syncing ? "spin-icon" : ""}
             />
             {syncing ? "Syncing..." : "Sync Pipeline"}
-          </button>
+          </button> */}
 
           <button
             className="routine-btn"
@@ -444,7 +444,7 @@ const chartOptions = {
       </div>
 
       {/* SEARCH */}
-      <div className="command-card">
+      {/* <div className="command-card">
         <div className="command-title">
           <Command size={14} className="command-title-icon" />
           <span>INTERACTIVE RECRUITMENT COMMAND INTERFACE</span>
@@ -468,7 +468,7 @@ const chartOptions = {
           <span>Show pending submissions</span>
           <span>Active job postings summary</span>
         </div>
-      </div>
+      </div> */}
 
       {/* STATS */}
       <div className="stats-grid">

@@ -54,7 +54,7 @@ const matchedJobs = [
 const earningsData = {
   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
   datasets: [{
-    label: "Earnings",
+    label: " Earnings",
     data: [30000, 45000, 42000, 60000, 55000, 75000],
     borderColor: "#3b82f6",
     backgroundColor: "rgba(59, 130, 246, 0.05)",
@@ -261,7 +261,7 @@ const chartData = {
   labels: graphData.map((d) => d.month),
   datasets: [
     {
-      label: "Resume Uploads",
+      label: " Resume Uploads",
       data: graphData.map((d) => d.uploads),
       borderColor: "#5a5de8",
       backgroundColor: "rgba(90,93,232,0.12)",
@@ -274,7 +274,7 @@ const chartData = {
       pointHoverRadius: 6,
     },
     {
-      label: "Reviews",
+      label: " Reviews",
       data: graphData.map((d) => d.reviews),
       borderColor: "#00b67a",
       backgroundColor: "rgba(0,182,122,0.12)",
@@ -424,7 +424,7 @@ const chartOptions = {
       </div>
 
       {/* SEARCH */}
-      <div className="command-card">
+      {/* <div className="command-card">
         <div className="command-title">
           <Command size={14} className="command-title-icon" />
           <span>INTERACTIVE BENCH SALES COMMAND INTERFACE</span>
@@ -449,7 +449,7 @@ const chartOptions = {
           <span>Generate vendor report</span>
           <span>Predict placement closure rate</span>
         </div>
-      </div>
+      </div> */}
 
       {/* STATS */}
       <div className="stats-grid">

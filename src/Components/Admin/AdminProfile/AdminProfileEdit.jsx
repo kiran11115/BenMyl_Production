@@ -85,7 +85,7 @@ const AdminProfileEdit = () => {
         }
         await updateCompanyProfile(formData).unwrap();
         refetch(); // Ensure data is updated before navigation
-        navigate("/Admin/admin-profile");
+        navigate("/Admin/overview-dashboard", { state: { openProfileModal: true } });
       } catch (err) {
         console.error("Update failed", err);
       }

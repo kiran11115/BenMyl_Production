@@ -262,8 +262,8 @@ function EditProfile() {
 
       await updateRecruiterProfile(fd).unwrap();
       const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-      const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-profile` : `${basePath}/user-profile`;
-      navigate(targetPath);
+      const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/overview-dashboard` : `${basePath}/user-dashboard`;
+      navigate(targetPath, { state: { openProfileModal: true } });
 
     },
   });

@@ -265,7 +265,7 @@ function UploadTalentModal({
               </div>{/* end scroll wrapper */}
               {/* actions */}
               <div className="utm-actions-row">
-                <button className="utm-btn-clear ut2-btn-clear" onClick={handleClose} disabled={isProcessing}>
+                <button className="btn-secondary" onClick={handleClose} disabled={isProcessing}>
                   Clear
                 </button>
                 <button className="quick-create-btn" onClick={handleProcess}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard } from "lucide-react";
 import VideoGuidePopover from "../Guide/VideoGuidePopover";
 import { videoGuides } from "../Guide/guideData";
@@ -136,6 +136,15 @@ function Header() {
 
   // Initialize navigation hook
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openProfileModal) {
+      setIsProfileModalOpen(true);
+      // Clean up the location state so it doesn't reopen if the user refreshes or navigates back/forth
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

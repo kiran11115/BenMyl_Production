@@ -85,8 +85,21 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
 
     if (!isOpen) return null;
 
+    const currentVideo = activeVideo || videoGuides[0];
+    if (!currentVideo) return null;
+
+    // Group guides by section
+    const groupedGuides = (videoGuides || []).reduce((acc, video) => {
+        const section = video.section || "Main Flows";
+        if (!acc[section]) {
+            acc[section] = [];
+        }
+        acc[section].push(video);
+        return acc;
+    }, {});
+
     // Build URL with enablejsapi=1 for postMessage support
-    const videoId = activeVideo.url.split('v=')[1] || activeVideo.url.split('/').pop();
+    const videoId = currentVideo.url.split('v=')[1] || currentVideo.url.split('/').pop();
     const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=0&rel=0&modestbranding=1&iv_load_policy=3&controls=1&disablekb=1&origin=${window.location.origin}`;
 
     return (
@@ -97,13 +110,13 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
                         <div className="video-popover-icon">
                             <Play size={16} fill="currentColor" />
                         </div>
-                        <h3 className="video-popover-title">BenMyl Guide: {activeVideo.title}</h3>
+                        <h3 className="video-popover-title">BenMyl Guide: {currentVideo.title}</h3>
                     </div>
                     <div className="video-popover-header-actions">
                         <button 
-                            className="video-popover-fullscreen" 
-                            onClick={toggleFullscreen}
-                            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                             className="video-popover-fullscreen" 
+                             onClick={toggleFullscreen}
+                             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                         >
                             {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
                         </button>
@@ -115,21 +128,25 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
                 
                 <div className="video-popover-main">
                     <div className="video-popover-sidebar">
-                        <h4 className="sidebar-title">All Guides</h4>
-                        <div className="video-list">
-                            {videoGuides.map((video) => (
-                                <button
-                                    key={video.id}
-                                    className={`video-item ${activeVideo.id === video.id ? 'active' : ''}`}
-                                    onClick={() => setActiveVideo(video)}
-                                >
-                                    <div className="video-item-info">
-                                        <span className="video-item-title">{video.title}</span>
-                                    </div>
-                                    <ChevronRight size={14} className="chevron" />
-                                </button>
-                            ))}
-                        </div>
+                        {Object.entries(groupedGuides).map(([sectionName, guides]) => (
+                            <div key={sectionName} className="sidebar-section">
+                                <h4 className="sidebar-title">{sectionName}</h4>
+                                <div className="video-list">
+                                    {guides.map((video) => (
+                                        <button
+                                            key={video.id}
+                                            className={`video-item ${currentVideo.id === video.id ? 'active' : ''}`}
+                                            onClick={() => setActiveVideo(video)}
+                                        >
+                                            <div className="video-item-info">
+                                                <span className="video-item-title">{video.title}</span>
+                                            </div>
+                                            <ChevronRight size={14} className="chevron" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="video-popover-body">
@@ -138,7 +155,7 @@ const VideoGuidePopover = ({ isOpen, onClose, videoGuides }) => {
                                 <iframe
                                     ref={iframeRef}
                                     src={embedUrl}
-                                    title={activeVideo.title}
+                                    title={currentVideo.title}
                                     frameBorder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen

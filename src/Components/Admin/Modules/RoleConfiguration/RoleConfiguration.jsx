@@ -187,12 +187,12 @@ function RoleConfiguration() {
                     badgeText="Configuring Permissions"
                     icon={ShieldCheck}
                     actions={[
-                        { 
-                            label: "Reset Defaults", 
-                            icon: <RotateCcw size={16} />, 
-                            type: "secondary",
-                            onClick: () => console.log("Reset")
-                        },
+                        // { 
+                        //     label: "Reset Defaults", 
+                        //     icon: <RotateCcw size={16} />, 
+                        //     type: "secondary",
+                        //     onClick: () => console.log("Reset")
+                        // },
                         { 
                             label: isSaving ? "Saving..." : "Save Changes", 
                             icon: <Save size={16} />, 

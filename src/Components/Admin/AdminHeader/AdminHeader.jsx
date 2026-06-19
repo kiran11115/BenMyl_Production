@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard, Play } from "lucide-react";
 import "./AdminHeader.css";
 import Notifications from "../../Header/Notifications";
@@ -70,6 +70,15 @@ function AdminHeader() {
 
     // Initialize navigation hook
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.openProfileModal) {
+            setIsProfileModalOpen(true);
+            // Clean up the location state so it doesn't reopen if the user refreshes or navigates back/forth
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, navigate]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);

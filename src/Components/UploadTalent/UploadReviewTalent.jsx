@@ -271,10 +271,10 @@ const UploadReviewTalent = () => {
                         <div style={{
                             display: "flex", alignItems: "center", gap: 8,
                             background: "#f8fafc", border: "1px solid #e2e8f0",
-                            borderRadius: 10, padding: "8px 14px", minWidth: 280,
+                            borderRadius: 10, minWidth: 280,
                             boxShadow: "inset 0 1px 2px rgba(0,0,0,0.02)",
                         }}>
-                            <FiSearch size={16} color="#94a3b8" />
+                            <FiSearch size={16} className="ms-3" color="#94a3b8" />
                             <input
                                 type="text"
                                 placeholder="Search extracted resumes..."

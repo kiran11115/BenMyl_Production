@@ -27,7 +27,8 @@ import {
   ChevronDown,
   Download,
   Briefcase,
-  User
+  User,
+  Search
 } from 'lucide-react';
 import { FiArrowLeft, FiFilePlus } from 'react-icons/fi';
 import { Home } from 'lucide-react';
@@ -188,7 +189,19 @@ const CustomPdfViewer = ({ file }) => {
 
 const ContractCreate = () => {
   const navigate = useNavigate();
-  const { addContract } = useContext(ContractContext);
+  const { addContract, contracts } = useContext(ContractContext);
+
+  const generateContractTitle = (jobTitle, contractsList) => {
+    if (!jobTitle) return '';
+    const kebab = jobTitle
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-+|-+$)/g, '');
+    const existingCount = contractsList?.filter(c => c.jobTitle?.toLowerCase().trim() === jobTitle.toLowerCase().trim()).length || 0;
+    const count = String(existingCount + 1).padStart(2, '0');
+    return `${kebab}-${count}-sow`.toUpperCase();
+  };
 
   // 5-step wizard state
   const [step, setStep] = useState(1);
@@ -200,9 +213,42 @@ const ContractCreate = () => {
   const [signatureType, setSignatureType] = useState('draw');
   const [signatureData, setSignatureData] = useState(null);
   const [signatureError, setSignatureError] = useState('');
+  const [hasDrawn, setHasDrawn] = useState(false);
+  
+  const [jobPopoverOpen, setJobPopoverOpen] = useState(false);
+  const [candidatePopoverOpen, setCandidatePopoverOpen] = useState(false);
+  const [jobSearch, setJobSearch] = useState('');
+  const [candidateSearch, setCandidateSearch] = useState('');
+
+  const jobRef = useRef();
+  const candidateRef = useRef();
+
   const [legalDocument, setLegalDocument] = useState(null);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [pdfUrl, setPdfUrl] = useState(null);
+
+  // Reset signature values when type switches
+  useEffect(() => {
+    setSignatureData(null);
+    setHasDrawn(false);
+    setSignatureError('');
+  }, [signatureType]);
+
+  // Outside click listener for search-select popovers
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (jobRef.current && !jobRef.current.contains(e.target)) {
+        setJobPopoverOpen(false);
+      }
+      if (candidateRef.current && !candidateRef.current.contains(e.target)) {
+        setCandidatePopoverOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   // Manage PDF preview URL lifecycle
   useEffect(() => {
@@ -338,6 +384,19 @@ const ContractCreate = () => {
   const [getNotificationsByJobId] = useLazyGetNotificationsByJobIdQuery();
   const [saveContract, { isLoading: isSavingContract }] = useSaveContractMutation();
 
+  const filteredJobs = useMemo(() => {
+    return jobs.filter(j => 
+      j.title.toLowerCase().includes(jobSearch.toLowerCase()) || 
+      j.company.toLowerCase().includes(jobSearch.toLowerCase())
+    );
+  }, [jobs, jobSearch]);
+
+  const filteredCandidates = useMemo(() => {
+    return candidates.filter(c => 
+      c.name.toLowerCase().includes(candidateSearch.toLowerCase())
+    );
+  }, [candidates, candidateSearch]);
+
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
 
   // Formik setup
@@ -465,6 +524,7 @@ const ContractCreate = () => {
 
   const startDrawing = (e) => {
     isDrawing.current = true;
+    setHasDrawn(true);
     draw(e);
   };
 
@@ -497,6 +557,7 @@ const ContractCreate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     setSignatureData(null);
+    setHasDrawn(false);
     setSignatureError('Signature/upload image is required');
   };
 
@@ -621,6 +682,16 @@ const ContractCreate = () => {
 
   // Submit and create contract integration
   const handleSaveContractSubmit = async () => {
+    if (signatureType === 'draw' && !hasDrawn) {
+      setSignatureError('Signature is required. Please draw your signature.');
+      toast.error('Please draw your signature before sharing.');
+      return;
+    }
+    if (signatureType === 'upload' && !signatureData) {
+      setSignatureError('Please upload a signature image.');
+      toast.error('Please upload a signature image before sharing.');
+      return;
+    }
     if (!signatureData) {
       setSignatureError('Signature/upload image is required');
       toast.error('Please provide signature before sharing.');
@@ -811,7 +882,7 @@ const ContractCreate = () => {
                     {/* Job & Candidate Selection – two-column card layout */}
                     <div className="cw-selection-grid">
                       {/* Job Selector Card */}
-                      <div className="cw-select-card">
+                      <div className="cw-select-card" ref={jobRef} style={{ position: 'relative' }}>
                         <div className="cw-select-card-header">
                           <div className="cw-select-card-icon"><Briefcase size={16} /></div>
                           <div>
@@ -819,27 +890,70 @@ const ContractCreate = () => {
                             <div className="cw-select-card-sub">Select the job to generate a contract for</div>
                           </div>
                         </div>
-                        <select
-                          className="cw-select-input"
-                          value={formik.values.jobTitle}
-                          onChange={(e) => {
-                            const selectedVal = e.target.value;
-                            formik.setFieldValue('jobTitle', selectedVal);
-                            formik.setFieldValue('candidateName', '');
-                            formik.setFieldValue('candidateEmail', '');
-                            formik.setFieldValue('candidatePhone', '');
-                            formik.setFieldValue('companyName', 'BenMyl Staffing');
-                          }}
+                        
+                        <button
+                          type="button"
+                          className={`cw-dropdown-target ${formik.values.jobTitle ? 'has-value' : ''}`}
+                          onClick={() => setJobPopoverOpen(prev => !prev)}
                         >
-                          <option value="">-- Select Open Position Role --</option>
-                          {isJobsLoading ? (
-                            <option disabled>Loading open roles...</option>
+                          {formik.values.jobTitle ? (
+                            <span className="cw-dropdown-value">{formik.values.jobTitle}</span>
                           ) : (
-                            jobs.map(j => (
-                              <option key={j.id} value={j.title}>{j.title} ({j.company})</option>
-                            ))
+                            <span className="cw-dropdown-placeholder">Select open position role...</span>
                           )}
-                        </select>
+                          <ChevronDown size={14} color="#94a3b8" />
+                        </button>
+
+                        {/* Job popover */}
+                        {jobPopoverOpen && (
+                          <div className="cw-popover">
+                            <div className="cw-popover-search">
+                              <Search className="cw-search-icon" size={13} />
+                              <input
+                                autoFocus
+                                type="text"
+                                placeholder="Search jobs…"
+                                value={jobSearch}
+                                onChange={e => setJobSearch(e.target.value)}
+                              />
+                            </div>
+                            <div className="cw-popover-list hide-scrollbar">
+                              {isJobsLoading ? (
+                                <div style={{ padding: '14px 12px', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>Loading open roles...</div>
+                              ) : filteredJobs.length > 0 ? (
+                                filteredJobs.map(job => (
+                                  <div
+                                    key={job.id}
+                                    className={`cw-popover-item ${formik.values.jobTitle === job.title ? 'selected' : ''}`}
+                                    onClick={() => {
+                                      formik.setFieldValue('jobTitle', job.title);
+                                      const autoTitle = generateContractTitle(job.title, contracts);
+                                      formik.setFieldValue('contractTitle', autoTitle);
+                                      formik.setFieldValue('candidateName', '');
+                                      formik.setFieldValue('candidateEmail', '');
+                                      formik.setFieldValue('candidatePhone', '');
+                                      formik.setFieldValue('companyName', 'BenMyl Staffing');
+                                      setJobPopoverOpen(false);
+                                      setJobSearch('');
+                                    }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+                                  >
+                                    <div style={{ width: 28, height: 28, borderRadius: 8, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                      <Briefcase size={13} color="#64748b" />
+                                    </div>
+                                    <div>
+                                      <div style={{ fontSize: 12, fontWeight: 600, color: '#1e293b' }}>{job.title}</div>
+                                      <div style={{ fontSize: 11, color: '#94a3b8' }}>{job.company}</div>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div style={{ padding: '14px 12px', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>No jobs found.</div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
                         {formik.values.jobTitle && (
                           <div className="cw-select-card-badge">
                             <CheckCircle size={12} /> {formik.values.jobTitle}
@@ -848,7 +962,7 @@ const ContractCreate = () => {
                       </div>
 
                       {/* Candidate Selector Card */}
-                      <div className={`cw-select-card ${!formik.values.jobTitle ? 'cw-select-card-disabled' : ''}`}>
+                      <div className={`cw-select-card ${!formik.values.jobTitle ? 'cw-select-card-disabled' : ''}`} ref={candidateRef} style={{ position: 'relative' }}>
                         <div className="cw-select-card-header">
                           <div className="cw-select-card-icon candidate"><User size={16} /></div>
                           <div>
@@ -861,50 +975,79 @@ const ContractCreate = () => {
                             <Users size={24} />
                             <span>Select a job role first to see shortlisted candidates</span>
                           </div>
-                        ) : isCandidatesLoading ? (
-                          <div className="cw-select-card-loading">
-                            <RefreshCw size={16} className="cw-spin" /> Fetching candidates...
-                          </div>
-                        ) : candidates.length === 0 ? (
-                          <div className="cw-select-card-empty">
-                            <AlertCircle size={16} />
-                            No shortlisted candidates mapped to this position.
-                          </div>
                         ) : (
-                          <select
-                            className="cw-select-input"
-                            value={formik.values.candidateName}
-                            onChange={(e) => {
-                              const selectedName = e.target.value;
-                              const c = candidates.find(cand => cand.name === selectedName);
-                              if (c) {
-                                formik.setFieldValue('candidateName', c.name);
-                                formik.setFieldValue('candidateEmail', c.email);
-                                formik.setFieldValue('candidatePhone', c.phone);
-                                const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
-                                const candidateComp = c.CompanyName || c.uploadedByName || "BenMyl Staffing";
-                                const roleLower = userRoleRaw.toLowerCase();
-                                if (roleLower === 'benchsales') {
-                                  formik.setFieldValue('companyName', loggedInComp);
-                                  formik.setFieldValue('clientCompany', candidateComp);
-                                } else {
-                                  formik.setFieldValue('clientCompany', loggedInComp);
-                                  formik.setFieldValue('companyName', candidateComp);
-                                }
-                                if (c.workLocation) formik.setFieldValue('workLocation', c.workLocation);
-                              } else {
-                                formik.setFieldValue('candidateName', '');
-                                formik.setFieldValue('candidateEmail', '');
-                                formik.setFieldValue('candidatePhone', '');
-                                formik.setFieldValue('companyName', 'BenMyl Staffing');
-                              }
-                            }}
-                          >
-                            <option value="">-- Select Shortlisted Candidate --</option>
-                            {candidates.map(c => (
-                              <option key={c.id} value={c.name}>{c.name}</option>
-                            ))}
-                          </select>
+                          <>
+                            <button
+                              type="button"
+                              className={`cw-dropdown-target ${formik.values.candidateName ? 'has-value' : ''}`}
+                              onClick={() => setCandidatePopoverOpen(prev => !prev)}
+                              disabled={isCandidatesLoading}
+                            >
+                              {formik.values.candidateName ? (
+                                <span className="cw-dropdown-value">{formik.values.candidateName}</span>
+                              ) : (
+                                <span className="cw-dropdown-placeholder">Select shortlisted candidate...</span>
+                              )}
+                              <ChevronDown size={14} color="#94a3b8" />
+                            </button>
+
+                            {/* Candidate popover */}
+                            {candidatePopoverOpen && (
+                              <div className="cw-popover">
+                                <div className="cw-popover-search">
+                                  <Search className="cw-search-icon" size={13} />
+                                  <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Search candidates…"
+                                    value={candidateSearch}
+                                    onChange={e => setCandidateSearch(e.target.value)}
+                                  />
+                                </div>
+                                <div className="cw-popover-list hide-scrollbar">
+                                  {isCandidatesLoading ? (
+                                    <div style={{ padding: '14px 12px', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>Fetching candidates...</div>
+                                  ) : filteredCandidates.length > 0 ? (
+                                    filteredCandidates.map(c => (
+                                      <div
+                                        key={c.id}
+                                        className={`cw-popover-item ${formik.values.candidateName === c.name ? 'selected' : ''}`}
+                                        onClick={() => {
+                                          formik.setFieldValue('candidateName', c.name);
+                                          formik.setFieldValue('candidateEmail', c.email);
+                                          formik.setFieldValue('candidatePhone', c.phone);
+                                          const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
+                                          const candidateComp = c.CompanyName || c.uploadedByName || "BenMyl Staffing";
+                                          const roleLower = userRoleRaw.toLowerCase();
+                                          if (roleLower === 'benchsales') {
+                                            formik.setFieldValue('companyName', loggedInComp);
+                                            formik.setFieldValue('clientCompany', candidateComp);
+                                          } else {
+                                            formik.setFieldValue('clientCompany', loggedInComp);
+                                            formik.setFieldValue('companyName', candidateComp);
+                                          }
+                                          if (c.workLocation) formik.setFieldValue('workLocation', c.workLocation);
+                                          setCandidatePopoverOpen(false);
+                                          setCandidateSearch('');
+                                        }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+                                      >
+                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                          <User size={13} color="#64748b" />
+                                        </div>
+                                        <div>
+                                          <div style={{ fontSize: 12, fontWeight: 600, color: '#1e293b' }}>{c.name}</div>
+                                          {c.role && <div style={{ fontSize: 11, color: '#94a3b8' }}>{c.role}</div>}
+                                        </div>
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <div style={{ padding: '14px 12px', fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>No shortlisted candidates found.</div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </>
                         )}
                         {formik.values.candidateName && (
                           <div className="cw-select-card-badge candidate">

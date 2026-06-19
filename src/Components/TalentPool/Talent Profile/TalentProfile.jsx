@@ -25,7 +25,8 @@ import { FaGem } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   useLazyGetEmployeeTalentProfileQuery,
-  useGetGroupedJobTitlesQuery
+  useGetGroupedJobTitlesQuery,
+  useGetEmployeeProfessionalDetailsQuery
 } from "../../../State-Management/Api/TalentPoolApiSlice";
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
@@ -79,6 +80,12 @@ const TalentProfile = () => {
 
   const [triggerGetProfile, { data: employee, isLoading, isError }] =
     useLazyGetEmployeeTalentProfileQuery();
+
+  const { data: professionalData, isLoading: isProfessionalLoading } =
+    useGetEmployeeProfessionalDetailsQuery(employeeId, {
+      refetchOnMountOrArgChange: true,
+      skip: !employeeId,
+    });
 
   useEffect(() => {
     if (employeeId) {
@@ -165,7 +172,7 @@ const TalentProfile = () => {
     setIsShortlisted(!exists);
   };
 
-  if (isLoading) return (
+  if (isLoading || isProfessionalLoading) return (
     <div className="posted-jobs-loader" style={{ minHeight: '60vh' }}>
       <div className="jobs-loader-ring">
         <div className="jobs-loader-icon"><FiUser size={18} /></div>
@@ -261,7 +268,27 @@ const TalentProfile = () => {
                 <FiStar size={20} />
               </div>
               <div className="tp-info-label" style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Expected Salary</div>
-              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>$120k – $150k / yr</div>
+              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                {professionalData?.expectedSalaryMin && professionalData?.expectedSalaryMax
+                  ? (() => {
+                      const currency = professionalData?.salaryCurrency || "USD";
+                      let symbol = "$";
+                      if (currency === "EUR") symbol = "€";
+                      else if (currency === "INR") symbol = "₹";
+                      
+                      const formatVal = (val) => {
+                        const numericVal = Number(val);
+                        if (isNaN(numericVal)) return val;
+                        if (numericVal >= 1000) {
+                          const kVal = numericVal / 1000;
+                          return `${Number(kVal.toFixed(1)).toLocaleString()}k`;
+                        }
+                        return numericVal.toLocaleString();
+                      };
+                      return `${symbol}${formatVal(professionalData.expectedSalaryMin)} – ${symbol}${formatVal(professionalData.expectedSalaryMax)} / yr`;
+                    })()
+                  : "Not Mentioned"}
+              </div>
             </div>
 
             {/* Card 2: Work Model */}

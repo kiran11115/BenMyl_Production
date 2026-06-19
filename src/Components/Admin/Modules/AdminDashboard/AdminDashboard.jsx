@@ -346,21 +346,14 @@ const growth =
           </h1>
 
           <p>
-            Your autonomous recruitment workflow
-            is calibrated and running. AI neural
-            screens completed
-            <strong>
-              {" "}
-              14,204 parsing jobs{" "}
-            </strong>
-            successfully today.
+            Workforce intelligence is ready. Review today's recruitment performance, candidate activity, and hiring opportunities.
           </p>
 
         </div>
 
         <div className="hero-buttons">
 
-          <button
+          {/* <button
             className="launch-btn"
             onClick={triggerSync}
           >
@@ -374,7 +367,7 @@ const growth =
             {syncing
               ? "Syncing..."
               : "Launch AI Workspace"}
-          </button>
+          </button> */}
 
           <button
             className="routine-btn"
@@ -392,7 +385,7 @@ const growth =
 
       {/* SEARCH */}
 
-      <div className="command-card">
+      {/* <div className="command-card">
 
         <div className="command-title">
           <Command size={14} className="command-title-icon" />
@@ -437,7 +430,7 @@ const growth =
 
         </div>
 
-      </div>
+      </div> */}
 
       {/* STATS */}
 
