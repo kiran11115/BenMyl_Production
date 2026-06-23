@@ -1154,7 +1154,11 @@ const TalentPool = () => {
           {/* Sticky header */}
           <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
 
-            <div className="hero-card mb-4">
+            <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
               <FiUsers
                 size={240}
                 style={{
@@ -1172,119 +1176,120 @@ const TalentPool = () => {
                 <div className="hero-pill">
                   ✦ Find Talent
                 </div>
-                <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Talent Network Board</h1>
+                <div className="hero-title-row">
+                  <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Talent Network Board</h1>
 
-                <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
+                  <div className="hero-buttons">
+                    <button
+                      className="filters-applied"
+                      onClick={() => setIsMobileFilterOpen(true)}
+                    >
+                      <FiFilter /> Filters
+                    </button>
+
+                    <button
+                      className="routine-btn"
+                      onClick={() => setIsJobDetailsDrawerOpen(true)}
+                    >
+                      <FiBriefcase />
+                      <span>View Job Details</span>
+                    </button>
+
+                    <button
+                      className="routine-btn"
+                      onClick={() => setIsDrawerOpen(true)}
+                    >
+                      <FiBriefcase />
+                      <span>View Shortlisted</span>
+                    </button>
+
+                    <div className="vs-results-right">
+                      {/* VIEW TOGGLE */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          background: "#f4f8ff",
+                          border: "1px solid #d9e6ff",
+                          borderRadius: "10px",
+                          padding: "3px",
+                          gap: "2px",
+                          height: "40px",
+                        }}
+                      >
+                        <button
+                          onClick={() => setViewMode("grid")}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            border: "none",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            background:
+                              viewMode === "grid"
+                                ? "#3b82f6"
+                                : "transparent",
+                            color:
+                              viewMode === "grid"
+                                ? "#ffffff"
+                                : "#64748b",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <FiGrid size={14} />
+                        </button>
+
+                        <button
+                          onClick={() => setViewMode("table")}
+                          style={{
+                            width: "28px",
+                            height: "28px",
+                            border: "none",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            background:
+                              viewMode === "table"
+                                ? "#3b82f6"
+                                : "transparent",
+                            color:
+                              viewMode === "table"
+                                ? "#ffffff"
+                                : "#64748b",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <FiList size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hero-content-row">
                   <p className="job-posting-subtitle">
                     Search and manage your Talent network.
                   </p>
                 </div>
               </div>
-
-              <div style={{ position: "relative" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    flex: 1,
-                    maxWidth: "700px",
-                    justifyContent: "flex-end",
-                    alignItems: "center",
-                  }}
-                >
-
-                  <button
-                    className="filters-applied"
-                    onClick={() => setIsMobileFilterOpen(true)}
-                  >
-                    <FiFilter /> Filters
-                  </button>
-
-                  <button
-                    className="routine-btn"
-                    onClick={() => setIsJobDetailsDrawerOpen(true)}
-                  >
-                    <FiBriefcase />
-                    <span>View Job Details</span>
-                  </button>
-
-                  <button
-                    className="routine-btn"
-                    onClick={() => setIsDrawerOpen(true)}
-
-                  >
-                    <FiBriefcase />
-                    <span>View Shortlisted</span>
-                  </button>
-
-                  <div className="vs-results-right">
-                    {/* VIEW TOGGLE */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        background: "#f4f8ff",
-                        border: "1px solid #d9e6ff",
-                        borderRadius: "10px",
-                        padding: "3px",
-                        gap: "2px",
-                        height: "40px",
-                      }}
-                    >
-                      <button
-                        onClick={() => setViewMode("grid")}
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                          border: "none",
-                          borderRadius: "8px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          background:
-                            viewMode === "grid"
-                              ? "#3b82f6"
-                              : "transparent",
-                          color:
-                            viewMode === "grid"
-                              ? "#ffffff"
-                              : "#64748b",
-                          transition: "all 0.2s ease",
-                        }}
-                      >
-                        <FiGrid size={14} />
-                      </button>
-
-                      <button
-                        onClick={() => setViewMode("table")}
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                          border: "none",
-                          borderRadius: "8px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          background:
-                            viewMode === "table"
-                              ? "#3b82f6"
-                              : "transparent",
-                          color:
-                            viewMode === "table"
-                              ? "#ffffff"
-                              : "#64748b",
-                          transition: "all 0.2s ease",
-                        }}
-                      >
-                        <FiList size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                      <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
             </div>
+            <img src="/Images/find.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
 
 
 

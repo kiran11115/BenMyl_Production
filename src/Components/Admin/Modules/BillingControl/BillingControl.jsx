@@ -60,7 +60,7 @@ function BillingControl() {
             />
 
             <div className="billing-overview">
-                <div className="hero-card">
+                <div className="hero-section-wrapper mb-4">\n        <div className="hero-card">\n          <div className="hero-concentric-lines"></div>\n          <div className="hero-ripple-pattern"></div>\n          <div className="hero-circular-highlights"></div>
                     <div className="plan-info">
                         <span className="hero-pill">✦ CURRENT PLAN</span>
                         <h2 className="job-posting-title text-white">Professional Tier</h2>
@@ -77,7 +77,19 @@ function BillingControl() {
                             <span className="stat-val">•••• 4242</span>
                         </div>
                     </div>
-                </div>
+                          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
 
                 <div className="overview-card seats-usage">
                     <div className="seats-header">

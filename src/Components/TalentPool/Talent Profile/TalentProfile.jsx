@@ -297,7 +297,7 @@ const TalentProfile = () => {
                 <FiMapPin size={20} />
               </div>
               <div className="tp-info-label" style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>Work Model</div>
-              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Hybrid / Remote</div>
+              <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{professionalData?.workPreference || "Not Mentioned"}</div>
             </div>
 
             {/* Card 3: Skills */}

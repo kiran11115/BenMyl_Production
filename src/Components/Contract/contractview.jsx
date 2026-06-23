@@ -21,25 +21,37 @@ const SignatureSection = ({ onComplete, onCancel }) => {
   const [type, setType] = useState('draw');
   const [data, setData] = useState(null);
   const [signatureError, setSignatureError] = useState('');
+  const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
   const canvasRef = useRef(null);
   const isDrawing = useRef(false);
 
+  // Helper to check if canvas is blank/empty by inspecting pixel data
+  const isCanvasBlank = (canvas) => {
+    if (!canvas) return true;
+    const ctx = canvas.getContext('2d');
+    const { data: pixelData } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pixelData.length; i++) {
+      if (pixelData[i] !== 0) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   useEffect(() => {
+    setData(null);
+    setIsCanvasEmpty(true);
+    setSignatureError('');
     if (type === 'draw' && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#1e293b';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
     }
   }, [type]);
-
-  // Clear signature error once data is set
-  useEffect(() => {
-    if (data) {
-      setSignatureError('');
-    }
-  }, [data]);
 
   const startDrawing = (e) => {
     isDrawing.current = true;
@@ -50,12 +62,21 @@ const SignatureSection = ({ onComplete, onCancel }) => {
   const stopDrawing = () => {
     isDrawing.current = false;
     const canvas = canvasRef.current;
-    setData(canvas.toDataURL());
+    if (canvas) {
+      const isBlank = isCanvasBlank(canvas);
+      setIsCanvasEmpty(isBlank);
+      if (!isBlank) {
+        setData(canvas.toDataURL());
+      } else {
+        setData(null);
+      }
+    }
   };
 
   const draw = (e) => {
     if (!isDrawing.current) return;
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
@@ -64,25 +85,42 @@ const SignatureSection = ({ onComplete, onCancel }) => {
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(x, y);
+    setIsCanvasEmpty(false);
   };
 
   const clear = () => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+    }
     setData(null);
+    setIsCanvasEmpty(true);
     setSignatureError('Signature/upload image is required');
   };
 
   const handleSignSubmit = () => {
-    if (!data) {
-      setSignatureError('Signature/upload image is required');
-      toast.error('Legal signature is required to proceed.');
-      return;
+    if (type === 'draw') {
+      const canvas = canvasRef.current;
+      const isBlank = !canvas || isCanvasBlank(canvas);
+      if (isBlank) {
+        setSignatureError('Signature/upload image is required');
+        toast.error('Legal signature is required to proceed.');
+        return;
+      }
+      const signatureData = canvas.toDataURL();
+      setSignatureError('');
+      onComplete(signatureData);
+    } else {
+      if (!data) {
+        setSignatureError('Signature/upload image is required');
+        toast.error('Legal signature is required to proceed.');
+        return;
+      }
+      setSignatureError('');
+      onComplete(data);
     }
-    setSignatureError('');
-    onComplete(data);
   };
 
   return (
@@ -102,7 +140,7 @@ const SignatureSection = ({ onComplete, onCancel }) => {
       {type === 'draw' ? (
         <div className="sig-canvas-wrapper" style={{ height: 180, background: '#fff', borderColor: '#fed7aa' }}>
           <canvas ref={canvasRef} width={600} height={180} onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseOut={stopDrawing} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} style={{ width: '100%', height: '100%', cursor: 'crosshair' }} />
-          {!data && <div className="sig-canvas-placeholder">Draw your legal signature here</div>}
+          {isCanvasEmpty && <div className="sig-canvas-placeholder">Draw your legal signature here</div>}
           <button className="btn-secondary" style={{ position: 'absolute', right: 12, bottom: 12 }} onClick={clear}>Clear Canvas</button>
         </div>
       ) : (
@@ -503,7 +541,11 @@ const ContractView = () => {
   return (
     <div className="ai-dashboard-wrapper contract-page">
       {/* HEADER CARD */}
-      <div className="hero-card mb-4">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <div className="hero-left">
           <div className="hero-pill">
             ✦ Document Viewer
@@ -538,6 +580,18 @@ const ContractView = () => {
           >
             <FiPrinter style={{ marginRight: '8px' }} /> Print
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 

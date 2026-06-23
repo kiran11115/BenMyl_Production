@@ -120,7 +120,11 @@ const ProfilePage = () => {
           <div className="pp-top-row">
 
             {/* Hero Card */}
-            <div className="project-card pp-hero-card">
+            <div className="hero-section-wrapper mb-4">
+        <div className="project-card pp-hero-card">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
               <div className="pp-hero-cover" />
               <div className="pp-hero-content">
 
@@ -298,7 +302,19 @@ const ProfilePage = () => {
             </div>
 
           </div>{/* end pp-bottom-row */}
+                  <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
+      </div>
 
         {/* ══════════ RIGHT SIDEBAR ══════════ */}
         <div className="pp-sidebar">

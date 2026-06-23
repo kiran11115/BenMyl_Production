@@ -1,11 +1,6 @@
 /* =========================================
    1. Global Page Layout & Typography
    ========================================= */
-.job-page,
-.projects-container {
-  padding: 24px;
-  color: #334155;
-}
 
 .dashboard-layout,
 .job-layout {

@@ -9,7 +9,7 @@ import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
 import { toast } from "react-toastify";
 import StatsGrid from "../Dashboard/StatsGrid";
-import { Users, Briefcase } from "lucide-react";
+import { Users, Briefcase, Sparkles } from "lucide-react";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 
 
@@ -23,6 +23,7 @@ const UploadTalent = () => {
     const [refreshKey, setRefreshKey] = useState(0);
     const [showUploading, setShowUploading] = useState(false);
     const [showStats, setShowStats] = useState(false);
+    const [showDevMsg, setShowDevMsg] = useState(false);
     const [showUploadedSuccess, setShowUploadedSuccess] = useState(false);
     const [showUploadError, setShowUploadError] = useState(false);
     const [uploadErrorMessage, setUploadErrorMessage] = useState("");
@@ -185,45 +186,90 @@ const UploadTalent = () => {
     return (
         <div className="projects-page-wrapper">
             <div className="projects-container">
-                <div className="hero-card mb-4">
-                    <div className="hero-left">
-                        <div className="hero-pill">
-                            ✦ Resource Management
-                        </div>
-                        <h1 className="job-posting-title text-white">Admin Talent Hub</h1>
+                <div className="hero-section-wrapper mb-4">
+                    <div className="hero-card ">
+                        <div className="hero-concentric-lines"></div>
+                        <div className="hero-ripple-pattern"></div>
+                        <div className="hero-circular-highlights"></div>
+                        <div className="hero-left">
+                            <div className="hero-pill">
+                                ✦ Resource Management
+                            </div>
+                            
+                            <div className="hero-title-row">
+                                <h1>Admin Talent Hub</h1>
 
-                        <div className="job-posting-header-info">
-                            <p className="job-posting-subtitle">
-                                Manage and review your uploaded talent profiles effectively.
+                                <div className="hero-buttons">
+                                    <button
+                                        className="routine-btn"
+                                        onClick={() => {
+                                            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
+                                            navigate(`${basePath}/upload-review-talent`);
+                                        }}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        <span>Upload Talent</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="hero-content-row">
+                                <p>
+                                    Manage and review your uploaded talent profiles effectively.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="hero-illustration">
+                            <div className="hero-particles">
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                            </div>
+                            <img src="/Images/Resume.png" alt="Resource Management Illustration" className="hero-svg-image" />
+                        </div>
+                    </div>
+
+                    <div className="copilot-card" style={{ flex: 1, margin: 0 }}>
+                        <div className="copilot-header">
+                            <div className="copilot-title-wrapper">
+                                <Sparkles size={16} className="copilot-sparkles-icon" />
+                                <span className="copilot-title">AI Agent</span>
+                                <span className="copilot-beta-badge">Beta</span>
+                            </div>
+                        </div>
+
+                        <div className="copilot-body">
+                            <p className="copilot-text">
+                                I found <strong>{totalTalentCount} Total Talent Profiles</strong><br /> available in your network.
                             </p>
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                <button
+                                    className="copilot-action-btn"
+                                    onClick={() => setShowDevMsg(true)}
+                                >
+                                    Optimize Resource
+                                </button>
+                                {showDevMsg && (
+                                    <span style={{ fontSize: "11px", color: "#64748b" }}>
+                                        We are currently under development.
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="copilot-bot-illustration">
+                            <img src="/Images/AI-Bot.png" alt="AI Copilot Bot" className="copilot-bot-image" />
+                            <div className="copilot-glow-bg"></div>
                         </div>
                     </div>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <button
-                            onClick={() => setShowStats(!showStats)}
-                            className="routine-btn"
-                        >
-                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
-                        </button>
-                        <button
-                            className="routine-btn"
-                            onClick={() => {
-                                const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
-                                navigate(`${basePath}/upload-review-talent`);
-                            }}
-                        >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            <span>Upload Talent</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div className={`metrics-slider ${showStats ? "show" : ""}`}>
-                    <StatsGrid data={kpiCards} />
                 </div>
 
                 {/* CONTENT */}
-                <div className="view-content mt-3">
+                <div className="view-content">
                     <div className="upload-main">
                         {talentsData && talentsData.length > 0 ? (
                             <UserTalentProfiles searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
@@ -243,7 +289,7 @@ const UploadTalent = () => {
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
     );
 };
 

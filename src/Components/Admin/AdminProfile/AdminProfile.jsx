@@ -104,7 +104,7 @@ const AdminProfile = () => {
   return (
     <div className="admin-profile-container">
       {/* --- HERO SECTION --- */}
-      <div className="company-hero-card">
+      <div className="hero-section-wrapper mb-4">\n        <div className="company-hero-card">\n          <div className="hero-concentric-lines"></div>\n          <div className="hero-ripple-pattern"></div>\n          <div className="hero-circular-highlights"></div>
         <div className="company-logo-wrapper">
           <img
             src={companyData?.logo ? `${companyData.logo}?t=${Date.now()}` : "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=300"}
@@ -145,6 +145,18 @@ const AdminProfile = () => {
           <button className="btn-upload-secondary" onClick={onAccountSettings}>
             <FiSettings /> Account Settings
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 

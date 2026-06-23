@@ -1779,7 +1779,11 @@ const ReviewTalent = () => {
         }
       `}</style>
       {/* FULL WIDTH HERO CARD */}
-      <div className="hero-card mb-4" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '24px 36px', borderRadius: '28px', minHeight: '140px', position: 'relative', overflow: 'hidden' }}>
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card " style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '24px 36px', borderRadius: '28px', minHeight: '140px', position: 'relative', overflow: 'hidden' }}>
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <Users
           size={240}
           strokeWidth={0.5}
@@ -1833,6 +1837,18 @@ const ReviewTalent = () => {
         >
           <CheckCircle size={16} /> AI Processing Complete
         </div> */}
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 

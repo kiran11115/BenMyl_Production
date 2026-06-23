@@ -58,7 +58,11 @@ export default function Projects() {
 
   return (
     <div className="projects-coming-soon-container">
-      <div className="cs-hero-card">
+      <div className="hero-section-wrapper mb-4">
+        <div className="cs-hero-card">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <div className="cs-hero-glow"></div>
         <div className="cs-badge-wrapper">
           <div className="cs-badge">
@@ -71,6 +75,18 @@ export default function Projects() {
           We are building a robust and comprehensive tracking cockpit for your live projects. 
           Manage your cloud migrations, track development sprints, and monitor quality audits in real-time.
         </p>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
       </div>
 
       <div className="cs-section-divider">

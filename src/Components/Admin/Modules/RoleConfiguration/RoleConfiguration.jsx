@@ -180,27 +180,47 @@ function RoleConfiguration() {
             </div>
 
             <div className="role-config-main">
-                <ModuleHeader 
-                    breadcrumb="Role Configuration"
-                    title={selectedRole.displayName}
-                    description="Set module-level access and feature capabilities for this role."
-                    badgeText="Configuring Permissions"
-                    icon={ShieldCheck}
-                    actions={[
-                        // { 
-                        //     label: "Reset Defaults", 
-                        //     icon: <RotateCcw size={16} />, 
-                        //     type: "secondary",
-                        //     onClick: () => console.log("Reset")
-                        // },
-                        { 
-                            label: isSaving ? "Saving..." : "Save Changes", 
-                            icon: <Save size={16} />, 
-                            type: "primary",
-                            onClick: handleSavePermissions
-                        }
-                    ]}
-                />
+                <div className="hero-section-wrapper mb-4">
+                    <div className="hero-card ">
+                        <div className="hero-concentric-lines"></div>
+                        <div className="hero-ripple-pattern"></div>
+                        <div className="hero-circular-highlights"></div>
+                        <div className="hero-left">
+                            <div className="hero-pill">
+                                ✦ Configuring Permissions
+                            </div>
+                            <div className="hero-title-row">
+                                <h1 className="job-posting-title text-white">{selectedRole.displayName}</h1>
+
+                                <div className="hero-buttons">
+                                    <button
+                                        type="button"
+                                        className="routine-btn"
+                                        onClick={handleSavePermissions}
+                                    >
+                                        <Save size={16} /> {isSaving ? "Saving..." : "Save Changes"}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="hero-content-row">
+                                <p className="job-posting-subtitle">
+                                    Set module-level access and feature capabilities for this role.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="hero-illustration">
+                            <div className="hero-particles">
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                            </div>
+                            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="team-assignment-section" style={{ marginBottom: '24px', backgroundColor: '#fff', padding: '20px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>

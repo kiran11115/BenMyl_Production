@@ -228,7 +228,7 @@ export default function UpcomingInterview() {
     return (
         <div className="ui-page">
             {/* Hero Header with Blue Gradient */}
-            <div className="hero-card mb-4">
+            <div className="hero-section-wrapper mb-4">        <div className="hero-card ">          <div className="hero-concentric-lines"></div>         <div className="hero-ripple-pattern"></div>         <div className="hero-circular-highlights"></div>
                 <FiCalendar
                     size={240}
                     style={{
@@ -246,38 +246,52 @@ export default function UpcomingInterview() {
                     <div className="hero-pill">
                         ✦ Interview Management
                     </div>
-                    <h1 className="text-white" style={{ position: 'relative', zIndex: 2 }}>
-                        Upcoming Interviews
-                    </h1>
-                    <p className="hero-subtitle" style={{ position: 'relative', zIndex: 2 }}>
-                        Manage your scheduled interviews, track candidate availability, and monitor upcoming meetings.
-                    </p>
-                </div>
+                    <div className="hero-title-row">
+                        <h1 className="text-white" style={{ position: 'relative', zIndex: 2 }}>
+                            Upcoming Interviews
+                        </h1>
 
-                {userRole !== 'Benchsales' && (
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <button
-                            onClick={() => setIsNextInterviewHidden(!isNextInterviewHidden)}
-                            className="routine-btn"
-                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
-                        >
-                            {isNextInterviewHidden ? <FiEye size={16} /> : <FiEyeOff size={16} />}
-                            <span>{isNextInterviewHidden ? "Show Interviews" : "Hide Interviews"}</span>
-                        </button>
-                        <button
-                            onClick={() => {
-                                setPreSelectedJobId(null);
-                                setPreSelectedCandidateId(null);
-                                setIsDrawerOpen(true);
-                            }}
-                            className="routine-btn"
-                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
-                        >
-                            <FiPlus size={16} />
-                            <span>Add New Interview</span>
-                        </button>
+                        {userRole !== 'Benchsales' && (
+                            <div className="hero-buttons">
+                                <button
+                                    onClick={() => setIsNextInterviewHidden(!isNextInterviewHidden)}
+                                    className="routine-btn"
+                                >
+                                    {isNextInterviewHidden ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                                    <span>{isNextInterviewHidden ? "Show Interviews" : "Hide Interviews"}</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setPreSelectedJobId(null);
+                                        setPreSelectedCandidateId(null);
+                                        setIsDrawerOpen(true);
+                                    }}
+                                    className="routine-btn"
+                                >
+                                    <FiPlus size={16} />
+                                    <span>Add New Interview</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
+                    <div className="hero-content-row">
+                        <p className="hero-subtitle" style={{ position: 'relative', zIndex: 2 }}>
+                            Manage your scheduled interviews, track candidate availability, and monitor upcoming meetings.
+                        </p>
+                    </div>
+                </div>
+                <div className="hero-illustration">
+                    <div className="hero-particles">
+                        <div className="particle"></div>
+                        <div className="particle"></div>
+                        <div className="particle"></div>
+                        <div className="particle"></div>
+                        <div className="particle"></div>
+                        <div className="particle"></div>
+                    </div>
+                    <img src="/Images/Calender.png" alt="Dashboard Illustration" className="hero-svg-image" />
+                </div>
+            </div>
             </div>
 
             {nextInterview && !selectedDate && !searchQuery && (

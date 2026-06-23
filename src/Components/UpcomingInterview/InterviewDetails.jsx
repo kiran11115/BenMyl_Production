@@ -87,7 +87,11 @@ export default function InterviewDetails() {
     if (!activeInterview) {
         return (
             <div className="jobs-container">
-                <div className="hero-card mb-4">
+                <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
                     <div className="hero-left">
                         <div className="hero-pill">✦ Interview Insight</div>
                         <h1 className="job-posting-title">Interview Details</h1>
@@ -100,7 +104,19 @@ export default function InterviewDetails() {
                             <FiArrowLeft size={13} /> Back to Interviews
                         </button>
                     </div>
-                </div>
+                          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
                 <div className="card-base" style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
                     No interview data found.
                 </div>
@@ -156,7 +172,12 @@ export default function InterviewDetails() {
                 "Meeting link shared successfully!"
             );
 
-            navigate("/user/user-upcoming-interview");
+            navigate(
+                localStorage.getItem("Role") === "Admin"
+                    ? "/Admin/admin-upcoming-interview"
+                    : "/user/user-upcoming-interview"
+            );
+
 
         } catch (error) {
             console.error(error);
@@ -197,7 +218,11 @@ export default function InterviewDetails() {
         <div className="jobs-container">
 
             {/* ── Hero Header (matches all other pages) ── */}
-            <div className="hero-card mb-4">
+            <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
                 <div className="hero-left">
                     <div className="hero-pill">✦ Interview Insight</div>
                     <h1 className="job-posting-title">{activeInterview.name}</h1>
@@ -254,7 +279,19 @@ export default function InterviewDetails() {
   <FiVideo size={13} /> Join Meeting
 </button>
                 </div>
+                      <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
             </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
 
             {/* ── Dashboard Layout (mirrors JobOverview.jsx) ── */}
             <div className="dashboard-layout">

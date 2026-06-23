@@ -491,7 +491,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
       </div>
 
       {/* Availability */}
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <SectionHeader
           id="availability"
           title="Employment Type"
@@ -521,7 +521,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
             />
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Locations */}
       <div className="filter-section">

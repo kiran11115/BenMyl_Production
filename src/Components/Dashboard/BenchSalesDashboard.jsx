@@ -85,6 +85,40 @@ const utilizationData = {
   }]
 };
 
+const sparklineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+  scales: {
+    x: { display: false },
+    y: { display: false, min: 0 }
+  },
+  elements: {
+    point: { radius: 0, hoverRadius: 0 }
+  },
+  layout: { padding: 0 }
+};
+
+const createSparklineData = (color, gradientStart, gradientEnd, dataPoints) => ({
+  labels: dataPoints.map((_, i) => i),
+  datasets: [{
+    data: dataPoints,
+    borderColor: color,
+    borderWidth: 1.2,
+    fill: true,
+    backgroundColor: (context) => {
+      const chart = context.chart;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return 'transparent';
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, gradientStart);
+      gradient.addColorStop(1, gradientEnd);
+      return gradient;
+    },
+    tension: 0.4
+  }]
+});
+
 const getInitials = (name = "") => {
   return name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join("");
 };
@@ -111,12 +145,17 @@ const BenchSalesDashboard = () => {
   const [getTalentJobs, { isLoading: isJobsLoading }] = useGetFindJobsMutation();
   const { data: analyticsData } = useGetMonthlyAnalyticsQuery();
 
+  const sparklineData1 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
+  const sparklineData2 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [15, 18, 20, 22, 25, 28]), []);
+  const sparklineData3 = useMemo(() => createSparklineData('#10b981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0)', [20, 25, 28, 30, 35, 40]), []);
+  const sparklineData4 = useMemo(() => createSparklineData('#06b6d4', 'rgba(6, 182, 212, 0.15)', 'rgba(6, 182, 212, 0)', [10, 15, 20, 25, 22, 30]), []);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         const companyId = localStorage.getItem("logincompanyid");
         const companyIdNum = Number(companyId);
-        
+
         // 1. Fetch Pending Review Count & Talent
         const pendingPayload = {
           companyid: companyIdNum,
@@ -179,8 +218,8 @@ const BenchSalesDashboard = () => {
             company: job.companyName,
             location: job.location,
             experience: job.experienceLevel || job.yearsOfExperience,
-            salary: job.salaryRange_Min && job.salaryRange_Max 
-              ? `$${job.salaryRange_Min}-${job.salaryRange_Max}` 
+            salary: job.salaryRange_Min && job.salaryRange_Max
+              ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
               : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A",
             type: job.employeeType || job.workModels,
             department: job.department,
@@ -205,7 +244,7 @@ const BenchSalesDashboard = () => {
   };
 
   const handlePitchCandidate = (candidateName, jobTitle, company) => {
-    setToastMessage(`Pitch initiated — structuring placement package for ${candidateName} at ${company} for ${jobTitle}.`);
+    setToastMessage(`Pitch initiated - structuring placement package for ${candidateName} at ${company} for ${jobTitle}.`);
     setShowUploadedSuccess(true);
     setTimeout(() => setShowUploadedSuccess(false), 5000);
   };
@@ -250,88 +289,88 @@ const BenchSalesDashboard = () => {
   ];
 
   const graphData = useMemo(() => {
-  return analyticsData?.data?.map((item) => ({
-    month: item.monthName?.slice(0, 3),
-    uploads: Number(item.resumeUploads || 0),
-    reviews: Number(item.reviews || 0),
-  })) || [];
-}, [analyticsData]);
+    return analyticsData?.data?.map((item) => ({
+      month: item.monthName?.slice(0, 3),
+      uploads: Number(item.resumeUploads || 0),
+      reviews: Number(item.reviews || 0),
+    })) || [];
+  }, [analyticsData]);
 
-const chartData = {
-  labels: graphData.map((d) => d.month),
-  datasets: [
-    {
-      label: " Resume Uploads",
-      data: graphData.map((d) => d.uploads),
-      borderColor: "#5a5de8",
-      backgroundColor: "rgba(90,93,232,0.12)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#fff",
-      pointBorderColor: "#5a5de8",
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-    {
-      label: " Reviews",
-      data: graphData.map((d) => d.reviews),
-      borderColor: "#00b67a",
-      backgroundColor: "rgba(0,182,122,0.12)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#fff",
-      pointBorderColor: "#00b67a",
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-  ],
-};
+  const chartData = {
+    labels: graphData.map((d) => d.month),
+    datasets: [
+      {
+        label: " Resume Uploads",
+        data: graphData.map((d) => d.uploads),
+        borderColor: "#5a5de8",
+        backgroundColor: "rgba(90,93,232,0.12)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#5a5de8",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: " Reviews",
+        data: graphData.map((d) => d.reviews),
+        borderColor: "#00b67a",
+        backgroundColor: "rgba(0,182,122,0.12)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#00b67a",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: "index",
-    intersect: false,
-  },
-  plugins: {
-    legend: {
-      display: true,
-      position: "top",
-      align: "end",
-      labels: {
-        usePointStyle: true,
-        boxWidth: 6,
-        font: {
-          size: 11,
-          family: "Inter",
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        align: "end",
+        labels: {
+          usePointStyle: true,
+          boxWidth: 6,
+          font: {
+            size: 11,
+            family: "Inter",
+          },
         },
       },
     },
-  },
-  scales: {
-    x: {
-      grid: {
-        display: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#94a3b8",
+        },
       },
-      ticks: {
-        color: "#94a3b8",
+      y: {
+        beginAtZero: true,
+        grid: {
+          borderDash: [4, 4],
+          color: "#f1f5f9",
+        },
+        ticks: {
+          color: "#94a3b8",
+        },
       },
     },
-    y: {
-      beginAtZero: true,
-      grid: {
-        borderDash: [4, 4],
-        color: "#f1f5f9",
-      },
-      ticks: {
-        color: "#94a3b8",
-      },
-    },
-  },
-};
+  };
 
   return (
     <div className="ai-dashboard-wrapper">
@@ -363,63 +402,82 @@ const chartOptions = {
         </div>
       )}
 
-      <div className="hero-card">
-        <Briefcase 
-          size={240} 
-          strokeWidth={0.5} 
-          style={{
-            position: 'absolute',
-            right: '30%',
-            top: '50%',
-            transform: 'translateY(-50%) rotate(-10deg)',
-            color: '#ffffff',
-            opacity: 0.04,
-            zIndex: 1,
-            pointerEvents: 'none'
-          }}
-        />
-        <div className="hero-left">
-          <div className="hero-pill">
-            ✦ BENCH SALES LEAD CONSOLE ACTIVE
+      <div className="hero-section-wrapper">
+        <div className="hero-card">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
+
+          <div className="hero-left">
+            <div className="hero-pill">
+              ✦ BENCH SALES LEAD CONSOLE ACTIVE
+            </div>
+            <div className="hero-title-row">
+              <h1>
+                Welcome Back, {user}
+              </h1>
+
+              <div className="hero-buttons">
+                <button
+                  className="routine-btn"
+                  onClick={() => navigate('/User/active-routines')}
+                >
+                  View Active Routines
+                  <ArrowUpRight size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="hero-content-row">
+              <p>
+                Your bench sales channel is active. You have{" "}
+                <strong>{totalTalentCount} available candidates</strong> and{" "}
+                <strong>{matchedJobsCount} matched vacancies</strong> ready for submission.
+              </p>
+            </div>
           </div>
-          <h1 style={{ fontSize: '30px' }}>
-            Welcome Back, {user}
-          </h1>
-          <p style={{ fontSize: '14px' }}>
-            Your bench sales channel is active. You have{" "}
-            <strong>{totalTalentCount} available candidates</strong> and{" "}
-            <strong>{matchedJobsCount} matched vacancies</strong> ready for submission.
-          </p>
+
+          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
 
-        <div className="hero-buttons">
-          <button
-            className="launch-btn"
-            onClick={triggerSync}
-          >
-            <RefreshCw
-              size={16}
-              className={syncing ? "spin-icon" : ""}
-            />
-            {syncing ? "Syncing..." : "Sync Bench"}
-          </button>
+        {/* COPILOT CARD */}
+        <div className="copilot-card">
+          <div className="copilot-header">
+            <div className="copilot-title-wrapper">
+              <Sparkles size={16} className="copilot-sparkles-icon" />
+              <span className="copilot-title">AI Agent</span>
+              <span className="copilot-beta-badge">Beta</span>
+            </div>
+          </div>
 
+          <div className="copilot-body">
+            <p className="copilot-text">
+              I found <strong>{matchedJobsCount} matched vacancies</strong><br /> for your bench candidates.
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <button
+                className="copilot-action-btn"
+                onClick={() => handleNavigate('/user-Jobs')}
+              >
+                Review Matches
+              </button>
+            </div>
+          </div>
 
-          <button
-            className="routine-btn"
-            onClick={() => navigate('/User/active-routines')}
-          >
-            View Active Routines
-            <ArrowUpRight size={16} />
-          </button>
-
-          <button
-            className="routine-btn"
-            onClick={() => navigate('/User/upload-review-talent')}
-          >
-            Upload Talent
-            <Upload size={16} />
-          </button>
+          <div className="copilot-bot-illustration">
+            <img src="/Images/AI-Bot.png" alt="AI Copilot Bot" className="copilot-bot-image" />
+            <div className="copilot-glow-bg"></div>
+          </div>
         </div>
       </div>
 
@@ -456,125 +514,157 @@ const chartOptions = {
 
         {/* CARD 1 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <div className="stat-title">Total on Bench</div>
-            <div className="stat-icon-box">
-              <Users size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-purple">
+                <Users size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Total on Bench</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{totalTalentCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-purple">+{totalTalentCount}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{totalTalentCount}</div>
-          <div className="stat-footer-row">
-            <span>Candidates available</span>
-          </div>
-          <div className="green-badge">+{totalTalentCount}</div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-upload-talent')}>
-            ↗ Manage Bench
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData1} />
           </div>
         </div>
 
         {/* CARD 2 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Resumes Awaiting</span>
-            <div className="stat-icon-box">
-              <FileText size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-blue">
+                <FileText size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Resumes Awaiting</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{pendingReviewCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-blue">{pendingReviewCount > 0 ? 'Review' : 'Clear'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{pendingReviewCount}</div>
-          <div className="stat-footer-row">
-            <span>Pending AI processing</span>
-          </div>
-          <div className="green-badge" style={{ background: pendingReviewCount > 0 ? '#fff3e0' : '#e8fbf1', color: pendingReviewCount > 0 ? '#f5810c' : '#00b67a' }}>
-            {pendingReviewCount > 0 ? 'Review' : 'Clear'}
-          </div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-upload-talent')}>
-            ↗ Review Now
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData2} />
           </div>
         </div>
 
         {/* CARD 3 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Vacancies Found</span>
-            <div className="stat-icon-box">
-              <Briefcase size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-orange">
+                <Briefcase size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Vacancies Found</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{matchedJobsCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-orange">+{matchedJobsCount}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{matchedJobsCount}</div>
-          <div className="stat-footer-row">
-            <span>Client openings matched</span>
-          </div>
-          <div className="green-badge">+{matchedJobsCount}</div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-Jobs')}>
-            ↗ View Jobs
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData3} />
           </div>
         </div>
 
         {/* CARD 4 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Match Rate</span>
-            <div className="stat-icon-box">
-              <Sparkles size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-green">
+                <Sparkles size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Match Rate</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">95%</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-green">+4.1%</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">95%</div>
-          <div className="stat-footer-row">
-            <span>AI placement accuracy</span>
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData4} />
           </div>
-          <div className="green-badge">+4.1%</div>
-          <div className="stat-bottom-link">
-            ↗ Optimal Flow
-          </div>
+        </div>
+
+        {/* CARD 5 */}
+        <div 
+            className="stat-card action-card"
+            onClick={() => handleNavigate('/user-upload-talent')}
+        >
+            <div className="action-card-content">
+                <div className="stat-card-icon-box stat-orange action-icon-box">
+                    <Upload size={22}/>
+                </div>
+                <span className="action-card-title">Upload Talent</span>
+                <span className="action-card-desc">Add candidates to bench</span>
+                <div className="action-card-arrow-wrapper">
+                    <ArrowRight size={18} className="action-card-arrow" />
+                </div>
+            </div>
+            <div className="stat-bg-icon stat-text-orange">
+                <Upload size={120} />
+            </div>
         </div>
 
       </div>
 
-      {/* CHART SECTION */}
-      <div className="chart-grid">
+      <div className="chart-log-row">
 
         <div className="graph-card">
           <div className="graph-header">
             <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
+              <h3 className="graph-title">
                 Bench Placement Velocity Index
               </h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>
+              <p className="graph-subtitle">
                 Real-time mapping of candidate pipelines & placement revenue
               </p>
             </div>
-
-            {/* <div className="graph-tabs">
-              <button className="graph-tab active">Placement Volume</button>
-              <button className="graph-tab">Revenue Stream (k$)</button>
-            </div> */}
           </div>
 
           <div
-  className="graph-area"
-  style={{
-    height: "320px",
-    padding: "10px",
-  }}
->
-  <Line
-    data={chartData}
-    options={chartOptions}
-  />
-</div>
+            className="graph-area"
+            style={{
+              height: "320px",
+              padding: "10px",
+            }}
+          >
+            <Line
+              data={chartData}
+              options={chartOptions}
+            />
+          </div>
 
           <div className="graph-footer">
             <div>
               <span>TOTAL ON BENCH</span>
-              <strong style={{ fontSize: 14 }}>{totalTalentCount} Candidates</strong>
+              <strong className="graph-footer-jobs" style={{ color: '#475569' }}>{totalTalentCount} Candidates</strong>
             </div>
             <div>
               <span>RESUME UPLOADS</span>
-              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>{graphData.reduce((a, b) => a + b.uploads, 0)}</strong>
+              <strong className="graph-footer-resumes">{graphData.reduce((a, b) => a + b.uploads, 0)}</strong>
             </div>
             <div>
               <span>TOTAL REVIEWS</span>
-              <strong style={{ fontSize: 14, color: '#009966' }}>{graphData.reduce((a, b) => a + b.reviews, 0)}</strong>
+              <strong className="graph-footer-growth">{graphData.reduce((a, b) => a + b.reviews, 0)}</strong>
             </div>
           </div>
         </div>
@@ -583,8 +673,8 @@ const chartOptions = {
         <div className="log-card">
           <div className="log-header">
             <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>Recommended Placements</h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>
+              <h3 className="log-title">Recommended Placements</h3>
+              <p className="log-subtitle">
                 Live vacancy matches for bench candidates
               </p>
             </div>
@@ -593,38 +683,40 @@ const chartOptions = {
 
           <div className="log-list">
             {isJobsLoading ? (
-              <div className="log-item">
-                <span className="log-tag">Loading...</span>
-                <p style={{ fontSize: '11px' }}>Fetching matched vacancies...</p>
+              <div className="log-item theme-0">
+                <div className="log-item-left">
+                  <span className="log-tag">Loading...</span>
+                  <p className="log-message">Fetching matched vacancies...</p>
+                </div>
               </div>
             ) : realMatchedJobs.length > 0 ? (
               realMatchedJobs.map((job, idx) => (
-                <div className="log-item" key={job.id || idx}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className={`log-item theme-${idx % 4}`} key={job.id || idx}>
+                  <div className="log-item-left">
                     <span className="log-tag">{job.company}</span>
-                    <small style={{ fontSize: 11 }}>95% Match</small>
+                    <p className="log-message">
+                      <strong>{job.title}</strong>
+                      {job.location ? ` · ${job.location}` : ''}
+                      {job.salary ? ` - ${job.salary}` : ''}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '11px' }}>
-                    <strong>{job.title}</strong>
-                    {job.location ? ` · ${job.location}` : ''}
-                    {job.salary ? ` — ${job.salary}` : ''}
-                  </p>
+                  <small className="log-time">95% Match</small>
                 </div>
               ))
             ) : (
-              <div className="log-item">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="log-item theme-0">
+                <div className="log-item-left">
                   <span className="log-tag">Pipeline</span>
-                  <small style={{ fontSize: 11 }}>Live</small>
+                  <p className="log-message">No active recommended placements. Add profiles to trigger matches.</p>
                 </div>
-                <p style={{ fontSize: '11px' }}>No active recommended placements. Add profiles to trigger matches.</p>
+                <small className="log-time">Live</small>
               </div>
             )}
           </div>
 
           <div className="security-box">
-            <span style={{ fontSize: 11 }}>✓ Bench pipeline AI compliant</span>
-            <strong style={{ fontSize: 10 }}>EXCELLENT</strong>
+            <span className="security-text">✓ Bench pipeline AI compliant</span>
+            <strong className="security-status">EXCELLENT</strong>
           </div>
         </div>
 
@@ -634,10 +726,10 @@ const chartOptions = {
       <div className="quick-card">
         <div className="quick-header">
           <div>
-            <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
+            <h3 className="quick-title">
               Quick Action Command Console
             </h3>
-            <p style={{ fontSize: '12px', marginTop: 0 }}>
+            <p className="quick-desc">
               Launch bench workflows and placement flows instantly
             </p>
           </div>
@@ -653,12 +745,13 @@ const chartOptions = {
               <div className="quick-icon">
                 {item.icon}
               </div>
-              <h4 style={{ fontSize: 12, marginBottom: 0 }}>
-                {item.title}
-              </h4>
-              <p style={{ fontSize: 10, marginTop: 0 }}>
-                {item.desc}
-              </p>
+              <div className="quick-content">
+                <h4 className="quick-item-title">{item.title}</h4>
+                <p className="quick-item-desc">{item.desc}</p>
+              </div>
+              <div className="quick-arrow">
+                <ArrowUpRight size={18} />
+              </div>
             </div>
           ))}
         </div>
@@ -667,20 +760,22 @@ const chartOptions = {
       {/* PENDING PARSER AUDIT QUEUE */}
       <div className="quick-card" style={{ marginTop: 22 }}>
         <div className="quick-header">
-          <div>
+          <div className="d-flex justify-content-between align-items-center w-100">
+            <div className="d-flex flex-column">
             <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
               Pending Parser Auditing Queue
             </h3>
             <p style={{ fontSize: '12px', marginTop: 0 }}>
               Resumes awaiting AI processing and review
             </p>
+            </div>
+            <button
+              onClick={() => handleNavigate('/user-upload-talent')}
+              style={{ background: '#5a5de8', border: 'none', color: '#fff', fontSize: '11px', fontWeight: 700, padding: '8px 16px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              Manage Queue <ArrowUpRight size={13} />
+            </button>
           </div>
-          <button
-            onClick={() => handleNavigate('/user-upload-talent')}
-            style={{ background: '#5a5de8', border: 'none', color: '#fff', fontSize: '11px', fontWeight: 700, padding: '8px 16px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            Manage Queue <ArrowUpRight size={13} />
-          </button>
         </div>
         <div style={{ marginTop: 16 }}>
           <UploadTalentTable

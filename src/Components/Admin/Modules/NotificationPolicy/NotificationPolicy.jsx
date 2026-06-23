@@ -19,27 +19,55 @@ const NOTIFICATION_TRIGGERS = [
 function NotificationPolicy() {
     return (
         <div className="notification-containerOne">
-            <ModuleHeader 
-                breadcrumb="Notification Policy"
-                title="Notification Policy Manager"
-                description="Configure how and when users receive system-wide alerts and communications."
-                badgeText="Alert Management"
-                icon={Bell}
-                actions={[
-                    { 
-                        label: "Reset", 
-                        icon: <RotateCcw size={16} />, 
-                        type: "secondary",
-                        onClick: () => console.log("Reset")
-                    },
-                    { 
-                        label: "Save Policies", 
-                        icon: <Save size={16} />, 
-                        type: "primary",
-                        onClick: () => console.log("Saved")
-                    }
-                ]}
-            />
+            <div className="hero-section-wrapper mb-4">
+                <div className="hero-card ">
+                    <div className="hero-concentric-lines"></div>
+                    <div className="hero-ripple-pattern"></div>
+                    <div className="hero-circular-highlights"></div>
+                    <div className="hero-left">
+                        <div className="hero-pill">
+                            ✦ Alert Management
+                        </div>
+                        <div className="hero-title-row">
+                            <h1 className="job-posting-title text-white">Notification Policy Manager</h1>
+
+                            <div className="hero-buttons" style={{ display: 'flex', gap: '10px' }}>
+                                <button
+                                    type="button"
+                                    className="routine-btn"
+                                    onClick={() => console.log("Reset")}
+                                    style={{ background: 'rgba(255, 255, 255, 0.12)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.15)' }}
+                                >
+                                    <RotateCcw size={16} /> Reset
+                                </button>
+                                <button
+                                    type="button"
+                                    className="routine-btn"
+                                    onClick={() => console.log("Saved")}
+                                >
+                                    <Save size={16} /> Save Policies
+                                </button>
+                            </div>
+                        </div>
+                        <div className="hero-content-row">
+                            <p className="job-posting-subtitle">
+                                Configure how and when users receive system-wide alerts and communications.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="hero-illustration">
+                        <div className="hero-particles">
+                            <div className="particle"></div>
+                            <div className="particle"></div>
+                            <div className="particle"></div>
+                            <div className="particle"></div>
+                            <div className="particle"></div>
+                            <div className="particle"></div>
+                        </div>
+                        <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+                    </div>
+                </div>
+            </div>
 
             <div className="policy-matrix-box">
                 <div className="box-header">

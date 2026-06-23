@@ -627,7 +627,11 @@ const autoFillRole =
   return (
     <form onSubmit={formik.handleSubmit} className="ai-dashboard-wrapper">
       {/* HEADER CARD */}
-   <div className="hero-card mb-4">
+   <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
 <div className="hero-left">
   <div className="hero-pill">
             ✦ Create New Job
@@ -656,7 +660,19 @@ navigate(targetPath);
 <FiArrowLeft /> Back to Posted jobs
 </button>
 </div>
-</div>
+          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/post.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
 
       <div className="dashboard-layout">
 

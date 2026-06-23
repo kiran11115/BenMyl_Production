@@ -2411,8 +2411,10 @@
 .sub-hero-widgets {
   display: flex !important;
   gap: 16px !important;
-  flex-wrap: wrap !important;
-  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+  overflow-x: auto !important;
+  padding-bottom: 8px !important;
 }
 
 .sub-shield-icon {
@@ -3012,12 +3014,15 @@
   .sub-hero-widgets {
     width: 100% !important;
     justify-content: flex-start !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
   }
   
   .hero-token-widget-premium {
-    width: 100% !important;
-    min-width: unset !important;
+    width: auto !important;
+    min-width: 280px !important;
   }
   
   .stripe-input-row {

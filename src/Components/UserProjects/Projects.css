@@ -9,7 +9,8 @@
 }
 
 .projects-container {
-  padding: 28px 28px 40px;
+  padding: 28px 28px 0px;
+  padding-bottom: 0px;
   color: #334155;
   margin: 0 auto;
 }

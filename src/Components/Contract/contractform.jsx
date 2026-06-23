@@ -378,7 +378,11 @@ const ContractForm = () => {
 
   return (
     <div className="contract-page">
-      <div className="hero-card mb-4">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
                   <div className="hero-left">
                     <div className="hero-pill">
                               ✦ Contract Management
@@ -403,7 +407,19 @@ const ContractForm = () => {
   <FiPlus size={16} />
   New Work Order
 </button>
-                  </div>
+                            <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/contract.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
+        </div>
+      </div>
       {/* <ModuleHeader
         breadcrumb="C2C Contracts"
         title="Contract Management"

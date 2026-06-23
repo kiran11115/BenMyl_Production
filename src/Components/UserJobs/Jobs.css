@@ -1787,7 +1787,7 @@
 }
 
 /* --- Additional Responsive Typography & UI for Jobs board and Modal --- */
-.hero-card {
+/* .hero-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1804,7 +1804,7 @@
   background-size: cover, cover;
   background-position: bottom, center;
   box-shadow: 0 20px 45px rgba(92,92,230,.16);
-}
+} */
 
 .job-posting-title {
   font-size: 24px;

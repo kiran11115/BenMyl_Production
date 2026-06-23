@@ -428,8 +428,13 @@ const SubscriptionPage = () => {
     <div className="projects-page-wrapper">
       <div className="projects-container">
         {/* HERO SECTION */}
-        <div className="hero-card mb-4 sub-hero-container">
-          <div className="hero-left sub-hero-left">
+        <div className="hero-section-wrapper mb-4">
+        <div className="hero-card  ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
+          <div className="hero-left sub-hero-left d-flex flex-row">
+            <div className="d-flex flex-column gap-3">
             <div className="hero-pill">
               ✦ Subscriptions & Billing
             </div>
@@ -441,11 +446,11 @@ const SubscriptionPage = () => {
                   : "View your active plan details, monitor your token utilization, and request more tokens."}
               </p>
             </div>
-          </div>
-          
-          {/* Elegant widgets in top blue card */}
-          <div className="sub-hero-widgets">
-            {/* Plan Details Widget */}
+            </div>
+
+            {/* Elegant widgets in top blue card */}
+            <div className="sub-hero-widgets">
+              {/* Plan Details Widget */}
             <div className="hero-token-widget-premium">
               <div className="widget-header-premium">
                 <Shield size={14} className="sub-shield-icon" />
@@ -477,8 +482,21 @@ const SubscriptionPage = () => {
                 </button>
               )}
             </div>
+            </div>
+          </div>
+                  <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Billing.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
         </div>
+      </div>
 
         {/* INTERACTIVE NAVIGATION TABS - ADMIN ONLY */}
         {isAdmin && (

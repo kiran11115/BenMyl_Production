@@ -114,7 +114,11 @@ export default function AccountSettings() {
   return (
     <div className="ai-dashboard-wrapper">
       {/* Hero Header */}
-      <div className="hero-card mb-4">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <div className="hero-left">
           <div className="hero-pill">✦ Account Settings</div>
           <h1 className="job-posting-title text-white">System &amp; Preferences</h1>
@@ -126,6 +130,18 @@ export default function AccountSettings() {
           <button type="button" className="routine-btn" onClick={() => navigate("/Admin/overview-dashboard")}>
             <FiArrowLeft style={{ marginRight: "8px" }} /> Back
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 

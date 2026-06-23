@@ -269,7 +269,11 @@ const UploadTalentProfile = () => {
   return (
     <div className="ai-dashboard-wrapper">
       {/* ── HERO HEADER CARD (COVER) ── */}
-      <div className="hero-card tp-banner">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <button className="routine-btn mb-5" onClick={() => {
           const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
           const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upload-talent` : `${basePath}/user-upload-talent`;
@@ -296,6 +300,18 @@ const UploadTalentProfile = () => {
           >
             <FiEdit2 size={14} style={{ marginRight: '6px' }} /> Edit Profile
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            {/* <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" /> */}
+          </div>
         </div>
       </div>
 

@@ -417,7 +417,11 @@ const JobOverview = () => {
   return (
     <div className="jobs-container">
       {/* HEADER */}
-      <div className="hero-card mb-4">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <FiBriefcase
           size={240}
           style={{
@@ -469,6 +473,18 @@ const JobOverview = () => {
           >
             <FiEdit size={13} /> Edit Job
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            {/* <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" /> */}
+          </div>
         </div>
       </div>
 

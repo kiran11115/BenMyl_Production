@@ -30,7 +30,11 @@ const Portal = () => {
       <div className="portal-container">
         
         {/* Top Blue Hero Card */}
-        <div className="hero-card mb-4">
+        <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
           <div className="hero-left">
             <div className="hero-pill">
               ✦ Control Center
@@ -47,7 +51,19 @@ const Portal = () => {
               <span>Admin Portal</span>
             </div>
           </div>
+                  <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
+      </div>
 
         {/* Cards Grid */}
         <div className="admin-grid-wrapper">

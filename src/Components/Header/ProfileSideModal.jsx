@@ -138,23 +138,54 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
                   {profile.companyDescription}
                 </p>
               )} */}
-              <div className="psm-hero-company-grid">
-                {profile?.totalEmployees && (
-                  <div className="psm-hero-company-meta">
-                    <FiUsers size={12} /> <strong>Size:</strong> {profile.totalEmployees}
-                  </div>
-                )}
-                {profile?.founded && (
-                  <div className="psm-hero-company-meta">
-                    <FiCalendar size={12} /> <strong>Founded:</strong> {profile.founded}
-                  </div>
-                )}
-                {profile?.website && (
-                  <div className="psm-hero-company-meta" style={{ gridColumn: 'span 2' }}>
-                    <FiGlobe size={12} /> <strong>Website:</strong> <a href={profile.website} target="_blank" rel="noreferrer">{profile.website}</a>
-                  </div>
-                )}
-              </div>
+           <div className="psm-hero-company-grid">
+  {profile?.role === "Admin" ? (
+    <>
+      {profile?.totalEmployees && (
+        <div className="psm-hero-company-meta">
+          <FiUsers size={12} /> <strong>Size:</strong> {profile.totalEmployees}
+        </div>
+      )}
+ 
+      {profile?.founded && (
+        <div className="psm-hero-company-meta">
+          <FiCalendar size={12} /> <strong>Founded:</strong> {profile.founded}
+        </div>
+      )}
+ 
+      {profile?.website && (
+        <div
+          className="psm-hero-company-meta"
+          style={{ gridColumn: "span 2" }}
+        >
+          <FiGlobe size={12} /> <strong>Website:</strong>
+          <a href={profile.website} target="_blank" rel="noreferrer">
+            {profile.website}
+          </a>
+        </div>
+      )}
+    </>
+  ) : (
+    <>
+      {localStorage.getItem("CompanyName") && (
+        <div className="psm-hero-company-meta">
+          <FiGlobe size={12} /> <strong>Company:</strong>{" "}
+          {localStorage.getItem("CompanyName")}
+        </div>
+      )}
+ 
+      {localStorage.getItem("Industry") && (
+        <div
+          className="psm-hero-company-meta"
+          style={{ gridColumn: "span 2" }}
+        >
+          <FiBriefcase size={12} /> <strong>Industry:</strong>{" "}
+          {localStorage.getItem("Industry")}
+        </div>
+      )}
+    </>
+  )}
+</div>
             </div>
 
           </div>

@@ -244,7 +244,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
       />
 
       <div className="vs-page">
-        <div className="projects-container d-flex flex-column gap-3 p-0">
+        <div className="p-4 pt-0 d-flex flex-column gap-3">
           {/* Heading Section */}
           <div className="ut-header-row">
             <div className="ut-title-group">

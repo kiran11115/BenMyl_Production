@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
@@ -104,6 +104,40 @@ const pipelineLineData = {
   }],
 };
 
+const sparklineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+  scales: {
+    x: { display: false },
+    y: { display: false, min: 0 }
+  },
+  elements: {
+    point: { radius: 0, hoverRadius: 0 }
+  },
+  layout: { padding: 0 }
+};
+
+const createSparklineData = (color, gradientStart, gradientEnd, dataPoints) => ({
+  labels: dataPoints.map((_, i) => i),
+  datasets: [{
+    data: dataPoints,
+    borderColor: color,
+    borderWidth: 1.2,
+    fill: true,
+    backgroundColor: (context) => {
+      const chart = context.chart;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return 'transparent';
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, gradientStart);
+      gradient.addColorStop(1, gradientEnd);
+      return gradient;
+    },
+    tension: 0.4
+  }]
+});
+
 const HiringManagerDashboard = () => {
   const navigate = useNavigate();
   const guideRef = useRef();
@@ -125,11 +159,16 @@ const HiringManagerDashboard = () => {
   const [dashboardProjects, setDashboardProjects] = useState([]);
   const [getQueueManagement] = useGetQueueManagementMutation();
   const [getMyBench] = useGetMyBenchMutation();
-  const { data: monthlyAnalytics } = useGetPostedMonthlyAnalyticsQuery(undefined,{refetchOnMountOrArgChange:true});
+  const { data: monthlyAnalytics } = useGetPostedMonthlyAnalyticsQuery(undefined, { refetchOnMountOrArgChange: true });
+
+  const sparklineData1 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
+  const sparklineData2 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [15, 18, 20, 22, 25, 28]), []);
+  const sparklineData3 = useMemo(() => createSparklineData('#10b981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0)', [20, 25, 28, 30, 35, 40]), []);
+  const sparklineData4 = useMemo(() => createSparklineData('#06b6d4', 'rgba(6, 182, 212, 0.15)', 'rgba(6, 182, 212, 0)', [10, 15, 20, 25, 22, 30]), []);
 
   useEffect(() => {
     setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
-    
+
     // Calculate Project Data
     const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
     const mockProjects = [
@@ -138,36 +177,36 @@ const HiringManagerDashboard = () => {
       { status: "Awaiting Review", budget: 120000 },
     ];
     const allProjects = [...mockProjects, ...customProjects];
-    
+
     setActiveProjectsCount(allProjects.filter(p => p.status === "In Progress").length);
-    
+
     // Map jobTitles to projects for the dashboard
     if (Array.isArray(jobTitles)) {
-        const mappedProjects = jobTitles.map(job => {
-            const rateText = job.salaryRange_Min && job.salaryRange_Max 
-                ? `$${job.salaryRange_Min}-${job.salaryRange_Max}` 
-                : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
-            
-            const budgetLabel = (() => {
-                const t = (job.salarType || "").toLowerCase();
-                if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
-                if (t.includes("month")) return "/month";
-                if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
-                return "/hr"; 
-            })();
+      const mappedProjects = jobTitles.map(job => {
+        const rateText = job.salaryRange_Min && job.salaryRange_Max
+          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+          : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
 
-            return {
-                title: job.jobTitle,
-                company: job.companyName,
-                status: job.isactive ? "Active" : "Closed",
-                statusClass: job.isactive ? "status-completed" : "status-review",
-                progress: job.isactive ? 100 : 0,
-                budget: `${rateText}${budgetLabel}`,
-                dueDate: job.lastDateToApply ? new Date(job.lastDateToApply).toLocaleDateString() : "Ongoing",
-                approvedBy: job.userName || "Hiring Manager"
-            };
-        });
-        setDashboardProjects(mappedProjects.slice(0, 3));
+        const budgetLabel = (() => {
+          const t = (job.salarType || "").toLowerCase();
+          if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+          if (t.includes("month")) return "/month";
+          if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+          return "/hr";
+        })();
+
+        return {
+          title: job.jobTitle,
+          company: job.companyName,
+          status: job.isactive ? "Active" : "Closed",
+          statusClass: job.isactive ? "status-completed" : "status-review",
+          progress: job.isactive ? 100 : 0,
+          budget: `${rateText}${budgetLabel}`,
+          dueDate: job.lastDateToApply ? new Date(job.lastDateToApply).toLocaleDateString() : "Ongoing",
+          approvedBy: job.userName || "Hiring Manager"
+        };
+      });
+      setDashboardProjects(mappedProjects.slice(0, 3));
     }
 
     const revenue = allProjects
@@ -178,13 +217,13 @@ const HiringManagerDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const companyIdNum = Number(userId);
-        
+
         // 1. Fetch Pending Review Count
         const pendingPayload = {
-            companyid: companyIdNum,
-            pageNumber: 1,
-            pageSize: 1000,
-            filters: [],
+          companyid: companyIdNum,
+          pageNumber: 1,
+          pageSize: 1000,
+          filters: [],
         };
         const pendingRes = await getQueueManagement(pendingPayload).unwrap();
         const pendingCount = Array.isArray(pendingRes) ? pendingRes.filter(item => item.status === "Pending For Review").length : 0;
@@ -193,16 +232,16 @@ const HiringManagerDashboard = () => {
         // 2. Fetch Recent Jobs for Parity
         if (Array.isArray(jobTitles)) {
           const mappedJobs = jobTitles.slice(0, 3).map(job => {
-            const rateText = job.salaryRange_Min && job.salaryRange_Max 
-              ? `$${job.salaryRange_Min}-${job.salaryRange_Max}` 
+            const rateText = job.salaryRange_Min && job.salaryRange_Max
+              ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
               : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
-            
+
             const budgetLabel = (() => {
               const t = (job.salarType || "").toLowerCase();
               if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
               if (t.includes("month")) return "/month";
               if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
-              return "/hr"; 
+              return "/hr";
             })();
 
             return {
@@ -235,13 +274,13 @@ const HiringManagerDashboard = () => {
     fetchDashboardData();
   }, [jobTitles, userId, getQueueManagement, getMyBench]);
 
-  const handleNavigate = (path) => {
+  const handleNavigate = (path, state = {}) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
     let finalPath = path;
     if (basePath === '/Admin' && path === '/user-upcoming-interview') {
       finalPath = '/admin-upcoming-interview';
     }
-    navigate(`${basePath}${finalPath}`);
+    navigate(`${basePath}${finalPath}`, { state });
   };
 
   const handleSubmissionAction = (candidateName, actionType, role) => {
@@ -268,100 +307,100 @@ const HiringManagerDashboard = () => {
     },
     {
       title: "Posted Jobs",
-      desc: `${postedJobsCount} active vacancies — view status & applicants.`,
+      desc: `${postedJobsCount} active vacancies - view status & applicants.`,
       icon: <Briefcase size={20} />,
       path: '/user-posted-jobs',
     },
     {
       title: "Active Projects",
-      desc: `${activeProjectsCount} projects — track status & timelines.`,
+      desc: `${activeProjectsCount} projects - track status & timelines.`,
       icon: <LayoutGrid size={20} />,
       path: '/user-projects',
     },
   ];
 
   const graphData =
-  monthlyAnalytics?.data?.map((item) => ({
-    month: item.monthName?.slice(0, 3),
-    posted: Number(item.totalJobsPosted || 0),
-    active: Number(item.activeJobs || 0),
-  })) || [];
+    monthlyAnalytics?.data?.map((item) => ({
+      month: item.monthName?.slice(0, 3),
+      posted: Number(item.totalJobsPosted || 0),
+      active: Number(item.activeJobs || 0),
+    })) || [];
 
   const chartData = {
-  labels: graphData.map((d) => d.month),
-  datasets: [
-    {
-      label: " Posted Jobs",
-      data: graphData.map((d) => d.posted),
-      borderColor: "#5a5de8",
-      backgroundColor: "rgba(90,93,232,0.12)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#fff",
-      pointBorderColor: "#5a5de8",
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-    {
-      label: "  Active Jobs",
-      data: graphData.map((d) => d.active),
-      borderColor: "#00b67a",
-      backgroundColor: "rgba(0,182,122,0.12)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#fff",
-      pointBorderColor: "#00b67a",
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-  ],
-};
+    labels: graphData.map((d) => d.month),
+    datasets: [
+      {
+        label: " Posted Jobs",
+        data: graphData.map((d) => d.posted),
+        borderColor: "#5a5de8",
+        backgroundColor: "rgba(90,93,232,0.12)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#5a5de8",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: "  Active Jobs",
+        data: graphData.map((d) => d.active),
+        borderColor: "#00b67a",
+        backgroundColor: "rgba(0,182,122,0.12)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#fff",
+        pointBorderColor: "#00b67a",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ],
+  };
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    mode: "index",
-    intersect: false,
-  },
-  plugins: {
-    legend: {
-      display: true,
-      position: "top",
-      align: "end",
-      labels: {
-        usePointStyle: true,
-        boxWidth: 6,
-        font: {
-          size: 11,
-          family: "Inter",
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: "index",
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        align: "end",
+        labels: {
+          usePointStyle: true,
+          boxWidth: 6,
+          font: {
+            size: 11,
+            family: "Inter",
+          },
         },
       },
     },
-  },
-  scales: {
-    x: {
-      grid: {
-        display: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#94a3b8",
+        },
       },
-      ticks: {
-        color: "#94a3b8",
+      y: {
+        beginAtZero: true,
+        grid: {
+          borderDash: [4, 4],
+          color: "#f1f5f9",
+        },
+        ticks: {
+          color: "#94a3b8",
+        },
       },
     },
-    y: {
-      beginAtZero: true,
-      grid: {
-        borderDash: [4, 4],
-        color: "#f1f5f9",
-      },
-      ticks: {
-        color: "#94a3b8",
-      },
-    },
-  },
-};
+  };
 
   return (
     <div className="ai-dashboard-wrapper">
@@ -383,63 +422,91 @@ const chartOptions = {
 
       <Guide ref={guideRef} />
 
-      <div className="hero-card">
-        <LayoutGrid 
-          size={240} 
-          strokeWidth={0.5} 
-          style={{
-            position: 'absolute',
-            right: '30%',
-            top: '50%',
-            transform: 'translateY(-50%) rotate(-10deg)',
-            color: '#ffffff',
-            opacity: 0.04,
-            zIndex: 1,
-            pointerEvents: 'none'
-          }}
-        />
-        <div className="hero-left">
-          <div className="hero-pill">
-            ✦ HIRING MANAGER CONSOLE ACTIVE
+      <div className="hero-section-wrapper">
+        <div className="hero-card">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
+
+          <div className="hero-left">
+            <div className="hero-pill">
+              ✦ HIRING MANAGER CONSOLE ACTIVE
+            </div>
+            <div className="hero-title-row">
+              <h1>
+                Welcome Back, {user}
+              </h1>
+
+              <div className="hero-buttons">
+                <button
+                  className="routine-btn"
+                  onClick={() => handleNavigate('/user-post-new-positions')}
+                >
+                  <Plus size={16} />
+                  Post New Job
+                  <ArrowUpRight size={16} />
+                </button>
+
+                <button
+                  className="routine-btn"
+                  onClick={() => navigate('/User/active-routines')}
+                >
+                  View Active Routines
+                  <ArrowUpRight size={16} />
+                </button>
+              </div>
+            </div>
+
+            <div className="hero-content-row">
+              <p>
+                Your recruitment pipeline is calibrated and running. You have{" "}
+                <strong>{postedJobsCount} active postings</strong> and{" "}
+                <strong>{pendingReviewCount} bench submissions</strong> awaiting evaluation.
+              </p>
+            </div>
           </div>
-          <h1 style={{ fontSize: '30px' }}>
-            Welcome Back, {user}
-          </h1>
-          <p style={{ fontSize: '14px' }}>
-            Your recruitment pipeline is calibrated and running. You have{" "}
-            <strong>{postedJobsCount} active postings</strong> and{" "}
-            <strong>{pendingReviewCount} bench submissions</strong> awaiting evaluation.
-          </p>
+
+          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
 
-        <div className="hero-buttons">
-          {/* <button
-            className="launch-btn"
-            onClick={triggerSync}
-          >
-            <RefreshCw
-              size={16}
-              className={syncing ? "spin-icon" : ""}
-            />
-            {syncing ? "Syncing..." : "Sync Pipeline"}
-          </button> */}
+        {/* COPILOT CARD */}
+        <div className="copilot-card">
+          <div className="copilot-header">
+            <div className="copilot-title-wrapper">
+              <Sparkles size={16} className="copilot-sparkles-icon" />
+              <span className="copilot-title">AI Agent</span>
+              <span className="copilot-beta-badge">Beta</span>
+            </div>
+          </div>
 
-          <button
-            className="routine-btn"
-            onClick={() => handleNavigate('/user-post-new-positions')}
-          >
-            <Plus size={16} />
-            Post New Job
-            <ArrowUpRight size={16} />
-          </button>
+          <div className="copilot-body">
+            <p className="copilot-text">
+              I detected <strong>{pendingReviewCount} pending submissions</strong><br /> for your review.
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <button
+                className="copilot-action-btn"
+                onClick={() => handleNavigate('/user-upload-talent')}
+              >
+                Review Matches
+              </button>
+            </div>
+          </div>
 
-          <button
-            className="routine-btn"
-            onClick={() => navigate('/User/active-routines')}
-          >
-            View Active Routines
-            <ArrowUpRight size={16} />
-          </button>
+          <div className="copilot-bot-illustration">
+            <img src="/Images/AI-Bot.png" alt="AI Copilot Bot" className="copilot-bot-image" />
+            <div className="copilot-glow-bg"></div>
+          </div>
         </div>
       </div>
 
@@ -475,119 +542,156 @@ const chartOptions = {
 
         {/* CARD 1 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <div className="stat-title">Jobs Posted</div>
-            <div className="stat-icon-box">
-              <Briefcase size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-purple">
+                <Briefcase size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Jobs Posted</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{postedJobsCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-purple">Active</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{postedJobsCount}</div>
-          <div className="stat-footer-row">
-            <span>Active vacancies open</span>
-          </div>
-          <div className="green-badge">Active</div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-posted-jobs')}>
-            ↗ View Jobs
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData1} />
           </div>
         </div>
 
         {/* CARD 2 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Active Projects</span>
-            <div className="stat-icon-box">
-              <LayoutGrid size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-blue">
+                <LayoutGrid size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Active Projects</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{activeProjectsCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-blue">Live</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{activeProjectsCount}</div>
-          <div className="stat-footer-row">
-            <span>Projects in progress</span>
-          </div>
-          <div className="green-badge">Live</div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-projects')}>
-            ↗ View Projects
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData2} />
           </div>
         </div>
 
         {/* CARD 3 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Pitches to Review</span>
-            <div className="stat-icon-box">
-              <Inbox size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-orange">
+                <Inbox size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Pitches to Review</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{pendingReviewCount}</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-orange">{pendingReviewCount > 0 ? 'Pending' : 'Clear'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{pendingReviewCount}</div>
-          <div className="stat-footer-row">
-            <span>Awaiting evaluation</span>
-          </div>
-          <div className="green-badge" style={{ background: pendingReviewCount > 0 ? '#fff3e0' : '#e8fbf1', color: pendingReviewCount > 0 ? '#f5810c' : '#00b67a' }}>
-            {pendingReviewCount > 0 ? 'Pending' : 'Clear'}
-          </div>
-          <div className="stat-bottom-link" style={{ cursor: 'pointer' }} onClick={() => handleNavigate('/user-upload-talent')}>
-            ↗ Review Now
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData3} />
           </div>
         </div>
 
         {/* CARD 4 */}
         <div className="stat-card">
-          <div className="stat-header-row">
-            <span className="stat-title">Hiring Health</span>
-            <div className="stat-icon-box">
-              <ShieldCheck size={16} />
+          <div className="stat-card-header">
+            <div className="stat-card-icon-title-container">
+              <div className="stat-card-icon-box stat-green">
+                <ShieldCheck size={18} />
+              </div>
+              <div className="stat-card-title-number">
+                <span className="stat-card-title">Hiring Health</span>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span className="stat-card-number">{hiringHealth}%</span>
+                  <div className="stat-card-change">
+                    <span className="stat-card-percentage stat-text-green">+{Math.max(0, hiringHealth - 75)}%</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="stat-number">{hiringHealth}%</div>
-          <div className="stat-footer-row">
-            <span>SLA performance score</span>
+          <div className="stat-card-sparkline">
+            <Line options={sparklineOptions} data={sparklineData4} />
           </div>
-          <div className="green-badge">+{Math.max(0, hiringHealth - 75)}%</div>
-          <div className="stat-bottom-link">
-            ↗ Optimal Flow
+        </div>
+
+        {/* CARD 5 */}
+        <div
+          className="stat-card action-card"
+          onClick={() => handleNavigate('/user-upcoming-interview', { openDrawer: true })}
+        >
+          <div className="action-card-content">
+            <div className="stat-card-icon-box stat-orange action-icon-box">
+              <Calendar size={22} />
+            </div>
+            <span className="action-card-title">Schedule Interview</span>
+            <span className="action-card-desc">Coordinate calendar slots</span>
+            <div className="action-card-arrow-wrapper">
+              <ArrowRight size={18} className="action-card-arrow" />
+            </div>
+          </div>
+          <div className="stat-bg-icon stat-text-orange">
+            <Calendar size={120} />
           </div>
         </div>
 
       </div>
 
-      {/* CHART SECTION */}
-      <div className="chart-grid">
+      <div className="chart-log-row">
 
         <div className="graph-card">
           <div className="graph-header">
             <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
+              <h3 className="graph-title">
                 Hiring Activity Velocity Index
               </h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>
+              <p className="graph-subtitle">
                 Real-time mapping of applicant pipelines & revenue capture
               </p>
             </div>
           </div>
           <div
-                      className="graph-area"
-                      style={{
-                        height: "320px",
-                        padding: "10px",
-                      }}
-                    >
-                      <Line
-                        data={chartData}
-                        options={chartOptions}
-                      />
-                    </div>
+            className="graph-area"
+            style={{
+              height: "320px",
+              padding: "10px",
+            }}
+          >
+            <Line
+              data={chartData}
+              options={chartOptions}
+            />
+          </div>
 
           <div className="graph-footer">
             <div>
               <span>AVG RECRUITMENT CYCLE</span>
-              <strong style={{ fontSize: 14 }}>11.4 Days</strong>
+              <strong className="graph-footer-jobs" style={{ color: '#475569' }}>11.4 Days</strong>
             </div>
             <div>
               <span>ACTIVE POSTINGS</span>
-              <strong style={{ fontSize: 14, color: '#5B5BD6' }}>{postedJobsCount} Jobs</strong>
+              <strong className="graph-footer-resumes">{postedJobsCount} Jobs</strong>
             </div>
             <div>
               <span>HIRING HEALTH INDEX</span>
-              <strong style={{ fontSize: 14, color: '#009966' }}>{hiringHealth}% Score</strong>
+              <strong className="graph-footer-growth">{hiringHealth}% Score</strong>
             </div>
           </div>
         </div>
@@ -596,8 +700,8 @@ const chartOptions = {
         <div className="log-card">
           <div className="log-header">
             <div>
-              <h3 style={{ fontSize: '14px', marginBottom: 0 }}>Active Pitched Submissions</h3>
-              <p style={{ fontSize: '12px', marginTop: 0 }}>Live submissions from bench sales</p>
+              <h3 className="log-title">Active Pitched Submissions</h3>
+              <p className="log-subtitle">Live submissions from bench sales</p>
             </div>
             <Activity size={18} />
           </div>
@@ -605,32 +709,32 @@ const chartOptions = {
           <div className="log-list">
             {recentJobs.length > 0 ? (
               recentJobs.map((job, idx) => (
-                <div className="log-item" key={job.id || idx}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className={`log-item theme-${idx % 4}`} key={job.id || idx}>
+                  <div className="log-item-left">
                     <span className="log-tag">{job.company || 'Company'}</span>
-                    <small style={{ fontSize: 11 }}>Active</small>
+                    <p className="log-message">
+                      <strong>{job.title}</strong>{job.location ? ` · ${job.location}` : ''}{job.salary ? ` - ${job.salary}` : ''}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '11px' }}>
-                    <strong>{job.title}</strong>{job.location ? ` · ${job.location}` : ''}{job.salary ? ` — ${job.salary}` : ''}
-                  </p>
+                  <small className="log-time">Active</small>
                 </div>
               ))
             ) : (
               <>
-                <div className="log-item">
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div className="log-item theme-0">
+                  <div className="log-item-left">
                     <span className="log-tag">Pipeline</span>
-                    <small style={{ fontSize: 11 }}>Live</small>
+                    <p className="log-message">No active submissions yet. Post jobs to attract candidates.</p>
                   </div>
-                  <p style={{ fontSize: '11px' }}>No active submissions yet. Post jobs to attract candidates.</p>
+                  <small className="log-time">Live</small>
                 </div>
               </>
             )}
           </div>
 
           <div className="security-box">
-            <span style={{ fontSize: 11 }}>✓ Recruitment pipeline compliant</span>
-            <strong style={{ fontSize: 10 }}>EXCELLENT</strong>
+            <span className="security-text">✓ Recruitment pipeline compliant</span>
+            <strong className="security-status">EXCELLENT</strong>
           </div>
         </div>
 
@@ -640,10 +744,10 @@ const chartOptions = {
       <div className="quick-card">
         <div className="quick-header">
           <div>
-            <h3 style={{ fontSize: '14px', marginBottom: 0 }}>
+            <h3 className="quick-title">
               Quick Action Command Console
             </h3>
-            <p style={{ fontSize: '12px', marginTop: 0 }}>
+            <p className="quick-desc">
               Launch hiring workflows and calibration flows instantly
             </p>
           </div>
@@ -659,12 +763,13 @@ const chartOptions = {
               <div className="quick-icon">
                 {item.icon}
               </div>
-              <h4 style={{ fontSize: 12, marginBottom: 0 }}>
-                {item.title}
-              </h4>
-              <p style={{ fontSize: 10, marginTop: 0 }}>
-                {item.desc}
-              </p>
+              <div className="quick-content">
+                <h4 className="quick-item-title">{item.title}</h4>
+                <p className="quick-item-desc">{item.desc}</p>
+              </div>
+              <div className="quick-arrow">
+                <ArrowUpRight size={18} />
+              </div>
             </div>
           ))}
         </div>

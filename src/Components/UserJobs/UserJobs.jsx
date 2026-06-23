@@ -389,7 +389,11 @@ const UserJobs = () => {
         {/* RIGHT */}
         <div className="user-jobs-right-section">
           {/* TOP */}
-          <div className="hero-card mb-4">
+          <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
             <div className="hero-left">
               <div className="hero-pill">
                 ✦ Find jobs
@@ -421,7 +425,19 @@ const UserJobs = () => {
                 />
               </div>
             </div>
+                    <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/jobs.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
+        </div>
+      </div>
 
           {/* GRID */}
           <div

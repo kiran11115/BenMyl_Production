@@ -16,7 +16,7 @@
 }
 
 /* --- Hero Card (Top Blue Card) --- */
-.hero-card {
+/* .hero-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,7 +54,7 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-}
+} */
 
 .job-posting-title {
   font-size: 26px;

@@ -32,7 +32,7 @@ const TalentGridView = ({
       )}
 
       {/* ── grid uses projects-grid with 3 columns override ── */}
-      <div className="projects-grid talent-grid-3-col" style={{ marginTop: 12 }}>
+      <div className="projects-grid talent-grid-4-col" style={{ marginTop: 12 }}>
         {visibleCandidates.map((candidate, idx) => {
           const isShortlisted = activeJobId && shortlistedMap?.[activeJobId]?.find((c) => c.id === candidate.id);
           const initials = getInitials(candidate.name);

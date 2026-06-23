@@ -66,61 +66,63 @@ export default function PostedJobsPage() {
 
                 {/* Top cards for Posted Jobs */}
 
-                <div
-                    className="hero-card mb-4"
-                >
-                    <FiBriefcase 
-                        size={240} 
-                        style={{
-                            position: 'absolute',
-                            right: '30%',
-                            top: '50%',
-                            transform: 'translateY(-50%) rotate(-10deg)',
-                            color: '#ffffff',
-                            opacity: 0.04,
-                            zIndex: 1,
-                            pointerEvents: 'none'
-                        }}
-                    />
-                    <div className="hero-left">
-                        <div className="hero-pill">
-                            ✦ Posted Jobs
+                <div className="hero-section-wrapper mb-4">
+                    <div className="hero-card ">
+                        <div className="hero-concentric-lines"></div>
+                        <div className="hero-ripple-pattern"></div>
+                        <div className="hero-circular-highlights"></div>
+                        <div className="hero-left">
+                            <div className="hero-pill">
+                                ✦ Posted Jobs
+                            </div>
+                            <div className="hero-title-row">
+                                <h1 className="job-posting-title text-white">
+                                    Posted Opportunities Board
+                                </h1>
+
+                                <div className="hero-buttons">
+                                    <button
+                                        onClick={() => setShowStats(!showStats)}
+                                        className="routine-btn"
+                                    >
+                                        {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            const basePath = window.location.pathname
+                                                .toLowerCase()
+                                                .startsWith('/admin')
+                                                ? '/Admin'
+                                                : '/user';
+
+                                            navigate(`${basePath}/user-post-new-positions`);
+                                        }}
+                                        className="routine-btn"
+                                    >
+                                        <FiPlus size={16} />
+                                        <span>Post New Job</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="hero-content-row">
+                                <p className="job-posting-subtitle">
+                                    Displaying all posted job opportunities with complete role details
+                                </p>
+                            </div>
                         </div>
-
-                        <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>
-                            Posted Opportunities Board
-                        </h1>
-
-                        <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
-                            <p className="job-posting-subtitle">
-                                Displaying all posted job opportunities with complete role details
-                            </p>
+                        <div className="hero-illustration">
+                            <div className="hero-particles">
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                            </div>
+                            <img src="/Images/jobs.png" alt="Jobs Illustration" className="hero-svg-image" />
                         </div>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <button
-                            onClick={() => setShowStats(!showStats)}
-                            className="routine-btn"
-                        >
-                            {showStats ? "Hide Metric Cards" : "Show Metric Cards"}
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                const basePath = window.location.pathname
-                                    .toLowerCase()
-                                    .startsWith('/admin')
-                                    ? '/Admin'
-                                    : '/user';
-
-                                navigate(`${basePath}/user-post-new-positions`);
-                            }}
-                            className="routine-btn"
-                        >
-                            <FiPlus size={16} />
-                            <span>Post New Job</span>
-                        </button>
                     </div>
                 </div>
 

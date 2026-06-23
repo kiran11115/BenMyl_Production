@@ -124,7 +124,11 @@ const TalentProfile = () => {
     <div className="ai-dashboard-wrapper">
       
       {/* ── HERO HEADER CARD ── */}
-      <div className="hero-card mb-4">
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
         <div className="hero-left">
           <div className="hero-pill">✦ Profile Page</div>
           <h1 className="job-posting-title text-white">{profileData.name}</h1>
@@ -145,6 +149,18 @@ const TalentProfile = () => {
           >
             <FiArrowLeft style={{ marginRight: '6px' }} /> Talent Pool
           </button>
+        </div>
+                <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 
@@ -308,7 +324,7 @@ const TalentProfile = () => {
               </div>
               <div>
                 <div className="tp-quick-lbl">Work Preference</div>
-                <div className="tp-quick-val">Hybrid (2-3 days remote)</div>
+                <div className="tp-info-value" style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{professionalData?.workPreference || "Not Mentioned"}</div>
               </div>
             </div>
 

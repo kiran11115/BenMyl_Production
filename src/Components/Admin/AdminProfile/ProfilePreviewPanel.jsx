@@ -44,25 +44,17 @@ const ProfilePreviewPanel = ({ data, logoPreview, roleBadge = "ADMIN" }) => {
             <div className="preview-glass-card">
               <div className="preview-stat-item">
                 <FiUsers />
-                <span className="preview-stat-label">Size:</span>
-                <span className="preview-stat-value">{data.CompanySize || "11-50 employees"}</span>
+                <span className="preview-stat-label">Company:</span>
+                <span className="preview-stat-value">
+                  {(!localStorage.getItem("CompanyName") || localStorage.getItem("CompanyName") === "null") ? "N/A" : localStorage.getItem("CompanyName")}
+                </span>
               </div>
               <div className="preview-stat-item">
                 <FiCalendar />
-                <span className="preview-stat-label">Founded:</span>
-                <span className="preview-stat-value">{data.FoundedYear || "2016"}</span>
-              </div>
-              <div className="preview-stat-item">
-                <FiGlobe />
-                <span className="preview-stat-label">Website:</span>
-                <a
-                  href={data.WebsiteURL || "https://benmyl.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="preview-link"
-                >
-                  {data.WebsiteURL || "https://benmyl.com"}
-                </a>
+                <span className="preview-stat-label">Industry:</span>
+                <span className="preview-stat-value">
+                  {(!localStorage.getItem("Industry") || localStorage.getItem("Industry") === "null") ? "N/A" : localStorage.getItem("Industry")}
+                </span>
               </div>
             </div>
           </div>
