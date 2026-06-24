@@ -61,6 +61,16 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
     navigate("/user/user-subscription");
   };
 
+  const industry = localStorage.getItem("Industry");
+
+const displayIndustry =
+  industry &&
+  industry !== "null" &&
+  industry !== "undefined" &&
+  industry.trim() !== ""
+    ? industry
+    : "N/A";
+
   return (
     <>
       {/* Overlay backdrop */}
@@ -180,7 +190,7 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
           style={{ gridColumn: "span 2" }}
         >
           <FiBriefcase size={12} /> <strong>Industry:</strong>{" "}
-          {localStorage.getItem("Industry")}
+          {displayIndustry}
         </div>
       )}
     </>

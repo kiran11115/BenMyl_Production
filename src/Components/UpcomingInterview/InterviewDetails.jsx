@@ -43,6 +43,7 @@ export default function InterviewDetails() {
     const [showEmailInput, setShowEmailInput] = useState(false);
     const userId = localStorage.getItem("CompanyId");
     const userRole = localStorage.getItem("Role");
+    const CompanyName = localStorage.getItem("CompanyName");
     const isBenchsales = userRole === 'Benchsales';
     const jobQueryUserId = isBenchsales && interview?.recruiterID ? interview.recruiterID : userId;
 
@@ -368,10 +369,14 @@ export default function InterviewDetails() {
                                 <span className="label">Job Role</span>
                                 <span className="value">{activeInterview.jobData?.title || activeInterview.role || '—'}</span>
                             </div>
-                            <div className="drawer-stat-item">
-                                <span className="label">Vendor</span>
-                                <span className="value">{activeInterview.vendorName || '—'}</span>
-                            </div>
+                            {activeInterview.vendorName &&
+ activeInterview.vendorName.trim().toLowerCase() !==
+ CompanyName?.trim().toLowerCase() && (
+  <div className="drawer-stat-item">
+    <span className="label">Vendor</span>
+    <span className="value">{activeInterview.vendorName}</span>
+  </div>
+)}
                         </div>
 
                         {/* Skills */}
