@@ -15,18 +15,7 @@ const TalentAvailabilityBadge = ({ text }) => {
 
   return (
     <span
-      style={{
-        backgroundColor: style.bg,
-        color: style.text,
-       display: "inline-block",
-      padding: "4px 10px",
-      borderRadius: "6px",
-      fontSize: "11px",
-      fontWeight: "600",
-      whiteSpace: "normal",
-      textTransform:"uppercase",
-      width:"fit-content"
-      }}
+     className="job-chip mint"
     >
       {text}
     </span>

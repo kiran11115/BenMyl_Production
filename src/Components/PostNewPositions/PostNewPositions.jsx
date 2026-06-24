@@ -669,7 +669,7 @@ navigate(targetPath);
               <div className="particle"></div>
               <div className="particle"></div>
             </div>
-            <img src="/Images/post.png" alt="Dashboard Illustration" className="hero-svg-image" />
+            <img src="/Images/file.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
         </div>
       </div>

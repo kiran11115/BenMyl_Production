@@ -73,6 +73,17 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
     pollingInterval: 5000,
   });
 
+  const isToday = (dateString) => {
+    if (!dateString) return false;
+    const d = new Date(dateString);
+    const today = new Date();
+    return d.getDate() === today.getDate() &&
+           d.getMonth() === today.getMonth() &&
+           d.getFullYear() === today.getFullYear();
+  };
+
+  const todayCount = raw.filter(item => isToday(item.CreatedAt)).length;
+
   const items = raw
     .map((item, i) => ({
       id:      item.Id ?? i,
@@ -221,8 +232,8 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
           type="button"
         >
           <Bell size={20} />
-          {items.length > 0 && (
-            <span className="notification-badge">{items.length}</span>
+          {todayCount > 0 && (
+            <span className="notification-badge">{todayCount}</span>
           )}
         </button>
 
@@ -276,7 +287,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
                   </span>
                 </div>
 
-                {items.length > 0 && (
+                {todayCount > 0 && (
                   <span
                     style={{
                       fontSize:     11,
@@ -287,7 +298,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
                       padding:      "2px 8px",
                     }}
                   >
-                    {items.length} new
+                    {todayCount} new today
                   </span>
                 )}
               </div>

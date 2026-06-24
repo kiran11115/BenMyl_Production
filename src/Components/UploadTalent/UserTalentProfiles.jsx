@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { FiGrid, FiList, FiSearch, FiBriefcase } from "react-icons/fi";
+import { FiGrid, FiList, FiSearch, FiBriefcase, FiRefreshCw } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 // --- Sub-Components ---
 import UserTalentGrid from "./UserTalentGrid";
@@ -54,6 +55,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
   const PAGE_SIZE = 50;
 
   const [viewMode, setViewMode] = useState("grid");
+  const [isToggling, setIsToggling] = useState(false);
   const [sortBy] = useState("recommended");
 
   const [candidatesMock, setCandidatesMock] = useState([]);
@@ -300,8 +302,13 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
               {/* PUBLISH BUTTON */}
               <button
                 className="btn-upload ut-publish-btn"
-                onClick={() => setIsPublishModalOpen(true)}
-                disabled={selectedIds.size === 0}
+                onClick={() => {
+                  if (selectedIds.size === 0) {
+                    toast.error("Please select talent in order to publish.");
+                    return;
+                  }
+                  setIsPublishModalOpen(true);
+                }}
               >
                 <span>
                   Publish{" "}
@@ -314,62 +321,63 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  background: "#f4f8ff",
-                  border: "1px solid #d9e6ff",
-                  borderRadius: "10px",
-                  padding: "3px",
-                  gap: "2px",
+                  background: "#f1f5f9",
+                  borderRadius: "12px",
+                  padding: "4px",
+                  gap: "4px",
                   height: "40px",
+                  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
+                  border: "1px solid #e2e8f0"
                 }}
               >
                 <button
-                  onClick={() => setViewMode("grid")}
+                  onClick={() => {
+                    if (viewMode === "grid") return;
+                    setIsToggling(true);
+                    setViewMode("grid");
+                    setTimeout(() => setIsToggling(false), 500);
+                  }}
                   style={{
-                    width: "28px",
-                    height: "28px",
+                    width: "36px",
+                    height: "32px",
                     border: "none",
                     borderRadius: "8px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    background:
-                      viewMode === "grid"
-                        ? "#3b82f6"
-                        : "transparent",
-                    color:
-                      viewMode === "grid"
-                        ? "#ffffff"
-                        : "#64748b",
-                    transition: "all 0.2s ease",
+                    background: viewMode === "grid" ? "#ffffff" : "transparent",
+                    color: viewMode === "grid" ? "#3b82f6" : "#64748b",
+                    boxShadow: viewMode === "grid" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
-                  <FiGrid size={14} />
+                  <FiGrid size={16} />
                 </button>
 
                 <button
-                  onClick={() => setViewMode("table")}
+                  onClick={() => {
+                    if (viewMode === "table") return;
+                    setIsToggling(true);
+                    setViewMode("table");
+                    setTimeout(() => setIsToggling(false), 500);
+                  }}
                   style={{
-                    width: "28px",
-                    height: "28px",
+                    width: "36px",
+                    height: "32px",
                     border: "none",
                     borderRadius: "8px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    background:
-                      viewMode === "table"
-                        ? "#3b82f6"
-                        : "transparent",
-                    color:
-                      viewMode === "table"
-                        ? "#ffffff"
-                        : "#64748b",
-                    transition: "all 0.2s ease",
+                    background: viewMode === "table" ? "#ffffff" : "transparent",
+                    color: viewMode === "table" ? "#3b82f6" : "#64748b",
+                    boxShadow: viewMode === "table" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
-                  <FiList size={14} />
+                  <FiList size={16} />
                 </button>
               </div>
             </div>
@@ -390,7 +398,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
               )}
 
               {/* No Data */}
-              {!isLoading && sortedCandidates.length === 0 && (
+              {!isLoading && !isToggling && sortedCandidates.length === 0 && (
                 <div
                   style={{
                     padding: "40px",
@@ -400,7 +408,17 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                   <NoData text={searchQuery ? "No Talent Profiles matching your search" : "No Talent Profiles found"} />
                 </div>
               )}
-              {viewMode === "grid" ? (
+              {isToggling ? (
+                <div className="jobs-screen-loader" style={{ height: "400px" }}>
+                  <div className="jobs-loader-ring">
+                    <div className="jobs-loader-icon">
+                      <FiRefreshCw className="spin-icon" size={18} />
+                    </div>
+                  </div>
+                  <p className="jobs-loader-text">Switching to {viewMode === "grid" ? "Grid" : "Table"} View...</p>
+                  <span className="jobs-loader-sub">Preparing layout for optimal viewing</span>
+                </div>
+              ) : viewMode === "grid" ? (
                 <UserTalentGrid
                   candidates={sortedCandidates}
                   selectedIds={selectedIds}

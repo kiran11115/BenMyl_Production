@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   Bell,
   MessageSquare,
@@ -11,6 +11,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { useGetUserNotificationsQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
+import "../PostNewPositions/PostNewPositions.css";
 
 /* ─────────────────────────────────────────────
    Soft UI Palette
@@ -313,6 +314,7 @@ const NotificationsPage = () => {
   });
 
   const [selectedDate, setSelectedDate] = useState("");
+  const dateInputRef = useRef(null);
 
   const TODAY = todayISO();
 
@@ -447,88 +449,87 @@ const NotificationsPage = () => {
       <div className="np-page">
         <div className="np-inner">
 
-          {/* ── Page Header ── */}
-          <div className="np-header">
-            {/* Left: title */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 9,
-                  background: S.orangeSoft,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Bell size={16} color={S.orangeText} strokeWidth={2} />
+        {/* HEADER CARD matching user-post-new-positions / EditProfile.jsx */}
+        <div className="hero-section-wrapper mb-4" style={{ marginTop: "24px", flexShrink: 0 }}>
+          <div className="hero-card ">
+            <div className="hero-concentric-lines"></div>
+            <div className="hero-ripple-pattern"></div>
+            <div className="hero-circular-highlights"></div>
+            <div className="hero-left">
+              <div className="hero-pill">
+                ✦ Notifications
               </div>
-              <div>
-                <h2
-                  style={{
-                    margin: 0,
-                    fontSize: 17,
-                    fontWeight: 700,
-                    color: S.text,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Notifications
-                </h2>
-                <p style={{ margin: "2px 0 0", fontSize: 12, color: S.textFaint }}>
-                  {allItems.length} total · {todayItems.length} today
+              <h1 className="job-posting-title text-white">Alerts & Messaging Board</h1>
+              <div className="job-posting-header-info">
+                <p className="job-posting-subtitle">
+                  {allItems.length} total notifications · {todayItems.length} received today
                 </p>
               </div>
             </div>
-
-            {/* Right: date picker */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              {selectedDate && (
-                <button
-                  onClick={() => setSelectedDate("")}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    background: "none",
-                    border: `1px solid ${S.border}`,
-                    borderRadius: 7,
-                    padding: "5px 10px",
-                    fontSize: 12,
-                    color: S.textMuted,
-                    cursor: "pointer",
-                    fontFamily: "'Inter','Segoe UI',sans-serif",
+            <div className="hero-buttons">
+              {/* Right: date picker */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", zIndex: 2 }}>
+                {selectedDate && (
+                  <button
+                    onClick={() => setSelectedDate("")}
+                    className="routine-btn"
+                    style={{ background: "rgba(255,255,255,0.1)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}
+                  >
+                    <X size={14} style={{ marginRight: '4px' }}/> Clear
+                  </button>
+                )}
+                <div
+                  className="routine-btn"
+                  onClick={() => {
+                    try {
+                      dateInputRef.current?.showPicker();
+                    } catch (e) {
+                      dateInputRef.current?.focus();
+                    }
+                  }}
+                  style={{ 
+                    position: "relative", 
+                    background: "rgba(255,255,255,0.1)", 
+                    color: "#fff", 
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    overflow: "hidden",
+                    cursor: "pointer"
                   }}
                 >
-                  <X size={11} /> Clear
-                </button>
-              )}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 7,
-                  background: S.bg,
-                  border: `1px solid ${S.border}`,
-                  borderRadius: 8,
-                  padding: "6px 12px",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-                }}
-              >
-                <Calendar size={13} color={S.textFaint} />
-                <input
-                  type="date"
-                  className="np-date-input"
-                  value={selectedDate}
-                  max={TODAY}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  style={{ color: selectedDate ? S.text : S.textFaint }}
-                />
+                  <Calendar size={14} />
+                  <span>
+                    {selectedDate ? fmtFullDate(selectedDate) : "Select Date"}
+                  </span>
+                  <input
+                    type="date"
+                    ref={dateInputRef}
+                    value={selectedDate}
+                    max={TODAY}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    style={{ 
+                      position: "absolute",
+                      width: "0",
+                      height: "0",
+                      opacity: 0,
+                      pointerEvents: "none"
+                    }}
+                  />
+                </div>
               </div>
             </div>
+            <div className="hero-illustration">
+              <div className="hero-particles">
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+              </div>
+              <img src="/Images/user.png" alt="Dashboard Illustration" className="hero-svg-image" />
+            </div>
           </div>
+        </div>
 
           {/* ── Columns ── */}
           {isLoading ? (

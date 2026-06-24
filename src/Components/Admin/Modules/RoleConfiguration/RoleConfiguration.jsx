@@ -143,15 +143,11 @@ function RoleConfiguration() {
         <div className="role-config-container">
             <div className="role-config-sidebar">
                 <div className="sidebar-header">
-                    <div className="header-top">
-                        <h2>System Roles</h2>
-                        <button className="add-role-btn">
+                    <div className="d-flex align-items-center gap-3 m-0">
+                        <div className="stat-card-icon-box stat-purple">
                             <UserPlus size={18} />
-                        </button>
-                    </div>
-                    <div className="search-box w-100">
-                        <Search size={16} />
-                        <input type="text" placeholder="Search roles..." />
+                        </div>
+                     <h2 className="m-0">System Roles</h2>
                     </div>
                 </div>
 

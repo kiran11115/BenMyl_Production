@@ -5,6 +5,7 @@ import {
   FiChevronUp,
   FiChevronDown,
   FiEye,
+  FiLoader,
 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -12,16 +13,7 @@ import { useNavigate } from "react-router-dom";
 // --- Sub-component: Availability Badge ---
 const AvailabilityBadge = ({ text }) => (
   <span
-    style={{
-      display: "inline-block",
-      padding: "4px 10px",
-      borderRadius: "6px",
-      fontSize: "11px",
-      fontWeight: "600",
-      whiteSpace: "normal",
-      backgroundColor: "#f0fdf4",
-      color: "#22c55e",
-    }}
+   className="job-chip mint"
   >
     {text}
   </span>
@@ -44,7 +36,7 @@ const getInitials = (name = "") =>
 // --- Sub-component: Table Row ---
 // Modified to accept shortlist props and render the button in the Action column
 const CandidateRow = memo(
-  ({ candidate, onShortlist, onProfileClick, isShortlisted, activeJobId, activeJobColor }) => {
+  ({ candidate, onShortlist, onProfileClick, isShortlisted, activeJobId, activeJobColor, loadingShortlistId }) => {
     const navigate = useNavigate();
     return (
       <tr className="tt-row">
@@ -58,19 +50,6 @@ const CandidateRow = memo(
             ) : (
               <div 
                 className="profile-avatar initials"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#f1f1ff",
-                  color: "#5B5BD6",
-                  fontWeight: "700",
-                  fontSize: "14px",
-                  border: "1.5px solid #f1f1ff",
-                }}
               >
                 {getInitials(candidate.name)}
               </div>
@@ -91,7 +70,7 @@ const CandidateRow = memo(
         <td className="tt-td">
           <div className="tt-skills-flex">
             {candidate.skills.slice(0, 2).map((skill) => (
-              <span key={skill} className="status-tag status-progress">
+              <span key={skill} className="job-chip green">
                 {skill}
               </span>
             ))}
@@ -104,7 +83,7 @@ const CandidateRow = memo(
         </td>
         <td className="tt-td">
           <div className="tt-location">
-            <FiMapPin size={14} color="#9ca3af" /> {candidate.location}
+            <FiMapPin size={12} color="#9ca3af" /> {candidate.location}
           </div>
         </td>
         <td className="tt-td">
@@ -114,28 +93,18 @@ const CandidateRow = memo(
             ))}
           </div>
         </td>
-        <td className="tt-td action d-flex gap-2">
+        <td className="d-flex gap-2">
           {/* Replaced generic MoreVertical with functional Shortlist Button */}
           <button
-            className="tt-action-btn"
+            className="btn-v2-primary"
             onClick={() => onShortlist(candidate)}
-            style={{
-              border: `1px solid ${activeJobId ? activeJobColor : "#cbd5e1"}`,
-              backgroundColor: isShortlisted ? activeJobColor : "white",
-              color: isShortlisted
-                ? "white"
-                : activeJobId
-                  ? activeJobColor
-                  : "#64748b",
-              padding: "6px 12px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "12px",
-              fontWeight: "600",
-              width: "100%",
-            }}
+            disabled={loadingShortlistId === candidate.id}
           >
-            {isShortlisted ? "Selected" : "Shortlist"}
+            {loadingShortlistId === candidate.id ? (
+              <span className="d-flex align-items-center gap-1 justify-content-center">
+                <FiLoader size={12} className="spin-icon" /> Shortlisting
+              </span>
+            ) : isShortlisted ? "Selected" : "Shortlist"}
           </button>
           <button
             className="tt-action-btn"
@@ -158,6 +127,7 @@ const TalentTableView = ({
   shortlistedMap,
   onProfileClick,
   hasMore,
+  loadingShortlistId,
 }) => {
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -294,6 +264,7 @@ const TalentTableView = ({
                 isShortlisted={isShortlisted}
                 activeJobId={activeJobId}
                 activeJobColor={activeJobColor}
+                loadingShortlistId={loadingShortlistId}
               />
             );
           })}

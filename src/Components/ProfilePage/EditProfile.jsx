@@ -505,7 +505,7 @@ function EditProfile() {
               <div className="particle"></div>
               <div className="particle"></div>
             </div>
-            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+            <img src="/Images/user.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
         </div>
       </div>

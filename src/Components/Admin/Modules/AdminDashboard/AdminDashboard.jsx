@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect, useMemo} from "react";
 import {useNavigate} from "react-router-dom";
+import { toast as toastify } from "react-toastify";
 
 import {
     Users,
@@ -475,17 +476,12 @@ function AdminDashboard() {
                             I found <strong>18 high-match candidates</strong><br/> for your open roles.
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                            <button 
-                                className="copilot-action-btn" 
-                                onClick={() => setShowDevMsg(true)}
+                            <button
+                                className="copilot-action-btn"
+                                onClick={() => toastify.info("This feature is currently under development.")}
                             >
                                 Review Matches
                             </button>
-                            {showDevMsg && (
-                                <span style={{ fontSize: "11px", color: "#64748b" }}>
-                                    We are currently under development.
-                                </span>
-                            )}
                         </div>
                     </div>
                     

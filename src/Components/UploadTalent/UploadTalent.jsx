@@ -249,15 +249,10 @@ const UploadTalent = () => {
                             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                                 <button
                                     className="copilot-action-btn"
-                                    onClick={() => setShowDevMsg(true)}
+                                    onClick={() => toast.info("This feature is currently under development.")}
                                 >
                                     Optimize Resource
                                 </button>
-                                {showDevMsg && (
-                                    <span style={{ fontSize: "11px", color: "#64748b" }}>
-                                        We are currently under development.
-                                    </span>
-                                )}
                             </div>
                         </div>
 

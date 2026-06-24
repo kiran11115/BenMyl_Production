@@ -44,7 +44,7 @@
 .psm-hero {
   position: relative;
   padding: 40px 28px 24px;
-  background: linear-gradient(135deg, #07132d 0%, #2b3669 55%, #7b78f3 100%);
+  background-image: linear-gradient(-225deg, #3D4E81 0%, #5753C9 48%, #6E7FF3 100%);
   flex-shrink: 0;
 }
 
@@ -135,12 +135,12 @@
 .psm-role-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #d9ddff;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -358,18 +358,18 @@
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .psm-sub-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: rgba(16, 185, 129, 0.2);
   border: 1px solid rgba(16, 185, 129, 0.3);
   color: #34d399;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -378,12 +378,12 @@
 .psm-tokens-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: rgba(245, 129, 12, 0.2);
   border: 1px solid rgba(245, 129, 12, 0.3);
   color: #fb923c;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
@@ -391,11 +391,11 @@
 .psm-vdisplay-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: #eef6ff;
   color: #2563eb;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   border: 1px solid #bfdbfe;
 }

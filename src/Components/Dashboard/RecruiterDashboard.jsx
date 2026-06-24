@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast as toastify } from "react-toastify";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -566,7 +567,7 @@ const RecruiterDashboard = () => {
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <button
                 className="copilot-action-btn"
-                onClick={() => handleNavigate('/user-upload-talent')}
+                onClick={() => toastify.info("This feature is currently under development.")}
               >
                 Review Matches
               </button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMapPin, FiBriefcase, FiUser, FiEye, FiAward, FiStar, FiActivity, FiCpu, FiCode } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiUser, FiEye, FiAward, FiStar, FiActivity, FiCpu, FiCode, FiLoader } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import NoData from "../UploadTalent/NoData";
 import "./TalentPool.css";
@@ -16,6 +16,7 @@ const TalentGridView = ({
   shortlistedMap,
   onProfileClick,
   hasMore,
+  loadingShortlistId,
 }) => {
   const getInitials = (name = "") =>
     name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join("");
@@ -200,6 +201,7 @@ const TalentGridView = ({
                 <button
                   onClick={() => onShortlist(candidate)}
                   className={isShortlisted ? "btn-v2-primary shortlisted" : "btn-v2-primary"}
+                  disabled={loadingShortlistId === candidate.id}
                   style={Object.assign(
                     { fontSize: 10.5, padding: "7px 16px", textTransform: "uppercase", borderRadius: "8px" },
                     isShortlisted && activeJobColor
@@ -207,7 +209,11 @@ const TalentGridView = ({
                       : {}
                   )}
                 >
-                  {isShortlisted ? (
+                  {loadingShortlistId === candidate.id ? (
+                    <span className="d-flex align-items-center gap-1 justify-content-center">
+                      <FiLoader size={10} className="spin-icon" /> Shortlisting
+                    </span>
+                  ) : isShortlisted ? (
                     <span className="d-flex align-items-center gap-1 justify-content-center">
                       <GiCheckMark size={10} /> Selected
                     </span>

@@ -60,7 +60,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
       <td className="tt-td">
         <div className="tt-candidate-flex">
           {/* Initial Avatar */}
-          <div className="initial-avatar">
+          <div className="profile-avatar initials">
             {getInitials(candidate.name)}
           </div>
 
@@ -85,7 +85,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
       <td className="tt-td">
         <div className="tt-skills-flex">
           {candidate.skills.slice(0, 2).map((skill) => (
-            <span key={skill} className="status-tag status-progress">
+            <span key={skill} className="job-chip green">
               {skill}
             </span>
           ))}
@@ -191,7 +191,7 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
       {/* Desktop View */}
       <div className="d-none d-md-block" style={{ overflowY: "auto", maxHeight: "600px" }}>
         <table className="tt-table">
-          <thead>
+          <thead style={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: "#fff" }}>
             <tr className="tt-thead-tr">
               <th className="tt-th" style={{ width: "40px" }}></th>
 

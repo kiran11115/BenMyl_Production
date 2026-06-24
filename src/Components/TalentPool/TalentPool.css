@@ -6,6 +6,15 @@
   color: #1f2937;
 }
 
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* TALENTPOOL HEADER */
 
 .talentpool-header{
@@ -1404,6 +1413,29 @@
 
 @media (max-width: 768px) {
   .talent-grid-3-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 4 columns grid layout overrides for Talent Pool */
+.talent-grid-4-col {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+@media (max-width: 1300px) {
+  .talent-grid-4-col {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .talent-grid-4-col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .talent-grid-4-col {
     grid-template-columns: 1fr !important;
   }
 }

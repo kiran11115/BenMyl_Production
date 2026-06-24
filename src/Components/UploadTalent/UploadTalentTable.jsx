@@ -274,12 +274,6 @@ useEffect(() => {
                 UPLOAD DATE <SortIcon columnKey="uploadDate" />
               </th>
 
-              {!isDashboard && (
-                <th onClick={() => requestSort("confidence")}>
-                  CONFIDENCE <SortIcon columnKey="confidence" />
-                </th>
-              )}
-
               <th>ACTIONS</th>
             </tr>
           </thead>
@@ -377,17 +371,6 @@ useEffect(() => {
 
                   {/* UPLOAD DATE */}
                   <td>{talent.uploadDate}</td>
-
-                  {/* CONFIDENCE */}
-                  {!isDashboard && (
-                    <td>
-                      <span
-                        className={`status-tag ${talent.confidenceClass}`}
-                      >
-                        {talent.confidence}
-                      </span>
-                    </td>
-                  )}
 
                   {/* ACTIONS */}
                   <td>

@@ -45,7 +45,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
-    background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
+    background: linear-gradient(-225deg, #3D4E81 0%, #5753C9 48%, #6E7FF3 100%);
     border-bottom: none;
     flex-shrink: 0;
 }
