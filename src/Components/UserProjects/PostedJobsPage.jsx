@@ -1,17 +1,28 @@
 import React from "react";
 import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft, FiPlus } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import PostedJobs from "./PostedJobs";
 import StatsRow from "./StatsRow";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./Projects.css";
 
 export default function PostedJobsPage() {
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [showStats, setShowStats] = useState(false);
     const userId = localStorage.getItem("CompanyId");
     const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
+
+    useEffect(() => {
+        const linkedinStatus = searchParams.get("linkedin");
+        if (linkedinStatus === "posted") {
+            toast.success("Posted successfully on LinkedIn 🎉");
+            searchParams.delete("linkedin");
+            setSearchParams(searchParams);
+        }
+    }, [searchParams, setSearchParams]);
 
     const jobStats = useMemo(() => {
         if (!Array.isArray(apiJobs)) return [];

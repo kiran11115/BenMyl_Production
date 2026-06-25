@@ -254,7 +254,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                 Talent Profiles
               </h1>
               <p className="section-subtitle">
-                Search and manage your Talent network.
+                Search and manage your talent network.
               </p>
             </div>
 

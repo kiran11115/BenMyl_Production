@@ -1,5 +1,5 @@
-import React, {useState, useRef, useEffect, useMemo} from "react";
-import {useNavigate} from "react-router-dom";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast as toastify } from "react-toastify";
 
 import {
@@ -35,21 +35,21 @@ import {
     Legend,
     Filler
 } from "chart.js";
-import {Line} from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 
 import UploadTalentModal from "../../../UploadTalent/UploadTalentModal";
 
 import "../../Modules/AdminDashboard/AdminDashboard.css";
 
-import {useRoleListDetailsQuery} from "../../../../State-Management/Api/PermissionsApiSlice";
+import { useRoleListDetailsQuery } from "../../../../State-Management/Api/PermissionsApiSlice";
 
-import {useGetTeamMembersQuery} from "../../../../State-Management/Api/AdminDetailsApiSlice";
+import { useGetTeamMembersQuery } from "../../../../State-Management/Api/AdminDetailsApiSlice";
 
-import {useGetAllContractsQuery} from "../../../../State-Management/Api/ContractApiSlice";
+import { useGetAllContractsQuery } from "../../../../State-Management/Api/ContractApiSlice";
 
-import {useGetGroupedJobTitlesQuery, useTalentPoolMutation} from "../../../../State-Management/Api/TalentPoolApiSlice";
-import {useGetAutonomousActivityLogQuery, useGetDashboardStatsQuery, useGetRecruiterGraphQuery} from "../../../../State-Management/Api/DashboardApiSlice";
+import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../../../State-Management/Api/TalentPoolApiSlice";
+import { useGetAutonomousActivityLogQuery, useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -76,7 +76,7 @@ const createSparklineData = (color, gradientStart, gradientEnd, dataPoints) => (
         fill: true,
         backgroundColor: (context) => {
             const chart = context.chart;
-            const {ctx, chartArea} = chart;
+            const { ctx, chartArea } = chart;
             if (!chartArea) return 'transparent'; // Fix for initial render error
             const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
             gradient.addColorStop(0, gradientStart);
@@ -93,32 +93,35 @@ const QUICK_ACTIONS = [
     {
         title: "Add New Recruiter",
         desc: "Configure profile, access limits, and KPI scoreboards.",
-        icon: <Users size={20}/>,
-        path: "/Admin/account-settings"
+        icon: <Users size={20} />,
+        path: "/Admin/account-settings",
+        state: {
+            activeTab: "team"
+        }
     },
 
     {
         title: "Post Open Job",
         desc: "Create job listings and matching parameters instantly.",
-        icon: <Briefcase size={20}/>,
+        icon: <Briefcase size={20} />,
         path: "/Admin/user-post-new-positions"
     },
 
     {
         title: "Auto Match Sync",
         desc: "Sync candidate profiles against active requirements.",
-        icon: <Sparkles size={20}/>,
+        icon: <Sparkles size={20} />,
         path: "/Admin/admin-talentpool"
     },
     {
         title: "Billing Console",
         desc: "Manage enterprise billing and active subscriptions.",
-        icon: <CreditCard size={20}/>,
+        icon: <CreditCard size={20} />,
         path: "/Admin/admin-subscription"
     }, {
         title: "Security Setup",
         desc: "Configure network policies and role access.",
-        icon: <ShieldCheck size={20}/>,
+        icon: <ShieldCheck size={20} />,
         path: "/Admin/role-configuration"
     },
 ];
@@ -146,8 +149,8 @@ function AdminDashboard() {
         data: rolesData = []
     } = useRoleListDetailsQuery();
 
-    const {data: teamData} = useGetTeamMembersQuery(emailId, {
-        skip: ! emailId
+    const { data: teamData } = useGetTeamMembersQuery(emailId, {
+        skip: !emailId
     });
 
     const {
@@ -157,18 +160,18 @@ function AdminDashboard() {
     const {
         data: apiJobs = []
     } = useGetGroupedJobTitlesQuery(userId, {
-        skip: ! userId
+        skip: !userId
     });
 
     const [getFindTalent] = useTalentPoolMutation();
 
     const {
         data: dashboardStats = {}
-    } = useGetDashboardStatsQuery(undefined, {refetchOnMountOrArgChange: true});
+    } = useGetDashboardStatsQuery(undefined, { refetchOnMountOrArgChange: true });
 
     const {
         data: recruiterGraph = []
-    } = useGetRecruiterGraphQuery(undefined, {refetchOnMountOrArgChange: true});
+    } = useGetRecruiterGraphQuery(undefined, { refetchOnMountOrArgChange: true });
 
     const {
         data: activityLogs = [],
@@ -183,17 +186,17 @@ function AdminDashboard() {
 
         const mins = Math.floor(diff / 60000);
 
-        if (mins < 1) 
+        if (mins < 1)
             return "Just now";
-        
-        if (mins < 60) 
+
+        if (mins < 60)
             return `${mins} mins ago`;
-        
+
 
         const hrs = Math.floor(mins / 60);
-        if (hrs < 24) 
+        if (hrs < 24)
             return `${hrs} hours ago`;
-        
+
 
         const days = Math.floor(hrs / 24);
         return `${days} days ago`;
@@ -207,12 +210,12 @@ function AdminDashboard() {
     } = dashboardStats;
 
     const graphData = useMemo(() => {
-        if (!Array.isArray(recruiterGraph)) 
+        if (!Array.isArray(recruiterGraph))
             return [];
-        
+
 
         return recruiterGraph.map((item) => ({
-            month: item.monthName ?. slice(0, 3),
+            month: item.monthName?.slice(0, 3),
             benchSales: Number(item.benchSales || 0),
             hiringManagers: Number(item.hiringManagers || 0)
         }));
@@ -226,7 +229,7 @@ function AdminDashboard() {
 
     useEffect(() => {
         if (companyId) {
-            getFindTalent({companyid: Number(companyId), pageNumber: 1, pageSize: 1000, filters: []}).unwrap().then((res) => {
+            getFindTalent({ companyid: Number(companyId), pageNumber: 1, pageSize: 1000, filters: [] }).unwrap().then((res) => {
                 if (Array.isArray(res)) {
                     setTalentCount(res.length);
                 }
@@ -235,7 +238,7 @@ function AdminDashboard() {
     }, [companyId, getFindTalent]);
 
     const teamMembers = useMemo(() => {
-        return Array.isArray(teamData) ? teamData : teamData ?. value || [];
+        return Array.isArray(teamData) ? teamData : teamData?.value || [];
     }, [teamData]);
 
     const triggerSync = () => {
@@ -261,7 +264,7 @@ function AdminDashboard() {
                 borderColor: "#3CC9C9",
                 backgroundColor: (context) => {
                     const chart = context.chart;
-                    const {ctx, chartArea} = chart;
+                    const { ctx, chartArea } = chart;
                     if (!chartArea) return "rgba(60, 201, 201, 0.08)";
                     const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
                     gradient.addColorStop(0, "rgba(60, 201, 201, 0.22)");
@@ -281,7 +284,7 @@ function AdminDashboard() {
                 borderColor: "#FFA94D",
                 backgroundColor: (context) => {
                     const chart = context.chart;
-                    const {ctx, chartArea} = chart;
+                    const { ctx, chartArea } = chart;
                     if (!chartArea) return "rgba(255, 169, 77, 0.08)";
                     const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
                     gradient.addColorStop(0, "rgba(255, 169, 77, 0.20)");
@@ -391,12 +394,12 @@ function AdminDashboard() {
             {/* TOAST */}
 
             {
-            toast && (
-                <div className="ai-toast">
-                    <div className="pulse-dot"></div>
-                    {toast} </div>
-            )
-        }
+                toast && (
+                    <div className="ai-toast">
+                        <div className="pulse-dot"></div>
+                        {toast} </div>
+                )
+            }
 
             {/* HERO SECTION WRAPPER */}
             <div className="hero-section-wrapper">
@@ -418,7 +421,7 @@ function AdminDashboard() {
 
                         <div className="hero-pill">
                             {/* <span className="green-dot"></span> */}
-                           ✦ ENTERPRISE AI PORTAL ENABLED
+                            ✦ ENTERPRISE AI PORTAL ENABLED
                         </div>
 
                         {/* <div className="hero-subtitle">Workforce Intelligence</div> */}
@@ -431,9 +434,9 @@ function AdminDashboard() {
                                 <button className="routine-btn"
                                     onClick={
                                         () => navigate("/Admin/active-routines")
-                                }>
+                                    }>
                                     View Active Routines
-                                    <ArrowUpRight size={16}/>
+                                    <ArrowUpRight size={16} />
                                 </button>
                             </div>
                         </div>
@@ -470,10 +473,10 @@ function AdminDashboard() {
                             <span className="copilot-beta-badge">Beta</span>
                         </div>
                     </div>
-                    
+
                     <div className="copilot-body">
                         <p className="copilot-text">
-                            I found <strong>18 high-match candidates</strong><br/> for your open roles.
+                            I found <strong>18 high-match candidates</strong><br /> for your open roles.
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                             <button
@@ -484,7 +487,7 @@ function AdminDashboard() {
                             </button>
                         </div>
                     </div>
-                    
+
                     <div className="copilot-bot-illustration">
                         <img src="/Images/AI-Bot.png" alt="AI Copilot Bot" className="copilot-bot-image" />
                         <div className="copilot-glow-bg"></div>
@@ -550,7 +553,7 @@ function AdminDashboard() {
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-purple">
-                                <Users size={18}/>
+                                <Users size={18} />
                             </div>
                             <div className="stat-card-title-number">
                                 <span className="stat-card-title">Active Users</span>
@@ -574,7 +577,7 @@ function AdminDashboard() {
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-blue">
-                                <Briefcase size={18}/>
+                                <Briefcase size={18} />
                             </div>
                             <div className="stat-card-title-number">
                                 <span className="stat-card-title">Open Requirements</span>
@@ -598,7 +601,7 @@ function AdminDashboard() {
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-green">
-                                <Users size={18}/>
+                                <Users size={18} />
                             </div>
                             <div className="stat-card-title-number">
                                 <span className="stat-card-title">Candidates Added</span>
@@ -622,7 +625,7 @@ function AdminDashboard() {
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-teal">
-                                <Briefcase size={18}/>
+                                <Briefcase size={18} />
                             </div>
                             <div className="stat-card-title-number">
                                 <span className="stat-card-title">Hires This Month</span>
@@ -642,13 +645,13 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 5 */}
-                <div 
+                <div
                     className="stat-card action-card"
                     onClick={() => navigate("/Admin/role-configuration")}
                 >
                     <div className="action-card-content">
                         <div className="stat-card-icon-box stat-orange action-icon-box">
-                            <ShieldCheck size={22}/>
+                            <ShieldCheck size={22} />
                         </div>
                         <span className="action-card-title">Role Configuration</span>
                         <span className="action-card-desc">Manage access & policies</span>
@@ -677,7 +680,7 @@ function AdminDashboard() {
                     </div>
 
                     <div className="graph-area">
-                        <Line data={chartData} options={chartOptions}/>
+                        <Line data={chartData} options={chartOptions} />
                     </div>
 
                     <div className="graph-footer">
@@ -714,30 +717,30 @@ function AdminDashboard() {
                             <p className="log-subtitle">Live triggers from sourcing systems</p>
                         </div>
 
-                        <Activity size={18}/>
+                        <Activity size={18} />
 
                     </div>
 
                     <div className="log-list">
                         {
-                        logsLoading ? (
-                            <div className="text-center py-3">
-                                Loading activity logs...
-                            </div>
-                        ) : activityLogs?.length > 0 ? (activityLogs.slice(0, 10).map((log, index) => (
-                            <div className={`log-item theme-${index % 4}`} key={index}>
-                                <div className="log-item-left">
-                                    <span className="log-tag">{log.activityType}</span>
-                                    <p className="log-message">{log.activityMessage}</p>
+                            logsLoading ? (
+                                <div className="text-center py-3">
+                                    Loading activity logs...
                                 </div>
-                                <small className="log-time">{getTimeAgo(log.activityDate)}</small>
-                            </div>
-                        ))) : (
-                            <div className="text-center py-3">
-                                No activity logs found
-                            </div>
-                        )
-                    } </div>
+                            ) : activityLogs?.length > 0 ? (activityLogs.slice(0, 10).map((log, index) => (
+                                <div className={`log-item theme-${index % 4}`} key={index}>
+                                    <div className="log-item-left">
+                                        <span className="log-tag">{log.activityType}</span>
+                                        <p className="log-message">{log.activityMessage}</p>
+                                    </div>
+                                    <small className="log-time">{getTimeAgo(log.activityDate)}</small>
+                                </div>
+                            ))) : (
+                                <div className="text-center py-3">
+                                    No activity logs found
+                                </div>
+                            )
+                        } </div>
 
                     <div className="security-box">
                         <span className="security-text">✓ Security token protocol compliant</span>
@@ -761,28 +764,32 @@ function AdminDashboard() {
 
                 <div className="quick-grid">
                     {
-                    QUICK_ACTIONS.map((item, index) => (
+                        QUICK_ACTIONS.map((item, index) => (
 
-                        <div className="quick-item"
-                            key={index}
-                            onClick={() => navigate(item.path)}>
+                            <div className="quick-item"
+                                key={index}
+                                onClick={() =>
+                                    navigate(item.path, {
+                                        state: item.state,
+                                    })
+                                }>
 
-                            <div className="quick-icon">
-                                {item.icon}
+                                <div className="quick-icon">
+                                    {item.icon}
+                                </div>
+
+                                <div className="quick-content">
+                                    <h4 className="quick-item-title">{item.title}</h4>
+                                    <p className="quick-item-desc">{item.desc}</p>
+                                </div>
+
+                                <div className="quick-arrow">
+                                    <ArrowUpRight size={18} />
+                                </div>
+
                             </div>
-
-                            <div className="quick-content">
-                                <h4 className="quick-item-title">{item.title}</h4>
-                                <p className="quick-item-desc">{item.desc}</p>
-                            </div>
-
-                            <div className="quick-arrow">
-                                <ArrowUpRight size={18} />
-                            </div>
-
-                        </div>
-                    ))
-                }
+                        ))
+                    }
                 </div>
 
             </div>
@@ -796,7 +803,7 @@ function AdminDashboard() {
                 }
                 onSuccess={
                     () => setShowUploadModal(false)
-                }/>
+                } />
 
         </div>
     );

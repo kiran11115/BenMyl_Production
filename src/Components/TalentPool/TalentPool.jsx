@@ -1292,7 +1292,7 @@ const TalentPool = () => {
 
                 <div className="hero-content-row">
                   <p className="job-posting-subtitle">
-                    Search and manage your Talent network.
+                    Search and manage your talent network.
                   </p>
                 </div>
               </div>

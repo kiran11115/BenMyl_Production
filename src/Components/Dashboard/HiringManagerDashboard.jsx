@@ -431,7 +431,7 @@ const HiringManagerDashboard = () => {
 
           <div className="hero-left">
             <div className="hero-pill">
-              ✦ HIRING MANAGER CONSOLE ACTIVE
+              ✦ Recruiter CONSOLE ACTIVE
             </div>
             <div className="hero-title-row">
               <h1>

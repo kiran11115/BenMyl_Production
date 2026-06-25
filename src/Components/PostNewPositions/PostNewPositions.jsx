@@ -5,7 +5,7 @@ import {
   FileText, X, Building2, Check, ChevronDown, Calendar, Clock, Search
 } from 'lucide-react';
 import { FiArrowLeft, FiLinkedin } from "react-icons/fi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import JobTitleAutocomplete from './JobTitleAutocomplete';
@@ -62,6 +62,17 @@ const PostNewPositions = () => {
   const isEdit = location.state?.isEdit;
   const JobID = location.state?.jobId;
   console.log("JobID:", JobID)
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const linkedinStatus = searchParams.get("linkedin");
+    if (linkedinStatus === "posted") {
+      toast.success("Posted successfully on LinkedIn 🎉");
+      searchParams.delete("linkedin");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   // Work Authorization states
   const [workAuthorization, setWorkAuthorization] = useState({

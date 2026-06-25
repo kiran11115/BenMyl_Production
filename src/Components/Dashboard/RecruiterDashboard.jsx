@@ -365,12 +365,6 @@ const RecruiterDashboard = () => {
 
   const QUICK_ACTIONS = [
     {
-      title: "Review Pitches",
-      desc: `${pendingReviewCount} submissions awaiting your approval.`,
-      icon: <Inbox size={20} />,
-      path: '/user-upload-talent',
-    },
-    {
       title: "Posted Jobs",
       desc: `${postedJobsCount} active vacancies - view status & applicants.`,
       icon: <Briefcase size={20} />,
@@ -501,7 +495,7 @@ const RecruiterDashboard = () => {
 
           <div className="hero-left">
             <div className="hero-pill">
-              ✦ RECRUITER CONSOLE ACTIVE
+              ✦ Hiring Manager CONSOLE ACTIVE
             </div>
             <div className="hero-title-row">
               <h1>

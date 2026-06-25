@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   FiArrowLeft,
   FiShield,
@@ -37,7 +37,14 @@ export default function AccountSettings() {
   const [inviteUser, { isLoading: isInviting }] = useInviteUserMutation();
 
   const location = useLocation();
+  console.log("hii",location.state?.activeTab);
   const [activeTab, setActiveTab] = useState(location.state?.activeTab || "billing");
+
+  useEffect(() => {
+  if (location.state?.activeTab) {
+    setActiveTab(location.state.activeTab);
+  }
+}, [location.state?.activeTab]);
 
   const [inviteForm, setInviteForm] = useState({ fullName: "", email: "", role: "Admin" });
   const [inviteError, setInviteError] = useState("");
