@@ -591,10 +591,10 @@ function Header() {
           languagesSpoken: apiData.languagesSpoken
             ? apiData.languagesSpoken.split(",").map(l => l.trim()).filter(Boolean)
             : [],
-          companyDescription: companyApiData?.description || "Providing innovative solutions for the future.",
-          totalEmployees: companyApiData?.companySize || "11-50 employees",
-          founded: companyApiData?.foundedYear || "2020",
-          website: companyApiData?.websiteURL || "https://benmyl.com",
+          companyDescription: companyApiData?.description || "",
+          totalEmployees: companyApiData?.companySize || "",
+          founded: companyApiData?.foundedYear || "",
+          website: companyApiData?.websiteURL || "",
           subscriptionType: "Enterprise Plan",
           tokens: "150",
         } : { name: user, role, email, subscriptionType: "Enterprise Plan", tokens: "150" }}

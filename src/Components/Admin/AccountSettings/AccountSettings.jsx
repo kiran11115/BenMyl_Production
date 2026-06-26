@@ -147,7 +147,7 @@ export default function AccountSettings() {
               <div className="particle"></div>
               <div className="particle"></div>
             </div>
-            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+            <img src="/Images/User.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
         </div>
       </div>

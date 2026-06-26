@@ -32,6 +32,13 @@ export const videoGuides = [
         url: "https://youtu.be/_V6sLadTiOM",
         embedUrl: `https://www.youtube.com/embed/_V6sLadTiOM?${embedParams}`,
         section: "Individual Guide Flow"
+    },
+    {
+        id: "guide-4",
+        title: "Sharing Hotlist",
+        url: "https://youtu.be/q4bcGtnx2Yw",
+        embedUrl: `https://www.youtube.com/embed/q4bcGtnx2Yw?${embedParams}`,
+        section: "Individual Guide Flow"
     }
 ];
 

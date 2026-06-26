@@ -47,6 +47,102 @@ const formatDateToDisplay = (value) => {
   return `${day}-${month}-${year}`;
 };
 
+const TimeSelectionPreview = ({ startTime, endTime }) => {
+    const getRotation = (time) => {
+        let hr = parseInt(time.hr, 10) || 12;
+        let min = parseInt(time.min, 10) || 0;
+        const minRot = min * 6;
+        const hrRot = (hr % 12) * 30 + min * 0.5;
+        return { hrRot, minRot };
+    };
+
+    const getDurationText = () => {
+        let startHr = parseInt(startTime.hr, 10);
+        if (startTime.ampm === 'PM' && startHr !== 12) startHr += 12;
+        if (startTime.ampm === 'AM' && startHr === 12) startHr = 0;
+        const startMin = parseInt(startTime.min, 10) || 0;
+
+        let endHr = parseInt(endTime.hr, 10);
+        if (endTime.ampm === 'PM' && endHr !== 12) endHr += 12;
+        if (endTime.ampm === 'AM' && endHr === 12) endHr = 0;
+        const endMin = parseInt(endTime.min, 10) || 0;
+
+        let startTotalMinutes = startHr * 60 + startMin;
+        let endTotalMinutes = endHr * 60 + endMin;
+
+        if (endTotalMinutes < startTotalMinutes) {
+            endTotalMinutes += 24 * 60;
+        }
+
+        const diff = endTotalMinutes - startTotalMinutes;
+        const hrs = Math.floor(diff / 60);
+        const mins = diff % 60;
+
+        if (hrs === 0 && mins === 0) return '0 mins';
+        
+        let parts = [];
+        if (hrs > 0) parts.push(`${hrs} ${hrs === 1 ? 'hr' : 'hrs'}`);
+        if (mins > 0) parts.push(`${mins} ${mins === 1 ? 'min' : 'mins'}`);
+        return parts.join(' ');
+    };
+
+    const startRot = getRotation(startTime);
+    const endRot = getRotation(endTime);
+    const duration = getDurationText();
+
+    return (
+        <div className="time-preview-container">
+            <div className="time-preview-clocks">
+                <div className="clock-wrapper">
+                    <span className="clock-label">From</span>
+                    <div className="analog-clock">
+                        <div className="clock-marker m-12"></div>
+                        <div className="clock-marker m-3"></div>
+                        <div className="clock-marker m-6"></div>
+                        <div className="clock-marker m-9"></div>
+                        <div 
+                            className="clock-hand hour-hand" 
+                            style={{ transform: `rotate(${startRot.hrRot}deg)` }}
+                        ></div>
+                        <div 
+                            className="clock-hand minute-hand" 
+                            style={{ transform: `rotate(${startRot.minRot}deg)` }}
+                        ></div>
+                    </div>
+                    <span className="clock-time-display">
+                        {startTime.hr}:{startTime.min} {startTime.ampm}
+                    </span>
+                </div>
+
+                <div className="clock-wrapper">
+                    <span className="clock-label">To</span>
+                    <div className="analog-clock">
+                        <div className="clock-marker m-12"></div>
+                        <div className="clock-marker m-3"></div>
+                        <div className="clock-marker m-6"></div>
+                        <div className="clock-marker m-9"></div>
+                        <div 
+                            className="clock-hand hour-hand" 
+                            style={{ transform: `rotate(${endRot.hrRot}deg)` }}
+                        ></div>
+                        <div 
+                            className="clock-hand minute-hand" 
+                            style={{ transform: `rotate(${endRot.minRot}deg)` }}
+                        ></div>
+                    </div>
+                    <span className="clock-time-display">
+                        {endTime.hr}:{endTime.min} {endTime.ampm}
+                    </span>
+                </div>
+            </div>
+            <div className="duration-pill">
+                <FiClock size={12} />
+                <span>Duration: {duration}</span>
+            </div>
+        </div>
+    );
+};
+
 const ScheduleInterview = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -187,16 +283,48 @@ const ScheduleInterview = () => {
         setViewDate(date);
     };
 
-    const timeSlots = [
-        { id: '09:00', time: '9:00 AM', hr: '09', min: '00', ampm: 'AM' },
-        { id: '10:00', time: '10:00 AM', hr: '10', min: '00', ampm: 'AM' },
-        { id: '11:00', time: '11:00 AM', hr: '11', min: '00', ampm: 'AM' },
-        { id: '12:00', time: '12:00 PM', hr: '12', min: '00', ampm: 'PM' },
-        { id: '14:00', time: '2:00 PM', hr: '02', min: '00', ampm: 'PM' },
-        { id: '15:00', time: '3:00 PM', hr: '03', min: '00', ampm: 'PM' },
-        { id: '16:00', time: '4:00 PM', hr: '04', min: '00', ampm: 'PM' },
-        { id: '17:00', time: '5:00 PM', hr: '05', min: '00', ampm: 'PM' }
-    ];
+    const timeSlots = useMemo(() => {
+        const slots = [
+            { id: '09:00', time: '9:00 AM', hr: '09', min: '00', ampm: 'AM' },
+            { id: '10:00', time: '10:00 AM', hr: '10', min: '00', ampm: 'AM' },
+            { id: '11:00', time: '11:00 AM', hr: '11', min: '00', ampm: 'AM' },
+            { id: '12:00', time: '12:00 PM', hr: '12', min: '00', ampm: 'PM' },
+            { id: '14:00', time: '2:00 PM', hr: '02', min: '00', ampm: 'PM' },
+            { id: '15:00', time: '3:00 PM', hr: '03', min: '00', ampm: 'PM' },
+            { id: '16:00', time: '4:00 PM', hr: '04', min: '00', ampm: 'PM' },
+            { id: '17:00', time: '5:00 PM', hr: '05', min: '00', ampm: 'PM' }
+        ];
+        if (!selectedDate) return slots;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            return slots.filter(slot => {
+                let slotHr = parseInt(slot.hr, 10);
+                if (slot.ampm === 'PM' && slotHr !== 12) slotHr += 12;
+                if (slot.ampm === 'AM' && slotHr === 12) slotHr = 0;
+                const slotTime = new Date(selectedDate);
+                slotTime.setHours(slotHr, parseInt(slot.min, 10), 0, 0);
+                return slotTime > today;
+            });
+        }
+        return slots;
+    }, [selectedDate]);
+
+    const isCustomTimeLate = useMemo(() => {
+        let hr = parseInt(startTime.hr, 10);
+        if (startTime.ampm === 'PM' && hr !== 12) hr += 12;
+        if (startTime.ampm === 'AM' && hr === 12) hr = 0;
+        const min = parseInt(startTime.min, 10) || 0;
+        return hr > 17 || (hr === 17 && min > 0);
+    }, [startTime]);
+
+    const isTodayPastLimit = useMemo(() => {
+        if (!selectedDate) return false;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            return today.getHours() >= 17;
+        }
+        return false;
+    }, [selectedDate]);
 
     const hoursOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
     const minutesOptions = ['00', '15', '30', '45'];
@@ -737,52 +865,96 @@ const ScheduleInterview = () => {
                                     <button className={`time-tab-btn ${timeMode === 'custom' ? 'active' : ''}`} onClick={() => setTimeMode('custom')}>Custom</button>
                                 </div>
                                 {timeMode === 'quick' && (
-                                    <div className="slots-grid">
-                                        {timeSlots.map(slot => (
-                                            <button
-                                                key={slot.id}
-                                                className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
-                                                onClick={() => handleQuickSlotClick(slot)}
-                                            >
-                                                {slot.time}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    timeSlots.length > 0 ? (
+                                        <div className="slots-grid">
+                                            {timeSlots.map(slot => (
+                                                <button
+                                                    key={slot.id}
+                                                    className={`slot-chip ${(!isRangeMode && timeSlotId === slot.id) ? 'active' : ''}`}
+                                                    onClick={() => handleQuickSlotClick(slot)}
+                                                >
+                                                    {slot.time}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="limit-warning-card">
+                                            <div className="limit-warning-icon">
+                                                <FiClock size={16} />
+                                            </div>
+                                            <div className="limit-warning-content">
+                                                <h4 className="limit-warning-title">Daily Schedule Concluding</h4>
+                                                <p className="limit-warning-desc">No further interview slots are available for today as the business hours are ending.</p>
+                                            </div>
+                                        </div>
+                                    )
                                 )}
                                 {timeMode === 'custom' && (
-                                    <div className="custom-range-container">
-                                        <div className="time-select-block mb-3">
-                                            <span className="range-label">From:</span>
-                                            <div className="h-m-picker">
-                                                <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                                    {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                                </select>
-                                                <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                                    {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                                </select>
-                                                <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                                    <option value="AM">AM</option>
-                                                    <option value="PM">PM</option>
-                                                </select>
+                                    (isTodayPastLimit || isCustomTimeLate) ? (
+                                        <div className="limit-warning-card" style={{ margin: '12px 0 0' }}>
+                                            <div className="limit-warning-icon">
+                                                <FiClock size={16} />
+                                            </div>
+                                            <div className="limit-warning-content">
+                                                <h4 className="limit-warning-title">Daily Schedule Concluding</h4>
+                                                <p className="limit-warning-desc">
+                                                    No further interview slots are available for today as the business hours are ending.
+                                                    {isCustomTimeLate && !isTodayPastLimit && (
+                                                        <span
+                                                            style={{ color: '#f5810c', cursor: 'pointer', textDecoration: 'underline', marginLeft: '8px', fontWeight: 'bold' }}
+                                                            onClick={() => {
+                                                                setStartTime({ hr: '09', min: '00', ampm: 'AM' });
+                                                                setEndTime({ hr: '10', min: '00', ampm: 'AM' });
+                                                            }}
+                                                        >
+                                                            Adjust Time
+                                                        </span>
+                                                    )}
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="time-select-block">
-                                            <span className="range-label">To:</span>
-                                            <div className="h-m-picker">
-                                                <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
-                                                    {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
-                                                </select>
-                                                <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
-                                                    {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                                                </select>
-                                                <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
-                                                    <option value="AM">AM</option>
-                                                    <option value="PM">PM</option>
-                                                </select>
+                                    ) : (
+                                        <div className="custom-range-container">
+                                            <div className="time-select-block mb-3">
+                                                <span className="range-label">From:</span>
+                                                <div className="h-m-picker">
+                                                    <select value={startTime.hr} onChange={(e) => { setStartTime({ ...startTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                        {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                                    </select>
+                                                    <select value={startTime.min} onChange={(e) => { setStartTime({ ...startTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                        {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                                    </select>
+                                                    <select value={startTime.ampm} onChange={(e) => { setStartTime({ ...startTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                        <option value="AM">AM</option>
+                                                        <option value="PM">PM</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="time-select-block">
+                                                <span className="range-label">To:</span>
+                                                <div className="h-m-picker">
+                                                    <select value={endTime.hr} onChange={(e) => { setEndTime({ ...endTime, hr: e.target.value }); setIsRangeMode(true); }}>
+                                                        {hoursOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                                    </select>
+                                                    <select value={endTime.min} onChange={(e) => { setEndTime({ ...endTime, min: e.target.value }); setIsRangeMode(true); }}>
+                                                        {minutesOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                                    </select>
+                                                    <select value={endTime.ampm} onChange={(e) => { setEndTime({ ...endTime, ampm: e.target.value }); setIsRangeMode(true); }}>
+                                                        <option value="AM">AM</option>
+                                                        <option value="PM">PM</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )
                                 )}
+
+                                {/* Analog clock preview */}
+                                {((timeMode === 'quick' && timeSlots.length > 0) || 
+                                  (timeMode === 'custom' && !isTodayPastLimit && !isCustomTimeLate)) && (
+                                    <TimeSelectionPreview startTime={startTime} endTime={endTime} />
+                                )}
+
                                 <div className="dt-modal-confirm-row">
                                     <div className="dt-confirm-summary">
                                         <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Selected</span>

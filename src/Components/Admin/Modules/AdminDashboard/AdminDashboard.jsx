@@ -22,6 +22,7 @@ import {
     Bot,
     MoreHorizontal,
     ArrowRight,
+    Calendar,
 } from "lucide-react";
 
 import {
@@ -50,6 +51,7 @@ import { useGetAllContractsQuery } from "../../../../State-Management/Api/Contra
 
 import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../../../State-Management/Api/TalentPoolApiSlice";
 import { useGetAutonomousActivityLogQuery, useGetDashboardStatsQuery, useGetRecruiterGraphQuery } from "../../../../State-Management/Api/DashboardApiSlice";
+import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery } from "../../../../State-Management/Api/ScheduleInterviewApiSlice";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -181,6 +183,25 @@ function AdminDashboard() {
         pollingInterval: 1000
     });
 
+    const {
+        data: apiInterviewsNormal = []
+    } = useSchedulesDetailsQuery(userId, {
+        skip: !userId,
+        refetchOnMountOrArgChange: true
+    });
+
+    const {
+        data: apiInterviewsBench = []
+    } = useSchedulesDetailsBenchsalesQuery(userId, {
+        skip: !userId,
+        refetchOnMountOrArgChange: true
+    });
+
+    const totalInterviewsCount = useMemo(() => {
+        return (Array.isArray(apiInterviewsNormal) ? apiInterviewsNormal.length : 0) +
+               (Array.isArray(apiInterviewsBench) ? apiInterviewsBench.length : 0);
+    }, [apiInterviewsNormal, apiInterviewsBench]);
+
     const getTimeAgo = (dateString) => {
         const diff = Date.now() - new Date(dateString).getTime();
 
@@ -221,10 +242,47 @@ function AdminDashboard() {
         }));
     }, [recruiterGraph]);
 
-    const sparklineData1 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', graphData.length ? graphData.map(d => d.hiringManagers) : [10, 20, 15, 25]), [graphData]);
-    const sparklineData2 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', graphData.length ? graphData.map(d => d.benchSales) : [15, 18, 20, 22]), [graphData]);
-    const sparklineData3 = useMemo(() => createSparklineData('#10b981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0)', graphData.length ? graphData.map(d => d.benchSales * 1.5) : [20, 25, 28, 30]), [graphData]);
-    const sparklineData4 = useMemo(() => createSparklineData('#06b6d4', 'rgba(6, 182, 212, 0.15)', 'rgba(6, 182, 212, 0)', graphData.length ? graphData.map(d => d.hiringManagers * 1.2) : [10, 15, 20, 25]), [graphData]);
+    const activeUsersTrend = useMemo(() => graphData.length ? graphData.map(d => d.hiringManagers) : [10, 20, 15, 25], [graphData]);
+    const openRequirementsTrend = useMemo(() => graphData.length ? graphData.map(d => d.benchSales) : [15, 18, 20, 22], [graphData]);
+    const candidatesTrend = useMemo(() => graphData.length ? graphData.map(d => d.benchSales * 1.5) : [20, 25, 28, 30], [graphData]);
+    const interviewsTrend = useMemo(() => graphData.length ? graphData.map(d => d.hiringManagers * 1.2) : [10, 15, 20, 25], [graphData]);
+
+    const calculatePctChange = (trend) => {
+        if (!Array.isArray(trend) || trend.length < 2) {
+            return { value: "0", isPositive: true };
+        }
+        const current = trend[trend.length - 1];
+        const previous = trend[trend.length - 2];
+        if (previous === 0) {
+            return { value: current > 0 ? "100.0" : "0", isPositive: current >= 0 };
+        }
+        const pct = ((current - previous) / previous) * 100;
+        return {
+            value: Math.abs(pct).toFixed(1),
+            isPositive: pct >= 0
+        };
+    };
+
+    const activeUsersChange = useMemo(() => calculatePctChange(activeUsersTrend), [activeUsersTrend]);
+    const openRequirementsChange = useMemo(() => calculatePctChange(openRequirementsTrend), [openRequirementsTrend]);
+    const candidatesChange = useMemo(() => calculatePctChange(candidatesTrend), [candidatesTrend]);
+    const interviewsChange = useMemo(() => calculatePctChange(interviewsTrend), [interviewsTrend]);
+
+    const renderTrendChange = (change, positiveClass) => {
+        const isZero = change.value === "0" || change.value === "0.0";
+        const colorClass = isZero ? positiveClass : (change.isPositive ? positiveClass : 'stat-text-red');
+        return (
+            <span className={`stat-card-percentage ${colorClass}`}>
+                {!isZero && (change.isPositive ? '↑ ' : '↓ ')}
+                {change.value}%
+            </span>
+        );
+    };
+
+    const sparklineData1 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', activeUsersTrend), [activeUsersTrend]);
+    const sparklineData2 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', openRequirementsTrend), [openRequirementsTrend]);
+    const sparklineData3 = useMemo(() => createSparklineData('#10b981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0)', candidatesTrend), [candidatesTrend]);
+    const sparklineData4 = useMemo(() => createSparklineData('#06b6d4', 'rgba(6, 182, 212, 0.15)', 'rgba(6, 182, 212, 0)', interviewsTrend), [interviewsTrend]);
     const sparklineData5 = useMemo(() => createSparklineData('#f97316', 'rgba(249, 115, 22, 0.15)', 'rgba(249, 115, 22, 0)', graphData.length ? graphData.map(d => d.hiringManagers * 1.5) : [12, 18, 22, 28]), [graphData]);
 
     useEffect(() => {
@@ -476,7 +534,7 @@ function AdminDashboard() {
 
                     <div className="copilot-body">
                         <p className="copilot-text">
-                            I found <strong>18 high-match candidates</strong><br /> for your open roles.
+                            I found <strong>{openRequirements} posted jobs</strong><br /> in your profile.
                         </p>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                             <button
@@ -560,7 +618,7 @@ function AdminDashboard() {
                                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
                                     <span className="stat-card-number">{activeRecruiters}</span>
                                     <div className="stat-card-change">
-                                        <span className="stat-card-percentage stat-text-purple">↑ 12.5%</span>
+                                        {renderTrendChange(activeUsersChange, 'stat-text-purple')}
                                         <span className="stat-card-vs">vs last month</span>
                                     </div>
                                 </div>
@@ -584,7 +642,7 @@ function AdminDashboard() {
                                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
                                     <span className="stat-card-number">{openRequirements}</span>
                                     <div className="stat-card-change">
-                                        <span className="stat-card-percentage stat-text-green">↑ 8.3%</span>
+                                        {renderTrendChange(openRequirementsChange, 'stat-text-green')}
                                         <span className="stat-card-vs">vs last month</span>
                                     </div>
                                 </div>
@@ -608,7 +666,7 @@ function AdminDashboard() {
                                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
                                     <span className="stat-card-number">{candidateSubmissions}</span>
                                     <div className="stat-card-change">
-                                        <span className="stat-card-percentage stat-text-green">↑ 15.8%</span>
+                                        {renderTrendChange(candidatesChange, 'stat-text-green')}
                                         <span className="stat-card-vs">vs last month</span>
                                     </div>
                                 </div>
@@ -625,14 +683,14 @@ function AdminDashboard() {
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-teal">
-                                <Briefcase size={18} />
+                                <Calendar size={18} />
                             </div>
                             <div className="stat-card-title-number">
-                                <span className="stat-card-title">Hires This Month</span>
+                                <span className="stat-card-title">Interviews Scheduled</span>
                                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-                                    <span className="stat-card-number">{talentCount}</span>
+                                    <span className="stat-card-number">{totalInterviewsCount}</span>
                                     <div className="stat-card-change">
-                                        <span className="stat-card-percentage stat-text-green">↑ 50.0%</span>
+                                        {renderTrendChange(interviewsChange, 'stat-text-green')}
                                         <span className="stat-card-vs">vs last month</span>
                                     </div>
                                 </div>

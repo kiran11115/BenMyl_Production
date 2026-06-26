@@ -11,20 +11,10 @@ const TrialPopover = () => {
   const remainingDaysNum = (rawDays === null || rawDays === undefined || rawDays === "undefined" || rawDays === "null" || isNaN(Number(rawDays))) ? 0 : Number(rawDays);
   const trialdays = String(remainingDaysNum);
 
-  // Date Calculations
+  // Date Calculations derived from the remaining days count
   const now = new Date();
-  const storedStartDate = localStorage.getItem("TrialStartDate");
-  
-  let createdDate;
-  if (storedStartDate) {
-    createdDate = new Date(storedStartDate);
-  } else {
-    // Fallback: estimate start date assuming 20 days total
-    createdDate = new Date(now.getTime() - ((20 - remainingDaysNum) * 24 * 60 * 60 * 1000));
-  }
-  
-  // End date is 20 days from created date
-  const endDate = new Date(createdDate.getTime() + (20 * 24 * 60 * 60 * 1000));
+  const endDate = new Date(now.getTime() + (remainingDaysNum * 24 * 60 * 60 * 1000));
+  const createdDate = new Date(endDate.getTime() - (90 * 24 * 60 * 60 * 1000));
 
   const formatDate = (date) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });

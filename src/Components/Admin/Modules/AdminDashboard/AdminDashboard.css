@@ -406,6 +406,7 @@ body{
   font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -969,6 +970,7 @@ body{
 .stat-text-green { color: #10b981; }
 .stat-text-teal { color: #06b6d4; }
 .stat-text-orange { color: #f97316; }
+.stat-text-red { color: #ef4444; }
 
 .stat-card-vs {
   color: #94a3b8;

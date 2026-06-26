@@ -2200,3 +2200,158 @@
     transform: translateY(0);
   }
 }
+
+/* ── Daily Schedule Limit Warning Card ── */
+.limit-warning-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.limit-warning-icon {
+  color: #f5810c;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.limit-warning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.limit-warning-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7c2d12;
+  margin: 0;
+}
+
+.limit-warning-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9a3412;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Analog Clock Preview ── */
+.time-preview-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.time-preview-clocks {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 20px;
+}
+
+.clock-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.clock-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.analog-clock {
+  width: 64px;
+  height: 64px;
+  border: 3px solid #1e293b;
+  border-radius: 50%;
+  position: relative;
+  background: #f8fafc;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.analog-clock::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #1e293b;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.clock-hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  border-radius: 4px;
+  z-index: 5;
+}
+
+.hour-hand {
+  width: 3px;
+  height: 18px;
+  background: #1e293b;
+}
+
+.minute-hand {
+  width: 2px;
+  height: 24px;
+  background: #f5810c;
+}
+
+.clock-marker {
+  position: absolute;
+  width: 2px;
+  height: 4px;
+  background: #cbd5e1;
+  left: 50%;
+}
+.clock-marker.m-12 { top: 2px; left: calc(50% - 1px); }
+.clock-marker.m-3  { top: calc(50% - 2px); right: 2px; left: auto; transform: rotate(90deg); }
+.clock-marker.m-6  { bottom: 2px; left: calc(50% - 1px); }
+.clock-marker.m-9  { top: calc(50% - 2px); left: 2px; transform: rotate(90deg); }
+
+.clock-time-display {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.duration-pill {
+  background: #fff8e6;
+  border: 1px solid #ffe8cc;
+  color: #d97706;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

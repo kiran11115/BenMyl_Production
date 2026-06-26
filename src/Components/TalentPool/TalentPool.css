@@ -559,6 +559,10 @@
 }
 
 .tt-th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #1e293b;
   padding: 16px;
   font-size: 12px;
   font-weight: 700;

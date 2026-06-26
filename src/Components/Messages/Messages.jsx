@@ -4,8 +4,6 @@ import {
   FiEdit,
   FiMoreHorizontal,
   FiSend,
-  FiPaperclip,
-  FiAtSign,
   FiMessageSquare,
   FiChevronLeft,
   FiChevronDown,
@@ -32,10 +30,12 @@ if (!document.getElementById("msg-inter-font")) {
 }
 
 /* ── Helpers ── */
-const AVATAR_COLORS = [
-  "#1e293b", "#0284c7", "#16a34a", "#0891b2",
-  "#7c3aed", "#dc2626", "#ea580c", "#9333ea",
-  "#0f766e", "#b45309",
+const AVATAR_COLOR_PAIRS = [
+  { background: "#eceffd", color: "#6b6ff0" }, // purple
+  { background: "#e6f9f8", color: "#0ea5e9" }, // green
+  { background: "#e6fbf1", color: "#00b67a" }, // mint
+  { background: "#ffedd5", color: "#f5810c" }, // orange
+  { background: "#fef2f2", color: "#DC2626" }, // pink
 ];
 
 /** Get initials from a full name */
@@ -45,11 +45,11 @@ const getInitials = (name = "") => {
   return name.slice(0, 2).toUpperCase();
 };
 
-/** Pick a deterministic colour based on string hash */
-const pickColor = (str = "") => {
+/** Pick a deterministic colour pair based on string hash */
+const pickColorPair = (str = "") => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  return AVATAR_COLOR_PAIRS[Math.abs(hash) % AVATAR_COLOR_PAIRS.length];
 };
 
 /** Format to dd-MMM-yyyy (e.g. 04-May-2026) */
@@ -123,7 +123,15 @@ const mapUser = (user, index) => {
   const name =
     user.FullName ?? user.fullName ?? user.UserName ?? user.userName ?? user.name ?? "Unknown";
   const email = (user.EmailID ?? user.Email ?? user.email ?? "").toLowerCase();
-  const role = user.Role ?? user.role ?? user.designation ?? "";
+  
+  let role = user.Role ?? user.role ?? user.designation ?? "";
+  const roleLower = role.trim().toLowerCase();
+  if (roleLower === "recruiter") {
+    role = "Hiring Manager";
+  } else if (roleLower === "recruiter2") {
+    role = "Recruiter";
+  }
+
   const id = user.AuthInfoId ?? user.userId ?? user.id ?? index;
 
   const rawMsg = user.lastMessage ?? user.LastMessage;
@@ -133,7 +141,8 @@ const mapUser = (user, index) => {
     name: name.trim(),
     email,
     avatar: getInitials(name),
-    avatarColor: pickColor(email || name || String(index)),
+    avatarBg: pickColorPair(email || name || String(index)).background,
+    avatarTextColor: pickColorPair(email || name || String(index)).color,
     preview: rawMsg || "",
     hasMessaged: !!rawMsg,
     time: formatSidebarTime(user.lastMessageTime ?? user.LastMessageTime ?? ""),
@@ -543,7 +552,7 @@ const Messages = () => {
                     >
                       <div
                         className="tms-avatar"
-                        style={{ background: c.avatarColor }}
+                        style={{ background: c.avatarBg, color: c.avatarTextColor }}
                       >
                         {c.avatar}
                         {c.online && <span className="tms-online-dot" />}
@@ -634,7 +643,10 @@ const Messages = () => {
               </button>
               <div
                 className="tms-header-avatar"
-                style={{ background: currentConversation?.avatarColor || "#6264a7" }}
+                style={{ 
+                  background: currentConversation?.avatarBg || "#eceffd", 
+                  color: currentConversation?.avatarTextColor || "#6b6ff0" 
+                }}
               >
                 {currentConversation?.avatar}
                 {currentConversation?.online && (
@@ -747,7 +759,8 @@ const Messages = () => {
                             {!isMe && (
                               <div className="tms-msg-avatar"
                                 style={{
-                                  background: isFirstInBlock ? currentConversation?.avatarColor : "transparent",
+                                  background: isFirstInBlock ? currentConversation?.avatarBg : "transparent",
+                                  color: isFirstInBlock ? currentConversation?.avatarTextColor : "transparent",
                                   visibility: isFirstInBlock ? "visible" : "hidden",
                                 }}
                               >
@@ -768,7 +781,8 @@ const Messages = () => {
                             {!isMe && (
                               <div className="tms-msg-avatar"
                                 style={{
-                                  background: isFirstInBlock ? currentConversation?.avatarColor : "transparent",
+                                  background: isFirstInBlock ? currentConversation?.avatarBg : "transparent",
+                                  color: isFirstInBlock ? currentConversation?.avatarTextColor : "transparent",
                                   visibility: isFirstInBlock ? "visible" : "hidden",
                                 }}
                               >
@@ -823,8 +837,6 @@ const Messages = () => {
                     onChange={(e) => setInputValue(e.target.value)}
                   />
                   <div className="tms-input-actions">
-                    <button type="button" className="tms-act-btn" title="Attach"><FiPaperclip size={18} /></button>
-                    <button type="button" className="tms-act-btn" title="Mention"><FiAtSign size={18} /></button>
                     <button
                       type="submit"
                       className={"tms-send-btn" + (inputValue.trim() ? " tms-send-active" : "")}

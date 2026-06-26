@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiX, FiEdit2, FiLogOut, FiMail, FiPhone, FiMapPin,
@@ -27,6 +27,7 @@ import packageJson from "../../../package.json";
  */
 const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) => {
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(false);
 
   /* Lock body scroll when open */
   useEffect(() => {
@@ -52,7 +53,7 @@ const ProfileSideModal = ({ isOpen, onClose, onEditClick, onSignOut, profile }) 
   const handleAddUsersClick = () => {
     onClose();
     // Directs to page with list of users created as team members (activeTab = team)
-    navigate("/Admin/account-settings", { state: { activeTab: "team" } });
+    navigate("/AdmiN/Account-settings", { state: { activeTab: "team" } });
   };
 
   const handleSubscriptionClick = () => {
@@ -70,6 +71,19 @@ const displayIndustry =
   industry.trim() !== ""
     ? industry
     : "N/A";
+
+  const handleLogoutClick = () => {
+    setShowConfirm(true);
+    console.log("Logging Screen State: Profile Side Modal Sign Out Confirmation.", {
+        timestamp: new Date().toISOString(),
+        currentUrl: window.location.href,
+        profileName: profile?.name,
+        profileRole: profile?.role
+    });
+    setTimeout(() => {
+        onSignOut();
+    }, 2000);
+  };
 
   return (
     <>
@@ -129,11 +143,9 @@ const displayIndustry =
                   <FiPhone size={12} /> <span>{profile.phone}</span>
                 </div>
               )}
-              {profile?.location && (
-                <div className="psm-hero-contact-item">
-                  <FiMapPin size={12} /> <span>{profile.location}</span>
-                </div>
-              )}
+              <div className="psm-hero-contact-item">
+                <FiMapPin size={12} /> <span>{profile?.location || "N/A"}</span>
+              </div>
               {profile?.linkedinUrl && (
                 <div className="psm-hero-contact-item">
                   <FiLinkedin size={12} /> <a href={profile.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a>
@@ -151,29 +163,27 @@ const displayIndustry =
            <div className="psm-hero-company-grid">
   {profile?.role === "Admin" ? (
     <>
-      {profile?.totalEmployees && (
-        <div className="psm-hero-company-meta">
-          <FiUsers size={12} /> <strong>Size:</strong> {profile.totalEmployees}
-        </div>
-      )}
+      <div className="psm-hero-company-meta">
+        <FiUsers size={12} /> <strong>Size:</strong> {profile?.totalEmployees && profile.totalEmployees.trim() !== "" ? profile.totalEmployees : "N/A"}
+      </div>
  
-      {profile?.founded && (
-        <div className="psm-hero-company-meta">
-          <FiCalendar size={12} /> <strong>Founded:</strong> {profile.founded}
-        </div>
-      )}
+      <div className="psm-hero-company-meta">
+        <FiCalendar size={12} /> <strong>Founded:</strong> {profile?.founded && profile.founded.trim() !== "" ? profile.founded : "N/A"}
+      </div>
  
-      {profile?.website && (
-        <div
-          className="psm-hero-company-meta"
-          style={{ gridColumn: "span 2" }}
-        >
-          <FiGlobe size={12} /> <strong>Website:</strong>
-          <a href={profile.website} target="_blank" rel="noreferrer">
+      <div
+        className="psm-hero-company-meta"
+        style={{ gridColumn: "span 2" }}
+      >
+        <FiGlobe size={12} /> <strong>Website:</strong>{" "}
+        {profile?.website && profile.website.trim() !== "" && profile.website !== "N/A" && profile.website !== "N/A" ? (
+          <a href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`} target="_blank" rel="noreferrer">
             {profile.website}
           </a>
-        </div>
-      )}
+        ) : (
+          <span>N/A</span>
+        )}
+      </div>
     </>
   ) : (
     <>
@@ -290,12 +300,27 @@ const displayIndustry =
               <FiUsers size={14} /> Add Users
             </button>
           )}
-          <button className="psm-btn psm-btn-danger" onClick={onSignOut}>
+          <button className="psm-btn psm-btn-danger" onClick={handleLogoutClick}>
             <FiLogOut size={14} /> Sign Out
           </button>
         </div>
 
       </aside>
+
+      {showConfirm && (
+        <div className="psm-alert-overlay">
+          <div className="psm-alert-box">
+            <div className="psm-alert-icon-wrap">
+              <FiLogOut size={32} />
+            </div>
+            <h3 className="psm-alert-title">Thank You!</h3>
+            <p className="psm-alert-note" style={{ marginBottom: 0 }}>
+              Thank you for your valuable time on BenMyl. We hope you had a productive session. We look forward to seeing you again soon!
+            </p>
+            <div className="psm-alert-spinner"></div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -26,6 +26,104 @@ const getInitials = (name = '') =>
     name.trim().split(' ').slice(0, 2).map(w => w[0]?.toUpperCase()).join('');
 
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const HOURS = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+const MINUTES = ['00', '15', '30', '45'];
+
+const TimeSelectionPreview = ({ startTime, endTime }) => {
+    const getRotation = (time) => {
+        let hr = parseInt(time.hr, 10) || 12;
+        let min = parseInt(time.min, 10) || 0;
+        const minRot = min * 6;
+        const hrRot = (hr % 12) * 30 + min * 0.5;
+        return { hrRot, minRot };
+    };
+
+    const getDurationText = () => {
+        let startHr = parseInt(startTime.hr, 10);
+        if (startTime.ampm === 'PM' && startHr !== 12) startHr += 12;
+        if (startTime.ampm === 'AM' && startHr === 12) startHr = 0;
+        const startMin = parseInt(startTime.min, 10) || 0;
+
+        let endHr = parseInt(endTime.hr, 10);
+        if (endTime.ampm === 'PM' && endHr !== 12) endHr += 12;
+        if (endTime.ampm === 'AM' && endHr === 12) endHr = 0;
+        const endMin = parseInt(endTime.min, 10) || 0;
+
+        let startTotalMinutes = startHr * 60 + startMin;
+        let endTotalMinutes = endHr * 60 + endMin;
+
+        if (endTotalMinutes < startTotalMinutes) {
+            endTotalMinutes += 24 * 60;
+        }
+
+        const diff = endTotalMinutes - startTotalMinutes;
+        const hrs = Math.floor(diff / 60);
+        const mins = diff % 60;
+
+        if (hrs === 0 && mins === 0) return '0 mins';
+        
+        let parts = [];
+        if (hrs > 0) parts.push(`${hrs} ${hrs === 1 ? 'hr' : 'hrs'}`);
+        if (mins > 0) parts.push(`${mins} ${mins === 1 ? 'min' : 'mins'}`);
+        return parts.join(' ');
+    };
+
+    const startRot = getRotation(startTime);
+    const endRot = getRotation(endTime);
+    const duration = getDurationText();
+
+    return (
+        <div className="time-preview-container">
+            <div className="time-preview-clocks">
+                <div className="clock-wrapper">
+                    <span className="clock-label">From</span>
+                    <div className="analog-clock">
+                        <div className="clock-marker m-12"></div>
+                        <div className="clock-marker m-3"></div>
+                        <div className="clock-marker m-6"></div>
+                        <div className="clock-marker m-9"></div>
+                        <div 
+                            className="clock-hand hour-hand" 
+                            style={{ transform: `rotate(${startRot.hrRot}deg)` }}
+                        ></div>
+                        <div 
+                            className="clock-hand minute-hand" 
+                            style={{ transform: `rotate(${startRot.minRot}deg)` }}
+                        ></div>
+                    </div>
+                    <span className="clock-time-display">
+                        {startTime.hr}:{startTime.min} {startTime.ampm}
+                    </span>
+                </div>
+
+                <div className="clock-wrapper">
+                    <span className="clock-label">To</span>
+                    <div className="analog-clock">
+                        <div className="clock-marker m-12"></div>
+                        <div className="clock-marker m-3"></div>
+                        <div className="clock-marker m-6"></div>
+                        <div className="clock-marker m-9"></div>
+                        <div 
+                            className="clock-hand hour-hand" 
+                            style={{ transform: `rotate(${endRot.hrRot}deg)` }}
+                        ></div>
+                        <div 
+                            className="clock-hand minute-hand" 
+                            style={{ transform: `rotate(${endRot.minRot}deg)` }}
+                        ></div>
+                    </div>
+                    <span className="clock-time-display">
+                        {endTime.hr}:{endTime.min} {endTime.ampm}
+                    </span>
+                </div>
+            </div>
+            <div className="duration-pill">
+                <FiClock size={12} />
+                <span>Duration: {duration}</span>
+            </div>
+        </div>
+    );
+};
 
 /* ── Component ── */
 const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId, preSelectedCandidateId }) => {
@@ -191,9 +289,6 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
         return slots;
     }, [selectedDate]);
 
-    const HOURS = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
-    const MINUTES = ['00', '15', '30', '45'];
-
     // Additional dynamic filtering for custom hours
     const getFilteredHours = React.useCallback((ampm) => {
         if (!selectedDate) return HOURS;
@@ -208,7 +303,57 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
             });
         }
         return HOURS;
-    }, [selectedDate, HOURS]);
+    }, [selectedDate]);
+
+    // Auto-adjust custom times if they are filtered out for today
+    useEffect(() => {
+        if (!selectedDate || timeMode !== 'custom') return;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            const currentHours = getFilteredHours(startTime.ampm);
+            if (!currentHours.includes(startTime.hr)) {
+                const amHours = getFilteredHours('AM');
+                const pmHours = getFilteredHours('PM');
+                let validHr = '';
+                let validAmpm = '';
+                if (amHours.length > 0) {
+                    validHr = amHours[0];
+                    validAmpm = 'AM';
+                } else if (pmHours.length > 0) {
+                    validHr = pmHours[0];
+                    validAmpm = 'PM';
+                } else {
+                    validHr = '05';
+                    validAmpm = 'PM';
+                }
+
+                setStartTime({ hr: validHr, min: '00', ampm: validAmpm });
+                
+                let eHr = (parseInt(validHr, 10) + 1).toString().padStart(2, '0');
+                let eAmpm = validAmpm;
+                if (validHr === '11') eAmpm = validAmpm === 'AM' ? 'PM' : 'AM';
+                if (validHr === '12') eHr = '01';
+                setEndTime({ hr: eHr, min: '00', ampm: eAmpm });
+            }
+        }
+    }, [selectedDate, timeMode, startTime.ampm, startTime.hr, getFilteredHours]);
+
+    const isCustomTimeLate = useMemo(() => {
+        let hr = parseInt(startTime.hr, 10);
+        if (startTime.ampm === 'PM' && hr !== 12) hr += 12;
+        if (startTime.ampm === 'AM' && hr === 12) hr = 0;
+        const min = parseInt(startTime.min, 10) || 0;
+        return hr > 17 || (hr === 17 && min > 0);
+    }, [startTime]);
+
+    const isTodayPastLimit = useMemo(() => {
+        if (!selectedDate) return false;
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+            return today.getHours() >= 17;
+        }
+        return false;
+    }, [selectedDate]);
 
     const isAMDisabled = useMemo(() => {
         if (!selectedDate) return false;
@@ -513,41 +658,84 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
                                     </div>
 
                                     {timeMode === 'quick' ? (
-                                        <div className="sid-time-slots">
-                                            {TIME_SLOTS.map(slot => (
-                                                <button
-                                                    key={slot.id}
-                                                    className={`sid-time-slot ${!isRangeMode && timeSlotId === slot.id ? 'active' : ''}`}
-                                                    onClick={() => handleQuickSlot(slot)}
-                                                >
-                                                    {slot.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="sid-custom-time-container">
-                                            {[
-                                                { label: 'Start Time', time: startTime, setTime: (v) => { setStartTime(v); setIsRangeMode(true); } },
-                                                { label: 'End Time', time: endTime, setTime: (v) => { setEndTime(v); setIsRangeMode(true); } },
-                                            ].map(({ label, time, setTime }) => (
-                                                <div key={label} className="sid-custom-time-group">
-                                                    <label className="sid-custom-time-label">{label}</label>
-                                                    <div className="sid-custom-time-inputs">
-                                                        <select className="sid-auth-input" value={time.hr} onChange={e => setTime({ ...time, hr: e.target.value })}>
-                                                            {getFilteredHours(time.ampm).map(h => <option key={h} value={h}>{h}</option>)}
-                                                        </select>
-                                                        <span className="sid-time-colon">:</span>
-                                                        <select className="sid-auth-input" value={time.min} onChange={e => setTime({ ...time, min: e.target.value })}>
-                                                            {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
-                                                        </select>
-                                                        <select className="sid-auth-input sid-auth-ampm" value={time.ampm} onChange={e => setTime({ ...time, ampm: e.target.value })}>
-                                                            {!isAMDisabled && <option value="AM">AM</option>}
-                                                            <option value="PM">PM</option>
-                                                        </select>
-                                                    </div>
+                                        TIME_SLOTS.length > 0 ? (
+                                            <div className="sid-time-slots">
+                                                {TIME_SLOTS.map(slot => (
+                                                    <button
+                                                        key={slot.id}
+                                                        className={`sid-time-slot ${!isRangeMode && timeSlotId === slot.id ? 'active' : ''}`}
+                                                        onClick={() => handleQuickSlot(slot)}
+                                                    >
+                                                        {slot.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="limit-warning-card">
+                                                <div className="limit-warning-icon">
+                                                    <FiClock size={16} />
                                                 </div>
-                                            ))}
-                                        </div>
+                                                <div className="limit-warning-content">
+                                                    <h4 className="limit-warning-title">Daily Schedule Concluding</h4>
+                                                    <p className="limit-warning-desc">No further interview slots are available for today as the business hours are ending.</p>
+                                                </div>
+                                            </div>
+                                        )
+                                    ) : (
+                                        (isTodayPastLimit || isCustomTimeLate) ? (
+                                            <div className="limit-warning-card" style={{ margin: '12px 0 0' }}>
+                                                <div className="limit-warning-icon">
+                                                    <FiClock size={16} />
+                                                </div>
+                                                <div className="limit-warning-content">
+                                                    <h4 className="limit-warning-title">Daily Schedule Concluding</h4>
+                                                    <p className="limit-warning-desc">
+                                                        No further interview slots are available for today as the business hours are ending.
+                                                        {isCustomTimeLate && !isTodayPastLimit && (
+                                                            <span
+                                                                style={{ color: '#f5810c', cursor: 'pointer', textDecoration: 'underline', marginLeft: '8px', fontWeight: 'bold' }}
+                                                                onClick={() => {
+                                                                    setStartTime({ hr: '09', min: '00', ampm: 'AM' });
+                                                                    setEndTime({ hr: '10', min: '00', ampm: 'AM' });
+                                                                }}
+                                                            >
+                                                                Adjust Time
+                                                            </span>
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="sid-custom-time-container">
+                                                {[
+                                                    { label: 'Start Time', time: startTime, setTime: (v) => { setStartTime(v); setIsRangeMode(true); } },
+                                                    { label: 'End Time', time: endTime, setTime: (v) => { setEndTime(v); setIsRangeMode(true); } },
+                                                ].map(({ label, time, setTime }) => (
+                                                    <div key={label} className="sid-custom-time-group">
+                                                        <label className="sid-custom-time-label">{label}</label>
+                                                        <div className="sid-custom-time-inputs">
+                                                            <select className="sid-auth-input" value={time.hr} onChange={e => setTime({ ...time, hr: e.target.value })}>
+                                                                {getFilteredHours(time.ampm).map(h => <option key={h} value={h}>{h}</option>)}
+                                                            </select>
+                                                            <span className="sid-time-colon">:</span>
+                                                            <select className="sid-auth-input" value={time.min} onChange={e => setTime({ ...time, min: e.target.value })}>
+                                                                {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
+                                                            </select>
+                                                            <select className="sid-auth-input sid-auth-ampm" value={time.ampm} onChange={e => setTime({ ...time, ampm: e.target.value })}>
+                                                                {!isAMDisabled && <option value="AM">AM</option>}
+                                                                <option value="PM">PM</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )
+                                    )}
+
+                                    {/* Analog clock preview */}
+                                    {((timeMode === 'quick' && TIME_SLOTS.length > 0) || 
+                                      (timeMode === 'custom' && !isTodayPastLimit && !isCustomTimeLate)) && (
+                                        <TimeSelectionPreview startTime={startTime} endTime={endTime} />
                                     )}
                                 </div>
                             </div>
