@@ -1,6 +1,6 @@
 /* =============================================
    Messages.css - Elegant & Premium Chat Design
-   Project brand: #556bab (orange), #1e293b (navy)
+   Project brand: #5a5de8 (orange), #1e293b (navy)
    Premium layout, rich typography, smooth transitions
  ============================================= */
 
@@ -87,7 +87,7 @@
 }
 
 .tms-domain-tab.tms-tab-active {
-  color: #556bab;
+  color: #5a5de8;
   background: #ffffff;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
 }
@@ -115,7 +115,7 @@
 
 .tms-tab-active .tms-tab-count {
   background: #f7f7f7;
-  color: #556bab;
+  color: #5a5de8;
 }
 
 /* Search */
@@ -133,7 +133,7 @@
 
 .tms-search-wrap:focus-within {
   background: #ffffff;
-  border-color: #556bab;
+  border-color: #5a5de8;
   box-shadow: 0 0 0 3px rgba(245, 129, 12, 0.1);
 }
 
@@ -192,7 +192,7 @@
 .tms-accordion-badge {
   margin-left: auto;
   background: #f7f7f7;
-  color: #556bab;
+  color: #5a5de8;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 8px;
@@ -329,7 +329,7 @@
   display: block;
   font-size: 11px;
   font-weight: 600;
-  color: #556bab;
+  color: #5a5de8;
   text-transform: capitalize;
   white-space: nowrap;
   overflow: hidden;
@@ -351,7 +351,7 @@
   min-width: 18px;
   height: 18px;
   border-radius: 99px;
-  background: #556bab;
+  background: #5a5de8;
   color: #ffffff !important;
   font-size: 10px;
   font-weight: 700;
@@ -441,7 +441,7 @@
 .tms-chat-header-role {
   font-size: 12px;
   font-weight: 600;
-  color: #556bab;
+  color: #8f90bf;
 }
 
 /* ── Chat Body ── */
@@ -731,13 +731,12 @@
 .tms-public-request-icon {
   width: 60px;
   height: 60px;
-  border-radius: 18px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #556bab;
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  color: #ffffff;
+  background: #5a5de8;
 }
 
 .tms-public-request-title {
@@ -777,14 +776,13 @@
 }
 
 .tms-action-accept {
-  background: #556bab;
-  border-color: #556bab;
+  background: #5a5de8;
+  border-color: #5a5de8;
   color: #ffffff;
   box-shadow: 0 3px 6px rgba(245, 129, 12, 0.2);
 }
 
 .tms-action-accept:hover {
-  background: #ea7009;
   transform: translateY(-1px);
 }
 
@@ -812,10 +810,11 @@
   padding: 4px 6px 4px 16px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+  position: relative;
 }
 
 .tms-input-wrapper:focus-within {
-  border-color: #556bab;
+  border-color: #5a5de8;
   box-shadow: 0 4px 16px rgba(245, 129, 12, 0.08);
 }
 
@@ -860,14 +859,13 @@
 }
 
 .tms-send-btn.tms-send-active {
-  background: #556bab;
+  background: #5a5de8;
   color: #ffffff !important;
   cursor: pointer;
   box-shadow: 0 3px 8px rgba(245, 129, 12, 0.25);
 }
 
 .tms-send-btn.tms-send-active:hover {
-  background: #ea7009;
   transform: scale(1.05);
 }
 
@@ -953,7 +951,7 @@
   width: 14px;
   height: 14px;
   border: 2px solid #e2e8f0;
-  border-top-color: #556bab;
+  border-top-color: #5a5de8;
   border-radius: 50%;
   animation: tms-spin 0.7s linear infinite;
   vertical-align: middle;
@@ -971,4 +969,258 @@
   color: #ef4444;
   font-size: 12px;
   padding: 24px 16px;
+}
+
+/* EMOJI PICKER POPOVER */
+.tms-emoji-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+.tms-emoji-btn:hover {
+  background: #f1f5f9;
+  color: #5a5de8;
+}
+
+.tms-emoji-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.tms-emoji-picker-popover {
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15), 0 8px 16px rgba(15, 23, 42, 0.08);
+  padding: 16px;
+  width: 260px;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.tms-emoji-picker-popover.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.tms-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.tms-emoji-item {
+  background: none;
+  border: none;
+  font-size: 18px;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease;
+}
+
+.tms-emoji-item:hover {
+  background: #f1f5f9;
+}
+
+/* SUGGESTION CHIPS */
+.tms-suggestion-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+}
+
+.tms-suggestion-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tms-suggestion-chip:hover {
+  background: #5a5de8;
+  border-color: #5a5de8;
+  color: #ffffff;
+}
+
+/* Inline copy button inside bubble */
+.tms-inline-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  opacity: 0;
+  visibility: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px) scale(0.9);
+  z-index: 5;
+}
+
+.tms-bubble-me .tms-inline-copy-btn {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  left: 6px;
+  right: auto;
+}
+
+.tms-bubble:hover .tms-inline-copy-btn {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.tms-inline-copy-btn:hover {
+  background: #ffffff;
+  color: #3b82f6;
+  transform: translateY(0) scale(1.1) !important;
+}
+
+.tms-bubble-me .tms-inline-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+/* MESSAGE BUBBLE ACTIONS AND REACTIONS */
+.tms-bubble-wrap {
+  position: relative;
+}
+
+.tms-bubble-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.tms-msg-me .tms-bubble-container {
+  flex-direction: row-reverse;
+}
+
+
+.tms-msg-reactions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tms-msg-reaction-badge {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tms-msg-reaction-badge:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+/* PIN BUTTON & STATUS */
+.tms-contact-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tms-pin-toggle-btn {
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  color: #64748b;
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.tms-pin-toggle-btn:hover {
+  color: #5a5de8;
+  background: #ffffff;
+  border-color: #5a5de8;
+  transform: rotate(30deg) scale(1.1);
+  box-shadow: 0 4px 12px rgba(90, 93, 232, 0.15);
+}
+
+.tms-pin-toggle-btn.pinned {
+  background: #5a5de8;
+  border-color: #5a5de8;
+  color: #ffffff !important;
+  transform: rotate(0deg);
+  box-shadow: 0 4px 12px rgba(90, 93, 232, 0.25);
+}
+
+.tms-pin-toggle-btn.pinned:hover {
+  transform: scale(1.1);
+}
+
+.tms-contact-card-pinned {
+  background-color: #f5f6ff !important;
+}
+
+.tms-contact-card-pinned:hover {
+  background-color: #e8eafc !important;
+}
+
+/* INLINE EMOJIS FOR ELEGANT MESSAGES */
+.tms-inline-emoji {
+  width: 20px;
+  height: 20px;
+  vertical-align: -3px;
+  margin: 0 2px;
+  display: inline-block;
+}
+
+.tms-msg-only-emojis .tms-inline-emoji {
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
 }

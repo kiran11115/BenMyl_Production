@@ -133,7 +133,7 @@ import { useGetFAQsQuery } from "../../State-Management/Api/ChatApiSlice";
 // ];
 
 const BOT_INTRO =
-  "👋 Hi there! I'm the BenMyl Support Assistant. Select a topic below or type your question- I'm here to help!";
+  "Hi there! I'm the BenMyl Support Assistant. Select a topic below or type your question- I'm here to help!";
 
 export default function SupportButton() {
   const [isOpen, setIsOpen] = useState(false);

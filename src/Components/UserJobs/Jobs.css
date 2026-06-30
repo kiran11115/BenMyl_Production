@@ -1330,7 +1330,15 @@
 .user-jobs-results-container {
   height: calc(100vh - 140px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+  /* Hide scrollbar but keep functional */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.user-jobs-results-container::-webkit-scrollbar {
+  display: none;
 }
 
 .user-jobs-empty-state-wrapper {
@@ -1381,6 +1389,7 @@
   .user-jobs-results-container {
     height: auto;
     overflow-y: visible;
+    overflow-x: hidden;
     padding-right: 0;
   }
 

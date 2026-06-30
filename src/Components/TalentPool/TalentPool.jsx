@@ -634,7 +634,7 @@ const TalentPool = () => {
           if (selectedTitles.length > 0) {
             filtersArray.push({
               filterName: "Title",
-              filterOperator: "Equals",
+              filterOperator: "Contains",
               filterValue: selectedTitles,
             });
           }
@@ -935,11 +935,15 @@ const TalentPool = () => {
     setLoadingShortlistId(candidate.id);
     setTimeout(() => {
       setLoadingShortlistId(null);
-      const matchingJob = jobs.find(
-        (job) =>
-          job.title?.toLowerCase().trim() ===
-          candidate.role?.toLowerCase().trim()
-      );
+      const matchingJob = jobs.find((job) => {
+        const jobTitle = job.title?.toLowerCase().trim();
+        const candRole = candidate.role?.toLowerCase().trim();
+        if (!jobTitle || !candRole) return false;
+        if (jobTitle === candRole) return true;
+        const subRoles = candRole.split(/[\/,|&]|\band\b/).map((r) => r.trim());
+        if (subRoles.includes(jobTitle)) return true;
+        return candRole.includes(jobTitle) || jobTitle.includes(candRole);
+      });
 
       if (!matchingJob) {
         setSelectedCandidate(candidate);
@@ -1315,11 +1319,7 @@ const TalentPool = () => {
             {/* Layout */}
             <div
               ref={resultsRef}
-              style={{
-                height: "calc(100vh - 140px)",
-                overflowY: "auto",
-                paddingRight: "4px",
-              }}
+              className="talent-pool-results-container hide-scrollbar"
             >
               {(isLoading || !minTimeElapsed) && allCandidates.length === 0 ? (
                 <div className="jobs-screen-loader">
@@ -1590,20 +1590,36 @@ const TalentPool = () => {
           color: #64748b;
           pointer-events: none;
         }
+        .talent-pool-results-container {
+          height: calc(100vh - 140px);
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding-right: 4px;
+        }
+
+        @media (max-width: 768px) {
+          .talent-pool-results-container {
+            height: auto;
+            overflow-y: visible;
+            overflow-x: hidden;
+            padding-right: 0;
+          }
+        }
+
         .hide-scrollbar::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
-}
+          width: 0px;
+          background: transparent;
+        }
 
-/* Firefox */
-.hide-scrollbar {
-  scrollbar-width: none;
-}
+        /* Firefox */
+        .hide-scrollbar {
+          scrollbar-width: none;
+        }
 
-/* IE / old Edge */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-}
+        /* IE / old Edge */
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+        }
       `}</style>
       </div>
     </div>

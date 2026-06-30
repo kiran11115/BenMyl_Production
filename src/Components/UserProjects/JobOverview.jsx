@@ -527,9 +527,18 @@ const JobOverview = () => {
               </div>
             </div>
 
-            {/* ── LinkedIn / Share — above stats ── */}
-            <div className="jov-linkedin-bar">
-              <ShareJobCard job={job} />
+            {/* ── Find Talent / LinkedIn Share — above stats ── */}
+            <div className="">
+              {/* <ShareJobCard job={job} /> */}
+              {(!bids || !bids.some((bid) => bid.IsShortlisted)) && (
+                <button
+                  className="routine-btn-2"
+                  onClick={handleFindTalentClick}
+                >
+                  <FiSearch size={14} style={{ marginRight: "6px" }} />
+                  Find Talent
+                </button>
+              )}
             </div>
           </div>
 

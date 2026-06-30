@@ -8,8 +8,11 @@ import {
   FiChevronLeft,
   FiChevronDown,
   FiChevronRight,
+  FiSmile,
+  FiCopy
 } from "react-icons/fi";
 import "./Messages.css";
+import { toast } from "react-toastify";
 import {
   useChatListDetailsQuery,
   useChatUsersListQuery,
@@ -18,6 +21,7 @@ import {
   useSendMessageMutation,
 } from "../../State-Management/Api/ChatApiSlice";
 import { startConnection, getConnection } from "./SignalRService";
+import { Pin } from "lucide-react";
 
 /* ── Google Font ── */
 if (!document.getElementById("msg-inter-font")) {
@@ -153,6 +157,71 @@ const mapUser = (user, index) => {
   };
 };
 
+const FLUENT_EMOJI_MAP = {
+  '👍': 'thumbs-up',
+  '❤️': 'red-heart',
+  '😂': 'face-with-tears-of-joy',
+  '😮': 'face-with-open-mouth',
+  '😢': 'crying-face',
+  '🙏': 'folded-hands',
+  '😀': 'grinning-face',
+  '😍': 'smiling-face-with-heart-eyes',
+  '🎉': 'party-popper',
+  '🔥': 'fire',
+  '🤔': 'thinking-face',
+  '👀': 'eyes',
+  '🚀': 'rocket',
+  '👏': 'clapping-hands',
+  '🙌': 'raising-hands',
+  '💯': 'hundred-points',
+  '😭': 'loudly-crying-face',
+  '😡': 'enraged-face',
+  '☀️': 'sun',
+  '💼': 'briefcase',
+  '✉️': 'envelope',
+};
+
+const getFluentEmojiUrl = (emoji) => {
+  const name = FLUENT_EMOJI_MAP[emoji];
+  if (!name) return "";
+  return `https://unpkg.com/@lobehub/assets-emoji@1.3.0/assets/${name}.webp`;
+};
+
+const renderMessageContent = (text) => {
+  if (!text) return null;
+  
+  // Check if message consists ONLY of one or more mapped emojis
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
+  const cleanText = text.replace(/\s+/g, "");
+  const matchEmojis = cleanText.match(emojiRegex) || [];
+  const isOnlyEmojis = matchEmojis.length > 0 && matchEmojis.join("") === cleanText;
+
+  const keys = Object.keys(FLUENT_EMOJI_MAP);
+  const escapedKeys = keys.map(k => k.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+  const pattern = new RegExp(`(${escapedKeys.join('|')})`, 'g');
+  
+  const parts = text.split(pattern);
+  
+  return (
+    <span className={isOnlyEmojis ? "tms-msg-only-emojis" : "tms-msg-text-with-emojis"}>
+      {parts.map((part, index) => {
+        if (FLUENT_EMOJI_MAP[part]) {
+          return (
+            <img
+              key={index}
+              src={getFluentEmojiUrl(part)}
+              alt={part}
+              className="tms-inline-emoji"
+              title={part}
+            />
+          );
+        }
+        return part;
+      })}
+    </span>
+  );
+};
+
 const initialMessagesByConversation = {};
 const EMPTY_MESSAGES = [];
 
@@ -172,8 +241,38 @@ const Messages = () => {
   // Accordion states
   const [recentExpanded, setRecentExpanded] = useState(true);
   const [pendingExpanded, setPendingExpanded] = useState(true);
+  const [pinnedExpanded, setPinnedExpanded] = useState(true);
 
+  // Feature states
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [pinnedChats, setPinnedChats] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("benmyl_persist_pinned_chats") || "[]");
+    } catch {
+      return [];
+    }
+  });
   const chatBodyRef = useRef(null);
+
+  // Persistence Effects
+  useEffect(() => {
+    localStorage.setItem("benmyl_persist_pinned_chats", JSON.stringify(pinnedChats));
+  }, [pinnedChats]);
+
+  const togglePinChat = (chatId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPinnedChats((prev) => {
+      const isPinned = prev.includes(chatId);
+      if (isPinned) {
+        toast.info("Chat unpinned");
+        return prev.filter((id) => id !== chatId);
+      } else {
+        toast.success("Chat pinned to top!");
+        return [...prev, chatId];
+      }
+    });
+  };
 
   /* ── userId from localStorage (stored at login as response.userid) ── */
   const userId = useMemo(() => localStorage.getItem("CompanyId") ?? "", []);
@@ -245,12 +344,13 @@ const Messages = () => {
         loggedInDomain !== "" && userDomain !== "" && userDomain === loggedInDomain;
       return { ...mapped, domain: isSame ? "sameDomain" : "nonDomain" };
     })
+      .filter((c) => String(c.id) !== String(userId))
       .sort((a, b) => {
         const timeA = new Date(a.lastRawTime || 0).getTime();
         const timeB = new Date(b.lastRawTime || 0).getTime();
         return timeB - timeA;
       });
-  }, [chatData, loggedInDomain, chatUsersListMap, messagesByConversation]);
+  }, [chatData, loggedInDomain, chatUsersListMap, messagesByConversation, userId]);
 
   const currentConversation = conversations.find((c) => c.id === selectedId);
 
@@ -525,22 +625,26 @@ const Messages = () => {
             )}
 
             {!isLoading && !isError && (() => {
-              // Recent: Any contact that HAS message history (latest on top)
-              const recentList = filtered.filter(c => c.hasMessaged);
-              // Secondary: Contacts in the current tab that DON'T have messages yet
-              const secondaryList = filtered.filter(c => !c.hasMessaged);
+              // Pinned: Pinned contacts
+              const pinnedList = filtered.filter(c => pinnedChats.includes(c.id));
+              // Recent: Any contact that HAS message history (latest on top) and is not pinned
+              const recentList = filtered.filter(c => c.hasMessaged && !pinnedChats.includes(c.id));
+              // Secondary: Contacts in the current tab that DON'T have messages yet and are not pinned
+              const secondaryList = filtered.filter(c => !c.hasMessaged && !pinnedChats.includes(c.id));
 
               const secondaryLabel = isPublicTab ? "Public" : "Team";
 
               const renderContact = (c) => {
                 const active = selectedId === c.id;
+                const isPinned = pinnedChats.includes(c.id);
                 return (
                   <div
                     key={c.id}
                     className={
                       "tms-contact-card" +
                       (isPublicTab ? " tms-contact-card-public" : "") +
-                      (active ? " tms-contact-card-active" : "")
+                      (active ? " tms-contact-card-active" : "") +
+                      (isPinned ? " tms-contact-card-pinned" : "")
                     }
                   >
                     <button
@@ -561,10 +665,20 @@ const Messages = () => {
                       <div className="tms-contact-text">
                         <div className="tms-contact-top">
                           <span className="tms-contact-name">{c.name}</span>
-                          {c.time && <span className="tms-contact-time">{c.time}</span>}
+                          <div className="d-flex align-items-center gap-1">
+                            <button
+                              type="button"
+                              className={`tms-pin-toggle-btn ${isPinned ? 'pinned' : ''}`}
+                              title={isPinned ? "Unpin Chat" : "Pin Chat"}
+                              onClick={(e) => togglePinChat(c.id, e)}
+                            >
+                              <Pin size={12} />
+                            </button>
+                            {c.time && <span className="tms-contact-time">{c.time}</span>}
+                          </div>
                         </div>
                         {c.hasMessaged ? (
-                          <span className="tms-contact-preview">{c.preview}</span>
+                          <span className="tms-contact-preview">{renderMessageContent(c.preview)}</span>
                         ) : (
                           <span className="tms-contact-role">{c.role}</span>
                         )}
@@ -580,6 +694,25 @@ const Messages = () => {
 
               return (
                 <div className="tms-accordions">
+                  {/* Pinned Accordion */}
+                  {pinnedList.length > 0 && (
+                    <div className="tms-accordion">
+                      <button
+                        className="tms-accordion-header"
+                        onClick={() => setPinnedExpanded(!pinnedExpanded)}
+                      >
+                        {pinnedExpanded ? <FiChevronDown size={14} /> : <FiChevronRight size={14} />}
+                        <span>Pinned</span>
+                        <span className="tms-accordion-badge">{pinnedList.length}</span>
+                      </button>
+                      {pinnedExpanded && (
+                        <div className="tms-accordion-content">
+                          {pinnedList.map(renderContact)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Recent Accordion (Active chats) */}
                   <div className="tms-accordion">
                     <button
@@ -684,7 +817,7 @@ const Messages = () => {
               !isAcceptedPublicChat &&
               !currentMessages.some(m => m.from === "me") ? (
               <div className="tms-public-request-card">
-                <div className="tms-public-request-icon">
+                <div className="tms-empty-illustration">
                   <FiMessageSquare size={24} />
                 </div>
                 <p className="tms-public-request-title">Public chat request</p>
@@ -695,14 +828,14 @@ const Messages = () => {
                 <div className="tms-chat-request-actions">
                   <button
                     type="button"
-                    className="tms-action-btn tms-action-accept"
+                    className="copilot-action-btn w-100"
                     onClick={handleAcceptPublicChat}
                   >
                     Accept
                   </button>
                   <button
                     type="button"
-                    className="tms-action-btn tms-action-decline"
+                    className="routine-btn w-100"
                     onClick={handleDeclinePublicChat}
                   >
                     Decline
@@ -769,10 +902,24 @@ const Messages = () => {
                             )}
                             <div className="tms-bubble-wrap">
                               {!isMe && isFirstInBlock && <span className="tms-sender-name">{currentConversation?.name}</span>}
-                              <div className={"tms-bubble tms-link-bubble" + (isMe ? " tms-bubble-me" : " tms-bubble-them")}>
-                                <a href={msg.text} target="_blank" rel="noopener noreferrer" className="tms-link-text">{msg.text}</a>
-                                {isMe && <span className="tms-tick">✓</span>}
+                              <div className="tms-bubble-container">
+                                <div className={"tms-bubble tms-link-bubble" + (isMe ? " tms-bubble-me" : " tms-bubble-them")}>
+                                  <a href={msg.text} target="_blank" rel="noopener noreferrer" className="tms-link-text">{msg.text}</a>
+                                  {isMe && <span className="tms-tick">✓</span>}
+                                  <button
+                                    type="button"
+                                    className="tms-inline-copy-btn"
+                                    title="Copy Message"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(msg.text);
+                                      toast.success("Message copied!");
+                                    }}
+                                  >
+                                    <FiCopy size={12} />
+                                  </button>
+                                </div>
                               </div>
+
                               {msg.date && <span className="tms-msg-time">{msg.date}</span>}
                             </div>
                           </div>
@@ -791,9 +938,23 @@ const Messages = () => {
                             )}
                             <div className="tms-bubble-wrap">
                               {!isMe && isFirstInBlock && <span className="tms-sender-name">{currentConversation?.name}</span>}
-                              <div className={"tms-bubble" + (isMe ? " tms-bubble-me" : " tms-bubble-them")}>
-                                <p>{msg.text}</p>
+                              <div className="tms-bubble-container">
+                                <div className={"tms-bubble" + (isMe ? " tms-bubble-me" : " tms-bubble-them")}>
+                                  <p>{renderMessageContent(msg.text)}</p>
+                                  <button
+                                    type="button"
+                                    className="tms-inline-copy-btn"
+                                    title="Copy Message"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(msg.text);
+                                      toast.success("Message copied!");
+                                    }}
+                                  >
+                                    <FiCopy size={12} />
+                                  </button>
+                                </div>
                               </div>
+
                               {msg.date && <span className="tms-msg-time">{msg.date}</span>}
                             </div>
                           </div>
@@ -829,7 +990,51 @@ const Messages = () => {
             !isAcceptedPublicChat &&
             !currentMessages.some(m => m.from === "me")) && (
               <footer className="tms-input-bar">
+                {/* Suggestions row */}
+                <div className="tms-suggestion-row">
+                  {["Sounds good!", "Thank you!", "I'm checking this", "Will do!", "Perfect!"].map((text) => (
+                    <button
+                      key={text}
+                      type="button"
+                      className="tms-suggestion-chip"
+                      onClick={() => setInputValue(text)}
+                    >
+                      {text}
+                    </button>
+                  ))}
+                </div>
+
                 <form className="tms-input-wrapper" onSubmit={handleSend}>
+                  <div className={`tms-emoji-picker-popover ${showEmojiPicker ? 'show' : ''}`}>
+                    <div className="tms-emoji-grid">
+                      {['😀', '😂', '😍', '👍', '🎉', '❤️', '🔥', '🤔', '👀', '🚀', '👏', '🙌', '💯', '😭', '😡', '☀️', '💼', '✉️'].map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          className="tms-emoji-item"
+                          onClick={() => {
+                            setInputValue((prev) => prev + emoji);
+                            setShowEmojiPicker(false);
+                          }}
+                        >
+                          <img src={getFluentEmojiUrl(emoji)} alt={emoji} style={{ width: 24, height: 24 }} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {showEmojiPicker && (
+                    <div className="tms-emoji-picker-overlay" onClick={() => setShowEmojiPicker(false)} />
+                  )}
+                  
+                  <button
+                    type="button"
+                    className="tms-emoji-btn"
+                    title="Choose Emoji"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  >
+                    <FiSmile size={18} />
+                  </button>
+
                   <input
                     className="tms-input"
                     placeholder="Type a message"

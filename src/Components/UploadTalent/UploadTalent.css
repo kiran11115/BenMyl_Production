@@ -1223,6 +1223,12 @@
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 20px;
+  position: sticky;
+  top: 70px;
+  z-index: 100;
+  background: #f5f7fb;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .ut-title-group .section-title {
@@ -1282,6 +1288,7 @@
   .ut-header-row {
     flex-direction: column;
     align-items: flex-start;
+    top: 60px;
   }
 
   .ut-actions-group {

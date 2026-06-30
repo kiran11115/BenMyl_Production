@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FileText, Plus, Download, Eye, Search, CheckCircle,
+  FileText, Plus, Download, Eye, EyeOff, Search, CheckCircle,
   Clock, XCircle, FileCheck, Users, ChevronUp, ChevronDown,
   PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign
 } from 'lucide-react';
@@ -12,7 +12,57 @@ import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
 import { Home } from "lucide-react";
 import './contract.css';
+import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
 import jsPDF from 'jspdf';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler);
+
+const sparklineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+  scales: {
+    x: { display: false },
+    y: { display: false, min: 0 }
+  },
+  elements: {
+    point: { radius: 0, hoverRadius: 0 }
+  },
+  layout: { padding: 0 }
+};
+
+const createSparklineData = (color, gradientStart, gradientEnd, dataPoints) => ({
+  labels: dataPoints.map((_, i) => i),
+  datasets: [{
+    data: dataPoints,
+    borderColor: color,
+    borderWidth: 1.2,
+    fill: true,
+    backgroundColor: (context) => {
+      const chart = context.chart;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return 'transparent';
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, gradientStart);
+      gradient.addColorStop(1, gradientEnd);
+      return gradient;
+    },
+    tension: 0.4
+  }]
+});
 
 /* =========================================
    COMPONENTS
@@ -43,26 +93,31 @@ const ContractBadge = ({ status }) => {
   );
 };
 
-const StatCard = ({ icon, label, value, colorClass }) => (
-  <div className={`stat-card ${colorClass}`}>
-    <div className="stat-header-row">
-      <span className="stat-title">{label}</span>
-      <div className="stat-icon-box">{icon}</div>
+const StatCard = ({ icon, label, value, colorClass, statusText, statusClass, sparklineData }) => (
+  <div className="stat-card">
+    <div className="stat-card-header">
+      <div className="stat-card-icon-title-container">
+        <div className={`stat-card-icon-box ${colorClass}`}>
+          {icon}
+        </div>
+        <div className="stat-card-title-number">
+          <span className="stat-card-title">{label}</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+            <span className="stat-card-number">{value}</span>
+            {statusText && (
+              <div className="stat-card-change">
+                <span className={`stat-card-percentage ${statusClass}`}>{statusText}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div className="stat-number">{value}</div>
-
-    <div className="stat-footer-row">
-      <span>Last calibrated 5m ago</span>
-    </div>
-
-    <div className="green-badge">
-      Live now
-    </div>
-
-    <div className="stat-bottom-link">
-      ↗ Optimal Flow
-    </div>
+    {sparklineData && (
+      <div className="stat-card-sparkline">
+        <Line options={sparklineOptions} data={sparklineData} />
+      </div>
+    )}
   </div>
 );
 
@@ -162,6 +217,12 @@ const SignatureSection = ({ onComplete, onCancel }) => {
 const ContractForm = () => {
   const navigate = useNavigate();
   const { updateContract } = useContext(ContractContext);
+  const [showMetrics, setShowMetrics] = useState(true);
+
+  const sparklineData1 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
+  const sparklineData2 = useMemo(() => createSparklineData('#f97316', 'rgba(249, 115, 22, 0.15)', 'rgba(249, 115, 22, 0)', [15, 18, 20, 22, 25, 28]), []);
+  const sparklineData3 = useMemo(() => createSparklineData('#10b981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0)', [20, 25, 28, 30, 35, 40]), []);
+  const sparklineData4 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', [10, 15, 20, 25, 22, 30]), []);
 
   const userId = localStorage.getItem("CompanyId");
   const { data: apiResponse, isLoading } = useGetContractsByBenchsalesQuery(userId, {
@@ -398,15 +459,23 @@ const ContractForm = () => {
                   </div>
                   </div>
                    
-                   <button
-  className="routine-btn"
-  onClick={() =>
-    navigate(`${basePath}/contract-create`)
-  }
->
-  <FiPlus size={16} />
-  New Work Order
-</button>
+                  <div className="hero-card-actions-wrapper">
+                    <button
+                      className="routine-btn"
+                      style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(4px)' }}
+                      onClick={() => setShowMetrics(!showMetrics)}
+                    >
+                      {showMetrics ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showMetrics ? 'Hide Metrics' : 'Show Metrics'}
+                    </button>
+                    <button
+                      className="routine-btn"
+                      onClick={() => navigate(`${basePath}/contract-create`)}
+                    >
+                      <FiPlus size={16} />
+                      New Work Order
+                    </button>
+                  </div>
                             <div className="hero-illustration">
             <div className="hero-particles">
               <div className="particle"></div>
@@ -439,11 +508,13 @@ const ContractForm = () => {
         ]}
       /> */}
 
-      <div className="contract-stats-grid">
-        <StatCard icon={<Building size={20} />} label="Total Agreements" value={stats.total} colorClass="card-blue" />
-        <StatCard icon={<Clock size={20} />} label="Pending Review" value={stats.active} colorClass="card-yellow" />
-        <StatCard icon={<FileCheck size={20} />} label="Fully Executed" value={stats.completed} colorClass="card-green" />
-        <StatCard icon={<ShieldCheck size={20} />} label="Compliance Status" value="100%" colorClass="card-purple" />
+      <div className={`contract-stats-grid-wrapper ${showMetrics ? 'show' : 'hide'}`}>
+        <div className="contract-stats-grid">
+          <StatCard icon={<Building size={18} />} label="Total Agreements" value={stats.total} colorClass="stat-blue" statusText="Active" statusClass="stat-text-blue" sparklineData={sparklineData1} />
+          <StatCard icon={<Clock size={18} />} label="Pending Review" value={stats.active} colorClass="stat-orange" statusText="Pending" statusClass="stat-text-orange" sparklineData={sparklineData2} />
+          <StatCard icon={<FileCheck size={18} />} label="Fully Executed" value={stats.completed} colorClass="stat-green" statusText="Completed" statusClass="stat-text-green" sparklineData={sparklineData3} />
+          <StatCard icon={<ShieldCheck size={18} />} label="Compliance Status" value="100%" colorClass="stat-purple" statusText="Optimal" statusClass="stat-text-purple" sparklineData={sparklineData4} />
+        </div>
       </div>
 
       <div className="contract-table-wrapper">
