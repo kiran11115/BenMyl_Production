@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { 
     Shield, ShieldCheck, UserPlus, Search, 
     MoreVertical, ChevronRight, Save, RotateCcw,
-    Eye, Edit, CheckCircle2, Trash2, Layout, Users
+    Eye, Edit, CheckCircle2, Trash2, Layout, Users,
+    ChevronDown, X
 } from "lucide-react";
 import "./RoleConfiguration.css";
 import ModuleHeader from "../ModuleHeader";
@@ -22,6 +23,10 @@ function RoleConfiguration() {
     const [selectedRole, setSelectedRole] = useState({ id: "", name: "Loading...", displayName: "Loading..." });
     const [permissions, setPermissions] = useState({});
     const [selectedTeamMember, setSelectedTeamMember] = useState("");
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [memberSearchQuery, setMemberSearchQuery] = useState("");
+    const popoverRef = useRef(null);
+
 
     const emailID = localStorage.getItem("Email");
 
@@ -74,6 +79,32 @@ function RoleConfiguration() {
             return memberEmail.toLowerCase().endsWith(`@${adminDomain.toLowerCase()}`);
         });
     }, [teamApiData, adminDomain]);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+                setIsPopoverOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const searchedTeamMembers = useMemo(() => {
+        if (!memberSearchQuery) return filteredTeamMembers;
+        return filteredTeamMembers.filter(member => {
+            const name = (member.fullName || member.name || "").toLowerCase();
+            const email = (member.emailID || "").toLowerCase();
+            const query = memberSearchQuery.toLowerCase();
+            return name.includes(query) || email.includes(query);
+        });
+    }, [filteredTeamMembers, memberSearchQuery]);
+
+    const selectedMemberObj = useMemo(() => {
+        return filteredTeamMembers.find(m => String(m.authInfoID) === String(selectedTeamMember));
+    }, [filteredTeamMembers, selectedTeamMember]);
 
     const { data: userPermissionsData } = useGetUserPermissionsQuery(selectedTeamMember, {
         skip: !selectedTeamMember,
@@ -225,29 +256,79 @@ function RoleConfiguration() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <label style={{ fontSize: '14px', fontWeight: '500', color: '#475569' }}>Select Member to configure specific overrides (Optional)</label>
-                        <select 
-                            value={selectedTeamMember} 
-                            onChange={(e) => setSelectedTeamMember(e.target.value)}
-                            style={{ 
-                                padding: '10px 12px', 
-                                borderRadius: '8px', 
-                                border: '1px solid #cbd5e1', 
-                                fontSize: '14px', 
-                                color: '#334155', 
-                                outline: 'none', 
-                                backgroundColor: '#f8fafc',
-                                width: '100%',
-                                maxWidth: '400px',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <option value="">Select a team member...</option>
-                            {filteredTeamMembers.map(member => (
-                                <option key={member.authInfoID || member.emailID} value={member.authInfoID || ""}>
-                                    {member.fullName || member.name || member.emailID.split('@')[0]} - {member.emailID}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="popover-select-container" ref={popoverRef}>
+                            <div 
+                                className="popover-select-trigger"
+                                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                            >
+                                <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', marginRight: '8px' }}>
+                                    {selectedMemberObj 
+                                        ? `${selectedMemberObj.fullName || selectedMemberObj.name || selectedMemberObj.emailID.split('@')[0]} - ${selectedMemberObj.emailID}`
+                                        : "Select a team member..."}
+                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                                    {selectedTeamMember && (
+                                        <X 
+                                            size={14} 
+                                            style={{ color: '#64748b', cursor: 'pointer' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedTeamMember("");
+                                            }}
+                                        />
+                                    )}
+                                    <ChevronDown size={16} style={{ color: '#64748b' }} />
+                                </div>
+                            </div>
+
+                            {isPopoverOpen && (
+                                <div className="popover-select-content">
+                                    <div className="popover-search-wrapper">
+                                        <Search size={14} />
+                                        <input
+                                            type="text"
+                                            className="popover-search-input"
+                                            placeholder="Search members..."
+                                            value={memberSearchQuery}
+                                            onChange={(e) => setMemberSearchQuery(e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="popover-options-list">
+                                        <div 
+                                            className={`popover-option ${!selectedTeamMember ? "selected" : ""}`}
+                                            onClick={() => {
+                                                setSelectedTeamMember("");
+                                                setIsPopoverOpen(false);
+                                                setMemberSearchQuery("");
+                                            }}
+                                        >
+                                            <span>Select a team member...</span>
+                                        </div>
+                                        {searchedTeamMembers.map(member => (
+                                            <div 
+                                                key={member.authInfoID || member.emailID}
+                                                className={`popover-option ${String(selectedTeamMember) === String(member.authInfoID) ? "selected" : ""}`}
+                                                onClick={() => {
+                                                    setSelectedTeamMember(member.authInfoID);
+                                                    setIsPopoverOpen(false);
+                                                    setMemberSearchQuery("");
+                                                }}
+                                            >
+                                                <span>{member.fullName || member.name || member.emailID.split('@')[0]}</span>
+                                                <span className="popover-option-email">{member.emailID}</span>
+                                            </div>
+                                        ))}
+                                        {searchedTeamMembers.length === 0 && (
+                                            <div className="popover-no-results">
+                                                No members found
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         {filteredTeamMembers.length === 0 && !isTeamLoading && (
                             <span style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
                                 No active team members found with the role "{selectedRole.displayName}".

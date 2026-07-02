@@ -1421,28 +1421,11 @@
   }
 }
 
-/* 4 columns grid layout overrides for Talent Pool */
+/* 4 columns grid layout overrides for Talent Pool using clamp format */
 .talent-grid-4-col {
-  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(290px, 22%, 350px), 1fr)) !important;
 }
 
-@media (max-width: 1300px) {
-  .talent-grid-4-col {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (max-width: 992px) {
-  .talent-grid-4-col {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .talent-grid-4-col {
-    grid-template-columns: 1fr !important;
-  }
-}
 
 /* Hide number spinner icons */
 .no-spinner-input::-webkit-outer-spin-button,
