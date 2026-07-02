@@ -23,8 +23,28 @@ const AdminDetailsApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    shareTokens: builder.mutation({
+      query: (payload) => ({
+        url: "/api/uatcompany/ShareTokens",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    getTokenDashboard: builder.query({
+      query: () => ({
+        url: "/api/uatcompany/GetTokenDashboard",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useAdmindetailsMutation, useGetAdminDetailsQuery,useGetTeamMembersQuery  } =
-  AdminDetailsApiSlice;
+export const {
+  useAdmindetailsMutation,
+  useGetAdminDetailsQuery,
+  useGetTeamMembersQuery,
+  useShareTokensMutation,
+  useGetTokenDashboardQuery,
+} = AdminDetailsApiSlice;

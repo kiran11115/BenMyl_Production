@@ -2359,3 +2359,10 @@ input[type=number].auth-input {
   }
 }
 
+.btn-publish-vacancy:disabled {
+  background-color: #a0aec0 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+

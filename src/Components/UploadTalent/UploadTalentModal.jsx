@@ -87,6 +87,7 @@ function UploadTalentModal({
   onSuccess, show = false, onHide, onShow, onUploading,
   hideButton = false, inline = false,
   waitingForRefresh = false, countdown = 0, uploadCount = 0,
+  isOutOfTokens = false,
 }) {
   const [showModal,    setShowModal]    = useState(show);
   const [dragActive,   setDragActive]   = useState(false);
@@ -192,29 +193,31 @@ function UploadTalentModal({
           <div
             className="utm-dropzone ut2-drop"
             style={{
-              border:`1.5px dashed ${dragActive?"#5b5bd6":"#cbd5e1"}`,
-              background: dragActive?"#fffbf5":"#fafbfc",
-              cursor: isProcessing?"not-allowed":"pointer",
+              border:`1.5px dashed ${isOutOfTokens?"#fca5a5":dragActive?"#5b5bd6":"#cbd5e1"}`,
+              background: isOutOfTokens?"#fdf2f2":dragActive?"#fffbf5":"#fafbfc",
+              cursor: (isProcessing||isOutOfTokens)?"not-allowed":"pointer",
             }}
-            onDragEnter={handleDrag} onDragLeave={handleDrag}
-            onDragOver={handleDrag}  onDrop={handleDrop}
-            onClick={()=>!isProcessing&&document.getElementById("ut2FileInput").click()}
+            onDragEnter={e => !isOutOfTokens && handleDrag(e)} 
+            onDragLeave={e => !isOutOfTokens && handleDrag(e)}
+            onDragOver={e => !isOutOfTokens && handleDrag(e)}  
+            onDrop={e => !isOutOfTokens && handleDrop(e)}
+            onClick={()=>!isProcessing&&!isOutOfTokens&&document.getElementById("ut2FileInput").click()}
           >
             <input id="ut2FileInput" type="file" multiple accept=".pdf,.zip,.rar"
               style={{display:"none"}} onChange={e=>e.target.files?.[0]&&addFiles(e.target.files)}
-              disabled={isProcessing}/>
+              disabled={isProcessing||isOutOfTokens}/>
             <div className="utm-dropzone-icon" style={{
-              background: dragActive?"linear-gradient(135deg,#fff7ed,#ffedd5)":"#f1f5f9",
-              color: dragActive?"#5b5bd6":"#94a3b8",
-              border:`1.5px solid ${dragActive?"#4c4cc021":"#e2e8f0"}`,
+              background: isOutOfTokens?"#fee2e2":dragActive?"linear-gradient(135deg,#fff7ed,#ffedd5)":"#f1f5f9",
+              color: isOutOfTokens?"#dc2626":dragActive?"#5b5bd6":"#94a3b8",
+              border:`1.5px solid ${isOutOfTokens?"#fca5a5":dragActive?"#4c4cc021":"#e2e8f0"}`,
             }}>
               <Upload size={20}/>
             </div>
-            <div className="utm-dropzone-title">
-              {dragActive?"Drop your files here":"Drag & drop candidate CVs or click to pick"}
+            <div className="utm-dropzone-title" style={{ color: isOutOfTokens ? "#7f1d1d" : "inherit" }}>
+              {isOutOfTokens ? "Ingestion disabled (Insufficient tokens)" : dragActive ? "Drop your files here" : "Drag & drop candidate CVs or click to pick"}
             </div>
-            <div className="utm-dropzone-desc">
-              {"Accepted parameters: PDF, ZIP up to 12 MB.\nSupports Bulk processing simultaneously."}
+            <div className="utm-dropzone-desc" style={{ color: isOutOfTokens ? "#ef4444" : "inherit" }}>
+              {isOutOfTokens ? "Please buy or allocate more tokens to upload talent resumes." : "Accepted parameters: PDF, ZIP up to 12 MB.\nSupports Bulk processing simultaneously."}
             </div>
           </div>
 

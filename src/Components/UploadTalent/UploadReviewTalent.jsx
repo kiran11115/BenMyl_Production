@@ -10,14 +10,18 @@ import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
 import { toast } from "react-toastify";
 import StatsGrid from "../Dashboard/StatsGrid";
-import { Users, Briefcase } from "lucide-react";
+import { Users, Briefcase, Shield } from "lucide-react";
 import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
+import { useGetTokenDashboardQuery } from "../../State-Management/Api/AdminDetailsApiSlice";
 
 
 const UploadReviewTalent = () => {
     const [showModal, setShowModal] = useState(false);
     const location = useLocation();
 
+    const { data: tokenData } = useGetTokenDashboardQuery(undefined, { refetchOnMountOrArgChange: true });
+    const remainingTokens = tokenData?.companydetails?.userAvailableTokens ?? 200;
+    const isOutOfTokens = tokenData !== undefined && remainingTokens === 0;
 
     const [searchQuery, setSearchQuery] = useState("");
     const [pendingReviewCount, setPendingReviewCount] = useState(0);
@@ -255,6 +259,61 @@ const UploadReviewTalent = () => {
 
                 {/* CONTENT */}
                 <div className="view-content">
+                    {isOutOfTokens && (
+                        <div className="alert-insufficient-tokens" style={{
+                            backgroundColor: '#fef2f2',
+                            border: '1px solid #fca5a5',
+                            borderRadius: '12px',
+                            padding: '16px 20px',
+                            marginBottom: '20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    backgroundColor: '#fee2e2',
+                                    padding: '8px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Shield size={20} color="#dc2626" />
+                                </div>
+                                <div>
+                                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '700', color: '#991b1b' }}>
+                                        Insufficient tokens to upload
+                                    </h4>
+                                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#b91c1c' }}>
+                                        Your remaining token balance is 0. Please top up or upgrade your plan to upload talent profiles.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-subscription' : '/user/user-subscription')}
+                                style={{
+                                    backgroundColor: '#dc2626',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    padding: '10px 18px',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: '600',
+                                    transition: 'all 0.2s',
+                                    boxShadow: '0 2px 4px rgba(220, 38, 38, 0.15)'
+                                }}
+                                onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                                onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
+                            >
+                                Go to Subscription
+                            </button>
+                        </div>
+                    )}
+
                     {/* INLINE UPLOAD SECTION */}
                     <div style={{
                         marginTop: showUploadSection ? '20px' : '0',
@@ -271,6 +330,7 @@ const UploadReviewTalent = () => {
                             waitingForRefresh={waitingForRefresh}
                             countdown={countdown}
                             uploadCount={uploadCount}
+                            isOutOfTokens={isOutOfTokens}
                         />
                     </div>
 

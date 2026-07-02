@@ -55,6 +55,8 @@ function Signin() {
           localStorage.setItem("adminFirstName", response?.adminFirstName);
           localStorage.setItem("Industry", response?.industry);
           localStorage.setItem("RemainingDays", response?.remainingDays);
+          localStorage.setItem("AvailableTokens", response?.companyAvailableTokens);
+          localStorage.setItem("TotalTokens", response?.companyTotalTokens);
           localStorage.removeItem("trialPopoverHidden");
           const role = response?.roleID;
 

@@ -4,7 +4,7 @@ import { CheckCircle, Zap, CreditCard, Clock, Users, Activity, Plus, Check, Shie
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { useGetTeamMembersQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
+import { useGetTeamMembersQuery, useShareTokensMutation, useGetTokenDashboardQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
 import './SubscriptionPage.css';
 import '../UserJobs/Jobs.css';
 import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
@@ -48,6 +48,9 @@ const SubscriptionPage = () => {
   const [activeTab, setActiveTab] = useState(isAdmin ? "users" : "plans");
   const billingTableRef = useRef(null);
 
+  const [shareTokens] = useShareTokensMutation();
+  const { data: dashboardData, refetch: refetchDashboard } = useGetTokenDashboardQuery(undefined,{refetchOnMountOrArgChange:true});
+
   // State for user requests and loaders
   const [isAllocating, setIsAllocating] = useState(false);
   const [approvingId, setApprovingId] = useState(null);
@@ -57,7 +60,22 @@ const SubscriptionPage = () => {
   ]);
 
   // Stripe & pool state variables
-  const [adminTotalPool, setAdminTotalPool] = useState(50000);
+  const [adminTotalPool, setAdminTotalPool] = useState(Number(localStorage.getItem("TotalTokens")) || 0);
+  const [adminTokensLeft, setAdminTokensLeft] = useState(Number(localStorage.getItem("AvailableTokens")) || 0);
+
+  useEffect(() => {
+    if (dashboardData?.companydetails) {
+      setAdminTokensLeft(dashboardData.companydetails.userAvailableTokens || 0);
+      setAdminTotalPool(dashboardData.companydetails.companyTotalTokens || 0);
+    }
+  }, [dashboardData]);
+
+  const userAllocated = dashboardData?.companydetails?.userAllocatedTokens ?? 1000;
+  const userUsed = dashboardData?.companydetails?.userUsedTokens ?? 800;
+  const userAvailable = dashboardData?.companydetails?.userAvailableTokens ?? 200;
+
+  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
+  const userRemainingPercent = userAllocated > 0 ? Math.round((userAvailable / userAllocated) * 100) : 20;
   const [isYearlyBilling, setIsYearlyBilling] = useState(false);
   const [isAddTokensOpen, setIsAddTokensOpen] = useState(false);
   const [selectedPkg, setSelectedPkg] = useState({ tokens: 10000, price: 90, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" });
@@ -106,15 +124,13 @@ const SubscriptionPage = () => {
     const dataList = Array.isArray(teamApiData) ? teamApiData : (teamApiData?.value || []);
     if (!dataList.length) {
       // Fallback mock users
-      return [
-        { name: "Alice Smith", emailID: "alice@company.com", role: "Recruiter", tokens: 1200 },
-        { name: "Bob Jones", emailID: "bob@company.com", role: "Hiring Manager", tokens: 800 },
-        { name: "Charlie Brown", emailID: "charlie@company.com", role: "Bench Sales", tokens: 450 }
-      ];
+      return [];
     }
     return dataList.map((member) => ({
       name: member.name || member.emailID.split("@")[0],
       emailID: member.emailID,
+      authInfoID: member.authInfoID,
+      roleName: member.role,
       role: member.role === "Admin" ? "Administrator" : member.role === "Recruiter2" ? "Recruiter" : member.role === "Recruiter" ? "Hiring Manager" : "Bench Sales",
       tokens: member.tokens || 1000
     }));
@@ -144,8 +160,6 @@ const SubscriptionPage = () => {
   const totalAllocated = useMemo(() => {
     return teamUsers.reduce((acc, u) => acc + (u.tokens || 0), 0);
   }, [teamUsers]);
-
-  const adminTokensLeft = adminTotalPool - totalAllocated;
 
   const tokenUsageLogs = useMemo(() => {
     return [
@@ -220,6 +234,7 @@ const SubscriptionPage = () => {
     setTimeout(() => {
       // Add purchased tokens to pool state
       setAdminTotalPool(prev => prev + selectedPkg.tokens);
+      setAdminTokensLeft(prev => prev + selectedPkg.tokens);
       toast.success(`Payment successful! Added ${selectedPkg.tokens.toLocaleString()} tokens to pool.`);
       
       // Reset inputs & close modal
@@ -252,20 +267,37 @@ const SubscriptionPage = () => {
       title: "Confirm Token Allocation",
       message: `Are you sure you want to allocate ${amount.toLocaleString()} tokens to ${selectedUserObject?.name}?`,
       icon: <Zap size={20} />,
-      onConfirm: () => {
+      onConfirm: async () => {
         setIsAllocating(true);
-        setTimeout(() => {
+        try {
+          const payload = {
+            companyId: Number(localStorage.getItem("logincompanyid")) || 0,
+            userId: selectedUserObject?.authInfoID || 0,
+            roleName: selectedUserObject?.roleName || "",
+            tokens: amount,
+            allocatedBy: Number(localStorage.getItem("CompanyId")) || 0,
+            remarks: "Allocated by Admin"
+          };
+          await shareTokens(payload).unwrap();
+          refetchDashboard();
+          
           setTeamUsers(prev => prev.map(u => {
             if (u.emailID === allocateUserEmail) {
               return { ...u, tokens: (u.tokens || 0) + amount };
             }
             return u;
           }));
+          setAdminTokensLeft(prev => prev - amount);
 
           toast.success(`Successfully allocated ${amount.toLocaleString()} tokens to ${selectedUserObject?.name}!`);
           setAllocateTokensAmount("");
+        } catch (err) {
+          console.error("Failed to allocate tokens:", err);
+          toast.error("Failed to allocate tokens. Please try again.");
+        } finally {
           setIsAllocating(false);
-        }, 1200);
+          setConfirmModalConfig(null);
+        }
       },
       onCancel: () => {}
     });
@@ -290,6 +322,7 @@ const SubscriptionPage = () => {
             }
             return u;
           }));
+          setAdminTokensLeft(prev => prev - req.tokensRequested);
           setUserRequests(prev => prev.filter(r => r.id !== req.id));
           toast.success(`Approved and allocated ${req.tokensRequested.toLocaleString()} tokens to ${req.name}!`);
           setApprovingId(null);
@@ -471,9 +504,9 @@ const SubscriptionPage = () => {
                 <span>{isAdmin ? "Available Tokens Pool" : "Your Available Tokens"}</span>
               </div>
               <div className="widget-value-premium">
-                {isAdmin ? adminTokensLeft.toLocaleString() : "200"}
+                {isAdmin ? adminTokensLeft.toLocaleString() : userAvailable.toLocaleString()}
                 <div className="sub-widget-allocated">
-                  {isAdmin ? `Allocated: ${adminTotalPool.toLocaleString()}` : "Allocated: 1,000"}
+                  {isAdmin ? `Allocated: ${adminTotalPool.toLocaleString()}` : `Allocated: ${userAllocated.toLocaleString()}`}
                 </div>
               </div>
               {isAdmin && (
@@ -1188,7 +1221,7 @@ const SubscriptionPage = () => {
                         <div className="stat-title">Allocated Tokens</div>
                         <div className="stat-icon-box"><Zap size={16} /></div>
                       </div>
-                      <div className="stat-number">1,000</div>
+                      <div className="stat-number">{userAllocated.toLocaleString()}</div>
                       <div className="stat-footer-row"><span>Total assigned to you</span></div>
                       <div className="green-badge">Max</div>
                       <div className="stat-bg-icon stat-bg-blue"><Zap size={120} /></div>
@@ -1199,9 +1232,9 @@ const SubscriptionPage = () => {
                         <div className="stat-title">Used Tokens</div>
                         <div className="stat-icon-box"><Activity size={16} /></div>
                       </div>
-                      <div className="stat-number">800</div>
+                      <div className="stat-number">{userUsed.toLocaleString()}</div>
                       <div className="stat-footer-row"><span>Tokens consumed</span></div>
-                      <div className="green-badge badge-red">80%</div>
+                      <div className="green-badge badge-red">{userUsedPercent}%</div>
                       <div className="stat-bg-icon stat-bg-red"><Activity size={120} /></div>
                     </div>
                     
@@ -1210,9 +1243,9 @@ const SubscriptionPage = () => {
                         <div className="stat-title">Remaining Tokens</div>
                         <div className="stat-icon-box"><Plus size={16} /></div>
                       </div>
-                      <div className="stat-number stat-text-orange">200</div>
+                      <div className="stat-number stat-text-orange">{userAvailable.toLocaleString()}</div>
                       <div className="stat-footer-row"><span>Available for use</span></div>
-                      <div className="green-badge badge-amber">20%</div>
+                      <div className="green-badge badge-amber">{userRemainingPercent}%</div>
                       <div className="stat-bg-icon stat-bg-amber"><Plus size={120} /></div>
                     </div>
                   </div>

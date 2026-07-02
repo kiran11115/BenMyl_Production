@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Briefcase, MapPin, DollarSign, Monitor,
-  FileText, X, Building2, Check, ChevronDown, Calendar, Clock, Search
+  FileText, X, Building2, Check, ChevronDown, Calendar, Clock, Search, Shield
 } from 'lucide-react';
 import { FiArrowLeft, FiLinkedin } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -15,6 +15,7 @@ import {
   usePostJobMutation,
   useSaveJobDraftMutation
 } from '../../State-Management/Api/ProjectApiSlice';
+import { useGetTokenDashboardQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
 import { Country, State, City } from 'country-state-city';
 
 import '../Dashboard/Dashboard.css';
@@ -62,6 +63,10 @@ const PostNewPositions = () => {
   const isEdit = location.state?.isEdit;
   const JobID = location.state?.jobId;
   console.log("JobID:", JobID)
+
+  const { data: tokenData } = useGetTokenDashboardQuery(undefined, { refetchOnMountOrArgChange: true });
+  const remainingTokens = tokenData?.companydetails?.userAvailableTokens ?? 200;
+  const isOutOfTokens = tokenData !== undefined && remainingTokens === 0;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -689,6 +694,61 @@ navigate(targetPath);
 
         {/* ================= MAIN FORM ================= */}
         <div className="dashboard-column-main">
+          {isOutOfTokens && (
+            <div className="alert-insufficient-tokens" style={{
+              backgroundColor: '#fef2f2',
+              border: '1.5px solid #fca5a5',
+              borderRadius: '12px',
+              padding: '16px 20px',
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  backgroundColor: '#fee2e2',
+                  padding: '8px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Shield size={20} color="#dc2626" />
+                </div>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '700', color: '#991b1b' }}>
+                    Insufficient tokens to post
+                  </h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#b91c1c' }}>
+                    Your remaining token balance is 0. Please top up or upgrade your plan to publish vacancies.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-subscription' : '/user/user-subscription')}
+                style={{
+                  backgroundColor: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '10px 18px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 2px 4px rgba(220, 38, 38, 0.15)'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
+              >
+                Go to Subscription
+              </button>
+            </div>
+          )}
+
           <div className="premium-card">
             
             <h2 className="font-display mb-1" style={{ fontSize: "16px", fontWeight: 700, color: "#1F2937", textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -1372,7 +1432,7 @@ navigate(targetPath);
                 {/* <button type="button" className="btn-create-post" onClick={handleSaveDraft}>
                   Create Post
                 </button> */}
-                <button type="submit" className="btn-publish-vacancy">
+                <button type="submit" className="btn-publish-vacancy" disabled={isOutOfTokens}>
                   Publish Vacancy
                 </button>
               </div>
