@@ -28,7 +28,8 @@ import {
   Download,
   Briefcase,
   User,
-  Search
+  Search,
+  Shield
 } from 'lucide-react';
 import { FiArrowLeft, FiFilePlus } from 'react-icons/fi';
 import { Home } from 'lucide-react';
@@ -40,6 +41,7 @@ import { useLazyGetNotificationsByJobIdQuery, useSaveContractMutation } from "..
 
 import './contractwizard.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useGetTokenDashboardQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
 
 // Validation Schema matches original fields (Phone and Email are optional now)
 const validationSchema = Yup.object().shape({
@@ -392,6 +394,10 @@ const ContractCreate = () => {
   const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
   const [getNotificationsByJobId] = useLazyGetNotificationsByJobIdQuery();
   const [saveContract, { isLoading: isSavingContract }] = useSaveContractMutation();
+  // Token check – same pattern as Post a Job & Upload Talent
+  const { data: tokenData } = useGetTokenDashboardQuery(undefined, { refetchOnMountOrArgChange: true });
+  const remainingTokens = tokenData?.companydetails?.userAvailableTokens ?? 200;
+  const isOutOfTokens = tokenData !== undefined && remainingTokens === 0;
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(j => 
@@ -888,6 +894,62 @@ const ContractCreate = () => {
                       </h3>
                     </div>
 
+                    {/* Insufficient Tokens Alert */}
+                    {isOutOfTokens && (
+                      <div className="alert-insufficient-tokens" style={{
+                        backgroundColor: '#fef2f2',
+                        border: '1.5px solid #fca5a5',
+                        borderRadius: '12px',
+                        padding: '16px 20px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{
+                            backgroundColor: '#fee2e2',
+                            padding: '8px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            <Shield size={20} color="#dc2626" />
+                          </div>
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '700', color: '#991b1b' }}>
+                              Insufficient tokens to create contract
+                            </h4>
+                            <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#b91c1c' }}>
+                              Your remaining token balance is 0. Please top up or upgrade your plan to create contracts.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => navigate(window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-subscription' : '/user/user-subscription')}
+                          style={{
+                            backgroundColor: '#dc2626',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '10px 18px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 2px 4px rgba(220, 38, 38, 0.15)'
+                          }}
+                          onMouseOver={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                          onMouseOut={(e) => e.target.style.backgroundColor = '#dc2626'}
+                        >
+                          Go to Subscription
+                        </button>
+                      </div>
+                    )}
+
                     {/* Job & Candidate Selection – two-column card layout */}
                     <div className="cw-selection-grid">
                       {/* Job Selector Card */}
@@ -1071,15 +1133,18 @@ const ContractCreate = () => {
                       <button type="button" className="btn-secondary" disabled>Back</button>
                       <button
                         type="button"
-                        className="btn-v2-primary"
-                        style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '10px' }}
+                        className={isOutOfTokens ? 'btn-v2-disabled' : 'btn-v2-primary'}
+                        style={{ color: isOutOfTokens ? '#94a3b8' : '#fff', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '10px', cursor: isOutOfTokens ? 'not-allowed' : 'pointer', opacity: isOutOfTokens ? 0.7 : 1 }}
+                        disabled={isOutOfTokens}
                         onClick={() => {
+                          if (isOutOfTokens) return;
                           if (formik.values.jobTitle && formik.values.candidateName) {
                             setStep(2);
                           } else {
                             toast.error('Select both Job and Candidate to continue');
                           }
                         }}
+                        title={isOutOfTokens ? 'Insufficient tokens – please top up your plan' : ''}
                       >
                         Approve Candidate & Continue <ChevronRight size={16} />
                       </button>

@@ -38,6 +38,44 @@ const AdminDetailsApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    requestTokens: builder.mutation({
+      query: (payload) => ({
+        url: "/api/uatcompany/RequestTokens",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    getTokenRequestList: builder.query({
+      query: (companyId) => ({
+        url: `/api/uatcompany/GetTokenRequestList/${companyId}`,
+        method: "GET",
+      }),
+    }),
+
+    getCompanyUserTokenList: builder.query({
+      query: (companyId) => ({
+        url: `/api/uatcompany/GetCompanyUserTokenList?companyId=${companyId}`,
+        method: "GET",
+      }),
+    }),
+
+    approveTokenRequest: builder.mutation({
+      query: (payload) => ({
+        url: "/api/uatcompany/ApproveTokenRequest",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    rejectTokenRequest: builder.mutation({
+      query: (payload) => ({
+        url: "/api/uatcompany/RejectTokenRequest",
+        method: "POST",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -47,4 +85,9 @@ export const {
   useGetTeamMembersQuery,
   useShareTokensMutation,
   useGetTokenDashboardQuery,
+  useRequestTokensMutation,
+  useGetTokenRequestListQuery,
+  useApproveTokenRequestMutation,
+  useRejectTokenRequestMutation,
+  useGetCompanyUserTokenListQuery,
 } = AdminDetailsApiSlice;

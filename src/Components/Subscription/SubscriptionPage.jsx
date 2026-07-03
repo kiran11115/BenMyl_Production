@@ -4,7 +4,7 @@ import { CheckCircle, Zap, CreditCard, Clock, Users, Activity, Plus, Check, Shie
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { useGetTeamMembersQuery, useShareTokensMutation, useGetTokenDashboardQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
+import { useGetTeamMembersQuery, useShareTokensMutation, useGetTokenDashboardQuery, useRequestTokensMutation, useGetTokenRequestListQuery, useApproveTokenRequestMutation, useRejectTokenRequestMutation, useGetCompanyUserTokenListQuery } from '../../State-Management/Api/AdminDetailsApiSlice';
 import './SubscriptionPage.css';
 import '../UserJobs/Jobs.css';
 import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
@@ -46,19 +46,50 @@ const SubscriptionPage = () => {
   const role = localStorage.getItem("Role");
   const isAdmin = role === "Admin";
   const emailID = localStorage.getItem("Email");
+  const companyId = Number(localStorage.getItem("logincompanyid")) || 0;
   const [activeTab, setActiveTab] = useState(isAdmin ? "users" : "plans");
   const billingTableRef = useRef(null);
 
   const [shareTokens] = useShareTokensMutation();
+  const [requestTokens] = useRequestTokensMutation();
+  const [approveTokenRequest] = useApproveTokenRequestMutation();
+  const [rejectTokenRequest] = useRejectTokenRequestMutation();
+
   const { data: dashboardData, refetch: refetchDashboard } = useGetTokenDashboardQuery(undefined,{refetchOnMountOrArgChange:true});
+  const { data: requestListData, refetch: refetchRequests } = useGetTokenRequestListQuery(companyId, {
+    skip: !companyId || !isAdmin,
+    refetchOnMountOrArgChange: true,
+  });
+  const { data: userTokenListData, refetch: refetchUserTokenList } = useGetCompanyUserTokenListQuery(companyId, {
+    skip: !companyId || !isAdmin,
+    refetchOnMountOrArgChange: true,
+  });
 
   // State for user requests and loaders
   const [isAllocating, setIsAllocating] = useState(false);
   const [approvingId, setApprovingId] = useState(null);
-  const [userRequests, setUserRequests] = useState([
-    { id: "req-1", name: "Alice Smith", emailID: "alice@company.com", tokensRequested: 350, date: "Jun 11, 2026" },
-    { id: "req-2", name: "Charlie Brown", emailID: "charlie@company.com", tokensRequested: 500, date: "Jun 12, 2026" }
-  ]);
+  const [userRequests, setUserRequests] = useState([]);
+
+  useEffect(() => {
+    if (requestListData) {
+      const mapped = requestListData
+        .filter(req => req.status === "Pending")
+        .map(req => ({
+          id: req.requestId,
+          name: req.userName || req.emailID?.split('@')[0] || "Unknown User",
+          emailID: req.emailID,
+          tokensRequested: req.requestedTokens,
+          date: req.requestedDate ? new Date(req.requestedDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }) : "N/A",
+          requestId: req.requestId,
+          userId: req.userId
+        }));
+      setUserRequests(mapped);
+    }
+  }, [requestListData]);
 
   // Stripe & pool state variables
   const [adminTotalPool, setAdminTotalPool] = useState(Number(localStorage.getItem("TotalTokens")) || 0);
@@ -102,40 +133,56 @@ const SubscriptionPage = () => {
   ];
 
   // State for user view request token
-  const handleRequestTokens = () => {
+  const handleRequestTokens = async () => {
     if (!requestTokenAmount) {
       toast.error("Please enter the number of tokens required.");
       return;
     }
+    const tokenVal = Number(requestTokenAmount);
+    if (isNaN(tokenVal) || tokenVal <= 0) {
+      toast.error("Please enter a valid positive number of tokens.");
+      return;
+    }
     setIsRequestingTokens(true);
-    setTimeout(() => {
-      toast.success(`Token request for ${requestTokenAmount} tokens sent successfully!`);
+    try {
+      const payload = {
+        companyId: Number(localStorage.getItem("logincompanyid")) || 0,
+        userId: Number(localStorage.getItem("CompanyId")) || 0,
+        requestedTokens: tokenVal,
+        remarks: `request tokens from ${localStorage.getItem("UserName") || "unknown user"}`
+      };
+      await requestTokens(payload).unwrap();
+      toast.success(`Token request for ${tokenVal} tokens sent successfully!`);
       setRequestTokenAmount("");
+    } catch (err) {
+      console.error("Failed to request tokens:", err);
+      toast.error(err?.data?.message || "Failed to submit token request. Please try again.");
+    } finally {
       setIsRequestingTokens(false);
-    }, 1200);
+    }
   };
 
   // ── Team query & token allocation state ──
-  const { data: teamApiData, isLoading: isTeamLoading } = useGetTeamMembersQuery(emailID, { skip: !emailID || !isAdmin });
   const [teamUsers, setTeamUsers] = useState([]);
   const [allocateUserEmail, setAllocateUserEmail] = useState("");
   const [allocateTokensAmount, setAllocateTokensAmount] = useState("");
 
   const formattedTeamFromApi = useMemo(() => {
-    const dataList = Array.isArray(teamApiData) ? teamApiData : (teamApiData?.value || []);
+    const dataList = Array.isArray(userTokenListData) ? userTokenListData : [];
     if (!dataList.length) {
-      // Fallback mock users
       return [];
     }
-    return dataList.map((member) => ({
-      name: member.name || member.emailID.split("@")[0],
-      emailID: member.emailID,
-      authInfoID: member.authInfoID,
-      roleName: member.role,
-      role: member.role === "Admin" ? "Administrator" : member.role === "Recruiter2" ? "Recruiter" : member.role === "Recruiter" ? "Hiring Manager" : "Bench Sales",
-      tokens: member.tokens || 1000
-    }));
-  }, [teamApiData]);
+    return dataList
+      .filter((member) => member.roleName?.toLowerCase() !== "admin")
+      .map((member) => ({
+        name: member.userName || member.emailID?.split("@")[0] || "Unknown User",
+        emailID: member.emailID,
+        authInfoID: member.userId,
+        roleName: member.roleName,
+        role: member.roleName === "Admin" ? "Administrator" : member.roleName === "Recruiter2" ? "Recruiter" : member.roleName === "Recruiter" ? "Hiring Manager" : "Bench Sales",
+        tokens: member.allocatedTokens || 0
+      }));
+  }, [userTokenListData]);
 
   const allRoles = useMemo(() => {
     const roles = teamUsers.map(u => u.role).filter(Boolean);
@@ -281,6 +328,7 @@ const SubscriptionPage = () => {
           };
           await shareTokens(payload).unwrap();
           refetchDashboard();
+          refetchUserTokenList();
           
           setTeamUsers(prev => prev.map(u => {
             if (u.emailID === allocateUserEmail) {
@@ -314,28 +362,52 @@ const SubscriptionPage = () => {
       title: "Approve Token Request",
       message: `Are you sure you want to approve the request of ${req.tokensRequested.toLocaleString()} tokens for ${req.name}?`,
       icon: <Bell size={20} />,
-      onConfirm: () => {
+      onConfirm: async () => {
         setApprovingId(req.id);
-        setTimeout(() => {
-          setTeamUsers(prev => prev.map(u => {
-            if (u.emailID === req.emailID) {
-              return { ...u, tokens: (u.tokens || 0) + req.tokensRequested };
-            }
-            return u;
-          }));
-          setAdminTokensLeft(prev => prev - req.tokensRequested);
-          setUserRequests(prev => prev.filter(r => r.id !== req.id));
+        try {
+          const payload = {
+            requestId: req.id,
+            adminUserId: Number(localStorage.getItem("CompanyId")) || 0
+          };
+          await approveTokenRequest(payload).unwrap();
+          
+          refetchDashboard();
+          refetchRequests();
+          refetchUserTokenList();
+          
           toast.success(`Approved and allocated ${req.tokensRequested.toLocaleString()} tokens to ${req.name}!`);
+        } catch (err) {
+          console.error("Failed to approve token request:", err);
+          toast.error(err?.data?.message || "Failed to approve request. Please try again.");
+        } finally {
           setApprovingId(null);
-        }, 1200);
+          setConfirmModalConfig(null);
+        }
       },
       onCancel: () => {}
     });
   };
 
-  const handleDeclineRequest = (id) => {
-    setUserRequests(prev => prev.filter(r => r.id !== id));
-    toast.success("Token request declined.");
+  const handleDeclineRequest = async (req) => {
+    setApprovingId(req.id);
+    try {
+      const payload = {
+        requestId: req.id,
+        adminUserId: Number(localStorage.getItem("CompanyId")) || 0
+      };
+      await rejectTokenRequest(payload).unwrap();
+      
+      refetchDashboard();
+      refetchRequests();
+      refetchUserTokenList();
+      
+      toast.success(`Declined token request for ${req.name}.`);
+    } catch (err) {
+      console.error("Failed to decline token request:", err);
+      toast.error(err?.data?.message || "Failed to decline request. Please try again.");
+    } finally {
+      setApprovingId(null);
+    }
   };
 
   const getInitialsAvatar = (name) => {
@@ -725,7 +797,7 @@ const SubscriptionPage = () => {
                               <button
                                 className="decline-toast-btn request-btn-circle-danger"
                                 disabled={approvingId !== null}
-                                onClick={() => handleDeclineRequest(req.id)}
+                                onClick={() => handleDeclineRequest(req)}
                                 title="Decline Request"
                               >
                                 <X size={14} />
