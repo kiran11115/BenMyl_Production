@@ -428,7 +428,7 @@ const StepVerify = ({
       <section className="auth-section">
         <h3 className="auth-section-title">Registered Address</h3>
 
-        <div className="projects-grid">
+        <div className="auth-address-grid">
           {/* STREET */}
           <div className="auth-group auth-span-2">
             <label className="auth-label">Street Address</label>

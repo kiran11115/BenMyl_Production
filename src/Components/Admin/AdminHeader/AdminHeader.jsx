@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard, Play } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Users, Plus, Zap, ArrowRight, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard, Play, Coins, ChevronUp } from "lucide-react";
 import "./AdminHeader.css";
 import Notifications from "../../Header/Notifications";
 import { useGetCompanyProfileEditQuery } from "../../../State-Management/Api/CompanyProfileApiSlice";
+import { useGetTokenDashboardQuery } from "../../../State-Management/Api/AdminDetailsApiSlice";
 import TrialPopover from "../../Header/TrialPopover";
 import ProfileSideModal from "../../Header/ProfileSideModal";
 import ScrollToTop from "../../ScrollToTop";
@@ -47,6 +48,21 @@ function AdminHeader() {
     const profileRef = useRef(null);
     const aiPopoverRef = useRef(null);
     const dropdownRef = useRef(null);
+
+    const [isSubHeaderVisible, setIsSubHeaderVisible] = useState(() => {
+        return localStorage.getItem("tokenSubHeaderVisible") !== "false";
+    });
+
+    const { data: tokenData, isLoading: isTokenLoading, isFetching: isTokenFetching } = useGetTokenDashboardQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+    const isTokenQueryLoading = isTokenLoading || isTokenFetching;
+
+    const userAllocated = tokenData?.companydetails?.userAllocatedTokens ?? 1000;
+    const userUsed = tokenData?.companydetails?.userUsedTokens ?? 800;
+    const userAvailable = tokenData?.companydetails?.userAvailableTokens ?? 200;
+    const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
+
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
 
@@ -373,7 +389,79 @@ function AdminHeader() {
                 </div>
             </header>
 
-            <div class="app-zoom">
+            {/* Collapsible Token Sub-Header */}
+            <div className={`token-sub-header ${!isSubHeaderVisible ? "hidden" : ""}`}>
+                <div className="token-info">
+                    <Coins className="token-icon" size={14} />
+                    <span className="token-title">Token Credits:</span>
+                    <span className="token-details">
+                        {isTokenQueryLoading ? (
+                            <span className="token-loader"></span>
+                        ) : (
+                            <>
+                                <strong>{userAvailable}</strong> available / <strong>{userAllocated}</strong> allocated
+                            </>
+                        )}
+                    </span>
+                </div>
+                
+                <div className="token-usage-container">
+                    <span className="token-usage-text">Usage:</span>
+                    <div className="token-usage-bar-wrapper">
+                        <div className="token-usage-bar-container">
+                            <div 
+                                className="token-usage-progress" 
+                                style={{ width: `${Math.min(userUsedPercent, 100)}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                    {isTokenQueryLoading ? (
+                        <span className="token-loader" style={{ marginLeft: "10px" }}></span>
+                    ) : (
+                        <span className="token-usage-percent">{userUsedPercent}% ({userUsed} used)</span>
+                    )}
+                </div>
+
+                <div className="token-actions">
+                    <button 
+                        onClick={() => navigate("/Admin/admin-subscription")} 
+                        className="token-btn-view-details"
+                    >
+                        View Details
+                    </button>
+                    <button 
+                        onClick={() => {
+                            setIsSubHeaderVisible(false);
+                            localStorage.setItem("tokenSubHeaderVisible", "false");
+                        }} 
+                        className="token-btn-hide"
+                        title="Hide Details"
+                    >
+                        <ChevronUp size={14} />
+                    </button>
+                </div>
+            </div>
+
+            {!isSubHeaderVisible && (
+                <button 
+                    className="token-sub-header-show-trigger" 
+                    onClick={() => {
+                        setIsSubHeaderVisible(true);
+                        localStorage.setItem("tokenSubHeaderVisible", "true");
+                    }}
+                    title="Show Token Details"
+                >
+                    <Coins size={12} className="token-trigger-icon" />
+                    {isTokenQueryLoading ? (
+                        <span className="token-loader inline"></span>
+                    ) : (
+                        <span>Tokens: {userAvailable}</span>
+                    )}
+                    <ChevronDown size={12} className="token-trigger-chevron" />
+                </button>
+            )}
+
+            <div className="app-zoom">
                 <main className="cust-main">
                     <Outlet />
                 </main>

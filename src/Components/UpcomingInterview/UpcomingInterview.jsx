@@ -511,9 +511,11 @@ export default function UpcomingInterview() {
                             </div>
                         ) : (
                             <div className="empty-feed-state">
-                                <div className="empty-icon-circle">
-                                    <FiCalendar size={32} />
-                                </div>
+                                <img
+                                    src="/Images/no data.svg"
+                                    alt="No data"
+                                    style={{ width: "100%", maxWidth: "160px", opacity: "50%", marginBottom: "20px" }}
+                                />
                                 <h3>No Interviews Scheduled</h3>
                                 <p>Relax! You don't have any sessions booked for this criteria.</p>
                                 <button className="btn-v2-primary mt-3" onClick={() => {

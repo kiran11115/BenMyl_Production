@@ -13,6 +13,7 @@ import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
 import { Home } from "lucide-react";
 import './contract.css';
 import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
+import NoData from "../UploadTalent/NoData";
 import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
@@ -371,7 +372,7 @@ const ContractForm = () => {
 
       section('Entity Information (Company-to-Company)');
       field('Client Company (Hiring Side)', contract.clientCompany);
-      field('Vendor Company (Bench Side)', contract.companyName || 'BenMyl Staffing', W / 2);
+      field('Vendor Company (Bench Side)', contract.companyName || '-', W / 2);
       y += 35;
 
       section('Engagement Details');
@@ -548,8 +549,8 @@ const ContractForm = () => {
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
-                    No legal documents found.
+                  <td colSpan={7} style={{ padding: '40px 0' }}>
+                    <NoData text="No legal documents found." />
                   </td>
                 </tr>
               ) : (

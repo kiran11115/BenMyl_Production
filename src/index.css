@@ -258,3 +258,203 @@ select {
   align-items: center;
   gap: 14px;
 }
+
+/* =========================================================
+   QUICK LAUNCH MODAL STYLES (Shared across roles)
+   ========================================================= */
+
+/* MODAL OVERLAY */
+.routine-modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(7,13,28,.45);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+/* MODAL */
+.routine-modal{
+  width:100%;
+  max-width:540px;
+  background: #fefefe;
+  border-radius:26px;
+  padding:24px 28px;
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow: 0 25px 80px rgba(0,0,0,.45);
+  animation:modalShow .25s ease;
+}
+
+@keyframes modalShow{
+  from{
+    opacity:0;
+    transform:translateY(10px) scale(.97);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+/* HEADER */
+.routine-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.routine-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#5b5bd6;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing: 0.02em;
+}
+
+.routine-title svg{
+  color:#5b5bd6;
+}
+
+/* CLOSE */
+.routine-close{
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#7f8596;
+  cursor:pointer;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.2s ease;
+}
+
+.routine-close:hover{
+  color:#5d5d5d;
+}
+
+.routine-divider{
+  height:1px;
+  background:rgba(201, 201, 201);
+  margin:14px 0;
+}
+
+/* TEXT */
+.routine-subtitle{
+  color:#747474;
+  font-size:12.5px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+/* GRID */
+.routine-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+/* CARD */
+.routine-card{
+  min-height:96px;
+  border-radius:16px;
+  background:#fefefe;
+  padding:16px;
+  cursor:pointer;
+  transition:.3s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: rgba(229, 229, 229, 0.812) 0px 0px 1px 1px !important;
+}
+
+.routine-card:hover{
+  transform:translateY(-4px);
+}
+
+.routine-bg-icon {
+  position: absolute;
+  right: -10px;
+  bottom: -15px;
+  opacity: 0.04;
+  pointer-events: none;
+  transform: rotate(-15deg);
+  transition: all 0.3s ease;
+  z-index: 0;
+}
+
+.routine-card:hover .routine-bg-icon {
+  transform: rotate(-5deg) scale(1.1);
+  opacity: 0.08;
+}
+
+.routine-arrow {
+  color: #94a3b8;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.routine-card:hover .routine-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: #5b5bd6;
+}
+
+@keyframes pulseAnim {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.icon-pulse-anim {
+  animation: pulseAnim 2s infinite ease-in-out;
+}
+
+/* ICON */
+.routine-icon{
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* TITLE */
+.routine-card h4{
+  color:#000000;
+  font-size:14.5px;
+  font-weight:700;
+}
+
+/* DESC */
+.routine-card span{
+  display:block;
+  margin-top:4px;
+  color:#80879b;
+  font-size:10.5px;
+  font-family:SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* RESPONSIVE DESIGN FOR ROUTINE MODAL */
+@media (max-width: 992px) {
+  .routine-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .routine-modal {
+    width: 95%;
+    padding: 20px;
+  }
+}

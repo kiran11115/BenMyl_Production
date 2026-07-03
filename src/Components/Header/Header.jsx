@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard } from "lucide-react";
+import { Search, Bell, Menu, X, LogOut, User, ChevronDown, File, Settings, MessageCircleIcon, Play, LayoutDashboard, Briefcase, Calendar, FileText, CreditCard, Coins, ChevronUp, Zap, ArrowRight } from "lucide-react";
 import VideoGuidePopover from "../Guide/VideoGuidePopover";
 import { videoGuides } from "../Guide/guideData";
 import "./Header.css";
 import Notifications from "./Notifications";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import { useGetCompanyProfileEditQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
+import { useGetTokenDashboardQuery } from "../../State-Management/Api/AdminDetailsApiSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MobileBottomNav from "./MobileBottomNav";
@@ -52,6 +53,20 @@ function Header() {
   const [showRoutineModal, setShowRoutineModal] = useState(false);
   const profileRef = useRef(null);
   const aiPopoverRef = useRef(null);
+
+  const [isSubHeaderVisible, setIsSubHeaderVisible] = useState(() => {
+    return localStorage.getItem("tokenSubHeaderVisible") !== "false";
+  });
+
+  const { data: tokenData, isLoading: isTokenLoading, isFetching: isTokenFetching } = useGetTokenDashboardQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const isTokenQueryLoading = isTokenLoading || isTokenFetching;
+
+  const userAllocated = tokenData?.companydetails?.userAllocatedTokens ?? 1000;
+  const userUsed = tokenData?.companydetails?.userUsedTokens ?? 800;
+  const userAvailable = tokenData?.companydetails?.userAvailableTokens ?? 200;
+  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
 
   const user = localStorage.getItem("UserName");
   const role = localStorage.getItem("Role");
@@ -402,6 +417,78 @@ function Header() {
         </div>
       </header>
 
+      {/* Collapsible Token Sub-Header */}
+      <div className={`token-sub-header ${!isSubHeaderVisible ? "hidden" : ""}`}>
+        <div className="token-info">
+          <Coins className="token-icon" size={14} />
+          <span className="token-title">Token Credits:</span>
+          <span className="token-details">
+            {isTokenQueryLoading ? (
+              <span className="token-loader"></span>
+            ) : (
+              <>
+                <strong>{userAvailable}</strong> available / <strong>{userAllocated}</strong> allocated
+              </>
+            )}
+          </span>
+        </div>
+        
+        <div className="token-usage-container">
+          <span className="token-usage-text">Usage:</span>
+          <div className="token-usage-bar-wrapper">
+            <div className="token-usage-bar-container">
+              <div 
+                className="token-usage-progress" 
+                style={{ width: `${Math.min(userUsedPercent, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+          {isTokenQueryLoading ? (
+            <span className="token-loader" style={{ marginLeft: "10px" }}></span>
+          ) : (
+            <span className="token-usage-percent">{userUsedPercent}% ({userUsed} used)</span>
+          )}
+        </div>
+
+        <div className="token-actions">
+          <button 
+            onClick={() => navigate("/user/user-subscription")} 
+            className="token-btn-view-details"
+          >
+            View Details
+          </button>
+          <button 
+            onClick={() => {
+              setIsSubHeaderVisible(false);
+              localStorage.setItem("tokenSubHeaderVisible", "false");
+            }} 
+            className="token-btn-hide"
+            title="Hide Details"
+          >
+            <ChevronUp size={14} />
+          </button>
+        </div>
+      </div>
+
+      {!isSubHeaderVisible && (
+        <button 
+          className="token-sub-header-show-trigger" 
+          onClick={() => {
+            setIsSubHeaderVisible(true);
+            localStorage.setItem("tokenSubHeaderVisible", "true");
+          }}
+          title="Show Token Details"
+        >
+          <Coins size={12} className="token-trigger-icon" />
+          {isTokenQueryLoading ? (
+            <span className="token-loader inline"></span>
+          ) : (
+            <span>Tokens: {userAvailable}</span>
+          )}
+          <ChevronDown size={12} className="token-trigger-chevron" />
+        </button>
+      )}
+
       <div className="app-zoom main-content-wrapper">
         <main className="cust-main">
           <Outlet />
@@ -421,7 +508,7 @@ function Header() {
             <div className="routine-header">
 
               <div className="routine-title">
-
+                <Zap size={18} className="icon-pulse-anim" />
                 <span>
                   QUICK LAUNCH
                 </span>
@@ -461,16 +548,19 @@ function Header() {
                 }}
               >
 
-                <div className="routine-icon">
-                  <File size={18} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                  <div className="routine-icon" style={{ background: '#eff6ff', color: '#3b82f6' }}>
+                    <File size={18} />
+                  </div>
+                  <div className="routine-arrow"><ArrowRight size={16} /></div>
                 </div>
 
-                <h4>Create Job</h4>
+                <h4 style={{ position: 'relative', zIndex: 1 }}>Create Job</h4>
 
                 <span>
                   Create hiring requirements.
                 </span>
-
+                <div className="routine-bg-icon" style={{ color: '#3b82f6' }}><File size={80} /></div>
               </div>
 
               {/* UPLOAD TALENT */}
@@ -485,19 +575,22 @@ function Header() {
                 }}
               >
 
-                <div className="routine-icon">
-                  <Users size={18} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                  <div className="routine-icon" style={{ background: '#f5f3ff', color: '#8b5cf6' }}>
+                    <Users size={18} />
+                  </div>
+                  <div className="routine-arrow"><ArrowRight size={16} /></div>
                 </div>
 
-                <h4>Upload Talent</h4>
+                <h4 style={{ position: 'relative', zIndex: 1 }}>Upload Talent</h4>
 
                 <span>
                   AI parser candidate upload.
                 </span>
-
+                <div className="routine-bg-icon" style={{ color: '#8b5cf6' }}><Users size={80} /></div>
               </div>
 
-              {/* TALENT POOL */}
+              {/* CONTRACT */}
 
               <div
                 className="routine-card"
@@ -509,16 +602,19 @@ function Header() {
                 }}
               >
 
-                <div className="routine-icon">
-                  <Users size={18} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                  <div className="routine-icon" style={{ background: '#ecfdf5', color: '#10b981' }}>
+                    <Users size={18} />
+                  </div>
+                  <div className="routine-arrow"><ArrowRight size={16} /></div>
                 </div>
 
-                <h4>Create Contract</h4>
+                <h4 style={{ position: 'relative', zIndex: 1 }}>Create Contract</h4>
 
                 <span>
                   Manage contract listings.
                 </span>
-
+                <div className="routine-bg-icon" style={{ color: '#10b981' }}><Users size={80} /></div>
               </div>
 
               {/* INTERVIEW */}
@@ -533,16 +629,19 @@ function Header() {
                 }}
               >
 
-                <div className="routine-icon">
-                  <Bell size={16} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                  <div className="routine-icon" style={{ background: '#fff7ed', color: '#f97316' }}>
+                    <Bell size={18} />
+                  </div>
+                  <div className="routine-arrow"><ArrowRight size={16} /></div>
                 </div>
 
-                <h4>Schedule Interview</h4>
+                <h4 style={{ position: 'relative', zIndex: 1 }}>Schedule Interview</h4>
 
                 <span>
                   Coordinate interview flow
                 </span>
-
+                <div className="routine-bg-icon" style={{ color: '#f97316' }}><Bell size={80} /></div>
               </div>
 
             </div>

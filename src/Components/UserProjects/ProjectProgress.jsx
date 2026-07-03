@@ -189,7 +189,7 @@ export default function ProjectProgress() {
                 <div className="d-flex align-items-center gap-2 mb-2" style={{ fontSize: "13px", color: "#64748b" }}>
                     <button
                         className="link-button d-flex align-items-center gap-1"
-                        onClick={() => navigate("/User/user-projects")}
+                        onClick={() => navigate("/User/user-posted-jobs")}
                         style={{ border: "none", background: "none", cursor: "pointer", color: "#3b82f6", display: "flex", alignItems: "center", gap: "4px" }}
                     >
                         <FiArrowLeft size={13} /> Back to Projects

@@ -206,6 +206,15 @@ const ContractCreate = () => {
   // 5-step wizard state
   const [step, setStep] = useState(1);
   const [activeSection, setActiveSection] = useState('org'); // For Step 2 collapsible panels
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  const handleBackClick = () => {
+    if (step < 6) {
+      setShowExitConfirm(true);
+    } else {
+      navigate(-1);
+    }
+  };
 
   // Generation step index (for Step 4 progress animation)
   const [generationStep, setGenerationStep] = useState(0);
@@ -404,7 +413,7 @@ const ContractCreate = () => {
     initialValues: {
       contractTitle: '',
       clientCompany: '',
-      companyName: 'BenMyl Staffing',
+      companyName: 'none selected',
       candidateName: '',
       candidateEmail: '',
       candidatePhone: '',
@@ -821,7 +830,7 @@ const ContractCreate = () => {
         </div>
 
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <button className="routine-btn" onClick={() => navigate(-1)}>
+          <button className="routine-btn" onClick={handleBackClick}>
             <ChevronLeft />
             <span>Back</span>
           </button>
@@ -932,7 +941,7 @@ const ContractCreate = () => {
                                       formik.setFieldValue('candidateName', '');
                                       formik.setFieldValue('candidateEmail', '');
                                       formik.setFieldValue('candidatePhone', '');
-                                      formik.setFieldValue('companyName', 'BenMyl Staffing');
+                                      formik.setFieldValue('companyName', '-');
                                       setJobPopoverOpen(false);
                                       setJobSearch('');
                                     }}
@@ -1016,8 +1025,8 @@ const ContractCreate = () => {
                                           formik.setFieldValue('candidateName', c.name);
                                           formik.setFieldValue('candidateEmail', c.email);
                                           formik.setFieldValue('candidatePhone', c.phone);
-                                          const loggedInComp = localStorage.getItem("CompanyName") || "BenMyl Staffing";
-                                          const candidateComp = c.CompanyName || c.uploadedByName || "BenMyl Staffing";
+                                          const loggedInComp = localStorage.getItem("CompanyName") || "-";
+                                          const candidateComp = c.CompanyName || c.uploadedByName || "-";
                                           const roleLower = userRoleRaw.toLowerCase();
                                           if (roleLower === 'benchsales') {
                                             formik.setFieldValue('companyName', loggedInComp);
@@ -1099,7 +1108,7 @@ const ContractCreate = () => {
                     </div>
                     <div className="cw-summary-row">
                       <span className="cw-summary-label">Vendor Company Name:</span>
-                      <span className="cw-summary-value">{formik.values.companyName || '-'}</span>
+                      <span className="cw-summary-value">{formik.values.companyName || 'empty'}</span>
                     </div>
 
                     <div style={{ marginTop: '24px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '11px', color: '#94a3b8' }}>
@@ -1968,6 +1977,40 @@ const ContractCreate = () => {
             </div>
           </div>
         </>
+      )}
+
+      {showExitConfirm && (
+        <div className="exit-confirm-modal-overlay">
+          <div className="exit-confirm-modal-card">
+            <div className="exit-confirm-modal-header">
+              <AlertCircle size={24} className="exit-confirm-icon" />
+              <h3>Exit Contract Wizard?</h3>
+            </div>
+            <div className="exit-confirm-modal-body">
+              <p>Are you sure you want to go back? The contract draft is currently saved, and you can resume execution later.</p>
+              <div className="exit-confirm-note">
+                <strong>Autosave note:</strong> Your current progress has been saved as a draft.
+              </div>
+            </div>
+            <div className="exit-confirm-modal-footer">
+              <button 
+                className="exit-confirm-btn-cancel" 
+                onClick={() => setShowExitConfirm(false)}
+              >
+                Keep Editing
+              </button>
+              <button 
+                className="exit-confirm-btn-confirm" 
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  navigate(-1);
+                }}
+              >
+                Exit Wizard
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

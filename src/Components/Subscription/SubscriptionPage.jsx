@@ -9,6 +9,7 @@ import './SubscriptionPage.css';
 import '../UserJobs/Jobs.css';
 import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
 import '../Header/ProfileSideModal.css';
+import NoData from "../UploadTalent/NoData";
 
 const planThemes = {
   free_trial: {
@@ -684,8 +685,8 @@ const SubscriptionPage = () => {
                     </h3>
                     <div className="requests-scroll-container">
                       {userRequests.length === 0 ? (
-                        <div className="requests-empty">
-                          No pending token requests
+                        <div className="requests-empty" style={{ border: 'none', background: 'transparent', padding: '12px' }}>
+                          <NoData text="No pending token requests" maxWidth="150px" />
                         </div>
                       ) : (
                         userRequests.map((req) => (
@@ -1092,8 +1093,8 @@ const SubscriptionPage = () => {
                       <tbody>
                         {tokenUsageLogs.length === 0 ? (
                           <tr>
-                            <td colSpan="5" className="custom-table-empty">
-                              No token usage records available.
+                            <td colSpan="5" style={{ padding: '24px' }}>
+                              <NoData text="No token usage records available." />
                             </td>
                           </tr>
                         ) : (

@@ -18,7 +18,7 @@ const ProjectsSection = ({ projects, onUploadSuccess, onUploading, role }) => {
             className="border-0 p-0" 
             onClick={() => {
               const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-projects` : `${basePath}/user-projects`;
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-posted-jobs` : `${basePath}/user-posted-jobs`;
               navigate(targetPath);
             }}
             style={{ 

@@ -1523,50 +1523,7 @@ body{
   background:#00d084;
 }
 
-/* RESPONSIVE */
-
-@media(max-width:1200px){
-
-  .stats-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .chart-grid{
-    grid-template-columns:1fr;
-  }
-
-  .quick-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-}
-
-@media(max-width:768px){
-
-  .hero-card{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:24px;
-  }
-
-  .hero-left h1{
-    font-size:26px;
-  }
-
-  .stats-grid{
-    grid-template-columns:1fr;
-  }
-
-  .quick-grid{
-    grid-template-columns:1fr;
-  }
-
-  .graph-footer{
-    flex-direction:column;
-    gap:20px;
-  }
-
-}
+/* RESPONSIVE STYLES CONSOLIDATED AT THE BOTTOM OF THE FILE */
 
 /* MODAL OVERLAY */
 
@@ -1785,74 +1742,165 @@ body{
    RESPONSIVE DESIGN BREAKPOINTS
    ========================================================= */
 
-@media (max-width: 1200px) {
+/* --- Large Desktops / Laptops (min-width: 1400px) --- */
+/* (Base styles apply: .stats-grid has 5 columns, .quick-grid has 5 columns, .chart-log-row has 3fr 2fr) */
+
+/* --- Laptop / Small Desktop Breakpoint (max-width: 1399px) --- */
+@media (max-width: 1399px) {
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
   }
-  .chart-grid {
-    grid-template-columns: 1fr;
+  .quick-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .hero-left h1 {
+    font-size: 24px;
   }
 }
 
-@media (max-width: 992px) {
+/* --- Medium Screen Breakpoint (max-width: 1200px) --- */
+@media (max-width: 1200px) {
   .hero-section-wrapper {
     flex-direction: column;
-  }
-  .chart-grid {
-    grid-template-columns: 1fr;
+    gap: 20px;
   }
   .hero-card {
+    flex: none;
+    width: 100%;
+  }
+  .copilot-card {
+    flex: none;
+    width: 100%;
+    min-height: 180px;
+  }
+  .copilot-body {
+    max-width: 70%;
+  }
+}
+
+/* --- Tablet Landscape / Small Laptop Breakpoint (max-width: 1100px) --- */
+@media (max-width: 1100px) {
+  .chart-log-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    height: auto;
+  }
+  .graph-card, 
+  .log-card {
+    height: 440px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- Tablet Portrait Breakpoint (max-width: 768px) --- */
+@media (max-width: 768px) {
+  .ai-dashboard-wrapper {
+    padding: 16px;
+  }
+  .hero-card {
+    padding: 24px;
     flex-direction: column;
     align-items: flex-start;
+    gap: 20px;
   }
   .hero-left {
     flex: 0 0 100%;
     max-width: 100%;
   }
   .hero-illustration {
-    display: none; /* Hide SVG to prevent text overlap on tablets */
+    display: none; /* Hide SVG overlap on tablet/mobile */
   }
   .hero-title-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
     gap: 16px;
   }
-  .routine-grid {
+  .quick-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
-}
-
-@media (max-width: 768px) {
-  .stats-grid {
+  .copilot-body {
+    max-width: 100%;
+  }
+  .copilot-bot-illustration {
+    width: 100px;
+    height: 100px;
+    right: 10px;
+    bottom: 10px;
+  }
+  .copilot-bot-image {
+    width: 180px;
+    height: 180px;
+  }
+  .routine-grid {
     grid-template-columns: 1fr;
   }
   .routine-modal {
     width: 95%;
     padding: 20px;
   }
-  .hero-card {
-    padding: 24px;
-  }
-  .graph-card, 
-  .log-card {
-    min-height: 400px;
-  }
-  .graph-area {
-    min-height: 240px;
-  }
 }
 
+/* --- Mobile Breakpoint (max-width: 480px) --- */
 @media (max-width: 480px) {
+  .ai-dashboard-wrapper {
+    padding: 12px;
+  }
+  .hero-card {
+    padding: 16px;
+  }
+  .hero-left h1 {
+    font-size: 20px;
+  }
+  .hero-left p {
+    font-size: 12px;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  .hero-buttons button {
+    width: 100%;
+  }
   .graph-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 12px;
   }
-  .hero-left h1 {
-    font-size: 22px;
+  .graph-footer strong {
+    font-size: 16px;
   }
   .stat-card {
-    padding: 16px;
+    padding: 14px;
+  }
+  .copilot-bot-illustration {
+    display: none; /* Hide copilot bot on small screen to free up space */
+  }
+  .quick-item {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .quick-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .quick-item-title {
+    font-size: 11px;
+  }
+  .quick-item-desc {
+    font-size: 9px;
   }
 }
 

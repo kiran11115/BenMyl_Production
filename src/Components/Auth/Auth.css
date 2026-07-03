@@ -132,8 +132,8 @@
   background-color: #ffffff;
 }
 
-/* ── Tablet (landscape tablets & small laptops) ── */
-@media (max-width: 1024px) {
+/* ── Tablet (portrait tablets & small screens) ── */
+@media (max-width: 768px) {
 
   .auth-container,
   .auth-container-signup {
@@ -149,7 +149,7 @@
   }
 
   .auth-brand-side {
-    display: none;
+    display: none !important;
   }
 
   .auth-form-side {
@@ -180,7 +180,7 @@
   }
 
   .auth-brand-side {
-    display: none;
+    display: none !important;
   }
 
   .auth-form-side {
@@ -728,7 +728,7 @@
   max-width: 3.5rem;
   height: clamp(2.75rem, 8vw, 3.5rem);
   text-align: center;
-  font-size: 11px;
+  font-size: 1.5rem;
   font-weight: 700;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
@@ -1293,5 +1293,24 @@
     border-radius: 2px;
     margin: 10px auto 0;
     flex-shrink: 0;
+  }
+}
+
+/* ── Custom Mobile Layout Fixes ── */
+@media (max-width: 768px) {
+  .auth-form-col-50 {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-form-title.title-lg {
+    font-size: 24px;
+  }
+  .auth-form-title.title-md {
+    font-size: 20px;
+  }
+  .auth-form-title.title-sm {
+    font-size: 16px;
   }
 }

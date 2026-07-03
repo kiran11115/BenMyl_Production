@@ -5,12 +5,9 @@ export const subscriptionPlans = [
     subtitle: "(20 Days – One Time)",
     price: "$0",
     tokens: "1,000 Tokens Total",
-    tokensBreakdown: "Admin: 700 | Recruiter: 100 | Hiring Manager: 100 | Bench Sales: 100",
     features: [
       "10 Job Posts per role (Admin, Recruiter, Hiring Manager)",
-      "Additional posts: 100 Tokens each",
       "20 Candidate Uploads per role",
-      "Additional uploads: 50 Tokens each",
       "AI Generation: 20 Tokens per use",
       "No additional users/roles allowed"
     ],

@@ -13,7 +13,7 @@ const StepBilling = ({
   return (
     <div className="animate-fade-in">
       <div className="row">
-        <div className="col-6">
+        <div className="col-12 col-md-6 mb-4 mb-md-0">
           <div className="payment-type-toggle">
             <button
               type="button"
@@ -57,7 +57,7 @@ const StepBilling = ({
           </div>
         </div>
 
-        <div className="col-6">
+        <div className="col-12 col-md-6">
           <div className="billing-layout">
             <div className="billing-form-fields">
               <div className="auth-group">

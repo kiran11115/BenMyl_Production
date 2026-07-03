@@ -11,7 +11,7 @@ const MobileBottomNav = () => {
             { path: "/user/user-dashboard", icon: <LayoutDashboard size={20} />, label: "Home" },
             { path: "/user/user-talentpool", icon: <Users size={20} />, label: "Pool" },
             { path: "/user/AI-screen", icon: <div className="mobile-nav-ai-bubble"><span className="mobile-nav-ai-sparkle">✦</span></div>, label: "AI" },
-            { path: "/user/user-projects", icon: <Briefcase size={20} />, label: "Projects" },
+            { path: "/user/user-posted-jobs", icon: <Briefcase size={20} />, label: "Projects" },
             { path: "/user/user-profile", icon: <User size={20} />, label: "Profile" },
         ],
         "Benchsales": [

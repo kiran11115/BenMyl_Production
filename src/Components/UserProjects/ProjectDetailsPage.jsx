@@ -22,6 +22,7 @@ import {
 import { GiCheckMark } from "react-icons/gi";
 import "./Projects.css";
 import "../UpcomingInterview/UpcomingInterview.css";
+import NoData from "../UploadTalent/NoData";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
@@ -56,14 +57,14 @@ export default function ProjectDetailsPage() {
       <div className="ui-page">
         <div className="profile-breadcrumb d-flex gap-1 mb-4">
           <button className="link-button" onClick={() => {
-            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-            navigate(`${basePath}/user-projects`);
+            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+            navigate(targetPath);
           }}>
             <FiArrowLeft /> Back to Projects
           </button>
         </div>
         <div className="no-data p-5 text-center bg-white rounded-3">
-          <h3>Project details not found</h3>
+          <NoData text="Project details not found" />
         </div>
       </div>
     );
@@ -89,8 +90,8 @@ export default function ProjectDetailsPage() {
         {/* Breadcrumb */}
         <div className="profile-breadcrumb d-flex gap-2 mb-3" style={{ fontSize: "13px" }}>
           <button className="link-button d-flex align-items-center gap-1" onClick={() => {
-            const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-            navigate(`${basePath}/user-projects`);
+            const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+            navigate(targetPath);
           }} style={{ color: "#f5810c" }}>
             <FiArrowLeft size={13} /> Projects
           </button>

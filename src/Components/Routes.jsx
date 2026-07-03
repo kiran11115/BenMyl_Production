@@ -139,7 +139,6 @@ const routes = createBrowserRouter(
           </Route>
 
           <Route element={<ModuleProtectedRoute module="Projects" />}>
-            <Route path="user-projects" element={<Projects />} />
             <Route path="user-posted-jobs" element={<PostedJobsPage />} />
             <Route element={<ModuleProtectedRoute module="Projects" action="edit" />}>
               <Route path="user-post-new-positions" element={<PostNewPositions />} />

@@ -10,6 +10,7 @@ import { useGetEmployeesByTitleQuery, usePlaceBidMutation } from "../../State-Ma
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
 import { useNavigate } from "react-router-dom";
 import { CustomAlert } from "../Common/CustomAlert";
+import NoData from "../UploadTalent/NoData";
 
 
 const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
@@ -126,7 +127,9 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
               ) : isError ? (
                 <div className="job-modal-empty-state error">Failed to load talents</div>
               ) : normalizedTalents.length === 0 ? (
-                <div className="job-modal-empty-state">No talents matching this role</div>
+                <div className="job-modal-empty-state" style={{ background: 'transparent', border: 'none' }}>
+                  <NoData text="No talents matching this role" maxWidth="130px" />
+                </div>
               ) : (
                 <div className="talent-list d-flex flex-column gap-3">
                   {/* Selected Candidates */}

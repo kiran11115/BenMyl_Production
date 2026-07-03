@@ -214,7 +214,7 @@ const mapApiContractToUI = (item) => {
     candidateEmail: item.candidateEmail || '',
     candidatePhone: item.candidatePhone || '',
     clientCompany: item.clientCompanyName || '-',
-    companyName: item.vendorCompanyName || 'BenMyl Staffing',
+    companyName: item.vendorCompanyName || '-',
     workLocation: item.workLocation || '-',
     employmentType: item.employmentType || '-',
     startDate: item.startDate ? formatDate(item.startDate.split('T')[0]) : '-',
@@ -477,7 +477,7 @@ const ContractView = () => {
 
       section('Contracting Entities');
       field('Client Side', contract.clientCompany);
-      field('Vendor Side', contract.companyName || 'BenMyl Staffing', W / 2);
+      field('Vendor Side', contract.companyName || '-', W / 2);
       y += 50;
 
       section('Engagement Scope');
@@ -665,7 +665,7 @@ const ContractView = () => {
                 </div>
                 <div className="party-box" style={{ textAlign: 'right' }}>
                   <span className="party-label">VENDOR ORGANIZATION</span>
-                  <div className="party-val" style={{ color: '#1e293b' }}>{contract.companyName || 'BenMyl Staffing'}</div>
+                  <div className="party-val" style={{ color: '#1e293b' }}>{contract.companyName || '-'}</div>
                 </div>
               </div>
             </div>

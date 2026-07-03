@@ -217,6 +217,12 @@
   gap: 1.5rem;
 }
 
+.auth-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
 .auth-address-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -550,6 +556,7 @@
   }
 
   .auth-grid-3,
+  .auth-grid-2,
   .auth-address-grid,
   .auth-license-grid {
     grid-template-columns: 1fr;

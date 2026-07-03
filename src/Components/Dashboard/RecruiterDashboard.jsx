@@ -378,9 +378,9 @@ const RecruiterDashboard = () => {
     },
     {
       title: "Active Projects",
-      desc: `${activeProjectsCount} projects - track status & timelines.`,
+      desc: `projects - track status & timelines.`,
       icon: <LayoutGrid size={20} />,
-      path: '/user-projects',
+      path: '/user-posted-jobs',
     },
   ];
 

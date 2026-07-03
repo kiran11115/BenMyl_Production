@@ -180,8 +180,8 @@ export default function CreateProject() {
       "customProjects",
       JSON.stringify([...existing, newProject])
     );
-    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-    navigate(`${basePath}/user-projects`);
+    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+    navigate(targetPath);
   };
 
   const handleSave = () => {
@@ -222,8 +222,8 @@ export default function CreateProject() {
           <button
             className="link-button d-flex align-items-center gap-1 create-project-breadcrumb-link"
             onClick={() => {
-              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-              navigate(`${basePath}/user-projects`);
+              const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+              navigate(targetPath);
             }}
           >
             <FiArrowLeft size={13} /> Projects
@@ -441,8 +441,8 @@ export default function CreateProject() {
                   type="button"
                   className="btn-review"
                   onClick={() => {
-                    const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                    navigate(`${basePath}/user-projects`);
+                    const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin/admin-posted-jobs' : '/user/user-posted-jobs';
+                    navigate(targetPath);
                   }}
                 >
                   Discard
