@@ -66,7 +66,7 @@ function Header() {
   const userAllocated = tokenData?.companydetails?.userAllocatedTokens ?? 1000;
   const userUsed = tokenData?.companydetails?.userUsedTokens ?? 800;
   const userAvailable = tokenData?.companydetails?.userAvailableTokens ?? 200;
-  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
+  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 0;
 
   const user = localStorage.getItem("UserName");
   const role = localStorage.getItem("Role");

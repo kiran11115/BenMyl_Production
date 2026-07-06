@@ -64,6 +64,10 @@ const SubscriptionPage = () => {
     skip: !companyId || !isAdmin,
     refetchOnMountOrArgChange: true,
   });
+  const { data: teamApiData, isLoading: isTeamLoading } = useGetTeamMembersQuery(emailID, {
+    skip: !emailID || !isAdmin,
+    refetchOnMountOrArgChange: true,
+  });
 
   // State for user requests and loaders
   const [isAllocating, setIsAllocating] = useState(false);
@@ -106,8 +110,8 @@ const SubscriptionPage = () => {
   const userUsed = dashboardData?.companydetails?.userUsedTokens ?? 800;
   const userAvailable = dashboardData?.companydetails?.userAvailableTokens ?? 200;
 
-  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
-  const userRemainingPercent = userAllocated > 0 ? Math.round((userAvailable / userAllocated) * 100) : 20;
+  const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 0;
+  const userRemainingPercent = userAllocated > 0 ? Math.round((userAvailable / userAllocated) * 100) : 0;
   const [isYearlyBilling, setIsYearlyBilling] = useState(false);
   const [isAddTokensOpen, setIsAddTokensOpen] = useState(false);
   const [selectedPkg, setSelectedPkg] = useState({ tokens: 10000, price: 90, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" });
@@ -168,21 +172,39 @@ const SubscriptionPage = () => {
   const [allocateTokensAmount, setAllocateTokensAmount] = useState("");
 
   const formattedTeamFromApi = useMemo(() => {
-    const dataList = Array.isArray(userTokenListData) ? userTokenListData : [];
-    if (!dataList.length) {
+    const teamList = Array.isArray(teamApiData) ? teamApiData : (teamApiData?.value || []);
+    const tokenList = Array.isArray(userTokenListData) ? userTokenListData : [];
+
+    if (!teamList.length) {
+      if (tokenList.length) {
+        return tokenList
+          .filter((member) => member.roleName?.toLowerCase() !== "admin")
+          .map((member) => ({
+            name: member.userName || member.emailID?.split("@")[0] || "Unknown User",
+            emailID: member.emailID,
+            authInfoID: member.userId,
+            roleName: member.roleName,
+            role: member.roleName === "Admin" ? "Administrator" : member.roleName === "Recruiter2" ? "Recruiter" : member.roleName === "Recruiter" ? "Hiring Manager" : "Bench Sales",
+            tokens: member.allocatedTokens || 0
+          }));
+      }
       return [];
     }
-    return dataList
-      .filter((member) => member.roleName?.toLowerCase() !== "admin")
-      .map((member) => ({
-        name: member.userName || member.emailID?.split("@")[0] || "Unknown User",
-        emailID: member.emailID,
-        authInfoID: member.userId,
-        roleName: member.roleName,
-        role: member.roleName === "Admin" ? "Administrator" : member.roleName === "Recruiter2" ? "Recruiter" : member.roleName === "Recruiter" ? "Hiring Manager" : "Bench Sales",
-        tokens: member.allocatedTokens || 0
-      }));
-  }, [userTokenListData]);
+
+    return teamList
+      .filter((member) => member.role?.toLowerCase() !== "admin")
+      .map((member) => {
+        const tokenInfo = tokenList.find(t => t.emailID?.toLowerCase() === member.emailID?.toLowerCase());
+        return {
+          name: member.name || member.emailID?.split("@")[0] || "Unknown User",
+          emailID: member.emailID,
+          authInfoID: tokenInfo?.userId || member.userId || member.authInfoID || member.id || 0,
+          roleName: member.role,
+          role: member.role === "Admin" ? "Administrator" : member.role === "Recruiter2" ? "Recruiter" : member.role === "Recruiter" ? "Hiring Manager" : "Bench Sales",
+          tokens: tokenInfo?.allocatedTokens || 0
+        };
+      });
+  }, [teamApiData, userTokenListData]);
 
   const allRoles = useMemo(() => {
     const roles = teamUsers.map(u => u.role).filter(Boolean);
@@ -679,12 +701,19 @@ const SubscriptionPage = () => {
                             value={allocateUserEmail} 
                             onChange={(e) => setAllocateUserEmail(e.target.value)}
                             className="allocate-select"
+                            disabled={isTeamLoading}
                           >
-                            {teamUsers.map(user => (
-                              <option key={user.emailID} value={user.emailID}>
-                                {user.name}
-                              </option>
-                            ))}
+                            {isTeamLoading && teamUsers.length === 0 ? (
+                              <option value="">Loading team members...</option>
+                            ) : teamUsers.length === 0 ? (
+                              <option value="">No team members found</option>
+                            ) : (
+                              teamUsers.map(user => (
+                                <option key={user.emailID} value={user.emailID}>
+                                  {user.name}
+                                </option>
+                              ))
+                            )}
                           </select>
                         </div>
 
@@ -828,27 +857,41 @@ const SubscriptionPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {teamUsers.map((user, idx) => (
-                            <tr key={idx}>
-                              <td>
-                                <div className="user-info-td">
-                                  {getInitialsAvatar(user.name)}
-                                  <div className="user-details-text">
-                                    <span className="u-name">{user.name}</span>
-                                    <span className="u-role">{user.emailID}</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <span className="role-tag-sm">{user.role}</span>
-                              </td>
-                              <td>
-                                <span className="token-usage-badge usage-badge-allocated">
-                                  {user.tokens} Tokens
-                                </span>
+                          {isTeamLoading && teamUsers.length === 0 ? (
+                            <tr>
+                              <td colSpan="3" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                                Loading team members...
                               </td>
                             </tr>
-                          ))}
+                          ) : teamUsers.length === 0 ? (
+                            <tr>
+                              <td colSpan="3" style={{ textAlign: "center", padding: "20px", color: "#64748b" }}>
+                                No team members found.
+                              </td>
+                            </tr>
+                          ) : (
+                            teamUsers.map((user, idx) => (
+                              <tr key={idx}>
+                                <td>
+                                  <div className="user-info-td">
+                                    {getInitialsAvatar(user.name)}
+                                    <div className="user-details-text">
+                                      <span className="u-name">{user.name}</span>
+                                      <span className="u-role">{user.emailID}</span>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span className="role-tag-sm">{user.role}</span>
+                                </td>
+                                <td>
+                                  <span className="token-usage-badge usage-badge-allocated">
+                                    {user.tokens} Tokens
+                                  </span>
+                                </td>
+                              </tr>
+                            ))
+                          )}
                         </tbody>
                       </table>
                     </div>

@@ -373,7 +373,7 @@ const FormWizard = () => {
       await admindetails(buildPayload(formik.values)).unwrap();
       localStorage.setItem("TrialStartDate", new Date().toISOString());
       localStorage.removeItem("trialPopoverHidden"); // Reset hidden state for new user
-      toast.success("Account created successfully! Free trial valid for 20 days.");
+      toast.success("Account created successfully! Free trial valid for 90 days.");
       navigate("/sign-in");
     } catch (err) {
       console.error(err);

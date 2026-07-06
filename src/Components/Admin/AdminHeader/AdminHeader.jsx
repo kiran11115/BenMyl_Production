@@ -58,10 +58,12 @@ function AdminHeader() {
     });
     const isTokenQueryLoading = isTokenLoading || isTokenFetching;
 
-    const userAllocated = tokenData?.companydetails?.userAllocatedTokens ?? 1000;
-    const userUsed = tokenData?.companydetails?.userUsedTokens ?? 800;
+    // Admin sees company-wide token pool (companyTotalTokens), not just their user allocation
+    const userAllocated = tokenData?.companydetails?.companyTotalTokens ?? tokenData?.companydetails?.userAllocatedTokens ?? 1000;
     const userAvailable = tokenData?.companydetails?.userAvailableTokens ?? 200;
-    const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 80;
+    // Calculate company-wide used = total allocated - available (userUsedTokens is only admin's personal usage)
+    const userUsed = userAllocated - userAvailable;
+    const userUsedPercent = userAllocated > 0 ? Math.round((userUsed / userAllocated) * 100) : 0;
 
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
