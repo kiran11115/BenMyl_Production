@@ -62,6 +62,14 @@ import AdminDashboard from "./Admin/Modules/AdminDashboard/AdminDashboard";
 import ActiveRoutines from "./Admin/Modules/AdminDashboard/ActiveRoutines";
 import ModuleProtectedRoute from "./Admin/Modules/RoleConfiguration/ModuleProtectedRoute";
 
+// Master Admin Module Imports
+import MasterHeader from "./MasterScreens/MasterHeader";
+import MasterDashboard from "./MasterScreens/MasterDashboard";
+import MasterCompanies from "./MasterScreens/MasterCompanies";
+import MasterNetwork from "./MasterScreens/MasterNetwork";
+import MasterBilling from "./MasterScreens/MasterBilling";
+import MasterCompanyOverview from "./MasterScreens/MasterCompanyOverview";
+
 const routes = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -118,6 +126,14 @@ const routes = createBrowserRouter(
           <Route path="admin-subscription" element={<SubscriptionPage />} />
 
 
+        </Route>
+
+        <Route path="MasterAdmin" element={<MasterHeader />}>
+          <Route path="dashboard" element={<MasterDashboard />} />
+          <Route path="companies" element={<MasterCompanies />} />
+          <Route path="companies/:id" element={<MasterCompanyOverview />} />
+          <Route path="network" element={<MasterNetwork />} />
+          <Route path="billing" element={<MasterBilling />} />
         </Route>
 
         <Route path="User" element={<Header />}>
