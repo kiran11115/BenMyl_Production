@@ -6,7 +6,7 @@ import {
   PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { ContractContext, mapApiContractToUI } from './ContractContext';
+import { ContractContext, mapApiContractToUI, formatDate } from './ContractContext';
 import { useGetContractsByBenchsalesQuery } from '../../State-Management/Api/ContractApiSlice';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
@@ -76,6 +76,7 @@ const STATUS_CONFIG = {
   Accepted: { cls: 'badge-accepted', label: 'Accepted', icon: <CheckCircle size={10} /> },
   Rejected: { cls: 'badge-rejected', label: 'Rejected', icon: <XCircle size={10} /> },
   Completed: { cls: 'badge-completed', label: 'Completed', icon: <FileCheck size={10} /> },
+  Closed: { cls: 'badge-closed', label: 'Closed', icon: <XCircle size={10} /> },
 };
 
 const SIG_STATUS = {
@@ -210,6 +211,515 @@ const SignatureSection = ({ onComplete, onCancel }) => {
       </div>
     </div>
   );
+};/* =========================================
+   MILESTONES & PROJECT PROGRESS COMPONENTS
+   ========================================= */
+const ConfirmModal = ({ title, message, confirmText = "Confirm", cancelText = "Cancel", onConfirm, onCancel }) => {
+  return (
+    <div className="custom-talent-alert-overlay">
+      <div className="custom-talent-alert-card">
+        <div className="custom-talent-alert-body-container">
+          <div className="alert-graphic-wrapper">
+            <svg width="48" height="48" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="30" fill="#fff7ed" stroke="#fed7aa" strokeWidth="2" />
+              <path d="M32 18 L48 46 H16 Z" stroke="#ea580c" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M32 28 V38 M32 42 H32.01" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <h3 className="custom-talent-alert-title">
+            {title}
+          </h3>
+          <p className="custom-talent-alert-message">
+            {message}
+          </p>
+        </div>
+        <div className="custom-talent-alert-actions-row">
+          <button 
+            type="button" 
+            className="tbl-btn tbl-btn-status-change" 
+            onClick={onCancel}
+          >
+            {cancelText}
+          </button>
+          <button 
+            type="button" 
+            className="btn-primary" 
+            onClick={onConfirm}
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MilestoneDetail = ({
+  contract,
+  progress,
+  daysLeft,
+  hoursLeft,
+  minutesLeft,
+  monday,
+  friday,
+  sunday,
+  formatToExactDate,
+  review,
+  onReviewSubmit,
+  extension,
+  onExtensionSubmit,
+  status,
+  simulateCompleted,
+  onToggleSimulation
+}) => {
+  const [rating, setRating] = useState(review?.rating || 5);
+  const [comment, setComment] = useState(review?.comment || '');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedExtDate, setSelectedExtDate] = useState('');
+  const [selectedExtReason, setSelectedExtReason] = useState('');
+  const [confirmModal, setConfirmModal] = useState(null);
+
+  // Reset local state when selected contract changes
+  useEffect(() => {
+    setRating(review?.rating || 5);
+    setComment(comment => review?.comment || '');
+    setShowDatePicker(false);
+    setSelectedExtDate('');
+    setSelectedExtReason('');
+  }, [contract.id, review]);
+
+  const StarRating = () => {
+    return (
+      <div className="star-rating-input">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            className={`star-btn ${star <= rating ? 'filled' : ''}`}
+            onClick={() => setRating(star)}
+            disabled={!!review?.submitted}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!comment.trim()) {
+      toast.warning('Please enter feedback comment');
+      return;
+    }
+    onReviewSubmit(rating, comment);
+  };
+
+  const isClosed = status === 'Closed';
+
+  return (
+    <div className="milestone-detail-card compact-text">
+      <div className="detail-header-section">
+        <div className="detail-title-wrapper">
+          <h3 className="detail-title">{contract.contractTitle}</h3>
+          <span className="detail-subtitle">Ref ID: {contract.id}</span>
+        </div>
+        <span className={`detail-status-badge ${status.toLowerCase()}`}>{status}</span>
+      </div>
+
+      <div className="detail-section-grid">
+        <div className="detail-info-item">
+          <span className="lbl">Designated Resource</span>
+          <span className="val">{contract.candidateName}</span>
+        </div>
+        <div className="detail-info-item">
+          <span className="lbl">Position / Role</span>
+          <span className="val">{contract.jobTitle}</span>
+        </div>
+        <div className="detail-info-item">
+          <span className="lbl">Client Organization</span>
+          <span className="val">{contract.clientCompany}</span>
+        </div>
+        <div className="detail-info-item">
+          <span className="lbl">Milestone Period</span>
+          <span className="val font-semibold text-slate-700">{formatToExactDate(monday)} to {formatToExactDate(sunday)}</span>
+        </div>
+      </div>
+
+      <div className="detail-divider"></div>
+
+      {/* Automated Progress Section */}
+      <div className="detail-section">
+        <h4 className="section-title">Automated Progress</h4>
+        <p className="section-desc">Progress is calculated automatically relative to the weekly target deadline.</p>
+
+        <div className="progress-automated-container">
+          <div className="progress-bar-wrap">
+            <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+          </div>
+          
+          <div className="progress-stat-row">
+            <span className="progress-percentage-label">Current Progress: <strong className="text-orange">{progress}%</strong></span>
+            <span className="progress-target-label">Target: {formatToExactDate(friday)}</span>
+          </div>
+
+          <div className="milestone-typo-days-left">
+            {progress < 100 ? (
+              <>
+                Target deadline: <span className="days-left-highlight">{formatToExactDate(friday)}</span> • <span className="days-left-count">{daysLeft}d {hoursLeft}h {minutesLeft}m left</span> to achieve this week's milestone.
+              </>
+            ) : (
+              <>
+                Target deadline: <span className="days-left-highlight">{formatToExactDate(friday)}</span> reached. Progress is fully completed.
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Change Status Action */}
+        {!isClosed && (
+          <div className="status-action-row mt-3">
+            <span className="status-action-label">Need to change status for evaluation?</span>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                const targetState = simulateCompleted ? "In Progress" : "Completed";
+                setConfirmModal({
+                  title: "Confirm Status Change",
+                  message: `Are you sure you want to change the status of this milestone to ${targetState}?`,
+                  confirmText: "Change Status",
+                  cancelText: "Cancel",
+                  onConfirm: () => {
+                    setConfirmModal(null);
+                    onToggleSimulation();
+                  }
+                });
+              }}
+            >
+              {simulateCompleted ? "Set to In Progress" : "Change Status to Completed"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="detail-divider"></div>
+
+      {/* Rate Contract Section */}
+      {progress === 100 ? (
+        <div className="detail-section review-section-wrap">
+          <h4 className="section-title">Rate Contract</h4>
+          <p className="section-desc">Provide your service evaluation and feedback below to close the contract.</p>
+          
+          {review?.submitted || isClosed ? (
+            <div className="review-submitted-card">
+              <div className="submitted-header">
+                <span className="badge-check">✓ Rated & Closed</span>
+                <span className="stars-display">{'★'.repeat(review?.rating || rating)}{'☆'.repeat(5 - (review?.rating || rating))}</span>
+              </div>
+              <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
+              <div className="contract-closed-notification alert alert-success mt-2">
+                <strong>Closed:</strong> This contract has been officially closed.
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleReviewSubmit} className="review-form">
+              <div className="form-group mb-3">
+                <label className="form-label d-block">Overall Deliverables Rating</label>
+                <StarRating />
+              </div>
+              <div className="form-group mb-3">
+                <label className="form-label">Review Summary & Evaluation Comments</label>
+                <textarea
+                  className="form-control feedback-textarea"
+                  rows="3"
+                  placeholder="Provide final evaluation comments..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn-primary w-100 py-2" style={{ fontSize: '11px' }}>
+                Submit Rating & Close Contract
+              </button>
+            </form>
+          )}
+        </div>
+      ) : (
+        <div className="detail-section extension-section-wrap">
+          <h4 className="section-title">Milestone Extension Request</h4>
+          <p className="section-desc">If milestones cannot be met within the current week, Candidate Handler can raise an extension request.</p>
+
+          {extension?.submitted ? (
+            <div className="extension-submitted-card">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="badge-pending">Extension Requested</span>
+                <span className="ext-date">{formatDate(extension.newDate)}</span>
+              </div>
+              <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+              <div className="ext-meta">Raised by: <strong>Candidate Handler</strong></div>
+            </div>
+          ) : showDatePicker ? (
+            <div className="elegant-date-picker-wrap">
+              <div className="form-group mb-2">
+                <label className="form-label">Choose Extension Target Date</label>
+                <input
+                  type="date"
+                  className="date-filter-input"
+                  value={selectedExtDate}
+                  min={new Date().toISOString().split('T')[0]} // Restricted to future dates
+                  onChange={(e) => setSelectedExtDate(e.target.value)}
+                />
+              </div>
+              <div className="form-group mb-2">
+                <label className="form-label">Extension Justification Reason</label>
+                <textarea
+                  className="form-control feedback-textarea"
+                  rows="2"
+                  placeholder="Explain why the extension is required..."
+                  value={selectedExtReason}
+                  onChange={(e) => setSelectedExtReason(e.target.value)}
+                />
+              </div>
+              <div className="date-input-filter-row">
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => {
+                    if (!selectedExtDate) {
+                      toast.warning("Please choose a valid date.");
+                      return;
+                    }
+                    if (!selectedExtReason.trim()) {
+                      toast.warning("Please provide a reason for the extension request.");
+                      return;
+                    }
+                    setConfirmModal({
+                      title: "Confirm Extension Request",
+                      message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
+                      confirmText: "Submit Request",
+                      cancelText: "Cancel",
+                      onConfirm: () => {
+                        setConfirmModal(null);
+                        onExtensionSubmit(selectedExtDate, selectedExtReason);
+                        toast.success("Extension request submitted successfully!");
+                        setShowDatePicker(false);
+                      }
+                    });
+                  }}
+                >
+                  Confirm Request
+                </button>
+                <button
+                  type="button"
+                  className="tbl-btn tbl-btn-status-change"
+                  onClick={() => setShowDatePicker(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={isClosed}
+              onClick={() => setShowDatePicker(true)}
+            >
+              Request Extension
+            </button>
+          )}
+        </div>
+      )}
+      {confirmModal && (
+        <ConfirmModal
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.confirmText}
+          cancelText={confirmModal.cancelText}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal(null)}
+        />
+      )}
+    </div>
+  );
+};
+
+const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview, extensionMap, submitExtension, statusOverrideMap }) => {
+  const activeContracts = contracts.filter(c => c.status !== 'Draft' && c.status !== 'Rejected');
+  const [selectedId, setSelectedId] = useState(activeContracts[0]?.id || null);
+  const [simulatedCompletedMap, setSimulatedCompletedMap] = useState({});
+
+  useEffect(() => {
+    if (!selectedId && activeContracts.length > 0) {
+      setSelectedId(activeContracts[0].id);
+    }
+  }, [activeContracts, selectedId]);
+
+  const selectedContract = activeContracts.find(c => c.id === selectedId);
+
+  const getWeekRangeData = () => {
+    const today = new Date();
+    const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    
+    // Start date of week (Monday)
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    monday.setHours(9, 0, 0, 0); // Monday 9 AM
+
+    // End date of work week (Target Deadline Date: Friday)
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    friday.setHours(17, 0, 0, 0); // Friday 5 PM
+
+    // End of full week (Sunday)
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return { monday, friday, sunday };
+  };
+
+  const formatToExactDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `${day}-${months[date.getMonth()]}-${date.getFullYear()}`;
+  };
+
+  const { monday, friday, sunday } = getWeekRangeData();
+  const currentWeekStr = `${formatToExactDate(monday)} to ${formatToExactDate(sunday)}`;
+  const currentFriday = formatToExactDate(friday);
+
+  return (
+    <div className="milestones-layout">
+      {/* List Side */}
+      <div className="milestones-list-panel">
+        <div className="panel-header">
+          <h4 className="panel-title"><Calendar size={14} color="#f5810c" /> Weekly Deliverables</h4>
+          <span className="week-label">Exact Week: {currentWeekStr}</span>
+        </div>
+        <div className="milestones-list">
+          {activeContracts.length === 0 ? (
+            <NoData text="No active milestone contracts for this week." />
+          ) : (
+            activeContracts.map(c => {
+              const isSimulated = !!simulatedCompletedMap[c.id];
+              const isClosed = (statusOverrideMap[c.id] || c.status) === 'Closed';
+
+              let progress = 0;
+              if (isClosed || isSimulated) {
+                progress = 100;
+              } else {
+                const totalTime = friday.getTime() - monday.getTime();
+                const elapsedTime = new Date().getTime() - monday.getTime();
+
+                if (new Date().getTime() >= friday.getTime()) {
+                  progress = 100;
+                } else if (new Date().getTime() <= monday.getTime()) {
+                  progress = 0;
+                } else {
+                  progress = Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
+                }
+              }
+
+              const status = statusOverrideMap[c.id] || c.status;
+              const isSelected = c.id === selectedId;
+
+              return (
+                <div
+                  key={c.id}
+                  className={`milestone-list-item ${isSelected ? 'selected' : ''}`}
+                  onClick={() => setSelectedId(c.id)}
+                >
+                  <div className="milestone-item-header">
+                    <span className="milestone-item-id">{c.id}</span>
+                    <span className={`milestone-item-status-tag ${status.toLowerCase()}`}>{status}</span>
+                  </div>
+                  <div className="milestone-item-title">{c.contractTitle}</div>
+                  <div className="milestone-item-candidate">{c.candidateName} • {c.jobTitle}</div>
+                  <div className="milestone-item-progress-bar-container">
+                    <div className="milestone-item-progress-track">
+                      <div className="milestone-item-progress-fill" style={{ width: `${progress}%` }}></div>
+                    </div>
+                    <span className="milestone-item-progress-text">{progress}% Complete</span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Detail Side */}
+      <div className="milestones-detail-panel">
+        {selectedContract ? (() => {
+          const isSimulated = !!simulatedCompletedMap[selectedContract.id];
+          const isClosed = (statusOverrideMap[selectedContract.id] || selectedContract.status) === 'Closed';
+          
+          let progress = 0;
+          let daysLeft = 0;
+          let hoursLeft = 0;
+          let minutesLeft = 0;
+
+          if (isClosed || isSimulated) {
+            progress = 100;
+            daysLeft = 0;
+            hoursLeft = 0;
+            minutesLeft = 0;
+          } else {
+            const today = new Date();
+            const totalTime = friday.getTime() - monday.getTime();
+            const elapsedTime = today.getTime() - monday.getTime();
+
+            if (today.getTime() >= friday.getTime()) {
+              progress = 100;
+              daysLeft = 0;
+              hoursLeft = 0;
+              minutesLeft = 0;
+            } else if (today.getTime() <= monday.getTime()) {
+              progress = 0;
+              daysLeft = 5;
+              hoursLeft = 0;
+              minutesLeft = 0;
+            } else {
+              progress = Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
+              const diffTime = friday.getTime() - today.getTime();
+              daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+              hoursLeft = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              minutesLeft = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+            }
+          }
+
+          return (
+            <MilestoneDetail
+              contract={selectedContract}
+              progress={progress}
+              daysLeft={daysLeft}
+              hoursLeft={hoursLeft}
+              minutesLeft={minutesLeft}
+              monday={monday}
+              friday={friday}
+              sunday={sunday}
+              formatToExactDate={formatToExactDate}
+              review={reviewMap[selectedContract.id]}
+              onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment)}
+              extension={extensionMap[selectedContract.id]}
+              onExtensionSubmit={(newDate, reason) => submitExtension(selectedContract.id, newDate, reason)}
+              status={statusOverrideMap[selectedContract.id] || selectedContract.status}
+              simulateCompleted={isSimulated}
+              onToggleSimulation={() => setSimulatedCompletedMap(prev => ({ ...prev, [selectedContract.id]: !prev[selectedContract.id] }))}
+            />
+          );
+        })() : (
+          <div className="milestone-detail-empty">
+            <Info size={32} color="#94a3b8" />
+            <p>Select a contract milestone to view details and track progress.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 /* =========================================
@@ -243,6 +753,67 @@ const ContractForm = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [isDownloading, setIsDownloading] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'createdDate', direction: 'desc' });
+
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Milestone tracking states persisted in localStorage
+  const [progressMap, setProgressMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('contract_progress_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const [reviewMap, setReviewMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('contract_review_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const [extensionMap, setExtensionMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('contract_extension_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const [statusOverrideMap, setStatusOverrideMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('contract_status_override_map');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const updateProgress = (id, value) => {
+    const next = { ...progressMap, [id]: value };
+    setProgressMap(next);
+    localStorage.setItem('contract_progress_map', JSON.stringify(next));
+  };
+
+  const submitReview = (id, rating, comment) => {
+    const nextReview = { ...reviewMap, [id]: { rating, comment, submitted: true } };
+    setReviewMap(nextReview);
+    localStorage.setItem('contract_review_map', JSON.stringify(nextReview));
+
+    const nextStatus = { ...statusOverrideMap, [id]: 'Closed' };
+    setStatusOverrideMap(nextStatus);
+    localStorage.setItem('contract_status_override_map', JSON.stringify(nextStatus));
+  };
+
+  const submitExtension = (id, newDate, reason) => {
+    const next = { ...extensionMap, [id]: { newDate, reason, submitted: true, status: 'Pending' } };
+    setExtensionMap(next);
+    localStorage.setItem('contract_extension_map', JSON.stringify(next));
+  };
 
   const role = localStorage.getItem('Role') || 'Benchsales';
   const isBenchsales = role === 'Benchsales';
@@ -518,71 +1089,106 @@ const ContractForm = () => {
         </div>
       </div>
 
-      <div className="contract-table-wrapper">
-        <div className="contract-table-header">
-          <div className="contract-table-title"><ShieldCheck size={16} color="#f5810c" /> Legal Documents Vault</div>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div className="contract-search-bar"><Search size={14} color="#94a3b8" /><input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} /></div>
+      {/* Tabs navigation */}
+      <div className="tab-switcher" style={{ alignSelf: 'flex-start', marginBottom: '24px', display: 'inline-flex' }}>
+        <button
+          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveTab('all')}
+        >
+          <Building size={14} style={{ marginRight: '6px' }} />
+          All Contracts 
+          <span className="tab-badge">{contracts.length}</span>
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'milestones' ? 'active' : ''}`}
+          onClick={() => setActiveTab('milestones')}
+        >
+          <Calendar size={14} style={{ marginRight: '6px' }} />
+          Weekly Milestones
+          <span className="tab-badge orange-badge">
+            {contracts.filter(c => c.status !== 'Draft' && c.status !== 'Rejected').length}
+          </span>
+        </button>
+      </div>
+
+      {activeTab === 'all' ? (
+        <div className="contract-table-wrapper">
+          <div className="contract-table-header">
+            <div className="contract-table-title"><ShieldCheck size={16} color="#f5810c" /> Legal Documents Vault</div>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <div className="contract-search-bar"><Search size={14} color="#94a3b8" /><input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} /></div>
+            </div>
+          </div>
+
+          <div className="contract-table-scroll">
+            <table className="contract-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort('id')} style={{ cursor: 'pointer' }}>Ref ID <SortIcon col="id" /></th>
+                  <th onClick={() => handleSort('contractTitle')} style={{ cursor: 'pointer' }}>Agreement Title <SortIcon col="contractTitle" /></th>
+                  <th onClick={() => handleSort('candidateName')} style={{ cursor: 'pointer' }}>Candidate <SortIcon col="candidateName" /></th>
+                  <th>Status</th>
+                  <th onClick={() => handleSort('createdDate')} style={{ cursor: 'pointer' }}>Created <SortIcon col="createdDate" /></th>
+                  <th>Execution</th>
+                  <th style={{ textAlign: 'center' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0' }}>
+                      <div className="contract-spinner" style={{ width: 24, height: 24, margin: '0 auto 12px' }} />
+                      <span style={{ fontSize: 13, color: '#64748b' }}>Loading legal documents...</span>
+                    </td>
+                  </tr>
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '40px 0' }}>
+                      <NoData text="No legal documents found." />
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map(c => {
+                    const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
+                    const sigCfg = SIG_STATUS[sigStatus];
+                    const currentStatus = statusOverrideMap[c.id] || c.status;
+                    return (
+                      <tr key={c.id}>
+                        <td><span className="contract-id">{c.id}</span></td>
+                        <td><div style={{ fontWeight: 700, color: '#1e293b' }}>{c.contractTitle}</div><div style={{ fontSize: 10, color: '#64748b' }}>{c.clientCompany} → {c.companyName || 'BenMyl'}</div></td>
+                        <td><div className="d-flex align-items-center gap-2"><User size={12} color="#64748b" /> {c.candidateName}</div></td>
+                        <td><ContractBadge status={currentStatus} /></td>
+                        <td style={{ color: '#64748b', fontSize: 12 }}>{c.createdDate}</td>
+                        <td><span className={`contract-badge ${sigCfg.cls}`}><span className="badge-dot" />{sigCfg.label}</span></td>
+                        <td>
+                          <div className="d-flex gap-2 justify-content-center">
+                            <button className="tbl-btn tbl-btn-view" onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}>
+                              <Eye size={12} /> {String(c.createdBy) === String(userId) ? 'View' : 'View & Sign'}
+                            </button>
+                            <button className="tbl-btn tbl-btn-download" onClick={() => handleDownload(c)} disabled={isDownloading === c.id}>
+                              {isDownloading === c.id ? <div className="contract-spinner" style={{ width: 10, height: 10 }} /> : <Download size={12} />}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-
-        <div className="contract-table-scroll">
-          <table className="contract-table">
-            <thead>
-              <tr>
-                <th onClick={() => handleSort('id')} style={{ cursor: 'pointer' }}>Ref ID <SortIcon col="id" /></th>
-                <th onClick={() => handleSort('contractTitle')} style={{ cursor: 'pointer' }}>Agreement Title <SortIcon col="contractTitle" /></th>
-                <th onClick={() => handleSort('candidateName')} style={{ cursor: 'pointer' }}>Candidate <SortIcon col="candidateName" /></th>
-                <th>Status</th>
-                <th onClick={() => handleSort('createdDate')} style={{ cursor: 'pointer' }}>Created <SortIcon col="createdDate" /></th>
-                <th>Execution</th>
-                <th style={{ textAlign: 'center' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0' }}>
-                    <div className="contract-spinner" style={{ width: 24, height: 24, margin: '0 auto 12px' }} />
-                    <span style={{ fontSize: 13, color: '#64748b' }}>Loading legal documents...</span>
-                  </td>
-                </tr>
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} style={{ padding: '40px 0' }}>
-                    <NoData text="No legal documents found." />
-                  </td>
-                </tr>
-              ) : (
-                filtered.map(c => {
-                  const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
-                  const sigCfg = SIG_STATUS[sigStatus];
-                  return (
-                    <tr key={c.id}>
-                      <td><span className="contract-id">{c.id}</span></td>
-                      <td><div style={{ fontWeight: 700, color: '#1e293b' }}>{c.contractTitle}</div><div style={{ fontSize: 10, color: '#64748b' }}>{c.clientCompany} → {c.companyName || 'BenMyl'}</div></td>
-                      <td><div className="d-flex align-items-center gap-2"><User size={12} color="#64748b" /> {c.candidateName}</div></td>
-                      <td><ContractBadge status={c.status} /></td>
-                      <td style={{ color: '#64748b', fontSize: 12 }}>{c.createdDate}</td>
-                      <td><span className={`contract-badge ${sigCfg.cls}`}><span className="badge-dot" />{sigCfg.label}</span></td>
-                      <td>
-                        <div className="d-flex gap-2 justify-content-center">
-                          <button className="tbl-btn tbl-btn-view" onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}>
-                            <Eye size={12} /> {String(c.createdBy) === String(userId) ? 'View' : 'View & Sign'}
-                          </button>
-                          <button className="tbl-btn tbl-btn-download" onClick={() => handleDownload(c)} disabled={isDownloading === c.id}>
-                            {isDownloading === c.id ? <div className="contract-spinner" style={{ width: 10, height: 10 }} /> : <Download size={12} />}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      ) : (
+        <WeeklyMilestonesView
+          contracts={contracts}
+          progressMap={progressMap}
+          reviewMap={reviewMap}
+          submitReview={submitReview}
+          extensionMap={extensionMap}
+          submitExtension={submitExtension}
+          statusOverrideMap={statusOverrideMap}
+        />
+      )}
     </div>
   );
 };
