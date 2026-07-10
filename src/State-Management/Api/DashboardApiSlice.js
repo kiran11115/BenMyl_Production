@@ -37,7 +37,23 @@ getPostedMonthlyAnalytics: builder.query({
       }),
     }),
 
+    getRequiterDashboard: builder.query({
+      query: ({ companyId, userId }) => ({
+        url: "api/uatcompany/GetrequiterDashboard",
+        method: "GET",
+        params: { companyId, userId },
+      }),
+    }),
+
+    getHiringDashboard: builder.query({
+      query: (userId) => ({
+        url: "api/uatcompany/GethiringDashboard",
+        method: "GET",
+        params: { userId },
+      }),
+    }),
+
   }),
 });
 
-export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery,useGetMonthlyAnalyticsQuery,useGetPostedMonthlyAnalyticsQuery } = DashboardApiSlice;
+export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery,useGetMonthlyAnalyticsQuery,useGetPostedMonthlyAnalyticsQuery,useGetRequiterDashboardQuery,useGetHiringDashboardQuery } = DashboardApiSlice;

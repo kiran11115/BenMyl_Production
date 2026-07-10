@@ -14,7 +14,7 @@ import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSli
 import NoData from "../UploadTalent/NoData";
 import { useLocation } from "react-router-dom";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 50;
 
 const getInitials = (name = "") => {
   return name
@@ -31,6 +31,7 @@ const UserJobs = () => {
   const location = useLocation();
   const roleFromProfile = location.state?.role;
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const loadingRef = useRef(false);
 
   // Search state (matching Talent Profile functionality)
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,8 +49,11 @@ const UserJobs = () => {
 
   // pagination
   const [pageNumber, setPageNumber] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [allJobs, setAllJobs] = useState([]);
+
+  // Refs to always hold latest values inside scroll/async callbacks
+  const hasMoreRef = useRef(true);
+  const pageNumberRef = useRef(1);
 
   // scroll container ref
   const resultsRef = useRef(null);
@@ -155,32 +159,46 @@ const UserJobs = () => {
   // initial + pagination fetch
   useEffect(() => {
     let isMounted = true;
+    loadingRef.current = true;
 
     const fetchJobs = async () => {
-      if (pageNumber > 1 && !hasMore) return;
-
-      const payload = {
-        ComponyID: Number(companyId), // ⚠ exact casing required
-        pageNumber,
-        pageSize: PAGE_SIZE,
-        filters: buildApiFilters(filters),
-      };
-
-      const res = await getTalentJobs(payload).unwrap();
-
-      if (!isMounted) return;
-
-      if (!Array.isArray(res) || res.length === 0) {
-        setHasMore(false);
+      if (pageNumber > 1 && !hasMoreRef.current) {
+        loadingRef.current = false;
         return;
       }
 
-      setAllJobs((prev) =>
-        pageNumber === 1 ? res : [...prev, ...res]
-      );
+      let res = [];
 
-      if (res.length < PAGE_SIZE) {
-        setHasMore(false);
+      try {
+        const payload = {
+          ComponyID: Number(companyId),
+          pageNumber,
+          pageSize: PAGE_SIZE,
+          filters: buildApiFilters(filters),
+        };
+
+        res = await getTalentJobs(payload).unwrap();
+
+        if (!isMounted) return;
+
+        if (!Array.isArray(res) || res.length === 0) {
+          hasMoreRef.current = false;
+          return;
+        }
+
+        setAllJobs(prev =>
+          pageNumber === 1 ? res : [...prev, ...res]
+        );
+
+        if (res.length < PAGE_SIZE) {
+          hasMoreRef.current = false;
+        }
+      } catch (err) {
+        console.error("Fetch jobs failed:", err);
+      } finally {
+        if (isMounted) {
+          loadingRef.current = false;
+        }
       }
 
       // Auto-open logic
@@ -247,6 +265,7 @@ const UserJobs = () => {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber, filters, debouncedSearch]);
 
   // =========================
@@ -259,16 +278,21 @@ const UserJobs = () => {
     const onScroll = () => {
       if (
         el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
-        hasMore &&
-        !isLoading
+        hasMoreRef.current &&
+        !loadingRef.current
       ) {
-        setPageNumber((prev) => prev + 1);
+        loadingRef.current = true; // prevent duplicate increments
+        setPageNumber(prev => {
+          const next = prev + 1;
+          pageNumberRef.current = next;
+          return next;
+        });
       }
     };
 
     el.addEventListener("scroll", onScroll);
     return () => el.removeEventListener("scroll", onScroll);
-  }, [hasMore, isLoading]);
+  }, []);
 
   // =========================
   // NORMALIZE API DATA → UI
@@ -342,7 +366,8 @@ const UserJobs = () => {
   useEffect(() => {
     setAllJobs([]);
     setPageNumber(1);
-    setHasMore(true);
+    pageNumberRef.current = 1;
+    hasMoreRef.current = true;
     setMinTimeElapsed(false);
     const timer = setTimeout(() => {
       setMinTimeElapsed(true);
@@ -363,7 +388,6 @@ const UserJobs = () => {
             onApplyFilters={(appliedFilters) => {
               setAllJobs([]);
               setPageNumber(1);
-              setHasMore(true);
               setFilters(appliedFilters);
             }}
           />
@@ -379,7 +403,6 @@ const UserJobs = () => {
             onApplyFilters={(appliedFilters) => {
               setAllJobs([]);
               setPageNumber(1);
-              setHasMore(true);
               setFilters(appliedFilters);
               setIsMobileFilterOpen(false);
             }}

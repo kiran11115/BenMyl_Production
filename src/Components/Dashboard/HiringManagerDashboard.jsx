@@ -43,13 +43,12 @@ import {
 import ProjectsSection from "./ProjectsSection";
 import HiringPipelineChart from "./charts/HiringPipelineChart";
 import InterviewsList from "./InterviewsList";
-import { useGetQueueManagementMutation, useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { CandidateCard } from "../UploadTalent/UserTalentGrid";
 import Guide from "../Guide/Guide";
 import UploadTalentModal from "../UploadTalent/UploadTalentModal";
 import "../Admin/Modules/AdminDashboard/AdminDashboard.css";
-import { useGetPostedMonthlyAnalyticsQuery } from "../../State-Management/Api/DashboardApiSlice";
+import { useGetPostedMonthlyAnalyticsQuery, useGetRequiterDashboardQuery } from "../../State-Management/Api/DashboardApiSlice";
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Filler);
 
@@ -156,10 +155,13 @@ const HiringManagerDashboard = () => {
   const [toast, setToast] = useState(null);
   const user = localStorage.getItem("UserName") || "User";
   const userId = localStorage.getItem("CompanyId");
-  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+  const companyId = localStorage.getItem("logincompanyid");
+  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId , {refetchOnMountOrArgChange:true});
   const [dashboardProjects, setDashboardProjects] = useState([]);
-  const [getQueueManagement] = useGetQueueManagementMutation();
-  const [getMyBench] = useGetMyBenchMutation();
+  const { data: dashboardStats } = useGetRequiterDashboardQuery(
+    { companyId, userId },
+    { skip: !userId, refetchOnMountOrArgChange: true }
+  );
   const { data: monthlyAnalytics } = useGetPostedMonthlyAnalyticsQuery(undefined, { refetchOnMountOrArgChange: true });
 
   const sparklineData1 = useMemo(() => createSparklineData('#8b5cf6', 'rgba(139, 92, 246, 0.15)', 'rgba(139, 92, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
@@ -168,20 +170,28 @@ const HiringManagerDashboard = () => {
   const sparklineData4 = useMemo(() => createSparklineData('#06b6d4', 'rgba(6, 182, 212, 0.15)', 'rgba(6, 182, 212, 0)', [10, 15, 20, 25, 22, 30]), []);
 
   useEffect(() => {
-    setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
+    // 1. Sync card counts from dashboardStats API or fallback to local calculations
+    if (dashboardStats) {
+      setPostedJobsCount(dashboardStats.jobsPosted ?? 0);
+      setActiveProjectsCount(dashboardStats.activeProjects ?? 0);
+      setPendingReviewCount(dashboardStats.pitchesToReview ?? 0);
+      setHiringHealth(dashboardStats.hiringHealth ?? 75);
+    } else {
+      setPostedJobsCount(Array.isArray(jobTitles) ? jobTitles.length : 0);
 
-    // Calculate Project Data
-    const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
-    const mockProjects = [
-      { status: "Completed", budget: 45000 },
-      { status: "In Progress", budget: 85000 },
-      { status: "Awaiting Review", budget: 120000 },
-    ];
-    const allProjects = [...mockProjects, ...customProjects];
+      const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
+      const mockProjects = [
+        { status: "Completed", budget: 45000 },
+        { status: "In Progress", budget: 85000 },
+        { status: "Awaiting Review", budget: 120000 },
+      ];
+      const allProjects = [...mockProjects, ...customProjects];
+      setActiveProjectsCount(allProjects.filter(p => p.status === "In Progress").length);
+      setHiringHealth(75);
+      setPendingReviewCount(0);
+    }
 
-    setActiveProjectsCount(allProjects.filter(p => p.status === "In Progress").length);
-
-    // Map jobTitles to projects for the dashboard
+    // 2. Map jobTitles to projects for the dashboard
     if (Array.isArray(jobTitles)) {
       const mappedProjects = jobTitles.map(job => {
         const rateText = job.salaryRange_Min && job.salaryRange_Max
@@ -210,70 +220,50 @@ const HiringManagerDashboard = () => {
       setDashboardProjects(mappedProjects.slice(0, 3));
     }
 
+    // 3. Calculate total revenue from projects
+    const customProjects = JSON.parse(localStorage.getItem("customProjects") || "[]");
+    const mockProjects = [
+      { status: "Completed", budget: 45000 },
+      { status: "In Progress", budget: 85000 },
+      { status: "Awaiting Review", budget: 120000 },
+    ];
+    const allProjects = [...mockProjects, ...customProjects];
     const revenue = allProjects
       .filter(p => p.status === "Completed")
       .reduce((sum, p) => sum + (typeof p.budget === 'string' ? parseFloat(p.budget.replace(/[^0-9.]/g, '')) : p.budget || 0), 0);
     setTotalRevenue(revenue);
 
-    const fetchDashboardData = async () => {
-      try {
-        const companyIdNum = Number(userId);
+    // 4. Map jobTitles to recentJobs for parity
+    if (Array.isArray(jobTitles)) {
+      const mappedJobs = jobTitles.slice(0, 3).map(job => {
+        const rateText = job.salaryRange_Min && job.salaryRange_Max
+          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
+          : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
 
-        // 1. Fetch Pending Review Count
-        const pendingPayload = {
-          companyid: companyIdNum,
-          pageNumber: 1,
-          pageSize: 1000,
-          filters: [],
+        const budgetLabel = (() => {
+          const t = (job.salarType || "").toLowerCase();
+          if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+          if (t.includes("month")) return "/month";
+          if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+          return "/hr";
+        })();
+
+        return {
+          id: job.jobID,
+          title: job.jobTitle,
+          company: job.companyName,
+          location: job.location,
+          experience: job.experienceLevel || job.yearsOfExperience,
+          salary: `${rateText}${budgetLabel}`,
+          type: job.employeeType || job.workModels,
+          department: job.department,
+          skills: job.requiredSkills ? job.requiredSkills.split(",").map(s => s.trim()) : [],
+          avatar: `https://ui-avatars.com/api/?name=${job.companyName}&background=3b82f6&color=fff`,
         };
-        const pendingRes = await getQueueManagement(pendingPayload).unwrap();
-        const pendingCount = Array.isArray(pendingRes) ? pendingRes.filter(item => item.status === "Pending For Review").length : 0;
-        setPendingReviewCount(pendingCount);
-
-        // 2. Fetch Recent Jobs for Parity
-        if (Array.isArray(jobTitles)) {
-          const mappedJobs = jobTitles.slice(0, 3).map(job => {
-            const rateText = job.salaryRange_Min && job.salaryRange_Max
-              ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
-              : job.salaryRange_Min ? `$${job.salaryRange_Min}` : "N/A";
-
-            const budgetLabel = (() => {
-              const t = (job.salarType || "").toLowerCase();
-              if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
-              if (t.includes("month")) return "/month";
-              if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
-              return "/hr";
-            })();
-
-            return {
-              id: job.jobID,
-              title: job.jobTitle,
-              company: job.companyName,
-              location: job.location,
-              experience: job.experienceLevel || job.yearsOfExperience,
-              salary: `${rateText}${budgetLabel}`,
-              type: job.employeeType || job.workModels,
-              department: job.department,
-              skills: job.requiredSkills ? job.requiredSkills.split(",").map(s => s.trim()) : [],
-              avatar: `https://ui-avatars.com/api/?name=${job.companyName}&background=3b82f6&color=fff`,
-            };
-          });
-          setRecentJobs(mappedJobs);
-        }
-
-        // 3. Calculate Hiring Health
-        // If pending is low relative to total, health is higher
-        const totalTalentRes = await getMyBench({ companyid: companyIdNum, pageNumber: 1, pageSize: 10 }).unwrap();
-        const totalTalent = Array.isArray(totalTalentRes) ? totalTalentRes.length : 10;
-        const health = Math.max(60, Math.min(98, 100 - (pendingCount / (totalTalent || 1) * 100)));
-        setHiringHealth(Math.round(health));
-
-      } catch (err) {
-        console.error("Dashboard data fetch error", err);
-      }
-    };
-    fetchDashboardData();
-  }, [jobTitles, userId, getQueueManagement, getMyBench]);
+      });
+      setRecentJobs(mappedJobs);
+    }
+  }, [jobTitles, dashboardStats]);
 
   const handleNavigate = (path, state = {}) => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';

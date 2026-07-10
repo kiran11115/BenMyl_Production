@@ -40,7 +40,7 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
   skills:
     typeof skills === "string"
       ? skills.split(",").map((s) => s.trim())
-      : skills || [],
+      : skills || [], 
 };
         const res = await getRecommendedJobs(payload).unwrap();
         setAllJobs(Array.isArray(res) ? res : []);
@@ -69,7 +69,8 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
   };
 
   const mappedJobs = useMemo(() => {
-    return allJobs.map((job) => ({
+    const loggedInUserId = Number(localStorage.getItem("CompanyId"));
+    return allJobs.filter((job) => Number(job.userId) !== loggedInUserId).map((job) => ({
       id: job.jobID || job.id,
       userId: job.userId || job.jobUserId || job.jobuserid,
       title: job.jobTitle || job.title,
@@ -154,7 +155,13 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
         {firstThreeJobs.map((job) => (
           <div
             key={job.id}
-            onClick={() => setSelectedJob(job)}
+            onClick={() => {
+              if (isShortlisted) {
+                toast.warning("Candidate is already shortlisted");
+                return;
+              }
+              setSelectedJob(job);
+            }}
             className="job-card d-flex flex-column"
             style={{ cursor: "pointer" }}
           >

@@ -55,7 +55,7 @@ const SubscriptionPage = () => {
   const [approveTokenRequest] = useApproveTokenRequestMutation();
   const [rejectTokenRequest] = useRejectTokenRequestMutation();
 
-  const { data: dashboardData, refetch: refetchDashboard } = useGetTokenDashboardQuery(undefined,{refetchOnMountOrArgChange:true});
+  const { data: dashboardData, refetch: refetchDashboard } = useGetTokenDashboardQuery(undefined, { refetchOnMountOrArgChange: true });
   const { data: requestListData, refetch: refetchRequests } = useGetTokenRequestListQuery(companyId, {
     skip: !companyId || !isAdmin,
     refetchOnMountOrArgChange: true,
@@ -155,8 +155,8 @@ const SubscriptionPage = () => {
         requestedTokens: tokenVal,
         remarks: `request tokens from ${localStorage.getItem("UserName") || "unknown user"}`
       };
-      await requestTokens(payload).unwrap();
-      toast.success(`Token request for ${tokenVal} tokens sent successfully!`);
+      const response = await requestTokens(payload).unwrap();
+      toast.success(response.Message || response.message);
       setRequestTokenAmount("");
     } catch (err) {
       console.error("Failed to request tokens:", err);
@@ -299,14 +299,14 @@ const SubscriptionPage = () => {
         return;
       }
     }
-    
+
     setIsPaying(true);
     setTimeout(() => {
       // Add purchased tokens to pool state
       setAdminTotalPool(prev => prev + selectedPkg.tokens);
       setAdminTokensLeft(prev => prev + selectedPkg.tokens);
       toast.success(`Payment successful! Added ${selectedPkg.tokens.toLocaleString()} tokens to pool.`);
-      
+
       // Reset inputs & close modal
       setStripeCardNumber("");
       setStripeExpiry("");
@@ -351,7 +351,7 @@ const SubscriptionPage = () => {
           await shareTokens(payload).unwrap();
           refetchDashboard();
           refetchUserTokenList();
-          
+
           setTeamUsers(prev => prev.map(u => {
             if (u.emailID === allocateUserEmail) {
               return { ...u, tokens: (u.tokens || 0) + amount };
@@ -370,7 +370,7 @@ const SubscriptionPage = () => {
           setConfirmModalConfig(null);
         }
       },
-      onCancel: () => {}
+      onCancel: () => { }
     });
   };
 
@@ -392,11 +392,11 @@ const SubscriptionPage = () => {
             adminUserId: Number(localStorage.getItem("CompanyId")) || 0
           };
           await approveTokenRequest(payload).unwrap();
-          
+
           refetchDashboard();
           refetchRequests();
           refetchUserTokenList();
-          
+
           toast.success(`Approved and allocated ${req.tokensRequested.toLocaleString()} tokens to ${req.name}!`);
         } catch (err) {
           console.error("Failed to approve token request:", err);
@@ -406,7 +406,7 @@ const SubscriptionPage = () => {
           setConfirmModalConfig(null);
         }
       },
-      onCancel: () => {}
+      onCancel: () => { }
     });
   };
 
@@ -418,11 +418,11 @@ const SubscriptionPage = () => {
         adminUserId: Number(localStorage.getItem("CompanyId")) || 0
       };
       await rejectTokenRequest(payload).unwrap();
-      
+
       refetchDashboard();
       refetchRequests();
       refetchUserTokenList();
-      
+
       toast.success(`Declined token request for ${req.name}.`);
     } catch (err) {
       console.error("Failed to decline token request:", err);
@@ -462,7 +462,7 @@ const SubscriptionPage = () => {
   const getPlanPrice = (planId) => {
     if (planId === "free_trial") return "$0";
     if (planId === "enterprise") return "Custom";
-    
+
     if (planId === "basic") {
       return isYearlyBilling ? "$39/mo" : "$49/mo";
     }
@@ -478,8 +478,8 @@ const SubscriptionPage = () => {
     const priceDisplay = getPlanPrice(plan.id);
 
     return (
-      <div 
-        key={plan.id} 
+      <div
+        key={plan.id}
         className={`subscription-plan-card ${theme.themeClass} ${isActive ? 'active-plan' : ''} ${plan.comingSoon ? 'coming-soon' : ''}`}
       >
         {/* Google UI color bar at the top */}
@@ -540,8 +540,8 @@ const SubscriptionPage = () => {
               </span>
             )}
           </div>
-          
-          <button 
+
+          <button
             className={`plan-action-btn ${isActive ? 'active-btn' : plan.comingSoon ? 'coming-soon-btn' : 'upgrade-btn'}`}
             disabled={isActive || plan.comingSoon}
           >
@@ -557,95 +557,95 @@ const SubscriptionPage = () => {
       <div className="projects-container">
         {/* HERO SECTION */}
         <div className="hero-section-wrapper mb-4">
-        <div className="hero-card  ">
-          <div className="hero-concentric-lines"></div>
-          <div className="hero-ripple-pattern"></div>
-          <div className="hero-circular-highlights"></div>
-          <div className="hero-left sub-hero-left d-flex flex-row">
-            <div className="d-flex flex-column gap-3">
-            <div className="hero-pill">
-              ✦ Subscriptions & Billing
-            </div>
-            <h1 className="job-posting-title text-white">Subscription Management</h1>
-            <div className="job-posting-header-info">
-              <p className="job-posting-subtitle">
-                {isAdmin 
-                  ? "Manage your organization's subscription, view token utilization, and access billing history." 
-                  : "View your active plan details, monitor your token utilization, and request more tokens."}
-              </p>
-            </div>
-            </div>
-
-            {/* Elegant widgets in top blue card */}
-            <div className="sub-hero-widgets">
-              {/* Plan Details Widget */}
-            <div className="hero-token-widget-premium">
-              <div className="widget-header-premium">
-                <Shield size={14} className="sub-shield-icon" />
-                <span>Current Subscription</span>
-              </div>
-              <div className="widget-value-premium font-sans sub-widget-value">
-                Free Trial
-              </div>
-              <div className="sub-widget-expiry">
-                Exp: June 30, 2026
-              </div>
-            </div>
-
-            {/* Tokens Pool Widget */}
-            <div className="hero-token-widget-premium">
-              <div className="widget-header-premium">
-                <Zap size={14} className="sub-zap-icon" />
-                <span>{isAdmin ? "Available Tokens Pool" : "Your Available Tokens"}</span>
-              </div>
-              <div className="widget-value-premium">
-                {isAdmin ? adminTokensLeft.toLocaleString() : userAvailable.toLocaleString()}
-                <div className="sub-widget-allocated">
-                  {isAdmin ? `Allocated: ${adminTotalPool.toLocaleString()}` : `Allocated: ${userAllocated.toLocaleString()}`}
+          <div className="hero-card  ">
+            <div className="hero-concentric-lines"></div>
+            <div className="hero-ripple-pattern"></div>
+            <div className="hero-circular-highlights"></div>
+            <div className="hero-left sub-hero-left d-flex flex-row">
+              <div className="d-flex flex-column gap-3">
+                <div className="hero-pill">
+                  ✦ Subscriptions & Billing
+                </div>
+                <h1 className="job-posting-title text-white">Subscription Management</h1>
+                <div className="job-posting-header-info">
+                  <p className="job-posting-subtitle">
+                    {isAdmin
+                      ? "Manage your organization's subscription, view token utilization, and access billing history."
+                      : "View your active plan details, monitor your token utilization, and request more tokens."}
+                  </p>
                 </div>
               </div>
-              {isAdmin && (
-                <button className="add-tokens-action-btn" onClick={() => setIsAddTokensOpen(true)}>
-                  Add Tokens
-                </button>
-              )}
+
+              {/* Elegant widgets in top blue card */}
+              <div className="sub-hero-widgets">
+                {/* Plan Details Widget */}
+                <div className="hero-token-widget-premium">
+                  <div className="widget-header-premium">
+                    <Shield size={14} className="sub-shield-icon" />
+                    <span>Current Subscription</span>
+                  </div>
+                  <div className="widget-value-premium font-sans sub-widget-value">
+                    Free Trial
+                  </div>
+                  <div className="sub-widget-expiry">
+                    Exp: June 30, 2026
+                  </div>
+                </div>
+
+                {/* Tokens Pool Widget */}
+                <div className="hero-token-widget-premium">
+                  <div className="widget-header-premium">
+                    <Zap size={14} className="sub-zap-icon" />
+                    <span>{isAdmin ? "Available Tokens Pool" : "Your Available Tokens"}</span>
+                  </div>
+                  <div className="widget-value-premium">
+                    {isAdmin ? adminTokensLeft.toLocaleString() : userAvailable.toLocaleString()}
+                    <div className="sub-widget-allocated">
+                      {isAdmin ? `Allocated: ${adminTotalPool.toLocaleString()}` : `Allocated: ${userAllocated.toLocaleString()}`}
+                    </div>
+                  </div>
+                  {isAdmin && (
+                    <button className="add-tokens-action-btn" onClick={() => setIsAddTokensOpen(true)}>
+                      Add Tokens
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
+            <div className="hero-illustration">
+              <div className="hero-particles">
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+                <div className="particle"></div>
+              </div>
+              <img src="/Images/Billing.png" alt="Dashboard Illustration" className="hero-svg-image" />
             </div>
-          </div>
-                  <div className="hero-illustration">
-            <div className="hero-particles">
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-            </div>
-            <img src="/Images/Billing.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
         </div>
-      </div>
 
         {/* INTERACTIVE NAVIGATION TABS - ADMIN ONLY */}
         {isAdmin && (
           <div className="elegant-tabs-container">
-            <button 
+            <button
               className={`tab-item tab-item-users ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
               <Users size={13} className="tab-icon" />
               <span>Users</span>
             </button>
-            
-            <button 
+
+            <button
               className={`tab-item tab-item-billing ${activeTab === 'billing' ? 'active' : ''}`}
               onClick={() => setActiveTab('billing')}
             >
               <CreditCard size={13} className="tab-icon" />
               <span>Billing & Payments</span>
             </button>
-            
-            <button 
+
+            <button
               className={`tab-item tab-item-plans ${activeTab === 'plans' ? 'active' : ''}`}
               onClick={() => setActiveTab('plans')}
             >
@@ -653,7 +653,7 @@ const SubscriptionPage = () => {
               <span>Subscription Plans</span>
             </button>
 
-            <button 
+            <button
               className={`tab-item tab-item-usage ${activeTab === 'usage' ? 'active' : ''}`}
               onClick={() => setActiveTab('usage')}
             >
@@ -674,7 +674,7 @@ const SubscriptionPage = () => {
                 <div className="users-aside-content">
                   {/* Allocate Tokens Card (Accordion style) */}
                   <div className="premium-card premium-card-p20">
-                    <h3 
+                    <h3
                       onClick={() => setIsAllocateExpanded(!isAllocateExpanded)}
                       className="allocate-accordion-trigger"
                     >
@@ -697,8 +697,8 @@ const SubscriptionPage = () => {
                           <label className="allocate-field-label">
                             Select User
                           </label>
-                          <select 
-                            value={allocateUserEmail} 
+                          <select
+                            value={allocateUserEmail}
                             onChange={(e) => setAllocateUserEmail(e.target.value)}
                             className="allocate-select"
                             disabled={isTeamLoading}
@@ -721,9 +721,9 @@ const SubscriptionPage = () => {
                           <label className="allocate-field-label">
                             User Role
                           </label>
-                          <select 
-                            value={selectedUserObject?.role || ""} 
-                            disabled 
+                          <select
+                            value={selectedUserObject?.role || ""}
+                            disabled
                             className="allocate-select-disabled"
                           >
                             {allRoles.map((roleName) => (
@@ -747,17 +747,17 @@ const SubscriptionPage = () => {
                           <label className="allocate-field-label">
                             Tokens to Allocate
                           </label>
-                          <input 
-                            type="number" 
-                            placeholder="Min 100" 
-                            value={allocateTokensAmount} 
+                          <input
+                            type="number"
+                            placeholder="Min 100"
+                            value={allocateTokensAmount}
                             onChange={(e) => setAllocateTokensAmount(e.target.value)}
                             className="allocate-input"
                           />
                         </div>
 
-                        <button 
-                          className="btn-primary allocate-submit-btn" 
+                        <button
+                          className="btn-primary allocate-submit-btn"
                           onClick={handleAllocateTokens}
                           disabled={isAllocating}
                         >
@@ -791,8 +791,8 @@ const SubscriptionPage = () => {
                         </div>
                       ) : (
                         userRequests.map((req) => (
-                          <div 
-                            key={req.id} 
+                          <div
+                            key={req.id}
                             className="request-toast-alert-card"
                           >
                             <div className="request-alert-main">
@@ -809,7 +809,7 @@ const SubscriptionPage = () => {
                                 </span>
                               </div>
                             </div>
-                            
+
                             <div className="request-alert-actions">
                               <button
                                 className="approve-toast-btn request-btn-circle-success"
@@ -905,7 +905,7 @@ const SubscriptionPage = () => {
               <div className="billing-tab-layout">
                 {/* Left Column: Payment Methods & Billing History vertically stacked */}
                 <div className="billing-main-content">
-                  
+
                   {/* 1. Payment Methods Card */}
                   <div className="premium-card mb-4 premium-card-p20">
                     <div className="d-flex justify-content-between align-items-center mb-3">
@@ -917,7 +917,7 @@ const SubscriptionPage = () => {
                         <Plus size={13} /> Add Method
                       </button>
                     </div>
-                    
+
                     <div className="sub-methods-container">
                       <div className="virtual-credit-card">
                         <div className="card-glow"></div>
@@ -930,11 +930,11 @@ const SubscriptionPage = () => {
                             <span className="card-badge">PRIMARY</span>
                           </div>
                         </div>
-                        
+
                         <div className="card-middle-row">
                           <span className="virtual-card-number">••••  ••••  ••••  4242</span>
                         </div>
-                        
+
                         <div className="card-bottom-row">
                           <div className="card-holder-info">
                             <span className="card-label-mini">CARDHOLDER</span>
@@ -1104,20 +1104,20 @@ const SubscriptionPage = () => {
                   <Layers size={18} className="sub-plans-icon" />
                   Available Subscription Plans
                 </h3>
-                
+
                 {/* Billing Cycle Toggle */}
                 <div className="sub-cycle-toggle-container">
                   <span className={`sub-cycle-text ${isYearlyBilling ? 'inactive' : 'active'}`}>Monthly Billing</span>
-                  <button 
+                  <button
                     onClick={() => setIsYearlyBilling(!isYearlyBilling)}
                     className="sub-cycle-toggle-btn"
                   >
-                    <div 
+                    <div
                       className={`sub-cycle-toggle-dot ${isYearlyBilling ? 'yearly' : 'monthly'}`}
                     />
                   </button>
                   <span className={`sub-cycle-text-yearly ${isYearlyBilling ? 'active' : 'inactive'}`}>
-                    Yearly Billing 
+                    Yearly Billing
                     <span className="sub-cycle-save-badge">Save 20%</span>
                   </span>
                 </div>
@@ -1218,7 +1218,7 @@ const SubscriptionPage = () => {
                             let progressClass = "success";
                             if (percent > 85) progressClass = "danger";
                             else if (percent > 60) progressClass = "warning";
-                            
+
                             return (
                               <tr key={idx}>
                                 <td>
@@ -1241,8 +1241,8 @@ const SubscriptionPage = () => {
                                       <span className="usage-limit">{log.limit.toLocaleString()}</span>
                                     </div>
                                     <div className="progress-bar-bg compact">
-                                      <div 
-                                        className={`progress-bar-fill ${progressClass}`} 
+                                      <div
+                                        className={`progress-bar-fill ${progressClass}`}
                                         style={{ width: `${percent}%` }}
                                       ></div>
                                     </div>
@@ -1287,11 +1287,11 @@ const SubscriptionPage = () => {
                       <label className="allocate-field-label">
                         Tokens Required
                       </label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         min="1"
-                        placeholder="e.g. 500" 
-                        value={requestTokenAmount} 
+                        placeholder="e.g. 500"
+                        value={requestTokenAmount}
                         onChange={(e) => {
                           const val = e.target.value;
                           if (val === "" || Number(val) >= 0) {
@@ -1306,8 +1306,8 @@ const SubscriptionPage = () => {
                         className="no-spinner-input sub-request-input"
                       />
                     </div>
-                    <button 
-                      className="btn-primary sub-request-submit-btn" 
+                    <button
+                      className="btn-primary sub-request-submit-btn"
                       onClick={handleRequestTokens}
                       disabled={isRequestingTokens}
                     >
@@ -1342,7 +1342,7 @@ const SubscriptionPage = () => {
                       <div className="green-badge">Max</div>
                       <div className="stat-bg-icon stat-bg-blue"><Zap size={120} /></div>
                     </div>
-                    
+
                     <div className="stat-card w-100">
                       <div className="stat-header-row">
                         <div className="stat-title">Used Tokens</div>
@@ -1353,7 +1353,7 @@ const SubscriptionPage = () => {
                       <div className="green-badge badge-red">{userUsedPercent}%</div>
                       <div className="stat-bg-icon stat-bg-red"><Activity size={120} /></div>
                     </div>
-                    
+
                     <div className="stat-card w-100">
                       <div className="stat-header-row">
                         <div className="stat-title">Remaining Tokens</div>
@@ -1386,7 +1386,7 @@ const SubscriptionPage = () => {
           <>
             {/* Backdrop */}
             <div className="psm-backdrop"></div>
-            
+
             {/* Panel */}
             <div className="psm-panel">
               {/* Header */}
@@ -1402,16 +1402,16 @@ const SubscriptionPage = () => {
                   Purchase additional tokens to distribute to your recruiters and hiring managers.
                 </p>
               </div>
-              
+
               {/* Scrollable Body */}
               <div className="psm-body psm-body-gap20">
-                
+
                 {/* Package Selection */}
                 <div>
                   <label className="stripe-label">Select Token Package</label>
                   <div className="token-packages-grid">
                     {tokenPackages.map((pkg) => (
-                      <div 
+                      <div
                         key={pkg.tokens}
                         onClick={() => setSelectedPkg(pkg)}
                         className={`token-pkg-grid-card pkg-${pkg.tokens} ${selectedPkg.tokens === pkg.tokens ? 'selected' : ''}`}
@@ -1425,7 +1425,7 @@ const SubscriptionPage = () => {
                           {pkg.tokens.toLocaleString()}
                         </span>
                         <span className="pkg-tokens-lbl">Tokens</span>
-                        
+
                         <span className="pkg-price-value">${pkg.price}</span>
                         <span className="pkg-unit-price">
                           {(pkg.price / pkg.tokens * 1000).toFixed(2)}¢ / token
@@ -1439,7 +1439,7 @@ const SubscriptionPage = () => {
                 <div className="psm-divider-top">
                   <label className="stripe-label mb-8">Payment Method</label>
                   <div className="psm-flex-col-gap10">
-                    <div 
+                    <div
                       onClick={() => setSelectedPaymentMethod("visa_4242")}
                       className={`stripe-payment-selector-card ${selectedPaymentMethod === "visa_4242" ? "selected" : ""}`}
                     >
@@ -1463,7 +1463,7 @@ const SubscriptionPage = () => {
                       </div>
                     </div>
 
-                    <div 
+                    <div
                       onClick={() => setSelectedPaymentMethod("new_card")}
                       className={`stripe-payment-selector-card ${selectedPaymentMethod === "new_card" ? "selected" : ""}`}
                     >
@@ -1497,9 +1497,9 @@ const SubscriptionPage = () => {
                       {/* Card Number */}
                       <div className="stripe-input-cell">
                         <span className="stripe-input-label">Card Number</span>
-                        <input 
-                          type="text" 
-                          placeholder="4242 4242 4242 4242" 
+                        <input
+                          type="text"
+                          placeholder="4242 4242 4242 4242"
                           className="stripe-input-field"
                           value={stripeCardNumber}
                           onChange={(e) => setStripeCardNumber(e.target.value)}
@@ -1509,9 +1509,9 @@ const SubscriptionPage = () => {
                       <div className="stripe-input-row">
                         <div className="stripe-input-cell">
                           <span className="stripe-input-label">Expiration</span>
-                          <input 
-                            type="text" 
-                            placeholder="MM / YY" 
+                          <input
+                            type="text"
+                            placeholder="MM / YY"
                             className="stripe-input-field"
                             value={stripeExpiry}
                             onChange={(e) => setStripeExpiry(e.target.value)}
@@ -1519,9 +1519,9 @@ const SubscriptionPage = () => {
                         </div>
                         <div className="stripe-input-cell">
                           <span className="stripe-input-label">CVC</span>
-                          <input 
-                            type="text" 
-                            placeholder="123" 
+                          <input
+                            type="text"
+                            placeholder="123"
                             className="stripe-input-field"
                             maxLength={4}
                             value={stripeCvc}
@@ -1533,9 +1533,9 @@ const SubscriptionPage = () => {
 
                     <div className="stripe-field-container">
                       <span className="stripe-label">Cardholder Name</span>
-                      <input 
-                        type="text" 
-                        placeholder="Jane Smith" 
+                      <input
+                        type="text"
+                        placeholder="Jane Smith"
                         className="stripe-field-input"
                         value={stripeName}
                         onChange={(e) => setStripeName(e.target.value)}
@@ -1544,9 +1544,9 @@ const SubscriptionPage = () => {
 
                     <div className="stripe-field-container">
                       <span className="stripe-label">ZIP / Postal Code</span>
-                      <input 
-                        type="text" 
-                        placeholder="10001" 
+                      <input
+                        type="text"
+                        placeholder="10001"
                         className="stripe-field-input"
                         value={stripeZip}
                         onChange={(e) => setStripeZip(e.target.value)}
@@ -1554,78 +1554,78 @@ const SubscriptionPage = () => {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="psm-summary-box">
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b" }}>Total Payment:</span>
-                <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", fontFamily: "'Space Grotesk', sans-serif" }}>${selectedPkg.price}.00</span>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="psm-footer">
-              <button 
-                className="btn-secondary" 
-                onClick={() => setIsAddTokensOpen(false)}
-                disabled={isPaying}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn-primary" 
-                onClick={handlePayAddTokens}
-                disabled={isPaying}
-              >
-                {isPaying ? (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                    <div className="spinner-sm"></div>
-                    Processing...
-                  </div>
-                ) : (
-                  `Pay $${selectedPkg.price}.00`
-                )}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* CUSTOM CONFIRMATION DIALOG OVERLAY */}
-      {confirmModalConfig && (
-        <>
-          <div className="psm-backdrop z-10000"></div>
-          <div className="custom-confirm-overlay">
-            <div className="custom-confirm-card">
-              <div className="custom-confirm-header">
-                <div className="custom-confirm-icon-box">
-                  {confirmModalConfig.icon}
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#1e293b", fontFamily: "'Space Grotesk', sans-serif" }}>${selectedPkg.price}.00</span>
                 </div>
-                <h3>{confirmModalConfig.title}</h3>
               </div>
-              <p className="custom-confirm-message">{confirmModalConfig.message}</p>
-              <div className="custom-confirm-actions">
-                <button 
-                  className="btn-secondary" 
-                  onClick={() => {
-                    confirmModalConfig.onCancel();
-                    setConfirmModalConfig(null);
-                  }}
+
+              {/* Footer */}
+              <div className="psm-footer">
+                <button
+                  className="btn-secondary"
+                  onClick={() => setIsAddTokensOpen(false)}
+                  disabled={isPaying}
                 >
                   Cancel
                 </button>
-                <button 
-                  className="btn-primary" 
-                  onClick={() => {
-                    confirmModalConfig.onConfirm();
-                    setConfirmModalConfig(null);
-                  }}
+                <button
+                  className="btn-primary"
+                  onClick={handlePayAddTokens}
+                  disabled={isPaying}
                 >
-                  Confirm
+                  {isPaying ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                      <div className="spinner-sm"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    `Pay $${selectedPkg.price}.00`
+                  )}
                 </button>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+
+        {/* CUSTOM CONFIRMATION DIALOG OVERLAY */}
+        {confirmModalConfig && (
+          <>
+            <div className="psm-backdrop z-10000"></div>
+            <div className="custom-confirm-overlay">
+              <div className="custom-confirm-card">
+                <div className="custom-confirm-header">
+                  <div className="custom-confirm-icon-box">
+                    {confirmModalConfig.icon}
+                  </div>
+                  <h3>{confirmModalConfig.title}</h3>
+                </div>
+                <p className="custom-confirm-message">{confirmModalConfig.message}</p>
+                <div className="custom-confirm-actions">
+                  <button
+                    className="btn-secondary"
+                    onClick={() => {
+                      confirmModalConfig.onCancel();
+                      setConfirmModalConfig(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn-primary"
+                    onClick={() => {
+                      confirmModalConfig.onConfirm();
+                      setConfirmModalConfig(null);
+                    }}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

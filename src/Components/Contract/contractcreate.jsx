@@ -62,6 +62,19 @@ const validationSchema = Yup.object().shape({
   termsAndConditions: Yup.string().required('Required'),
 });
 
+// Local display formatter: convert ContractContext.formatDate output from "dd-Mmm-yyyy" to "dd Mmm yyyy"
+const formatDateDisplay = (val) => {
+  if (!val) return '-';
+  try {
+    const formatted = formatDate(val);
+    if (!formatted) return '-';
+    if (typeof formatted === 'string') return formatted.replace(/-/g, ' ');
+    return formatted;
+  } catch (e) {
+    return val;
+  }
+};
+
 // Custom PDF rendering component using pdf.js to render PDF content on HTML5 canvas elements
 const CustomPdfViewer = ({ file }) => {
   const [pages, setPages] = useState([]);
@@ -1579,11 +1592,11 @@ const ContractCreate = () => {
                       </div>
                       <div className="cw-preview-mini-row">
                         <span className="cw-preview-mini-label">Start Date</span>
-                        <span className="cw-preview-mini-value">{formik.values.startDate || '-'}</span>
+                        <span className="cw-preview-mini-value">{formatDateDisplay(formik.values.startDate)}</span>
                       </div>
                       <div className="cw-preview-mini-row">
                         <span className="cw-preview-mini-label">End Date</span>
-                        <span className="cw-preview-mini-value">{formik.values.endDate || '-'}</span>
+                        <span className="cw-preview-mini-value">{formatDateDisplay(formik.values.endDate)}</span>
                       </div>
                     </div>
 
@@ -1675,11 +1688,11 @@ const ContractCreate = () => {
                         </div>
                         <div>
                           <span className="cw-legal-field-label">Effective Commencement</span>
-                          <div className="cw-legal-field-value">{formik.values.startDate}</div>
+                          <div className="cw-legal-field-value">{formatDateDisplay(formik.values.startDate)}</div>
                         </div>
                         <div>
                           <span className="cw-legal-field-label">End Date Constraint</span>
-                          <div className="cw-legal-field-value">{formik.values.endDate}</div>
+                          <div className="cw-legal-field-value">{formatDateDisplay(formik.values.endDate)}</div>
                         </div>
                         <div>
                           <span className="cw-legal-field-label">Fees / Remittance Rate</span>
