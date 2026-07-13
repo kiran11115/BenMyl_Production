@@ -69,6 +69,7 @@ import MasterCompanies from "./MasterScreens/MasterCompanies";
 import MasterNetwork from "./MasterScreens/MasterNetwork";
 import MasterBilling from "./MasterScreens/MasterBilling";
 import MasterCompanyOverview from "./MasterScreens/MasterCompanyOverview";
+import MasterShare from "./MasterScreens/MasterShare";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -134,6 +135,7 @@ const routes = createBrowserRouter(
           <Route path="companies/:id" element={<MasterCompanyOverview />} />
           <Route path="network" element={<MasterNetwork />} />
           <Route path="billing" element={<MasterBilling />} />
+          <Route path="share" element={<MasterShare />} />
         </Route>
 
         <Route path="User" element={<Header />}>

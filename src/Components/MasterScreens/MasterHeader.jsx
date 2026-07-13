@@ -11,7 +11,8 @@ import {
   ShieldAlert,
   User,
   Bell,
-  ChevronDown
+  ChevronDown,
+  Share2
 } from "lucide-react";
 import "./MasterHeader.css";
 
@@ -37,6 +38,7 @@ const MasterHeader = () => {
     { path: "/MasterAdmin/companies", name: "Companies", icon: Building2 },
     { path: "/MasterAdmin/network", name: "Network", icon: Network },
     { path: "/MasterAdmin/billing", name: "Billing", icon: CreditCard },
+    { path: "/MasterAdmin/share", name: "Share", icon: Share2 },
   ];
 
   // Close dropdown on click outside

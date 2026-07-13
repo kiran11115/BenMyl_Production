@@ -1,0 +1,167 @@
+.master-share-container {
+  padding: 32px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+}
+
+.master-share-header {
+  margin-bottom: 24px;
+}
+
+.master-share-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.master-share-header p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.master-share-content {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.master-share-form-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+}
+
+.master-share-preview-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  height: 700px; /* Fixed height for the preview section */
+  display: flex;
+  flex-direction: column;
+}
+
+.master-share-preview-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.preview-container {
+  flex: 1;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.template-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+.no-preview {
+  color: #6b7280;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+@media (max-width: 900px) {
+  .master-share-content {
+    flex-direction: column;
+  }
+  .master-share-form-card,
+  .master-share-preview-card {
+    width: 100%;
+  }
+}
+
+.master-share-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #ffffff;
+}
+
+.form-group input.readonly-input {
+  background-color: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-group input.readonly-input:focus {
+  border-color: #d1d5db;
+  box-shadow: none;
+}
+
+.form-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.master-share-submit-btn {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.master-share-submit-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.master-share-submit-btn:active {
+  background-color: #1e40af;
+}
