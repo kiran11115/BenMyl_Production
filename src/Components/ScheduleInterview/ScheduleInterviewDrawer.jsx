@@ -392,6 +392,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
             const fd = new FormData();
             fd.append('InterviewId', 0);
             fd.append('RecruiterID', Number(userId));
+            fd.append("JobID", selectedJob.id);
             fd.append('RecruiterName', userName);
             fd.append('CompanyName', selectedJob.company);
             fd.append('JobTitle', selectedJob.title);
