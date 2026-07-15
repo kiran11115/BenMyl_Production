@@ -9,8 +9,17 @@ const SigninApiSlice = apiSlice.injectEndpoints({
         body: { ...Credentials },
       }),
     }),
+
+    masterLogin: builder.mutation({
+      query: (data) => ({
+        url: "/api/Account/MasterLogin",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
   }),
 });
 
 
-export const {useSigninMutation} = SigninApiSlice;
+export const {useSigninMutation,useMasterLoginMutation} = SigninApiSlice;

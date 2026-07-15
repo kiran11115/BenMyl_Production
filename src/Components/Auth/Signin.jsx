@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSigninMutation } from "../../State-Management/Api/SigninApiSlice";
+import { useMasterLoginMutation, useSigninMutation } from "../../State-Management/Api/SigninApiSlice";
 import { SubmissionErrorModal } from "./SigninAlert";
 import "./Auth.css";
 
@@ -15,6 +15,7 @@ function Signin() {
 
   const navigate = useNavigate();
   const [signin, { isLoading }] = useSigninMutation();
+  const [masterLogin] = useMasterLoginMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -34,15 +35,23 @@ function Signin() {
       try {
         setLoginErrorMsg("");
 
-        if (values.email === "master@benmyl.com" && values.password === "Mylas@123") {
-          localStorage.setItem("token", "master-admin-token-bypass-xyz");
-          localStorage.setItem("Email", "master@benmyl.com");
-          localStorage.setItem("Role", "MasterAdmin");
-          localStorage.setItem("UserName", "Master Admin");
-          localStorage.setItem("CompanyName", "BenMyl Support");
-          navigate("/MasterAdmin/dashboard");
-          return;
-        }
+        if (values.email === "master@benmyl.com") {
+  const masterResponse = await masterLogin({
+    emailID: values.email,
+    password: values.password,
+  }).unwrap();
+
+  console.log("MASTER LOGIN", masterResponse);
+
+  if (masterResponse) {
+    localStorage.setItem("Email", masterResponse.emailId);
+    localStorage.setItem("Role", masterResponse.roleName);
+    localStorage.setItem("UserName", masterResponse.fullName);
+
+    navigate("/MasterAdmin/dashboard");
+    return;
+  }
+}
 
         const payload = {
           emailID: values.email,

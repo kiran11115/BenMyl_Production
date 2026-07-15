@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Building2, 
   Search, 
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./MasterCompanies.css";
+import { useGetCompanyListQuery } from "../../State-Management/Api/CompanyApiSlice";
 
 const initialCompanies = [
   { id: "COMP-101", name: "AeroTech Solutions", domain: "aerotech.io", tier: "Enterprise", status: "Active", users: 42, maxUsers: 100, tickets: 2, joined: "2026-01-15" },
@@ -28,7 +29,31 @@ const initialCompanies = [
 
 const MasterCompanies = () => {
   const navigate = useNavigate();
+  const { data: apiCompanies, isLoading, error } = useGetCompanyListQuery();
   const [companies, setCompanies] = useState(initialCompanies);
+
+  useEffect(() => {
+    if (apiCompanies) {
+      const mapped = apiCompanies.map(item => ({
+        id: item.companyId,
+        name: item.companyName?.trim() || "",
+        domain: item.website || "",
+        status: item.companyStatus || "Active",
+        users: item.currentUsers || 0,
+        maxUsers: item.totalUsers || 0,
+        tier: item.tier || "Starter",
+        tickets: item.activeSupportUsers || 0,
+        joined: "2026-01-15", // default/mock joined date
+        contactName: item.contactName,
+        contactEmail: item.contactEmail,
+        contactPhone: item.contactPhone,
+        city: item.city,
+        state: item.state,
+        country: item.country
+      }));
+      setCompanies(mapped);
+    }
+  }, [apiCompanies]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [tierFilter, setTierFilter] = useState("All");
@@ -98,13 +123,31 @@ const MasterCompanies = () => {
   const filteredCompanies = companies.filter(comp => {
     const matchesSearch = comp.name.toLowerCase().includes(search.toLowerCase()) || 
                           comp.domain.toLowerCase().includes(search.toLowerCase()) ||
-                          comp.id.toLowerCase().includes(search.toLowerCase());
+                          comp.id.toString().toLowerCase().includes(search.toLowerCase());
     
     const matchesStatus = statusFilter === "All" || comp.status === statusFilter;
     const matchesTier = tierFilter === "All" || comp.tier === tierFilter;
 
     return matchesSearch && matchesStatus && matchesTier;
   });
+
+  if (isLoading) {
+    return (
+      <div className="companies-container">
+        <div className="empty-grid-state">Loading companies...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="companies-container">
+        <div className="empty-grid-state" style={{ color: "#ef4444" }}>
+          Error loading companies. Please try again later.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="companies-container">

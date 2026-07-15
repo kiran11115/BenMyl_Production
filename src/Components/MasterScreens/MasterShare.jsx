@@ -1,37 +1,67 @@
 import React, { useState } from "react";
 import "./MasterShare.css";
+import { useSendTemplateMailMutation } from "../../State-Management/Api/MasterAdminApiSlice";
+import { toast } from "react-toastify";
 
 const MasterShare = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [sendTemplateMail, { isLoading }] = useSendTemplateMailMutation();
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
 
   const templates = [
-    { id: "temp-1", name: "Welcome Template 1", url: "/benmyl_welcome_template.html" },
-    { id: "temp-2", name: "Welcome Combined", url: "/benmyl_welcome_template_combined.html" },
-    { id: "temp-3", name: "Welcome Template v2", url: "/benmyl_welcome_template_v2.html" },
-    { id: "temp-4", name: "Welcome Template v3", url: "/benmyl_welcome_template_v3.html" },
-    { id: "temp-5", name: "Welcome Template v4", url: "/benmyl_welcome_template_v4.html" },
-    { id: "temp-6", name: "Welcome Template v5", url: "/benmyl_welcome_template_v5.html" },
+    { id: "temp-1", name: "Welcome Template v1", url: "/benmyl_welcome_template.html" },
+    { id: "temp-2", name: "Welcome Template v2", url: "/benmyl_welcome_template_v2.html" },
+    { id: "temp-3", name: "Welcome Template v3", url: "/benmyl_welcome_template_v5.html" },
+    { id: "temp-4", name: "Welcome Template v4", url: "/benmyl_welcome_template_v4.html" },
+    { id: "temp-5", name: "Welcome Template v5", url: "/benmyl_welcome_template_v3.html" },
+    { id: "temp-6", name: "Welcome Template v6", url: "/benmyl_welcome_template_combined.html" },
   ];
 
   const selectedTemplateObj = templates.find((t) => t.id === selectedTemplate);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    console.log("Sending email:", {
-      templateId: selectedTemplate,
-      message,
-      email,
-      name,
-    });
-    alert("Email sent successfully!");
-    // Reset form
-    setSelectedTemplate("");
-    setMessage("");
-    setEmail("");
-    setName("");
+
+    if (!selectedTemplate) {
+      toast.error("Please select a template.");
+      return;
+    }
+
+    if (!name.trim()) {
+      toast.error("Please enter recipient name.");
+      return;
+    }
+
+    if (!email.trim()) {
+      toast.error("Please enter recipient email.");
+      return;
+    }
+
+    const payload = {
+      templateId: selectedTemplate, // temp-1,temp-2,temp-3...
+      toEmail: email,
+      name: name,
+      message: message,
+    };
+
+    try {
+      const response = await sendTemplateMail(payload).unwrap();
+
+      toast.success(response?.message || "Email sent successfully!");
+
+      // Reset Form
+      setSelectedTemplate("");
+      setMessage("");
+      setEmail("");
+      setName("");
+
+    } catch (error) {
+      toast.error(
+        error?.data?.message || "Failed to send email."
+      );
+    }
   };
 
   return (
@@ -40,7 +70,7 @@ const MasterShare = () => {
         <h2>Share Templates</h2>
         <p>Select a template and send an email.</p>
       </div>
-      
+
       <div className="master-share-content">
         <div className="master-share-form-card">
           <form onSubmit={handleSend} className="master-share-form">
@@ -106,8 +136,12 @@ const MasterShare = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="master-share-submit-btn">
-                Send Email
+              <button
+                type="submit"
+                className="master-share-submit-btn"
+                disabled={isLoading}
+              >
+                {isLoading ? "Sending..." : "Send Email"}
               </button>
             </div>
           </form>

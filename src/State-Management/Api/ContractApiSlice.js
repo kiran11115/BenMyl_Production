@@ -35,6 +35,12 @@ export const ContractApiSlice = apiSlice.injectEndpoints({
             query: (jobId) =>
                 `api/Account/GetNotificationsByJobId?jobId=${jobId}`,
         }),
+        getContractNotifications: builder.query({
+  query: (userId) => ({
+    url: `/api/Account/GetContractNotifications?userId=${userId}`,
+    method: "GET",
+  }),
+}),
     }),
 });
 
@@ -43,5 +49,6 @@ export const {
     useGetAllContractsQuery,
     useGetContractByIdQuery,
     useGetContractsByBenchsalesQuery,
-    useLazyGetNotificationsByJobIdQuery
+    useLazyGetNotificationsByJobIdQuery,
+    useGetContractNotificationsQuery
 } = ContractApiSlice;

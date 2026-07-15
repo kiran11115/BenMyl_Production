@@ -1,24 +1,27 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  Building2, 
-  ArrowLeft, 
-  Globe, 
-  Users, 
-  Shield, 
-  Briefcase, 
-  UserCheck, 
-  BarChart3, 
-  Calendar, 
+import {
+  Building2,
+  ArrowLeft,
+  Globe,
+  Users,
+  Shield,
+  Briefcase,
+  UserCheck,
+  BarChart3,
+  Calendar,
   CreditCard,
   CheckCircle,
   Clock,
   AlertCircle,
   FileText,
   TrendingUp,
-  Download
+  Download,
+  Loader2
 } from "lucide-react";
 import "./MasterCompanyOverview.css";
+import { useGetCompanyUsersQuery, useGetCompanyJobListQuery, useLazyGetCompanyJobListQuery, useLazyGetInterviewSchedulesQuery } from "../../State-Management/Api/CompanyApiSlice";
+
 
 // Dynamic mock databases mapped to Company IDs
 const companyDatabase = {
@@ -159,9 +162,28 @@ const MasterCompanyOverview = () => {
 
   const company = companyDatabase[id] || { ...defaultCompany, name: `Company Profile (${id})` };
 
+  // Fetch users from API (eager)
+  const { data: usersResponse, isLoading: usersLoading } = useGetCompanyUsersQuery(id, { skip: !id });
+  // Fetch jobs lazily — triggered by clicking a member row
+  const [fetchMemberJobs, { data: jobsResponse, isLoading: jobsLoading }] = useLazyGetCompanyJobListQuery();
+  // Fetch interviews lazily — triggered by clicking a member row
+  const [fetchMemberInterviews, { data: interviewsResponse, isLoading: interviewsLoading }] = useLazyGetInterviewSchedulesQuery();
+
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  const apiMembers = usersResponse?.data || [];
+  const apiJobs = jobsResponse?.data || [];
+  const apiInterviews = interviewsResponse?.data || [];
+
+  const handleMemberClick = (member) => {
+    setSelectedMember(member);
+    fetchMemberJobs(member.authInfoID);
+    fetchMemberInterviews(member.authInfoID);
+    setActiveTab("posts");
+  };
+
   const tabItems = [
     { id: "posts", name: "Job Posts", icon: Briefcase },
-    { id: "talent", name: "Talent Pool", icon: Users },
     { id: "analytics", name: "Analytics", icon: BarChart3 },
     { id: "interviews", name: "Interviews Done", icon: Calendar },
     { id: "tokens", name: "Tokens & Subscription", icon: CreditCard }
@@ -221,55 +243,74 @@ const MasterCompanyOverview = () => {
         <div className="section-title-row">
           <div className="title-desc">
             <h3>Registered Team Members</h3>
-            <p>Displaying accounts enrolled in the client workspace ({company.users} active / {company.maxUsers} limit)</p>
+            <p>Displaying accounts enrolled in the client workspace ({apiMembers.length} active / {company.maxUsers} limit)</p>
           </div>
           <div className="quota-bar-wrapper">
             <div className="quota-bar-info">
               <span>Seats Filled:</span>
-              <strong>{Math.round((company.users / company.maxUsers) * 100)}%</strong>
+              <strong>{company.maxUsers ? Math.round((apiMembers.length / company.maxUsers) * 100) : 0}%</strong>
             </div>
             <div className="progress-bar-container">
-              <div 
-                className="progress-bar-fill" 
-                style={{ width: `${(company.users / company.maxUsers) * 100}%` }}
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${company.maxUsers ? (apiMembers.length / company.maxUsers) * 100 : 0}%` }}
               ></div>
             </div>
           </div>
         </div>
 
         <div className="table-card-container">
-          <table className="overview-matching-table">
-            <thead>
-              <tr>
-                <th>Member Name</th>
-                <th>Corporate Email</th>
-                <th>Allocated Role</th>
-                <th>Account Status</th>
-                <th>Joined Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {company.members.map((member, idx) => (
-                <tr key={idx}>
-                  <td className="member-name-col">
-                    <div className="avatar-letter">{member.name[0]}</div>
-                    <span className="bold-text">{member.name}</span>
-                  </td>
-                  <td className="email-col">{member.email}</td>
-                  <td className="role-col">
-                    <span className="role-badge-text">{member.role}</span>
-                  </td>
-                  <td>
-                    <span className={`status-dot-text ${member.status.toLowerCase()}`}>
-                      <span className="dot"></span>
-                      <span>{member.status}</span>
-                    </span>
-                  </td>
-                  <td className="date-col">{member.joined}</td>
+          {usersLoading ? (
+            <div className="panel-empty-state"><Loader2 size={18} className="spin-icon" /> Loading members...</div>
+          ) : apiMembers.length === 0 ? (
+            <div className="panel-empty-state">No team members registered in this workspace.</div>
+          ) : (
+            <table className="overview-matching-table">
+              <thead>
+                <tr>
+                  <th>Member Name</th>
+                  <th>Corporate Email</th>
+                  <th>Allocated Role</th>
+                  <th>Account Status</th>
+                  <th>Joined Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {apiMembers.map((member, idx) => (
+                  <tr
+                    key={member.authInfoID || idx}
+                    onClick={() => handleMemberClick(member)}
+                    style={{ cursor: "pointer" }}
+                    className={selectedMember?.authInfoID === member.authInfoID ? "member-row-selected" : ""}
+                  >
+                    <td className="member-name-col">
+                      <div className="avatar-letter">{member.memberName?.[0]?.toUpperCase() || "?"}</div>
+                      <span className="bold-text">{member.memberName || "—"}</span>
+                    </td>
+                    <td className="email-col">{member.corporateEmail || "—"}</td>
+                    <td className="role-col">
+                      <span className="role-badge-text">
+                        {member.allocatedRole === "Recruiter2"
+                          ? "Recruiter"
+                          : member.allocatedRole === "Recruiter"
+                            ? "Hiring Manager"
+                            : member.allocatedRole || "—"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-dot-text ${(member.accountStatus || "").toLowerCase()}`}>
+                        <span className="dot"></span>
+                        <span>{member.accountStatus || "—"}</span>
+                      </span>
+                    </td>
+                    <td className="date-col">
+                      {member.joinedDate ? new Date(member.joinedDate).toLocaleDateString() : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </section>
 
@@ -297,12 +338,22 @@ const MasterCompanyOverview = () => {
           {activeTab === "posts" && (
             <div className="tab-panel-posts">
               <div className="panel-header">
-                <h4>Active Job Vacancies</h4>
-                <span className="count-pill">{company.posts.length} Openings</span>
+                <h4>
+                  {selectedMember
+                    ? <>Job Vacancies &mdash; <span style={{ color: "var(--primary)" }}>{selectedMember.memberName}</span></>
+                    : "Active Job Vacancies"}
+                </h4>
+                <span className="count-pill">{selectedMember ? `${apiJobs.length} Openings` : "Select a member"}</span>
               </div>
-              
-              {company.posts.length === 0 ? (
-                <div className="panel-empty-state">No job vacancies created in this workspace.</div>
+
+              {!selectedMember ? (
+                <div className="panel-empty-state">
+                  Click on any team member above to load their job list.
+                </div>
+              ) : jobsLoading ? (
+                <div className="panel-empty-state"><Loader2 size={18} className="spin-icon" /> Loading jobs...</div>
+              ) : apiJobs.length === 0 ? (
+                <div className="panel-empty-state">No job vacancies found for {selectedMember.memberName}.</div>
               ) : (
                 <div className="table-card-container">
                   <table className="overview-matching-table">
@@ -316,15 +367,17 @@ const MasterCompanyOverview = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {company.posts.map((post, idx) => (
-                        <tr key={idx}>
-                          <td className="bold-text">{post.title}</td>
-                          <td>{post.department}</td>
-                          <td className="date-col">{post.date}</td>
-                          <td className="bold-text">{post.applicants} applicants</td>
+                      {apiJobs.map((post, idx) => (
+                        <tr key={post.jobID || idx}>
+                          <td className="bold-text">{post.jobTitle || "—"}</td>
+                          <td>{post.department || "—"}</td>
+                          <td className="date-col">
+                            {post.createdDate ? new Date(post.createdDate).toLocaleDateString() : "—"}
+                          </td>
+                          <td className="bold-text">{post.applicants ?? 0} applicants</td>
                           <td>
-                            <span className={`status-badge-outline ${post.status.toLowerCase()}`}>
-                              {post.status}
+                            <span className={`status-badge-outline ${(post.status || "").toLowerCase()}`}>
+                              {post.status || "—"}
                             </span>
                           </td>
                         </tr>
@@ -336,45 +389,7 @@ const MasterCompanyOverview = () => {
             </div>
           )}
 
-          {activeTab === "talent" && (
-            <div className="tab-panel-talent">
-              <div className="panel-header">
-                <h4>Talent Pool Profiles</h4>
-                <span className="count-pill">{company.talent.length} Sourced</span>
-              </div>
 
-              {company.talent.length === 0 ? (
-                <div className="panel-empty-state">No talent pool records found in this workspace.</div>
-              ) : (
-                <div className="table-card-container">
-                  <table className="overview-matching-table">
-                    <thead>
-                      <tr>
-                        <th>Candidate Name</th>
-                        <th>Target Job Profile</th>
-                        <th>Match Confidence</th>
-                        <th>Sourcing Stage</th>
-                        <th>Evaluation Score</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {company.talent.map((t, idx) => (
-                        <tr key={idx}>
-                          <td className="bold-text">{t.candidate}</td>
-                          <td>{t.title}</td>
-                          <td className="match-col bold-text">{t.match}</td>
-                          <td>
-                            <span className="stage-tag">{t.status}</span>
-                          </td>
-                          <td className="bold-text">{t.score} / 100</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
 
           {activeTab === "analytics" && (
             <div className="tab-panel-analytics">
@@ -409,34 +424,50 @@ const MasterCompanyOverview = () => {
           {activeTab === "interviews" && (
             <div className="tab-panel-interviews">
               <div className="panel-header">
-                <h4>Completed and Scheduled Assessments</h4>
-                <span className="count-pill">{company.interviews.length} Interviews</span>
+                <h4>
+                  {selectedMember
+                    ? <>Interview Schedules &mdash; <span style={{ color: "var(--primary)" }}>{selectedMember.memberName}</span></>
+                    : "Completed and Scheduled Assessments"}
+                </h4>
+                <span className="count-pill">{selectedMember ? `${apiInterviews.length} Interviews` : "Select a member"}</span>
               </div>
 
-              {company.interviews.length === 0 ? (
-                <div className="panel-empty-state">No interview assessments logs present.</div>
+              {!selectedMember ? (
+                <div className="panel-empty-state">
+                  Click on any team member above to load their interview schedules.
+                </div>
+              ) : interviewsLoading ? (
+                <div className="panel-empty-state"><Loader2 size={18} className="spin-icon" /> Loading interviews...</div>
+              ) : apiInterviews.length === 0 ? (
+                <div className="panel-empty-state">No interview schedules found for {selectedMember.memberName}.</div>
               ) : (
                 <div className="table-card-container">
                   <table className="overview-matching-table">
                     <thead>
                       <tr>
-                        <th>Date Scheduled</th>
-                        <th>Candidate Name</th>
-                        <th>Corporate Interviewer</th>
-                        <th>Assessment Format</th>
-                        <th>Evaluation Result</th>
+                        <th>Date</th>
+                        <th>Candidate</th>
+                        <th>Job Title</th>
+                        <th>Time</th>
+                        <th>Mode</th>
+                        <th>Interviewer</th>
+                        <th>Meeting Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {company.interviews.map((item, idx) => (
-                        <tr key={idx}>
-                          <td className="date-col">{item.date}</td>
-                          <td className="bold-text">{item.candidate}</td>
-                          <td>{item.interviewer}</td>
-                          <td>{item.format}</td>
+                      {apiInterviews.map((item, idx) => (
+                        <tr key={item.candidateID || idx}>
+                          <td className="date-col">
+                            {item.interviewDate ? new Date(item.interviewDate).toLocaleDateString() : "\u2014"}
+                          </td>
+                          <td className="bold-text">{item.candidateName || "\u2014"}</td>
+                          <td>{item.jobTitle || "\u2014"}</td>
+                          <td>{item.interviewTime || "\u2014"}</td>
+                          <td>{item.interviewMode || "\u2014"}</td>
+                          <td>{item.interviewerName || "\u2014"}</td>
                           <td>
-                            <span className={`result-tag ${item.result.toLowerCase()}`}>
-                              {item.result}
+                            <span className={`status-badge-outline ${(item.meetingLinkStatus || "").toLowerCase()}`}>
+                              {item.meetingLinkStatus || "\u2014"}
                             </span>
                           </td>
                         </tr>
@@ -478,7 +509,7 @@ const MasterCompanyOverview = () => {
                   <div className="panel-header">
                     <h4>Billing & Invoices History</h4>
                   </div>
-                  
+
                   {company.billing.length === 0 ? (
                     <div className="panel-empty-state">No billing invoices have been issued.</div>
                   ) : (

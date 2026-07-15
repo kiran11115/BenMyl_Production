@@ -642,3 +642,45 @@
     justify-content: flex-start;
   }
 }
+
+/* Loader spin animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  color: var(--primary);
+}
+
+.panel-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  color: #94a3b8;
+  font-size: 13.5px;
+  font-style: italic;
+  gap: 8px;
+}
+
+/* Clickable member rows */
+.overview-matching-table tbody tr:hover {
+  background-color: #f8faff;
+  transition: background-color 0.15s;
+}
+
+.member-row-selected {
+  background-color: #eff6ff !important;
+  border-left: 3px solid var(--primary);
+}
+
+.member-row-selected td:first-child {
+  padding-left: 13px;
+}
+
+

@@ -1,11 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { FiClock, FiCheckCircle } from "react-icons/fi";
+import { FiClock, FiCheckCircle, FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import "./TrialPopover.css";
+import { useGetContractNotificationsQuery } from "../../State-Management/Api/ContractApiSlice";
 
-const TrialPopover = () => {
-  const [isVisible, setIsVisible] = useState(true);
+const TrialPopover = () => {   
+  const [isVisible, setIsVisible] = useState(() => {
+    return localStorage.getItem("trialPopoverHidden") !== "true";
+  });
   const navigate = useNavigate();
+  const userId = Number(localStorage.getItem("CompanyId"));
+
+const { data: contractData } = useGetContractNotificationsQuery(userId, {
+  skip: !userId,
+});
+
+const expiringContracts =
+  contractData?.data?.filter(
+    (item) =>
+      Number(item.daysRemaining) >= 0 &&
+      Number(item.daysRemaining) <= 7
+  ) || [];
+
+  const handleViewContracts = () => {
+  handleHide();
+
+  const isSharedAdmin =
+    window.location.pathname.toLowerCase().startsWith("/admin");
+
+  navigate(
+    isSharedAdmin
+      ? "/Admin/contract-listing"
+      : "/user/contract-listing"
+  );
+};
 
   const rawDays = localStorage.getItem("RemainingDays");
   const remainingDaysNum = (rawDays === null || rawDays === undefined || rawDays === "undefined" || rawDays === "null" || isNaN(Number(rawDays))) ? 0 : Number(rawDays);
@@ -65,6 +93,61 @@ const TrialPopover = () => {
           </div>
 
           <h3 className="trial-title">Free Trial</h3>
+
+          {expiringContracts.length > 0 && (
+  <div
+    style={{
+      background: "#fff4e5",
+      border: "1px solid #f5b942",
+      borderRadius: "10px",
+      padding: "14px",
+      marginBottom: "18px",
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+      }}
+    >
+      <FiAlertTriangle color="#f59e0b" size={22} />
+
+      <div style={{ flex: 1 }}>
+        <strong>
+          {expiringContracts.length} Contract
+          {expiringContracts.length > 1 ? "s are" : " is"} Expiring
+        </strong>
+
+        <div
+          style={{
+            fontSize: "13px",
+            marginTop: "4px",
+            color: "#555",
+          }}
+        >
+          {expiringContracts.map((item, index) => (
+            <div key={item.contractID}>
+              • {item.jobTitle} - {item.daysRemaining} day
+              {item.daysRemaining !== 1 ? "s" : ""} remaining
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <button
+      className="btn-primary"
+      style={{
+        marginTop: "12px",
+        width: "100%",
+      }}
+      onClick={handleViewContracts}
+    >
+      View Contracts
+    </button>
+  </div>
+)}
           
           <div className="origin-widget-grid">
             <div className="origin-card origin-days-card">
