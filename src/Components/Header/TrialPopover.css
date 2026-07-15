@@ -1,191 +1,515 @@
-/* TrialPopover.css — Fullscreen Modal Alert */
+/* TrialPopover.css — Extended Modal Alert */
 
+/* ── Overlay ── */
 .trial-floating-popover {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
   z-index: 1050;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: trialFadeIn 0.3s ease;
+  padding: 24px;
+  animation: trialFadeIn 0.25s ease;
 }
 
 @keyframes trialFadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
-/* Outer Card Container */
-.trial-popover-content {
+/* ── Modal Card ── */
+.trial-popover-content.extended {
   background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: 32px;
-  box-shadow: 
-    0 24px 50px -12px rgba(0, 0, 0, 0.25), 
-    0 8px 24px -4px rgba(0, 0, 0, 0.1);
-  padding: 28px 24px;
-  width: 90%;
-  max-width: 380px;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow:
+    0 4px 6px -1px rgba(15, 23, 42, 0.06),
+    0 20px 40px -8px rgba(15, 23, 42, 0.12);
+  padding: 36px;
+  width: 100%;
+  max-width: 860px;
   position: relative;
   overflow: hidden;
-  text-align: center;
-  animation: trialSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: trialPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes trialSlideUp {
-  from { opacity: 0; transform: translateY(30px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes trialPopIn {
+  from { opacity: 0; transform: scale(0.96) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);     }
 }
 
-/* Modern top glowing gradient accent bar */
-.trial-popover-content::before {
-  display: none;
-}
 
-.trial-content-wrapper {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
-.trial-icon-container {
-  background: rgba(245, 129, 12, 0.1);
-  color: #f5810c;
-  width: 72px;
-  height: 72px;
+/* ── Close Button ── */
+.trial-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  cursor: pointer;
+  z-index: 20;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.trial-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* ── Two-Column Layout ── */
+.trial-extended-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 36px;
+  position: relative;
+  z-index: 1;
+}
+
+.trial-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.trial-left-col  { position: relative; }
+.trial-right-col { min-width: 0; }
+
+.trial-divider {
+  width: 1px;
+  background: #f1f5f9;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+/* ── Side-by-Side Header (Icon + Label) ── */
+.trial-header-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+/* Animated clock badge */
+.trial-clock-badge {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #5a5de8 0%, #7B61FF 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(90, 93, 232, 0.25);
+}
+
+.trial-clock-svg {
+  width: 30px;
+  height: 30px;
+  color: #ffffff;
+  overflow: visible;
+}
+
+/* Minute hand rotates once per 60 s */
+.clock-hand-minute {
+  transform-origin: 24px 24px;
+  animation: rotateMinute 10s linear infinite;
+}
+
+/* Hour hand rotates once per 12 minutes (slow but visible) */
+.clock-hand-hour {
+  transform-origin: 24px 24px;
+  animation: rotateHour 120s linear infinite;
+}
+
+@keyframes rotateMinute {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+@keyframes rotateHour {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+.trial-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .trial-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
   letter-spacing: -0.01em;
-  margin-bottom: 16px;
+  line-height: 1.2;
 }
 
+.trial-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── Countdown + Date Widgets ── */
 .origin-widget-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 24px;
   width: 100%;
 }
 
 .origin-card {
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.18s ease;
 }
+.origin-card:hover { transform: translateY(-2px); }
 
-.origin-card:hover {
-  transform: scale(0.97);
-}
-
+/* Big countdown tile — spans both columns */
 .origin-days-card {
   grid-column: span 2;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1440 320%27%3E%3Cpath fill=%27%23ffffff%27 fill-opacity=%270.06%27 d=%27M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%27%3E%3C/path%3E%3Cpath fill=%27%23ffffff%27 fill-opacity=%270.03%27 d=%27M0,160L48,165.3C96,171,192,181,288,160C384,139,480,85,576,96C672,107,768,181,864,181.3C960,181,1056,107,1152,80C1248,53,1344,75,1392,85.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%27%3E%3C/path%3E%3C/svg%3E"),
-    linear-gradient(135deg, #07132d 0%, #1c2759 40%, #5a5ce8 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
+  background: linear-gradient(135deg, #5a5de8 0%, #7B61FF 100%);
   color: #ffffff;
-  box-shadow: 0 12px 24px -8px rgba(245, 129, 12, 0.4);
+  box-shadow: 0 8px 20px -4px rgba(90, 93, 232, 0.3);
+  border: none;
+  align-items: center;
+  text-align: center;
+  padding: 22px 18px;
 }
 
 .origin-days-number {
-  font-size: 64px;
-  font-weight: 900;
+  font-size: 48px;
+  font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
 .origin-days-label {
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0.95;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.85;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-top: 4px;
+  letter-spacing: 0.08em;
+  margin-top: 6px;
 }
 
+/* Small date tiles */
 .origin-date-card {
-  background: rgba(241, 245, 249, 0.8);
-  backdrop-filter: blur(8px);
-  color: #0f172a;
-  border: 1px solid rgba(226, 232, 240, 0.6);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
 }
 
 .origin-date-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
+  letter-spacing: 0.06em;
+  margin-bottom: 5px;
 }
 
 .origin-date-value {
-  font-size: 15px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
 }
 
+/* ── Desc + Actions ── */
 .trial-desc {
-  margin: 0 0 20px 0;
-  font-size: 14px;
-  color: #475569;
-  line-height: 1.5;
-  max-width: 95%;
+  margin: 0 0 24px 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.55;
 }
 
 .trial-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
+  margin-top: auto;
 }
 
 .trial-action-btn {
   flex: 1;
-  padding: 14px;
-  border-radius: 24px;
-  font-size: 15px;
-  font-weight: 800;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .trial-btn-skip {
   flex: 1;
-  background: transparent;
+  background: #ffffff;
   color: #64748b;
-  border: 1px solid #cbd5e1;
-  padding: 14px;
-  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  padding: 11px 14px;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
-
 .trial-btn-skip:hover {
   background: #f8fafc;
-  color: #475569;
-  border-color: #94a3b8;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
-@media (max-width: 768px) {
-  .trial-actions {
+/* ── Right Column Header ── */
+.contract-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.contract-col-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contract-col-icon {
+  display: flex;
+  align-items: center;
+  color: #f5810c;
+}
+
+.contract-col-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.contract-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #5a5de8 0%, #7B61FF 100%);
+  border: none;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 10px rgba(90, 93, 232, 0.25);
+}
+
+/* ── Scrollable Contract List ── */
+.contractor-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+  /* Custom slim scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.contractor-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+.contractor-scroll-container::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+/* Individual contract card */
+.contract-alert-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  cursor: default;
+}
+.contract-alert-card:hover {
+  background: #fafbff;
+  border-color: #e0e2f9;
+  transform: translateX(2px);
+}
+
+.contract-alert-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.contract-alert-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.contract-alert-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.contract-alert-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.contract-alert-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Days remaining pill */
+.contract-days-pill {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.contract-days-pill.urgent {
+  color: #ffffff;
+  background: #ef4444;
+  border-color: #ef4444;
+  animation: urgentPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.contractor-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #5a5de8;
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.contractor-view-btn:hover {
+  background: #474adb;
+  transform: translateY(-1px);
+}
+
+.contractor-view-btn.outline {
+  background: #ffffff;
+  color: #5a5de8;
+  border: 1px solid #e2e8f0;
+}
+.contractor-view-btn.outline:hover {
+  background: #f5f5ff;
+  border-color: #c7c7f5;
+}
+
+/* ── Empty State ── */
+.empty-contract-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #f8fafc;
+  border: 1.5px dashed #e2e8f0;
+  border-radius: 16px;
+  padding: 36px 24px;
+  flex: 1;
+}
+
+.empty-icon-wrapper {
+  background: #f0fdf4;
+  color: #16a34a;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border: 1px solid #bbf7d0;
+}
+
+.empty-contract-state h5 {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.empty-contract-state p {
+  margin: 0 0 18px 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .trial-extended-layout {
     flex-direction: column;
+    gap: 24px;
+  }
+  .trial-divider {
+    width: 100%;
+    height: 1px;
+    background: #f1f5f9;
+    align-self: auto;
+  }
+  .trial-popover-content.extended {
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
   }
 }

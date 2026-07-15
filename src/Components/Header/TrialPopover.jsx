@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiClock, FiCheckCircle, FiAlertTriangle } from "react-icons/fi";
+import { FiClock, FiCheckCircle, FiAlertTriangle, FiX, FiFileText } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import "./TrialPopover.css";
 import { useGetContractNotificationsQuery } from "../../State-Management/Api/ContractApiSlice";
@@ -11,29 +11,29 @@ const TrialPopover = () => {
   const navigate = useNavigate();
   const userId = Number(localStorage.getItem("CompanyId"));
 
-const { data: contractData } = useGetContractNotificationsQuery(userId, {
-  skip: !userId,
-});
+  const { data: contractData } = useGetContractNotificationsQuery(userId, {
+    skip: !userId,
+  });
 
-const expiringContracts =
-  contractData?.data?.filter(
-    (item) =>
-      Number(item.daysRemaining) >= 0 &&
-      Number(item.daysRemaining) <= 7
-  ) || [];
+  const expiringContracts =
+    contractData?.data?.filter(
+      (item) =>
+        Number(item.daysRemaining) >= 0 &&
+        Number(item.daysRemaining) <= 7
+    ) || [];
 
   const handleViewContracts = () => {
-  handleHide();
+    handleHide();
 
-  const isSharedAdmin =
-    window.location.pathname.toLowerCase().startsWith("/admin");
+    const isSharedAdmin =
+      window.location.pathname.toLowerCase().startsWith("/admin");
 
-  navigate(
-    isSharedAdmin
-      ? "/Admin/contract-listing"
-      : "/user/contract-listing"
-  );
-};
+    navigate(
+      isSharedAdmin
+        ? "/Admin/contract-listing"
+        : "/user/contract-listing"
+    );
+  };
 
   const rawDays = localStorage.getItem("RemainingDays");
   const remainingDaysNum = (rawDays === null || rawDays === undefined || rawDays === "undefined" || rawDays === "null" || isNaN(Number(rawDays))) ? 0 : Number(rawDays);
@@ -70,113 +70,113 @@ const expiringContracts =
   if (!isVisible) return null;
 
   return (
-    <div className="trial-floating-popover">
-      <div className="trial-popover-content">
-        {/* Background Vector matching the Bid Alert style */}
-        <FiClock 
-          size={240} 
-          style={{
-              position: 'absolute',
-              right: '20%',
-              top: '50%',
-              transform: 'translateY(-50%) rotate(-10deg)',
-              color: '#ffffffff',
-              opacity: 0.05,
-              zIndex: 0,
-              pointerEvents: 'none'
-          }}
-        />
+    <div className="trial-floating-popover centered-overlay">
+      <div className="trial-popover-content extended">
+        <button className="trial-close-btn" onClick={handleHide} aria-label="Close">
+          <FiX size={16} />
+        </button>
+        
+        <div className="trial-extended-layout">
+          {/* Left Column: Trial Information */}
+          <div className="trial-column trial-left-col">
 
-        <div className="trial-content-wrapper">
-          <div className="trial-icon-container">
-            <FiClock size={40} className="trial-main-icon" />
-          </div>
-
-          <h3 className="trial-title">Free Trial</h3>
-
-          {expiringContracts.length > 0 && (
-  <div
-    style={{
-      background: "#fff4e5",
-      border: "1px solid #f5b942",
-      borderRadius: "10px",
-      padding: "14px",
-      marginBottom: "18px",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-      }}
-    >
-      <FiAlertTriangle color="#f59e0b" size={22} />
-
-      <div style={{ flex: 1 }}>
-        <strong>
-          {expiringContracts.length} Contract
-          {expiringContracts.length > 1 ? "s are" : " is"} Expiring
-        </strong>
-
-        <div
-          style={{
-            fontSize: "13px",
-            marginTop: "4px",
-            color: "#555",
-          }}
-        >
-          {expiringContracts.map((item, index) => (
-            <div key={item.contractID}>
-              • {item.jobTitle} - {item.daysRemaining} day
-              {item.daysRemaining !== 1 ? "s" : ""} remaining
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <button
-      className="btn-primary"
-      style={{
-        marginTop: "12px",
-        width: "100%",
-      }}
-      onClick={handleViewContracts}
-    >
-      View Contracts
-    </button>
-  </div>
-)}
-          
-          <div className="origin-widget-grid">
-            <div className="origin-card origin-days-card">
-              <span className="origin-days-number">{trialdays}</span>
-              <span className="origin-days-label">Days Remaining</span>
+            {/* Icon + Label side-by-side header */}
+            <div className="trial-header-row">
+              <div className="trial-clock-badge">
+                {/* Animated SVG clock */}
+                <svg className="trial-clock-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                  <line className="clock-hand-minute" x1="24" y1="24" x2="24" y2="10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                  <line className="clock-hand-hour" x1="24" y1="24" x2="33" y2="24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                  <circle cx="24" cy="24" r="2" fill="currentColor"/>
+                </svg>
+              </div>
+              <div className="trial-header-text">
+                <h3 className="trial-title">Free Trial Period</h3>
+                <p className="trial-subtitle">Your subscription access overview</p>
+              </div>
             </div>
             
-            <div className="origin-card origin-date-card">
-              <span className="origin-date-label">Created On</span>
-              <span className="origin-date-value">{formatDate(createdDate)}</span>
+            <div className="origin-widget-grid">
+              <div className="origin-card origin-days-card">
+                <span className="origin-days-number">{trialdays}</span>
+                <span className="origin-days-label">Days Remaining</span>
+              </div>
+              
+              <div className="origin-card origin-date-card">
+                <span className="origin-date-label">Started</span>
+                <span className="origin-date-value">{formatDate(createdDate)}</span>
+              </div>
+              
+              <div className="origin-card origin-date-card">
+                <span className="origin-date-label">Expires</span>
+                <span className="origin-date-value">{formatDate(endDate)}</span>
+              </div>
             </div>
             
-            <div className="origin-card origin-date-card">
-              <span className="origin-date-label">Ends On</span>
-              <span className="origin-date-value">{formatDate(endDate)}</span>
+            <p className="trial-desc">
+              Subscribe now to secure uninterrupted access to premium features, seamless talent sourcing, and unlimited interview scheduling.
+            </p>
+
+            <div className="trial-actions">
+              <button className="btn-primary trial-action-btn" onClick={handleSubscribe}>
+                Subscribe Now
+              </button>
+              <button className="trial-btn-skip" onClick={handleHide}>
+                Maybe later
+              </button>
             </div>
           </div>
-          
-          <p className="trial-desc">
-            Subscribe now to secure uninterrupted access to premium features, seamless talent sourcing, and unlimited interview scheduling.
-          </p>
 
-          <div className="trial-actions" style={{ marginTop: '12px' }}>
-            <button className="btn-primary w-100" onClick={handleSubscribe}>
-              Subscribe Now
-            </button>
-            <button className="btn-secondary w-100" onClick={handleHide}>
-              Skip for now
-            </button>
+          <div className="trial-divider"></div>
+
+          {/* Right Column: Contract Notifications */}
+          <div className="trial-column trial-right-col">
+
+            <div className="contract-col-header">
+              <div className="contract-col-title-row">
+                <span className="contract-col-icon"><FiAlertTriangle size={15} /></span>
+                <h4 className="contract-col-title">Contract Alerts</h4>
+              </div>
+              {expiringContracts.length > 0 && (
+                <span className="contract-count-badge">{expiringContracts.length} Expiring</span>
+              )}
+            </div>
+
+            {expiringContracts.length > 0 ? (
+              <div className="contractor-scroll-container">
+                {expiringContracts.map((item) => (
+                  <div key={item.contractID} className="contract-alert-card">
+                    <div className="contract-alert-left">
+                      <div className="contract-alert-icon">
+                        <FiFileText size={16} />
+                      </div>
+                      <div className="contract-alert-info">
+                        <span className="contract-alert-title">{item.jobTitle}</span>
+                        <span className="contract-alert-meta">Contract expiring soon</span>
+                      </div>
+                    </div>
+                    <div className={`contract-days-pill ${Number(item.daysRemaining) <= 2 ? 'urgent' : ''}`}>
+                      {item.daysRemaining}d left
+                    </div>
+                  </div>
+                ))}
+                <button className="contractor-view-btn" onClick={handleViewContracts}>
+                  Manage Expiring Contracts
+                </button>
+              </div>
+            ) : (
+              <div className="empty-contract-state">
+                <div className="empty-icon-wrapper">
+                  <FiCheckCircle size={28} className="empty-icon" />
+                </div>
+                <h5>All Clear!</h5>
+                <p>No contracts expiring within the next 7 days. Operations are running smoothly.</p>
+                <button className="contractor-view-btn outline" onClick={handleViewContracts}>
+                  View All Contracts
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
