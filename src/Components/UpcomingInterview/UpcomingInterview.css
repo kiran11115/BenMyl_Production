@@ -1233,9 +1233,7 @@
     padding: 20px;
 }
 
-.interviewer-column-side .section-title {
-    margin-top: 0;
-}
+
 
 @media (max-width: 1024px) {
     .detail-grid-v2 {
@@ -2133,3 +2131,281 @@
     color: #10b981;
     cursor: pointer;
 }
+
+/* ── Interview Feed Tab Switcher ── */
+.interview-feed-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 3px;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.interview-feed-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+}
+
+.interview-feed-tab:hover:not(.active) {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.interview-feed-tab.active {
+    background: linear-gradient(135deg, #5a5de8 0%, #7B61FF 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(90, 93, 232, 0.25);
+}
+
+/* Count badge inside tab */
+.feed-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    line-height: 1;
+}
+
+/* Inactive tab count badge */
+.interview-feed-tab:not(.active) .feed-tab-count {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.feed-tab-count.completed {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Interview Status & Feedback Notes Section ── */
+.iv-notes-section {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.iv-notes-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.iv-notes-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+/* Status popover design */
+.iv-status-popover-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.iv-status-badge-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.iv-status-badge-btn .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+/* Color schemes for select trigger button badge */
+.iv-status-badge-btn.iv-status-ongoing {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #bfdbfe;
+}
+.iv-status-badge-btn.iv-status-ongoing .badge-dot {
+    background: #2563eb;
+}
+.iv-status-badge-btn.iv-status-ongoing:hover {
+    background: #dbeafe;
+}
+
+.iv-status-badge-btn.iv-status-completed {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #a7f3d0;
+}
+.iv-status-badge-btn.iv-status-completed .badge-dot {
+    background: #059669;
+}
+.iv-status-badge-btn.iv-status-completed:hover {
+    background: #d1fae5;
+}
+
+/* Popover Dropdown menu styling */
+.iv-status-popover-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 2px;
+    animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popoverFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.iv-status-popover-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+}
+
+.iv-status-popover-item:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.iv-status-popover-item .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.iv-status-popover-item .badge-dot.ongoing {
+    background: #2563eb;
+}
+
+.iv-status-popover-item .badge-dot.completed {
+    background: #059669;
+}
+
+/* ── Read-only (completed tab) ── */
+.iv-notes-readonly {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px;
+    border-top: none;
+    border: 1px solid #f1f5f9;
+}
+
+.iv-readonly-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 0px;
+}
+
+.iv-readonly-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+}
+
+/* Status badge in completed view */
+.iv-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.iv-status-completed {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    padding: 4px 8px;
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.05);
+}
+
+.iv-status-ongoing {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    padding: 4px 8px;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);
+}
+
+/* No notes state */
+.iv-no-notes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-style: italic;
+    padding: 4px 0;
+}
+

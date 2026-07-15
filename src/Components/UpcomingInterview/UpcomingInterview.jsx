@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
     FiCalendar,
     FiClock,
@@ -9,8 +9,10 @@ import {
     FiChevronRight,
     FiMapPin,
     FiX,
-    FiEyeOff
-
+    FiEyeOff,
+    FiMessageSquare,
+    FiSave,
+    FiCheckSquare
 } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
@@ -52,13 +54,44 @@ export default function UpcomingInterview() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
+    const [feedTab, setFeedTab] = useState("scheduled"); // scheduled | completed
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, interviewId: null, newStatus: "" });
+    const [activeStatusPopoverId, setActiveStatusPopoverId] = useState(null);
+
+    useEffect(() => {
+        const handleDocumentClick = () => {
+            setActiveStatusPopoverId(null);
+        };
+        document.addEventListener("click", handleDocumentClick);
+        return () => document.removeEventListener("click", handleDocumentClick);
+    }, []);
+
+    // Local interview notes — stored in localStorage, keyed by interview id
+    // Structure: { [id]: { interviewStatus: string, feedback: string } }
+    const [interviewNotes, setInterviewNotes] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem("interviewNotes") || "{}");
+        } catch { return {}; }
+    });
+
+    const saveInterviewNote = (id, field, value) => {
+        setInterviewNotes(prev => {
+            const updated = { ...prev, [id]: { ...(prev[id] || {}), [field]: value } };
+            localStorage.setItem("interviewNotes", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const saveFullNote = (id) => {
+        toast.success("Interview notes saved successfully.");
+    };
 
     // Support auto-opening drawer and preselection from navigation state
     const [isDrawerOpen, setIsDrawerOpen] = useState(location.state?.openDrawer || false);
     const [preSelectedJobId, setPreSelectedJobId] = useState(location.state?.preSelectedJobId || null);
     const [preSelectedCandidateId, setPreSelectedCandidateId] = useState(location.state?.preSelectedCandidateId || null);
 
-    const [isNextInterviewHidden, setIsNextInterviewHidden] = useState(false);
+    const [isNextInterviewHidden, setIsNextInterviewHidden] = useState(true);
 
     const recruiterId = localStorage.getItem("CompanyId");
     const userRole = localStorage.getItem("Role");
@@ -110,12 +143,22 @@ export default function UpcomingInterview() {
                 derivedStatus = "completed";
             }
 
+            // Apply local note status overrides for accuracy in UI tabs
+            const candidateId = item.candidateID || index;
+            const noteObj = interviewNotes[candidateId];
+            let status = item.status?.toLowerCase() || derivedStatus;
+            if (noteObj?.interviewStatus === "Completed") {
+                status = "completed";
+            } else if (noteObj?.interviewStatus === "Ongoing") {
+                status = "scheduled";
+            }
+
             // Find matching job for description enrichment
             const matchingJob = fetchedJobs?.find(j => j.jobTitle === item.jobTitle);
             const enrichedDescription = item.jobDescription || matchingJob?.jobDescription || "";
 
             return {
-                id: item.candidateID || index,
+                id: candidateId,
                 date: dateObj,
                 dateLabel: formatDateToDisplay(dateObj),
                 time: item.interviewTime,
@@ -128,7 +171,7 @@ export default function UpcomingInterview() {
                 rating: 4.5,
                 verified: true,
                 skills: item.skills ? item.skills.split(",").map(s => s.trim()) : [],
-                status: item.status?.toLowerCase() || derivedStatus,
+                status: status,
                 vendorName: item.companyName,
                 partnerContact: item.candidateName,
                 meetingLink: item.interviewLink,
@@ -182,6 +225,20 @@ export default function UpcomingInterview() {
         );
 
     }, [interviews, selectedDate, searchQuery]);
+
+    // Completed interviews — derives from the same `interviews` array, no API changes
+    const completedInterviews = useMemo(() => {
+        let list = interviews.filter(it => it.status === "completed");
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            list = list.filter(it =>
+                it.name.toLowerCase().includes(query) ||
+                it.role.toLowerCase().includes(query) ||
+                it.vendorName.toLowerCase().includes(query)
+            );
+        }
+        return list;
+    }, [interviews, searchQuery]);
 
     const handleViewDetail = (interview) => {
         const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
@@ -395,11 +452,34 @@ export default function UpcomingInterview() {
                             <h3 className="fg-title m-0">
                                 {selectedDate
                                     ? `Interviews: ${formatDateToDisplay(selectedDate)}`
-                                    : `Scheduled Feed`}
+                                    : feedTab === "scheduled" ? `Scheduled Feed` : `Completed Interviews`}
                             </h3>
                             <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 600 }}>
-                                {filteredInterviews.length} Sessions Found
+                                {feedTab === "scheduled" ? filteredInterviews.length : completedInterviews.length} Sessions Found
                             </span>
+                        </div>
+                        {/* Feed Tab Switcher */}
+                        <div className="interview-feed-tabs">
+                            <button
+                                className={`interview-feed-tab ${feedTab === 'scheduled' ? 'active' : ''}`}
+                                onClick={() => setFeedTab('scheduled')}
+                            >
+                                <FiCalendar size={13} />
+                                Scheduled
+                                {filteredInterviews.length > 0 && (
+                                    <span className="feed-tab-count">{filteredInterviews.length}</span>
+                                )}
+                            </button>
+                            <button
+                                className={`interview-feed-tab ${feedTab === 'completed' ? 'active' : ''}`}
+                                onClick={() => setFeedTab('completed')}
+                            >
+                                <GiCheckMark size={12} />
+                                Completed
+                                {completedInterviews.length > 0 && (
+                                    <span className="feed-tab-count completed">{completedInterviews.length}</span>
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -414,15 +494,13 @@ export default function UpcomingInterview() {
                             <div className="error-state p-5 text-center">
                                 <p className="text-danger fw-bold">Unable to fetch interviews</p>
                             </div>
-                        ) : filteredInterviews.length > 0 ? (
+                        ) : (feedTab === 'scheduled' ? filteredInterviews : completedInterviews).length > 0 ? (
                             <div className="jobs-wrapper" style={{ padding: 0 }}>
                                 <div className="jobs-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                                    {filteredInterviews.map((interview) => (
+                                    {(feedTab === 'scheduled' ? filteredInterviews : completedInterviews).map((interview) => (
                                         <div
                                             key={interview.id}
                                             className="job-card justify-content-between ui-no-hover"
-                                            onClick={() => handleViewDetail(interview)}
-                                            style={{ cursor: "pointer" }}
                                         >
                                             <div className="d-flex flex-column gap-3">
                                                 {/* TOP */}
@@ -440,9 +518,6 @@ export default function UpcomingInterview() {
                                                             <p className="company-name">{interview.role}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="job-eye-icon">
-                                                        <FiEye size={22} />
-                                                    </div>
                                                 </div>
 
                                                 {/* TAGS */}
@@ -456,37 +531,72 @@ export default function UpcomingInterview() {
                                                     </span>
                                                 </div>
 
-                                                {/* ACTIONS */}
-                                                <div className="job-desc-block">
-                                                    <div className="d-flex gap-2">
-                                                        <button
-                                                            className="job-view-more-btn"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-
-                                                                if (
-                                                                    !interview.meetingLink ||
-                                                                    interview.meetingLink === "null"
-                                                                ) {
-                                                                    toast.warning(
-                                                                        "Meeting link is not available. Redirecting to Interview Details to share the meeting link."
-                                                                    );
-
-                                                                    handleViewDetail(interview);
-                                                                    return;
-                                                                }
-
-                                                                window.open(
-                                                                    interview.meetingLink,
-                                                                    "_blank",
-                                                                    "noopener,noreferrer"
-                                                                );
-                                                            }}
-                                                        >
-                                                            Join Session
-                                                        </button>
+                                                {/* STATUS INPUT — scheduled tab only */}
+                                                {feedTab === 'scheduled' && (
+                                                    <div className="iv-notes-section" onClick={e => e.stopPropagation()}>
+                                                        <div className="iv-notes-row" style={{ position: 'relative' }}>
+                                                            <label className="iv-notes-label">Interview Status</label>
+                                                            <div className="iv-status-popover-wrapper">
+                                                                <button
+                                                                    type="button"
+                                                                    className={`iv-status-badge-btn iv-status-${(interviewNotes[interview.id]?.interviewStatus || 'Ongoing').toLowerCase()}`}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setActiveStatusPopoverId(activeStatusPopoverId === interview.id ? null : interview.id);
+                                                                    }}
+                                                                >
+                                                                    <span className="badge-dot"></span>
+                                                                    {interviewNotes[interview.id]?.interviewStatus || "Ongoing"}
+                                                                    <span className="chevron-down-arrow" style={{ fontSize: '9px', marginLeft: '6px', opacity: 0.7 }}>▼</span>
+                                                                </button>
+                                                                {activeStatusPopoverId === interview.id && (
+                                                                    <div className="iv-status-popover-menu">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="iv-status-popover-item"
+                                                                            onClick={() => {
+                                                                                setActiveStatusPopoverId(null);
+                                                                                saveInterviewNote(interview.id, 'interviewStatus', 'Ongoing');
+                                                                            }}
+                                                                        >
+                                                                            <span className="badge-dot ongoing"></span> Ongoing
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="iv-status-popover-item"
+                                                                            onClick={() => {
+                                                                                setActiveStatusPopoverId(null);
+                                                                                setConfirmModal({ isOpen: true, interviewId: interview.id, newStatus: 'Completed' });
+                                                                            }}
+                                                                        >
+                                                                            <span className="badge-dot completed"></span> Completed
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                )}
+
+                                                {/* COMPLETED TAB — show status read-only */}
+                                                {feedTab === 'completed' && (
+                                                    <div className="iv-notes-section iv-notes-readonly" onClick={e => e.stopPropagation()}>
+                                                        {interviewNotes[interview.id]?.interviewStatus ? (
+                                                            <div className="iv-readonly-row" style={{ marginBottom: 0 }}>
+                                                                <span className="iv-readonly-label">Status</span>
+                                                                <span className={`iv-status-badge iv-status-${(interviewNotes[interview.id].interviewStatus || '').toLowerCase().replace(/\s+/g, '-')}`}>
+                                                                    <FiCheckSquare size={11} style={{marginRight:4}}/>
+                                                                    {interviewNotes[interview.id].interviewStatus}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="iv-no-notes">
+                                                                <FiCheckSquare size={13} />
+                                                                <span>Status: Completed</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div>
@@ -504,6 +614,63 @@ export default function UpcomingInterview() {
                                                         </span>
                                                     </div>
                                                 </div>
+
+                                                {/* ACTIONS */}
+                                                {feedTab === 'scheduled' && (
+                                                    <div className="job-desc-block" style={{ marginTop: '12px' }}>
+                                                        <div className="d-flex gap-3" style={{ width: '100%' }}>
+                                                            <button
+                                                                type="button"
+                                                                className="btn-v2-primary"
+                                                                style={{ flex: 1, padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+
+                                                                    if (
+                                                                        !interview.meetingLink ||
+                                                                        interview.meetingLink === "null"
+                                                                    ) {
+                                                                        toast.warning(
+                                                                            "Meeting link is not available. Redirecting to Interview Details to share the meeting link."
+                                                                        );
+
+                                                                        handleViewDetail(interview);
+                                                                        return;
+                                                                    }
+
+                                                                    window.open(
+                                                                        interview.meetingLink,
+                                                                        "_blank",
+                                                                        "noopener,noreferrer"
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Join Session
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn-secondary"
+                                                                style={{ flex: 1, padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                                onClick={() => handleViewDetail(interview)}
+                                                            >
+                                                                View Details
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {feedTab === 'completed' && (
+                                                    <div className="job-desc-block" style={{ marginTop: '12px' }}>
+                                                        <button
+                                                            type="button"
+                                                            className="btn-secondary"
+                                                            style={{ width: '100%', padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                            onClick={() => handleViewDetail(interview)}
+                                                        >
+                                                            View Details
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -516,15 +683,24 @@ export default function UpcomingInterview() {
                                     alt="No data"
                                     style={{ width: "100%", maxWidth: "160px", opacity: "50%", marginBottom: "20px" }}
                                 />
-                                <h3>No Interviews Scheduled</h3>
-                                <p>Relax! You don't have any sessions booked for this criteria.</p>
-                                <button className="btn-v2-primary mt-3" onClick={() => {
-                                    setPreSelectedJobId(null);
-                                    setPreSelectedCandidateId(null);
-                                    setIsDrawerOpen(true);
-                                }}>
-                                    <FiPlus size={16} /> Schedule Now
-                                </button>
+                                {feedTab === 'scheduled' ? (
+                                    <>
+                                        <h3>No Interviews Scheduled</h3>
+                                        <p>Relax! You don't have any sessions booked for this criteria.</p>
+                                        <button className="btn-v2-primary mt-3" onClick={() => {
+                                            setPreSelectedJobId(null);
+                                            setPreSelectedCandidateId(null);
+                                            setIsDrawerOpen(true);
+                                        }}>
+                                            <FiPlus size={16} /> Schedule Now
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h3>No Completed Interviews</h3>
+                                        <p>Completed interviews will appear here once past sessions are recorded.</p>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -625,6 +801,57 @@ export default function UpcomingInterview() {
                 preSelectedJobId={preSelectedJobId}
                 preSelectedCandidateId={preSelectedCandidateId}
             />
+
+            {confirmModal.isOpen && (
+                <div className="custom-modal-overlay" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}>
+                    <div className="calendar-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '420px' }}>
+                        <div className="modal-header-premium">
+                            <h3 className="m-0">Confirm Status Change</h3>
+                            <button className="close-btn-premium" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}>
+                                <FiX size={18} />
+                            </button>
+                        </div>
+                        <div className="modal-body-premium text-center py-4 px-3">
+                            <div style={{
+                                width: '56px',
+                                height: '56px',
+                                background: '#f0fdf4',
+                                color: '#16a34a',
+                                borderRadius: '50%',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '1px solid #bbf7d0',
+                                                            marginBottom: '16px'
+                            }}>
+                                <FiCheckSquare size={24} />
+                            </div>
+                            <h5 style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>Mark as Completed?</h5>
+                            <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.6', margin: 0 }}>
+                                Are you sure you want to move the status to Completed? Once moved, the interview status is finalized and will be transferred to the completed list.
+                            </p>
+                        </div>
+                        <div className="modal-footer-premium d-flex gap-2 justify-content-end align-items-center" style={{ gap: '10px' }}>
+                            <button
+                                className="btn-secondary-premium"
+                                onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn-v2-primary"
+                                style={{ padding: '8px 20px !important' }}
+                                onClick={() => {
+                                    saveInterviewNote(confirmModal.interviewId, 'interviewStatus', confirmModal.newStatus);
+                                    setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" });
+                                }}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
