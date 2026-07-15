@@ -130,10 +130,11 @@ export default function UpcomingInterview() {
     const interviews = useMemo(() => {
         if (!Array.isArray(apiInterviews)) return [];
         return apiInterviews.map((item, index) => {
-            const dateParts = item.interviewDate.split('T')[0].split('-');
+            const dateStr = item.interviewDate || "";
+            const dateParts = dateStr ? dateStr.split('T')[0].split('-') : [];
             const dateObj = dateParts.length === 3
                 ? new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]))
-                : new Date(item.interviewDate);
+                : (item.interviewDate ? new Date(item.interviewDate) : new Date());
 
             // Derive status if not present (simple logic: past = completed, future = scheduled)
             const today = new Date();
