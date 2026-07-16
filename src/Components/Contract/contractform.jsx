@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   FileText, Plus, Download, Eye, EyeOff, Search, CheckCircle,
   Clock, XCircle, FileCheck, Users, ChevronUp, ChevronDown,
-  PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign, Layers
+  PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign, Layers,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ContractContext, mapApiContractToUI, formatDate } from './ContractContext';
@@ -178,7 +179,7 @@ const SignatureSection = ({ onComplete, onCancel }) => {
   return (
     <div className="acceptance-signature-box" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, marginTop: 16 }}>
       <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <PenTool size={16} color="#f5810c" /> Complete Bench Sales Acceptance
+        <PenTool size={16} color="#1e293b" /> Complete Bench Sales Acceptance
       </h4>
       <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>
         By signing, your company accepts all terms in this Work Order for <strong>Company-to-Company</strong> services.
@@ -578,20 +579,21 @@ const formatToExactDate = (date) => {
 const filterActiveWeekContracts = (contracts, monday, sunday) => {
   return contracts.filter(c => {
     if (c.status === 'Draft' || c.status === 'Rejected') return false;
-    if (c.startDate && c.endDate && c.startDate !== '-' && c.endDate !== '-') {
-      const start = new Date(c.startDate);
+    if (c.endDate && c.endDate !== '-') {
       const end = new Date(c.endDate);
-      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-         return start <= sunday && end >= monday;
+      if (!isNaN(end.getTime())) {
+         return end >= monday && end <= sunday;
       }
     }
-    return true; // Fallback for invalid dates
+    return false;
   });
 };
 
 const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview, extensionMap, submitExtension, statusOverrideMap }) => {
   const { monday, friday, sunday } = getWeekRangeData();
-  const activeContracts = filterActiveWeekContracts(contracts, monday, sunday);
+  const activeContracts = filterActiveWeekContracts(contracts, monday, sunday).filter(c => {
+    return !!c.benchSalesSignature && !!c.hiringManagerSignature;
+  });
   const [selectedId, setSelectedId] = useState(activeContracts[0]?.id || null);
   const [simulatedCompletedMap, setSimulatedCompletedMap] = useState({});
 
@@ -611,7 +613,7 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
       {/* List Side */}
       <div className="milestones-list-panel">
         <div className="panel-header">
-          <h4 className="panel-title"><Calendar size={14} color="#f5810c" /> Weekly Deliverables</h4>
+          <h4 className="panel-title"><Calendar size={14} color="#1e293b" /> Weekly Deliverables</h4>
           <span className="week-label">Exact Week: {currentWeekStr}</span>
         </div>
         <div className="milestones-list">
@@ -748,6 +750,377 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
 };
 
 /* =========================================
+   PROJECT END DATE CALENDAR VIEWS
+   ========================================= */
+function ContractCalendarWidget({ navDate, selectedDate, onDateSelect, isContractEndDate, onPrev, onNext }) {
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+
+  const month = navDate.getMonth();
+  const year = navDate.getFullYear();
+  const firstDay = new Date(year, month, 1).getDay();
+  const totalDays = daysInMonth(month, year);
+
+  const blanks = Array(firstDay).fill(null);
+  const days = Array.from({ length: totalDays }, (_, i) => i + 1);
+
+  return (
+    <div className="custom-calendar">
+      <div className="calendar-header">
+        <h3>{monthNames[month]} {year}</h3>
+        <div className="cal-nav">
+          <button onClick={onPrev} type="button">
+            <ChevronLeft size={16} />
+          </button>
+          <button onClick={onNext} type="button">
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+      <div className="calendar-weekdays">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => <div key={d}>{d}</div>)}
+      </div>
+      <div className="calendar-days">
+        {blanks.map((_, i) => <div key={`b-${i}`} className="day blank"></div>)}
+        {days.map(d => {
+          const todayDate = new Date();
+          todayDate.setHours(0, 0, 0, 0);
+          const currentIterDate = new Date(year, month, d);
+
+          const isToday = todayDate.toDateString() === currentIterDate.toDateString();
+          const isSelected = selectedDate && selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year;
+          const hasEndDate = isContractEndDate(d, month, year);
+
+          return (
+            <div
+              key={d}
+              className={`day ${isSelected ? "selected" : ""} ${hasEndDate ? "has-interview" : ""} ${isToday ? "today" : ""}`}
+              onClick={() => {
+                const newDate = new Date(year, month, d);
+                if (selectedDate && selectedDate.toDateString() === newDate.toDateString()) {
+                  onDateSelect(null);
+                } else {
+                  onDateSelect(newDate);
+                }
+              }}
+            >
+              {d}
+            </div>
+          );
+        })}
+      </div>
+      <div className="calendar-legend">
+        <div className="legend-item">
+          <span className="dot interview-dot"></span>
+          <span>Contract End Date</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extensionMap, submitExtension }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedExtDate, setSelectedExtDate] = useState('');
+  const [selectedExtReason, setSelectedExtReason] = useState('');
+  const [confirmModal, setConfirmModal] = useState(null);
+
+  let displayStatus = (statusOverrideMap && statusOverrideMap[c.id]) || c.status;
+  if (displayStatus === 'Completed') {
+    displayStatus = 'Agreed';
+  }
+
+  // Progress calculation matching WeeklyMilestonesView logic
+  const { monday, friday } = getWeekRangeData();
+  const isClosed = displayStatus === 'Closed';
+  let progress = 0;
+  if (isClosed) {
+    progress = 100;
+  } else {
+    const totalTime = friday.getTime() - monday.getTime();
+    const elapsedTime = new Date().getTime() - monday.getTime();
+
+    if (new Date().getTime() >= friday.getTime()) {
+      progress = 100;
+    } else if (new Date().getTime() <= monday.getTime()) {
+      progress = 0;
+    } else {
+      progress = Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
+    }
+  }
+
+  const extension = extensionMap && extensionMap[c.id];
+
+  return (
+    <div
+      className="milestone-list-item"
+      style={{ cursor: 'default', background: '#fff', border: '1px solid #e2e8f0', gap: '10px' }}
+    >
+      <div className="milestone-item-header">
+        <span className="milestone-item-id">{c.id}</span>
+        <span className={`milestone-item-status-tag ${displayStatus.toLowerCase()}`}>{displayStatus}</span>
+      </div>
+      <div className="milestone-item-title" style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{c.contractTitle}</div>
+      <div className="milestone-item-candidate">{c.candidateName} • {c.jobTitle}</div>
+      
+      <div className="milestone-item-progress-bar-container" style={{ margin: '4px 0 8px' }}>
+        <div className="milestone-item-progress-track">
+          <div className="milestone-item-progress-fill" style={{ width: `${progress}%` }}></div>
+        </div>
+        <span className="milestone-item-progress-text">{progress}% Complete</span>
+      </div>
+
+      {/* Extension request option */}
+      {progress < 100 && (
+        <div className="extension-section-wrap" style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #f1f5f9', marginTop: '4px' }}>
+          {extension?.submitted ? (
+            <div className="extension-submitted-card" style={{ padding: 0, background: 'none', border: 'none', boxShadow: 'none' }}>
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <span className="badge-pending" style={{ fontSize: '10px', padding: '2px 6px' }}>Extension Requested</span>
+                <span className="ext-date" style={{ fontSize: '10px', fontWeight: '600' }}>{formatDate(extension.newDate)}</span>
+              </div>
+              <p className="ext-reason" style={{ fontSize: '10px', margin: '4px 0 0 0' }}><strong>Reason:</strong> {extension.reason}</p>
+            </div>
+          ) : showDatePicker ? (
+            <div className="elegant-date-picker-wrap" style={{ gap: '6px' }}>
+              <div className="form-group mb-1">
+                <label className="form-label" style={{ fontSize: '10px' }}>Extension Target Date</label>
+                <input
+                  type="date"
+                  className="date-filter-input"
+                  style={{ fontSize: '11px', padding: '4px 8px' }}
+                  value={selectedExtDate}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setSelectedExtDate(e.target.value)}
+                />
+              </div>
+              <div className="form-group mb-1">
+                <label className="form-label" style={{ fontSize: '10px' }}>Reason</label>
+                <textarea
+                  className="form-control feedback-textarea"
+                  style={{ fontSize: '11px', padding: '4px 8px' }}
+                  rows="2"
+                  placeholder="Explain reason for extension..."
+                  value={selectedExtReason}
+                  onChange={(e) => setSelectedExtReason(e.target.value)}
+                />
+              </div>
+              <div className="date-input-filter-row" style={{ marginTop: '8px', gap: '6px' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ fontSize: '10px', padding: '4px 10px' }}
+                  onClick={() => {
+                    if (!selectedExtDate) {
+                      toast.warning("Please choose a date.");
+                      return;
+                    }
+                    if (!selectedExtReason.trim()) {
+                      toast.warning("Please provide a reason.");
+                      return;
+                    }
+                    setConfirmModal({
+                      title: "Confirm Extension Request",
+                      message: `Submit extension request to ${selectedExtDate}?`,
+                      confirmText: "Submit",
+                      cancelText: "Cancel",
+                      onConfirm: () => {
+                        setConfirmModal(null);
+                        submitExtension(c.id, selectedExtDate, selectedExtReason);
+                        toast.success("Extension request submitted!");
+                        setShowDatePicker(false);
+                      }
+                    });
+                  }}
+                >
+                  Confirm
+                </button>
+                <button
+                  type="button"
+                  className="tbl-btn tbl-btn-status-change"
+                  style={{ fontSize: '10px', padding: '4px 10px' }}
+                  onClick={() => setShowDatePicker(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ width: '100%', fontSize: '10px', padding: '4px 10px' }}
+              onClick={() => setShowDatePicker(true)}
+            >
+              Request Extension
+            </button>
+          )}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+        <span style={{ fontSize: '11px', color: '#64748b' }}>Client: <strong>{c.clientCompany}</strong></span>
+        <button
+          className="tbl-btn tbl-btn-view"
+          style={{ padding: '4px 10px', fontSize: '11px' }}
+          type="button"
+          onClick={() => navigate(`${basePath}/contract-view/${c.id}`)}
+        >
+          View Details
+        </button>
+      </div>
+
+      {confirmModal && (
+        <ConfirmModal
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.confirmText}
+          cancelText={confirmModal.cancelText}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={() => setConfirmModal(null)}
+        />
+      )}
+    </div>
+  );
+};
+
+const CalendarView = ({ contracts, navigate, basePath, statusOverrideMap, extensionMap, submitExtension }) => {
+  const [navDate, setNavDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  // Parse project end dates safely supporting DD-MMM-YYYY and ISO format, filtering only agreed contracts
+  const parsedContracts = useMemo(() => {
+    return contracts.map(c => {
+      let dateObj = null;
+      if (c.endDate && c.endDate !== '-') {
+        let dateStr = c.endDate;
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const monthStr = parts[1];
+          const year = parseInt(parts[2], 10);
+          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          const monthIdx = months.indexOf(monthStr);
+          if (monthIdx !== -1) {
+            dateObj = new Date(year, monthIdx, day);
+          }
+        }
+        if (!dateObj) {
+          dateObj = new Date(dateStr);
+        }
+      }
+      return {
+        ...c,
+        parsedEndDate: dateObj
+      };
+    })
+    .filter(c => c.parsedEndDate && !isNaN(c.parsedEndDate.getTime()))
+    .filter(c => !!c.benchSalesSignature && !!c.hiringManagerSignature);
+  }, [contracts]);
+
+  const isContractEndDate = (day, month, year) => {
+    return parsedContracts.some(c =>
+      c.parsedEndDate.getDate() === day &&
+      c.parsedEndDate.getMonth() === month &&
+      c.parsedEndDate.getFullYear() === year
+    );
+  };
+
+  const handlePrevMonth = () => {
+    setNavDate(new Date(navDate.getFullYear(), navDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setNavDate(new Date(navDate.getFullYear(), navDate.getMonth() + 1, 1));
+  };
+
+  // Contracts ending on the selected date
+  const contractsOnSelectedDate = useMemo(() => {
+    if (!selectedDate) return [];
+    return parsedContracts.filter(c =>
+      c.parsedEndDate.getDate() === selectedDate.getDate() &&
+      c.parsedEndDate.getMonth() === selectedDate.getMonth() &&
+      c.parsedEndDate.getFullYear() === selectedDate.getFullYear()
+    );
+  }, [parsedContracts, selectedDate]);
+
+  return (
+    <div className="milestones-layout">
+      {/* Calendar Side */}
+      <div className="milestones-list-panel" style={{ height: 'auto', minHeight: '430px' }}>
+        <div className="panel-header" style={{ marginBottom: '12px' }}>
+          <h4 className="panel-title">
+            <Calendar size={14} color="#1e293b" /> Contract End Stage Dates
+          </h4>
+          <span className="week-label">Select highlighted date to display contracts</span>
+        </div>
+        <div style={{ padding: '0 4px' }}>
+          <ContractCalendarWidget
+            navDate={navDate}
+            selectedDate={selectedDate}
+            onDateSelect={setSelectedDate}
+            isContractEndDate={isContractEndDate}
+            onPrev={handlePrevMonth}
+            onNext={handleNextMonth}
+          />
+          {selectedDate && (
+            <button
+              className="btn-clear-date-v2"
+              onClick={() => setSelectedDate(null)}
+              type="button"
+            >
+              Reset Selection
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Contracts List Side */}
+      <div className="milestones-detail-panel" style={{ minHeight: '430px' }}>
+        {selectedDate ? (
+          <div>
+            <div className="panel-header" style={{ marginBottom: '16px' }}>
+              <h4 className="panel-title" style={{ fontSize: '15px' }}>
+                Contracts Ending on {selectedDate.getDate()}-{["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][selectedDate.getMonth()]}-{selectedDate.getFullYear()}
+              </h4>
+              <span className="week-label">
+                {contractsOnSelectedDate.length} {contractsOnSelectedDate.length === 1 ? 'contract' : 'contracts'} ending
+              </span>
+            </div>
+
+            {contractsOnSelectedDate.length === 0 ? (
+              <div className="milestone-detail-empty">
+                <Info size={32} color="#94a3b8" />
+                <p>No contracts ending on this date.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {contractsOnSelectedDate.map(c => (
+                  <CalendarContractCard
+                    key={c.id}
+                    c={c}
+                    navigate={navigate}
+                    basePath={basePath}
+                    statusOverrideMap={statusOverrideMap}
+                    extensionMap={extensionMap}
+                    submitExtension={submitExtension}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="milestone-detail-empty">
+            <Info size={32} color="#94a3b8" />
+            <p>Select a date highlighted in the calendar to display ending contracts.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* =========================================
    DETAIL MODAL (Elegant Contract View)
    ========================================= */
 const ContractForm = () => {
@@ -875,7 +1248,7 @@ const ContractForm = () => {
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const W = doc.internal.pageSize.getWidth();
       const H = doc.internal.pageSize.getHeight();
-      let y = 50;
+      let y = 40;
 
       // Helper to fetch and convert any image URL/path to base64 (supporting CORS)
       const getBase64Image = async (url) => {
@@ -904,6 +1277,9 @@ const ContractForm = () => {
       };
 
       // Prefetch signatures before drawing PDF elements
+      // Prefetch signatures and logo before drawing PDF elements
+      let logoBase64 = await getBase64Image('/Images/Benmyl White logo.png');
+
       let hmSigBase64 = null;
       if (contract.hiringManagerSignature) {
         hmSigBase64 = await getBase64Image(contract.hiringManagerSignature);
@@ -914,79 +1290,204 @@ const ContractForm = () => {
         bsSigBase64 = await getBase64Image(contract.benchSalesSignature);
       }
 
-      doc.setFillColor(30, 41, 59); doc.rect(0, 0, W, 70, 'F');
-      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('BenMyl', 40, 42);
-      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text('PROFESSIONAL WORK ORDER AGREEMENT', 40, 58);
-      doc.setFontSize(9); doc.setTextColor(245, 129, 12); doc.text(`REF ID: ${contract.id}`, W - 40, 42, { align: 'right' });
-      doc.setTextColor(255, 255, 255); doc.text(`ISSUED ON: ${contract.createdDate}`, W - 40, 58, { align: 'right' });
+      // Draw watermark in background
+      doc.setTextColor(241, 245, 249); doc.setFont('helvetica', 'bold'); doc.setFontSize(72);
+      doc.text('BENMYL SECURED', W / 2, H / 2 + 50, { align: 'center', angle: 45 });
 
-      y = 100;
-      const section = (title) => {
-        doc.setFillColor(248, 250, 252); doc.rect(40, y - 5, W - 80, 20, 'F');
-        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(title.toUpperCase(), 50, y + 9);
-        y += 30;
-      };
+      // Draw Preamble Header (Client vs Vendor Organization)
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.text('CREATOR ORGANIZATION', 40, y);
+      doc.text('VENDOR ORGANIZATION', W - 40, y, { align: 'right' });
+      y += 14;
 
-      const field = (label, value, xOffset = 0) => {
-        doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text(label.toUpperCase(), 50 + xOffset, y);
-        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(String(value || '-'), 50 + xOffset, y + 14);
-      };
+      doc.setTextColor(30, 41, 59); doc.setFontSize(13);
+      doc.text(contract.clientCompany || '-', 40, y);
+      doc.setTextColor(30, 41, 59);
+      doc.text(contract.companyName && contract.companyName !== '-' ? contract.companyName : 'BenMyl', W - 40, y, { align: 'right' });
+      y += 20;
 
-      section('Entity Information (Company-to-Company)');
-      field('Client Company (Hiring Side)', contract.clientCompany);
-      field('Vendor Company (Bench Side)', contract.companyName || '-', W / 2);
-      y += 35;
+      // Divider Line
+      doc.setDrawColor(30, 41, 59); doc.setLineWidth(2);
+      doc.line(40, y, W - 40, y);
+      y += 20;
 
-      section('Engagement Details');
-      field('Contract Title', contract.contractTitle); field('Job Title', contract.jobTitle, W / 2); y += 35;
-      field('Candidate Name', contract.candidateName); field('Employment Type', contract.employmentType, W / 2); y += 35;
-      field('Work Location', contract.workLocation); field('Engagement Start', contract.startDate, W / 2); y += 45;
+      // Title Strip
+      doc.setFillColor(30, 41, 59); doc.rect(40, y, W - 80, 24, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+      if (logoBase64) {
+        try {
+          doc.addImage(logoBase64, 'PNG', 48, y + 4, 45, 16);
+          doc.text('C2C STAFFING WORK ORDER AGREEMENT', (W + 45) / 2, y + 15, { align: 'center' });
+        } catch (err) {
+          console.warn("Logo drawing failed:", err);
+          doc.text('C2C STAFFING WORK ORDER AGREEMENT', W / 2, y + 15, { align: 'center' });
+        }
+      } else {
+        doc.text('C2C STAFFING WORK ORDER AGREEMENT', W / 2, y + 15, { align: 'center' });
+      }
+      y += 38;
 
-      section('Terms and Conditions');
-      doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
-      const lines = doc.splitTextToSize(contract.termsAndConditions || '', W - 100);
-      doc.text(lines, 50, y);
-      y += lines.length * 13 + 30;
+      // Preamble Text
+      doc.setTextColor(51, 65, 85); doc.setFont('helvetica', 'oblique'); doc.setFontSize(8.5);
+      const preambleText = `This C2C Staffing Work Order ("Work Order") is effective as of ${contract.startDate} ("Effective Date"), and is entered into by and between ${contract.clientCompany} ("Client" or "Hiring Side") and ${contract.companyName && contract.companyName !== '-' ? contract.companyName : 'BenMyl'} ("Vendor" or "Bench Side"). This Work Order governs the professional services provided by the designated Resource outlined in the table below.`;
+      const preambleLines = doc.splitTextToSize(preambleText, W - 80);
+      doc.text(preambleLines, 40, y);
+      y += preambleLines.length * 12 + 18;
 
-      if (y > H - 150) { doc.addPage(); y = 50; }
-      section('Digital Signatures & Acceptance');
-      const sigY = y + 20;
-      doc.setDrawColor(226, 232, 240); doc.line(50, sigY + 50, W / 2 - 20, sigY + 50); doc.line(W / 2 + 20, sigY + 50, W - 50, sigY + 50);
-      doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-      doc.text('Hiring Side Authorized Signatory', 50, sigY + 62); doc.text('Vendor Side Authorized Signatory', W / 2 + 20, sigY + 62);
+      // Schedule A Table Title
+      doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.text('SCHEDULE A: STATEMENT OF WORK & FINANCIAL TERMS', 40, y);
+      y += 8;
 
-      // Draw hiring manager signature safely
+      // Draw Schedule A Table
+      const tableRows = [
+        ['Designated Resource (Consultant)', contract.candidateName],
+        ['Project Position / Role', contract.jobTitle],
+        ['Employment Terms / Type', `${contract.employmentType} (Company-to-Company)`],
+        ['Project Location', contract.workLocation],
+        ['Commencement Date', contract.startDate],
+        ['Project End Date (Target)', contract.endDate],
+        ['Hourly Billing Rate', contract.salary],
+        ['Remittance Cycle', contract.paymentCycle],
+        ['Reporting Manager', contract.reportingManager],
+        ['Termination Notice Period', contract.noticePeriod],
+      ];
+
+      const rowHeight = 15;
+      const col1Width = 180;
+      const col2Width = W - 80 - col1Width;
+      const tableHeight = tableRows.length * rowHeight;
+
+      // Outer border
+      doc.setDrawColor(203, 213, 225); doc.setLineWidth(1);
+      doc.rect(40, y, W - 80, tableHeight);
+      // Column dividing line
+      doc.line(40 + col1Width, y, 40 + col1Width, y + tableHeight);
+
+      let currentY = y;
+      tableRows.forEach(([label, value], idx) => {
+        // Alternating fill for labels
+        doc.setFillColor(248, 250, 252);
+        doc.rect(41, currentY + 1, col1Width - 1, rowHeight - 2, 'F');
+
+        // Draw text
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+        doc.text(label, 48, currentY + 11);
+        doc.setFont('helvetica', 'normal');
+        if (label === 'Hourly Billing Rate') {
+          doc.setTextColor(22, 163, 74); doc.setFont('helvetica', 'bold');
+        }
+        doc.text(String(value || '-'), 40 + col1Width + 10, currentY + 11);
+
+        currentY += rowHeight;
+        if (idx < tableRows.length - 1) {
+          doc.line(40, currentY, W - 40, currentY);
+        }
+      });
+      y += tableHeight + 20;
+
+      // Section 1: Terms & Conditions
+      if (contract.termsAndConditions) {
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        doc.text('SECTION 1: TERMS & CONDITIONS', 40, y);
+        y += 8;
+
+        const termsLines = doc.splitTextToSize(contract.termsAndConditions, W - 80 - 24);
+        const boxHeight = termsLines.length * 12 + 16;
+
+        // Background
+        doc.setFillColor(248, 250, 252);
+        doc.rect(40, y, W - 80, boxHeight, 'F');
+
+        // Left Accent Border (Slate #1e293b)
+        doc.setFillColor(30, 41, 59);
+        doc.rect(40, y, 4, boxHeight, 'F');
+
+        // Text
+        doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(termsLines, 56, y + 14, { lineHeightFactor: 1.4 });
+
+        y += boxHeight + 16;
+      }
+
+      // Section 2: Confidentiality & Non-Disclosure
+      if (contract.confidentialityClause) {
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        doc.text('SECTION 2: CONFIDENTIALITY & NON-DISCLOSURE', 40, y);
+        y += 8;
+
+        const confLines = doc.splitTextToSize(contract.confidentialityClause, W - 80 - 24);
+        const boxHeight = confLines.length * 12 + 16;
+
+        // Background
+        doc.setFillColor(248, 250, 252);
+        doc.rect(40, y, W - 80, boxHeight, 'F');
+
+        // Left Accent Border (Slate #1e293b)
+        doc.setFillColor(30, 41, 59);
+        doc.rect(40, y, 4, boxHeight, 'F');
+
+        // Text
+        doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(confLines, 56, y + 14, { lineHeightFactor: 1.4 });
+
+        y += boxHeight + 16;
+      }
+
+      // Signatures
+      if (y > H - 140) {
+        doc.addPage();
+        y = 40;
+
+        doc.setTextColor(241, 245, 249); doc.setFont('helvetica', 'bold'); doc.setFontSize(72);
+        doc.text('BENMYL SECURED', W / 2, H / 2 + 50, { align: 'center', angle: 45 });
+      }
+
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.text('AUTHORIZED SIGNATORY (HIRING SIDE)', 40, y);
+      doc.text('AUTHORIZED SIGNATORY (VENDOR SIDE)', W / 2 + 20, y);
+      y += 8;
+
+      const sigY = y;
+      // Draw HM Signature
       if (hmSigBase64) {
         try {
-          doc.addImage(hmSigBase64, 'PNG', 50, sigY - 10, 150, 50);
+          doc.addImage(hmSigBase64, 'PNG', 40, sigY, 140, 35);
         } catch (err) {
-          console.warn("Error drawing hiring manager signature in PDF:", err);
-          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-          doc.text('[HM Signature Draw Failed]', 50, sigY + 20);
+          console.warn("HM Signature drawing failed:", err);
         }
-      } else if (contract.hiringManagerSignature) {
-        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-        doc.text('[HM Signature Image Unavailable]', 50, sigY + 20);
       }
-
-      // Draw bench sales signature safely
+      // Draw BS Signature
       if (bsSigBase64) {
         try {
-          doc.addImage(bsSigBase64, 'PNG', W / 2 + 20, sigY - 10, 150, 50);
+          doc.addImage(bsSigBase64, 'PNG', W / 2 + 20, sigY, 140, 35);
         } catch (err) {
-          console.warn("Error drawing bench sales signature in PDF:", err);
-          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-          doc.text('[BS Signature Draw Failed]', W / 2 + 20, sigY + 20);
+          console.warn("BS Signature drawing failed:", err);
         }
-      } else if (contract.benchSalesSignature) {
-        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-        doc.text('[BS Signature Image Unavailable]', W / 2 + 20, sigY + 20);
       }
+      y += 40;
 
-      doc.setTextColor(203, 213, 225); doc.setFontSize(7); doc.text(`E-SIGNATURE TRACE ID: ${contract.id}-SECURE | IP LOGGED`, 40, H - 30);
+      doc.setDrawColor(30, 41, 59); doc.setLineWidth(1);
+      doc.line(40, y, W / 2 - 20, y);
+      doc.line(W / 2 + 20, y, W - 40, y);
+      y += 12;
 
-      doc.save(`Contract_${contract.id}.pdf`);
-      toast.success('PDF generated.');
+      doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+      doc.text(contract.hiringManagerUser, 40, y);
+      doc.text(contract.benchSalesUser, W / 2 + 20, y);
+      y += 12;
+
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      doc.text('Authorized Client Representative', 40, y);
+      doc.text('Authorized Vendor Representative', W / 2 + 20, y);
+
+      // Footer
+      doc.setTextColor(203, 213, 225); doc.setFontSize(7);
+      doc.text(`DIGITAL DOCUMENT REF: ${contract.id}-SECURE-VERIFIED | COMPLIANT DOCUMENT`, 40, H - 30);
+      doc.text('PAGE 1 OF 1', W - 40, H - 30, { align: 'right' });
+
+      doc.save(`Legal_Contract_${contract.id}.pdf`);
+      toast.success('Professional PDF exported successfully.');
     } catch (err) {
       console.error("PDF generation global failure:", err);
       toast.error('PDF failed.');
@@ -1096,15 +1597,24 @@ const ContractForm = () => {
           <Calendar size={13} className="tab-icon" />
           <span>Weekly Milestones</span>
           <span className="tab-badge orange-badge">
-            {filterActiveWeekContracts(contracts, getWeekRangeData().monday, getWeekRangeData().sunday).length}
+            {filterActiveWeekContracts(contracts, getWeekRangeData().monday, getWeekRangeData().sunday).filter(c => {
+              return !!c.benchSalesSignature && !!c.hiringManagerSignature;
+            }).length}
           </span>
+        </button>
+        <button
+          className={`tab-item tab-item-users ${activeTab === 'calendar' ? 'active' : ''}`}
+          onClick={() => setActiveTab('calendar')}
+        >
+          <Calendar size={13} className="tab-icon" />
+          <span>Calendar View</span>
         </button>
       </div>
 
-      {activeTab === 'all' ? (
+      {activeTab === 'all' && (
         <div className="contract-table-wrapper">
           <div className="contract-table-header">
-            <div className="contract-table-title"><ShieldCheck size={16} color="#f5810c" /> Legal Documents Vault</div>
+            <div className="contract-table-title"><ShieldCheck size={16} color="#1e293b" /> Legal Documents Vault</div>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
               <div className="contract-search-bar"><Search size={14} color="#94a3b8" /><input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} /></div>
             </div>
@@ -1171,7 +1681,8 @@ const ContractForm = () => {
             </table>
           </div>
         </div>
-      ) : (
+      )}
+      {activeTab === 'milestones' && (
         <WeeklyMilestonesView
           contracts={contracts}
           progressMap={progressMap}
@@ -1180,6 +1691,16 @@ const ContractForm = () => {
           extensionMap={extensionMap}
           submitExtension={submitExtension}
           statusOverrideMap={statusOverrideMap}
+        />
+      )}
+      {activeTab === 'calendar' && (
+        <CalendarView
+          contracts={contracts}
+          navigate={navigate}
+          basePath={basePath}
+          statusOverrideMap={statusOverrideMap}
+          extensionMap={extensionMap}
+          submitExtension={submitExtension}
         />
       )}
     </div>

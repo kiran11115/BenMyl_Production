@@ -122,29 +122,28 @@ const SignatureSection = ({ onComplete, onCancel }) => {
       onComplete(data);
     }
   };
-
   return (
-    <div className="acceptance-signature-box premium-card mt-4" style={{ border: '2px solid #f5810c', background: '#fff9f5' }}>
-      <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, color: '#92400e' }}>
+    <div className="acceptance-signature-box premium-card mt-4" style={{ border: '2px solid #1e293b', background: '#f8fafc' }}>
+      <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, color: '#1e293b' }}>
         <PenTool size={18} /> Finalize Your Acceptance
       </h4>
-      <p style={{ fontSize: 12, color: '#92400e', marginBottom: 16, opacity: 0.8 }}>
+      <p style={{ fontSize: 12, color: '#334155', marginBottom: 16, opacity: 0.8 }}>
         As an authorized representative of the <strong>Vendor Company</strong>, please provide your legal signature below to execute this C2C work order.
       </p>
 
-      <div className="sig-tabs" style={{ background: '#fff', border: '1px solid #fed7aa' }}>
+      <div className="sig-tabs" style={{ background: '#fff', border: '1px solid #cbd5e1' }}>
         <button className={`sig-tab ${type === 'draw' ? 'active' : ''}`} onClick={() => setType('draw')}>Draw Signature</button>
         <button className={`sig-tab ${type === 'upload' ? 'active' : ''}`} onClick={() => setType('upload')}>Upload Image</button>
       </div>
 
       {type === 'draw' ? (
-        <div className="sig-canvas-wrapper" style={{ height: 180, background: '#fff', borderColor: '#fed7aa' }}>
+        <div className="sig-canvas-wrapper" style={{ height: 180, background: '#fff', borderColor: '#cbd5e1' }}>
           <canvas ref={canvasRef} width={600} height={180} onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseOut={stopDrawing} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} style={{ width: '100%', height: '100%', cursor: 'crosshair' }} />
           {isCanvasEmpty && <div className="sig-canvas-placeholder">Draw your legal signature here</div>}
           <button className="btn-secondary" style={{ position: 'absolute', right: 12, bottom: 12 }} onClick={clear}>Clear Canvas</button>
         </div>
       ) : (
-        <div className="sig-canvas-wrapper" style={{ height: 180, background: '#fff', borderColor: '#fed7aa', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+        <div className="sig-canvas-wrapper" style={{ height: 180, background: '#fff', borderColor: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
           {data ? <img src={data} alt="Sig" style={{ maxHeight: 140 }} /> : <Upload size={32} color="#cbd5e1" />}
           <input type="file" id="bs-sig-up-premium" hidden onChange={(e) => {
             const f = e.target.files[0];
@@ -418,7 +417,7 @@ const ContractView = () => {
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       const W = doc.internal.pageSize.getWidth();
       const H = doc.internal.pageSize.getHeight();
-      let y = 50;
+      let y = 40;
 
       // Helper to fetch and convert any image URL/path to base64 (supporting CORS)
       const getBase64Image = async (url) => {
@@ -446,7 +445,9 @@ const ContractView = () => {
         }
       };
 
-      // Prefetch signatures before drawing PDF elements
+      // Prefetch signatures and logo before drawing PDF elements
+      let logoBase64 = await getBase64Image('/Images/Benmyl White logo.png');
+
       let hmSigBase64 = null;
       if (contract.hiringManagerSignature) {
         hmSigBase64 = await getBase64Image(contract.hiringManagerSignature);
@@ -457,79 +458,204 @@ const ContractView = () => {
         bsSigBase64 = await getBase64Image(contract.benchSalesSignature);
       }
 
-      doc.setFillColor(30, 41, 59); doc.rect(0, 0, W, 70, 'F');
-      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('BenMyl', 40, 42);
-      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text('OFFICIAL WORK ORDER AGREEMENT', 40, 58);
-      doc.setFontSize(9); doc.setTextColor(245, 129, 12); doc.text(`REF: ${contract.id}`, W - 40, 42, { align: 'right' });
-      doc.setTextColor(255, 255, 255); doc.text(`CREATED: ${contract.createdDate}`, W - 40, 58, { align: 'right' });
+      // Draw watermark in background
+      doc.setTextColor(241, 245, 249); doc.setFont('helvetica', 'bold'); doc.setFontSize(72);
+      doc.text('BENMYL SECURED', W / 2, H / 2 + 50, { align: 'center', angle: 45 });
 
-      y = 120;
-      const section = (title) => {
-        doc.setFillColor(248, 250, 252); doc.rect(40, y - 5, W - 80, 22, 'F');
-        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text(title.toUpperCase(), 50, y + 10);
-        y += 40;
-      };
+      // Draw Preamble Header (Client vs Vendor Organization)
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.text('CREATOR ORGANIZATION', 40, y);
+      doc.text('VENDOR ORGANIZATION', W - 40, y, { align: 'right' });
+      y += 14;
 
-      const field = (label, value, xOffset = 0) => {
-        doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text(label.toUpperCase(), 50 + xOffset, y);
-        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text(String(value || '-'), 50 + xOffset, y + 15);
-      };
+      doc.setTextColor(30, 41, 59); doc.setFontSize(13);
+      doc.text(contract.clientCompany || '-', 40, y);
+      doc.setTextColor(30, 41, 59);
+      doc.text(contract.companyName && contract.companyName !== '-' ? contract.companyName : 'BenMyl', W - 40, y, { align: 'right' });
+      y += 20;
 
-      section('Contracting Entities');
-      field('Client Side', contract.clientCompany);
-      field('Vendor Side', contract.companyName || '-', W / 2);
-      y += 50;
+      // Divider Line
+      doc.setDrawColor(30, 41, 59); doc.setLineWidth(2);
+      doc.line(40, y, W - 40, y);
+      y += 20;
 
-      section('Engagement Scope');
-      field('Agreement Title', contract.contractTitle); field('Role / Job Title', contract.jobTitle, W / 2); y += 40;
-      field('Resource Name', contract.candidateName); field('Terms', contract.employmentType, W / 2); y += 40;
-      field('Location', contract.workLocation); field('Effective Date', contract.startDate, W / 2); y += 50;
+      // Title Strip
+      doc.setFillColor(30, 41, 59); doc.rect(40, y, W - 80, 24, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+      if (logoBase64) {
+        try {
+          doc.addImage(logoBase64, 'PNG', 48, y + 4, 45, 16);
+          doc.text('C2C STAFFING WORK ORDER AGREEMENT', (W + 45) / 2, y + 15, { align: 'center' });
+        } catch (err) {
+          console.warn("Logo drawing failed:", err);
+          doc.text('C2C STAFFING WORK ORDER AGREEMENT', W / 2, y + 15, { align: 'center' });
+        }
+      } else {
+        doc.text('C2C STAFFING WORK ORDER AGREEMENT', W / 2, y + 15, { align: 'center' });
+      }
+      y += 38;
 
-      section('Terms of Engagement');
-      doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setLineHeightFactor(1.5);
-      const lines = doc.splitTextToSize(contract.termsAndConditions || '', W - 100);
-      doc.text(lines, 50, y);
-      y += lines.length * 15 + 40;
+      // Preamble Text
+      doc.setTextColor(51, 65, 85); doc.setFont('helvetica', 'oblique'); doc.setFontSize(8.5);
+      const preambleText = `This C2C Staffing Work Order ("Work Order") is effective as of ${contract.startDate} ("Effective Date"), and is entered into by and between ${contract.clientCompany} ("Client" or "Hiring Side") and ${contract.companyName && contract.companyName !== '-' ? contract.companyName : 'BenMyl'} ("Vendor" or "Bench Side"). This Work Order governs the professional services provided by the designated Resource outlined in the table below.`;
+      const preambleLines = doc.splitTextToSize(preambleText, W - 80);
+      doc.text(preambleLines, 40, y);
+      y += preambleLines.length * 12 + 18;
 
-      if (y > H - 180) { doc.addPage(); y = 50; }
-      section('Digital Execution & Validation');
-      const sigY = y + 20;
-      doc.setDrawColor(226, 232, 240); doc.line(50, sigY + 60, W / 2 - 20, sigY + 60); doc.line(W / 2 + 20, sigY + 60, W - 50, sigY + 60);
-      doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-      doc.text('Client Authorized Signature', 50, sigY + 72); doc.text('Vendor Authorized Signature', W / 2 + 20, sigY + 72);
+      // Schedule A Table Title
+      doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+      doc.text('SCHEDULE A: STATEMENT OF WORK & FINANCIAL TERMS', 40, y);
+      y += 8;
 
-      // Draw hiring manager signature safely
+      // Draw Schedule A Table
+      const tableRows = [
+        ['Designated Resource (Consultant)', contract.candidateName],
+        ['Project Position / Role', contract.jobTitle],
+        ['Employment Terms / Type', `${contract.employmentType} (Company-to-Company)`],
+        ['Project Location', contract.workLocation],
+        ['Commencement Date', contract.startDate],
+        ['Project End Date (Target)', contract.endDate],
+        ['Hourly Billing Rate', contract.salary],
+        ['Remittance Cycle', contract.paymentCycle],
+        ['Reporting Manager', contract.reportingManager],
+        ['Termination Notice Period', contract.noticePeriod],
+      ];
+
+      const rowHeight = 15;
+      const col1Width = 180;
+      const col2Width = W - 80 - col1Width;
+      const tableHeight = tableRows.length * rowHeight;
+
+      // Outer border
+      doc.setDrawColor(203, 213, 225); doc.setLineWidth(1);
+      doc.rect(40, y, W - 80, tableHeight);
+      // Column dividing line
+      doc.line(40 + col1Width, y, 40 + col1Width, y + tableHeight);
+
+      let currentY = y;
+      tableRows.forEach(([label, value], idx) => {
+        // Alternating fill for labels
+        doc.setFillColor(248, 250, 252);
+        doc.rect(41, currentY + 1, col1Width - 1, rowHeight - 2, 'F');
+
+        // Draw text
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+        doc.text(label, 48, currentY + 11);
+        doc.setFont('helvetica', 'normal');
+        if (label === 'Hourly Billing Rate') {
+          doc.setTextColor(22, 163, 74); doc.setFont('helvetica', 'bold');
+        }
+        doc.text(String(value || '-'), 40 + col1Width + 10, currentY + 11);
+
+        currentY += rowHeight;
+        if (idx < tableRows.length - 1) {
+          doc.line(40, currentY, W - 40, currentY);
+        }
+      });
+      y += tableHeight + 20;
+
+      // Section 1: Terms & Conditions
+      if (contract.termsAndConditions) {
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        doc.text('SECTION 1: TERMS & CONDITIONS', 40, y);
+        y += 8;
+
+        const termsLines = doc.splitTextToSize(contract.termsAndConditions, W - 80 - 24);
+        const boxHeight = termsLines.length * 12 + 16;
+
+        // Background
+        doc.setFillColor(248, 250, 252);
+        doc.rect(40, y, W - 80, boxHeight, 'F');
+
+        // Left Accent Border (Slate #1e293b)
+        doc.setFillColor(30, 41, 59);
+        doc.rect(40, y, 4, boxHeight, 'F');
+
+        // Text
+        doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(termsLines, 56, y + 14, { lineHeightFactor: 1.4 });
+
+        y += boxHeight + 16;
+      }
+
+      // Section 2: Confidentiality & Non-Disclosure
+      if (contract.confidentialityClause) {
+        doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+        doc.text('SECTION 2: CONFIDENTIALITY & NON-DISCLOSURE', 40, y);
+        y += 8;
+
+        const confLines = doc.splitTextToSize(contract.confidentialityClause, W - 80 - 24);
+        const boxHeight = confLines.length * 12 + 16;
+
+        // Background
+        doc.setFillColor(248, 250, 252);
+        doc.rect(40, y, W - 80, boxHeight, 'F');
+
+        // Left Accent Border (Slate #1e293b)
+        doc.setFillColor(30, 41, 59);
+        doc.rect(40, y, 4, boxHeight, 'F');
+
+        // Text
+        doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+        doc.text(confLines, 56, y + 14, { lineHeightFactor: 1.4 });
+
+        y += boxHeight + 16;
+      }
+
+      // Signatures
+      if (y > H - 140) {
+        doc.addPage();
+        y = 40;
+
+        doc.setTextColor(241, 245, 249); doc.setFont('helvetica', 'bold'); doc.setFontSize(72);
+        doc.text('BENMYL SECURED', W / 2, H / 2 + 50, { align: 'center', angle: 45 });
+      }
+
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+      doc.text('AUTHORIZED SIGNATORY (HIRING SIDE)', 40, y);
+      doc.text('AUTHORIZED SIGNATORY (VENDOR SIDE)', W / 2 + 20, y);
+      y += 8;
+
+      const sigY = y;
+      // Draw HM Signature
       if (hmSigBase64) {
         try {
-          doc.addImage(hmSigBase64, 'PNG', 50, sigY, 140, 55);
+          doc.addImage(hmSigBase64, 'PNG', 40, sigY, 140, 35);
         } catch (err) {
-          console.warn("Error drawing hiring manager signature in PDF:", err);
-          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-          doc.text('[Client Signature Draw Failed]', 50, sigY + 25);
+          console.warn("HM Signature drawing failed:", err);
         }
-      } else if (contract.hiringManagerSignature) {
-        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-        doc.text('[Client Signature Image Unavailable]', 50, sigY + 25);
       }
-
-      // Draw bench sales signature safely
+      // Draw BS Signature
       if (bsSigBase64) {
         try {
-          doc.addImage(bsSigBase64, 'PNG', W / 2 + 20, sigY, 140, 55);
+          doc.addImage(bsSigBase64, 'PNG', W / 2 + 20, sigY, 140, 35);
         } catch (err) {
-          console.warn("Error drawing bench sales signature in PDF:", err);
-          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-          doc.text('[Vendor Signature Draw Failed]', W / 2 + 20, sigY + 25);
+          console.warn("BS Signature drawing failed:", err);
         }
-      } else if (contract.benchSalesSignature) {
-        doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(148, 163, 184);
-        doc.text('[Vendor Signature Image Unavailable]', W / 2 + 20, sigY + 25);
       }
+      y += 40;
 
-      doc.setTextColor(203, 213, 225); doc.setFontSize(8);
-      doc.text(`TRACER-ID: ${contract.id}-SECURE-VERIFIED | DIGITAL AUDIT LOGGED | COMPLIANT DOCUMENT`, 40, H - 30);
+      doc.setDrawColor(30, 41, 59); doc.setLineWidth(1);
+      doc.line(40, y, W / 2 - 20, y);
+      doc.line(W / 2 + 20, y, W - 40, y);
+      y += 12;
+
+      doc.setTextColor(30, 41, 59); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+      doc.text(contract.hiringManagerUser, 40, y);
+      doc.text(contract.benchSalesUser, W / 2 + 20, y);
+      y += 12;
+
+      doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      doc.text('Authorized Client Representative', 40, y);
+      doc.text('Authorized Vendor Representative', W / 2 + 20, y);
+
+      // Footer
+      doc.setTextColor(203, 213, 225); doc.setFontSize(7);
+      doc.text(`DIGITAL DOCUMENT REF: ${contract.id}-SECURE-VERIFIED | COMPLIANT DOCUMENT`, 40, H - 30);
+      doc.text('PAGE 1 OF 1', W - 40, H - 30, { align: 'right' });
+
       doc.save(`Legal_Contract_${contract.id}.pdf`);
-      toast.success('Professional document exported.');
+      toast.success('Professional PDF exported successfully.');
     } catch (e) {
       console.error("PDF generation global failure:", e);
       toast.error('Export failed.');
@@ -596,62 +722,6 @@ const ContractView = () => {
       </div>
 
       <div className="formal-document-view-container">
-        {/* SIDEBAR */}
-        <div className="document-sidebar">
-          <div className="premium-timeline">
-            <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ShieldCheck size={18} color="#f5810c" /> Execution Timeline
-            </h4>
-
-            <div className={`timeline-item completed`}>
-              <div className="timeline-dot"><Check size={14} /></div>
-              <div className="timeline-content">
-                <span className="timeline-title">Contract Created</span>
-                <span className="timeline-sub">By {contract.hiringManagerUser} on {contract.createdDate}</span>
-              </div>
-            </div>
-
-            <div className={`timeline-item completed`}>
-              <div className="timeline-dot"><Check size={14} /></div>
-              <div className="timeline-content">
-                <span className="timeline-title">Hiring Manager Signed</span>
-                <span className="timeline-sub">Digital signature verified</span>
-              </div>
-            </div>
-
-            <div className={`timeline-item ${contract.benchSalesAccepted ? 'completed' : 'active'}`}>
-              <div className="timeline-dot">
-                {contract.benchSalesAccepted ? <Check size={14} /> : <Clock size={12} />}
-              </div>
-              <div className="timeline-content">
-                <span className="timeline-title">Bench Sales Acceptance</span>
-                <span className="timeline-sub">
-                  {contract.benchSalesAccepted ? `Signed on ${contract.benchSalesDate}` : 'Pending Bench Sales signature'}
-                </span>
-              </div>
-            </div>
-
-            <div className={`timeline-item ${contract.status === 'Completed' ? 'completed' : ''}`}>
-              <div className="timeline-dot">
-                {contract.status === 'Completed' ? <FileCheck size={14} /> : <Lock size={12} />}
-              </div>
-              <div className="timeline-content">
-                <span className="timeline-title">Fully Executed</span>
-                <span className="timeline-sub">{contract.status === 'Completed' ? 'Legal agreement archived' : 'Waiting for final signature'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="premium-card" style={{ background: '#f8fafc', padding: '20px', borderStyle: 'dashed' }}>
-            <h5 style={{ fontSize: 12, fontWeight: 800, marginBottom: 12 }}>Security Trace</h5>
-            <div style={{ fontSize: 11, color: '#64748b', display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div className="d-flex justify-content-between"><span>Audit ID:</span><span className="text-dark fw-bold">{contract.id.split('-')[1]}X99</span></div>
-              <div className="d-flex justify-content-between"><span>Hashing:</span><span className="text-dark fw-bold">SHA-256</span></div>
-              <div className="d-flex justify-content-between"><span>Network:</span><span className="text-dark fw-bold">AES-Encrypted</span></div>
-            </div>
-          </div>
-        </div>
-
         {/* PAPER CONTENT */}
         <div className="document-main">
           <div className="contract-paper" style={{ border: '1px solid #e2e8f0' }}>
@@ -661,7 +731,7 @@ const ContractView = () => {
               <div className="company-info-row">
                 <div className="party-box">
                   <span className="party-label">CREATOR ORGANIZATION</span>
-                  <div className="party-val" style={{ color: '#f5810c' }}>{contract.clientCompany}</div>
+                  <div className="party-val" style={{ color: '#1e293b' }}>{contract.clientCompany}</div>
                 </div>
                 <div className="party-box" style={{ textAlign: 'right' }}>
                   <span className="party-label">VENDOR ORGANIZATION</span>
@@ -671,35 +741,88 @@ const ContractView = () => {
             </div>
 
             <div className="paper-body">
-              <div className="contract-title-strip" style={{ background: 'linear-gradient(to right, #1e293b, #334155)', borderRadius: '4px' }}>
-                {contract.contractTitle}
+              <div className="contract-title-strip" style={{ background: 'linear-gradient(to right, #1e293b, #334155)', borderRadius: '4px', padding: '12px 16px', fontSize: '15px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <img src="/Images/Benmyl White logo.png" alt="BenMyl Logo" style={{ height: '22px', objectFit: 'contain' }} />
+                <span>C2C STAFFING WORK ORDER AGREEMENT</span>
               </div>
 
-              <div className="contract-info-grid">
-                <div className="info-item"><span className="il">Designated Resource</span><span className="iv">{contract.candidateName}</span></div>
-                <div className="info-item"><span className="il">Project Position</span><span className="iv">{contract.jobTitle}</span></div>
-                <div className="info-item"><span className="il">Employment Terms</span><span className="iv">{contract.employmentType}</span></div>
-                <div className="info-item"><span className="il">Project Location</span><span className="iv">{contract.workLocation}</span></div>
-                <div className="info-item"><span className="il">Commencement Date</span><span className="iv">{contract.startDate}</span></div>
-                <div className="info-item"><span className="il">Project End Date</span><span className="iv">{contract.endDate}</span></div>
-                <div className="info-item"><span className="il">Professional Fees</span><span className="iv">{contract.salary}</span></div>
-                <div className="info-item"><span className="il">Remittance Cycle</span><span className="iv">{contract.paymentCycle}</span></div>
+              <div className="document-section Preamble" style={{ marginBottom: '24px' }}>
+                <p style={{ fontStyle: 'italic', fontSize: '12px', color: '#334155', lineHeight: '1.6', textAlign: 'justify', margin: 0 }}>
+                  This C2C Staffing Work Order ("Work Order") is effective as of <strong>{contract.startDate}</strong> ("Effective Date"), and is entered into by and between <strong>{contract.clientCompany}</strong> ("Client" or "Hiring Side") and <strong>{contract.companyName && contract.companyName !== '-' ? contract.companyName : 'BenMyl'}</strong> ("Vendor" or "Bench Side") (each a "Party", and collectively the "Parties"). This Work Order governs the professional services provided by the designated Resource outlined in the table below.
+                </p>
               </div>
 
-              <div className="document-section">
-                <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Article I: Scope of Engagement</h4>
-                <p>This Work Order is issued under the master services agreement between <strong>{contract.companyName || 'BenMyl'}</strong> and <strong>{contract.clientCompany}</strong>. The Vendor agrees to provide professional services through the designated resource in accordance with the job descriptions and requirements provided by the Client.</p>
+              <div className="document-section" style={{ marginBottom: '24px' }}>
+                <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #1e293b', paddingBottom: '6px', marginBottom: '12px', fontSize: '12px', fontWeight: '800' }}>
+                  Schedule A: Statement of Work & Financial Terms
+                </h4>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', color: '#1e293b', border: '1px solid #cbd5e1', marginBottom: '10px' }}>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', width: '35%', borderRight: '1px solid #cbd5e1' }}>Designated Resource (Consultant)</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.candidateName}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Project Position / Role</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.jobTitle}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Employment Terms / Type</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.employmentType} (Company-to-Company)</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Project Location</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.workLocation}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Commencement Date</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.startDate}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Project End Date (Target)</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.endDate}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Hourly Billing Rate</td>
+                      <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: 'bold' }}>{contract.salary}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Remittance Cycle</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.paymentCycle}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Reporting Manager</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.reportingManager}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Termination Notice Period</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.noticePeriod}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
-              <div className="document-section">
-                <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Article II: Compliance & Legal Terms</h4>
-                <p className="legal-text" style={{ fontSize: '13px', borderLeftColor: '#f5810c' }}>{contract.termsAndConditions}</p>
-              </div>
+              {contract.termsAndConditions && (
+                <div className="document-section" style={{ marginBottom: '24px' }}>
+                  <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #cbd5e1', paddingBottom: '4px', marginBottom: '8px', fontSize: '11px', fontWeight: '800' }}>
+                    Section 1: Terms &amp; Conditions
+                  </h4>
+                  <p className="legal-text" style={{ fontSize: '12px', background: '#f8fafc', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #1e293b', fontStyle: 'normal', color: '#475569', lineHeight: '1.6', textAlign: 'justify', whiteSpace: 'pre-line', margin: 0 }}>
+                    {contract.termsAndConditions}
+                  </p>
+                </div>
+              )}
 
-              <div className="document-section">
-                <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>Article III: Confidentiality</h4>
-                <p className="legal-text" style={{ fontSize: '13px' }}>{contract.confidentialityClause || 'All proprietary information, intellectual property, and project data remain the sole property of the Client. The Vendor agrees to maintain absolute confidentiality.'}</p>
-              </div>
+              {contract.confidentialityClause && (
+                <div className="document-section" style={{ marginBottom: '24px' }}>
+                  <h4 style={{ textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #cbd5e1', paddingBottom: '4px', marginBottom: '8px', fontSize: '11px', fontWeight: '800' }}>
+                    Section 2: Confidentiality &amp; Non-Disclosure
+                  </h4>
+                  <p className="legal-text" style={{ fontSize: '12px', background: '#f8fafc', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #1e293b', fontStyle: 'normal', color: '#475569', lineHeight: '1.6', textAlign: 'justify', whiteSpace: 'pre-line', margin: 0 }}>
+                    {contract.confidentialityClause}
+                  </p>
+                </div>
+              )}
 
               <div className="signature-grid">
                 <div className="sig-box">
@@ -748,7 +871,7 @@ const ContractView = () => {
 
           {!contract.benchSalesAccepted && isBS && contract.status !== 'Rejected' && !showSignBox && !isCreator && (
             <div className="mt-5 text-center d-flex justify-content-center gap-3">
-              <button className="btn-primary" onClick={() => setShowSignBox(true)} style={{ minWidth: '240px', height: '54px', fontSize: 16, fontWeight: 800, borderRadius: '12px', boxShadow: '0 10px 20px rgba(245,129,12,0.2)' }}>
+              <button className="btn-primary" onClick={() => setShowSignBox(true)} style={{ minWidth: '240px', height: '54px', fontSize: 16, fontWeight: 800, borderRadius: '12px', boxShadow: '0 10px 20px rgba(30,41,59,0.2)' }}>
                 <PenTool size={20} className="me-2" /> Accept & Sign Work Order
               </button>
               <button className="btn-secondary text-red" onClick={handleReject} style={{ height: '54px', padding: '0 24px', borderRadius: '12px' }}>
@@ -756,6 +879,53 @@ const ContractView = () => {
               </button>
             </div>
           )}
+        </div>
+
+        {/* SIDEBAR */}
+        <div className="document-sidebar">
+          <div className="premium-timeline">
+            <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ShieldCheck size={18} color="#16a34a" /> Execution Timeline
+            </h4>
+
+            <div className={`timeline-item completed`}>
+              <div className="timeline-dot"><Check size={14} /></div>
+              <div className="timeline-content">
+                <span className="timeline-title">Contract Created</span>
+                <span className="timeline-sub">By {contract.hiringManagerUser} on {contract.createdDate}</span>
+              </div>
+            </div>
+
+            <div className={`timeline-item completed`}>
+              <div className="timeline-dot"><Check size={14} /></div>
+              <div className="timeline-content">
+                <span className="timeline-title">Hiring Manager Signed</span>
+                <span className="timeline-sub">Digital signature verified</span>
+              </div>
+            </div>
+
+            <div className={`timeline-item ${contract.benchSalesAccepted ? 'completed' : 'active'}`}>
+              <div className="timeline-dot">
+                {contract.benchSalesAccepted ? <Check size={14} /> : <Clock size={12} />}
+              </div>
+              <div className="timeline-content">
+                <span className="timeline-title">Bench Sales Acceptance</span>
+                <span className="timeline-sub">
+                  {contract.benchSalesAccepted ? `Signed on ${contract.benchSalesDate}` : 'Pending Bench Sales signature'}
+                </span>
+              </div>
+            </div>
+
+            <div className={`timeline-item ${contract.status === 'Completed' ? 'completed' : ''}`}>
+              <div className="timeline-dot">
+                {contract.status === 'Completed' ? <FileCheck size={14} /> : <Lock size={12} />}
+              </div>
+              <div className="timeline-content">
+                <span className="timeline-title">Fully Executed</span>
+                <span className="timeline-sub">{contract.status === 'Completed' ? 'Legal agreement archived' : 'Waiting for final signature'}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {customConfirm && (
