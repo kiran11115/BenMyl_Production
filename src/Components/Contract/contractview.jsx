@@ -45,8 +45,9 @@ const SignatureSection = ({ onComplete, onCancel }) => {
     if (type === 'draw' && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3.5;
       ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.strokeStyle = '#1e293b';
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.beginPath();
@@ -54,12 +55,30 @@ const SignatureSection = ({ onComplete, onCancel }) => {
   }, [type]);
 
   const startDrawing = (e) => {
+    if (e.cancelable) e.preventDefault();
     isDrawing.current = true;
     setSignatureError('');
-    draw(e);
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clientX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
+    if (clientX === undefined || clientY === undefined) return;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsCanvasEmpty(false);
   };
 
   const stopDrawing = () => {
+    if (!isDrawing.current) return;
     isDrawing.current = false;
     const canvas = canvasRef.current;
     if (canvas) {
@@ -75,17 +94,22 @@ const SignatureSection = ({ onComplete, onCancel }) => {
 
   const draw = (e) => {
     if (!isDrawing.current) return;
+    if (e.cancelable) e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-    const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clientX = e.clientX || (e.touches && e.touches[0] && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0] && e.touches[0].clientY);
+    if (clientX === undefined || clientY === undefined) return;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
     ctx.lineTo(x, y);
     ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setIsCanvasEmpty(false);
   };
 
   const clear = () => {
@@ -123,7 +147,7 @@ const SignatureSection = ({ onComplete, onCancel }) => {
     }
   };
   return (
-    <div className="acceptance-signature-box premium-card mt-4" style={{ border: '2px solid #1e293b', background: '#f8fafc' }}>
+    <div className="acceptance-signature-box premium-card mt-4 p-3" style={{ border: '2px solid #1e293b', background: '#f8fafc' }}>
       <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, color: '#1e293b' }}>
         <PenTool size={18} /> Finalize Your Acceptance
       </h4>
@@ -861,24 +885,6 @@ const ContractView = () => {
               </div>
             </div>
           </div>
-
-          {showSignBox && !isCreator && (
-            <SignatureSection
-              onComplete={handleAccept}
-              onCancel={() => setShowSignBox(false)}
-            />
-          )}
-
-          {!contract.benchSalesAccepted && isBS && contract.status !== 'Rejected' && !showSignBox && !isCreator && (
-            <div className="mt-5 text-center d-flex justify-content-center gap-3">
-              <button className="btn-primary" onClick={() => setShowSignBox(true)} style={{ minWidth: '240px', height: '54px', fontSize: 16, fontWeight: 800, borderRadius: '12px', boxShadow: '0 10px 20px rgba(30,41,59,0.2)' }}>
-                <PenTool size={20} className="me-2" /> Accept & Sign Work Order
-              </button>
-              <button className="btn-secondary text-red" onClick={handleReject} style={{ height: '54px', padding: '0 24px', borderRadius: '12px' }}>
-                <XCircle size={20} className="me-2" /> Decline Agreement
-              </button>
-            </div>
-          )}
         </div>
 
         {/* SIDEBAR */}
@@ -926,6 +932,27 @@ const ContractView = () => {
               </div>
             </div>
           </div>
+
+          {/* SIGNATURE SECTION AND ACTIONS */}
+          {showSignBox && !isCreator && (
+            <div style={{ marginTop: '20px' }}>
+              <SignatureSection
+                onComplete={handleAccept}
+                onCancel={() => setShowSignBox(false)}
+              />
+            </div>
+          )}
+
+          {!contract.benchSalesAccepted && isBS && contract.status !== 'Rejected' && !showSignBox && !isCreator && (
+            <div className="d-flex flex-column gap-2 mt-3 w-100">
+              <button className="btn-primary w-100" onClick={() => setShowSignBox(true)} style={{ height: '48px', fontSize: 14, fontWeight: 800, borderRadius: '8px', boxShadow: '0 4px 12px rgba(30,41,59,0.1)' }}>
+                <PenTool size={18} className="me-2" /> Accept &amp; Sign Work Order
+              </button>
+              <button className="btn-secondary text-red w-100" onClick={handleReject} style={{ height: '40px', borderRadius: '8px' }}>
+                <XCircle size={18} className="me-2" /> Decline Agreement
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {customConfirm && (
