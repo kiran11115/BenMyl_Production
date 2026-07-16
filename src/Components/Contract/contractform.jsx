@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   FileText, Plus, Download, Eye, EyeOff, Search, CheckCircle,
   Clock, XCircle, FileCheck, Users, ChevronUp, ChevronDown,
-  PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign
+  PenTool, Upload, ShieldCheck, Building, User, Info, Calendar, DollarSign, Layers
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ContractContext, mapApiContractToUI, formatDate } from './ContractContext';
@@ -77,6 +77,7 @@ const STATUS_CONFIG = {
   Rejected: { cls: 'badge-rejected', label: 'Rejected', icon: <XCircle size={10} /> },
   Completed: { cls: 'badge-completed', label: 'Completed', icon: <FileCheck size={10} /> },
   Closed: { cls: 'badge-closed', label: 'Closed', icon: <XCircle size={10} /> },
+  Agreed: { cls: 'badge-accepted', label: 'Agreed', icon: <CheckCircle size={10} /> },
 };
 
 const SIG_STATUS = {
@@ -342,7 +343,7 @@ const MilestoneDetail = ({
         </div>
         <div className="detail-info-item">
           <span className="lbl">Milestone Period</span>
-          <span className="val font-semibold text-slate-700">{formatToExactDate(monday)} to {formatToExactDate(sunday)}</span>
+          <span className="val font-semibold text-slate-700">{contract.startDate} to {contract.endDate}</span>
         </div>
       </div>
 
@@ -545,8 +546,52 @@ const MilestoneDetail = ({
   );
 };
 
+const getWeekRangeData = () => {
+  const today = new Date();
+  const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  
+  // Start date of week (Monday)
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + mondayOffset);
+  monday.setHours(9, 0, 0, 0); // Monday 9 AM
+
+  // End date of work week (Target Deadline Date: Friday)
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  friday.setHours(17, 0, 0, 0); // Friday 5 PM
+
+  // End of full week (Sunday)
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  return { monday, friday, sunday };
+};
+
+const formatToExactDate = (date) => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${day}-${months[date.getMonth()]}-${date.getFullYear()}`;
+};
+
+const filterActiveWeekContracts = (contracts, monday, sunday) => {
+  return contracts.filter(c => {
+    if (c.status === 'Draft' || c.status === 'Rejected') return false;
+    if (c.startDate && c.endDate && c.startDate !== '-' && c.endDate !== '-') {
+      const start = new Date(c.startDate);
+      const end = new Date(c.endDate);
+      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+         return start <= sunday && end >= monday;
+      }
+    }
+    return true; // Fallback for invalid dates
+  });
+};
+
 const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview, extensionMap, submitExtension, statusOverrideMap }) => {
-  const activeContracts = contracts.filter(c => c.status !== 'Draft' && c.status !== 'Rejected');
+  const { monday, friday, sunday } = getWeekRangeData();
+  const activeContracts = filterActiveWeekContracts(contracts, monday, sunday);
   const [selectedId, setSelectedId] = useState(activeContracts[0]?.id || null);
   const [simulatedCompletedMap, setSimulatedCompletedMap] = useState({});
 
@@ -558,36 +603,6 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
 
   const selectedContract = activeContracts.find(c => c.id === selectedId);
 
-  const getWeekRangeData = () => {
-    const today = new Date();
-    const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
-    
-    // Start date of week (Monday)
-    const mondayOffset = day === 0 ? -6 : 1 - day;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
-    monday.setHours(9, 0, 0, 0); // Monday 9 AM
-
-    // End date of work week (Target Deadline Date: Friday)
-    const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4);
-    friday.setHours(17, 0, 0, 0); // Friday 5 PM
-
-    // End of full week (Sunday)
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-
-    return { monday, friday, sunday };
-  };
-
-  const formatToExactDate = (date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return `${day}-${months[date.getMonth()]}-${date.getFullYear()}`;
-  };
-
-  const { monday, friday, sunday } = getWeekRangeData();
   const currentWeekStr = `${formatToExactDate(monday)} to ${formatToExactDate(sunday)}`;
   const currentFriday = formatToExactDate(friday);
 
@@ -623,7 +638,11 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
                 }
               }
 
-              const status = statusOverrideMap[c.id] || c.status;
+              let status = statusOverrideMap[c.id] || c.status;
+              const bothSigned = !!c.benchSalesSignature && !!c.hiringManagerSignature;
+              if (bothSigned && status === 'Completed') {
+                status = 'Agreed';
+              }
               const isSelected = c.id === selectedId;
 
               return (
@@ -691,6 +710,12 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
             }
           }
 
+          let status = statusOverrideMap[selectedContract.id] || selectedContract.status;
+          const bothSigned = !!selectedContract.benchSalesSignature && !!selectedContract.hiringManagerSignature;
+          if (bothSigned && status === 'Completed') {
+            status = 'Agreed';
+          }
+
           return (
             <MilestoneDetail
               contract={selectedContract}
@@ -706,7 +731,7 @@ const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview,
               onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment)}
               extension={extensionMap[selectedContract.id]}
               onExtensionSubmit={(newDate, reason) => submitExtension(selectedContract.id, newDate, reason)}
-              status={statusOverrideMap[selectedContract.id] || selectedContract.status}
+              status={status}
               simulateCompleted={isSimulated}
               onToggleSimulation={() => setSimulatedCompletedMap(prev => ({ ...prev, [selectedContract.id]: !prev[selectedContract.id] }))}
             />
@@ -757,62 +782,28 @@ const ContractForm = () => {
   const [activeTab, setActiveTab] = useState('all');
 
   // Milestone tracking states persisted in localStorage
-  const [progressMap, setProgressMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('contract_progress_map');
-      return saved ? JSON.parse(saved) : {};
-    } catch (e) {
-      return {};
-    }
-  });
-
-  const [reviewMap, setReviewMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('contract_review_map');
-      return saved ? JSON.parse(saved) : {};
-    } catch (e) {
-      return {};
-    }
-  });
-
-  const [extensionMap, setExtensionMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('contract_extension_map');
-      return saved ? JSON.parse(saved) : {};
-    } catch (e) {
-      return {};
-    }
-  });
-
-  const [statusOverrideMap, setStatusOverrideMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('contract_status_override_map');
-      return saved ? JSON.parse(saved) : {};
-    } catch (e) {
-      return {};
-    }
-  });
+  // Milestone tracking states
+  const [progressMap, setProgressMap] = useState({});
+  const [reviewMap, setReviewMap] = useState({});
+  const [extensionMap, setExtensionMap] = useState({});
+  const [statusOverrideMap, setStatusOverrideMap] = useState({});
 
   const updateProgress = (id, value) => {
     const next = { ...progressMap, [id]: value };
     setProgressMap(next);
-    localStorage.setItem('contract_progress_map', JSON.stringify(next));
   };
 
   const submitReview = (id, rating, comment) => {
     const nextReview = { ...reviewMap, [id]: { rating, comment, submitted: true } };
     setReviewMap(nextReview);
-    localStorage.setItem('contract_review_map', JSON.stringify(nextReview));
 
     const nextStatus = { ...statusOverrideMap, [id]: 'Closed' };
     setStatusOverrideMap(nextStatus);
-    localStorage.setItem('contract_status_override_map', JSON.stringify(nextStatus));
   };
 
   const submitExtension = (id, newDate, reason) => {
     const next = { ...extensionMap, [id]: { newDate, reason, submitted: true, status: 'Pending' } };
     setExtensionMap(next);
-    localStorage.setItem('contract_extension_map', JSON.stringify(next));
   };
 
   const role = localStorage.getItem('Role') || 'Benchsales';
@@ -1089,24 +1080,23 @@ const ContractForm = () => {
         </div>
       </div>
 
-      {/* Tabs navigation */}
-      <div className="tab-switcher" style={{ alignSelf: 'flex-start', marginBottom: '24px', display: 'inline-flex' }}>
+      <div className="elegant-tabs-container mb-4">
         <button
-          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+          className={`tab-item tab-item-users ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => setActiveTab('all')}
         >
-          <Building size={14} style={{ marginRight: '6px' }} />
-          All Contracts 
+          <Layers size={13} className="tab-icon" />
+          <span>All Contracts</span>
           <span className="tab-badge">{contracts.length}</span>
         </button>
         <button
-          className={`tab-btn ${activeTab === 'milestones' ? 'active' : ''}`}
+          className={`tab-item tab-item-users ${activeTab === 'milestones' ? 'active' : ''}`}
           onClick={() => setActiveTab('milestones')}
         >
-          <Calendar size={14} style={{ marginRight: '6px' }} />
-          Weekly Milestones
+          <Calendar size={13} className="tab-icon" />
+          <span>Weekly Milestones</span>
           <span className="tab-badge orange-badge">
-            {contracts.filter(c => c.status !== 'Draft' && c.status !== 'Rejected').length}
+            {filterActiveWeekContracts(contracts, getWeekRangeData().monday, getWeekRangeData().sunday).length}
           </span>
         </button>
       </div>
@@ -1151,7 +1141,10 @@ const ContractForm = () => {
                   filtered.map(c => {
                     const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
                     const sigCfg = SIG_STATUS[sigStatus];
-                    const currentStatus = statusOverrideMap[c.id] || c.status;
+                    let currentStatus = statusOverrideMap[c.id] || c.status;
+                    if (sigStatus === 'complete' && currentStatus === 'Completed') {
+                      currentStatus = 'Agreed';
+                    }
                     return (
                       <tr key={c.id}>
                         <td><span className="contract-id">{c.id}</span></td>

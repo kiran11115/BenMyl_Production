@@ -1330,6 +1330,7 @@
 .milestone-item-status-tag.accepted { background: #f0fdf4; color: #16a34a; }
 .milestone-item-status-tag.rejected { background: #fef2f2; color: #dc2626; }
 .milestone-item-status-tag.completed { background: #ecfdf5; color: #059669; }
+.milestone-item-status-tag.agreed { background: #ecfdf5; color: #059669; }
 .milestone-item-status-tag.closed { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
 .milestone-item-title {
@@ -1442,6 +1443,7 @@
 .detail-status-badge.accepted { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
 .detail-status-badge.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 .detail-status-badge.completed { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+.detail-status-badge.agreed { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
 .detail-status-badge.closed { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
 .detail-section-grid {

@@ -580,7 +580,7 @@ export default function UpcomingInterview() {
                                                 )}
 
                                                 {/* COMPLETED TAB — show status read-only */}
-                                                {feedTab === 'completed' && (
+                                                {/* {feedTab === 'completed' && (
                                                     <div className="iv-notes-section iv-notes-readonly" onClick={e => e.stopPropagation()}>
                                                         {interviewNotes[interview.id]?.interviewStatus ? (
                                                             <div className="iv-readonly-row" style={{ marginBottom: 0 }}>
@@ -597,7 +597,7 @@ export default function UpcomingInterview() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                )}
+                                                )} */}
                                             </div>
 
                                             <div>
