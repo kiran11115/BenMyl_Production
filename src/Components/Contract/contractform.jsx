@@ -722,6 +722,35 @@ const filterActiveWeekContracts = (contracts, monday, sunday) => {
   });
 };
 
+const parseDateSafely = (dateStr) => {
+  if (!dateStr || dateStr === '-') return null;
+  const cleanStr = dateStr.replace(/\//g, '-');
+  const parts = cleanStr.split('-');
+  if (parts.length === 3) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthIdx = months.indexOf(parts[1]);
+    if (monthIdx !== -1) {
+      const day = parseInt(parts[0], 10);
+      const year = parseInt(parts[2], 10);
+      return new Date(year, monthIdx, day);
+    }
+    if (parts[0].length === 4) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+    if (parts[2].length === 4) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+  }
+  const parsed = new Date(dateStr);
+  return isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const getNextUpcomingDate = (parsedContracts) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -735,37 +764,19 @@ const getNextUpcomingDate = (parsedContracts) => {
   
   if (futureContracts.length === 0) return null;
   
-  // Sort to find the earliest future date
   const sorted = [...futureContracts].sort((a, b) => a.parsedEndDate - b.parsedEndDate);
   return sorted[0].parsedEndDate;
 };
 
-const calculateDateProgress = (startDateStr, endDateObj, isClosed, isSimulated) => {
-  if (isClosed || isSimulated) return 100;
-  if (!startDateStr || !endDateObj || isNaN(endDateObj.getTime())) return 0;
+const calculateDateProgress = (startDateStr, endDateObj) => {
+  const startObj = parseDateSafely(startDateStr);
+  const endObj = endDateObj instanceof Date ? endDateObj : parseDateSafely(endDateObj);
   
-  let startObj = null;
-  const parts = startDateStr.split('-');
-  if (parts.length === 3) {
-    const day = parseInt(parts[0], 10);
-    const monthStr = parts[1];
-    const year = parseInt(parts[2], 10);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const monthIdx = months.indexOf(monthStr);
-    if (monthIdx !== -1) {
-      startObj = new Date(year, monthIdx, day);
-    }
-  }
-  if (!startObj) {
-    startObj = new Date(startDateStr);
-  }
-  
-  if (isNaN(startObj.getTime())) return 0;
+  if (!startObj || !endObj) return 0;
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   startObj.setHours(0, 0, 0, 0);
-  const endObj = new Date(endDateObj);
   endObj.setHours(0, 0, 0, 0);
   
   const totalTime = endObj.getTime() - startObj.getTime();
@@ -775,14 +786,14 @@ const calculateDateProgress = (startDateStr, endDateObj, isClosed, isSimulated) 
   if (elapsedTime <= 0) return 0;
   if (today.getTime() >= endObj.getTime()) return 100;
   
-  return Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
+  return Math.min(100, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
 };
 
 const getDaysHoursMinutesLeft = (endDateObj) => {
-  if (!endDateObj || isNaN(endDateObj.getTime())) return { days: 0, hours: 0, minutes: 0 };
-  const today = new Date();
-  const endObj = new Date(endDateObj);
+  const endObj = endDateObj instanceof Date ? endDateObj : parseDateSafely(endDateObj);
+  if (!endObj) return { days: 0, hours: 0, minutes: 0 };
   
+  const today = new Date();
   const diffTime = endObj.getTime() - today.getTime();
   if (diffTime <= 0) {
     return { days: 0, hours: 0, minutes: 0 };
@@ -816,6 +827,17 @@ const renderStars = (ratingValue) => {
     }
   }
   return <div style={{ display: 'flex', gap: '3px', fontSize: '16px' }}>{stars}</div>;
+};
+
+const getFunctionalStatus = (contract, statusOverride, isSimulated, progressValue) => {
+  if (statusOverride === 'Closed' || contract.status === 'Closed') {
+    return 'Closed';
+  }
+  if (progressValue === 100 || isSimulated) {
+    const bothSigned = !!contract.benchSalesSignature && !!contract.hiringManagerSignature;
+    return bothSigned ? 'Agreed' : 'Completed';
+  }
+  return statusOverride || contract.status;
 };
 
 /* =========================================
@@ -1073,30 +1095,12 @@ const CalendarView = ({
   // Parse project end dates safely supporting DD-MMM-YYYY and ISO format, filtering only agreed contracts
   const parsedContracts = useMemo(() => {
     return contracts.map(c => {
-      let dateObj = null;
-      if (c.endDate && c.endDate !== '-') {
-        let dateStr = c.endDate;
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-          const day = parseInt(parts[0], 10);
-          const monthStr = parts[1];
-          const year = parseInt(parts[2], 10);
-          const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          const monthIdx = months.indexOf(monthStr);
-          if (monthIdx !== -1) {
-            dateObj = new Date(year, monthIdx, day);
-          }
-        }
-        if (!dateObj) {
-          dateObj = new Date(dateStr);
-        }
-      }
       return {
         ...c,
-        parsedEndDate: dateObj
+        parsedEndDate: parseDateSafely(c.endDate)
       };
     })
-    .filter(c => c.parsedEndDate && !isNaN(c.parsedEndDate.getTime()))
+    .filter(c => c.parsedEndDate !== null)
     .filter(c => !!c.benchSalesSignature && !!c.hiringManagerSignature);
   }, [contracts]);
 
@@ -1150,7 +1154,7 @@ const CalendarView = ({
     }
   }, [displayedContracts, selectedId]);
 
-  const selectedContract = contracts.find(c => c.id === selectedId);
+  const selectedContract = parsedContracts.find(c => c.id === selectedId);
 
   return (
     <div className="milestones-layout">
@@ -1221,13 +1225,13 @@ const CalendarView = ({
           ) : (
             displayedContracts.map(c => {
               const isSimulated = !!simulatedCompletedMap[c.id];
-              let status = statusOverrideMap[c.id] || c.status;
-              const bothSigned = !!c.benchSalesSignature && !!c.hiringManagerSignature;
-              if (bothSigned && status === 'Completed') {
-                status = 'Agreed';
+              const ext = extensionMap[c.id];
+              let endDateObj = c.parsedEndDate;
+              if (ext && ext.status === 'Accepted') {
+                endDateObj = parseDateSafely(ext.newDate) || c.parsedEndDate;
               }
-              const isClosedOrCompleted = status === 'Closed' || status === 'Completed' || status === 'Agreed';
-              const progress = calculateDateProgress(c.startDate, c.parsedEndDate, isClosedOrCompleted, isSimulated);
+              const progress = calculateDateProgress(c.startDate, endDateObj);
+              const status = getFunctionalStatus(c, statusOverrideMap[c.id], isSimulated, progress);
               const isSelected = c.id === selectedId;
               return (
                 <div
@@ -1258,15 +1262,14 @@ const CalendarView = ({
       <div className="milestones-detail-panel" style={{ height: '760px', overflowY: 'auto' }}>
         {selectedContract ? (() => {
           const isSimulated = !!simulatedCompletedMap[selectedContract.id];
-          let status = statusOverrideMap[selectedContract.id] || selectedContract.status;
-          const bothSigned = !!selectedContract.benchSalesSignature && !!selectedContract.hiringManagerSignature;
-          if (bothSigned && status === 'Completed') {
-            status = 'Agreed';
+          const ext = extensionMap[selectedContract.id];
+          let endDateObj = selectedContract.parsedEndDate;
+          if (ext && ext.status === 'Accepted') {
+            endDateObj = parseDateSafely(ext.newDate) || selectedContract.parsedEndDate;
           }
-          const isClosedOrCompleted = status === 'Closed' || status === 'Completed' || status === 'Agreed';
-          
-          const progress = calculateDateProgress(selectedContract.startDate, selectedContract.parsedEndDate, isClosedOrCompleted, isSimulated);
-          const { days, hours, minutes } = getDaysHoursMinutesLeft(selectedContract.parsedEndDate);
+          const progress = calculateDateProgress(selectedContract.startDate, endDateObj);
+          const status = getFunctionalStatus(selectedContract, statusOverrideMap[selectedContract.id], isSimulated, progress);
+          const { days, hours, minutes } = getDaysHoursMinutesLeft(endDateObj);
           const daysLeft = progress === 100 ? 0 : days;
           const hoursLeft = progress === 100 ? 0 : hours;
           const minutesLeft = progress === 100 ? 0 : minutes;
@@ -1341,7 +1344,29 @@ const ContractForm = () => {
   // Milestone tracking states
   const [progressMap, setProgressMap] = useState({});
   const [reviewMap, setReviewMap] = useState({});
-  const [extensionMap, setExtensionMap] = useState({});
+  const [extensionMap, setExtensionMap] = useState({
+    'CTR-2025-001': {
+      newDate: '2026-01-15',
+      reason: 'Additional client integration testing and security audit require extension of current milestones.',
+      submitted: true,
+      status: 'Pending',
+      requestedBy: 'Benchsales'
+    },
+    'CTR-2025-002': {
+      newDate: '2025-12-10',
+      reason: 'Delay in cloud environment provisioning from client side.',
+      submitted: true,
+      status: 'Pending',
+      requestedBy: 'HiringManager'
+    },
+    'CTR-2025-003': {
+      newDate: '2026-07-20',
+      reason: 'Scope expansion request for Kubernetes cluster setup and CI/CD pipelines redesign.',
+      submitted: true,
+      status: 'Pending',
+      requestedBy: 'Benchsales'
+    }
+  });
   const [statusOverrideMap, setStatusOverrideMap] = useState({});
 
   const updateProgress = (id, value) => {
