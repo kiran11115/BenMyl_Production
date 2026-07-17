@@ -270,6 +270,7 @@ const MilestoneDetail = ({
   onReviewSubmit,
   extension,
   onExtensionSubmit,
+  onExtensionAccept,
   status,
   simulateCompleted,
   onToggleSimulation
@@ -291,19 +292,59 @@ const MilestoneDetail = ({
   }, [contract.id, review]);
 
   const StarRating = () => {
+    const starsArray = [1, 2, 3, 4, 5];
     return (
-      <div className="star-rating-input">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            className={`star-btn ${star <= rating ? 'filled' : ''}`}
-            onClick={() => setRating(star)}
-            disabled={!!review?.submitted}
-          >
-            ★
-          </button>
-        ))}
+      <div className="star-rating-input" style={{ display: 'flex', gap: '6px' }}>
+        {starsArray.map((starIdx) => {
+          const isFull = starIdx <= rating;
+          const isHalf = (starIdx - 0.5) === rating;
+          
+          return (
+            <div 
+              key={starIdx} 
+              style={{ 
+                position: 'relative', 
+                display: 'inline-block', 
+                fontSize: '24px', 
+                cursor: review?.submitted ? 'default' : 'pointer',
+                userSelect: 'none'
+              }}
+            >
+              {/* Background grey star */}
+              <span style={{ color: '#e2e8f0' }}>★</span>
+              
+              {/* Highlighted yellow star */}
+              {(isFull || isHalf) && (
+                <span 
+                  style={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    width: isFull ? '100%' : '50%', 
+                    overflow: 'hidden', 
+                    color: '#eab308' 
+                  }}
+                >
+                  ★
+                </span>
+              )}
+              
+              {/* Left and Right half invisible click areas (if not submitted) */}
+              {!review?.submitted && (
+                <>
+                  <div 
+                    style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', zIndex: 2 }} 
+                    onClick={() => setRating(starIdx - 0.5)}
+                  />
+                  <div 
+                    style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: '100%', zIndex: 2 }} 
+                    onClick={() => setRating(starIdx)}
+                  />
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -362,17 +403,17 @@ const MilestoneDetail = ({
           
           <div className="progress-stat-row">
             <span className="progress-percentage-label">Current Progress: <strong className="text-orange">{progress}%</strong></span>
-            <span className="progress-target-label">Target: {formatToExactDate(friday)}</span>
+            <span className="progress-target-label">Target: {contract.endDate}</span>
           </div>
 
           <div className="milestone-typo-days-left">
             {progress < 100 ? (
               <>
-                Target deadline: <span className="days-left-highlight">{formatToExactDate(friday)}</span> • <span className="days-left-count">{daysLeft}d {hoursLeft}h {minutesLeft}m left</span> to achieve this week's milestone.
+                Target deadline: <span className="days-left-highlight">{contract.endDate}</span> • <span className="days-left-count">{daysLeft}d {hoursLeft}h {minutesLeft}m left</span> to achieve milestone.
               </>
             ) : (
               <>
-                Target deadline: <span className="days-left-highlight">{formatToExactDate(friday)}</span> reached. Progress is fully completed.
+                Target deadline: <span className="days-left-highlight">{contract.endDate}</span> reached. Progress is fully completed.
               </>
             )}
           </div>
@@ -408,131 +449,223 @@ const MilestoneDetail = ({
       <div className="detail-divider"></div>
 
       {/* Rate Contract Section */}
-      {progress === 100 ? (
+      {progress === 100 && (
         <div className="detail-section review-section-wrap">
-          <h4 className="section-title">Rate Contract</h4>
-          <p className="section-desc">Provide your service evaluation and feedback below to close the contract.</p>
-          
-          {review?.submitted || isClosed ? (
-            <div className="review-submitted-card">
-              <div className="submitted-header">
-                <span className="badge-check">✓ Rated & Closed</span>
-                <span className="stars-display">{'★'.repeat(review?.rating || rating)}{'☆'.repeat(5 - (review?.rating || rating))}</span>
-              </div>
-              <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
-              <div className="contract-closed-notification alert alert-success mt-2">
-                <strong>Closed:</strong> This contract has been officially closed.
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleReviewSubmit} className="review-form">
-              <div className="form-group mb-3">
-                <label className="form-label d-block">Overall Deliverables Rating</label>
-                <StarRating />
-              </div>
-              <div className="form-group mb-3">
-                <label className="form-label">Review Summary & Evaluation Comments</label>
-                <textarea
-                  className="form-control feedback-textarea"
-                  rows="3"
-                  placeholder="Provide final evaluation comments..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-100 py-2" style={{ fontSize: '11px' }}>
-                Submit Rating & Close Contract
-              </button>
-            </form>
-          )}
-        </div>
-      ) : (
-        <div className="detail-section extension-section-wrap">
-          <h4 className="section-title">Milestone Extension Request</h4>
-          <p className="section-desc">If milestones cannot be met within the current week, Candidate Handler can raise an extension request.</p>
+          <h4 className="section-title">Talent Evaluation & Feedback</h4>
+          {(() => {
+            const role = localStorage.getItem('Role') || 'Benchsales';
+            const isBenchsales = role === 'Benchsales';
 
-          {extension?.submitted ? (
-            <div className="extension-submitted-card">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className="badge-pending">Extension Requested</span>
-                <span className="ext-date">{formatDate(extension.newDate)}</span>
-              </div>
-              <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
-              <div className="ext-meta">Raised by: <strong>Candidate Handler</strong></div>
-            </div>
-          ) : showDatePicker ? (
-            <div className="elegant-date-picker-wrap">
-              <div className="form-group mb-2">
-                <label className="form-label">Choose Extension Target Date</label>
-                <input
-                  type="date"
-                  className="date-filter-input"
-                  value={selectedExtDate}
-                  min={new Date().toISOString().split('T')[0]} // Restricted to future dates
-                  onChange={(e) => setSelectedExtDate(e.target.value)}
-                />
-              </div>
-              <div className="form-group mb-2">
-                <label className="form-label">Extension Justification Reason</label>
-                <textarea
-                  className="form-control feedback-textarea"
-                  rows="2"
-                  placeholder="Explain why the extension is required..."
-                  value={selectedExtReason}
-                  onChange={(e) => setSelectedExtReason(e.target.value)}
-                />
-              </div>
-              <div className="date-input-filter-row">
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={() => {
-                    if (!selectedExtDate) {
-                      toast.warning("Please choose a valid date.");
-                      return;
-                    }
-                    if (!selectedExtReason.trim()) {
-                      toast.warning("Please provide a reason for the extension request.");
-                      return;
-                    }
-                    setConfirmModal({
-                      title: "Confirm Extension Request",
-                      message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
-                      confirmText: "Submit Request",
-                      cancelText: "Cancel",
-                      onConfirm: () => {
-                        setConfirmModal(null);
-                        onExtensionSubmit(selectedExtDate, selectedExtReason);
-                        toast.success("Extension request submitted successfully!");
-                        setShowDatePicker(false);
-                      }
-                    });
-                  }}
-                >
-                  Confirm Request
-                </button>
-                <button
-                  type="button"
-                  className="tbl-btn tbl-btn-status-change"
-                  onClick={() => setShowDatePicker(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="btn-primary"
-              disabled={isClosed}
-              onClick={() => setShowDatePicker(true)}
-            >
-              Request Extension
-            </button>
-          )}
+            if (!isBenchsales) {
+              // Contract Creator (Hiring Manager / Client)
+              if (review?.submitted || isClosed) {
+                return (
+                  <div className="review-submitted-card">
+                    <div className="submitted-header">
+                      <span className="badge-check">✓ Rated & Closed</span>
+                      {renderStars(review?.rating || rating)}
+                    </div>
+                    <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
+                    <div className="contract-closed-notification alert alert-success mt-2">
+                      <strong>Closed:</strong> You have closed this contract and submitted evaluation feedback.
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <form onSubmit={handleReviewSubmit} className="review-form">
+                    <p className="section-desc">Provide your service evaluation and feedback below to close the contract.</p>
+                    <div className="form-group mb-3">
+                      <label className="form-label d-block">Overall Deliverables Rating</label>
+                      <StarRating />
+                    </div>
+                    <div className="form-group mb-3">
+                      <label className="form-label">Review Summary & Evaluation Comments</label>
+                      <textarea
+                        className="form-control feedback-textarea"
+                        rows="3"
+                        placeholder="Provide final evaluation comments..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="btn-primary w-100 py-2" style={{ fontSize: '11px' }}>
+                      Submit Rating & Close Contract
+                    </button>
+                  </form>
+                );
+              }
+            } else {
+              // Talent Provider (Benchsales)
+              if (review?.submitted || isClosed) {
+                return (
+                  <div className="review-submitted-card">
+                    <div className="submitted-header">
+                      <span className="badge-check">✓ Received Client Rating</span>
+                      {renderStars(review?.rating || rating)}
+                    </div>
+                    <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
+                    <div className="contract-closed-notification alert alert-success mt-2" style={{ background: '#eff6ff', color: '#1e3a8a', borderColor: '#bfdbfe' }}>
+                      <strong>Evaluation Feedback Received:</strong> The client has rated and successfully closed this contract.
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <p className="section-desc" style={{ fontStyle: 'italic', margin: 0 }}>
+                    Awaiting final evaluation rating and feedback from the client/contract creator.
+                  </p>
+                );
+              }
+            }
+          })()}
         </div>
       )}
+
+      {/* Milestone Extension Request Section */}
+      <div className="detail-section extension-section-wrap">
+        <h4 className="section-title">Milestone Extension Request</h4>
+        {(() => {
+          const role = localStorage.getItem('Role') || 'Benchsales';
+          const isAccepted = extension?.status === 'Accepted';
+
+          if (extension?.submitted) {
+            const isRequester = extension.requestedBy ? (extension.requestedBy === role) : (role === 'Benchsales');
+
+            if (isRequester) {
+              return (
+                <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : '4px solid #ea580c' }}>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className={isAccepted ? "badge-check" : "badge-pending"}>
+                      {isAccepted ? "Extension Approved" : "Extension Requested"}
+                    </span>
+                    <span className="ext-date">{formatDate(extension.newDate)}</span>
+                  </div>
+                  <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                  <div className="ext-meta">Status: <strong>{isAccepted ? "Approved" : "Pending Review by " + (role === 'Benchsales' ? "Client" : "Talent Provider")}</strong></div>
+                </div>
+              );
+            } else {
+              return (
+                <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : '4px solid #ea580c' }}>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className={isAccepted ? "badge-check" : "badge-pending"}>
+                      {isAccepted ? "Extension Approved" : "Extension Received"}
+                    </span>
+                    <span className="ext-date">{formatDate(extension.newDate)}</span>
+                  </div>
+                  <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                  <div className="ext-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                    <span>Raised by: <strong>{role === 'Benchsales' ? "Client" : "Candidate Handler"}</strong></span>
+                    {!isAccepted && (
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                          setConfirmModal({
+                            title: "Accept Extension",
+                            message: `Accept the extension request to ${formatDate(extension.newDate)}?`,
+                            confirmText: "Accept",
+                            cancelText: "Cancel",
+                            onConfirm: () => {
+                              setConfirmModal(null);
+                              onExtensionAccept();
+                              toast.success("Extension request accepted successfully!");
+                            }
+                          });
+                        }}
+                      >
+                        Accept Extension
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+          } else {
+            return (
+              <>
+                <p className="section-desc">If milestones cannot be met within the target week, you can raise an extension request.</p>
+                {showDatePicker ? (
+                  <div className="elegant-date-picker-wrap" style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
+                    <div className="form-group mb-2">
+                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                        <Calendar size={13} color="#ea580c" /> CHOOSE EXTENSION TARGET DATE
+                      </label>
+                      <input
+                        type="date"
+                        className="date-filter-input"
+                        value={selectedExtDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setSelectedExtDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group mb-2">
+                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                        <Info size={13} color="#ea580c" /> EXTENSION JUSTIFICATION REASON
+                      </label>
+                      <textarea
+                        className="form-control feedback-textarea"
+                        rows="2"
+                        placeholder="Explain why the extension is required..."
+                        value={selectedExtReason}
+                        onChange={(e) => setSelectedExtReason(e.target.value)}
+                      />
+                    </div>
+                    <div className="date-input-filter-row" style={{ marginTop: '6px' }}>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                          if (!selectedExtDate) {
+                            toast.warning("Please choose a valid date.");
+                            return;
+                          }
+                          if (!selectedExtReason.trim()) {
+                            toast.warning("Please provide a reason for the extension request.");
+                            return;
+                          }
+                          setConfirmModal({
+                            title: "Confirm Extension Request",
+                            message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
+                            confirmText: "Submit Request",
+                            cancelText: "Cancel",
+                            onConfirm: () => {
+                              setConfirmModal(null);
+                              onExtensionSubmit(selectedExtDate, selectedExtReason, role);
+                              toast.success("Extension request submitted successfully!");
+                              setShowDatePicker(false);
+                            }
+                          });
+                        }}
+                      >
+                        Confirm Request
+                      </button>
+                      <button
+                        type="button"
+                        className="tbl-btn tbl-btn-status-change"
+                        onClick={() => setShowDatePicker(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    disabled={isClosed}
+                    onClick={() => setShowDatePicker(true)}
+                  >
+                    Request Extension
+                  </button>
+                )}
+              </>
+            );
+          }
+        })()}
+      </div>
       {confirmModal && (
         <ConfirmModal
           title={confirmModal.title}
@@ -589,164 +722,100 @@ const filterActiveWeekContracts = (contracts, monday, sunday) => {
   });
 };
 
-const WeeklyMilestonesView = ({ contracts, progressMap, reviewMap, submitReview, extensionMap, submitExtension, statusOverrideMap }) => {
-  const { monday, friday, sunday } = getWeekRangeData();
-  const activeContracts = filterActiveWeekContracts(contracts, monday, sunday).filter(c => {
-    return !!c.benchSalesSignature && !!c.hiringManagerSignature;
+const getNextUpcomingDate = (parsedContracts) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const futureContracts = parsedContracts.filter(c => {
+    if (!c.parsedEndDate) return false;
+    const end = new Date(c.parsedEndDate);
+    end.setHours(0, 0, 0, 0);
+    return end >= today;
   });
-  const [selectedId, setSelectedId] = useState(activeContracts[0]?.id || null);
-  const [simulatedCompletedMap, setSimulatedCompletedMap] = useState({});
+  
+  if (futureContracts.length === 0) return null;
+  
+  // Sort to find the earliest future date
+  const sorted = [...futureContracts].sort((a, b) => a.parsedEndDate - b.parsedEndDate);
+  return sorted[0].parsedEndDate;
+};
 
-  useEffect(() => {
-    if (!selectedId && activeContracts.length > 0) {
-      setSelectedId(activeContracts[0].id);
+const calculateDateProgress = (startDateStr, endDateObj, isClosed, isSimulated) => {
+  if (isClosed || isSimulated) return 100;
+  if (!startDateStr || !endDateObj || isNaN(endDateObj.getTime())) return 0;
+  
+  let startObj = null;
+  const parts = startDateStr.split('-');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const monthStr = parts[1];
+    const year = parseInt(parts[2], 10);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthIdx = months.indexOf(monthStr);
+    if (monthIdx !== -1) {
+      startObj = new Date(year, monthIdx, day);
     }
-  }, [activeContracts, selectedId]);
+  }
+  if (!startObj) {
+    startObj = new Date(startDateStr);
+  }
+  
+  if (isNaN(startObj.getTime())) return 0;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  startObj.setHours(0, 0, 0, 0);
+  const endObj = new Date(endDateObj);
+  endObj.setHours(0, 0, 0, 0);
+  
+  const totalTime = endObj.getTime() - startObj.getTime();
+  const elapsedTime = today.getTime() - startObj.getTime();
+  
+  if (totalTime <= 0) return 100;
+  if (elapsedTime <= 0) return 0;
+  if (today.getTime() >= endObj.getTime()) return 100;
+  
+  return Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
+};
 
-  const selectedContract = activeContracts.find(c => c.id === selectedId);
+const getDaysHoursMinutesLeft = (endDateObj) => {
+  if (!endDateObj || isNaN(endDateObj.getTime())) return { days: 0, hours: 0, minutes: 0 };
+  const today = new Date();
+  const endObj = new Date(endDateObj);
+  
+  const diffTime = endObj.getTime() - today.getTime();
+  if (diffTime <= 0) {
+    return { days: 0, hours: 0, minutes: 0 };
+  }
+  
+  const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+  return { days, hours, minutes };
+};
 
-  const currentWeekStr = `${formatToExactDate(monday)} to ${formatToExactDate(sunday)}`;
-  const currentFriday = formatToExactDate(friday);
-
-  return (
-    <div className="milestones-layout">
-      {/* List Side */}
-      <div className="milestones-list-panel">
-        <div className="panel-header">
-          <h4 className="panel-title"><Calendar size={14} color="#1e293b" /> Weekly Deliverables</h4>
-          <span className="week-label">Exact Week: {currentWeekStr}</span>
-        </div>
-        <div className="milestones-list">
-          {activeContracts.length === 0 ? (
-            <NoData text="No active milestone contracts for this week." />
-          ) : (
-            activeContracts.map(c => {
-              const isSimulated = !!simulatedCompletedMap[c.id];
-              const isClosed = (statusOverrideMap[c.id] || c.status) === 'Closed';
-
-              let progress = 0;
-              if (isClosed || isSimulated) {
-                progress = 100;
-              } else {
-                const totalTime = friday.getTime() - monday.getTime();
-                const elapsedTime = new Date().getTime() - monday.getTime();
-
-                if (new Date().getTime() >= friday.getTime()) {
-                  progress = 100;
-                } else if (new Date().getTime() <= monday.getTime()) {
-                  progress = 0;
-                } else {
-                  progress = Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
-                }
-              }
-
-              let status = statusOverrideMap[c.id] || c.status;
-              const bothSigned = !!c.benchSalesSignature && !!c.hiringManagerSignature;
-              if (bothSigned && status === 'Completed') {
-                status = 'Agreed';
-              }
-              const isSelected = c.id === selectedId;
-
-              return (
-                <div
-                  key={c.id}
-                  className={`milestone-list-item ${isSelected ? 'selected' : ''}`}
-                  onClick={() => setSelectedId(c.id)}
-                >
-                  <div className="milestone-item-header">
-                    <span className="milestone-item-id">{c.id}</span>
-                    <span className={`milestone-item-status-tag ${status.toLowerCase()}`}>{status}</span>
-                  </div>
-                  <div className="milestone-item-title">{c.contractTitle}</div>
-                  <div className="milestone-item-candidate">{c.candidateName} • {c.jobTitle}</div>
-                  <div className="milestone-item-progress-bar-container">
-                    <div className="milestone-item-progress-track">
-                      <div className="milestone-item-progress-fill" style={{ width: `${progress}%` }}></div>
-                    </div>
-                    <span className="milestone-item-progress-text">{progress}% Complete</span>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {/* Detail Side */}
-      <div className="milestones-detail-panel">
-        {selectedContract ? (() => {
-          const isSimulated = !!simulatedCompletedMap[selectedContract.id];
-          const isClosed = (statusOverrideMap[selectedContract.id] || selectedContract.status) === 'Closed';
-          
-          let progress = 0;
-          let daysLeft = 0;
-          let hoursLeft = 0;
-          let minutesLeft = 0;
-
-          if (isClosed || isSimulated) {
-            progress = 100;
-            daysLeft = 0;
-            hoursLeft = 0;
-            minutesLeft = 0;
-          } else {
-            const today = new Date();
-            const totalTime = friday.getTime() - monday.getTime();
-            const elapsedTime = today.getTime() - monday.getTime();
-
-            if (today.getTime() >= friday.getTime()) {
-              progress = 100;
-              daysLeft = 0;
-              hoursLeft = 0;
-              minutesLeft = 0;
-            } else if (today.getTime() <= monday.getTime()) {
-              progress = 0;
-              daysLeft = 5;
-              hoursLeft = 0;
-              minutesLeft = 0;
-            } else {
-              progress = Math.min(99, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
-              const diffTime = friday.getTime() - today.getTime();
-              daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-              hoursLeft = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              minutesLeft = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-            }
-          }
-
-          let status = statusOverrideMap[selectedContract.id] || selectedContract.status;
-          const bothSigned = !!selectedContract.benchSalesSignature && !!selectedContract.hiringManagerSignature;
-          if (bothSigned && status === 'Completed') {
-            status = 'Agreed';
-          }
-
-          return (
-            <MilestoneDetail
-              contract={selectedContract}
-              progress={progress}
-              daysLeft={daysLeft}
-              hoursLeft={hoursLeft}
-              minutesLeft={minutesLeft}
-              monday={monday}
-              friday={friday}
-              sunday={sunday}
-              formatToExactDate={formatToExactDate}
-              review={reviewMap[selectedContract.id]}
-              onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment)}
-              extension={extensionMap[selectedContract.id]}
-              onExtensionSubmit={(newDate, reason) => submitExtension(selectedContract.id, newDate, reason)}
-              status={status}
-              simulateCompleted={isSimulated}
-              onToggleSimulation={() => setSimulatedCompletedMap(prev => ({ ...prev, [selectedContract.id]: !prev[selectedContract.id] }))}
-            />
-          );
-        })() : (
-          <div className="milestone-detail-empty">
-            <Info size={32} color="#94a3b8" />
-            <p>Select a contract milestone to view details and track progress.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+const renderStars = (ratingValue) => {
+  const stars = [];
+  const fullStars = Math.floor(ratingValue);
+  const hasHalf = ratingValue % 1 !== 0;
+  
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      stars.push(<span key={i} style={{ color: '#eab308' }}>★</span>);
+    } else if (i === fullStars + 1 && hasHalf) {
+      stars.push(
+        <span key={i} style={{ position: 'relative', display: 'inline-block', color: '#e2e8f0' }}>
+          <span style={{ color: '#e2e8f0' }}>★</span>
+          <span style={{ position: 'absolute', top: 0, left: 0, width: '50%', overflow: 'hidden', color: '#eab308' }}>
+            ★
+          </span>
+        </span>
+      );
+    } else {
+      stars.push(<span key={i} style={{ color: '#e2e8f0' }}>★</span>);
+    }
+  }
+  return <div style={{ display: 'flex', gap: '3px', fontSize: '16px' }}>{stars}</div>;
 };
 
 /* =========================================
@@ -984,9 +1053,22 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
   );
 };
 
-const CalendarView = ({ contracts, navigate, basePath, statusOverrideMap, extensionMap, submitExtension }) => {
+const CalendarView = ({
+  contracts,
+  navigate,
+  basePath,
+  statusOverrideMap,
+  extensionMap,
+  submitExtension,
+  acceptExtension,
+  progressMap,
+  reviewMap,
+  submitReview
+}) => {
   const [navDate, setNavDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [simulatedCompletedMap, setSimulatedCompletedMap] = useState({});
 
   // Parse project end dates safely supporting DD-MMM-YYYY and ISO format, filtering only agreed contracts
   const parsedContracts = useMemo(() => {
@@ -1034,27 +1116,54 @@ const CalendarView = ({ contracts, navigate, basePath, statusOverrideMap, extens
     setNavDate(new Date(navDate.getFullYear(), navDate.getMonth() + 1, 1));
   };
 
-  // Contracts ending on the selected date
-  const contractsOnSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    return parsedContracts.filter(c =>
-      c.parsedEndDate.getDate() === selectedDate.getDate() &&
-      c.parsedEndDate.getMonth() === selectedDate.getMonth() &&
-      c.parsedEndDate.getFullYear() === selectedDate.getFullYear()
-    );
-  }, [parsedContracts, selectedDate]);
+  const { monday, friday, sunday } = getWeekRangeData();
+
+  // Get displayed contracts: filter by calendar date if selected, otherwise show upcoming milestones for a single date
+  const displayedContracts = useMemo(() => {
+    if (selectedDate) {
+      return parsedContracts.filter(c =>
+        c.parsedEndDate.getDate() === selectedDate.getDate() &&
+        c.parsedEndDate.getMonth() === selectedDate.getMonth() &&
+        c.parsedEndDate.getFullYear() === selectedDate.getFullYear()
+      );
+    } else {
+      const nextUpcomingDateObj = getNextUpcomingDate(parsedContracts);
+      if (nextUpcomingDateObj) {
+        return parsedContracts.filter(c =>
+          c.parsedEndDate.getDate() === nextUpcomingDateObj.getDate() &&
+          c.parsedEndDate.getMonth() === nextUpcomingDateObj.getMonth() &&
+          c.parsedEndDate.getFullYear() === nextUpcomingDateObj.getFullYear()
+        );
+      }
+      return [];
+    }
+  }, [contracts, selectedDate, parsedContracts]);
+
+  // Handle auto-selection when the displayed contracts change
+  useEffect(() => {
+    if (displayedContracts.length > 0) {
+      if (!displayedContracts.some(c => c.id === selectedId)) {
+        setSelectedId(displayedContracts[0].id);
+      }
+    } else {
+      setSelectedId(null);
+    }
+  }, [displayedContracts, selectedId]);
+
+  const selectedContract = contracts.find(c => c.id === selectedId);
 
   return (
     <div className="milestones-layout">
-      {/* Calendar Side */}
-      <div className="milestones-list-panel" style={{ height: 'auto', minHeight: '430px' }}>
+      {/* Calendar & List Side */}
+      <div className="milestones-list-panel" style={{ height: '760px' }}>
         <div className="panel-header" style={{ marginBottom: '12px' }}>
           <h4 className="panel-title">
-            <Calendar size={14} color="#1e293b" /> Contract End Stage Dates
+            <Calendar size={14} color="#1e293b" /> Contract End Dates & Milestones
           </h4>
-          <span className="week-label">Select highlighted date to display contracts</span>
         </div>
-        <div style={{ padding: '0 4px' }}>
+        
+        {/* Calendar Widget */}
+        <div style={{ padding: '0 4px', marginBottom: '16px' }}>
           <ContractCalendarWidget
             navDate={navDate}
             selectedDate={selectedDate}
@@ -1063,56 +1172,130 @@ const CalendarView = ({ contracts, navigate, basePath, statusOverrideMap, extens
             onPrev={handlePrevMonth}
             onNext={handleNextMonth}
           />
+        </div>
+
+        {/* Dynamic List Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '0 4px' }}>
+          <span className="week-label" style={{ fontWeight: '700', color: '#1e293b', fontSize: '13px' }}>
+            {selectedDate ? (
+              `Ending: ${selectedDate.getDate()}-${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][selectedDate.getMonth()]}-${selectedDate.getFullYear()}`
+            ) : (
+              (() => {
+                const nextUpcoming = getNextUpcomingDate(parsedContracts);
+                if (nextUpcoming) {
+                  return `Upcoming Milestones: ${nextUpcoming.getDate()}-${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][nextUpcoming.getMonth()]}-${nextUpcoming.getFullYear()}`;
+                }
+                return "Upcoming Milestones";
+              })()
+            )}
+          </span>
           {selectedDate && (
             <button
-              className="btn-clear-date-v2"
+              style={{ 
+                fontSize: '11px', 
+                padding: '4px 10px', 
+                background: '#fffbeb', 
+                border: '1px solid #fed7aa', 
+                borderRadius: '6px',
+                color: '#ea580c', 
+                cursor: 'pointer', 
+                fontWeight: '700',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                margin: 0
+              }}
               onClick={() => setSelectedDate(null)}
               type="button"
             >
-              Reset Selection
+              Reset
             </button>
+          )}
+        </div>
+
+        {/* Scrollable list of contract cards */}
+        <div className="milestones-list" style={{ overflowY: 'auto', flex: 1 }}>
+          {displayedContracts.length === 0 ? (
+            <NoData text={selectedDate ? "No contracts ending on this date." : "No active milestone contracts."} />
+          ) : (
+            displayedContracts.map(c => {
+              const isSimulated = !!simulatedCompletedMap[c.id];
+              let status = statusOverrideMap[c.id] || c.status;
+              const bothSigned = !!c.benchSalesSignature && !!c.hiringManagerSignature;
+              if (bothSigned && status === 'Completed') {
+                status = 'Agreed';
+              }
+              const isClosedOrCompleted = status === 'Closed' || status === 'Completed' || status === 'Agreed';
+              const progress = calculateDateProgress(c.startDate, c.parsedEndDate, isClosedOrCompleted, isSimulated);
+              const isSelected = c.id === selectedId;
+              return (
+                <div
+                  key={c.id}
+                  className={`milestone-list-item ${isSelected ? 'selected' : ''}`}
+                  onClick={() => setSelectedId(c.id)}
+                >
+                  <div className="milestone-item-header">
+                    <span className="milestone-item-id">{c.id}</span>
+                    <span className={`milestone-item-status-tag ${status.toLowerCase()}`}>{status}</span>
+                  </div>
+                  <div className="milestone-item-title">{c.contractTitle}</div>
+                  <div className="milestone-item-candidate">{c.candidateName} • {c.jobTitle}</div>
+                  <div className="milestone-item-progress-bar-container">
+                    <div className="milestone-item-progress-track">
+                      <div className="milestone-item-progress-fill" style={{ width: `${progress}%` }}></div>
+                    </div>
+                    <span className="milestone-item-progress-text">{progress}% Complete</span>
+                  </div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
 
-      {/* Contracts List Side */}
-      <div className="milestones-detail-panel" style={{ minHeight: '430px' }}>
-        {selectedDate ? (
-          <div>
-            <div className="panel-header" style={{ marginBottom: '16px' }}>
-              <h4 className="panel-title" style={{ fontSize: '15px' }}>
-                Contracts Ending on {selectedDate.getDate()}-{["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][selectedDate.getMonth()]}-{selectedDate.getFullYear()}
-              </h4>
-              <span className="week-label">
-                {contractsOnSelectedDate.length} {contractsOnSelectedDate.length === 1 ? 'contract' : 'contracts'} ending
-              </span>
-            </div>
+      {/* Details Side */}
+      <div className="milestones-detail-panel" style={{ height: '760px', overflowY: 'auto' }}>
+        {selectedContract ? (() => {
+          const isSimulated = !!simulatedCompletedMap[selectedContract.id];
+          let status = statusOverrideMap[selectedContract.id] || selectedContract.status;
+          const bothSigned = !!selectedContract.benchSalesSignature && !!selectedContract.hiringManagerSignature;
+          if (bothSigned && status === 'Completed') {
+            status = 'Agreed';
+          }
+          const isClosedOrCompleted = status === 'Closed' || status === 'Completed' || status === 'Agreed';
+          
+          const progress = calculateDateProgress(selectedContract.startDate, selectedContract.parsedEndDate, isClosedOrCompleted, isSimulated);
+          const { days, hours, minutes } = getDaysHoursMinutesLeft(selectedContract.parsedEndDate);
+          const daysLeft = progress === 100 ? 0 : days;
+          const hoursLeft = progress === 100 ? 0 : hours;
+          const minutesLeft = progress === 100 ? 0 : minutes;
 
-            {contractsOnSelectedDate.length === 0 ? (
-              <div className="milestone-detail-empty">
-                <Info size={32} color="#94a3b8" />
-                <p>No contracts ending on this date.</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {contractsOnSelectedDate.map(c => (
-                  <CalendarContractCard
-                    key={c.id}
-                    c={c}
-                    navigate={navigate}
-                    basePath={basePath}
-                    statusOverrideMap={statusOverrideMap}
-                    extensionMap={extensionMap}
-                    submitExtension={submitExtension}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
+          return (
+            <MilestoneDetail
+              contract={selectedContract}
+              progress={progress}
+              daysLeft={daysLeft}
+              hoursLeft={hoursLeft}
+              minutesLeft={minutesLeft}
+              monday={monday}
+              friday={friday}
+              sunday={sunday}
+              formatToExactDate={formatToExactDate}
+              review={reviewMap[selectedContract.id]}
+              onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment)}
+              extension={extensionMap[selectedContract.id]}
+              onExtensionSubmit={(newDate, reason, requestedBy) => submitExtension(selectedContract.id, newDate, reason, requestedBy)}
+              onExtensionAccept={() => acceptExtension(selectedContract.id)}
+              status={status}
+              simulateCompleted={isSimulated}
+              onToggleSimulation={() => setSimulatedCompletedMap(prev => ({ ...prev, [selectedContract.id]: !prev[selectedContract.id] }))}
+            />
+          );
+        })() : (
           <div className="milestone-detail-empty">
             <Info size={32} color="#94a3b8" />
-            <p>Select a date highlighted in the calendar to display ending contracts.</p>
+            <p>Select a contract milestone to view details and track progress.</p>
           </div>
         )}
       </div>
@@ -1174,9 +1357,17 @@ const ContractForm = () => {
     setStatusOverrideMap(nextStatus);
   };
 
-  const submitExtension = (id, newDate, reason) => {
-    const next = { ...extensionMap, [id]: { newDate, reason, submitted: true, status: 'Pending' } };
+  const submitExtension = (id, newDate, reason, requestedBy) => {
+    const next = { ...extensionMap, [id]: { newDate, reason, submitted: true, status: 'Pending', requestedBy } };
     setExtensionMap(next);
+  };
+
+  const acceptExtension = (id) => {
+    const current = extensionMap[id];
+    if (current) {
+      const next = { ...extensionMap, [id]: { ...current, status: 'Accepted' } };
+      setExtensionMap(next);
+    }
   };
 
   const role = localStorage.getItem('Role') || 'Benchsales';
@@ -1591,23 +1782,11 @@ const ContractForm = () => {
           <span className="tab-badge">{contracts.length}</span>
         </button>
         <button
-          className={`tab-item tab-item-users ${activeTab === 'milestones' ? 'active' : ''}`}
-          onClick={() => setActiveTab('milestones')}
-        >
-          <Calendar size={13} className="tab-icon" />
-          <span>Weekly Milestones</span>
-          <span className="tab-badge orange-badge">
-            {filterActiveWeekContracts(contracts, getWeekRangeData().monday, getWeekRangeData().sunday).filter(c => {
-              return !!c.benchSalesSignature && !!c.hiringManagerSignature;
-            }).length}
-          </span>
-        </button>
-        <button
           className={`tab-item tab-item-users ${activeTab === 'calendar' ? 'active' : ''}`}
           onClick={() => setActiveTab('calendar')}
         >
           <Calendar size={13} className="tab-icon" />
-          <span>Calendar View</span>
+          <span>Milestones & Calendar</span>
         </button>
       </div>
 
@@ -1682,17 +1861,6 @@ const ContractForm = () => {
           </div>
         </div>
       )}
-      {activeTab === 'milestones' && (
-        <WeeklyMilestonesView
-          contracts={contracts}
-          progressMap={progressMap}
-          reviewMap={reviewMap}
-          submitReview={submitReview}
-          extensionMap={extensionMap}
-          submitExtension={submitExtension}
-          statusOverrideMap={statusOverrideMap}
-        />
-      )}
       {activeTab === 'calendar' && (
         <CalendarView
           contracts={contracts}
@@ -1701,6 +1869,10 @@ const ContractForm = () => {
           statusOverrideMap={statusOverrideMap}
           extensionMap={extensionMap}
           submitExtension={submitExtension}
+          acceptExtension={acceptExtension}
+          progressMap={progressMap}
+          reviewMap={reviewMap}
+          submitReview={submitReview}
         />
       )}
     </div>

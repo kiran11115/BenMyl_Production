@@ -1362,7 +1362,7 @@
 
 .milestone-item-progress-fill {
   height: 100%;
-  background: #1e293b;
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
@@ -1517,7 +1517,7 @@
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1e293b 0%, #475569 100%);
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
   border-radius: 999px;
   transition: width 0.4s ease-out;
 }
@@ -1624,11 +1624,12 @@
 }
 
 .star-btn.filled {
-  color: #1e293b;
+  color: #eab308;
 }
 
 /* Forms and Inputs - compact sizing */
 .feedback-textarea {
+  font-family: inherit;
   background: #fff;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -1730,6 +1731,7 @@
 }
 
 .date-filter-input {
+  font-family: inherit;
   flex: 1;
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -1898,13 +1900,14 @@
 }
 
 .calendar-days .day.has-interview {
-  background: #f1f5f9;
-  color: #1e293b;
-  box-shadow: inset 0 0 0 1px #cbd5e1;
+  background: #fff7ed;
+  color: #c2410c;
+  box-shadow: inset 0 0 0 1px #fdba74;
 }
 
 .calendar-days .day.has-interview:hover:not(.selected) {
-  background: #e2e8f0;
+  background: #ffedd5;
+  color: #c2410c;
 }
 
 .calendar-days .day.selected {
@@ -1935,7 +1938,7 @@
 }
 
 .legend-item .dot.interview-dot {
-  background-color: #1e293b;
+  background-color: #ea580c;
 }
 
 .btn-clear-date-v2 {
