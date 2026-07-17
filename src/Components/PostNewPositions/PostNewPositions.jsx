@@ -251,6 +251,7 @@ const autoFillRole =
       educationLevel: editData?.educationLevel || '',
       yearsExperience: editData?.yearsOfExperience || '',
       additionalReqs: editData?.additionalRequirements || '',
+      JobStatus: 'active',
     },
     validationSchema,
     // ✅ ONLY OPEN PREVIEW
@@ -335,6 +336,7 @@ const autoFillRole =
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
     fd.append("SalarType", formik.values.salaryType);
     fd.append("JobDuration", formik.values.jobDuration);
+    fd.append("JobStatus", formik.values.JobStatus);
 
 
     try {
@@ -384,6 +386,7 @@ const autoFillRole =
     fd.append("IsW2Contract", preferredEmployment["W2-Contract"]);
     fd.append("Is1099Contract", preferredEmployment["1099-Contract"]);
     fd.append("IsContractToHire", preferredEmployment["Contract to Hire"]);
+    fd.append("JobStatus", formik.values.JobStatus);
 
 
     try {
@@ -642,6 +645,7 @@ const autoFillRole =
 
   return (
     <form onSubmit={formik.handleSubmit} className="ai-dashboard-wrapper">
+      <input type="hidden" name="JobStatus" value={formik.values.JobStatus} />
       {/* HEADER CARD */}
    <div className="hero-section-wrapper mb-4">
         <div className="hero-card ">

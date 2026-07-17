@@ -85,12 +85,6 @@
   margin-bottom: 20px;
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-}
 
 .wizard-trigger-btn {
   background-color: var(--primary);
