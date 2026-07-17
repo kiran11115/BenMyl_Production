@@ -41,6 +41,29 @@ export const ContractApiSlice = apiSlice.injectEndpoints({
     method: "GET",
   }),
 }),
+requestExtension: builder.mutation({
+  query: (data) => ({
+    url: "/api/uatcompany/RequestExtension",
+    method: "POST",
+    body: data,
+  }),
+  invalidatesTags: ["Contracts"],
+}),
+getExtensionRequests: builder.query({
+  query: (userId) => ({
+    url: `/api/uatcompany/GetExtensionRequests?userId=${userId}`,
+    method: "GET",
+  }),
+  providesTags: ["Contracts"],
+}),
+approveExtension: builder.mutation({
+  query: (data) => ({
+    url: "/api/uatcompany/ApproveExtension",
+    method: "POST",
+    body: data,
+  }),
+  invalidatesTags: ["Contracts"],
+}),
     }),
 });
 
@@ -50,5 +73,8 @@ export const {
     useGetContractByIdQuery,
     useGetContractsByBenchsalesQuery,
     useLazyGetNotificationsByJobIdQuery,
-    useGetContractNotificationsQuery
+    useGetContractNotificationsQuery,
+    useRequestExtensionMutation,
+    useGetExtensionRequestsQuery,
+    useApproveExtensionMutation,
 } = ContractApiSlice;

@@ -25,17 +25,33 @@ export const ScheduleInterviewApiSlice = apiSlice.injectEndpoints({
                 url: `api/uatcompany/interview-details/${recruiterId}`,
                 method: "GET",
             }),
+            providesTags: ["Scheduled"],
         }),
 
         shareMeetingLink: builder.mutation({
-      query: (body) => ({
-        url: "/api/uatcompany/share-meeting-link",
-        method: "POST",
-        body,
-      }),
-    }),
+            query: (body) => ({
+                url: "/api/uatcompany/share-meeting-link",
+                method: "POST",
+                body,
+            }),
+        }),
+
+        updateInterviewStatus: builder.mutation({
+            query: (body) => ({
+                url: "/api/uatcompany/UpdateInterviewStatus",
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: ["Scheduled"],
+        }),
 
     }),
 });
 
-export const { useScheduleInterviewMutation,useSchedulesDetailsQuery,useSchedulesDetailsBenchsalesQuery,useShareMeetingLinkMutation } = ScheduleInterviewApiSlice;
+export const {
+    useScheduleInterviewMutation,
+    useSchedulesDetailsQuery,
+    useSchedulesDetailsBenchsalesQuery,
+    useShareMeetingLinkMutation,
+    useUpdateInterviewStatusMutation,
+} = ScheduleInterviewApiSlice;

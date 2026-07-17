@@ -19,7 +19,7 @@ import "./UpcomingInterview.css";
 import "../UserJobs/Jobs.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery } from "../../State-Management/Api/ScheduleInterviewApiSlice";
+import { useSchedulesDetailsQuery, useSchedulesDetailsBenchsalesQuery, useUpdateInterviewStatusMutation } from "../../State-Management/Api/ScheduleInterviewApiSlice";
 import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetRecruiterProfileQuery } from "../../State-Management/Api/RecruiterProfileApiSlice";
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
@@ -55,7 +55,7 @@ export default function UpcomingInterview() {
     const [showCalendarModal, setShowCalendarModal] = useState(false);
     const [showJobModal, setShowJobModal] = useState(false);
     const [feedTab, setFeedTab] = useState("scheduled"); // scheduled | completed
-    const [confirmModal, setConfirmModal] = useState({ isOpen: false, interviewId: null, newStatus: "" });
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, interviewId: null, interviewIdVal: null, newStatus: "" });
     const [activeStatusPopoverId, setActiveStatusPopoverId] = useState(null);
 
     useEffect(() => {
@@ -66,24 +66,23 @@ export default function UpcomingInterview() {
         return () => document.removeEventListener("click", handleDocumentClick);
     }, []);
 
-    // Local interview notes — stored in localStorage, keyed by interview id
-    // Structure: { [id]: { interviewStatus: string, feedback: string } }
-    const [interviewNotes, setInterviewNotes] = useState(() => {
+    const [updateInterviewStatus] = useUpdateInterviewStatusMutation();
+
+    const handleUpdateStatus = async (interviewId, newStatus) => {
+        if (!interviewId) {
+            toast.error("Interview ID is missing.");
+            return;
+        }
         try {
-            return JSON.parse(localStorage.getItem("interviewNotes") || "{}");
-        } catch { return {}; }
-    });
-
-    const saveInterviewNote = (id, field, value) => {
-        setInterviewNotes(prev => {
-            const updated = { ...prev, [id]: { ...(prev[id] || {}), [field]: value } };
-            localStorage.setItem("interviewNotes", JSON.stringify(updated));
-            return updated;
-        });
-    };
-
-    const saveFullNote = (id) => {
-        toast.success("Interview notes saved successfully.");
+            await updateInterviewStatus({
+                recruiterId: Number(interviewId),
+                interviewStatus: newStatus
+            }).unwrap();
+            toast.success(`Interview status updated to ${newStatus} successfully.`);
+        } catch (err) {
+            toast.error("Failed to update interview status.");
+            console.error(err);
+        }
     };
 
     // Support auto-opening drawer and preselection from navigation state
@@ -144,14 +143,12 @@ export default function UpcomingInterview() {
                 derivedStatus = "completed";
             }
 
-            // Apply local note status overrides for accuracy in UI tabs
             const candidateId = item.candidateID || index;
-            const noteObj = interviewNotes[candidateId];
             let status = item.status?.toLowerCase() || derivedStatus;
-            if (noteObj?.interviewStatus === "Completed") {
-                status = "completed";
-            } else if (noteObj?.interviewStatus === "Ongoing") {
+            if (status === "ongoing" || status === "scheduled") {
                 status = "scheduled";
+            } else if (status === "completed") {
+                status = "completed";
             }
 
             // Find matching job for description enrichment
@@ -173,10 +170,12 @@ export default function UpcomingInterview() {
                 verified: true,
                 skills: item.skills ? item.skills.split(",").map(s => s.trim()) : [],
                 status: status,
+                rawStatus: item.status || (status === "completed" ? "Completed" : "Ongoing"),
                 vendorName: item.companyName,
                 partnerContact: item.candidateName,
                 meetingLink: item.interviewLink,
                 recruiterID: item.recruiterID || item.recruiterId || null,
+                interviewId: item.interviewId || item.interviewID || null,
                 jobData: {
                     title: item.jobTitle,
                     company: item.companyName,
@@ -538,41 +537,49 @@ export default function UpcomingInterview() {
                                                         <div className="iv-notes-row" style={{ position: 'relative' }}>
                                                             <label className="iv-notes-label">Interview Status</label>
                                                             <div className="iv-status-popover-wrapper">
-                                                                <button
-                                                                    type="button"
-                                                                    className={`iv-status-badge-btn iv-status-${(interviewNotes[interview.id]?.interviewStatus || 'Ongoing').toLowerCase()}`}
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setActiveStatusPopoverId(activeStatusPopoverId === interview.id ? null : interview.id);
-                                                                    }}
-                                                                >
-                                                                    <span className="badge-dot"></span>
-                                                                    {interviewNotes[interview.id]?.interviewStatus || "Ongoing"}
-                                                                    <span className="chevron-down-arrow" style={{ fontSize: '9px', marginLeft: '6px', opacity: 0.7 }}>▼</span>
-                                                                </button>
-                                                                {activeStatusPopoverId === interview.id && (
-                                                                    <div className="iv-status-popover-menu">
-                                                                        <button
-                                                                            type="button"
-                                                                            className="iv-status-popover-item"
-                                                                            onClick={() => {
-                                                                                setActiveStatusPopoverId(null);
-                                                                                saveInterviewNote(interview.id, 'interviewStatus', 'Ongoing');
-                                                                            }}
-                                                                        >
-                                                                            <span className="badge-dot ongoing"></span> Ongoing
-                                                                        </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            className="iv-status-popover-item"
-                                                                            onClick={() => {
-                                                                                setActiveStatusPopoverId(null);
-                                                                                setConfirmModal({ isOpen: true, interviewId: interview.id, newStatus: 'Completed' });
-                                                                            }}
-                                                                        >
-                                                                            <span className="badge-dot completed"></span> Completed
-                                                                        </button>
+                                                                {interview.rawStatus?.toLowerCase() === 'completed' ? (
+                                                                    <div className="iv-status-badge-btn iv-status-completed" style={{ cursor: 'default', background: '#f0fdf4', color: '#16a34a', borderColor: '#bbf7d0' }}>
+                                                                        <span className="badge-dot completed" style={{ background: '#16a34a' }}></span> Completed
                                                                     </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            className={`iv-status-badge-btn iv-status-${(interview.rawStatus || 'Ongoing').toLowerCase()}`}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setActiveStatusPopoverId(activeStatusPopoverId === interview.id ? null : interview.id);
+                                                                            }}
+                                                                        >
+                                                                            <span className="badge-dot"></span>
+                                                                            {interview.rawStatus || "Ongoing"}
+                                                                            <span className="chevron-down-arrow" style={{ fontSize: '9px', marginLeft: '6px', opacity: 0.7 }}>▼</span>
+                                                                        </button>
+                                                                        {activeStatusPopoverId === interview.id && (
+                                                                            <div className="iv-status-popover-menu">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="iv-status-popover-item"
+                                                                                    onClick={() => {
+                                                                                        setActiveStatusPopoverId(null);
+                                                                                        handleUpdateStatus(interview.interviewId, 'Ongoing');
+                                                                                    }}
+                                                                                >
+                                                                                    <span className="badge-dot ongoing"></span> Ongoing
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="iv-status-popover-item"
+                                                                                    onClick={() => {
+                                                                                        setActiveStatusPopoverId(null);
+                                                                                        setConfirmModal({ isOpen: true, interviewId: interview.id, interviewIdVal: interview.interviewId, newStatus: 'Completed' });
+                                                                                    }}
+                                                                                >
+                                                                                    <span className="badge-dot completed"></span> Completed
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
+                                                                    </>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -804,11 +811,11 @@ export default function UpcomingInterview() {
             />
 
             {confirmModal.isOpen && (
-                <div className="custom-modal-overlay" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}>
+                <div className="custom-modal-overlay" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, interviewIdVal: null, newStatus: "" })}>
                     <div className="calendar-modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '420px' }}>
                         <div className="modal-header-premium">
                             <h3 className="m-0">Confirm Status Change</h3>
-                            <button className="close-btn-premium" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}>
+                            <button className="close-btn-premium" onClick={() => setConfirmModal({ isOpen: false, interviewId: null, interviewIdVal: null, newStatus: "" })}>
                                 <FiX size={18} />
                             </button>
                         </div>
@@ -823,7 +830,7 @@ export default function UpcomingInterview() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 border: '1px solid #bbf7d0',
-                                                            marginBottom: '16px'
+                                marginBottom: '16px'
                             }}>
                                 <FiCheckSquare size={24} />
                             </div>
@@ -835,7 +842,7 @@ export default function UpcomingInterview() {
                         <div className="modal-footer-premium d-flex gap-2 justify-content-end align-items-center" style={{ gap: '10px' }}>
                             <button
                                 className="btn-secondary-premium"
-                                onClick={() => setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" })}
+                                onClick={() => setConfirmModal({ isOpen: false, interviewId: null, interviewIdVal: null, newStatus: "" })}
                             >
                                 Cancel
                             </button>
@@ -843,8 +850,8 @@ export default function UpcomingInterview() {
                                 className="btn-v2-primary"
                                 style={{ padding: '8px 20px !important' }}
                                 onClick={() => {
-                                    saveInterviewNote(confirmModal.interviewId, 'interviewStatus', confirmModal.newStatus);
-                                    setConfirmModal({ isOpen: false, interviewId: null, newStatus: "" });
+                                    handleUpdateStatus(confirmModal.interviewIdVal, confirmModal.newStatus);
+                                    setConfirmModal({ isOpen: false, interviewId: null, interviewIdVal: null, newStatus: "" });
                                 }}
                             >
                                 Confirm

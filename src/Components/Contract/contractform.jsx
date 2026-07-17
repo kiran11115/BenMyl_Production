@@ -8,7 +8,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ContractContext, mapApiContractToUI, formatDate } from './ContractContext';
-import { useGetContractsByBenchsalesQuery } from '../../State-Management/Api/ContractApiSlice';
+import {
+  useGetContractsByBenchsalesQuery,
+  useRequestExtensionMutation,
+  useGetExtensionRequestsQuery,
+  useApproveExtensionMutation,
+} from '../../State-Management/Api/ContractApiSlice';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
 import { Home } from "lucide-react";
@@ -271,6 +276,7 @@ const MilestoneDetail = ({
   extension,
   onExtensionSubmit,
   onExtensionAccept,
+  onExtensionReject,
   status,
   simulateCompleted,
   onToggleSimulation
@@ -528,141 +534,175 @@ const MilestoneDetail = ({
         <h4 className="section-title">Milestone Extension Request</h4>
         {(() => {
           const role = localStorage.getItem('Role') || 'Benchsales';
-          const isAccepted = extension?.status === 'Accepted';
+          const userId = localStorage.getItem('CompanyId');
+          const isAccepted = extension?.status === 'Accepted' || extension?.status === 'Approved';
+          const isRejected = extension?.status === 'Rejected';
+          const isPending = extension?.status === 'Pending';
+
+          const renderRequestForm = () => (
+            <div className="mt-3" style={{ borderTop: (isAccepted || isRejected) ? '1px solid #e2e8f0' : 'none', paddingTop: (isAccepted || isRejected) ? '16px' : '0' }}>
+              <p className="section-desc">If milestones cannot be met within the target week, you can raise an extension request.</p>
+              {showDatePicker ? (
+                <div className="elegant-date-picker-wrap" style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
+                  <div className="form-group mb-2">
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                      <Calendar size={13} color="#ea580c" /> CHOOSE EXTENSION TARGET DATE
+                    </label>
+                    <input
+                      type="date"
+                      className="date-filter-input"
+                      value={selectedExtDate}
+                      min={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setSelectedExtDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group mb-2">
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                      <Info size={13} color="#ea580c" /> EXTENSION JUSTIFICATION REASON
+                    </label>
+                    <textarea
+                      className="form-control feedback-textarea"
+                      rows="2"
+                      placeholder="Explain why the extension is required..."
+                      value={selectedExtReason}
+                      onChange={(e) => setSelectedExtReason(e.target.value)}
+                    />
+                  </div>
+                  <div className="date-input-filter-row" style={{ marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={() => {
+                        if (!selectedExtDate) {
+                          toast.warning("Please choose a valid date.");
+                          return;
+                        }
+                        if (!selectedExtReason.trim()) {
+                          toast.warning("Please provide a reason for the extension request.");
+                          return;
+                        }
+                        setConfirmModal({
+                          title: "Confirm Extension Request",
+                          message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
+                          confirmText: "Submit Request",
+                          cancelText: "Cancel",
+                          onConfirm: () => {
+                            setConfirmModal(null);
+                            onExtensionSubmit(selectedExtDate, selectedExtReason, role);
+                            toast.success("Extension request submitted successfully!");
+                            setShowDatePicker(false);
+                          }
+                        });
+                      }}
+                    >
+                      Confirm Request
+                    </button>
+                    <button
+                      type="button"
+                      className="tbl-btn tbl-btn-status-change"
+                      onClick={() => setShowDatePicker(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-primary"
+                  disabled={isClosed}
+                  onClick={() => setShowDatePicker(true)}
+                >
+                  Request Extension
+                </button>
+              )}
+            </div>
+          );
 
           if (extension?.submitted) {
-            const isRequester = extension.requestedBy ? (extension.requestedBy === role) : (role === 'Benchsales');
+            // isRequester: true if the current user raised this request
+            const isRequester = extension.requestedBy != null
+              ? String(extension.requestedBy) === String(userId)
+              : role === 'Benchsales';
 
             if (isRequester) {
               return (
-                <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : '4px solid #ea580c' }}>
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className={isAccepted ? "badge-check" : "badge-pending"}>
-                      {isAccepted ? "Extension Approved" : "Extension Requested"}
-                    </span>
-                    <span className="ext-date">{formatDate(extension.newDate)}</span>
+                <>
+                  <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
+                        {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Requested"}
+                      </span>
+                      <span className="ext-date">{formatDate(extension.newDate)}</span>
+                    </div>
+                    <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                    <div className="ext-meta">Status: <strong>{isAccepted ? "Approved" : isRejected ? "Rejected" : "Pending Review by " + (role === 'Benchsales' ? "Client" : "Talent Provider")}</strong></div>
                   </div>
-                  <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
-                  <div className="ext-meta">Status: <strong>{isAccepted ? "Approved" : "Pending Review by " + (role === 'Benchsales' ? "Client" : "Talent Provider")}</strong></div>
-                </div>
+                  {renderRequestForm()}
+                </>
               );
             } else {
               return (
-                <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : '4px solid #ea580c' }}>
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className={isAccepted ? "badge-check" : "badge-pending"}>
-                      {isAccepted ? "Extension Approved" : "Extension Received"}
-                    </span>
-                    <span className="ext-date">{formatDate(extension.newDate)}</span>
+                <>
+                  <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
+                        {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Received"}
+                      </span>
+                      <span className="ext-date">{formatDate(extension.newDate)}</span>
+                    </div>
+                    <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                    <div className="ext-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                      <span>Raised by: <strong>{role === 'Benchsales' ? "Client" : "Candidate Handler"}</strong></span>
+                      {isPending && (
+                        <div className="d-flex gap-2">
+                          <button
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => {
+                              setConfirmModal({
+                                title: "Accept Extension",
+                                message: `Accept the extension request to ${formatDate(extension.newDate)}?`,
+                                confirmText: "Accept",
+                                cancelText: "Cancel",
+                                onConfirm: () => {
+                                  setConfirmModal(null);
+                                  onExtensionAccept();
+                                }
+                              });
+                            }}
+                          >
+                            Accept Extension
+                          </button>
+                          <button
+                            type="button"
+                            className="tbl-btn tbl-btn-status-change"
+                            style={{ borderColor: '#ef4444', color: '#ef4444', margin: 0 }}
+                            onClick={() => {
+                              setConfirmModal({
+                                title: "Reject Extension",
+                                message: `Reject the extension request to ${formatDate(extension.newDate)}?`,
+                                confirmText: "Reject",
+                                cancelText: "Cancel",
+                                onConfirm: () => {
+                                  setConfirmModal(null);
+                                  onExtensionReject();
+                                }
+                              });
+                            }}
+                          >
+                            Reject Extension
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
-                  <div className="ext-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                    <span>Raised by: <strong>{role === 'Benchsales' ? "Client" : "Candidate Handler"}</strong></span>
-                    {!isAccepted && (
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        onClick={() => {
-                          setConfirmModal({
-                            title: "Accept Extension",
-                            message: `Accept the extension request to ${formatDate(extension.newDate)}?`,
-                            confirmText: "Accept",
-                            cancelText: "Cancel",
-                            onConfirm: () => {
-                              setConfirmModal(null);
-                              onExtensionAccept();
-                              toast.success("Extension request accepted successfully!");
-                            }
-                          });
-                        }}
-                      >
-                        Accept Extension
-                      </button>
-                    )}
-                  </div>
-                </div>
+                  {renderRequestForm()}
+                </>
               );
             }
           } else {
-            return (
-              <>
-                <p className="section-desc">If milestones cannot be met within the target week, you can raise an extension request.</p>
-                {showDatePicker ? (
-                  <div className="elegant-date-picker-wrap" style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-                    <div className="form-group mb-2">
-                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
-                        <Calendar size={13} color="#ea580c" /> CHOOSE EXTENSION TARGET DATE
-                      </label>
-                      <input
-                        type="date"
-                        className="date-filter-input"
-                        value={selectedExtDate}
-                        min={new Date().toISOString().split('T')[0]}
-                        onChange={(e) => setSelectedExtDate(e.target.value)}
-                      />
-                    </div>
-                    <div className="form-group mb-2">
-                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
-                        <Info size={13} color="#ea580c" /> EXTENSION JUSTIFICATION REASON
-                      </label>
-                      <textarea
-                        className="form-control feedback-textarea"
-                        rows="2"
-                        placeholder="Explain why the extension is required..."
-                        value={selectedExtReason}
-                        onChange={(e) => setSelectedExtReason(e.target.value)}
-                      />
-                    </div>
-                    <div className="date-input-filter-row" style={{ marginTop: '6px' }}>
-                      <button
-                        type="button"
-                        className="btn-primary"
-                        onClick={() => {
-                          if (!selectedExtDate) {
-                            toast.warning("Please choose a valid date.");
-                            return;
-                          }
-                          if (!selectedExtReason.trim()) {
-                            toast.warning("Please provide a reason for the extension request.");
-                            return;
-                          }
-                          setConfirmModal({
-                            title: "Confirm Extension Request",
-                            message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
-                            confirmText: "Submit Request",
-                            cancelText: "Cancel",
-                            onConfirm: () => {
-                              setConfirmModal(null);
-                              onExtensionSubmit(selectedExtDate, selectedExtReason, role);
-                              toast.success("Extension request submitted successfully!");
-                              setShowDatePicker(false);
-                            }
-                          });
-                        }}
-                      >
-                        Confirm Request
-                      </button>
-                      <button
-                        type="button"
-                        className="tbl-btn tbl-btn-status-change"
-                        onClick={() => setShowDatePicker(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    disabled={isClosed}
-                    onClick={() => setShowDatePicker(true)}
-                  >
-                    Request Extension
-                  </button>
-                )}
-              </>
-            );
+            return renderRequestForm();
           }
         })()}
       </div>
@@ -940,7 +980,97 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
     }
   }
 
+  const role = localStorage.getItem('Role') || 'Benchsales';
+  const userId = localStorage.getItem('CompanyId');
   const extension = extensionMap && extensionMap[c.id];
+  const isAccepted = extension?.status === 'Accepted' || extension?.status === 'Approved';
+  const isRejected = extension?.status === 'Rejected';
+  const isPending = extension?.status === 'Pending';
+  // isRequester: true if the current user raised this request
+  const isRequester = extension?.requestedBy != null
+    ? String(extension.requestedBy) === String(userId)
+    : role === 'Benchsales';
+
+  const renderCardRequestForm = () => {
+    if (showDatePicker) {
+      return (
+        <div className="elegant-date-picker-wrap" style={{ gap: '6px', marginTop: '6px' }}>
+          <div className="form-group mb-1">
+            <label className="form-label" style={{ fontSize: '10px' }}>Extension Target Date</label>
+            <input
+              type="date"
+              className="date-filter-input"
+              style={{ fontSize: '11px', padding: '4px 8px' }}
+              value={selectedExtDate}
+              min={new Date().toISOString().split('T')[0]}
+              onChange={(e) => setSelectedExtDate(e.target.value)}
+            />
+          </div>
+          <div className="form-group mb-1">
+            <label className="form-label" style={{ fontSize: '10px' }}>Reason</label>
+            <textarea
+              className="form-control feedback-textarea"
+              style={{ fontSize: '11px', padding: '4px 8px' }}
+              rows="2"
+              placeholder="Explain reason for extension..."
+              value={selectedExtReason}
+              onChange={(e) => setSelectedExtReason(e.target.value)}
+            />
+          </div>
+          <div className="date-input-filter-row" style={{ marginTop: '8px', gap: '6px' }}>
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ fontSize: '10px', padding: '4px 10px' }}
+              onClick={() => {
+                if (!selectedExtDate) {
+                  toast.warning("Please choose a date.");
+                  return;
+                }
+                if (!selectedExtReason.trim()) {
+                  toast.warning("Please provide a reason.");
+                  return;
+                }
+                setConfirmModal({
+                  title: "Confirm Extension Request",
+                  message: `Submit extension request to ${selectedExtDate}?`,
+                  confirmText: "Submit",
+                  cancelText: "Cancel",
+                  onConfirm: () => {
+                    setConfirmModal(null);
+                    submitExtension(c.id, selectedExtDate, selectedExtReason);
+                    toast.success("Extension request submitted!");
+                    setShowDatePicker(false);
+                  }
+                });
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              type="button"
+              className="tbl-btn tbl-btn-status-change"
+              style={{ fontSize: '10px', padding: '4px 10px' }}
+              onClick={() => setShowDatePicker(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        className="btn-primary"
+        style={{ width: '100%', fontSize: '10px', padding: '4px 10px', marginTop: '6px' }}
+        onClick={() => setShowDatePicker(true)}
+      >
+        Request Extension
+      </button>
+    );
+  };
 
   return (
     <div
@@ -965,86 +1095,20 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
       {progress < 100 && (
         <div className="extension-section-wrap" style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #f1f5f9', marginTop: '4px' }}>
           {extension?.submitted ? (
-            <div className="extension-submitted-card" style={{ padding: 0, background: 'none', border: 'none', boxShadow: 'none' }}>
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <span className="badge-pending" style={{ fontSize: '10px', padding: '2px 6px' }}>Extension Requested</span>
-                <span className="ext-date" style={{ fontSize: '10px', fontWeight: '600' }}>{formatDate(extension.newDate)}</span>
+            <>
+              <div className="extension-submitted-card" style={{ padding: 0, background: 'none', border: 'none', boxShadow: 'none' }}>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                    {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : isRequester ? "Extension Requested" : "Extension Received"}
+                  </span>
+                  <span className="ext-date" style={{ fontSize: '10px', fontWeight: '600' }}>{formatDate(extension.newDate)}</span>
+                </div>
+                <p className="ext-reason" style={{ fontSize: '10px', margin: '4px 0 0 0' }}><strong>Reason:</strong> {extension.reason}</p>
               </div>
-              <p className="ext-reason" style={{ fontSize: '10px', margin: '4px 0 0 0' }}><strong>Reason:</strong> {extension.reason}</p>
-            </div>
-          ) : showDatePicker ? (
-            <div className="elegant-date-picker-wrap" style={{ gap: '6px' }}>
-              <div className="form-group mb-1">
-                <label className="form-label" style={{ fontSize: '10px' }}>Extension Target Date</label>
-                <input
-                  type="date"
-                  className="date-filter-input"
-                  style={{ fontSize: '11px', padding: '4px 8px' }}
-                  value={selectedExtDate}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => setSelectedExtDate(e.target.value)}
-                />
-              </div>
-              <div className="form-group mb-1">
-                <label className="form-label" style={{ fontSize: '10px' }}>Reason</label>
-                <textarea
-                  className="form-control feedback-textarea"
-                  style={{ fontSize: '11px', padding: '4px 8px' }}
-                  rows="2"
-                  placeholder="Explain reason for extension..."
-                  value={selectedExtReason}
-                  onChange={(e) => setSelectedExtReason(e.target.value)}
-                />
-              </div>
-              <div className="date-input-filter-row" style={{ marginTop: '8px', gap: '6px' }}>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{ fontSize: '10px', padding: '4px 10px' }}
-                  onClick={() => {
-                    if (!selectedExtDate) {
-                      toast.warning("Please choose a date.");
-                      return;
-                    }
-                    if (!selectedExtReason.trim()) {
-                      toast.warning("Please provide a reason.");
-                      return;
-                    }
-                    setConfirmModal({
-                      title: "Confirm Extension Request",
-                      message: `Submit extension request to ${selectedExtDate}?`,
-                      confirmText: "Submit",
-                      cancelText: "Cancel",
-                      onConfirm: () => {
-                        setConfirmModal(null);
-                        submitExtension(c.id, selectedExtDate, selectedExtReason);
-                        toast.success("Extension request submitted!");
-                        setShowDatePicker(false);
-                      }
-                    });
-                  }}
-                >
-                  Confirm
-                </button>
-                <button
-                  type="button"
-                  className="tbl-btn tbl-btn-status-change"
-                  style={{ fontSize: '10px', padding: '4px 10px' }}
-                  onClick={() => setShowDatePicker(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+              {renderCardRequestForm()}
+            </>
           ) : (
-            <button
-              type="button"
-              className="btn-primary"
-              style={{ width: '100%', fontSize: '10px', padding: '4px 10px' }}
-              onClick={() => setShowDatePicker(true)}
-            >
-              Request Extension
-            </button>
+            renderCardRequestForm()
           )}
         </div>
       )}
@@ -1083,6 +1147,7 @@ const CalendarView = ({
   extensionMap,
   submitExtension,
   acceptExtension,
+  rejectExtension,
   progressMap,
   reviewMap,
   submitReview
@@ -1290,6 +1355,7 @@ const CalendarView = ({
               extension={extensionMap[selectedContract.id]}
               onExtensionSubmit={(newDate, reason, requestedBy) => submitExtension(selectedContract.id, newDate, reason, requestedBy)}
               onExtensionAccept={() => acceptExtension(selectedContract.id)}
+              onExtensionReject={() => rejectExtension(selectedContract.id)}
               status={status}
               simulateCompleted={isSimulated}
               onToggleSimulation={() => setSimulatedCompletedMap(prev => ({ ...prev, [selectedContract.id]: !prev[selectedContract.id] }))}
@@ -1313,6 +1379,8 @@ const ContractForm = () => {
   const navigate = useNavigate();
   const { updateContract } = useContext(ContractContext);
   const [showMetrics, setShowMetrics] = useState(true);
+  const [requestExtension, { isLoadingextension }] =
+  useRequestExtensionMutation();
 
   const sparklineData1 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
   const sparklineData2 = useMemo(() => createSparklineData('#f97316', 'rgba(249, 115, 22, 0.15)', 'rgba(249, 115, 22, 0)', [15, 18, 20, 22, 25, 28]), []);
@@ -1340,34 +1408,62 @@ const ContractForm = () => {
 
   const [activeTab, setActiveTab] = useState('all');
 
-  // Milestone tracking states persisted in localStorage
   // Milestone tracking states
   const [progressMap, setProgressMap] = useState({});
   const [reviewMap, setReviewMap] = useState({});
-  const [extensionMap, setExtensionMap] = useState({
-    'CTR-2025-001': {
-      newDate: '2026-01-15',
-      reason: 'Additional client integration testing and security audit require extension of current milestones.',
-      submitted: true,
-      status: 'Pending',
-      requestedBy: 'Benchsales'
-    },
-    'CTR-2025-002': {
-      newDate: '2025-12-10',
-      reason: 'Delay in cloud environment provisioning from client side.',
-      submitted: true,
-      status: 'Pending',
-      requestedBy: 'HiringManager'
-    },
-    'CTR-2025-003': {
-      newDate: '2026-07-20',
-      reason: 'Scope expansion request for Kubernetes cluster setup and CI/CD pipelines redesign.',
-      submitted: true,
-      status: 'Pending',
-      requestedBy: 'Benchsales'
-    }
-  });
   const [statusOverrideMap, setStatusOverrideMap] = useState({});
+
+  const role = localStorage.getItem('Role') || 'Benchsales';
+  const { data: extensionRequests } = useGetExtensionRequestsQuery(userId, {
+    skip: !userId,
+  });
+
+  const extensionMap = useMemo(() => {
+    const map = {};
+    if (extensionRequests && Array.isArray(extensionRequests)) {
+      extensionRequests.forEach(req => {
+        const contractId = String(req.ContractID || req.contractID || '');
+        if (contractId) {
+          map[contractId] = {
+            requestID: req.RequestID || req.requestID,
+            newDate: req.RequestedEndDate ? req.RequestedEndDate.split('T')[0] : '',
+            reason: req.ExtensionReason || req.extensionReason,
+            submitted: true,
+            status: req.RequestStatus || req.requestStatus,
+            requestedBy: req.RequestedBy ?? req.requestedBy ?? null,
+          };
+        }
+      });
+    }
+    return map;
+  }, [extensionRequests, role]);
+
+  const [approveExtension] = useApproveExtensionMutation();
+
+  const handleApproveRejectExtension = async (contractId, status) => {
+    try {
+      const ext = extensionMap[contractId];
+      if (!ext || !ext.requestID) {
+        toast.error("Extension request ID not found.");
+        return;
+      }
+
+      const payload = {
+        requestID: Number(ext.requestID),
+        status: status, // "Approved" or "Rejected"
+        approvedBy: Number(userId),
+        remarks: status === "Approved" ? "Extension request approved" : "Extension request rejected",
+      };
+
+      const response = await approveExtension(payload).unwrap();
+      toast.success(response?.message || `Extension request ${status.toLowerCase()} successfully!`);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error?.data?.message || `Failed to update extension status.`
+      );
+    }
+  };
 
   const updateProgress = (id, value) => {
     const next = { ...progressMap, [id]: value };
@@ -1382,20 +1478,26 @@ const ContractForm = () => {
     setStatusOverrideMap(nextStatus);
   };
 
-  const submitExtension = (id, newDate, reason, requestedBy) => {
-    const next = { ...extensionMap, [id]: { newDate, reason, submitted: true, status: 'Pending', requestedBy } };
-    setExtensionMap(next);
-  };
+  const submitExtension = async (contractId, newDate, reason) => {
+  try {
+    const payload = {
+      contractID: Number(contractId),
+      requestedEndDate: new Date(newDate).toISOString(),
+      extensionReason: reason,
+      requestedBy: userId,
+    };
 
-  const acceptExtension = (id) => {
-    const current = extensionMap[id];
-    if (current) {
-      const next = { ...extensionMap, [id]: { ...current, status: 'Accepted' } };
-      setExtensionMap(next);
-    }
-  };
+    const response = await requestExtension(payload).unwrap();
 
-  const role = localStorage.getItem('Role') || 'Benchsales';
+    toast.success(response?.message || "Extension request submitted.");
+  } catch (error) {
+    console.error(error);
+    toast.error(
+      error?.data?.message || "Failed to submit extension request."
+    );
+  }
+};
+
   const isBenchsales = role === 'Benchsales';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
 
@@ -1894,7 +1996,8 @@ const ContractForm = () => {
           statusOverrideMap={statusOverrideMap}
           extensionMap={extensionMap}
           submitExtension={submitExtension}
-          acceptExtension={acceptExtension}
+          acceptExtension={(id) => handleApproveRejectExtension(id, "Approved")}
+          rejectExtension={(id) => handleApproveRejectExtension(id, "Rejected")}
           progressMap={progressMap}
           reviewMap={reviewMap}
           submitReview={submitReview}
