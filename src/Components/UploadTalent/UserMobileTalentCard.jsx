@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMapPin, FiBriefcase, FiEye } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiEye, FiUser } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
@@ -66,8 +66,8 @@ const UserMobileTalentCard = ({ candidate, isSelected, onToggle }) => {
                     <span>{candidate.role}</span>
                 </div>
                 <div className="detail-item">
-                    <FiMapPin size={14} />
-                    <span>{candidate.location}</span>
+                    <FiUser size={14} />
+                    <span>{candidate.firstName || candidate.name?.split(" ")[0] || "NA"}</span>
                 </div>
                 <div className="detail-item full-width">
                     <div className="availability-badges">

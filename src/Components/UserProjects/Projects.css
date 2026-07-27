@@ -2046,3 +2046,126 @@
   }
 }
 
+/* =====================================================
+   13. POSTED JOBS CUSTOM CARD LAYOUT OVERRIDES
+   ===================================================== */
+.job-chip.neutral {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0;
+}
+
+.job-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.job-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(10px, 1.1vw, 12px) !important;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.job-meta-item .meta-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.job-card-view-btn {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.job-card-view-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+/* =====================================================
+   14. POSTED JOBS GRID (4 COLUMNS) & BUDGET OVERRIDES
+   ===================================================== */
+.posted-jobs-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 24px !important;
+}
+
+.job-card-footer .job-rate {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important; /* Neutral elegant dark slate */
+  display: flex !important;
+  align-items: baseline !important;
+  text-transform: capitalize !important;
+}
+
+.job-card-footer .job-rate-unit {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748b !important; /* Soft slate gray */
+  text-transform: capitalize !important;
+  margin-left: 2px !important;
+}
+
+.posted-jobs-grid .job-title {
+  text-transform: capitalize !important;
+}
+
+@media (max-width: 1200px) {
+  .posted-jobs-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .posted-jobs-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .posted-jobs-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.posted-jobs-grid .job-description {
+  color: #94a3b8 !important; /* Muted slate gray */
+}
+
+.job-rate-block {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.job-rate-divider {
+  color: #cbd5e1 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+.job-posted-on {
+  font-size: clamp(10px, 1.1vw, 11px) !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  text-transform: capitalize !important;
+}
+

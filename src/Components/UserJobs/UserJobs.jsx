@@ -5,6 +5,8 @@ import {
   FiFilter,
   FiBriefcase,
   FiEye,
+  FiClock,
+  FiArrowUp,
 } from "react-icons/fi";
 import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
@@ -15,6 +17,107 @@ import NoData from "../UploadTalent/NoData";
 import { useLocation } from "react-router-dom";
 
 const PAGE_SIZE = 50;
+
+const getCountryCodeFromLocation = (location = "") => {
+  if (!location || location.toLowerCase().trim() === "remote") return "un";
+  const loc = location.toLowerCase().trim();
+  
+  if (loc.includes("india")) return "in";
+  if (loc.includes("united states") || loc.includes("usa") || loc.includes("u.s.") || loc.includes("us")) return "us";
+  if (loc.includes("united kingdom") || loc.includes("uk") || loc.includes("u.k.") || loc.includes("gb") || loc.includes("england") || loc.includes("scotland") || loc.includes("wales")) return "gb";
+  if (loc.includes("united arab emirates") || loc.includes("uae") || loc.includes("dubai") || loc.includes("abu dhabi") || loc.includes("emirates")) return "ae";
+  
+  const cityToCountry = {
+    "visakhapatnam": "in", "vizag": "in", "mumbai": "in", "bombay": "in", "delhi": "in", "noida": "in", 
+    "gurgaon": "in", "gurugram": "in", "bangalore": "in", "bengaluru": "in", "hyderabad": "in", 
+    "chennai": "in", "madras": "in", "pune": "in", "kolkata": "in", "calcutta": "in", "ahmedabad": "in", 
+    "jaipur": "in", "kochi": "in", "coimbatore": "in", "indore": "in", "bhubaneswar": "in",
+    "new york": "us", "san francisco": "us", "dallas": "us", "austin": "us", "chicago": "us", 
+    "seattle": "us", "boston": "us", "los angeles": "us", "atlanta": "us", "houston": "us", 
+    "miami": "us", "denver": "us", "phoenix": "us", "philadelphia": "us",
+    "london": "gb", "manchester": "gb", "birmingham": "gb", "edinburgh": "gb", "glasgow": "gb",
+    "toronto": "ca", "vancouver": "ca", "montreal": "ca", "ottawa": "ca", "calgary": "ca",
+    "sydney": "au", "melbourne": "au", "brisbane": "au", "perth": "au",
+    "berlin": "de", "munich": "de", "frankfurt": "de", "hamburg": "de",
+    "paris": "fr", "lyon": "fr",
+    "dubai": "ae", "abu dhabi": "ae",
+    "singapore": "sg"
+  };
+
+  for (const [city, code] of Object.entries(cityToCountry)) {
+    if (loc.includes(city)) return code;
+  }
+  
+  const countryMap = {
+    "afghanistan": "af", "albania": "al", "algeria": "dz", "andorra": "ad", "angola": "ao", "antigua": "ag",
+    "argentina": "ar", "armenia": "am", "australia": "au", "austria": "at", "azerbaijan": "az", "bahamas": "bs",
+    "bahrain": "bh", "bangladesh": "bd", "barbados": "bb", "belarus": "by", "belgium": "be", "belize": "bz",
+    "benin": "bj", "bhutan": "bt", "bolivia": "bo", "bosnia": "ba", "botswana": "bw", "brazil": "br",
+    "brunei": "bn", "bulgaria": "bg", "burkina faso": "bf", "burundi": "bi", "cambodia": "kh", "cameroon": "cm",
+    "canada": "ca", "cape verde": "cv", "central african republic": "cf", "chad": "td", "chile": "cl",
+    "china": "cn", "colombia": "co", "comoros": "km", "congo": "cg", "costa rica": "cr", "croatia": "hr",
+    "cuba": "cu", "cyprus": "cy", "czech republic": "cz", "denmark": "dk", "djibouti": "dj", "dominica": "dm",
+    "dominican republic": "do", "ecuador": "ec", "egypt": "eg", "el salvador": "sv", "equatorial guinea": "gq",
+    "eritrea": "er", "estonia": "ee", "eswatini": "sz", "ethiopia": "et", "fiji": "fj", "finland": "fi",
+    "france": "fr", "gabon": "ga", "gambia": "gm", "georgia": "ge", "germany": "de", "ghana": "gh",
+    "greece": "gr", "grenada": "gd", "guatemala": "gt", "guinea": "gn", "guinea-bissau": "gw", "guyana": "gy",
+    "haiti": "ht", "honduras": "hn", "hungary": "hu", "iceland": "is", "indonesia": "id", "iran": "ir",
+    "iraq": "iq", "ireland": "ie", "israel": "il", "italy": "it", "jamaica": "jm", "japan": "jp",
+    "jordan": "jo", "kazakhstan": "kz", "kenya": "ke", "kiribati": "ki", "korea": "kr", "kuwait": "kw",
+    "kyrgyzstan": "kg", "laos": "la", "latvia": "lv", "lebanon": "lb", "lesotho": "ls", "liberia": "lr",
+    "libya": "ly", "liechtenstein": "li", "lithuania": "lt", "luxembourg": "lu", "madagascar": "mg",
+    "malawi": "mw", "malaysia": "my", "maldives": "mv", "mali": "ml", "malta": "mt", "marshall islands": "mh",
+    "mauritania": "mr", "mauritius": "mu", "mexico": "mx", "micronesia": "fm", "moldova": "md", "monaco": "mc",
+    "mongolia": "mn", "montenegro": "me", "morocco": "ma", "mozambique": "mz", "myanmar": "mm", "namibia": "na",
+    "nauru": "nr", "nepal": "np", "netherlands": "nl", "new zealand": "nz", "nicaragua": "ni", "niger": "ne",
+    "nigeria": "ng", "north macedonia": "mk", "norway": "no", "oman": "om", "pakistan": "pk", "palau": "pw",
+    "palestine": "ps", "panama": "pa", "papua new guinea": "pg", "paraguay": "py", "peru": "pe",
+    "philippines": "ph", "poland": "pl", "portugal": "pt", "qatar": "qa", "romania": "ro", "russia": "ru",
+    "rwanda": "rw", "saint kitts": "kn", "saint lucia": "lc", "saint vincent": "vc", "samoa": "ws",
+    "san marino": "sm", "sao tome": "st", "saudi arabia": "sa", "senegal": "sn", "serbia": "rs",
+    "seychelles": "sc", "sierra leone": "sl", "singapore": "sg", "slovakia": "sk", "slovenia": "si",
+    "solomon islands": "sb", "somalia": "so", "south africa": "za", "south sudan": "ss", "spain": "es",
+    "sri lanka": "lk", "sudan": "sd", "suriname": "sr", "sweden": "se", "switzerland": "ch", "syria": "sy",
+    "taiwan": "tw", "tajikistan": "tj", "tanzania": "tz", "thailand": "th", "timor-leste": "tl", "togo": "tg",
+    "tonga": "to", "trinidad": "tt", "tunisia": "tn", "turkey": "tr", "turkmenistan": "tm", "tuvalu": "tv",
+    "uganda": "ug", "ukraine": "ua", "uruguay": "uy", "uzbekistan": "uz", "vanuatu": "vu", "vatican": "va",
+    "venezuela": "ve", "vietnam": "vn", "yemen": "ye", "zambia": "zm", "zimbabwe": "zw"
+  };
+
+  for (const [countryName, code] of Object.entries(countryMap)) {
+    if (loc.includes(countryName)) return code;
+  }
+
+  const parts = loc.split(",").map(s => s.trim());
+  if (parts.length > 0) {
+    const lastPart = parts[parts.length - 1];
+    if (lastPart.length === 2) {
+      const validCodes = new Set(Object.values(countryMap));
+      validCodes.add("in");
+      validCodes.add("us");
+      validCodes.add("gb");
+      validCodes.add("ae");
+      if (validCodes.has(lastPart)) return lastPart;
+    }
+  }
+
+  const usStates = ["al", "ak", "az", "ar", "ca", "co", "ct", "de", "fl", "ga", "hi", "id", "il", "in", "ia", "ks", "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj", "nm", "ny", "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", "wa", "wv", "wi", "wy"];
+  if (parts.length > 1) {
+    const lastPart = parts[parts.length - 1];
+    if (usStates.includes(lastPart)) return "us";
+  }
+  return "un";
+};
+
+const formatPostedDate = (dateString) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  if (isNaN(date)) return dateString;
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 const getInitials = (name = "") => {
   return name
@@ -268,31 +371,63 @@ const UserJobs = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber, filters, debouncedSearch]);
 
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
   // =========================
   // SCROLL HANDLER (same as TalentPool)
   // =========================
   useEffect(() => {
     const el = resultsRef.current;
-    if (!el) return;
 
-    const onScroll = () => {
-      if (
-        el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
-        hasMoreRef.current &&
-        !loadingRef.current
-      ) {
-        loadingRef.current = true; // prevent duplicate increments
-        setPageNumber(prev => {
-          const next = prev + 1;
-          pageNumberRef.current = next;
-          return next;
-        });
+    const handleWindowScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
       }
     };
 
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", handleWindowScroll);
+
+    const onScroll = () => {
+      if (el) {
+        if (el.scrollTop > 300) {
+          setShowScrollTop(true);
+        } else {
+          setShowScrollTop(false);
+        }
+
+        if (
+          el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+          hasMoreRef.current &&
+          !loadingRef.current
+        ) {
+          loadingRef.current = true; // prevent duplicate increments
+          setPageNumber(prev => {
+            const next = prev + 1;
+            pageNumberRef.current = next;
+            return next;
+          });
+        }
+      }
+    };
+
+    if (el) {
+      el.addEventListener("scroll", onScroll);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+      if (el) el.removeEventListener("scroll", onScroll);
+    };
   }, []);
+
+  const scrollToTop = () => {
+    if (resultsRef.current) {
+      resultsRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // =========================
   // NORMALIZE API DATA → UI
@@ -339,6 +474,8 @@ const UserJobs = () => {
         job.isCPT && "CPT",
         job.isH4 && "H4",
       ].filter(Boolean),
+      postedOnText: formatPostedDate(job.createdOn || job.postedOn || job.createdDate || job.createdAt),
+      isShortlisted: Boolean(job.isShortlisted || job.shortlisted),
       preferredEmployment: [
         job.isCorpToCorp && "Corp-Corp",
         job.isW2Permanent && "W2-Permanent",
@@ -493,60 +630,84 @@ const UserJobs = () => {
                     <div className="job-card-header">
                       <div className="job-header-left">
                         <div className="job-company-logo">
-                          {getInitials(job.company)}
+                          <FiBriefcase color="#ffffff" size={20} />
                         </div>
 
                         <div className="job-header-info">
-                          <h3 className="job-title">{job.title}</h3>
-                          <p className="company-name">{job.company}</p>
+                          <h3 className="job-title" title={job.title}>{job.title}</h3>
+                          <div className="job-meta-row">
+                            {job.jobDurationText && (
+                              <div className="job-meta-item">
+                                <FiClock size={12} className="meta-icon" />
+                                <span>{job.jobDurationText}</span>
+                              </div>
+                            )}
+                            {job.location && (
+                              <div className="job-meta-item">
+                                <FiMapPin size={12} className="meta-icon" />
+                                <span title={job.location}>
+                                  {getCountryCodeFromLocation(job.location) && getCountryCodeFromLocation(job.location) !== "un" && (
+                                    <img 
+                                      src={`https://flagcdn.com/w20/${getCountryCodeFromLocation(job.location)}.png`}
+                                      srcSet={`https://flagcdn.com/w40/${getCountryCodeFromLocation(job.location)}.png 2x`}
+                                      width="18"
+                                      alt="Flag"
+                                      style={{ marginRight: '5px', verticalAlign: 'middle', borderRadius: '2px', display: 'inline-block' }}
+                                    />
+                                  )}
+                                  {job.location ? job.location.split(',')[0].trim() : ""}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="job-eye-icon">
-                        <FiEye size={22} />
-                      </div>
-                    </div>
-
-                    {/* TAGS */}
-                    <div className="job-tags-row">
-                      <span className="job-chip purple">
-                        {job.experienceText}
-                      </span>
-
-                      <span className="job-chip green">
-                        {job.workModel}
-                      </span>
-
-                      <span className="job-chip mint">
-                        {job.type?.length > 12
-                          ? `${job.type.slice(0, 12)}...`
-                          : job.type}
-                      </span>
+                      {job.isShortlisted && (
+                        <div className="job-chip mint">
+                          SHORTLISTED
+                        </div>
+                      )}
                     </div>
 
                     {/* DESC */}
                     <p className="job-description">
-                      {job.description?.replace(/\*\*/g, "")}
+                      {[
+                        job.company && `${job.company}`,
+                        job.preferredEmployment?.length > 0 && `Employment Type: ${job.preferredEmployment.join(", ")}`,
+                        job.workModel && `${job.workModel}`,
+                        job.description?.replace(/\*\*/g, "")
+                      ].filter(Boolean).join(" | ")}
                     </p>
 
                     {/* FOOTER */}
                     <div className="job-card-footer">
-                      <div className="job-rate">
-                        {job.rateText}
-                        <span className="job-rate-unit">
-                          {job.salaryType}
-                        </span>
+                      <div className="job-rate-block">
+                        <div className="job-rate">
+                          {job.rateText}
+                          <span className="job-rate-unit">
+                            {job.salaryType}
+                          </span>
+                        </div>
+                        {job.postedOnText && job.postedOnText !== "N/A" && (
+                          <>
+                            <span className="job-rate-divider">•</span>
+                            <span className="job-posted-on">
+                              Posted {job.postedOnText}
+                            </span>
+                          </>
+                        )}
                       </div>
 
-                      <div className="meta-pill">
-                        <FiMapPin size={12} />
-                        <span
-                          title={job.location}
-                          className="user-jobs-location-text"
-                        >
-                          {job.location ? job.location.split(',')[0].trim() : ""}
-                        </span>
-                      </div>
+                      <button
+                        className="job-card-view-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedJob(job);
+                        }}
+                      >
+                        View
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -564,6 +725,16 @@ const UserJobs = () => {
             location.state?.initialSelectedTalentId
           }
         />
+      )}
+
+      {showScrollTop && (
+        <button
+          className="talent-scroll-top-btn"
+          onClick={scrollToTop}
+          title="Scroll to top"
+        >
+          <FiArrowUp size={18} />
+        </button>
       )}
     </div>
   );

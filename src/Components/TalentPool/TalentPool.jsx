@@ -13,6 +13,10 @@ import {
   FiFilter,
   FiUsers,
   FiRefreshCw,
+  FiArrowUp,
+  FiMapPin,
+  FiUser,
+  FiEye,
 } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { GiCheckMark } from "react-icons/gi";
@@ -25,9 +29,11 @@ import TalentFilters from "../Filters/TalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetCompanyListQuery } from "../../State-Management/Api/CompanyApiSlice";
 import NoData from "../UploadTalent/NoData";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
 import { usePermissions } from "../Admin/Modules/RoleConfiguration/usePermissions";
+import TalentResumeView from "./TalentResumeView";
 
 // --- UTILS ---
 const parseExperience = (expStr) => {
@@ -45,8 +51,9 @@ const getInitials = (name = "") => {
 };
 
 // --- SHORTLIST DRAWER (unchanged) ---
-const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob, onInviteSuccess }) => {
+const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, userId, refreshTalents, clearShortlistForJob, onInviteSuccess, onViewCandidateProfile, onOpenConfirmRemoveAll }) => {
   const [offerStatus, setOfferStatus] = useState({});
+  const [openJobIds, setOpenJobIds] = useState({});
   const [sendInviteNotification] = useSendInviteNotificationMutation();
 
   const companyname = localStorage.getItem("CompanyName");
@@ -57,12 +64,26 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
 
   const [isClosing, setIsClosing] = useState(false);
 
+  const toggleJobAccordion = (jobId) => {
+    setOpenJobIds((prev) => ({
+      ...prev,
+      [jobId]: prev[jobId] === undefined ? false : !prev[jobId],
+    }));
+  };
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       onClose();
     }, 280);
+  };
+
+  const handleRemoveAllClick = () => {
+    onClose();
+    if (onOpenConfirmRemoveAll) {
+      onOpenConfirmRemoveAll();
+    }
   };
 
   const handleSendInvite = async (jobId) => {
@@ -119,11 +140,13 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
       />
       <div className={`drawer-panel ${isOpen && !isClosing ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
-          <h2 className="drawer-header-title">
-            <FiUsers size={16} color="rgba(255,255,255,0.8)" style={{ marginRight: "8px" }} />
-            Shortlisted Candidates
-          </h2>
-          <button className="close-btn" onClick={handleClose}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 className="drawer-header-title">
+              <FiUsers size={16} color="#0f172a" style={{ marginRight: "4px" }} />
+              Shortlisted Candidates
+            </h2>
+          </div>
+          <button className="trv-close-btn" title="Close Shortlist" onClick={handleClose}>
             <FiX size={18} />
           </button>
         </div>
@@ -138,64 +161,146 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
               if (!candidates || candidates.length === 0) return null;
 
               const currentStatus = offerStatus[jobId] || "idle";
+              const isJobOpen = openJobIds[jobId] !== false;
 
               return (
-                <div key={jobId} className="job-group">
+                <div key={jobId} className={`job-group ${isJobOpen ? "open" : "collapsed"}`}>
                   <div
                     className="job-header"
-                    style={{ borderLeft: `4px solid ${job?.color}` }}
+                    style={{ borderLeft: `4px solid ${job?.color || '#5a5de8'}`, cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => toggleJobAccordion(jobId)}
                   >
-                    <span className="job-title">{job?.title}</span>
-                    <span className="badge">{candidates.length}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                      <span className="job-title text-truncate">{job?.title || candidates[0]?.role || "Job Role"}</span>
+                      <span className="job-count-badge-green">{candidates.length}</span>
+                    </div>
+                    <FiChevronDown
+                      size={16}
+                      style={{
+                        transform: isJobOpen ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                        color: "#64748b",
+                        flexShrink: 0,
+                      }}
+                    />
                   </div>
 
-                  {candidates.map((cand) => (
-                    <div key={cand.id} className="mini-card">
-                      {cand.avatar ? (
-                        <img src={cand.avatar} className="mini-avatar" alt="" />
+                  <div className={`job-accordion-body ${isJobOpen ? "expanded" : "collapsed"}`}>
+                    {candidates.map((cand) => (
+                      <div key={cand.id} className="mini-card flex-column align-items-stretch gap-2">
+                        <div className="d-flex align-items-center justify-content-between gap-2">
+                          <div className="d-flex align-items-center gap-2" style={{ minWidth: 0, flex: 1 }}>
+                            <div className="avatar-wrapper" style={{ position: "relative", flexShrink: 0 }}>
+                              {cand.avatar ? (
+                                <img src={cand.avatar} className="mini-avatar" alt={cand.name} />
+                              ) : (
+                                <div className="mini-avatar-initials">
+                                  {getInitials(cand.name)}
+                                </div>
+                              )}
+                              <div className="avatar-verified-badge">
+                                <GiCheckMark size={7} color="#ffffff" />
+                              </div>
+                            </div>
+                            <div className="mini-info" style={{ minWidth: 0 }}>
+                              <h4 className="role mini-name text-truncate" style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#0f172a' }}>{cand.role}</h4>
+                              <div className="company-loc-text mini-role text-truncate" style={{ fontSize: '11.5px', color: '#64748b', fontWeight: '500' }}>
+                                {cand.company && cand.company.toLowerCase() !== "benmyl" ? cand.company : "N/A"}
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            className="remove-btn"
+                            disabled={currentStatus !== "idle"}
+                            onClick={() => onRemove(jobId, cand.id)}
+                            title="Remove candidate"
+                          >
+                            <FiTrash2 size={13} />
+                          </button>
+                        </div>
+
+                        {/* Details row: Location, Experience */}
+                        <div className="mini-details-row d-flex flex-wrap align-items-center gap-2" style={{ fontSize: "11px", color: "#64748b" }}>
+                          {cand.location && cand.location !== "-" && (
+                            <span className="d-inline-flex align-items-center gap-1">
+                              <FiMapPin size={11} color="#94a3b8" />
+                              <span>{cand.location}</span>
+                            </span>
+                          )}
+                          {cand.experience !== undefined && cand.experience !== null && String(cand.experience).trim() !== "" && (
+                            <span className="d-inline-flex align-items-center gap-1">
+                              <FiBriefcase size={11} color="#f5810c" />
+                              <span>{cand.experience}{typeof cand.experience === 'number' || !isNaN(cand.experience) ? ' Yrs Exp' : ''}</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Skills chips */}
+                        {cand.skills && cand.skills.length > 0 && (
+                          <div className="mini-skills-row d-flex flex-wrap gap-1 mt-1">
+                            {cand.skills.slice(0, 3).map((sk) => (
+                              <span key={sk} className="job-chip" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                                {sk}
+                              </span>
+                            ))}
+                            {cand.skills.length > 3 && (
+                              <span className="job-chip more" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                                +{cand.skills.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Action row: View Profile button */}
+                        <div className="d-flex justify-content-end mt-1 pt-1" style={{ borderTop: "1px solid #f1f5f9" }}>
+                          <button
+                            className="job-card-view-btn"
+                            onClick={() => {
+                              if (onViewCandidateProfile) onViewCandidateProfile(cand);
+                            }}
+                            style={{ padding: "4px 12px", fontSize: "10.5px", borderRadius: "6px" }}
+                          >
+                            <FiEye size={11} className="me-1" /> View Resume
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="job-footer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginTop: '12px' }}>
+                      <button
+                        className="remove-all-btn"
+                        onClick={handleRemoveAllClick}
+                        title="Remove all shortlisted candidates"
+                      >
+                        <FiTrash2 size={12} style={{ marginRight: '4px' }} /> Remove All
+                      </button>
+
+                      {canEdit ? (
+                        <button
+                          className={`btn-v2-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
+                          onClick={() => handleSendInvite(jobId)}
+                          disabled={currentStatus !== "idle"}
+                          style={{ padding: "8px 18px", borderRadius: "8px" }}
+                        >
+                          {currentStatus === "loading" && (
+                            <>
+                              <FiLoader className="spin-icon me-1" /> Sending...
+                            </>
+                          )}
+                          {currentStatus === "sent" && (
+                            <>
+                              <FiCheck className="me-1" /> Invite Sent
+                            </>
+                          )}
+                          {currentStatus === "idle" && "Send Invite"}
+                        </button>
                       ) : (
-                        <div className="mini-avatar-initials">
-                          {getInitials(cand.name)}
+                        <div className="permission-denied-text" style={{ fontSize: '12px', color: '#ef4444', fontStyle: 'italic' }}>
+                          No permission
                         </div>
                       )}
-                      <div className="mini-info">
-                        <div className="mini-name">{cand.name}</div>
-                        <div className="mini-role">{cand.role}</div>
-                      </div>
-                      <button
-                        className="remove-btn"
-                        disabled={currentStatus !== "idle"}
-                        onClick={() => onRemove(jobId, cand.id)}
-                      >
-                        <FiTrash2 />
-                      </button>
                     </div>
-                  ))}
-
-                  <div className="job-footer">
-                    {canEdit ? (
-                      <button
-                        className={`btn-primary border-0 ${currentStatus === "sent" ? "sent" : ""}`}
-                        onClick={() => handleSendInvite(jobId)}
-                        disabled={currentStatus !== "idle"}
-                      >
-                        {currentStatus === "loading" && (
-                          <>
-                            <FiLoader className="spin-icon" /> Sending...
-                          </>
-                        )}
-                        {currentStatus === "sent" && (
-                          <>
-                            <FiCheck /> Invite Sent
-                          </>
-                        )}
-                        {currentStatus === "idle" && "Send Invite"}
-                      </button>
-                    ) : (
-                      <div className="permission-denied-text" style={{ fontSize: '12px', color: '#ef4444', fontStyle: 'italic' }}>
-                        You don't have permission to send invites.
-                      </div>
-                    )}
                   </div>
                 </div>
               );
@@ -231,106 +336,118 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
           position: fixed;
           top: 0;
           right: 0;
-          width: 380px;
+          width: 20vw;
+          min-width: 320px;
+          max-width: 90vw;
           height: 100vh;
-          background: #f8fafc;
+          background: #ffffff;
           z-index: 2001;
           transform: translateX(100%);
-          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: -8px 0 32px rgba(15,23,42,0.10);
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: -10px 0 40px rgba(15, 23, 42, 0.12);
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          border-left: 1px solid #e2e8f0;
         }
         .drawer-panel.open {
           transform: translateX(0);
+        }
+        .job-accordion-body {
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        .job-accordion-body.expanded {
+          max-height: 2500px;
+          opacity: 1;
+          margin-top: 10px;
         }
         .drawer-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 20px 24px;
-          background: linear-gradient(90deg, #07132d 0%, #2b3669 48%, #7b78f3 100%);
-          border-bottom: none;
+          padding: 16px 20px;
+          background: #ffffff;
+          border-bottom: 1px solid #e2e8f0;
           flex-shrink: 0;
         }
         .drawer-header-title {
           margin: 0;
-          font-size: 14px;
+          font-size: 14.5px;
           font-weight: 700;
-          color: #ffffff;
+          color: #0f172a;
           display: flex;
           align-items: center;
-        }
-        .close-btn {
-          background: rgba(255,255,255,0.15);
-          border: 1px solid rgba(255,255,255,0.2);
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(255,255,255,0.85);
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .close-btn:hover {
-          background: rgba(255,255,255,0.25);
-          color: #ffffff;
         }
         .drawer-content {
-          padding: 20px;
+          padding: 16px;
           flex: 1;
           overflow-y: auto;
+          background: #fafafa;
         }
         .job-group {
           background: #ffffff;
-          border-radius: 16px;
-          border: 1px solid #e7ebf3;
-          padding: 16px;
-          margin-bottom: 16px;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          padding: 14px;
+          margin-bottom: 14px;
           display: flex;
           flex-direction: column;
         }
         .job-header {
-          background: #f8fafc;
-          border-radius: 8px;
-          padding: 8px 12px;
-          margin-bottom: 10px;
-          font-weight: 700;
-          font-size: 13px;
-          color: #1e293b;
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          padding: 10px 14px;
+          margin-bottom: 0px;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s ease;
+        }
+        .job-header:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+          background: #ffffff;
         }
         .job-title {
           font-weight: 700;
+          font-size: 13.5px;
           color: #0f172a;
+          letter-spacing: -0.01em;
+          text-transform: capitalize;
         }
-        .job-header .badge {
-          background: #e2e8f0;
-          color: #475569;
-          padding: 2px 8px;
-          border-radius: 9999px;
-          font-size: 11px;
-          font-weight: 700;
+        .job-count-badge-green {
+          background: #10b981 !important;
+          color: #ffffff !important;
+          font-size: 11px !important;
+          font-weight: 800 !important;
+          padding: 2px 8px !important;
+          border-radius: 9999px !important;
+          box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35) !important;
+          line-height: 1 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          flex-shrink: 0 !important;
         }
         .mini-card {
           display: flex;
           align-items: center;
           gap: 12px;
           padding: 10px;
-          border: 1px solid #f1f5f9;
-          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
           background: #ffffff;
           margin-bottom: 8px;
           transition: all 0.2s ease;
         }
         .mini-card:hover {
           border-color: #cbd5e1;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
         .mini-avatar, .mini-avatar-initials {
           width: 36px;
@@ -339,8 +456,9 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
           object-fit: cover;
         }
         .mini-avatar-initials {
-          background: #f1f1ff;
-          color: #5B5BD6;
+          background: #1e293b;
+          color: #ffffff;
+          border: 1px solid #1e293b;
           font-size: 12px;
           font-weight: 700;
           display: flex;
@@ -381,6 +499,102 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         .remove-btn:disabled {
           opacity: 0.3;
           cursor: not-allowed;
+        }
+        .remove-all-btn {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .remove-all-btn:hover {
+          background: #fee2e2;
+          color: #b91c1c;
+          border-color: #fca5a5;
+        }
+        .shortlist-confirm-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(15, 23, 42, 0.55);
+          backdrop-filter: blur(4px);
+          z-index: 99999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+        }
+        .shortlist-confirm-modal {
+          background: #ffffff;
+          border-radius: 16px;
+          width: 320px;
+          padding: 24px;
+          text-align: center;
+          box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+          animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalPop {
+          0% { transform: scale(0.92); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .scm-icon-wrap {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: #fef2f2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 14px;
+        }
+        .scm-title {
+          margin: 0 0 8px;
+          font-size: 15px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .scm-desc {
+          margin: 0 0 20px;
+          font-size: 12px;
+          color: #64748b;
+          line-height: 1.4;
+        }
+        .scm-actions {
+          display: flex;
+          gap: 10px;
+        }
+        .scm-btn {
+          flex: 1;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .scm-btn.cancel {
+          background: #f1f5f9;
+          color: #475569;
+        }
+        .scm-btn.cancel:hover {
+          background: #e2e8f0;
+          color: #1e293b;
+        }
+        .scm-btn.confirm-danger {
+          background: #ef4444;
+          color: #ffffff;
+        }
+        .scm-btn.confirm-danger:hover {
+          background: #dc2626;
         }
         .empty-state {
           color: #94a3b8;
@@ -582,6 +796,46 @@ const TalentPool = () => {
   });
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showConfirmRemoveAllModal, setShowConfirmRemoveAllModal] = useState(false);
+  const [showShortlistPromptModal, setShowShortlistPromptModal] = useState(false);
+  const [shortlistPromptData, setShortlistPromptData] = useState(null);
+
+  const handleConfirmRemoveAll = () => {
+    setShortlistedMap({});
+    localStorage.removeItem("shortlistedMap");
+    setShowConfirmRemoveAllModal(false);
+    toast.success("All shortlisted candidates removed.");
+  };
+
+  const handleConfirmPromptShortlist = () => {
+    if (!shortlistPromptData) return;
+    const { candidate, matchingJob } = shortlistPromptData;
+
+    setSelectedJobId(matchingJob.id);
+    setAppliedFilters((prev) => {
+      const existingSelectedJobs = prev?.selectedJobs || [];
+      const updatedSelectedJobs = existingSelectedJobs.includes(matchingJob.id)
+        ? existingSelectedJobs
+        : [...existingSelectedJobs, matchingJob.id];
+      return {
+        ...(prev || {}),
+        selectedJobs: updatedSelectedJobs,
+      };
+    });
+    setSearchParams({ jobId: matchingJob.id });
+
+    setShortlistedMap((prev) => {
+      const currentList = prev[matchingJob.id] || [];
+      const exists = currentList.find((c) => c.id === candidate.id);
+      if (exists) return prev;
+      return { ...prev, [matchingJob.id]: [...currentList, candidate] };
+    });
+
+    setShowShortlistPromptModal(false);
+    setShortlistPromptData(null);
+    setIsDrawerOpen(true);
+    toast.success(`Candidate shortlisted for ${matchingJob.title}`);
+  };
   const [isJobDetailsDrawerOpen, setIsJobDetailsDrawerOpen] = useState(false);
   const [successJobId, setSuccessJobId] = useState(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -632,10 +886,37 @@ const TalentPool = () => {
             .filter(Boolean);
 
           if (selectedTitles.length > 0) {
+            const expandRoleTokens = (titles) => {
+              const tokenSet = new Set();
+              titles.forEach((rawTitle) => {
+                if (!rawTitle) return;
+                const title = rawTitle.trim();
+                tokenSet.add(title);
+
+                const parts = title.split(/[\/\s&,-]+/).map((p) => p.trim()).filter(Boolean);
+                parts.forEach((part) => {
+                  if (part.length >= 2 && !["and", "for", "the", "with"].includes(part.toLowerCase())) {
+                    tokenSet.add(part);
+                  }
+                });
+
+                const lower = title.toLowerCase();
+                if (lower.includes("ui") || lower.includes("ux")) {
+                  tokenSet.add("UI");
+                  tokenSet.add("UX");
+                  tokenSet.add("UI/UX");
+                  tokenSet.add("UI / UX");
+                }
+              });
+              return Array.from(tokenSet);
+            };
+
+            const expandedTokens = expandRoleTokens(selectedTitles);
+
             filtersArray.push({
               filterName: "Title",
               filterOperator: "Contains",
-              filterValue: selectedTitles,
+              filterValue: expandedTokens,
             });
           }
         }
@@ -720,36 +1001,68 @@ const TalentPool = () => {
   };
 
 
+  const { data: companyList = [] } = useGetCompanyListQuery();
+
+  const companyMap = useMemo(() => {
+    const map = new Map();
+    if (Array.isArray(companyList)) {
+      companyList.forEach((c) => {
+        if (c.companyId && c.companyName) {
+          map.set(String(c.companyId), c.companyName.trim());
+        }
+      });
+    }
+    return map;
+  }, [companyList]);
+
   const candidates = useMemo(() => {
-    return allCandidates.map((item) => ({
-      id: item.employeeID,
+    return allCandidates.map((item) => {
+      const rawCompId = item.companyID || item.companyId || item.company_ID || item.company_id || item.insertByCompanyId || item.insertedByCompanyId;
+      const nameFromCompId = rawCompId ? companyMap.get(String(rawCompId)) : "";
+      const rawCompany = (item.companyName && item.companyName.toLowerCase() !== "benmyl")
+        ? item.companyName
+        : (item.company && item.company.toLowerCase() !== "benmyl")
+          ? item.company
+          : (nameFromCompId && nameFromCompId.toLowerCase() !== "benmyl")
+            ? nameFromCompId
+            : (item.currentCompany && item.currentCompany.toLowerCase() !== "benmyl")
+              ? item.currentCompany
+              : (item.uploadedCompany && item.uploadedCompany.toLowerCase() !== "benmyl")
+                ? item.uploadedCompany
+                : "";
 
-      name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
-      inviteUserId: Number(item.insertBy),
+      return {
+        id: item.employeeID,
+        companyID: rawCompId,
 
-      role: item.title || "-",
+        name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
+        inviteUserId: Number(item.insertBy),
 
-      experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
+        role: item.title || "-",
 
-      location: item.city || "-",
+        experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
 
-      skills: item.skills
-        ? item.skills.split(",").map((s) => s.trim())
-        : [],
+        location: item.city || "-",
 
-      avatar: item.profilePicture || "",
+        skills: item.skills
+          ? item.skills.split(",").map((s) => s.trim())
+          : [],
 
-      rating: 4.5,
+        avatar: item.profilePicture || "",
 
-      availability: item.status ? [item.status] : ["Available"],
+        rating: 4.5,
 
-      verified: true,
-      status: item.status?.toUpperCase() || "AVAILABLE",
-      isshortlisted: item.isshortlisted,
-      uploadedByName: item.uploadedByName,
-      hourlyRate: item.salary || 0,
-    }));
-  }, [allCandidates]);
+        availability: item.status ? [item.status] : ["Available"],
+
+        verified: true,
+        isshortlisted: item.isshortlisted,
+        uploadedByName: item.uploadedByName,
+        company: rawCompany,
+        education: item.highestQualification || (item.employee_Heighers && item.employee_Heighers[0]?.highestQualification) || item.degree || "",
+        hourlyRate: item.salary || 0,
+      };
+    });
+  }, [allCandidates, companyMap]);
 
   const jobs = useMemo(() => {
     if (!Array.isArray(jobTitles)) return [];
@@ -791,7 +1104,9 @@ const TalentPool = () => {
     if (!preselectedJobTitle || jobs.length === 0) return;
 
     const matchedJob = jobs.find(
-      (j) => j.title.toLowerCase() === preselectedJobTitle.toLowerCase()
+      (j) =>
+        j.title.toLowerCase().includes(preselectedJobTitle.toLowerCase()) ||
+        preselectedJobTitle.toLowerCase().includes(j.title.toLowerCase())
     );
 
     if (!matchedJob) return;
@@ -852,12 +1167,21 @@ const TalentPool = () => {
 
 
 
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
   useEffect(() => {
     const el = resultsRef.current;
-    if (!el) return;
 
-    const onScroll = () => {
+    const handleScroll = () => {
+      const currentScroll = el ? el.scrollTop : window.scrollY;
+      if (currentScroll > 180) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+
       if (
+        el &&
         el.scrollHeight > el.clientHeight &&
         el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
         hasMore &&
@@ -867,9 +1191,21 @@ const TalentPool = () => {
       }
     };
 
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
+    if (el) el.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      if (el) el.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [hasMore, isFetchingMore]);
+
+  const scrollToTop = () => {
+    if (resultsRef.current) {
+      resultsRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
 
   const activeJob = useMemo(() => {
@@ -950,21 +1286,24 @@ const TalentPool = () => {
         setShowCreateJobModal(true);
         return;
       }
-      if (!activeJobId) {
-        toast.error("Please select a Job from the filters first to shortlist.");
+
+      // Check if candidate is already shortlisted for matchingJob
+      const currentList = shortlistedMap[matchingJob.id] || [];
+      const isAlreadyShortlisted = currentList.some((c) => c.id === candidate.id);
+
+      if (isAlreadyShortlisted) {
+        setShortlistedMap((prev) => ({
+          ...prev,
+          [matchingJob.id]: currentList.filter((c) => c.id !== candidate.id),
+        }));
+        toast.info(`Removed candidate from ${matchingJob.title}`);
         return;
       }
 
-      setShortlistedMap((prev) => {
-        const currentList = prev[activeJobId] || [];
-        const exists = currentList.find((c) => c.id === candidate.id);
-
-        if (exists) {
-          return { ...prev, [activeJobId]: currentList.filter((c) => c.id !== candidate.id) };
-        }
-        return { ...prev, [activeJobId]: [...currentList, candidate] };
-      });
-    }, 500);
+      // Raise alert modal: "this job exists in your posted jobs.. would you like to add this role for that job"
+      setShortlistPromptData({ candidate, matchingJob });
+      setShowShortlistPromptModal(true);
+    }, 350);
   };
 
   const clearShortlistForJob = (jobId) => {
@@ -1063,20 +1402,12 @@ const TalentPool = () => {
   }, [appliedFilters, activeJobId]);
 
 
-  const handleProfileClick = (candidate) => {
-    const from = location.pathname + location.search;
-    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
 
-    navigate(
-      `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
-      {
-        state: {
-          employeeID: candidate.id,
-          candidate: candidate, // Pass whole object
-          jobId: activeJobId, // 🔥 this is critical
-        },
-      }
-    );
+  const handleProfileClick = (candidate) => {
+    setSelectedResumeCandidate(candidate);
+    setIsResumeModalOpen(true);
   };
 
 
@@ -1089,8 +1420,57 @@ const TalentPool = () => {
     }));
   };
 
+  const selectedTitles = useMemo(() => {
+    if (!appliedFilters?.selectedJobs?.length) return [];
+    return appliedFilters.selectedJobs
+      .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+      .filter(Boolean);
+  }, [appliedFilters?.selectedJobs, jobs]);
+
+  const getRoleMatchScore = (candRole, selectedTitlesList) => {
+    if (!candRole || !selectedTitlesList || selectedTitlesList.length === 0) return 0;
+    const lowerRole = candRole.toLowerCase().trim();
+
+    for (const title of selectedTitlesList) {
+      const lowerTitle = title.toLowerCase().trim();
+
+      // Primary exact role match
+      if (lowerRole === lowerTitle) return 100;
+
+      // Primary role starts with or contains selected title
+      if (lowerRole.startsWith(lowerTitle)) return 95;
+      if (lowerRole.includes(lowerTitle)) return 85;
+
+      // Selected title starts with candidate role
+      if (lowerTitle.startsWith(lowerRole)) return 75;
+      if (lowerTitle.includes(lowerRole)) return 70;
+
+      // Secondary token matching (e.g. Engineer, Developer)
+      const titleTokens = lowerTitle.split(/[\/\s&,-]+/).filter((t) => t.length >= 2);
+      const matchedTokens = titleTokens.filter((t) => lowerRole.includes(t));
+      if (matchedTokens.length > 0) {
+        const isPrimaryKeyword = matchedTokens.some((t) => !["engineer", "developer", "designer", "architect", "lead", "senior", "junior"].includes(t));
+        return isPrimaryKeyword ? (50 + matchedTokens.length * 10) : (30 + matchedTokens.length * 5);
+      }
+    }
+    return 0;
+  };
+
   const sortedCandidates = useMemo(() => {
-    const sortable = [...candidates];
+    let sortable = [...candidates];
+
+    if (selectedTitles.length > 0) {
+      sortable.sort((a, b) => {
+        const scoreA = getRoleMatchScore(a.role, selectedTitles);
+        const scoreB = getRoleMatchScore(b.role, selectedTitles);
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      return sortable;
+    }
+
     switch (sortBy) {
       case "rating_high":
         return sortable.sort((a, b) => b.rating - a.rating);
@@ -1105,7 +1485,7 @@ const TalentPool = () => {
       default:
         return sortable;
     }
-  }, [candidates, sortBy]);
+  }, [candidates, sortBy, selectedTitles]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -1218,11 +1598,21 @@ const TalentPool = () => {
                           toast.error("Please select a job and talent to view its shortlist.");
                           return;
                         }
+                        const currentShortlist = shortlistedMap?.[activeJobId] || [];
+                        if (!currentShortlist.length) {
+                          toast.error("Please select shortlist to view.");
+                          return;
+                        }
                         setIsDrawerOpen(true);
                       }}
                     >
                       <FiBriefcase />
                       <span>View Shortlisted</span>
+                      {activeJobId && shortlistedMap?.[activeJobId]?.length > 0 && (
+                        <span className="shortlist-count-badge">
+                          {shortlistedMap[activeJobId].length}
+                        </span>
+                      )}
                     </button>
 
                     <div className="vs-results-right">
@@ -1393,12 +1783,77 @@ const TalentPool = () => {
           refreshTalents={fetchTalents}
           clearShortlistForJob={clearShortlistForJob}
           onInviteSuccess={(jobId, candidateId) => {
-  setSuccessJobId({
-    jobId,
-    candidateId
-  });
-}}
+            setSuccessJobId({
+              jobId,
+              candidateId
+            });
+          }}
+          onViewCandidateProfile={handleProfileClick}
+          onOpenConfirmRemoveAll={() => setShowConfirmRemoveAllModal(true)}
         />
+
+        {/* Remove All Confirmation Modal (Centered on Screen) */}
+        {showConfirmRemoveAllModal && (
+          <div className="shortlist-confirm-backdrop" onClick={() => setShowConfirmRemoveAllModal(false)}>
+            <div className="shortlist-confirm-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="scm-icon-wrap">
+                <FiTrash2 size={22} color="#ef4444" />
+              </div>
+              <h3 className="scm-title">Remove All Candidates?</h3>
+              <p className="scm-desc">
+                Are you sure you want to remove all shortlisted candidates? This action cannot be undone.
+              </p>
+              <div className="scm-actions">
+                <button
+                  className="scm-btn cancel"
+                  onClick={() => setShowConfirmRemoveAllModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="scm-btn confirm-danger"
+                  onClick={handleConfirmRemoveAll}
+                >
+                  Yes, Remove All
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Matching Job Found Confirmation Alert Modal */}
+        {showShortlistPromptModal && shortlistPromptData && (
+          <div className="shortlist-confirm-backdrop" onClick={() => setShowShortlistPromptModal(false)}>
+            <div className="shortlist-confirm-modal elegant-prompt-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="epm-header-glow"></div>
+              <div className="epm-icon-badge">
+                <FiBriefcase size={22} className="epm-icon" />
+              </div>
+              <div className="epm-tag">Existing Posted Job Found</div>
+              <h3 className="epm-title">Shortlist for {shortlistPromptData.matchingJob?.title}?</h3>
+              <p className="epm-desc">
+                The position <strong>"{shortlistPromptData.matchingJob?.title}"</strong> is active in your posted jobs. Would you like to shortlist <strong>{shortlistPromptData.candidate?.name || 'this candidate'}</strong> directly under this job role?
+              </p>
+              <div className="epm-actions">
+                <button
+                  className="epm-btn cancel"
+                  onClick={() => {
+                    setShowShortlistPromptModal(false);
+                    setShortlistPromptData(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="epm-btn confirm"
+                  onClick={handleConfirmPromptShortlist}
+                >
+                  <GiCheckMark size={13} style={{ marginRight: '5px' }} /> Yes, Add Role
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <JobDetailsDrawer
           isOpen={isJobDetailsDrawerOpen}
@@ -1559,6 +2014,24 @@ const TalentPool = () => {
               </div>
             </div>
           </div>
+        )}
+
+        <TalentResumeView
+          isOpen={isResumeModalOpen}
+          onClose={() => setIsResumeModalOpen(false)}
+          candidate={selectedResumeCandidate}
+          onShortlist={handleShortlist}
+          isShortlisted={Boolean(activeJobId && shortlistedMap?.[activeJobId]?.some((c) => c.id === selectedResumeCandidate?.id))}
+        />
+
+        {showScrollTop && (
+          <button
+            className="talent-scroll-top-btn"
+            onClick={scrollToTop}
+            title="Scroll to top"
+          >
+            <FiArrowUp size={18} />
+          </button>
         )}
 
         <style jsx>{`

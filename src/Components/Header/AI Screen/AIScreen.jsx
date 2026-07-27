@@ -1258,21 +1258,7 @@ function AIScreen() {
           <FiSearch size={16} /> New
         </button>
 
-        {SUGGESTED_PROMPTS.map((prompt) => (
-          <button
-            key={prompt.id}
-            className="sidebar-btn"
-            onClick={() => { setActiveQuestionnaire(prompt.id); }}
-          >
-            <FiSearch size={16} />
-            {prompt.name}
-          </button>
-        ))}
-
-        <button className="sidebar-btn" style={{ marginTop: "auto" }}>
-          <FiSave size={16} /> Saved Prompts
-        </button>
-        <button className="sidebar-btn" onClick={goHome}>
+        <button className="sidebar-btn" style={{ marginTop: "auto" }} onClick={goHome}>
           <FiHome size={16} /> Home
         </button>
       </div>
@@ -1378,25 +1364,6 @@ function AIScreen() {
                     <span className="companion-subtitle">Get more done with</span>
                     <strong style={{ fontSize: "20px", display: "block", marginBottom: "4px" }}>AI Assistant</strong>
                     Your personal workspace assistant. I can help you analyze resumes, match candidate profiles to project requirements, or find market insights. Let me know how I can assist you!
-                  </div>
-                </div>
-
-                <div className="gradient-border-wrapper">
-                  <div className="gradient-border-inner" style={{ padding: "20px" }}>
-                    <h3 style={{ fontSize: 16, color: "var(--text-primary)", fontWeight: 700, margin: "0 0 16px 0" }}>Guided Workflows</h3>
-                    <div className="results-grid">
-                      {SUGGESTED_PROMPTS.map((prompt) => (
-                        <div
-                          key={prompt.id}
-                          className="resume-card"
-                          onClick={() => setActiveQuestionnaire(prompt.id)}
-                          style={{ padding: 16, background: "rgba(99, 102, 241, 0.05)", borderStyle: "dashed", borderColor: "rgba(99, 102, 241, 0.3)" }}
-                        >
-                          <h4 style={{ margin: "0 0 4px", fontSize: 15, color: "var(--accent)" }}>{prompt.name}</h4>
-                          <p style={{ margin: 0, fontSize: 12, color: "var(--text-secondary)" }}>{prompt.role}</p>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>

@@ -1,9 +1,10 @@
-import React, { memo } from "react";
-import { FiMapPin, FiBriefcase, FiDollarSign, FiEye, FiUser, FiAward, FiStar, FiActivity, FiCpu, FiCode } from "react-icons/fi";
+import React, { memo, useState, useEffect } from "react";
+import { FiMapPin, FiBriefcase, FiDollarSign, FiEye, FiUser, FiAward, FiStar, FiActivity, FiCpu, FiCode, FiBookOpen, FiArrowUp } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import "../TalentPool/TalentPool.css";
 import "../UserProjects/Projects.css";
+import TalentResumeView from "../TalentPool/TalentResumeView";
 
 
 
@@ -25,14 +26,19 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
     });
   };
 
-  const getInitials = (name = "") => {
-    return name
+  const colors = ["#f5810c", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#f59e0b", "#06b6d4"];
+  const avatarBgColor = colors[index % colors.length];
+
+  const getInitials = (text = "") => {
+    return text
       .split(" ")
       .filter(Boolean)
       .slice(0, 2)
       .map((n) => n[0].toUpperCase())
       .join("");
   };
+
+  const hasRealCompany = candidate.company && candidate.company.toLowerCase() !== "benmyl";
 
   return (
     <div
@@ -41,45 +47,25 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
     >
       {(() => {
         const icons = [FiUser, FiBriefcase, FiAward, FiStar, FiActivity, FiCpu, FiCode];
-        const colors = ["#f5810c", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#f59e0b", "#06b6d4"];
         const IconComponent = icons[index % icons.length];
-        const iconColor = colors[index % colors.length];
-        return <IconComponent className="card-bg-icon" style={{ color: iconColor }} />;
+        return <IconComponent className="card-bg-icon" style={{ color: avatarBgColor }} />;
       })()}
-      {/* Header: Status Pill, Match Badge, and Eye Icon */}
+      {/* Header: Status Pill, Match Badge */}
       <div className="card-header-row">
-        <span className={`job-chip ${
-          candidate.status === 'AVAILABLE' ? 'mint' : 
-          candidate.status === 'SHORTLISTED' ? 'green' : 
-          candidate.status === 'INTERVIEWING' ? 'purple' : 
-          'orange'
-        }`}>
+        <span className="job-chip mint">
           {candidate.status || (candidate.verified ? 'Verified' : 'Pending')}
         </span>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {candidate.profileCompletionPercentage !== undefined && (
-            <div className="job-chip green">
-              {candidate.profileCompletionPercentage}% completed
-            </div>
-          )}
-
-          <div
-            className="eye-icon-btn"
-            onClick={handleProfileClick}
-            title="View Profile"
-            style={small ? { padding: '4px' } : {}}
-          >
-            <FiEye size={15} />
+        {candidate.profileCompletionPercentage !== undefined && (
+          <div className="job-chip green">
+            {candidate.profileCompletionPercentage}% completed
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Profile Section: Avatar, Name, and Role */}
+      {/* Profile Section: Avatar, Role, Rating, Company, Location */}
       <div 
         className="profile-section" 
-        onClick={handleProfileClick}
-        style={{ cursor: 'pointer' }}
       >
         <div 
           className="talent-avatar-border-circle"
@@ -93,58 +79,91 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
           {candidate.avatar ? (
           <img
             src={candidate.avatar}
-            alt={candidate.name}
+            alt={candidate.role || "Talent"}
             className="profile-avatar"
             style={small ? { width: '38px', height: '38px' } : {}}
           />
         ) : (
           <div
             className="profile-avatar initials"
-            style={small ? { width: '34px', height: '34px', fontSize: '11px' } : {}}
+            style={{
+              backgroundColor: "#1e293b",
+              color: "#ffffff",
+              border: "1px solid #1e293b",
+              ...(small ? { width: '34px', height: '34px', fontSize: '11px' } : {})
+            }}
           >
-            {getInitials(candidate.name || candidate.title || candidate.company)}
+            {getInitials(candidate.name)}
           </div>
         )}
+          <div className="avatar-verified-badge" title="Verified Candidate">
+            <GiCheckMark size={8} color="#ffffff" />
+          </div>
         </div>
         <div className="profile-details">
-          <h4 className="name" style={small ? { fontSize: '13.5px' } : {}}>{candidate.name || candidate.title}</h4>
-          <p className="role" style={small ? { fontSize: '11px' } : {}}>{candidate.role || candidate.company}</p>
+          {/* Role Name on Top with Rating beside it */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+            <h4 className="role" style={small ? { fontSize: '12.5px', margin: 0, fontWeight: '700', color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 } : { margin: 0, fontSize: '13.5px', fontWeight: '700', color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+              {candidate.role || candidate.title || "Talent Role"}
+            </h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+              <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
+              <span className="star-rating-value" style={{ fontSize: '11px', fontWeight: '700', color: '#475569' }}>
+                {(candidate.rating || 4.5).toFixed(1)}
+              </span>
+            </div>
+          </div>
+
+          {/* Company Name & First Name beside each other */}
+          <p className="company-loc-text" style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748b', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {hasRealCompany && (
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {candidate.company}
+              </span>
+            )}
+            {hasRealCompany && (candidate.firstName || candidate.name) && <span>•</span>}
+            {(candidate.firstName || candidate.name) && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                <FiUser size={11} color="#94a3b8" />
+                {candidate.firstName || candidate.name?.split(" ")[0]}
+              </span>
+            )}
+          </p>
         </div>
       </div>
 
-      {/* Meta Grid: Salary, Experience, Location */}
-      <div className="meta-grid" style={small ? { padding: '8px', gap: '8px' } : {}}>
-        {candidate.salary && (
-          <div className="meta-item">
-            <FiDollarSign size={small ? 10 : 12} />
-            <span>{candidate.salary}</span>
-          </div>
-        )}
-        <div className="meta-item">
-          <FiBriefcase size={small ? 10 : 12} />
-          <span>{candidate.experience}</span>
+      {/* ── Separate Section: Work Experience & Education ── */}
+      <div className="card-edu-exp-block" style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '12px', padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        {/* Work Experience */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
+          <FiBriefcase size={11} color="#f5810c" style={{ flexShrink: 0 }} />
+          <span style={{ fontWeight: 600, color: '#475569' }}>Exp:</span>
+          <span style={{ color: '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {candidate.experience ? `${candidate.experience}${typeof candidate.experience === 'number' || (!isNaN(candidate.experience) && String(candidate.experience).trim() !== '') ? (String(candidate.experience).toLowerCase().includes('yr') || String(candidate.experience).toLowerCase().includes('exp') ? '' : ' Yrs Exp') : ''}` : "N/A"}
+          </span>
         </div>
-        <div className="meta-item">
-          <FiMapPin size={small ? 10 : 12} />
-          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{candidate.location}</span>
+
+        {/* Education */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
+          <FiBookOpen size={11} color="#3b82f6" style={{ flexShrink: 0 }} />
+          <span style={{ fontWeight: 600, color: '#475569' }}>Education:</span>
+          <span style={{ color: '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {candidate.education || candidate.highestQualification || candidate.degree || "Bachelor's Degree"}
+          </span>
         </div>
       </div>
 
       {/* Skills Chips Row */}
       {!small && candidate.skills && (
         <div className="skills-row">
-          {candidate.skills.slice(0, 3).map((skill, si) => {
-            const colors = ["orange", "pink", "purple", "mint", "green"];
-            const colorClass = colors[si % colors.length];
-            return (
-              <span 
-                key={skill} 
-                className={`job-chip ${colorClass}`}
-              >
-                {skill}
-              </span>
-            );
-          })}
+          {candidate.skills.slice(0, 3).map((skill) => (
+            <span 
+              key={skill} 
+              className="job-chip"
+            >
+              {skill}
+            </span>
+          ))}
           {candidate.skills.length > 3 && (
             <span className="job-chip more">
               +{candidate.skills.length - 3}
@@ -153,14 +172,18 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
         </div>
       )}
 
-      {/* Footer / Actions: Uploaded By + Select Button */}
+      {/* Footer / Actions: Uploaded By + View Button + Select Button */}
       <div
         className="card-actions"
         onClick={(e) => e.stopPropagation()}
         style={{
           marginTop: 'auto',
           paddingTop: '12px',
-          borderTop: '1px solid #edf0f5'
+          borderTop: '1px solid #edf0f5',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '8px'
         }}
       >
         {candidate.uploadedByName ? (
@@ -174,39 +197,96 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
           <div />
         )}
 
-        {!candidate.salary && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            onClick={() => onToggle(candidate.id)}
-            className={isSelected ? "btn-v2-primary shortlisted" : "btn-v2-primary"}
-            style={small ? { padding: '6px 12px', fontSize: '10.5px', borderRadius: '8px' } : { padding: '8px 18px', borderRadius: '8px' }}
+            className="job-card-view-btn"
+            onClick={handleProfileClick}
+            style={small ? { padding: '6px 12px', fontSize: '10.5px', borderRadius: '8px' } : { padding: '6px 16px', fontSize: '10.5px', borderRadius: '8px' }}
           >
-            {isSelected ? (
-              <span className="d-flex align-items-center gap-1 justify-content-center">
-                <GiCheckMark size={10} /> Selected
-              </span>
-            ) : (
-              "Select"
-            )}
+            View
           </button>
-        )}
+
+          {!candidate.salary && (
+            <button
+              onClick={() => onToggle(candidate.id)}
+              className={isSelected ? "btn-v2-primary shortlisted" : "btn-v2-primary"}
+              style={small ? { padding: '6px 12px', fontSize: '10.5px', borderRadius: '8px' } : { padding: '8px 18px', borderRadius: '8px' }}
+            >
+              {isSelected ? (
+                <span className="d-flex align-items-center gap-1 justify-content-center">
+                  <GiCheckMark size={10} /> Selected
+                </span>
+              ) : (
+                "Select"
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 });
 
 const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 180) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCardPrimaryAction = (c) => {
+    setSelectedResumeCandidate(c);
+    setIsResumeModalOpen(true);
+  };
+
   return (
-    <div className="projects-grid">
-      {candidates.map((c, index) => (
-        <CandidateCard
-          key={c.id}
-          candidate={c}
-          isSelected={selectedIds.has(c.id)}
-          onToggle={onToggleSelect}
-          index={index}
-        />
-      ))}
-    </div>
+    <>
+      <div className="projects-grid">
+        {candidates.map((c, index) => (
+          <CandidateCard
+            key={c.id}
+            candidate={c}
+            isSelected={selectedIds.has(c.id)}
+            onToggle={onToggleSelect}
+            onPrimaryAction={handleCardPrimaryAction}
+            index={index}
+          />
+        ))}
+      </div>
+
+      {showScrollTop && (
+        <button
+          className="talent-scroll-top-btn"
+          onClick={scrollToTop}
+          title="Scroll to top"
+        >
+          <FiArrowUp size={18} />
+        </button>
+      )}
+
+      <TalentResumeView
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+        candidate={selectedResumeCandidate}
+        onShortlist={(cand) => onToggleSelect(cand.id)}
+        isShortlisted={selectedResumeCandidate ? selectedIds.has(selectedResumeCandidate.id) : false}
+        isUploadTalent={true}
+      />
+    </>
   );
 };
 

@@ -2408,4 +2408,210 @@
     font-style: italic;
     padding: 4px 0;
 }
+
+.upcoming-interview-card {
+    background: #ffffff !important;
+    border-radius: 28px !important;
+    border: 1px solid #e7ebf3 !important;
+    padding: 20px !important;
+    min-height: 255px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: transform, box-shadow;
+}
+
+.upcoming-interview-card.popover-active {
+    z-index: 100 !important;
+}
+
+.upcoming-interview-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+    border-color: #cbd5e1 !important;
+}
+
+.upcoming-interview-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #f5810c 0%, #a855f7 60%, #ec4899 100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    border-bottom-left-radius: 28px;
+    border-bottom-right-radius: 28px;
+}
+
+.upcoming-interview-card:hover::after {
+    opacity: 1;
+}
+
+/* ── Calendar Month Card Badge (Orange Theme) ── */
+.calendar-month-card {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(245, 129, 12, 0.12);
+}
+
+.calendar-month-card .cal-month {
+    width: 100%;
+    background: #f5810c;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 0;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.calendar-month-card .cal-day {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #c2410c;
+    line-height: 1;
+}
+
+/* Plain Status Styling */
+.plain-status-badge-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 7px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.plain-status-badge-btn:hover {
+    background: #f1f5f9;
+}
+
+.plain-status-badge {
+    padding: 6px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.plain-popover {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Time Passed Alert Icon Badge (Top Right Corner) */
+.time-passed-icon-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
+    transition: all 0.2s ease;
+    z-index: 2;
+    animation: alertPulseIcon 2s infinite ease-in-out;
+}
+
+.time-passed-icon-badge:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #dc2626;
+    transform: scale(1.1);
+}
+
+@keyframes alertPulseIcon {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Red Update Status Button for Passed Interviews */
+.btn-update-status-red {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease, transform 0.1s ease !important;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+}
+
+.btn-update-status-red:hover {
+    background: #dc2626 !important;
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3) !important;
+}
+
+/* Standardized View Button matching Posted Jobs */
+.job-card-view-btn {
+    background: transparent !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+    padding: 6px 16px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.job-card-view-btn:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #1e293b !important;
+}
+
+/* Responsive grid breakpoints for 4 cards per row */
+@media (max-width: 1400px) {
+    .jobs-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+@media (max-width: 1024px) {
+    .jobs-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+@media (max-width: 640px) {
+    .jobs-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
 

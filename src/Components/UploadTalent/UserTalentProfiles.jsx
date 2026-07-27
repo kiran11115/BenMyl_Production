@@ -141,6 +141,8 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
           skills: item.skills
             ? item.skills.split(",").map((skill) => skill.trim())
             : [],
+          firstName: item.firstName || "NA",
+          username: item.username || item.userName || item.uploadedByName || "NA",
           location: item.city || "NA",
           availability: item.status ? [item.status] : [],
           uploadedByName: item.uploadedByName,
@@ -207,6 +209,7 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
     const query = searchQuery.toLowerCase();
     return candidatesMock.filter((c) =>
       c.name?.toLowerCase().includes(query) ||
+      c.firstName?.toLowerCase().includes(query) ||
       c.email?.toLowerCase().includes(query) ||
       c.role?.toLowerCase().includes(query) ||
       c.skills?.some((skill) => skill.toLowerCase().includes(query)) ||

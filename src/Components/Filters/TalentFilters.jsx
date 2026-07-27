@@ -1,7 +1,5 @@
-// TalentFilters.jsx
-import { Weight } from "lucide-react";
-import React, { useState, useRef, useEffect } from "react";
-import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus } from "react-icons/fi";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { FiChevronDown, FiStar, FiCheck, FiX, FiPlus, FiSearch } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 
 
@@ -123,11 +121,25 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
   const [isJobDropdownOpen, setIsJobDropdownOpen] = useState(false);
+  const [jobSearchTerm, setJobSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('jobs'); // DEFAULT OPEN
   const jobDropdownRef = useRef(null);
   const debounceTimerRef = useRef(null);
+
+  const filteredJobs = useMemo(() => {
+    if (!jobs || !Array.isArray(jobs)) return [];
+    if (!jobSearchTerm.trim()) return jobs;
+    const term = jobSearchTerm.toLowerCase().trim();
+    return jobs.filter((j) => {
+      const titleMatch = j.title ? j.title.toLowerCase().includes(term) : false;
+      const roleMatch = j.role ? j.role.toLowerCase().includes(term) : false;
+      const jobRoleMatch = j.jobRole ? j.jobRole.toLowerCase().includes(term) : false;
+      const categoryMatch = j.category ? j.category.toLowerCase().includes(term) : false;
+      return titleMatch || roleMatch || jobRoleMatch || categoryMatch;
+    });
+  }, [jobs, jobSearchTerm]);
 
   useEffect(() => {
     return () => {
@@ -363,37 +375,81 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
               </div>
               {isJobDropdownOpen && (
                 <div className="custom-dropdown-menu">
-                  {jobs && jobs.length > 0 ? (
-  jobs.map((job) => (
-    <div
-      key={job.id}
-      className="custom-option"
-      onClick={() => toggleJobSelection(job.id)}
-    >
-      <div
-        className={`custom-checkbox ${
-          filterInputs.selectedJobs.includes(job.id) ? "checked" : ""
-        }`}
-      >
-        {filterInputs.selectedJobs.includes(job.id) && (
-          <FiCheck size={10} color="white" />
-        )}
-      </div>
-      <span className="truncate-text">{job.title}</span>
-    </div>
-  ))
-) : (
-  <div
-    style={{
-      padding: "6px",
-      textAlign: "center",
-      color: "#94a3b8",
-      fontSize: "13px",
-    }}
-  >
-    No data found
-  </div>
-)}
+                  {/* Sticky Search Input for Find for Jobs */}
+                  <div
+                    style={{
+                      padding: "8px 10px",
+                      borderBottom: "1px solid #f1f5f9",
+                      position: "sticky",
+                      top: 0,
+                      background: "#ffffff",
+                      zIndex: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FiSearch size={14} color="#94a3b8" />
+                    <input
+                      type="text"
+                      placeholder="Search jobs & roles..."
+                      value={jobSearchTerm}
+                      onChange={(e) => setJobSearchTerm(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        width: "100%",
+                        border: "none",
+                        outline: "none",
+                        fontSize: "12px",
+                        color: "#0f172a",
+                        background: "transparent",
+                      }}
+                    />
+                    {jobSearchTerm && (
+                      <FiX
+                        size={13}
+                        color="#94a3b8"
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setJobSearchTerm("");
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {filteredJobs && filteredJobs.length > 0 ? (
+                    filteredJobs.map((job) => (
+                      <div
+                        key={job.id}
+                        className="custom-option"
+                        onClick={() => toggleJobSelection(job.id)}
+                      >
+                        <div
+                          className={`custom-checkbox ${
+                            filterInputs.selectedJobs.includes(job.id) ? "checked" : ""
+                          }`}
+                        >
+                          {filterInputs.selectedJobs.includes(job.id) && (
+                            <FiCheck size={10} color="white" />
+                          )}
+                        </div>
+                        <span className="truncate-text">{job.title}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        padding: "10px",
+                        textAlign: "center",
+                        color: "#94a3b8",
+                        fontSize: "12px",
+                      }}
+                    >
+                      No related jobs found
+                    </div>
+                  )}
                 </div>
               )}
             </div>

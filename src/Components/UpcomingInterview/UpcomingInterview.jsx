@@ -12,7 +12,10 @@ import {
     FiEyeOff,
     FiMessageSquare,
     FiSave,
-    FiCheckSquare
+    FiCheckSquare,
+    FiUser,
+    FiChevronDown,
+    FiAlertCircle
 } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./UpcomingInterview.css";
@@ -200,6 +203,68 @@ export default function UpcomingInterview() {
         return upcoming[0];
     }, [interviews]);
 
+    const isInterviewTimePassed = (interview) => {
+        if (!interview || !interview.date) return false;
+        if (interview.status === "completed" || interview.rawStatus?.toLowerCase() === "completed") {
+            return false;
+        }
+
+        const now = new Date();
+        const d = new Date(interview.date);
+        const interviewDate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+
+        if (interview.time) {
+            const timeStr = String(interview.time).trim();
+            const timeMatches = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/gi);
+            if (timeMatches && timeMatches.length > 0) {
+                // If time range is given (e.g. "10:00 AM to 11:30 AM"), use end time
+                const targetTimeStr = timeMatches[timeMatches.length - 1];
+                const singleMatch = targetTimeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+                if (singleMatch) {
+                    let hours = parseInt(singleMatch[1], 10);
+                    const minutes = parseInt(singleMatch[2], 10);
+                    const ampm = singleMatch[3] ? singleMatch[3].toUpperCase() : null;
+
+                    if (ampm === "PM" && hours < 12) hours += 12;
+                    if (ampm === "AM" && hours === 12) hours = 0;
+
+                    interviewDate.setHours(hours, minutes, 0, 0);
+                } else {
+                    interviewDate.setHours(23, 59, 59, 999);
+                }
+            } else {
+                interviewDate.setHours(23, 59, 59, 999);
+            }
+        } else {
+            interviewDate.setHours(23, 59, 59, 999);
+        }
+
+        return now > interviewDate;
+    };
+
+    const allInterviews = useMemo(() => {
+        let list = interviews;
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            list = list.filter(it =>
+                it.name.toLowerCase().includes(query) ||
+                it.role.toLowerCase().includes(query) ||
+                it.vendorName.toLowerCase().includes(query)
+            );
+        }
+
+        if (selectedDate) {
+            return list.filter(it =>
+                it.date.getDate() === selectedDate.getDate() &&
+                it.date.getMonth() === selectedDate.getMonth() &&
+                it.date.getFullYear() === selectedDate.getFullYear()
+            );
+        }
+
+        // Return interviews from every month in All tab
+        return list;
+    }, [interviews, selectedDate, searchQuery]);
+
     const filteredInterviews = useMemo(() => {
         let list = interviews;
 
@@ -216,17 +281,25 @@ export default function UpcomingInterview() {
             );
         }
 
-        // Filter by Calendar Date
-        if (!selectedDate) return list;
-        return list.filter(it =>
-            it.date.getDate() === selectedDate.getDate() &&
-            it.date.getMonth() === selectedDate.getMonth() &&
-            it.date.getFullYear() === selectedDate.getFullYear()
-        );
+        // Filter by Selected Date or Calendar Month (navDate)
+        if (selectedDate) {
+            return list.filter(it =>
+                it.date.getDate() === selectedDate.getDate() &&
+                it.date.getMonth() === selectedDate.getMonth() &&
+                it.date.getFullYear() === selectedDate.getFullYear()
+            );
+        } else if (navDate) {
+            return list.filter(it =>
+                it.date.getMonth() === navDate.getMonth() &&
+                it.date.getFullYear() === navDate.getFullYear()
+            );
+        }
 
-    }, [interviews, selectedDate, searchQuery]);
+        return list;
 
-    // Completed interviews — derives from the same `interviews` array, no API changes
+    }, [interviews, selectedDate, navDate, searchQuery]);
+
+    // Completed interviews — derives from the same `interviews` array across all months
     const completedInterviews = useMemo(() => {
         let list = interviews.filter(it => it.status === "completed");
         if (searchQuery.trim()) {
@@ -237,8 +310,18 @@ export default function UpcomingInterview() {
                 it.vendorName.toLowerCase().includes(query)
             );
         }
+
+        if (selectedDate) {
+            return list.filter(it =>
+                it.date.getDate() === selectedDate.getDate() &&
+                it.date.getMonth() === selectedDate.getMonth() &&
+                it.date.getFullYear() === selectedDate.getFullYear()
+            );
+        }
+
+        // Return all completed interviews across all months
         return list;
-    }, [interviews, searchQuery]);
+    }, [interviews, selectedDate, searchQuery]);
 
     const handleViewDetail = (interview) => {
         const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
@@ -452,14 +535,23 @@ export default function UpcomingInterview() {
                             <h3 className="fg-title m-0">
                                 {selectedDate
                                     ? `Interviews: ${formatDateToDisplay(selectedDate)}`
-                                    : feedTab === "scheduled" ? `Scheduled Feed` : `Completed Interviews`}
+                                    : feedTab === "all" ? `All Interviews` : feedTab === "scheduled" ? `Scheduled Feed` : `Completed Interviews`}
                             </h3>
                             <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 600 }}>
-                                {feedTab === "scheduled" ? filteredInterviews.length : completedInterviews.length} Sessions Found
+                                {(feedTab === 'all' ? allInterviews : feedTab === 'scheduled' ? filteredInterviews : completedInterviews).length} Sessions Found
                             </span>
                         </div>
                         {/* Feed Tab Switcher */}
                         <div className="interview-feed-tabs">
+                            <button
+                                className={`interview-feed-tab ${feedTab === 'all' ? 'active' : ''}`}
+                                onClick={() => setFeedTab('all')}
+                            >
+                                All
+                                {allInterviews.length > 0 && (
+                                    <span className="feed-tab-count">{allInterviews.length}</span>
+                                )}
+                            </button>
                             <button
                                 className={`interview-feed-tab ${feedTab === 'scheduled' ? 'active' : ''}`}
                                 onClick={() => setFeedTab('scheduled')}
@@ -494,188 +586,179 @@ export default function UpcomingInterview() {
                             <div className="error-state p-5 text-center">
                                 <p className="text-danger fw-bold">Unable to fetch interviews</p>
                             </div>
-                        ) : (feedTab === 'scheduled' ? filteredInterviews : completedInterviews).length > 0 ? (
+                        ) : (feedTab === 'all' ? allInterviews : feedTab === 'scheduled' ? filteredInterviews : completedInterviews).length > 0 ? (
                             <div className="jobs-wrapper" style={{ padding: 0 }}>
-                                <div className="jobs-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                                    {(feedTab === 'scheduled' ? filteredInterviews : completedInterviews).map((interview) => (
+                                <div className="jobs-grid" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
+                                    {(feedTab === 'all' ? allInterviews : feedTab === 'scheduled' ? filteredInterviews : completedInterviews).map((interview) => (
                                         <div
                                             key={interview.id}
-                                            className="job-card justify-content-between ui-no-hover"
+                                            className={`job-card justify-content-between ui-no-hover upcoming-interview-card ${activeStatusPopoverId === interview.id ? 'popover-active' : ''}`}
                                         >
+                                            {/* TIME PASSED ALERT ICON BADGE (TOP RIGHT CORNER) */}
+                                            {isInterviewTimePassed(interview) && (
+                                                <div
+                                                    className="time-passed-icon-badge"
+                                                    title="Interview time has passed. Need to update status."
+                                                >
+                                                    <FiAlertCircle size={15} />
+                                                </div>
+                                            )}
+
                                             <div className="d-flex flex-column gap-3">
                                                 {/* TOP */}
                                                 <div className="job-card-header">
                                                     <div className="job-header-left">
-                                                        <div className="job-company-logo" style={{ overflow: 'hidden' }}>
-                                                            {interview.avatar ? (
-                                                                <img src={interview.avatar} alt={interview.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                            ) : (
-                                                                getInitials(interview.name)
-                                                            )}
+                                                        {/* Calendar Month Card Badge */}
+                                                        <div className="calendar-month-card">
+                                                            <span className="cal-month">{interview.date ? interview.date.toLocaleString("en-US", { month: "short" }).toUpperCase() : "MMM"}</span>
+                                                            <span className="cal-day">{interview.date ? String(interview.date.getDate()).padStart(2, '0') : "00"}</span>
                                                         </div>
                                                         <div className="job-header-info">
-                                                            <h3 className="job-title" title={interview.name}>{interview.name}</h3>
-                                                            <p className="company-name">{interview.role}</p>
+                                                            <h3 className="job-title" title={interview.role}>{interview.role}</h3>
+                                                            <p className="company-name" title={interview.name}>
+                                                                <FiUser size={12} style={{ marginRight: '4px', opacity: 0.7 }} />
+                                                                {interview.name}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 {/* TAGS */}
                                                 <div className="job-tags-row">
-                                                    <span className={`job-chip ${interview.status.toLowerCase() === 'completed' ? 'green' : interview.status.toLowerCase() === 'cancelled' ? 'red' : 'purple'}`}>
-                                                        {interview.status}
-                                                    </span>
-                                                    <span className="job-chip mint">
+                                                    <span className="job-chip">
                                                         <FiClock size={12} style={{ marginRight: '4px' }} />
                                                         {interview.time}
                                                     </span>
+                                                    <span className="job-chip">
+                                                        <FiMapPin size={12} style={{ marginRight: '4px' }} />
+                                                        <span title={interview.location}>
+                                                            {interview.location ? interview.location.split(',')[0].trim() : "Remote"}
+                                                        </span>
+                                                    </span>
                                                 </div>
 
-                                                {/* STATUS INPUT — scheduled tab only */}
-                                                {feedTab === 'scheduled' && (
-                                                    <div className="iv-notes-section" onClick={e => e.stopPropagation()}>
-                                                        <div className="iv-notes-row" style={{ position: 'relative' }}>
-                                                            <label className="iv-notes-label">Interview Status</label>
-                                                            <div className="iv-status-popover-wrapper">
-                                                                {interview.rawStatus?.toLowerCase() === 'completed' ? (
-                                                                    <div className="iv-status-badge-btn iv-status-completed" style={{ cursor: 'default', background: '#f0fdf4', color: '#16a34a', borderColor: '#bbf7d0' }}>
-                                                                        <span className="badge-dot completed" style={{ background: '#16a34a' }}></span> Completed
-                                                                    </div>
-                                                                ) : (
-                                                                    <>
-                                                                        <button
-                                                                            type="button"
-                                                                            className={`iv-status-badge-btn iv-status-${(interview.rawStatus || 'Ongoing').toLowerCase()}`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setActiveStatusPopoverId(activeStatusPopoverId === interview.id ? null : interview.id);
-                                                                            }}
-                                                                        >
-                                                                            <span className="badge-dot"></span>
-                                                                            {interview.rawStatus || "Ongoing"}
-                                                                            <span className="chevron-down-arrow" style={{ fontSize: '9px', marginLeft: '6px', opacity: 0.7 }}>▼</span>
-                                                                        </button>
-                                                                        {activeStatusPopoverId === interview.id && (
-                                                                            <div className="iv-status-popover-menu">
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="iv-status-popover-item"
-                                                                                    onClick={() => {
-                                                                                        setActiveStatusPopoverId(null);
-                                                                                        handleUpdateStatus(interview.interviewId, 'Ongoing');
-                                                                                    }}
-                                                                                >
-                                                                                    <span className="badge-dot ongoing"></span> Ongoing
-                                                                                </button>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="iv-status-popover-item"
-                                                                                    onClick={() => {
-                                                                                        setActiveStatusPopoverId(null);
-                                                                                        setConfirmModal({ isOpen: true, interviewId: interview.id, interviewIdVal: interview.interviewId, newStatus: 'Completed' });
-                                                                                    }}
-                                                                                >
-                                                                                    <span className="badge-dot completed"></span> Completed
-                                                                                </button>
-                                                                            </div>
-                                                                        )}
-                                                                    </>
-                                                                )}
-                                                            </div>
+                                                {/* INTERVIEW STATUS DROPDOWN USING JOB CHIP */}
+                                                <div className="iv-notes-section" onClick={e => e.stopPropagation()}>
+                                                    <div className="iv-notes-row" style={{ position: 'relative' }}>
+                                                        <label className="iv-notes-label">Status</label>
+                                                        <div className="iv-status-popover-wrapper">
+                                                            {interview.rawStatus?.toLowerCase() === 'completed' || interview.status === 'completed' ? (
+                                                                <div className="job-chip green" style={{ cursor: 'default', height: '22px', padding: '0 10px' }}>
+                                                                    Completed
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={`job-chip ${(interview.rawStatus || 'Ongoing').toLowerCase() === 'completed' ? 'green' : 'purple'}`}
+                                                                        style={{ border: 'none', cursor: 'pointer', padding: '0 10px', height: '22px' }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setActiveStatusPopoverId(activeStatusPopoverId === interview.id ? null : interview.id);
+                                                                        }}
+                                                                    >
+                                                                        <span>{interview.rawStatus || "Ongoing"}</span>
+                                                                        <FiChevronDown size={11} style={{ marginLeft: '4px' }} />
+                                                                    </button>
+                                                                    {activeStatusPopoverId === interview.id && (
+                                                                        <div className="iv-status-popover-menu plain-popover">
+                                                                            <button
+                                                                                type="button"
+                                                                                className="iv-status-popover-item"
+                                                                                onClick={() => {
+                                                                                    setActiveStatusPopoverId(null);
+                                                                                    handleUpdateStatus(interview.interviewId, 'Ongoing');
+                                                                                }}
+                                                                            >
+                                                                                Ongoing
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="iv-status-popover-item"
+                                                                                onClick={() => {
+                                                                                    setActiveStatusPopoverId(null);
+                                                                                    setConfirmModal({ isOpen: true, interviewId: interview.id, interviewIdVal: interview.interviewId, newStatus: 'Completed' });
+                                                                                }}
+                                                                            >
+                                                                                Completed
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                )}
-
-                                                {/* COMPLETED TAB — show status read-only */}
-                                                {/* {feedTab === 'completed' && (
-                                                    <div className="iv-notes-section iv-notes-readonly" onClick={e => e.stopPropagation()}>
-                                                        {interviewNotes[interview.id]?.interviewStatus ? (
-                                                            <div className="iv-readonly-row" style={{ marginBottom: 0 }}>
-                                                                <span className="iv-readonly-label">Status</span>
-                                                                <span className={`iv-status-badge iv-status-${(interviewNotes[interview.id].interviewStatus || '').toLowerCase().replace(/\s+/g, '-')}`}>
-                                                                    <FiCheckSquare size={11} style={{marginRight:4}}/>
-                                                                    {interviewNotes[interview.id].interviewStatus}
-                                                                </span>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="iv-no-notes">
-                                                                <FiCheckSquare size={13} />
-                                                                <span>Status: Completed</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )} */}
+                                                </div>
                                             </div>
 
                                             <div>
-                                                {/* FOOTER */}
-                                                <div className="job-card-footer">
-                                                    <div className="job-rate" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
-                                                        <FiCalendar size={14} />
-                                                        {interview.dateLabel}
-                                                    </div>
-
-                                                    <div className="meta-pill">
-                                                        <FiMapPin size={12} />
-                                                        <span title={interview.location} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>
-                                                            {interview.location ? interview.location.split(',')[0].trim() : "Remote"}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
                                                 {/* ACTIONS */}
-                                                {feedTab === 'scheduled' && (
+                                                {interview.status !== 'completed' && (
                                                     <div className="job-desc-block" style={{ marginTop: '12px' }}>
                                                         <div className="d-flex gap-3" style={{ width: '100%' }}>
-                                                            <button
-                                                                type="button"
-                                                                className="btn-v2-primary"
-                                                                style={{ flex: 1, padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
+                                                            {isInterviewTimePassed(interview) ? (
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn-update-status-red"
+                                                                    style={{ flex: 1 }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setConfirmModal({ isOpen: true, interviewId: interview.id, interviewIdVal: interview.interviewId, newStatus: 'Completed' });
+                                                                    }}
+                                                                >
+                                                                    Update Status
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn-v2-primary"
+                                                                    style={{ flex: 1, padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
 
-                                                                    if (
-                                                                        !interview.meetingLink ||
-                                                                        interview.meetingLink === "null"
-                                                                    ) {
-                                                                        toast.warning(
-                                                                            "Meeting link is not available. Redirecting to Interview Details to share the meeting link."
+                                                                        if (
+                                                                            !interview.meetingLink ||
+                                                                            interview.meetingLink === "null"
+                                                                        ) {
+                                                                            toast.warning(
+                                                                                "Meeting link is not available. Redirecting to Interview Details to share the meeting link."
+                                                                            );
+
+                                                                            handleViewDetail(interview);
+                                                                            return;
+                                                                        }
+
+                                                                        window.open(
+                                                                            interview.meetingLink,
+                                                                            "_blank",
+                                                                            "noopener,noreferrer"
                                                                         );
-
-                                                                        handleViewDetail(interview);
-                                                                        return;
-                                                                    }
-
-                                                                    window.open(
-                                                                        interview.meetingLink,
-                                                                        "_blank",
-                                                                        "noopener,noreferrer"
-                                                                    );
-                                                                }}
-                                                            >
-                                                                Join Session
-                                                            </button>
+                                                                    }}
+                                                                >
+                                                                    Join Session
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 type="button"
-                                                                className="btn-secondary"
-                                                                style={{ flex: 1, padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                                className="job-card-view-btn"
+                                                                style={{ flex: 1 }}
                                                                 onClick={() => handleViewDetail(interview)}
                                                             >
-                                                                View Details
+                                                                View
                                                             </button>
                                                         </div>
                                                     </div>
                                                 )}
 
-                                                {feedTab === 'completed' && (
+                                                {interview.status === 'completed' && (
                                                     <div className="job-desc-block" style={{ marginTop: '12px' }}>
                                                         <button
                                                             type="button"
-                                                            className="btn-secondary"
-                                                            style={{ width: '100%', padding: '8px 16px', fontSize: '13px', borderRadius: '10px' }}
+                                                            className="job-card-view-btn"
+                                                            style={{ width: '100%' }}
                                                             onClick={() => handleViewDetail(interview)}
                                                         >
-                                                            View Details
+                                                            View
                                                         </button>
                                                     </div>
                                                 )}
@@ -731,6 +814,7 @@ export default function UpcomingInterview() {
                                 isInterviewDate={isInterviewDate}
                                 onPrev={handlePrevMonth}
                                 onNext={handleNextMonth}
+                                allowPast={feedTab === 'all' || feedTab === 'completed'}
                             />
                             {selectedDate && (
                                 <button className="btn-clear-date-v2" onClick={() => setSelectedDate(null)}>
@@ -786,6 +870,7 @@ export default function UpcomingInterview() {
                                 isInterviewDate={isInterviewDate}
                                 onPrev={handlePrevMonth}
                                 onNext={handleNextMonth}
+                                allowPast={feedTab === 'all' || feedTab === 'completed'}
                             />
                         </div>
                         <div className="modal-footer-premium">
@@ -864,7 +949,7 @@ export default function UpcomingInterview() {
     );
 }
 
-function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev, onNext }) {
+function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev, onNext, allowPast = false }) {
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
 
@@ -876,6 +961,9 @@ function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev
     const blanks = Array(firstDay).fill(null);
     const days = Array.from({ length: totalDays }, (_, i) => i + 1);
 
+    const isCurrentMonth = year === new Date().getFullYear() && month === new Date().getMonth();
+    const disablePrev = !allowPast && isCurrentMonth;
+
     return (
         <div className="custom-calendar">
             <div className="calendar-header">
@@ -883,8 +971,8 @@ function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev
                 <div className="cal-nav">
                     <button
                         onClick={onPrev}
-                        disabled={year === new Date().getFullYear() && month === new Date().getMonth()}
-                        style={{ opacity: (year === new Date().getFullYear() && month === new Date().getMonth()) ? 0.3 : 1 }}
+                        disabled={disablePrev}
+                        style={{ opacity: disablePrev ? 0.3 : 1 }}
                     >
                         <FiChevronLeft />
                     </button>
@@ -911,7 +999,7 @@ function Calendar({ navDate, selectedDate, onDateSelect, isInterviewDate, onPrev
                             key={d}
                             className={`day ${isSelected ? "selected" : ""} ${hasInterview ? "has-interview" : ""} ${isToday ? "today" : ""} ${isPast ? "past-date" : ""}`}
                             onClick={() => {
-                                if (isPast) return;
+                                if (isPast && !allowPast) return;
                                 const newDate = new Date(year, month, d);
                                 if (selectedDate && selectedDate.toDateString() === newDate.toDateString()) {
                                     onDateSelect(null);

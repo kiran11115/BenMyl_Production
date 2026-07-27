@@ -159,7 +159,7 @@ function ClassicTemplate({ talents, description, link }) {
               <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Name</th>
               <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Technology</th>
               <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Experience</th>
-              <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Location</th>
+              <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>First Name</th>
               <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Visa</th>
               <th style={{ background: "#f1f5f9", color: "#64748b", padding: "10px 16px", borderBottom: "1px solid #e2e8f0", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Relocation</th>
             </tr>
@@ -170,7 +170,7 @@ function ClassicTemplate({ talents, description, link }) {
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", color: "#0f172a", fontWeight: 600, fontSize: 11 }}>{t.name}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", color: "#3b82f6", fontWeight: 600, fontSize: 11 }}>{t.role}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", color: "#475569", fontWeight: 500, fontSize: 11 }}>{t.experience}</td>
-                <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", color: "#475569", fontWeight: 500, fontSize: 11 }}>{t.location}</td>
+                <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", color: "#475569", fontWeight: 500, fontSize: 11 }}>{t.firstName || t.name?.split(" ")[0] || "NA"}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #f1f5f9", fontSize: 11 }}>
                   <span style={{ background: "#eff6ff", color: "#3b82f6", border: "1px solid #bfdbfe", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 700 }}>{t.visa || "H1B"}</span>
                 </td>
@@ -224,7 +224,7 @@ function DarkProTemplate({ talents, description, link }) {
               <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Name</th>
               <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Technology</th>
               <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Experience</th>
-              <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Location</th>
+              <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>First Name</th>
               <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Visa</th>
               <th style={{ background: "#1e293b", color: "#94a3b8", padding: "10px 16px", borderBottom: "1px solid #334155", textAlign: "left", fontWeight: 600, textTransform: "uppercase", fontSize: 9, letterSpacing: "0.05em" }}>Relocation</th>
             </tr>
@@ -235,7 +235,7 @@ function DarkProTemplate({ talents, description, link }) {
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", color: "#f8fafc", fontWeight: 600, fontSize: 11 }}>{t.name}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", color: "#60a5fa", fontWeight: 600, fontSize: 11 }}>{t.role}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", color: "#cbd5e1", fontWeight: 500, fontSize: 11 }}>{t.experience}</td>
-                <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", color: "#cbd5e1", fontWeight: 500, fontSize: 11 }}>{t.location}</td>
+                <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", color: "#cbd5e1", fontWeight: 500, fontSize: 11 }}>{t.firstName || t.name?.split(" ")[0] || "NA"}</td>
                 <td style={{ padding: "10px 16px", borderBottom: "1px solid #1e293b", fontSize: 11 }}>
                   <span style={{ background: "#1e3a8a", color: "#93c5fd", border: "1px solid #1e40af", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 700 }}>{t.visa || "H1B"}</span>
                 </td>

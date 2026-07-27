@@ -1206,6 +1206,7 @@
 }
 
 .talent-avatar-border-circle {
+  position: relative;
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -1221,6 +1222,22 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.avatar-verified-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  z-index: 3;
 }
 
 .talent-card-premium .profile-avatar {
@@ -1239,10 +1256,10 @@
 }
 
 .talent-card-premium .profile-avatar.initials {
-  background: #f1f1ff;
-  color: #5B5BD6;
+  background: #1e293b;
+  color: #ffffff;
   font-weight: 700;
-  border: 1px solid #f1f1ff;
+  border: 1px solid #1e293b;
 }
 
 .talent-card-premium .profile-details {
@@ -1436,4 +1453,357 @@
 
 .no-spinner-input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* =========================================================
+   SCROLL TO TOP FLOATING BUTTON STYLES
+   ========================================================= */
+.talent-scroll-top-btn {
+  position: fixed;
+  bottom: 10%;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+  z-index: 2000;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.talent-scroll-top-btn:hover {
+  background: #5A5DE8;
+  border-color: #5A5DE8;
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(101, 12, 245, 0.4);
+}
+
+body.trv-modal-open .talent-scroll-top-btn {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   TEXT CAPITALIZATION FOR CANDIDATE CARDS & JOB ROLES
+   ========================================================= */
+.role,
+.tt-role,
+.trv-candidate-role,
+.trv-header-title,
+.trv-item-title,
+.company-loc-text,
+.card-edu-exp-block,
+.uploaded-by-text,
+.candidate-role {
+  text-transform: capitalize !important;
+}
+
+/* =========================================================
+   SHORTLIST COUNT BADGE STYLES
+   ========================================================= */
+.shortlist-count-badge {
+  background: #5a5de8;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(90, 93, 232, 0.35);
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: 18px;
+  height: 18px;
+}
+
+.routine-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Green Rounded Badge */
+.green-badge,
+.trv-badge.green-badge,
+.job-header .badge.green-badge {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #a7f3d0 !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+}
+
+/* =========================================================
+   SHORTLIST REMOVE ALL CONFIRMATION ALERT MODAL STYLES
+   ========================================================= */
+.shortlist-confirm-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+}
+
+.shortlist-confirm-modal {
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  width: 330px !important;
+  max-width: 90vw !important;
+  padding: 24px !important;
+  text-align: center !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22) !important;
+  border: 1px solid #e2e8f0 !important;
+  animation: scmModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes scmModalPop {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.scm-icon-wrap {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto 14px !important;
+}
+
+.scm-title {
+  margin: 0 0 8px !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+
+.scm-desc {
+  margin: 0 0 20px !important;
+  font-size: 12.5px !important;
+  color: #64748b !important;
+  line-height: 1.45 !important;
+}
+
+.scm-actions {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.scm-btn {
+  flex: 1 !important;
+  padding: 9px 14px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.scm-btn.cancel {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.scm-btn.cancel:hover {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+.scm-btn.confirm-danger {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35) !important;
+}
+
+.scm-btn.confirm-danger:hover {
+  background: #dc2626 !important;
+}
+
+/* =========================================================
+   LOADER SPINNER COLOR RULES (WHITE IN BUTTONS, BANNER THEME IN SCREEN, NO ORANGE)
+   ========================================================= */
+button .spin-icon,
+button svg.spin-icon,
+.btn-v2-primary .spin-icon,
+.btn-primary .spin-icon,
+.routine-btn .spin-icon,
+.remove-btn .spin-icon,
+.job-card-view-btn .spin-icon {
+  color: #ffffff !important;
+}
+
+.jobs-loader-ring::before {
+  border-top-color: #5a5de8 !important;
+  border-bottom-color: #3b82f6 !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.jobs-loader-icon,
+.jobs-loader-icon svg {
+  color: #5a5de8 !important;
+}
+
+/* =========================================================
+   ELEGANT SHORTLIST PROMPT ALERT MODAL STYLES
+   ========================================================= */
+.elegant-prompt-modal {
+  position: relative !important;
+  width: 400px !important;
+  max-width: 92vw !important;
+  background: #ffffff !important;
+  border-radius: 24px !important;
+  padding: 30px 26px 26px !important;
+  text-align: center !important;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8) !important;
+  overflow: hidden !important;
+  animation: elegantModalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes elegantModalPop {
+  0% { transform: scale(0.9) translateY(10px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.epm-header-glow {
+  position: absolute !important;
+  top: -60px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 200px !important;
+  height: 120px !important;
+  background: radial-gradient(ellipse at center, rgba(90, 93, 232, 0.18) 0%, rgba(255, 255, 255, 0) 70%) !important;
+  pointer-events: none !important;
+}
+
+.epm-icon-badge {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%) !important;
+  border: 1px solid #c7d2fe !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto 12px !important;
+  box-shadow: 0 8px 16px -4px rgba(90, 93, 232, 0.18) !important;
+}
+
+.epm-icon {
+  color: #4f46e5 !important;
+}
+
+.epm-tag {
+  display: inline-block !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: #4f46e5 !important;
+  background: #f5f3ff !important;
+  padding: 3px 10px !important;
+  border-radius: 9999px !important;
+  margin-bottom: 10px !important;
+  border: 1px solid #ddd6fe !important;
+}
+
+.epm-title {
+  margin: 0 0 10px !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  letter-spacing: -0.01em !important;
+  text-transform: capitalize !important;
+}
+
+.epm-desc {
+  margin: 0 0 24px !important;
+  font-size: 13px !important;
+  color: #64748b !important;
+  line-height: 1.55 !important;
+}
+
+.epm-desc strong {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+.epm-actions {
+  display: flex !important;
+  gap: 12px !important;
+}
+
+.epm-btn {
+  flex: 1 !important;
+  padding: 11px 16px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.epm-btn.cancel {
+  background: #f8fafc !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.epm-btn.cancel:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+.epm-btn.confirm {
+  background: linear-gradient(135deg, #5a5de8 0%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(90, 93, 232, 0.35) !important;
+}
+
+.epm-btn.confirm:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(90, 93, 232, 0.45) !important;
+}
+
+/* Talent Pool Results Container Scroll */
+.talent-pool-results-container {
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 32px;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { FiMapPin, FiBriefcase, FiUser, FiEye, FiAward, FiStar, FiActivity, FiCpu, FiCode, FiLoader } from "react-icons/fi";
+import { FiMapPin, FiBriefcase, FiUser, FiEye, FiAward, FiStar, FiActivity, FiCpu, FiCode, FiLoader, FiBookOpen } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import NoData from "../UploadTalent/NoData";
 import "./TalentPool.css";
@@ -21,7 +21,7 @@ const TalentGridView = ({
   const getInitials = (name = "") =>
     name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0].toUpperCase()).join("");
 
-  const visibleCandidates = candidates.filter((c) => c.isshortlisted === false);
+  const visibleCandidates = candidates;
 
   return (
     <div>
@@ -54,8 +54,6 @@ const TalentGridView = ({
 
           /* Rating — use existing or derive */
           const rating = candidate.rating ?? (3.5 + ((idx * 3) % 15) / 10);
-          const fullStars  = Math.floor(rating);
-          const halfStar   = rating - fullStars >= 0.5;
 
           const pct = matchScore || 75;
           let gradientStart = "#60a5fa", gradientMid = "#3b82f6", gradientEnd = "#2563eb";
@@ -65,12 +63,12 @@ const TalentGridView = ({
             gradientStart = "#34d399"; gradientMid = "#10b981"; gradientEnd = "#059669";
           }
 
+          const hasRealCompany = candidate.company && candidate.company.toLowerCase() !== "benmyl";
+
           return (
             <div
               key={candidate.id}
               className="project-card talent-card-premium"
-              onClick={() => onProfileClick(candidate)}
-              style={{ cursor: "pointer" }}
             >
               {(() => {
                 const icons = [FiUser, FiBriefcase, FiAward, FiStar, FiActivity, FiCpu, FiCode];
@@ -79,39 +77,18 @@ const TalentGridView = ({
                 const iconColor = colors[idx % colors.length];
                 return <IconComponent className="card-bg-icon" style={{ color: iconColor }} />;
               })()}
-              {/* ── Card header: status + match score + eye icon ── */}
+              {/* ── Card header: status ── */}
               <div className="card-header-row">
-                <span className={`job-chip ${s.chipClass}`}>
+                <span className="job-chip mint">
                   {s.label}
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {activeJobId && (
-                    <div className="job-chip green">
-                      {matchScore}% Match
-                    </div>
-                  )}
-                  <div
-                    className="eye-icon-btn"
-                    onClick={(e) => { e.stopPropagation(); onProfileClick(candidate); }}
-                    title="View Profile"
-                  >
-                    <FiEye size={15} />
-                  </div>
-                </div>
               </div>
 
-              {/* ── Profile Section: avatar + name + role ── */}
+              {/* ── Profile Section: avatar + role + rating + company + location ── */}
               <div className="profile-section">
                 <div 
                   className="talent-avatar-border-circle"
-                  style={activeJobId ? { 
-                    "--percent": pct,
-                    "--gradient-start": gradientStart,
-                    "--gradient-mid": gradientMid,
-                    "--gradient-end": gradientEnd
-                  } : {
-                    background: "transparent"
-                  }}
+                  style={{ background: "transparent" }}
                 >
                   {candidate.avatar ? (
                     <img
@@ -120,46 +97,85 @@ const TalentGridView = ({
                       className="profile-avatar"
                     />
                   ) : (
-                    <div className="profile-avatar initials">
+                    <div
+                      className="profile-avatar initials"
+                      style={{
+                        backgroundColor: "#1e293b",
+                        color: "#ffffff",
+                        border: "1px solid #1e293b",
+                      }}
+                    >
                       {initials}
                     </div>
                   )}
+                  <div className="avatar-verified-badge" title="Verified Candidate">
+                    <GiCheckMark size={8} color="#ffffff" />
+                  </div>
                 </div>
 
                 <div className="profile-details">
-                  <h4 className="name">{candidate.name}</h4>
-                  <p className="role">{candidate.role}</p>
+                  {/* Role Name on Top with Rating beside it */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                    <h4 className="role" style={{ margin: 0, fontSize: '13.5px', fontWeight: '700', color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                      {candidate.role}
+                    </h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                      <FiStar size={11} fill="#f59e0b" color="#f59e0b" />
+                      <span className="star-rating-value" style={{ fontSize: '11px', fontWeight: '700', color: '#475569' }}>
+                        {rating.toFixed(1)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Company Name & Location beside each other */}
+                  <p className="company-loc-text" style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748b', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {hasRealCompany && (
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {candidate.company}
+                      </span>
+                    )}
+                    {hasRealCompany && candidate.location && <span>•</span>}
+                    {candidate.location && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
+                        <FiMapPin size={11} color="#94a3b8" />
+                        {candidate.location}
+                      </span>
+                    )}
+                  </p>
                 </div>
               </div>
 
-              {/* ── Meta Info Grid: Location + Exp ── */}
-              <div className="meta-grid">
-                <div className="meta-item" title="Location">
-                  <FiMapPin size={12} />
-                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {candidate.location}
+              {/* ── Separate Section: Work Experience & Education ── */}
+              <div className="card-edu-exp-block" style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '12px', padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                {/* Work Experience */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
+                  <FiBriefcase size={11} color="#f5810c" style={{ flexShrink: 0 }} />
+                  <span style={{ fontWeight: 600, color: '#475569' }}>Exp:</span>
+                  <span style={{ color: '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {candidate.experience ? `${candidate.experience}${typeof candidate.experience === 'number' || (!isNaN(candidate.experience) && String(candidate.experience).trim() !== '') ? (String(candidate.experience).toLowerCase().includes('yr') || String(candidate.experience).toLowerCase().includes('exp') ? '' : ' Yrs Exp') : ''}` : "N/A"}
                   </span>
                 </div>
-                <div className="meta-item" title="Experience">
-                  <FiBriefcase size={12} />
-                  <span>{candidate.experience}</span>
+
+                {/* Education */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px' }}>
+                  <FiBookOpen size={11} color="#3b82f6" style={{ flexShrink: 0 }} />
+                  <span style={{ fontWeight: 600, color: '#475569' }}>Education:</span>
+                  <span style={{ color: '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {candidate.education || candidate.highestQualification || candidate.degree || "Bachelor's Degree"}
+                  </span>
                 </div>
               </div>
 
               {/* ── Skills Chips Row ── */}
               <div className="skills-row">
-                {candidate.skills.slice(0, 3).map((skill, si) => {
-                  const colors = ["orange", "pink", "purple", "mint", "green"];
-                  const colorClass = colors[si % colors.length];
-                  return (
-                    <span 
-                      key={skill} 
-                      className={`job-chip ${colorClass}`}
-                    >
-                      {skill}
-                    </span>
-                  );
-                })}
+                {candidate.skills.slice(0, 3).map((skill) => (
+                  <span 
+                    key={skill} 
+                    className="job-chip"
+                  >
+                    {skill}
+                  </span>
+                ))}
                 {candidate.skills.length > 3 && (
                   <span className="job-chip more">
                     +{candidate.skills.length - 3}
@@ -167,35 +183,16 @@ const TalentGridView = ({
                 )}
               </div>
 
-              {/* ── Footer / Card Actions: Rating + Shortlist Button ── */}
-              <div className="card-actions" onClick={(e) => e.stopPropagation()}>
-                {/* Star rating */}
-                <div className="star-rating-row">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg key={star} width="11" height="11" viewBox="0 0 24 24" fill="none">
-                      <polygon
-                        points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                        fill={
-                          star <= fullStars
-                            ? "#f59e0b"
-                            : star === fullStars + 1 && halfStar
-                              ? "url(#half)"
-                              : "#e2e8f0"
-                        }
-                        stroke="none"
-                      />
-                      {star === fullStars + 1 && halfStar && (
-                        <defs>
-                          <linearGradient id="half">
-                            <stop offset="50%" stopColor="#f59e0b" />
-                            <stop offset="50%" stopColor="#e2e8f0" />
-                          </linearGradient>
-                        </defs>
-                      )}
-                    </svg>
-                  ))}
-                  <span className="star-rating-value">{rating.toFixed(1)}</span>
-                </div>
+              {/* ── Footer / Card Actions: View Button + Shortlist Button ── */}
+              <div className="card-actions" style={{ justifyContent: 'flex-end', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
+                {/* View button beside Shortlist button */}
+                <button
+                  className="job-card-view-btn"
+                  onClick={(e) => { e.stopPropagation(); onProfileClick(candidate); }}
+                  style={{ fontSize: 10.5, padding: "7px 16px", borderRadius: "8px" }}
+                >
+                  View
+                </button>
 
                 {/* Shortlist button */}
                 <button

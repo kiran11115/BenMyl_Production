@@ -2,10 +2,12 @@ import React, { memo, useState, useMemo } from "react";
 import {
   FiBriefcase,
   FiMapPin,
+  FiUser,
   FiChevronUp,
   FiChevronDown,
   FiEye,
 } from "react-icons/fi";
+import { GiCheckMark } from "react-icons/gi";
 import { FaSort } from "react-icons/fa";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
 import NoData from "./NoData"; // adjust path if needed
@@ -34,16 +36,27 @@ const SortIcon = ({ active, direction }) => {
 };
 
 /* ---------------- TABLE ROW ---------------- */
-const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
+const CandidateRow = memo(({ candidate, isSelected, onToggle, index = 0 }) => {
   const navigate = useNavigate();
   const handleProfileClick = () => {
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
     navigate(`${basePath}/talent-profile`, {
       state: {
         employeeId: candidate.id,
+        candidate: candidate,
       },
     });
   };
+
+  const colors = ["#f5810c", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899", "#f59e0b", "#06b6d4"];
+  const avatarBgColor = colors[index % colors.length];
+
+  const experienceText = candidate.experience 
+    ? `${candidate.experience}${typeof candidate.experience === 'number' || (!isNaN(candidate.experience) && String(candidate.experience).trim() !== '') ? (String(candidate.experience).toLowerCase().includes('yr') || String(candidate.experience).toLowerCase().includes('exp') ? '' : ' Yrs Exp') : ''}` 
+    : "N/A";
+
+  const educationText = candidate.education || candidate.highestQualification || candidate.degree || candidate.educationDetail || "Bachelor's Degree";
+
   return (
     <tr className="tt-row">
       {/* Checkbox */}
@@ -56,27 +69,71 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
         />
       </td>
 
-      {/* Candidate */}
+      {/* Role Profile Avatar & Role Details */}
       <td className="tt-td">
-        <div className="tt-candidate-flex">
-          {/* Initial Avatar */}
-          <div className="profile-avatar initials">
-            {getInitials(candidate.name)}
+        <div className="tt-candidate-flex" style={{ alignItems: "center" }}>
+          <div 
+            className="talent-avatar-border-circle"
+            style={{ 
+              "--percent": candidate.profileCompletionPercentage || 75,
+              "--gradient-start": (candidate.profileCompletionPercentage || 75) < 40 ? "#fb923c" : (candidate.profileCompletionPercentage || 75) > 80 ? "#34d399" : "#60a5fa",
+              "--gradient-mid": (candidate.profileCompletionPercentage || 75) < 40 ? "#f97316" : (candidate.profileCompletionPercentage || 75) > 80 ? "#10b981" : "#3b82f6",
+              "--gradient-end": (candidate.profileCompletionPercentage || 75) < 40 ? "#ea580c" : (candidate.profileCompletionPercentage || 75) > 80 ? "#059669" : "#2563eb",
+              flexShrink: 0
+            }}
+          >
+            {candidate.avatar ? (
+              <img
+                src={candidate.avatar}
+                alt={candidate.role || "Talent"}
+                className="profile-avatar"
+                style={{ width: '38px', height: '38px' }}
+              />
+            ) : (
+              <div
+                className="profile-avatar initials"
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  fontSize: '11px',
+                  backgroundColor: "#1e293b",
+                  color: "#ffffff",
+                  border: "1px solid #1e293b"
+                }}
+              >
+                {getInitials(candidate.name)}
+              </div>
+            )}
+            <div className="avatar-verified-badge" title="Verified Candidate">
+              <GiCheckMark size={8} color="#ffffff" />
+            </div>
           </div>
 
           <div className="tt-info-col">
-            <span className="tt-name">{candidate.name}</span>
-            <span className="tt-email">{candidate.email}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="tt-name">{candidate.role || candidate.title || "Talent Role"}</span>
+              {candidate.rating !== undefined && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                  <span style={{ fontSize: '11px', color: '#f59e0b' }}>★</span>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#475569' }}>
+                    {(candidate.rating || 4.5).toFixed(1)}
+                  </span>
+                </div>
+              )}
+            </div>
+            {candidate.email && <span className="tt-email">{candidate.email}</span>}
           </div>
         </div>
       </td>
 
-      {/* Role & Experience */}
+      {/* Experience & Education */}
       <td className="tt-td">
         <div className="tt-role-flex">
-          <span className="tt-role">{candidate.role}</span>
           <span className="tt-exp">
-            <FiBriefcase size={12} /> {candidate.experience}
+            <FiBriefcase size={12} color="#f5810c" /> {experienceText}
+          </span>
+          <span className="tt-exp" style={{ color: "#64748b" }}>
+            Edu: {educationText}
           </span>
         </div>
       </td>
@@ -84,40 +141,71 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle }) => {
       {/* Skills */}
       <td className="tt-td">
         <div className="tt-skills-flex">
-          {candidate.skills.slice(0, 2).map((skill) => (
-            <span key={skill} className="job-chip green">
-              {skill}
-            </span>
-          ))}
-          {candidate.skills.length > 2 && (
-            <span className="tt-skill-more">
-              +{candidate.skills.length - 2}
+          {candidate.skills && candidate.skills.length > 0 ? (
+            <>
+              {candidate.skills.slice(0, 3).map((skill) => (
+                <span key={skill} className="job-chip">
+                  {skill}
+                </span>
+              ))}
+              {candidate.skills.length > 3 && (
+                <span className="job-chip more">
+                  +{candidate.skills.length - 3}
+                </span>
+              )}
+            </>
+          ) : (
+            <span style={{ color: '#94a3b8', fontSize: '12px' }}>N/A</span>
+          )}
+        </div>
+      </td>
+
+      {/* First Name / Company */}
+      <td className="tt-td">
+        <div className="tt-location" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <FiUser size={13} color="#9ca3af" />
+            <span>{candidate.firstName || candidate.name?.split(" ")[0] || "NA"}</span>
+          </div>
+          {candidate.company && candidate.company.toLowerCase() !== "benmyl" && (
+            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>
+              {candidate.company}
             </span>
           )}
         </div>
       </td>
 
-      {/* Location */}
-      <td className="tt-td">
-        <div className="tt-location">
-          <FiMapPin size={14} color="#9ca3af" /> {candidate.location}
-        </div>
-      </td>
-
-      {/* Availability */}
+      {/* Availability / Status */}
       <td className="tt-td">
         <div className="tt-role-flex">
-          {candidate.availability.map((avail) => (
-            <TalentAvailabilityBadge key={avail} text={avail} />
-          ))}
+          {candidate.availability && candidate.availability.length > 0 ? (
+            candidate.availability.map((avail) => (
+              <TalentAvailabilityBadge key={avail} text={avail} />
+            ))
+          ) : (
+            <span className="job-chip mint">
+              {candidate.status || (candidate.verified ? 'Verified' : 'Pending')}
+            </span>
+          )}
         </div>
       </td>
 
       {/* Action */}
       <td className="tt-td action">
-        <button className="tt-action-btn" onClick={handleProfileClick}>
-          <FiEye size={16} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <button className="job-card-view-btn" onClick={handleProfileClick} style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px' }}>
+            View
+          </button>
+          {!candidate.salary && (
+            <button
+              onClick={() => onToggle(candidate.id)}
+              className={isSelected ? "btn-v2-primary shortlisted" : "btn-v2-primary"}
+              style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '6px' }}
+            >
+              {isSelected ? "Selected" : "Select"}
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -178,12 +266,13 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
     <div className="tt-wrapper">
       {/* Mobile View */}
       <div className="mobile-talent-list d-md-none">
-        {sortedCandidates.map((c) => (
+        {sortedCandidates.map((c, index) => (
           <UserMobileTalentCard
             key={c.id}
             candidate={c}
             isSelected={selectedIds.has(c.id)}
             onToggle={onToggleSelect}
+            index={index}
           />
         ))}
       </div>
@@ -195,21 +284,21 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
             <tr className="tt-thead-tr">
               <th className="tt-th" style={{ width: "40px" }}></th>
 
-              <th className="tt-th sortable" onClick={() => requestSort("name")}>
+              <th className="tt-th sortable" onClick={() => requestSort("role")}>
                 <div className="tt-th-content">
-                  Candidate
+                  Role
                   <SortIcon
-                    active={sortConfig.key === "name"}
+                    active={sortConfig.key === "role"}
                     direction={sortConfig.direction}
                   />
                 </div>
               </th>
 
-              <th className="tt-th sortable" onClick={() => requestSort("role")}>
+              <th className="tt-th sortable" onClick={() => requestSort("experience")}>
                 <div className="tt-th-content">
-                  Role & Experience
+                  Experience & Education
                   <SortIcon
-                    active={sortConfig.key === "role"}
+                    active={sortConfig.key === "experience"}
                     direction={sortConfig.direction}
                   />
                 </div>
@@ -225,11 +314,11 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
                 </div>
               </th>
 
-              <th className="tt-th sortable" onClick={() => requestSort("location")}>
+              <th className="tt-th sortable" onClick={() => requestSort("firstName")}>
                 <div className="tt-th-content">
-                  Location
+                  First Name
                   <SortIcon
-                    active={sortConfig.key === "location"}
+                    active={sortConfig.key === "firstName"}
                     direction={sortConfig.direction}
                   />
                 </div>
@@ -271,12 +360,13 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
                 </td>
               </tr>
             ) : (
-              sortedCandidates.map((c) => (
+              sortedCandidates.map((c, index) => (
                 <CandidateRow
                   key={c.id}
                   candidate={c}
                   isSelected={selectedIds.has(c.id)}
                   onToggle={onToggleSelect}
+                  index={index}
                 />
               ))
             )}
