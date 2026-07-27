@@ -13,6 +13,8 @@ import {
   useRequestExtensionMutation,
   useGetExtensionRequestsQuery,
   useApproveExtensionMutation,
+  useSaveRatingAndReviewMutation,
+  useGetRatingAndReviewQuery,
 } from '../../State-Management/Api/ContractApiSlice';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
 import { FiChevronDown, FiFileText, FiPlus, FiSearch } from "react-icons/fi";
@@ -281,21 +283,50 @@ const MilestoneDetail = ({
   simulateCompleted,
   onToggleSimulation
 }) => {
-  const [rating, setRating] = useState(review?.rating || 5);
-  const [comment, setComment] = useState(review?.comment || '');
+  const contractIdForQuery = contract?.contractID || contract?.id;
+  const { data: ratingApiResponse, isLoading: isLoadingRating } = useGetRatingAndReviewQuery(contractIdForQuery, {
+    skip: !contractIdForQuery,
+  });
+
+  const fetchedReviewObj = useMemo(() => {
+    const rawData = ratingApiResponse?.data || ratingApiResponse;
+    let item = null;
+    if (Array.isArray(rawData) && rawData.length > 0) {
+      item = rawData[0];
+    } else if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && (rawData.overallRating !== undefined || rawData.ratingReviewID !== undefined)) {
+      item = rawData;
+    }
+
+    if (item && (item.overallRating !== undefined || item.reviewComments !== undefined)) {
+      return {
+        rating: Number(item.overallRating) || 0,
+        comment: item.reviewComments || '',
+        submitted: true,
+        reviewerRole: item.reviewerRole,
+        reviewDate: item.reviewDate,
+        ratingReviewID: item.ratingReviewID,
+      };
+    }
+    return null;
+  }, [ratingApiResponse]);
+
+  const effectiveReview = review?.submitted ? review : (fetchedReviewObj || review);
+
+  const [rating, setRating] = useState(effectiveReview?.rating || 5);
+  const [comment, setComment] = useState(effectiveReview?.comment || '');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedExtDate, setSelectedExtDate] = useState('');
   const [selectedExtReason, setSelectedExtReason] = useState('');
   const [confirmModal, setConfirmModal] = useState(null);
 
-  // Reset local state when selected contract changes
+  // Reset local state when selected contract or effective review changes
   useEffect(() => {
-    setRating(review?.rating || 5);
-    setComment(comment => review?.comment || '');
+    setRating(effectiveReview?.rating !== undefined ? effectiveReview.rating : 5);
+    setComment(effectiveReview?.comment !== undefined ? effectiveReview.comment : '');
     setShowDatePicker(false);
     setSelectedExtDate('');
     setSelectedExtReason('');
-  }, [contract.id, review]);
+  }, [contract?.id, effectiveReview?.rating, effectiveReview?.comment, effectiveReview?.submitted]);
 
   const StarRating = () => {
     const starsArray = [1, 2, 3, 4, 5];
@@ -312,7 +343,7 @@ const MilestoneDetail = ({
                 position: 'relative', 
                 display: 'inline-block', 
                 fontSize: '24px', 
-                cursor: review?.submitted ? 'default' : 'pointer',
+                cursor: effectiveReview?.submitted ? 'default' : 'pointer',
                 userSelect: 'none'
               }}
             >
@@ -336,7 +367,7 @@ const MilestoneDetail = ({
               )}
               
               {/* Left and Right half invisible click areas (if not submitted) */}
-              {!review?.submitted && (
+              {!effectiveReview?.submitted && (
                 <>
                   <div 
                     style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', zIndex: 2 }} 
@@ -455,23 +486,36 @@ const MilestoneDetail = ({
       <div className="detail-divider"></div>
 
       {/* Rate Contract Section */}
-      {progress === 100 && (
+      {(progress === 100 || effectiveReview?.submitted || isClosed) && (
         <div className="detail-section review-section-wrap">
           <h4 className="section-title">Talent Evaluation & Feedback</h4>
           {(() => {
+            const currentUserId = localStorage.getItem('CompanyId');
             const role = localStorage.getItem('Role') || 'Benchsales';
             const isBenchsales = role === 'Benchsales';
+            const isCreator = (contract?.createdBy && currentUserId)
+              ? String(contract.createdBy) === String(currentUserId)
+              : !isBenchsales;
 
-            if (!isBenchsales) {
+            if (isLoadingRating) {
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '13px', padding: '12px 0' }}>
+                  <div className="contract-spinner" style={{ width: 16, height: 16 }} />
+                  <span>Loading rating & evaluation feedback...</span>
+                </div>
+              );
+            }
+
+            if (isCreator) {
               // Contract Creator (Hiring Manager / Client)
-              if (review?.submitted || isClosed) {
+              if (effectiveReview?.submitted || isClosed) {
                 return (
                   <div className="review-submitted-card">
                     <div className="submitted-header">
                       <span className="badge-check">✓ Rated & Closed</span>
-                      {renderStars(review?.rating || rating)}
+                      {renderStars(effectiveReview?.rating || rating)}
                     </div>
-                    <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
+                    <p className="submitted-comments">"{effectiveReview?.comment || comment || 'Completed successfully.'}"</p>
                     <div className="contract-closed-notification alert alert-success mt-2">
                       <strong>Closed:</strong> You have closed this contract and submitted evaluation feedback.
                     </div>
@@ -503,15 +547,15 @@ const MilestoneDetail = ({
                 );
               }
             } else {
-              // Talent Provider (Benchsales)
-              if (review?.submitted || isClosed) {
+              // Talent Provider / Benchsales (Read-Only)
+              if (effectiveReview?.submitted || isClosed) {
                 return (
                   <div className="review-submitted-card">
                     <div className="submitted-header">
                       <span className="badge-check">✓ Received Client Rating</span>
-                      {renderStars(review?.rating || rating)}
+                      {renderStars(effectiveReview?.rating || rating)}
                     </div>
-                    <p className="submitted-comments">"{review?.comment || 'Completed successfully.'}"</p>
+                    <p className="submitted-comments">"{effectiveReview?.comment || comment || 'Completed successfully.'}"</p>
                     <div className="contract-closed-notification alert alert-success mt-2" style={{ background: '#eff6ff', color: '#1e3a8a', borderColor: '#bfdbfe' }}>
                       <strong>Evaluation Feedback Received:</strong> The client has rated and successfully closed this contract.
                     </div>
@@ -1351,7 +1395,7 @@ const CalendarView = ({
               sunday={sunday}
               formatToExactDate={formatToExactDate}
               review={reviewMap[selectedContract.id]}
-              onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment)}
+              onReviewSubmit={(rating, comment) => submitReview(selectedContract.id, rating, comment, selectedContract)}
               extension={extensionMap[selectedContract.id]}
               onExtensionSubmit={(newDate, reason, requestedBy) => submitExtension(selectedContract.id, newDate, reason, requestedBy)}
               onExtensionAccept={() => acceptExtension(selectedContract.id)}
@@ -1381,6 +1425,7 @@ const ContractForm = () => {
   const [showMetrics, setShowMetrics] = useState(true);
   const [requestExtension, { isLoadingextension }] =
   useRequestExtensionMutation();
+  const [saveRatingAndReview] = useSaveRatingAndReviewMutation();
 
   const sparklineData1 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
   const sparklineData2 = useMemo(() => createSparklineData('#f97316', 'rgba(249, 115, 22, 0.15)', 'rgba(249, 115, 22, 0)', [15, 18, 20, 22, 25, 28]), []);
@@ -1470,12 +1515,35 @@ const ContractForm = () => {
     setProgressMap(next);
   };
 
-  const submitReview = (id, rating, comment) => {
-    const nextReview = { ...reviewMap, [id]: { rating, comment, submitted: true } };
-    setReviewMap(nextReview);
+  const submitReview = async (id, rating, comment, contract) => {
+    try {
+      const role = localStorage.getItem('Role') || 'Benchsales';
+      const reviewedBy = Number(localStorage.getItem('CompanyId')) || 0;
 
-    const nextStatus = { ...statusOverrideMap, [id]: 'Closed' };
-    setStatusOverrideMap(nextStatus);
+      const payload = {
+        ratingReviewID: 0,
+        contractID: Number(contract?.contractID || id) || 0,
+        jobID: Number(contract?.jobID) || 0,
+        candidateID: Number(contract?.candidateID) || 0,
+        overallRating: rating,
+        reviewComments: comment,
+        reviewedBy: reviewedBy,
+        reviewerRole: role,
+        reviewDate: new Date().toISOString(),
+      };
+
+      const response = await saveRatingAndReview(payload).unwrap();
+      toast.success(response?.message || 'Rating & review submitted successfully!');
+
+      const nextReview = { ...reviewMap, [id]: { rating, comment, submitted: true } };
+      setReviewMap(nextReview);
+
+      const nextStatus = { ...statusOverrideMap, [id]: 'Closed' };
+      setStatusOverrideMap(nextStatus);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.message || 'Failed to submit rating & review.');
+    }
   };
 
   const submitExtension = async (contractId, newDate, reason) => {

@@ -149,6 +149,9 @@ export const mapApiContractToUI = (item) => {
   if (!item) return null;
   return {
     id: String(item.contractID || ''),
+    contractID: item.contractID || 0,
+    jobID: item.jobID || 0,
+    candidateID: item.candidateID || 0,
     contractTitle: item.contractTitle || 'Unnamed Contract',
     jobTitle: item.jobTitle || '-',
     candidateName: item.candidateName || '-',

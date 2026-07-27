@@ -64,6 +64,21 @@ approveExtension: builder.mutation({
   }),
   invalidatesTags: ["Contracts"],
 }),
+saveRatingAndReview: builder.mutation({
+  query: (data) => ({
+    url: "/api/uatcompany/ratingandreviewSave",
+    method: "POST",
+    body: data,
+  }),
+  invalidatesTags: ["Contracts"],
+}),
+getRatingAndReview: builder.query({
+  query: (contractId) => ({
+    url: `/api/uatcompany/Getratingandreview/${contractId}`,
+    method: "GET",
+  }),
+  providesTags: (result, error, contractId) => [{ type: "Contracts", id: contractId }],
+}),
     }),
 });
 
@@ -77,4 +92,8 @@ export const {
     useRequestExtensionMutation,
     useGetExtensionRequestsQuery,
     useApproveExtensionMutation,
+    useSaveRatingAndReviewMutation,
+    useGetRatingAndReviewQuery,
+    useLazyGetRatingAndReviewQuery,
 } = ContractApiSlice;
+
