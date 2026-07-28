@@ -2102,8 +2102,14 @@
    ===================================================== */
 .posted-jobs-grid {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 24px !important;
+}
+
+@media (min-width: 2560px) {
+  .posted-jobs-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
 
 .job-card-footer .job-rate {

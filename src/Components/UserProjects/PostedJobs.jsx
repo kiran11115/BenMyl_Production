@@ -190,7 +190,7 @@ const JobCardItem = ({ job, navigate }) => {
             </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
             {pendingBidsCount > 0 && (
               <div
                 className="job-chip orange"

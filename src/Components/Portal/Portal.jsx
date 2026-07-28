@@ -10,7 +10,8 @@ import {
   Zap, 
   BellRing, 
   CreditCard,
-  ArrowRight
+  ArrowRight,
+  Activity
 } from 'lucide-react';
 import './Portal.css';
 
@@ -22,6 +23,7 @@ const Portal = () => {
     { name: 'Role Configuration', path: '/Admin/role-configuration', icon: Shield, description: 'Manage user permissions and access levels' },
     { name: 'Notification', path: '/Admin/notification-policy', icon: BellRing, description: 'Set up alerts and messaging templates' },
     { name: 'Billing', path: '/Admin/admin-subscription', icon: CreditCard, description: 'Manage subscriptions and invoicing' },
+    { name: 'Analytics', path: '/Admin/admin-analytics', icon: Activity, description: 'View performance and usage metrics' },
     { name: 'Coming with more features', path: '#', icon: Zap, description: 'Stay tuned for new administrative capabilities' },
   ];
 

@@ -13,19 +13,42 @@ export default function Analytics() {
   return (
     <div className="admin-profile-container">
       {/* PAGE HEADER */}
-      <div className="edit-header-box mb-4">
-        <div className="edit-title-group">
-          <h1>Analytics Dashboard</h1>
-          <p>Real-time insights into your hiring pipeline and team performance</p>
-        </div>
-        <div className="d-flex gap-3 align-items-center">
-          <div className="d-flex align-items-center gap-2 bg-white px-3 py-2 rounded-3 border" style={{ cursor: "pointer" }}>
-            <FiCalendar className="text-primary" />
-            <span className="small fw-semibold">{timeframe}</span>
+      <div className="hero-section-wrapper mb-4">
+        <div className="hero-card ">
+          <div className="hero-concentric-lines"></div>
+          <div className="hero-ripple-pattern"></div>
+          <div className="hero-circular-highlights"></div>
+          <div className="hero-left">
+            <div className="hero-pill">
+              ✦ Intelligence
+            </div>
+            <h1 className="job-posting-title text-white">Analytics Dashboard</h1>
+            <div className="job-posting-header-info">
+              <p className="job-posting-subtitle">
+                Real-time insights into your hiring pipeline and team performance
+              </p>
+            </div>
           </div>
-          <button className="action-btn-premium action-btn-secondary d-flex align-items-center gap-2 py-2 px-3">
-            <FiDownload /> Export Reports
-          </button>
+          <div className="hero-card-actions-wrapper">
+             <div className="d-flex align-items-center gap-2 bg-white px-3 py-2 rounded-3 border me-3" style={{ cursor: "pointer", color: "black" }}>
+               <FiCalendar className="text-primary" />
+               <span className="small fw-semibold">{timeframe}</span>
+             </div>
+             <button className="action-btn-premium action-btn-secondary d-flex align-items-center gap-2 py-2 px-3 bg-white border">
+               <FiDownload /> Export
+             </button>
+          </div>
+          <div className="hero-illustration">
+            <div className="hero-particles">
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+              <div className="particle"></div>
+            </div>
+            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
+          </div>
         </div>
       </div>
 
@@ -37,8 +60,7 @@ export default function Analytics() {
       {/* CHARTS GRID */}
       <div className="row g-4 mb-4">
         <div className="col-lg-8">
-          <div className="card-premium h-100 non-functional">
-            <div className="coming-soon-badge">Coming Soon</div>
+          <div className="card-premium h-100">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 className="card-title-premium m-0"><FiTrendingUp /> Hiring Pipeline Trend</h3>
               <div className="d-flex gap-2">
@@ -52,8 +74,7 @@ export default function Analytics() {
           </div>
         </div>
         <div className="col-lg-4">
-          <div className="card-premium h-100 non-functional">
-            <div className="coming-soon-badge">Coming Soon</div>
+          <div className="card-premium h-100">
             <h3 className="card-title-premium mb-4"><FiUsers /> Source Distribution</h3>
             <div className="analytics-chart-box-analytics" style={{ height: "320px" }}>
               <BudgetPieChart />
@@ -78,8 +99,7 @@ export default function Analytics() {
         </div>
 
         <div className="col-12">
-          <div className="card-premium non-functional">
-            <div className="coming-soon-badge">Coming Soon</div>
+          <div className="card-premium">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3 className="card-title-premium m-0"><FiDollarSign /> Monthly Spend by Department</h3>
               <div className="d-flex gap-2">
@@ -94,8 +114,7 @@ export default function Analytics() {
       </div>
 
       {/* DETAILED TABLE */}
-      <section className="card-premium non-functional">
-        <div className="coming-soon-badge">Coming Soon</div>
+      <section className="card-premium">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h3 className="card-title-premium m-0">Department Performance Metrics</h3>
           <div className="text-muted small">Updated 2 hours ago</div>
