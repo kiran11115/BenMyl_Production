@@ -465,14 +465,7 @@ const BenchSalesDashboard = () => {
             <p className="copilot-text">
               I found <strong>{matchedJobsCount} matched vacancies</strong><br /> for your bench candidates.
             </p>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <button
-                className="copilot-action-btn"
-                onClick={() => toastify.info("This feature is currently under development.")}
-              >
-                Review Matches
-              </button>
-            </div>
+
           </div>
 
           <div className="copilot-bot-illustration">

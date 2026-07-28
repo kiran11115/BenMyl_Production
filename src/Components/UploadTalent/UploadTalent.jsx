@@ -246,14 +246,7 @@ const UploadTalent = () => {
                             <p className="copilot-text">
                                 I found <strong>{totalTalentCount} Total Talent Profiles</strong><br /> available in your network.
                             </p>
-                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                                <button
-                                    className="copilot-action-btn"
-                                    onClick={() => toast.info("This feature is currently under development.")}
-                                >
-                                    Optimize Resource
-                                </button>
-                            </div>
+
                         </div>
 
                         <div className="copilot-bot-illustration">

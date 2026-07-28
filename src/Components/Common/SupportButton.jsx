@@ -157,8 +157,9 @@ const faqOptions = faqData.map((item) => ({
     const OVERLAY_SELECTORS = [
       ".sid-overlay",
       ".drawer-overlay",
-      ".custom-modal-overlay",
-      ".routine-modal-overlay",
+      ".modal-overlay",
+      "[class*='-modal-overlay']",
+      ".modal"
     ];
 
     const checkOverlays = () => {

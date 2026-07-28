@@ -519,25 +519,6 @@ const ContractCreate = () => {
     fetchShortlisted();
   }, [formik.values.jobTitle, companyId,getNotificationsByJobId]);
 
-  // Load Autosave values on Mount
-  useEffect(() => {
-    const saved = localStorage.getItem('benmyl_wizard_draft');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        formik.setValues({ ...formik.initialValues, ...parsed });
-      } catch (e) {
-        console.warn("Could not restore draft values:", e);
-      }
-    }
-  }, []);
-
-  // Autosave triggers on Formik changes
-  useEffect(() => {
-    if (formik.dirty) {
-      localStorage.setItem('benmyl_wizard_draft', JSON.stringify(formik.values));
-    }
-  }, [formik.values]);
 
   // Signature Canvas Drawing Engine
   useEffect(() => {
@@ -791,7 +772,6 @@ const ContractCreate = () => {
       };
 
       addContract(newContract);
-      localStorage.removeItem('benmyl_wizard_draft'); // Clean autosave draft
       setStep(6); // Success confirmation step
       toast.success("Contract created and shared successfully!");
     } catch (err) {
@@ -857,10 +837,6 @@ const ContractCreate = () => {
       </div>
 
       <div className="cw-shell">
-        <div className="cw-autosave">
-          <span className="cw-autosave-dot"></span>
-          <span>Draft Autosaved</span>
-        </div>
 
         {step <= 5 ? (
           <div className="cw-checklist-container">
@@ -2066,9 +2042,6 @@ const ContractCreate = () => {
             </div>
             <div className="exit-confirm-modal-body">
               <p>Are you sure you want to go back? The contract draft is currently saved, and you can resume execution later.</p>
-              <div className="exit-confirm-note">
-                <strong>Autosave note:</strong> Your current progress has been saved as a draft.
-              </div>
             </div>
             <div className="exit-confirm-modal-footer">
               <button 
