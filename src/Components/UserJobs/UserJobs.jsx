@@ -165,23 +165,30 @@ const UserJobs = () => {
 
   const [getTalentJobs, { isLoading }] = useGetFindJobsMutation();
 
-  // filters (unchanged)
-  const [filters, setFilters] = useState({
-    keyword: "",
-    locationType: "Any Type",
-
-    roles: roleFromProfile ? [roleFromProfile] : [],
-    skills: [],
-    availability: [],
-
-    location: "",
-
-    minExperience: "",
-    maxExperience: "",
-
-    minSalary: "",
-    maxSalary: "",
+  const [filters, setFilters] = useState(() => {
+    const saved = sessionStorage.getItem("userJobsFilters");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return {
+      keyword: "",
+      locationType: "Any Type",
+      roles: roleFromProfile ? [roleFromProfile] : [],
+      skills: [],
+      availability: [],
+      location: "",
+      minExperience: "",
+      maxExperience: "",
+      minSalary: "",
+      maxSalary: "",
+    };
   });
+
+  useEffect(() => {
+    sessionStorage.setItem("userJobsFilters", JSON.stringify(filters));
+  }, [filters]);
 
 
   // =========================
@@ -518,17 +525,6 @@ const UserJobs = () => {
   return (
     <div className="user-jobs-page-wrapper">
       <div className="user-jobs-main-content">
-        {/* LEFT FILTER */}
-        <aside className="vs-filters-sidebar">
-          <JobFilters
-            initialFilters={filters}
-            onApplyFilters={(appliedFilters) => {
-              setAllJobs([]);
-              setPageNumber(1);
-              setFilters(appliedFilters);
-            }}
-          />
-        </aside>
 
         <FilterBottomSheet
           isOpen={isMobileFilterOpen}
@@ -548,7 +544,19 @@ const UserJobs = () => {
 
         {/* RIGHT */}
         <div className="user-jobs-right-section">
-          {/* TOP */}
+          {/* TOP STICKY FILTERS */}
+          <div style={{ position: "sticky", top: "70px", zIndex: 20, margin: '-18px -18px 16px -18px' }}>
+            <JobFilters
+              initialFilters={filters}
+              onApplyFilters={(appliedFilters) => {
+                setAllJobs([]);
+                setPageNumber(1);
+                setFilters(appliedFilters);
+              }}
+            />
+          </div>
+
+          {/* TOP HERO */}
           <div className="hero-section-wrapper mb-4">
         <div className="hero-card ">
           <div className="hero-concentric-lines"></div>

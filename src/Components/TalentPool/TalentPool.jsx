@@ -26,6 +26,7 @@ import TalentTableView from "./TalentTable";
 import "./TalentPool.css";
 import "../UserJobs/Jobs.css";
 import TalentFilters from "../Filters/TalentFilters";
+import HorizontalTalentFilters from "../Filters/HorizontalTalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
 import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -848,7 +849,22 @@ const TalentPool = () => {
   const [isInitialised, setIsInitialised] = useState(false);
   const [allSelectedJobDetails, setAllSelectedJobDetails] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [appliedFilters, setAppliedFilters] = useState(() => {
+    const saved = sessionStorage.getItem("talentPoolFilters");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (appliedFilters !== null) {
+      sessionStorage.setItem("talentPoolFilters", JSON.stringify(appliedFilters));
+    }
+  }, [appliedFilters]);
+
   const [showCreateJobModal, setShowCreateJobModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loadingShortlistId, setLoadingShortlistId] = useState(null);
@@ -1173,17 +1189,17 @@ const TalentPool = () => {
     const el = resultsRef.current;
 
     const handleScroll = () => {
-      const currentScroll = el ? el.scrollTop : window.scrollY;
+      const currentScroll = window.scrollY || document.documentElement.scrollTop;
+      
       if (currentScroll > 180) {
         setShowScrollTop(true);
       } else {
         setShowScrollTop(false);
       }
 
+      // Pagination check based on window scroll
       if (
-        el &&
-        el.scrollHeight > el.clientHeight &&
-        el.scrollTop + el.clientHeight >= el.scrollHeight - 50 &&
+        window.innerHeight + currentScroll >= document.documentElement.scrollHeight - 100 &&
         hasMore &&
         !isFetchingMore
       ) {
@@ -1271,38 +1287,50 @@ const TalentPool = () => {
     setLoadingShortlistId(candidate.id);
     setTimeout(() => {
       setLoadingShortlistId(null);
-      const matchingJob = jobs.find((job) => {
-        const jobTitle = job.title?.toLowerCase().trim();
-        const candRole = candidate.role?.toLowerCase().trim();
-        if (!jobTitle || !candRole) return false;
-        if (jobTitle === candRole) return true;
-        const subRoles = candRole.split(/[\/,|&]|\band\b/).map((r) => r.trim());
-        if (subRoles.includes(jobTitle)) return true;
-        return candRole.includes(jobTitle) || jobTitle.includes(candRole);
-      });
+      let targetJob = activeJobId ? jobs.find((j) => j.id === activeJobId) : null;
+      
+      if (!targetJob) {
+        targetJob = jobs.find((job) => {
+          const jobTitle = job.title?.toLowerCase().trim();
+          const candRole = candidate.role?.toLowerCase().trim();
+          if (!jobTitle || !candRole) return false;
+          if (jobTitle === candRole) return true;
+          const subRoles = candRole.split(/[\/,|&]|\band\b/).map((r) => r.trim());
+          if (subRoles.includes(jobTitle)) return true;
+          return candRole.includes(jobTitle) || jobTitle.includes(candRole);
+        });
+      }
 
-      if (!matchingJob) {
+      if (!targetJob) {
         setSelectedCandidate(candidate);
         setShowCreateJobModal(true);
         return;
       }
 
-      // Check if candidate is already shortlisted for matchingJob
-      const currentList = shortlistedMap[matchingJob.id] || [];
+      // Check if candidate is already shortlisted for targetJob
+      const currentList = shortlistedMap[targetJob.id] || [];
       const isAlreadyShortlisted = currentList.some((c) => c.id === candidate.id);
 
       if (isAlreadyShortlisted) {
         setShortlistedMap((prev) => ({
           ...prev,
-          [matchingJob.id]: currentList.filter((c) => c.id !== candidate.id),
+          [targetJob.id]: currentList.filter((c) => c.id !== candidate.id),
         }));
-        toast.info(`Removed candidate from ${matchingJob.title}`);
+        toast.info(`Removed candidate from ${targetJob.title}`);
         return;
       }
 
-      // Raise alert modal: "this job exists in your posted jobs.. would you like to add this role for that job"
-      setShortlistPromptData({ candidate, matchingJob });
-      setShowShortlistPromptModal(true);
+      if (activeJobId && targetJob.id === activeJobId) {
+        setShortlistedMap((prev) => ({
+          ...prev,
+          [targetJob.id]: [...currentList, candidate]
+        }));
+        toast.success(`Candidate shortlisted for ${targetJob.title}`);
+      } else {
+        // Raise alert modal: "this job exists in your posted jobs.. would you like to add this role for that job"
+        setShortlistPromptData({ candidate, matchingJob: targetJob });
+        setShowShortlistPromptModal(true);
+      }
     }, 350);
   };
 
@@ -1516,12 +1544,7 @@ const TalentPool = () => {
           alignItems: "flex-start",
         }}
       >
-        {/* LEFT FILTER */}
-
-        <aside
-        >
-          <TalentFilters onApplyFilters={handleApplyFilter} skillsList={allSkills} jobs={jobs} selectedJobId={selectedJobId} appliedFilters={appliedFilters} />
-        </aside>
+        {/* LEFT FILTER (Removed) */}
         <FilterBottomSheet
           isOpen={isMobileFilterOpen}
           onClose={() => setIsMobileFilterOpen(false)}
@@ -1541,8 +1564,125 @@ const TalentPool = () => {
         {/* RIGHT */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
-          {/* Sticky header */}
-          <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
+          {/* Main content wrapper */}
+          <div style={{ zIndex: 10 }}>
+
+            {/* Sticky Filters */}
+            <div style={{ position: "sticky", top: "70px", zIndex: 20, margin: '-18px -18px 16px -18px' }}>
+              <HorizontalTalentFilters 
+                onApplyFilters={handleApplyFilter} 
+                skillsList={allSkills} 
+                jobs={jobs} 
+                selectedJobId={selectedJobId} 
+                appliedFilters={appliedFilters} 
+              >
+                {/* ACTIONS & VIEW TOGGLE */}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <button
+                    className="routine-btn"
+                    style={{ height: '36px', padding: '0 12px' }}
+                    onClick={() => {
+                      if (!activeJobId) {
+                        toast.error("Please select a job to view its overview.");
+                        return;
+                      }
+                      setIsJobDetailsDrawerOpen(true);
+                    }}
+                  >
+                    <FiBriefcase size={14} />
+                    <span>View Job Details</span>
+                  </button>
+
+                  <button
+                    className="routine-btn"
+                    style={{ height: '36px', padding: '0 12px' }}
+                    onClick={() => {
+                      if (!activeJobId) {
+                        toast.error("Please select a job and talent to view its shortlist.");
+                        return;
+                      }
+                      const currentShortlist = shortlistedMap?.[activeJobId] || [];
+                      if (!currentShortlist.length) {
+                        toast.error("Please select shortlist to view.");
+                        return;
+                      }
+                      setIsDrawerOpen(true);
+                    }}
+                  >
+                    <FiBriefcase size={14} />
+                    <span>View Shortlisted</span>
+                    {activeJobId && shortlistedMap?.[activeJobId]?.length > 0 && (
+                      <span className="shortlist-count-badge">
+                        {shortlistedMap[activeJobId].length}
+                      </span>
+                    )}
+                  </button>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    background: "#f1f5f9",
+                    borderRadius: "12px",
+                    padding: "4px",
+                    gap: "4px",
+                    height: "36px",
+                    boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
+                    border: "1px solid #e2e8f0"
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      if (viewMode === "grid") return;
+                      setIsToggling(true);
+                      setViewMode("grid");
+                      setTimeout(() => setIsToggling(false), 500);
+                    }}
+                    style={{
+                      width: "32px",
+                      height: "28px",
+                      border: "none",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      background: viewMode === "grid" ? "#ffffff" : "transparent",
+                      color: viewMode === "grid" ? "#3b82f6" : "#64748b",
+                      boxShadow: viewMode === "grid" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    <FiGrid size={14} />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (viewMode === "table") return;
+                      setIsToggling(true);
+                      setViewMode("table");
+                      setTimeout(() => setIsToggling(false), 500);
+                    }}
+                    style={{
+                      width: "32px",
+                      height: "28px",
+                      border: "none",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      background: viewMode === "table" ? "#ffffff" : "transparent",
+                      color: viewMode === "table" ? "#3b82f6" : "#64748b",
+                      boxShadow: viewMode === "table" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    <FiList size={14} />
+                  </button>
+                </div>
+                </div>
+              </HorizontalTalentFilters>
+            </div>
 
             <div className="hero-section-wrapper mb-4">
         <div className="hero-card ">
@@ -1577,109 +1717,10 @@ const TalentPool = () => {
                       <FiFilter /> Filters
                     </button>
 
-                    <button
-                      className="routine-btn"
-                      onClick={() => {
-                        if (!activeJobId) {
-                          toast.error("Please select a job to view its overview.");
-                          return;
-                        }
-                        setIsJobDetailsDrawerOpen(true);
-                      }}
-                    >
-                      <FiBriefcase />
-                      <span>View Job Details</span>
-                    </button>
 
-                    <button
-                      className="routine-btn"
-                      onClick={() => {
-                        if (!activeJobId) {
-                          toast.error("Please select a job and talent to view its shortlist.");
-                          return;
-                        }
-                        const currentShortlist = shortlistedMap?.[activeJobId] || [];
-                        if (!currentShortlist.length) {
-                          toast.error("Please select shortlist to view.");
-                          return;
-                        }
-                        setIsDrawerOpen(true);
-                      }}
-                    >
-                      <FiBriefcase />
-                      <span>View Shortlisted</span>
-                      {activeJobId && shortlistedMap?.[activeJobId]?.length > 0 && (
-                        <span className="shortlist-count-badge">
-                          {shortlistedMap[activeJobId].length}
-                        </span>
-                      )}
-                    </button>
 
                     <div className="vs-results-right">
-                      {/* VIEW TOGGLE */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          background: "#f1f5f9",
-                          borderRadius: "12px",
-                          padding: "4px",
-                          gap: "4px",
-                          height: "40px",
-                          boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
-                          border: "1px solid #e2e8f0"
-                        }}
-                      >
-                        <button
-                          onClick={() => {
-                            if (viewMode === "grid") return;
-                            setIsToggling(true);
-                            setViewMode("grid");
-                            setTimeout(() => setIsToggling(false), 500);
-                          }}
-                          style={{
-                            width: "36px",
-                            height: "32px",
-                            border: "none",
-                            borderRadius: "8px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            background: viewMode === "grid" ? "#ffffff" : "transparent",
-                            color: viewMode === "grid" ? "#3b82f6" : "#64748b",
-                            boxShadow: viewMode === "grid" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
-                            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                          }}
-                        >
-                          <FiGrid size={16} />
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            if (viewMode === "table") return;
-                            setIsToggling(true);
-                            setViewMode("table");
-                            setTimeout(() => setIsToggling(false), 500);
-                          }}
-                          style={{
-                            width: "36px",
-                            height: "32px",
-                            border: "none",
-                            borderRadius: "8px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            background: viewMode === "table" ? "#ffffff" : "transparent",
-                            color: viewMode === "table" ? "#3b82f6" : "#64748b",
-                            boxShadow: viewMode === "table" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
-                            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                          }}
-                        >
-                          <FiList size={16} />
-                        </button>
-                      </div>
+                      {/* VIEW TOGGLE MOVED TO FILTERS */}
                     </div>
                   </div>
                 </div>
@@ -2064,8 +2105,7 @@ const TalentPool = () => {
           pointer-events: none;
         }
         .talent-pool-results-container {
-          height: calc(100vh - 140px);
-          overflow-y: auto;
+          min-height: calc(100vh - 140px);
           overflow-x: hidden;
           padding-right: 4px;
         }
