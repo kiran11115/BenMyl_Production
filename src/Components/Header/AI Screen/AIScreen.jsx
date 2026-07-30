@@ -1,33 +1,46 @@
-import React, { useState } from 'react';
-import { Sparkles, Search, FileText, CheckCircle, Briefcase, Clock, Zap, Award, BrainCircuit, Activity, ChevronRight, XCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Search, FileText, CheckCircle, Activity, ChevronDown, Mic, Volume2, Send, PieChart, Settings } from 'lucide-react';
+import { CandidateCard } from '../../UploadTalent/UserTalentGrid';
+import '../../UserProjects/Projects.css';
+import '../../TalentPool/TalentPool.css';
 import './AIScreen.css';
 
 const AIScreen = () => {
-  const [activeTab, setActiveTab] = useState('find');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [activeCardId, setActiveCardId] = useState('find');
 
-  // For Smart Match tab
-  const [jobReq, setJobReq] = useState('');
-  const [matchLoading, setMatchLoading] = useState(false);
-  const [showMatch, setShowMatch] = useState(false);
+  const handleCloseIntro = () => {
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setShowIntro(false);
+    }, 500); // Wait for CSS transition to finish
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleCloseIntro();
+    }, 4000); // 4 seconds auto-fade
+    return () => clearTimeout(timer);
+  }, []);
 
   // Mock data for Find Resources
   const foundResources = [
-    { name: 'Rahul Sharma', match: 96, availability: 'Available Now', role: 'Full Stack Developer', exp: '6 Years' },
-    { name: 'Priya Singh', match: 92, availability: 'Available in 5 Days', role: 'Frontend Developer', exp: '5 Years' },
-    { name: 'Amit Kumar', match: 89, availability: 'Available Immediately', role: 'React Developer', exp: '4 Years' },
+    { id: '1', name: 'Rahul Sharma', match: 96, availability: 'Available Now', role: 'Full Stack Developer', exp: '6 Years', skills: ['React', 'Node.js', 'Azure'] },
+    { id: '2', name: 'Priya Singh', match: 92, availability: 'Available in 5 Days', role: 'Frontend Developer', exp: '5 Years', skills: ['React', 'CSS', 'HTML'] },
+    { id: '3', name: 'Amit Kumar', match: 89, availability: 'Available Immediately', role: 'React Developer', exp: '4 Years', skills: ['React', 'Redux', 'TypeScript'] },
   ];
 
-  // Mock data for Smart Match
-  const matchResult = {
-    name: 'Rahul Sharma',
-    score: 96,
-    matchingSkills: ['React', 'TypeScript', 'Redux', 'Azure', 'REST APIs'],
-    missingSkills: ['GraphQL'],
-    recommendation: 'Strong match. Suitable for immediate client submission.',
-  };
+  const cardsData = [
+    { id: 'find', title: 'Find Resources', color: '#e0f2fe', borderColor: '#0369a1', icon: Search, text: 'Locate bench resources using natural language instead of manually applying multiple filters.', placeholder: 'E.g., Find a Senior React Developer with Azure experience, available immediately for a 6-month contract...' },
+    { id: 'summary', title: 'AI Resource Summary', color: '#fef3c7', borderColor: '#b45309', icon: FileText, text: 'Generate intelligent professional summaries highlighting key skills, experience, and availability.', placeholder: 'E.g., Summarize the professional profile of candidates with 5+ years of React experience...' },
+    { id: 'match', title: 'Smart Match', color: '#dcfce7', borderColor: '#15803d', icon: CheckCircle, text: 'Compare job requirements with profiles to generate match scores, missing skills, and rank suitability.', placeholder: 'E.g., Match job requirement #402 with available candidates...' }
+  ];
+
+  const activeCard = cardsData.find(c => c.id === activeCardId) || cardsData[0];
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
@@ -39,246 +52,151 @@ const AIScreen = () => {
     }, 1500);
   };
 
-  const handleMatch = () => {
-    if (!jobReq.trim()) return;
-    setMatchLoading(true);
-    setShowMatch(false);
-    setTimeout(() => {
-      setMatchLoading(false);
-      setShowMatch(true);
-    }, 1500);
-  };
-
   return (
-    <div className="ai-screen-wrapper">
-      <div className="ai-ambient-bg">
-        <div className="ai-blob blob-1"></div>
-        <div className="ai-blob blob-2"></div>
-        <div className="ai-blob blob-3"></div>
-      </div>
-      
-      <div className="ai-screen-content">
-        <header className="ai-screen-header">
-          <div className="ai-header-title">
-            <Sparkles className="ai-sparkles-icon" size={24} />
-            <h1>AI Resource Intelligence</h1>
+    <>
+      {showIntro && (
+        <div className={`ai-intro-screen ${isFadingOut ? 'fade-out' : ''}`}>
+          <div className="ai-intro-left">
+            <div className="ai-intro-blob-container">
+              <div className="ai-intro-blob"></div>
+              <div className="ai-intro-blob-2"></div>
+            </div>
           </div>
-          <p className="ai-header-subtitle">Find, summarize, and match candidates using the power of Artificial Intelligence.</p>
-        </header>
+          <div className="ai-intro-right">
 
-        <div className="ai-tabs-container">
-          <button 
-            className={`ai-tab-btn ${activeTab === 'find' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('find'); setShowResults(false); setSearchQuery(''); }}
-          >
-            <Search size={14} />
-            Find Resources
-          </button>
-          <button 
-            className={`ai-tab-btn ${activeTab === 'summary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('summary')}
-          >
-            <FileText size={14} />
-            AI Resource Summary
-          </button>
-          <button 
-            className={`ai-tab-btn ${activeTab === 'match' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('match'); setShowMatch(false); setJobReq(''); }}
-          >
-            <BrainCircuit size={14} />
-            Smart Match
-          </button>
+            <div className="ai-intro-content">
+              <h1 className="ai-intro-title">Build a <span>talent team</span> that can <span>build anything.</span></h1>
+              <p className="ai-intro-desc">Our intelligent AI analyzes real-world requirements, delivering real-time insights that instantly level up your hiring processes.</p>
+              <button className="ai-intro-cta" onClick={handleCloseIntro}>Start matching free</button>
+            </div>
+          </div>
         </div>
+      )}
 
-        <div className="ai-tab-content-area">
-          {activeTab === 'find' && (
-            <div className="ai-tab-find ai-fade-in">
-              <div className="ai-search-box">
-                <div className="ai-search-input-wrapper">
-                  <Search className="ai-search-icon" size={16} />
-                  <input 
-                    type="text" 
-                    placeholder="E.g., Find a React Developer with 5+ years of experience available immediately."
-                    className="ai-search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <button className="ai-search-btn ai-gradient-btn" onClick={handleSearch} disabled={isSearching || !searchQuery.trim()}>
-                    {isSearching ? <Activity className="ai-spin" size={14} /> : 'Search AI'}
+      <div className="jillo-container">
+        <div className="jillo-main-content">
+          <div className="jillo-center-wrapper">
+            {!showResults && !isSearching ? (
+              <>
+                <div className="jillo-sparkle-logo">
+                  <Sparkles size={24} color="#0f172a" />
+                </div>
+                <h1 className="jillo-greeting">What's on your mind?</h1>
+              </>
+            ) : (
+              showResults && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px', marginTop: '20px', textAlign: 'center' }}>
+                  <div className="jillo-sparkle-logo" style={{ marginBottom: '16px' }}>
+                    <Sparkles size={24} color="#a855f7" />
+                  </div>
+                  <h1 className="jillo-greeting" style={{ marginBottom: '10px' }}>Here are your top matches</h1>
+                  <p style={{ color: '#64748b', fontSize: '15px' }}>Based on your requirements, I've found these resources.</p>
+                </div>
+              )
+            )}
+
+            <div className="jillo-input-box">
+              <div className="jillo-input-header" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sparkles size={14} color={activeCard.borderColor} />
+                  <span style={{ color: activeCard.borderColor, fontWeight: 600 }}>{activeCard.title}</span>
+                </div>
+                {(searchQuery || showResults) && (
+                  <button 
+                    onClick={() => { setSearchQuery(''); setShowResults(false); setIsSearching(false); setActiveCardId('find'); }} 
+                    style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '13px', cursor: 'pointer', fontWeight: 500, textDecoration: 'underline' }}
+                  >
+                    Reset
                   </button>
-                </div>
+                )}
               </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <input 
+                  type="text"
+                  className="jillo-textarea" 
+                  placeholder={activeCard.placeholder}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isSearching && searchQuery.trim()) {
+                      e.preventDefault();
+                      handleSearch();
+                    }
+                  }}
+                  style={{ minHeight: '40px', marginBottom: 0, flex: 1 }}
+                />
+                <button className="jillo-send-btn" onClick={handleSearch} disabled={isSearching || !searchQuery.trim()} style={{ backgroundColor: activeCard.borderColor, flexShrink: 0 }}>
+                  {isSearching ? <Activity className="ai-spin" size={14} color="#fff" /> : <Send size={14} color="#fff" />}
+                </button>
+              </div>
+            </div>
 
-              {isSearching && (
-                <div className="ai-loading-state">
-                  <Activity className="ai-pulse-icon" size={32} />
-                  <p>Analyzing requirements and scanning talent pool...</p>
+            {!showResults && !isSearching && (
+              <>
+                <div className="jillo-tags">
+                  <span className="jillo-tag"><Search size={12} /> Top Rated</span>
+                  <span className="jillo-tag"><Activity size={12} /> Available Now</span>
+                  <span className="jillo-tag"><FileText size={12} /> Contractors</span>
+                  <span className="jillo-tag"><PieChart size={12} /> Full-Time</span>
+                  <span className="jillo-tag"><Settings size={12} /> Filter Options</span>
                 </div>
-              )}
 
-              {showResults && !isSearching && (
-                <div className="ai-results-grid ai-fade-up">
-                  {foundResources.map((res, idx) => (
-                    <div key={idx} className="ai-resource-card" style={{animationDelay: `${idx * 0.1}s`}}>
-                      <div className="ai-res-header">
-                        <div className="ai-res-avatar">{res.name.charAt(0)}</div>
-                        <div className="ai-res-info">
-                          <h3>{res.name}</h3>
-                          <p>{res.role} • {res.exp}</p>
-                        </div>
-                        <div className="ai-res-score">
-                          <span className="score-val">{res.match}%</span>
-                          <span className="score-lbl">Match</span>
-                        </div>
-                      </div>
-                      <div className="ai-res-body">
-                        <div className="ai-res-detail">
-                          <Clock size={14} />
-                          <span>{res.availability}</span>
-                        </div>
-                      </div>
-                      <button className="ai-view-btn">View Profile <ChevronRight size={14} /></button>
+                <div className="jillo-cards">
+                  {cardsData.map((card) => (
+                    <div 
+                      key={card.id} 
+                      className="jillo-card" 
+                      style={{ 
+                        backgroundColor: card.color, 
+                        border: activeCardId === card.id ? `2px solid ${card.borderColor}` : '2px solid transparent',
+                        cursor: 'pointer',
+                        transform: activeCardId === card.id ? 'translateY(-4px)' : 'none',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onClick={() => setActiveCardId(card.id)}
+                    >
+                      <card.icon size={14} color={card.borderColor} />
+                      <h4 style={{ color: card.borderColor }}>{card.title}</h4>
+                      <p>{card.text}</p>
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
+              </>
+            )}
 
-          {activeTab === 'summary' && (
-            <div className="ai-tab-summary ai-fade-in">
-              <div className="ai-summary-card">
-                <div className="ai-summary-header">
-                  <div className="ai-summary-avatar-lg">R</div>
-                  <div className="ai-summary-title">
-                    <h2>Rahul Sharma</h2>
-                    <span className="ai-badge"><CheckCircle size={14} /> AI Verified Profile</span>
-                  </div>
-                </div>
-                
-                <div className="ai-generated-summary">
-                  <div className="ai-gen-header">
-                    <Sparkles size={16} /> <h3>AI Generated Summary</h3>
-                  </div>
-                  <p>
-                    Rahul is a Full Stack Developer with 6 years of experience specializing in React, Node.js, and Azure. He has worked on enterprise web applications, is AWS Certified, and is available for deployment immediately. Suitable for Senior Frontend and Full Stack roles.
-                  </p>
-                </div>
-
-                <div className="ai-highlights-grid">
-                  <div className="ai-highlight-box">
-                    <Briefcase size={18} className="hl-icon" />
-                    <div className="hl-text">
-                      <span className="hl-lbl">Experience</span>
-                      <span className="hl-val">6 Years</span>
-                    </div>
-                  </div>
-                  <div className="ai-highlight-box">
-                    <Zap size={18} className="hl-icon" />
-                    <div className="hl-text">
-                      <span className="hl-lbl">Skills</span>
-                      <span className="hl-val">React, Node.js, Azure</span>
-                    </div>
-                  </div>
-                  <div className="ai-highlight-box">
-                    <Clock size={18} className="hl-icon" />
-                    <div className="hl-text">
-                      <span className="hl-lbl">Availability</span>
-                      <span className="hl-val">Immediate</span>
-                    </div>
-                  </div>
-                  <div className="ai-highlight-box">
-                    <Award size={18} className="hl-icon" />
-                    <div className="hl-text">
-                      <span className="hl-lbl">Certifications</span>
-                      <span className="hl-val">AWS Certified Developer</span>
-                    </div>
-                  </div>
-                </div>
+            {isSearching && (
+              <div className="ai-loading-state" style={{ marginTop: '40px' }}>
+                <Activity className="ai-pulse-icon" size={32} />
+                <p>Analyzing requirements and scanning talent pool...</p>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'match' && (
-            <div className="ai-tab-match ai-fade-in">
-              <div className="ai-search-box">
-                <div className="ai-search-input-wrapper ai-textarea-wrapper">
-                  <BrainCircuit className="ai-search-icon" size={16} style={{marginTop: '10px'}} />
-                  <textarea 
-                    placeholder="Paste Job Description or Requirements here... (e.g., Senior React Developer with React, TypeScript, Redux, Azure, and REST API experience.)"
-                    className="ai-search-input"
-                    value={jobReq}
-                    onChange={(e) => setJobReq(e.target.value)}
-                    rows={3}
+            {showResults && !isSearching && (
+              <div className="projects-grid ai-fade-up" style={{ marginTop: '24px', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+                {foundResources.map((res, idx) => (
+                  <CandidateCard
+                    key={res.id}
+                    candidate={{
+                      id: res.id,
+                      name: res.name,
+                      role: res.role,
+                      experience: res.exp,
+                      rating: 4.8,
+                      skills: res.skills,
+                      profileCompletionPercentage: res.match,
+                      status: res.availability
+                    }}
+                    isSelected={false}
+                    onToggle={() => {}}
+                    index={idx}
                   />
-                  <button className="ai-search-btn ai-gradient-btn" onClick={handleMatch} disabled={matchLoading || !jobReq.trim()}>
-                    {matchLoading ? <Activity className="ai-spin" size={14} /> : 'Analyze Match'}
-                  </button>
-                </div>
+                ))}
               </div>
-
-              {matchLoading && (
-                <div className="ai-loading-state">
-                  <Activity className="ai-pulse-icon" size={32} />
-                  <p>Running deep analysis against candidate profiles...</p>
-                </div>
-              )}
-
-              {showMatch && !matchLoading && (
-                <div className="ai-match-result ai-fade-up">
-                  <div className="ai-match-score-card">
-                    <div className="match-circular-progress">
-                      <svg viewBox="0 0 36 36" className="circular-chart">
-                        <defs>
-                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%" className="gradient-def">
-                            <stop offset="0%" />
-                            <stop offset="50%" />
-                            <stop offset="100%" />
-                          </linearGradient>
-                        </defs>
-                        <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path className="circle" strokeDasharray="96, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <text x="18" y="20.35" className="percentage">96%</text>
-                      </svg>
-                      <div className="match-name">{matchResult.name}</div>
-                    </div>
-                  </div>
-
-                  <div className="ai-match-details">
-                    <div className="ai-skills-section">
-                      <h3><CheckCircle size={14} className="text-success" /> Matching Skills</h3>
-                      <div className="ai-skills-list">
-                        {matchResult.matchingSkills.map(skill => (
-                          <span key={skill} className="ai-skill-pill match-pill">{skill}</span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="ai-skills-section">
-                      <h3><XCircle size={14} className="text-danger" /> Missing Skills</h3>
-                      <div className="ai-skills-list">
-                        {matchResult.missingSkills.map(skill => (
-                          <span key={skill} className="ai-skill-pill miss-pill">{skill}</span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="ai-recommendation-box">
-                      <Sparkles size={18} className="reco-icon" />
-                      <div className="reco-content">
-                        <h4>AI Recommendation</h4>
-                        <p>{matchResult.recommendation}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

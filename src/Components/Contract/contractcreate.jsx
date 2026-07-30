@@ -224,11 +224,7 @@ const ContractCreate = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   const handleBackClick = () => {
-    if (step < 6) {
-      setShowExitConfirm(true);
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   // Generation step index (for Step 4 progress animation)
@@ -2033,36 +2029,7 @@ const ContractCreate = () => {
         </>
       )}
 
-      {showExitConfirm && (
-        <div className="exit-confirm-modal-overlay">
-          <div className="exit-confirm-modal-card">
-            <div className="exit-confirm-modal-header">
-              <AlertCircle size={24} className="exit-confirm-icon" />
-              <h3>Exit Contract Wizard?</h3>
-            </div>
-            <div className="exit-confirm-modal-body">
-              <p>Are you sure you want to go back? The contract draft is currently saved, and you can resume execution later.</p>
-            </div>
-            <div className="exit-confirm-modal-footer">
-              <button 
-                className="exit-confirm-btn-cancel" 
-                onClick={() => setShowExitConfirm(false)}
-              >
-                Keep Editing
-              </button>
-              <button 
-                className="exit-confirm-btn-confirm" 
-                onClick={() => {
-                  setShowExitConfirm(false);
-                  navigate(-1);
-                }}
-              >
-                Exit Wizard
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

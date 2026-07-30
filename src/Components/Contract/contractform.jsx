@@ -574,6 +574,7 @@ const MilestoneDetail = ({
       )}
 
       {/* Milestone Extension Request Section */}
+      {!(effectiveReview?.submitted || isClosed) && (
       <div className="detail-section extension-section-wrap">
         <h4 className="section-title">Milestone Extension Request</h4>
         {(() => {
@@ -750,6 +751,7 @@ const MilestoneDetail = ({
           }
         })()}
       </div>
+      )}
       {confirmModal && (
         <ConfirmModal
           title={confirmModal.title}
@@ -914,12 +916,14 @@ const renderStars = (ratingValue) => {
 };
 
 const getFunctionalStatus = (contract, statusOverride, isSimulated, progressValue) => {
+  if (statusOverride === 'Completed' || contract.status === 'Completed') {
+    return 'Completed';
+  }
   if (statusOverride === 'Closed' || contract.status === 'Closed') {
     return 'Closed';
   }
   if (progressValue === 100 || isSimulated) {
-    const bothSigned = !!contract.benchSalesSignature && !!contract.hiringManagerSignature;
-    return bothSigned ? 'Agreed' : 'Completed';
+    return 'Completed';
   }
   return statusOverride || contract.status;
 };
@@ -1538,7 +1542,7 @@ const ContractForm = () => {
       const nextReview = { ...reviewMap, [id]: { rating, comment, submitted: true } };
       setReviewMap(nextReview);
 
-      const nextStatus = { ...statusOverrideMap, [id]: 'Closed' };
+      const nextStatus = { ...statusOverrideMap, [id]: 'Completed' };
       setStatusOverrideMap(nextStatus);
     } catch (error) {
       console.error(error);
@@ -2026,9 +2030,6 @@ const ContractForm = () => {
                     const sigStatus = !!c.benchSalesSignature && !!c.hiringManagerSignature ? 'complete' : 'partial';
                     const sigCfg = SIG_STATUS[sigStatus];
                     let currentStatus = statusOverrideMap[c.id] || c.status;
-                    if (sigStatus === 'complete' && currentStatus === 'Completed') {
-                      currentStatus = 'Agreed';
-                    }
                     return (
                       <tr key={c.id}>
                         <td><span className="contract-id">{c.id}</span></td>
