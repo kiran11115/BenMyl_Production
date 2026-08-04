@@ -46,8 +46,9 @@ const UploadTalentProfile = () => {
   const [portfolioExpanded, setPortfolioExpanded] = useState(false);
   const [skillInput, setSkillInput] = useState("");
   const [languageInput, setLanguageInput] = useState("");
-  const [activeTab, setActiveTab] = useState("Recommended Jobs");
-  const tabs = ["Recommended Jobs", "Overview", "Experience", "Projects", "Education"];
+  const [activeTab, setActiveTab] = useState("Overview");
+  const tabs = ["Overview", "Experience", "Projects", "Education"];
+  const [isRecommendedJobsOpen, setIsRecommendedJobsOpen] = useState(false);
   const [addEmployeeProfessionalDetails, { isLoading: isSaving }] = useAddEmployeeProfessionalDetailsMutation();
 
   const [getQueueManagement] = useGetQueueManagementMutation();
@@ -365,20 +366,6 @@ const UploadTalentProfile = () => {
 
       {/* ── MAIN CONTENT ── */}
       <div className="tp-main-content-wrapper">
-        {/* ── RECOMMENDED JOBS TAB ── */}
-        {activeTab === "Recommended Jobs" && (
-          <div className="tp-tab-pane">
-            <div className="premium-card">
-              <div className="tp-section-heading mb-3 d-flex align-items-center gap-2">
-                <span><FiStar size={13} /> Recommended Jobs</span>
-                <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal', textTransform: 'none', letterSpacing: 'normal' }}>
-                  (Click on card to apply the job)
-                </span>
-              </div>
-              <RecommendedJobs role={profileData?.role} skills={profileData?.skills?.join(",")} employeeId={employeeId} isShortlisted={profileData?.isshortlisted} />
-            </div>
-          </div>
-        )}
 
         {/* ── OVERVIEW TAB ── */}
         {activeTab === "Overview" && (
@@ -733,6 +720,43 @@ const UploadTalentProfile = () => {
           </div>
         </div>
       )}
+
+      {/* ── RECOMMENDED JOBS STICKY BUTTON & MODAL ── */}
+      <button 
+        className="tp-sticky-recommended-btn"
+        onClick={() => setIsRecommendedJobsOpen(true)}
+        title="View Recommended Jobs"
+      >
+        <FiStar size={20} />
+      </button>
+
+      {isRecommendedJobsOpen && (
+        <div className="tp-recommended-overlay" onClick={() => setIsRecommendedJobsOpen(false)}>
+          <div className="tp-recommended-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="tp-recommended-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
+                  <FiStar size={18} />
+                </div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>Recommended Jobs</h3>
+              </div>
+              <button onClick={() => setIsRecommendedJobsOpen(false)} className="tp-close-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
+                <FiX size={22} />
+              </button>
+            </div>
+            <div className="tp-recommended-body hide-scrollbar" style={{ padding: '20px', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
+              <RecommendedJobs
+                employeeId={employeeId}
+                role={profileData?.role}
+                skills={profileData?.skills?.join(", ")}
+                isShortlisted={profileData?.isshortlisted}
+                candidate={{ id: Number(employeeId), name: profileData?.name, role: profileData?.role, email: profileData?.email, avatar: profileData?.profileImage }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

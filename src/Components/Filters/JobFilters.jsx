@@ -104,6 +104,12 @@ const JobFilters = ({ onApplyFilters, initialFilters }) => {
     maxSalary: "",
   });
 
+  useEffect(() => {
+    if (initialFilters) {
+      setFilterInputs(initialFilters);
+    }
+  }, [initialFilters]);
+
   const [openDropdown, setOpenDropdown] = useState(null);
   const debounceTimerRef = useRef(null);
   

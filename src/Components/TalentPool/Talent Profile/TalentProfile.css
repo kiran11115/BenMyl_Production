@@ -494,4 +494,71 @@
   .tp-identity-strip { flex-direction: column; align-items: flex-start; }
   .tp-identity-actions { flex-direction: row; }
   .tp-proj-grid { grid-template-columns: 1fr; }
+
+/* ── Recommended Jobs Sticky Button & Modal ── */
+.tp-sticky-recommended-btn {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  padding: 12px 14px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 4px 0 15px rgba(91, 91, 214, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
+
+.tp-sticky-recommended-btn:hover {
+  padding-left: 18px;
+  background: linear-gradient(135deg, #6b6be6 0%, #8b4bf2 100%);
+}
+
+.tp-recommended-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.tp-recommended-modal {
+  width: 500px;
+  max-width: 90vw;
+  height: 100%;
+  background: #f8fafc;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: slideRightIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.tp-recommended-header {
+  padding: 20px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tp-close-btn:hover {
+  color: #ef4444 !important;
+}
+
+@keyframes slideRightIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}}

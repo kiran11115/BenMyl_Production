@@ -13,7 +13,7 @@ import { CustomAlert } from "../Common/CustomAlert";
 import NoData from "../UploadTalent/NoData";
 
 
-const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
+const JobModal = ({ job, onClose, initialSelectedTalentId, initialCandidate }) => {
   const title = job?.title;
   
   const {
@@ -85,7 +85,7 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
 
 
 
-  const normalizedTalents = talents
+  let normalizedTalents = talents
     .filter((t) => !t.isShortlisted)
     .map((t) => ({
       id: t.employeeID,
@@ -94,6 +94,13 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
       email: t.emailAddress,
       avatar: t.profileImage, // Use actual profile image if available
     }));
+
+  if (initialCandidate && initialSelectedTalentId) {
+    const exists = normalizedTalents.find(t => t.id === initialSelectedTalentId);
+    if (!exists) {
+      normalizedTalents = [initialCandidate, ...normalizedTalents];
+    }
+  }
 
   return createPortal(
     <div className="job-modal-overlay">
@@ -118,7 +125,8 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
               <span className="job-modal-count-badge">{selectedTalents.length} Selected</span>
             </div>
 
-            <div className="job-modal-talent-scroll-area">
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+              {/* Loading & Empty States */}
               {isLoading ? (
                 <div className="job-modal-empty-state">
                   <div className="job-modal-spinner spinner-margin" />
@@ -131,99 +139,114 @@ const JobModal = ({ job, onClose, initialSelectedTalentId }) => {
                   <NoData text="No talents matching this role" maxWidth="130px" />
                 </div>
               ) : (
-                <div className="talent-list d-flex flex-column gap-3">
-                  {/* Selected Candidates */}
-                  {normalizedTalents.filter(t => selectedTalents.includes(t.id)).length > 0 && (
-                    <div className="talent-group">
-                      <h5 className="job-modal-talent-group-title">Selected Candidates</h5>
-                      {normalizedTalents.filter(t => selectedTalents.includes(t.id)).map(talent => (
-                        <div 
-                          key={talent.id} 
-                          className="job-modal-talent-card-row selectable selected"
-                          onClick={() => handleToggleTalent(talent.id)}
-                        >
-                          <div className="job-modal-checkbox-selected">
-                            <FiCheck size={12} color="#fff" strokeWidth={3} />
-                          </div>
+                <>
+                  {/* Selected Candidates Section */}
+                  <div style={{ flexShrink: 0, borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+                    {normalizedTalents.filter(t => selectedTalents.includes(t.id)).length > 0 ? (
+                      <>
+                        <h5 className="job-modal-talent-group-title" style={{ marginBottom: '8px' }}>Selected Candidates</h5>
+                        <div className="talent-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '6px' }}>
+                          {normalizedTalents.filter(t => selectedTalents.includes(t.id)).map(talent => (
+                            <div 
+                              key={talent.id} 
+                              className="job-modal-talent-card-row selectable selected"
+                              onClick={() => handleToggleTalent(talent.id)}
+                              style={{ padding: '8px 10px', marginBottom: 0 }}
+                            >
+                              <div className="job-modal-checkbox-selected" style={{ width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <FiCheck size={10} color="#fff" strokeWidth={3} />
+                              </div>
 
-                          <div className="job-modal-initial-avatar">
-                            {talent.avatar ? (
-                              <img src={talent.avatar} alt={talent.name} />
-                            ) : (
-                              getInitials(talent.name)
-                            )}
-                          </div>
+                              <div className="job-modal-initial-avatar" style={{ width: '32px', height: '32px', fontSize: '12px' }}>
+                                {talent.avatar ? (
+                                  <img src={talent.avatar} alt={talent.name} />
+                                ) : (
+                                  getInitials(talent.name)
+                                )}
+                              </div>
 
-                          <div className="job-modal-t-info">
-                            <div className="t-header">
-                              <span className="job-modal-t-name">{talent.name}</span>
+                              <div className="job-modal-t-info">
+                                <div className="t-header">
+                                  <span className="job-modal-t-name" style={{ fontSize: '13px' }}>{talent.name}</span>
+                                </div>
+                                <div className="job-modal-t-role" style={{ fontSize: '11px' }}>{talent.role}</div>
+                              </div>
                             </div>
-                            <div className="job-modal-t-role">{talent.role}</div>
-                          </div>
+                          ))}
                         </div>
-                      ))}
+                      </>
+                    ) : (
+                      <p style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', margin: '0 0 12px 0' }}>No candidates selected yet.</p>
+                    )}
+
+                    {/* Footer / Actions for Selected Talents */}
+                    <div className="job-modal-footer-actions" style={{ marginTop: '12px', paddingTop: '0', borderTop: 'none', justifyContent: 'flex-start', gap: '8px' }}>
+                      <button 
+                        className="btn-primary" 
+                        onClick={handleDone}
+                        disabled={isSubmitting || selectedTalents.length === 0}
+                        style={{ flex: 1, padding: '8px', fontSize: '13px' }}
+                      >
+                        {isSubmitting ? <><FiLoader style={{ marginRight: '6px', animation: 'spin 1s linear infinite' }} size={14} /> Processing...</> : "Place Bid"}
+                      </button>
+                      <button className="btn-secondary" onClick={onClose} disabled={isSubmitting} style={{ flex: 1, padding: '8px', fontSize: '13px' }}>
+                        Cancel
+                      </button>
                     </div>
-                  )}
+                  </div>
 
-                  {/* Recommended Candidates */}
-                  {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).length > 0 && (
-                    <div className="talent-group">
-                      <h5 className="job-modal-talent-group-title recommended">Also Recommended Candidates</h5>
-                      {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).map(talent => (
-                        <div 
-                          key={talent.id} 
-                          className="job-modal-talent-card-row selectable"
-                          onClick={() => handleToggleTalent(talent.id)}
-                        >
-                          <div className="job-modal-checkbox-unselected">
-                          </div>
+                  {/* Non-Selected (Recommended) Candidates - Internal Scroll */}
+                  <div style={{ flex: 1, overflowY: 'auto', paddingTop: '12px', paddingRight: '6px' }}>
+                    {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).length > 0 && (
+                      <>
+                        <h5 className="job-modal-talent-group-title recommended" style={{ marginTop: 0, marginBottom: '8px' }}>Also Recommended Candidates</h5>
+                        <div className="talent-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {normalizedTalents.filter(t => !selectedTalents.includes(t.id)).map(talent => (
+                            <div 
+                              key={talent.id} 
+                              className="job-modal-talent-card-row selectable"
+                              onClick={() => handleToggleTalent(talent.id)}
+                              style={{ padding: '8px 10px', marginBottom: 0 }}
+                            >
+                              <div className="job-modal-checkbox-unselected" style={{ width: '16px', height: '16px' }}>
+                              </div>
 
-                          <div className="job-modal-initial-avatar">
-                            {talent.avatar ? (
-                              <img src={talent.avatar} alt={talent.name} />
-                            ) : (
-                              getInitials(talent.name)
-                            )}
-                          </div>
+                              <div className="job-modal-initial-avatar" style={{ width: '32px', height: '32px', fontSize: '12px' }}>
+                                {talent.avatar ? (
+                                  <img src={talent.avatar} alt={talent.name} />
+                                ) : (
+                                  getInitials(talent.name)
+                                )}
+                              </div>
 
-                          <div className="job-modal-t-info">
-                            <div className="t-header">
-                              <span className="job-modal-t-name">{talent.name}</span>
+                              <div className="job-modal-t-info">
+                                <div className="t-header">
+                                  <span className="job-modal-t-name" style={{ fontSize: '13px' }}>{talent.name}</span>
+                                </div>
+                                <div className="job-modal-t-role" style={{ fontSize: '11px' }}>{talent.role}</div>
+                              </div>
+
+                              <button 
+                                className="job-modal-t-view-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
+                                  navigate(`${basePath}/talent-profile`, {
+                                    state: { employeeId: talent.id, jobId: job.id },
+                                  });
+                                }}
+                                style={{ padding: '4px 8px' }}
+                              >
+                                <FiEye size={14} />
+                              </button>
                             </div>
-                            <div className="job-modal-t-role">{talent.role}</div>
-                          </div>
-
-                          <button 
-                            className="job-modal-t-view-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-                              navigate(`${basePath}/talent-profile`, {
-                                state: { employeeId: talent.id, jobId: job.id },
-                              });
-                            }}
-                          >
-                            <FiEye size={16} />
-                          </button>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      </>
+                    )}
+                  </div>
+                </>
               )}
-            </div>
-
-            <div className="job-modal-footer-actions">
-              <button className="btn-secondary" onClick={onClose} disabled={isSubmitting}>
-                Cancel
-              </button>
-              <button 
-                className="btn-primary" 
-                onClick={handleDone}
-                disabled={isSubmitting || selectedTalents.length === 0}
-              >
-                {isSubmitting ? <><FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} size={16} /> Processing...</> : "Place Bid"}
-              </button>
             </div>
           </aside>
 

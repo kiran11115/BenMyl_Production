@@ -7,7 +7,19 @@ import NoData from "./NoData";
 import JobModal from "../UserJobs/JobModal";
 import { toast } from "react-toastify";
 
-const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
+const getCountryCodeFromLocation = (location = "") => {
+  if (!location) return "";
+  const loc = location.toLowerCase();
+  if (loc.includes("united states") || loc.includes("usa") || loc.includes("us")) return "us";
+  if (loc.includes("united kingdom") || loc.includes("uk")) return "gb";
+  if (loc.includes("india")) return "in";
+  if (loc.includes("canada")) return "ca";
+  if (loc.includes("australia")) return "au";
+  if (loc.includes("germany")) return "de";
+  return "un";
+};
+
+const RecommendedJobs = ({ role, skills, employeeId, isShortlisted, candidate }) => {
   const navigate = useNavigate();
   const [selectedJob, setSelectedJob] = useState(null);
   const [allJobs, setAllJobs] = useState([]);
@@ -146,10 +158,11 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
 
   return (
     <div style={{ padding: "0" }}>
-      <div className="tp-scrollable-area grid-view" style={{ 
+      <div style={{ 
+        width: '100%', 
         padding: 0,
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        display: 'flex',
+        flexDirection: 'column',
         gap: '1.5rem'
       }}>
         {firstThreeJobs.map((job) => (
@@ -162,69 +175,94 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
               }
               setSelectedJob(job);
             }}
-            className="job-card d-flex flex-column"
-            style={{ cursor: "pointer" }}
+            className="job-card"
           >
             {/* TOP */}
             <div className="job-card-header">
               <div className="job-header-left">
                 <div className="job-company-logo">
-                  {getInitials(job.company)}
+                  <FiBriefcase color="#ffffff" size={20} />
                 </div>
 
                 <div className="job-header-info">
                   <h3 className="job-title" title={job.title}>{job.title}</h3>
-                  <p className="company-name">{job.company}</p>
+                  <div className="job-meta-row">
+                    {job.jobDuration && (
+                      <div className="job-meta-item">
+                        <FiClock size={12} className="meta-icon" />
+                        <span>{job.jobDuration}</span>
+                      </div>
+                    )}
+                    {job.location && (
+                      <div className="job-meta-item">
+                        <FiMapPin size={12} className="meta-icon" />
+                        <span title={job.location}>
+                          {getCountryCodeFromLocation(job.location) && getCountryCodeFromLocation(job.location) !== "un" && (
+                            <img 
+                              src={`https://flagcdn.com/w20/${getCountryCodeFromLocation(job.location)}.png`}
+                              srcSet={`https://flagcdn.com/w40/${getCountryCodeFromLocation(job.location)}.png 2x`}
+                              width="18"
+                              alt="Flag"
+                              style={{ marginRight: '5px', verticalAlign: 'middle', borderRadius: '2px', display: 'inline-block' }}
+                            />
+                          )}
+                          {job.location ? job.location.split(',')[0].trim() : ""}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="job-eye-icon">
-                <FiEye size={22} />
-              </div>
-            </div>
-
-            {/* TAGS */}
-            <div className="job-tags-row">
-              {job.experienceText && job.experienceText !== "N/A" && (
-                <span className="job-chip purple">
-                  {job.experienceText}
-                </span>
-              )}
-              {job.workModel && job.workModel !== "N/A" && (
-                <span className="job-chip green">
-                  {job.workModel}
-                </span>
-              )}
-              {job.type && job.type !== "N/A" && (
-                <span className="job-chip mint">
-                  {job.type.length > 15 ? `${job.type.slice(0, 15)}...` : job.type}
-                </span>
+              {job.isShortlisted && (
+                <div className="job-chip mint">
+                  SHORTLISTED
+                </div>
               )}
             </div>
 
             {/* DESC */}
             <p className="job-description">
-              {job.description ? job.description.replace(/\*\*/g, "") : "No description provided."}
+              {[
+                job.company && `${job.company}`,
+                job.preferredEmployment?.length > 0 && `Employment Type: ${job.preferredEmployment.join(", ")}`,
+                job.workModel && `${job.workModel}`,
+                job.description?.replace(/\*\*/g, "")
+              ].filter(Boolean).join(" | ")}
             </p>
 
             {/* FOOTER */}
-            <div className="job-card-footer mt-auto pt-3">
-              <div className="job-rate">
-                {job.rateText}
-                <span className="job-rate-unit">
-                  {job.salaryType ? ` ${job.salaryType}` : ""}
-                </span>
+            <div className="job-card-footer">
+              <div className="job-rate-block">
+                <div className="job-rate">
+                  {job.rateText}
+                  <span className="job-rate-unit">
+                    {job.salaryType}
+                  </span>
+                </div>
+                {job.postedOnText && job.postedOnText !== "N/A" && (
+                  <>
+                    <span className="job-rate-divider">•</span>
+                    <span className="job-posted-on">
+                      Posted {job.postedOnText}
+                    </span>
+                  </>
+                )}
               </div>
 
-              <div className="meta-pill">
-                <FiMapPin size={12} />
-                <span
-                  title={job.location}
-                  style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}
-                >
-                  {job.location ? job.location.split(',')[0].trim() : "N/A"}
-                </span>
-              </div>
+              <button
+                className="job-card-view-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isShortlisted) {
+                    toast.warning("Candidate is already shortlisted");
+                    return;
+                  }
+                  setSelectedJob(job);
+                }}
+              >
+                View
+              </button>
             </div>
           </div>
         ))}
@@ -261,6 +299,7 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted }) => {
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
           initialSelectedTalentId={employeeId ? Number(employeeId) : undefined}
+          initialCandidate={candidate}
         />
       )}
     </div>

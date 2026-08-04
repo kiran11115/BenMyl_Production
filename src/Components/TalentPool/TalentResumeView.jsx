@@ -23,6 +23,8 @@ import {
 } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetCompanyListQuery } from "../../State-Management/Api/CompanyApiSlice";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
+import RecommendedJobs from "../UploadTalent/RecommendedJobs";
+import { FiStar } from "react-icons/fi";
 import "./TalentResumeView.css";
 
 const TalentResumeView = ({
@@ -57,6 +59,7 @@ const TalentResumeView = ({
   const [editWorkAuth, setEditWorkAuth] = useState("US Citizen");
   const [customSalary, setCustomSalary] = useState(null);
   const [customWorkMode, setCustomWorkMode] = useState(null);
+  const [isRecommendedJobsOpen, setIsRecommendedJobsOpen] = useState(false);
 
   const isUploadContext = isUploadTalent || (typeof window !== "undefined" && window.location.pathname.toLowerCase().includes("upload-talent"));
 
@@ -363,7 +366,20 @@ const TalentResumeView = ({
       className={`trv-overlay ${isOpen && !isClosing ? "open" : ""}`}
       onClick={handleClose}
     >
-      <div className={`trv-panel ${isInlineEditing ? "expanded" : ""}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`trv-panel ${isInlineEditing || isRecommendedJobsOpen ? "expanded" : ""}`} onClick={(e) => e.stopPropagation()} style={{ position: "relative" }}>
+        
+        {/* RECOMMENDED JOBS STICKY BUTTON */}
+        {isUploadContext && !isRecommendedJobsOpen && (
+          <button 
+            className="tp-sticky-recommended-btn"
+            onClick={() => setIsRecommendedJobsOpen(true)}
+            title="View Recommended Jobs"
+            style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', borderRadius: '0 8px 8px 0', zIndex: 10 }}
+          >
+            <FiStar size={20} />
+          </button>
+        )}
+
         {/* Top Header Control Bar */}
         <div className="trv-header-bar">
           <div className="trv-header-title-block">
@@ -383,6 +399,43 @@ const TalentResumeView = ({
 
         {/* Split Body Container */}
         <div style={{ display: "flex", flex: 1, overflow: "hidden", position: "relative" }}>
+          
+          {/* NEW Left Side: Recommended Jobs Panel */}
+          {isUploadContext && isRecommendedJobsOpen && (
+             <div
+               style={{
+                 width: "480px",
+                 flexShrink: 0,
+                 background: "#f8fafc",
+                 borderRight: "1px solid #e2e8f0",
+                 display: "flex",
+                 flexDirection: "column",
+                 overflow: "hidden"
+               }}
+             >
+                <div style={{ padding: '20px 24px', background: '#ffffff', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', padding: '8px', borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
+                      <FiStar size={18} />
+                    </div>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>Recommended Jobs</h3>
+                  </div>
+                  <button onClick={() => setIsRecommendedJobsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
+                    <FiX size={22} />
+                  </button>
+                </div>
+                <div className="hide-scrollbar" style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                  <RecommendedJobs
+                    employeeId={activeId}
+                    role={profile.role}
+                    skills={profile.skills}
+                    isShortlisted={isShortlisted}
+                    candidate={{ id: Number(activeId), name: profile.name, role: profile.role, email: profile.email, avatar: profile.profileImage || profile.avatar }}
+                  />
+                </div>
+             </div>
+          )}
+
           {/* Left Side: Candidate Formal Resume */}
           <div className="trv-body" style={{ flex: 1, overflowY: "auto", padding: "24px 28px" }}>
             {isLoading ? (

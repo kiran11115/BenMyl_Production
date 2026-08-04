@@ -31,6 +31,7 @@ import {
 import { calculateTotalExperience } from "../../../Utils/experienceUtils";
 import { toast } from "react-toastify";
 import NoData from "../../UploadTalent/NoData";
+import RecommendedJobs from "../../UploadTalent/RecommendedJobs";
 
 const formatDateToDisplay = (value) => {
   if (!value) return "";
@@ -48,6 +49,7 @@ const TalentProfile = () => {
   const [activeTab, setActiveTab] = React.useState("Overview");
   const tabs = ["Overview", "Experience", "Projects", "Education"];
   const [showNoJobModal, setShowNoJobModal] = React.useState(false);
+  const [isRecommendedJobsOpen, setIsRecommendedJobsOpen] = React.useState(false);
 
   const query = new URLSearchParams(location.search);
   const from = query.get("from");
@@ -516,6 +518,9 @@ const TalentProfile = () => {
           </div>
         </div>
       )}
+
+
+
     </div>
   );
 };
