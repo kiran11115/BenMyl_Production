@@ -1,5 +1,6 @@
 export const subscriptionPlans = [
   {
+    planId: 1,
     id: "free_trial",
     name: "Free Trial",
     subtitle: "(20 Days – One Time)",
@@ -15,6 +16,7 @@ export const subscriptionPlans = [
     comingSoon: false,
   },
   {
+    planId: 2,
     id: "basic",
     name: "Basic Plan",
     subtitle: "Affordable starter plan",
@@ -30,6 +32,7 @@ export const subscriptionPlans = [
     comingSoon: true, // we can set comingSoon or not based on user's instruction, I'll set it to false so it can be selected.
   },
   {
+    planId: 3,
     id: "professional",
     name: "Professional Plan",
     subtitle: "Larger team capacity",
@@ -45,6 +48,7 @@ export const subscriptionPlans = [
     comingSoon: true,
   },
   {
+    planId: 4,
     id: "enterprise",
     name: "Custom Enterprise",
     subtitle: "Custom solutions for large organizations",

@@ -82,7 +82,7 @@ const FormWizard = () => {
         licenseType: Yup.string().required(),
         licenseNumber: Yup.string()
           .required("License number is required")
-          .test("license-format", "Invalid format", function(value) {
+          .test("license-format", "Invalid format", function (value) {
             if (!value) return false;
             const type = this.parent.licenseType;
             if (type === "EIN") return /^\d{2}-\d{7}$/.test(value);
@@ -195,7 +195,7 @@ const FormWizard = () => {
 
     if (name === "licenseNumber") {
       const licenseType = formik.values.licenseType;
-      
+
       if (licenseType === "EIN") {
         const raw = value.replace(/\D/g, "").slice(0, 9);
         formik.setFieldValue(name, raw.length >= 2 ? raw.slice(0, 2) + "-" + raw.slice(2) : raw);
@@ -235,14 +235,14 @@ const FormWizard = () => {
         const raw = value.replace(/\D/g, "").slice(0, 15);
         let formatted = raw;
         if (raw.length > 3 && raw.length <= 7) {
-          formatted = `${raw.slice(0,3)}-${raw.slice(3)}`;
+          formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
         } else if (raw.length > 7) {
-          formatted = `${raw.slice(0,3)}-${raw.slice(3,7)}-${raw.slice(7)}`;
+          formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
         }
         formik.setFieldValue(name, formatted);
         return;
       }
-      
+
       formik.setFieldValue(name, value.toUpperCase().slice(0, 25));
       return;
     }
@@ -315,7 +315,7 @@ const FormWizard = () => {
     fd.append("BusinessPhone", `${v.countryCode} ${v.phone}`);
     fd.append("Notification", v.notifications);
 
-    const countryMap = { USA: 1, INDIA: 2, UK: 3, UAE: 4 };
+    const countryMap = { USA: 1, India: 2, UK: 3, UAE: 4 };
     fd.append("countryRegistration", countryMap[v.country] || 0);
 
     const docMap = {
@@ -520,7 +520,7 @@ const FormWizard = () => {
               )}
             </footer>
           </form>
-        </div>   
+        </div>
       </div>
     </div>
   );

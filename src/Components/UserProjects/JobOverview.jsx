@@ -27,6 +27,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
 import {
   useLazyGetJobByIdQuery,
+  useLazyGetJobPostingINDByIdQuery,
   useTalentPoolMutation,
   useSendInviteNotificationMutation,
 } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -43,8 +44,11 @@ const JobOverview = () => {
   const jobId = location.state?.jobId;
   const userId = localStorage.getItem("CompanyId");
   const companyId = localStorage.getItem("logincompanyid");
+  const countryRegistration = Number(localStorage.getItem("countryRegistration") || 1);
+  const isIND = countryRegistration === 2;
 
-  const [getJobById, { data }] = useLazyGetJobByIdQuery();
+  const [getJobById, { data: usData }] = useLazyGetJobByIdQuery();
+  const [getJobPostingINDById, { data: indData }] = useLazyGetJobPostingINDByIdQuery();
   const [getFindTalent, { isLoading: isFindingTalent }] = useTalentPoolMutation();
   const [sendInviteNotification] = useSendInviteNotificationMutation();
   const [inviteStatuses, setInviteStatuses] = useState({});
@@ -56,13 +60,15 @@ const JobOverview = () => {
   const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
   const [inviteStatus, setInviteStatus] = useState({});
 
-
-
   useEffect(() => {
     if (jobId && userId) {
-      getJobById({ jobId, userId });
+      if (isIND) {
+        getJobPostingINDById({ jobId, userId });
+      } else {
+        getJobById({ jobId, userId });
+      }
     }
-  }, [jobId, userId, getJobById]);
+  }, [jobId, userId, isIND, getJobById, getJobPostingINDById]);
 
   const { data: bids = [] } = useGetJobBidsQuery(jobId, {
     skip: !jobId,
@@ -100,7 +106,7 @@ const JobOverview = () => {
         uatUserId,
         uatfirstName: username,
         companyName: companyname,
-        jobid: job?.jobID,
+        jobid: job?.jobID ?? jobId,
         jobName: job?.jobTitle,
       };
 
@@ -177,13 +183,10 @@ const JobOverview = () => {
     }
   };
 
-  useEffect(() => {
-    if (jobId && userId) {
-      getJobById({ jobId, userId });
-    }
-  }, [jobId, userId, getJobById]);
-
-  const job = data?.[0];
+  const rawJobData = isIND ? indData : usData;
+  const job = Array.isArray(rawJobData)
+    ? (rawJobData.find(j => Number(j.jobId || j.jobID) === Number(jobId)) || rawJobData[0])
+    : rawJobData;
 
   const formatPostedDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -318,12 +321,23 @@ const JobOverview = () => {
   const getSkillColor = (index) => SKILL_COLORS[index % SKILL_COLORS.length];
 
   const salaryType = (() => {
-    const t = (job?.salarType || "").toLowerCase();
-    if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
-    if (t.includes("month")) return "/month";
-    if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+  const t = (job?.salaryType || "").toLowerCase();
+
+  if (t.includes("hour") || t.includes("/hr") || t === "hourly")
     return "/hr";
-  })();
+
+  if (t.includes("month"))
+    return "/month";
+
+  if (
+    t.includes("budget") ||
+    t.includes("fixed") ||
+    t.includes("entirebudget")
+  )
+    return "Budget";
+
+  return "";
+})();
 
   const handleShortlist = (cand) => {
     setShortlistedCandidates(prev => [...prev, cand]);
@@ -508,21 +522,24 @@ const JobOverview = () => {
               <div className="d-flex gap-3">
                 <div className="meta-item">
                   <FiMapPin size={12} />
-                  {job?.location || "Location"}
+                  {job?.location || [job?.city, job?.state, job?.country].filter(Boolean).join(", ") || "Location"}
                 </div>
 
                 <div className="meta-item">
                   <FiDollarSign size={12} />
-                  {job?.salaryRange_Min && job?.salaryRange_Max
-                    ? `${job.salaryRange_Min} - ${job.salaryRange_Max} ${salaryType}`
-                    : job?.salaryRange_Min
-                      ? `${job.salaryRange_Min} ${salaryType}`
-                      : ""}
+                  {(() => {
+                    const minSal = job?.minSalary ?? job?.salaryRange_Min;
+                    const maxSal = job?.maxSalary ?? job?.salaryRange_Max;
+                    const currSym = job?.currency === "INR" ? "₹" : (job?.currency === "USD" ? "$" : (job?.currency || "$"));
+                    if (minSal && maxSal) return `${currSym}${minSal} - ${currSym}${maxSal} ${salaryType}`;
+                    if (minSal) return `${currSym}${minSal} ${salaryType}`;
+                    return "";
+                  })()}
                 </div>
 
                 <div className="meta-item text-indigo">
                   <FiClock size={12} />
-                  Posted on {formatPostedDate(job?.createdOn || job?.postedDate)}
+                  Posted on {formatPostedDate(job?.createdOn || job?.postedDate || job?.createdDate)}
                 </div>
               </div>
             </div>
@@ -547,22 +564,34 @@ const JobOverview = () => {
             <div className="jov-auth-row">
               {/* Stat Pills Row */}
               <div className="jov-stat-pills">
-                {job?.workModels && (
+                {(job?.workMode || job?.workModels) && (
                   <div className="jov-stat-pill">
                     <span className="jov-auth-label">Work Model</span>
-                    <span className="job-chip green">{job.workModels}</span>
+                    <span className="job-chip green">{job.workMode || job.workModels}</span>
                   </div>
                 )}
-                {(job?.yearsOfExperience || job?.yearsofExperience) && (
+                {(job?.experienceRequired !== undefined || job?.yearsOfExperience || job?.yearsofExperience) && (
                   <div className="jov-stat-pill">
                     <span className="jov-auth-label">Experience</span>
-                    <span className="job-chip purple">{job?.yearsOfExperience || job?.yearsofExperience} yrs</span>
+                    <span className="job-chip purple">{job?.experienceRequired ?? job?.yearsOfExperience ?? job?.yearsofExperience} yrs</span>
                   </div>
                 )}
-                {job?.educationLevel && (
+                {(job?.education || job?.educationLevel || job?.highestQualification) && (
                   <div className="jov-stat-pill">
                     <span className="jov-auth-label">Education</span>
-                    <span className="job-chip mint">{job.educationLevel}</span>
+                    <span className="job-chip mint">{job.education || job.educationLevel || job.highestQualification}</span>
+                  </div>
+                )}
+                {job?.numberOfOpenings && (
+                  <div className="jov-stat-pill">
+                    <span className="jov-auth-label">Openings</span>
+                    <span className="job-chip blue">{job.numberOfOpenings}</span>
+                  </div>
+                )}
+                {job?.noticePeriod && (
+                  <div className="jov-stat-pill">
+                    <span className="jov-auth-label">Notice Period</span>
+                    <span className="job-chip orange">{job.noticePeriod}</span>
                   </div>
                 )}
 
@@ -626,11 +655,11 @@ const JobOverview = () => {
             <h4>
               <FiFileText size={13} /> Job Description
             </h4>
-            {job?.jobDescription ? (
+            {(job?.jobSummary || job?.jobDescription) ? (
               <div
                 className="google-jd-content"
                 dangerouslySetInnerHTML={{
-                  __html: formatMarkdownToHtml(job.jobDescription),
+                  __html: formatMarkdownToHtml(job.jobSummary || job.jobDescription),
                 }}
               />
             ) : (

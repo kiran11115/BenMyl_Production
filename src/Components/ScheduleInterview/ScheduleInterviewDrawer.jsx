@@ -7,7 +7,7 @@ import {
     FiChevronDown, FiEye, FiEyeOff, FiVideo, FiBell, FiUser
 } from 'react-icons/fi';
 import { BsBuilding } from 'react-icons/bs';
-import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useScheduleInterviewMutation } from '../../State-Management/Api/ScheduleInterviewApiSlice';
 import { useGetRecruiterProfileQuery } from '../../State-Management/Api/RecruiterProfileApiSlice';
 import JobOverviewCard from "../TalentPool/JobOverviewCard";
@@ -135,6 +135,8 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
     const companyId = localStorage.getItem('logincompanyid');
     const userName = localStorage.getItem('UserName') || 'Recruiter';
     const userRole = localStorage.getItem('Role') || 'Recruiter';
+    const countryRegistration = Number(localStorage.getItem('countryRegistration') || 1);
+    const isIND = countryRegistration === 2;
 
     /* Recruiter profile for footer photo */
     const { data: recruiterProfile } = useGetRecruiterProfileQuery(Number(userId), { skip: !userId });
@@ -170,17 +172,46 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
     useOutsideClick(candidateRef, () => setCandidatePopoverOpen(false));
 
     /* API */
-    const { data: fetchedJobs, isLoading: isJobsLoading } =
-        useGetGroupedJobTitlesQuery(userId, { skip: !userId || !isOpen });
+    const { data: fetchedJobsUS, isLoading: isJobsLoading } =
+        useGetGroupedJobTitlesQuery(userId, { skip: !userId || !isOpen || isIND });
+    const { data: fetchedJobsIND, isLoading: isJobsLoadingIND } =
+        useGetJobPostingINDQuery(userId, { skip: !userId || !isOpen || !isIND });
+    const fetchedJobs = isIND ? fetchedJobsIND : fetchedJobsUS;
     const [getFindTalent] = useTalentPoolMutation();
     const [scheduleInterview, { isLoading: isSubmitting }] = useScheduleInterviewMutation();
 
     const [candidates, setCandidates] = useState([]);
     const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
 
-    /* Map API jobs */
+    /* Map API jobs — handles both US (jobID) and IND (jobId) schemas */
     const jobs = useMemo(() => {
         if (!Array.isArray(fetchedJobs)) return [];
+        if (isIND) {
+            return fetchedJobs.map(j => {
+                const currency = j.currency === 'INR' ? '₹' : '$';
+                return {
+                    id: j.jobId,
+                    title: j.jobTitle,
+                    company: j.companyName || 'Your Company',
+                    location: [j.city, j.state, j.country].filter(Boolean).join(', ') || 'On-site',
+                    budget: j.minSalary ? `${currency}${Number(j.minSalary).toLocaleString('en-IN')}` : 'N/A',
+                    salaryType: (() => {
+                        const t = (j.salaryType || '').toLowerCase();
+                        if (t.includes('entire') || t.includes('budget') || t.includes('fixed')) return '- Budget';
+                        if (t.includes('month')) return '/Month';
+                        if (t.includes('hour')) return '/Hr';
+                        if (t.includes('annual') || t.includes('year')) return '/Year';
+                        return '';
+                    })(),
+                    experience: j.experienceRequired != null ? `${j.experienceRequired} Yrs` : '0',
+                    type: j.employmentType || 'Full-time',
+                    description: j.jobSummary || '',
+                    requiredSkills: j.requiredSkills
+                        ? j.requiredSkills.split(',').map(s => s.trim())
+                        : [],
+                };
+            });
+        }
         return fetchedJobs.map(j => ({
             id: j.jobID,
             title: j.jobTitle,
@@ -195,7 +226,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
                 ? j.requiredSkills.split(',').map(s => s.trim())
                 : [],
         }));
-    }, [fetchedJobs]);
+    }, [fetchedJobs, isIND]);
 
     const filteredJobs = useMemo(
         () => jobs.filter(j => j.title.toLowerCase().includes(jobSearch.toLowerCase())),
@@ -220,9 +251,16 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
                 };
                 const res = await getFindTalent(payload).unwrap();
                 if (Array.isArray(res)) {
-                    const fetchedCandidates = res.filter(i => i.isshortlisted && !i.isSchedules).map(i => ({
+                    // When navigating from shortlist (preSelectedCandidateId present), show all
+                    // candidates for the job title so the pre-selected one is always found.
+                    // Otherwise only show shortlisted & not-yet-scheduled candidates.
+                    const filtered = preSelectedCandidateId
+                        ? res
+                        : res.filter(i => (i.isshortlisted || i.isShortlisted) && !i.isSchedules);
+
+                    const fetchedCandidates = filtered.map(i => ({
                         id: i.employeeID,
-                        name: `${i.firstName} ${i.lastName}`,
+                        name: `${i.firstName || ''} ${i.lastName || ''}`.trim(),
                         role: i.title || '—',
                         email: i.emailAddress,
                         avatar: i.profilePicture || '',

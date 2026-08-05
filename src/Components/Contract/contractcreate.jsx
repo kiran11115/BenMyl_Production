@@ -36,7 +36,7 @@ import { Home } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { ContractContext, formatDate } from './ContractContext';
 import ModuleHeader from "../Admin/Modules/ModuleHeader";
-import { useGetGroupedJobTitlesQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useLazyGetNotificationsByJobIdQuery, useSaveContractMutation } from "../../State-Management/Api/ContractApiSlice";
 
 import './contractwizard.css';
@@ -387,17 +387,34 @@ const ContractCreate = () => {
     return userRoleRaw || 'Hiring Manager';
   }, [userRoleRaw]);
 
-  // Fetch Jobs
-  const { data: fetchedJobs, isLoading: isJobsLoading } = useGetGroupedJobTitlesQuery(userId, { skip: !userId, refetchOnMountOrArgChange: true });
+  // Fetch Jobs — use IND endpoint for countryRegistration === 2
+  const countryRegistration = Number(localStorage.getItem('countryRegistration') || 1);
+  const isIND = countryRegistration === 2;
+
+  const { data: fetchedJobsUS, isLoading: isJobsLoadingUS } = useGetGroupedJobTitlesQuery(userId, { skip: !userId || isIND, refetchOnMountOrArgChange: true });
+  const { data: fetchedJobsIND, isLoading: isJobsLoadingIND } = useGetJobPostingINDQuery(userId, { skip: !userId || !isIND, refetchOnMountOrArgChange: true });
+  const fetchedJobs = isIND ? fetchedJobsIND : fetchedJobsUS;
+  const isJobsLoading = isIND ? isJobsLoadingIND : isJobsLoadingUS;
 
   const jobs = useMemo(() => {
     if (!fetchedJobs || !Array.isArray(fetchedJobs)) return [];
+    if (isIND) {
+      return fetchedJobs.map(job => ({
+        id: job.jobId,
+        title: job.jobTitle,
+        company: job.companyName || 'Your Company',
+        location: [job.city, job.state, job.country].filter(Boolean).join(', '),
+        employmentType: job.employmentType || '',
+      }));
+    }
     return fetchedJobs.map(job => ({
       id: job.jobID,
       title: job.jobTitle,
-      company: job.companyName || "Your Company",
+      company: job.companyName || 'Your Company',
+      location: job.location || '',
+      employmentType: job.employeeType || '',
     }));
-  }, [fetchedJobs]);
+  }, [fetchedJobs, isIND]);
 
   const [candidates, setCandidates] = useState([]);
   const [isCandidatesLoading, setIsCandidatesLoading] = useState(false);
@@ -485,13 +502,14 @@ const ContractCreate = () => {
           j => j.jobTitle === formik.values.jobTitle
         );
 
-        if (!selectedJob?.jobID) {
+        const selectedJobId = selectedJob?.jobId ?? selectedJob?.jobID;
+        if (!selectedJobId) {
           setCandidates([]);
           return;
         }
 
         const res = await getNotificationsByJobId(
-          selectedJob.jobID
+          selectedJobId
         ).unwrap();
 
         if (Array.isArray(res)) {
@@ -790,15 +808,17 @@ const ContractCreate = () => {
     );
 
     if (selectedJob) {
+      // IND uses employmentType; US uses employeeType
       formik.setFieldValue(
         "employmentType",
-        selectedJob.employeeType || ""
+        selectedJob.employmentType || selectedJob.employeeType || ""
       );
 
-      formik.setFieldValue(
-        "workLocation",
-        selectedJob.location || ""
-      );
+      // IND has city/state/country; US has a single location field
+      const loc = selectedJob.location
+        || [selectedJob.city, selectedJob.state, selectedJob.country].filter(Boolean).join(', ')
+        || '';
+      formik.setFieldValue("workLocation", loc);
     }
   }, [formik.values.jobTitle, fetchedJobs]);
 

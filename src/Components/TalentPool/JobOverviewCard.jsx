@@ -45,16 +45,27 @@ const JobOverviewCard = ({ job, isExpanded, onToggle, hideShare }) => {
   // Handle differences in prop names between different callers (e.g. TalentPool vs ScheduleInterview)
   const jobTitle = job.jobTitle || job.title || "Job Title";
   const companyName = job.companyName || job.company || "Company Name";
-  const location = job.location || "Location";
-  const minSal = job.salaryRange_Min || job.budget || job.rateText;
-  const maxSal = job.salaryRange_Max;
-  const salType = job.salarType || job.salaryType || "/hr";
-  
+  const location = job.location || [job.city, job.state, job.country].filter(Boolean).join(", ") || "Location";
+
+  // Salary — IND uses minSalary/maxSalary/currency, US uses salaryRange_Min/Max
+  const minSal = job.minSalary ?? job.salaryRange_Min ?? job.budget ?? job.rateText;
+  const maxSal = job.maxSalary ?? job.salaryRange_Max;
+  const currSym = job.currency === "INR" ? "₹" : (job.currency === "USD" ? "$" : (job.currency || "$"));
+  const salType = job.salaryType ?? job.salarType ?? "/hr";
+
   const postedDate = job.createdOn || job.postedDate;
-  
-  const workModel = job.workModels || ((job.jobDescription || job.description || "")?.includes("Remote") ? "Remote" : "On-site");
-  const exp = job.yearsOfExperience || job.yearsofExperience || job.experience || job.experienceText;
-  const edu = job.educationLevel;
+
+  // Work model — IND uses workMode, US uses workModels
+  const workModel = job.workMode || job.workModels || ((job.jobDescription || job.jobSummary || job.description || "")?.includes("Remote") ? "Remote" : undefined);
+
+  // Experience — IND uses experienceRequired, US uses yearsofExperience/yearsOfExperience
+  const exp = job.experienceRequired ?? job.yearsOfExperience ?? job.yearsofExperience ?? job.experience ?? job.experienceText;
+
+  // Education — IND uses education/highestQualification, US uses educationLevel
+  const edu = job.education || job.educationLevel || job.highestQualification;
+
+  // Description — IND uses jobSummary, US uses jobDescription
+  const jobDesc = job.jobSummary || job.jobDescription || job.description;
 
   return (
     <div className="dashboard-column-main card-base" style={{ padding: '24px', borderRadius: '16px', background: '#fff', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -82,9 +93,9 @@ const JobOverviewCard = ({ job, isExpanded, onToggle, hideShare }) => {
               <div className="meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <FiDollarSign size={12} />
                 {minSal && maxSal
-                  ? `${minSal} - ${maxSal} ${salType}`
+                  ? `${currSym}${minSal} - ${currSym}${maxSal} ${salType}`
                   : minSal
-                    ? `${minSal} ${salType}`
+                    ? `${currSym}${minSal} ${salType}`
                     : ""}
               </div>
 
@@ -184,11 +195,11 @@ const JobOverviewCard = ({ job, isExpanded, onToggle, hideShare }) => {
         <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: '#6366f1', textTransform: 'uppercase', marginBottom: '16px' }}>
           <FiFileText size={14} /> Job Description
         </h4>
-        {(job.jobDescription || job.description) ? (
+        {jobDesc ? (
           <div
             className="google-jd-content"
             dangerouslySetInnerHTML={{
-              __html: formatMarkdownToHtml(job.jobDescription || job.description),
+              __html: formatMarkdownToHtml(jobDesc),
             }}
           />
         ) : (

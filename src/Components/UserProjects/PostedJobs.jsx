@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { FiClock, FiMapPin, FiBriefcase, FiUsers, FiCalendar, FiArrowUp } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetJobBidsQuery } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "../UploadTalent/NoData";
 import "../UserJobs/Jobs.css";
@@ -232,7 +232,7 @@ const JobCardItem = ({ job, navigate }) => {
             </div>
             <span className="job-rate-divider">•</span>
             <span className="job-posted-on">
-              Posted {job.postedOnText}
+              Posted on {job.postedOnText}
             </span>
           </div>
 
@@ -255,8 +255,14 @@ const JobCardItem = ({ job, navigate }) => {
 const PostedJobs = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("CompanyId");
+  const countryRegistration = Number(localStorage.getItem("countryRegistration") || 1);
+  const isIND = countryRegistration === 2;
 
-  const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
+  const { data: usJobs = [], isLoading: isUSLoading } = useGetGroupedJobTitlesQuery(userId, { skip: isIND });
+  const { data: indJobs = [], isLoading: isINDLoading } = useGetJobPostingINDQuery(userId, { skip: !isIND });
+
+  const apiJobs = isIND ? indJobs : usJobs;
+  const isLoading = isIND ? isINDLoading : isUSLoading;
 
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -286,41 +292,57 @@ const PostedJobs = () => {
   }, []);
 
   const jobs = useMemo(() => {
-    return apiJobs.map((job) => ({
-      id: job.jobID,
-      title: job.jobTitle,
-      company: job.companyName,
-      location: job.location,
-      type: job.employeeType,
-      workModels: job.workModels,
-      salaryType: job.salarType,
-      rateText:
-        job.salaryRange_Min && job.salaryRange_Max
-          ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`
-          : job.salaryRange_Min
-            ? `$${job.salaryRange_Min}`
-            : "N/A",
-      budgetLabel: (() => {
-        const t = (job.salarType || "").toLowerCase();
-        if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
-        if (t.includes("month")) return "/month";
-        if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
-        return "/hr"; // default
-      })(),
-      experienceLevel: job.experienceLevel,
-      description: job.jobDescription || "",
-      skills: job.requiredSkills
-        ? job.requiredSkills.split(",").map((s) => s.trim())
-        : [],
-      duration: (() => {
-        if (!job.jobDuration) return "Ongoing";
-        if (job.jobDuration === "0" || job.jobDuration === 0) return "Ongoing";
-        const unit = job.jobDuration_Unit || (job.jobDuration === "1" || job.jobDuration === 1 ? "Month" : "Months");
-        return `${job.jobDuration} ${unit}`;
-      })(),
-      postedOnText: formatPostedDate(job.createdOn || job.postedDate),
-    }));
-  }, [apiJobs]);
+    return apiJobs.map((job) => {
+      // IND API uses: jobId, workMode, minSalary, maxSalary, currency, employmentType, jobSummary
+      // US  API uses: jobID, workModels, salaryRange_Min, salaryRange_Max, employeeType, jobDescription
+      const id = job.jobId ?? job.jobID;
+      const salaryMin = job.minSalary ?? job.salaryRange_Min;
+      const salaryMax = job.maxSalary ?? job.salaryRange_Max;
+      const currencySymbol = job.currency === "INR" ? "₹" : (job.currency === "USD" ? "$" : (job.currency || "$"));
+      const salaryType = job.salaryType ?? job.salarType ?? "";
+      const location = job.location ?? [job.city, job.state, job.country].filter(Boolean).join(", ");
+
+      return {
+        id,
+        title: job.jobTitle,
+        company: job.companyName,
+        location,
+        type: job.employmentType ?? job.employeeType,
+        workModels: job.workMode ?? job.workModels,
+        salaryType,
+        rateText:
+          salaryMin && salaryMax
+            ? `${currencySymbol}${salaryMin} - ${currencySymbol}${salaryMax}`
+            : salaryMin
+              ? `${currencySymbol}${salaryMin}`
+              : "N/A",
+        budgetLabel: (() => {
+          const t = salaryType.toLowerCase();
+          if (t.includes("hour") || t.includes("/hr") || t === "hourly") return "/hr";
+          if (t.includes("month")) return "/month";
+          if (t.includes("annum") || t.includes("year")) return "/yr";
+          if (t.includes("budget") || t.includes("fixed") || t.includes("entire")) return "Budget";
+          return "/hr";
+        })(),
+        experienceLevel: job.experienceLevel ?? (job.experienceRequired !== undefined ? `${job.experienceRequired} yrs` : ""),
+        description: job.jobSummary ?? job.jobDescription ?? "",
+        skills: job.requiredSkills
+          ? job.requiredSkills.split(",").map((s) => s.trim())
+          : [],
+        duration: (() => {
+          const dur = job.jobDuration;
+          if (!dur) return "Ongoing";
+          if (dur === "0" || dur === 0) return "Ongoing";
+          const unit = job.jobDuration_Unit || (String(dur) === "1" ? "Month" : "Months");
+          return `${dur} ${unit}`;
+        })(),
+        postedOnText: formatPostedDate(job.createdOn || job.postedDate || job.createdDate),
+        jobStatus: job.jobStatus ?? job.JobStatus,
+        isIND,
+        rawJob: job,
+      };
+    });
+  }, [apiJobs, isIND]);
 
   if (isLoading || !minTimeElapsed) {
     return (

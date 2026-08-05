@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useGetAllContractsQuery } from '../../State-Management/Api/ContractApiSlice';
 
+
 /* =========================================
    STATIC SEED DATA
    Simulates Bench Sales ↔ Hiring Manager contract workflow.
@@ -191,7 +192,11 @@ export const mapApiContractToUI = (item) => {
 export const ContractContext = createContext(null);
 
 export const ContractProvider = ({ children }) => {
-  const { data: apiContracts, isLoading } = useGetAllContractsQuery();
+  const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/forgot-password', '/otp-verification'];
+  const isPublicRoute = PUBLIC_PATHS.includes(window.location.pathname) || window.location.pathname.startsWith('/reset-password');
+  const { data: apiContracts, isLoading } = useGetAllContractsQuery(undefined, {
+    skip: isPublicRoute,
+  });
   const [contracts, setContracts] = useState([]);
 
   // Sync API contracts to state

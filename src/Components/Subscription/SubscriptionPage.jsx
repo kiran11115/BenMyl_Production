@@ -10,6 +10,31 @@ import '../UserJobs/Jobs.css';
 import '../Admin/Modules/AdminDashboard/AdminDashboard.css';
 import '../Header/ProfileSideModal.css';
 import NoData from "../UploadTalent/NoData";
+import {
+  useCreatePaymentMutation,
+  useGetPaymentHistoryQuery,
+  useGetBillingSummaryQuery,
+} from "../../State-Management/Api/PaymentApiSlice";
+
+import { loadStripe } from "@stripe/stripe-js";
+
+import {
+  Elements
+} from "@stripe/react-stripe-js";
+import StripeCheckout from './StripeCheckout';
+
+
+const stripePromise = loadStripe(
+   "pk_test_51TxjgtDor6quqZVXWA0YDSD4mbKp2fOiAF1fCSB5vrfFT4NhWwuuzzjmbhaPq6gm7uqLs5eklcShUr1IRlv2lvfn00R5LDrNil",
+   {
+    betas: [],
+    developerTools: {
+      assistant: {
+        enabled: false,
+      },
+    },
+  }
+);
 
 const planThemes = {
   free_trial: {
@@ -49,11 +74,26 @@ const SubscriptionPage = () => {
   const companyId = Number(localStorage.getItem("logincompanyid")) || 0;
   const [activeTab, setActiveTab] = useState(isAdmin ? "users" : "plans");
   const billingTableRef = useRef(null);
+  const stripeFormRef = useRef(null);
+  const [clientSecret,setClientSecret]=useState("");
+  const [showStripe,setShowStripe]=useState(false);
 
   const [shareTokens] = useShareTokensMutation();
   const [requestTokens] = useRequestTokensMutation();
   const [approveTokenRequest] = useApproveTokenRequestMutation();
   const [rejectTokenRequest] = useRejectTokenRequestMutation();
+  const [createPayment] = useCreatePaymentMutation();
+  const userId = Number(localStorage.getItem("CompanyId")) || 0;
+  const { data: paymentHistoryApiData, isLoading: isPaymentHistoryLoading } = useGetPaymentHistoryQuery(userId, {
+    skip: !userId,
+    refetchOnMountOrArgChange: true,
+  });
+  const { data: billingSummaryApiData, isLoading: isBillingSummaryLoading } = useGetBillingSummaryQuery(userId, {
+    skip: !userId,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const billingSummary = billingSummaryApiData?.data || billingSummaryApiData;
 
   const { data: dashboardData, refetch: refetchDashboard } = useGetTokenDashboardQuery(undefined, { refetchOnMountOrArgChange: true });
   const { data: requestListData, refetch: refetchRequests } = useGetTokenRequestListQuery(companyId, {
@@ -114,7 +154,7 @@ const SubscriptionPage = () => {
   const userRemainingPercent = userAllocated > 0 ? Math.round((userAvailable / userAllocated) * 100) : 0;
   const [isYearlyBilling, setIsYearlyBilling] = useState(false);
   const [isAddTokensOpen, setIsAddTokensOpen] = useState(false);
-  const [selectedPkg, setSelectedPkg] = useState({ tokens: 10000, price: 90, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" });
+  const [selectedPkg, setSelectedPkg] = useState({ planId: 2, tokens: 10000, price: 90, recommended: true, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" });
   const [stripeCardNumber, setStripeCardNumber] = useState("");
   const [stripeExpiry, setStripeExpiry] = useState("");
   const [stripeCvc, setStripeCvc] = useState("");
@@ -130,10 +170,10 @@ const SubscriptionPage = () => {
   const [isRequestingTokens, setIsRequestingTokens] = useState(false);
 
   const tokenPackages = [
-    { tokens: 5000, price: 50, color: "#22c55e", bgLight: "rgba(34, 197, 94, 0.08)" },
-    { tokens: 10000, price: 90, recommended: true, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" },
-    { tokens: 25000, price: 200, color: "#3b82f6", bgLight: "rgba(59, 130, 246, 0.08)" },
-    { tokens: 50000, price: 350, color: "#a855f7", bgLight: "rgba(168, 85, 247, 0.08)" }
+    { planId: 1, tokens: 5000, price: 50, color: "#22c55e", bgLight: "rgba(34, 197, 94, 0.08)" },
+    { planId: 2, tokens: 10000, price: 90, recommended: true, color: "#f5810c", bgLight: "rgba(245, 129, 12, 0.08)" },
+    { planId: 3, tokens: 25000, price: 200, color: "#3b82f6", bgLight: "rgba(59, 130, 246, 0.08)" },
+    { planId: 4, tokens: 50000, price: 350, color: "#a855f7", bgLight: "rgba(168, 85, 247, 0.08)" }
   ];
 
   // State for user view request token
@@ -292,31 +332,53 @@ const SubscriptionPage = () => {
     }
   };
 
-  const handlePayAddTokens = () => {
-    if (selectedPaymentMethod === "new_card") {
-      if (!stripeCardNumber || !stripeExpiry || !stripeCvc || !stripeName) {
-        toast.error("Please fill in all card details.");
-        return;
-      }
-    }
+  const handlePayAddTokens=async()=>{
 
-    setIsPaying(true);
-    setTimeout(() => {
-      // Add purchased tokens to pool state
-      setAdminTotalPool(prev => prev + selectedPkg.tokens);
-      setAdminTokensLeft(prev => prev + selectedPkg.tokens);
-      toast.success(`Payment successful! Added ${selectedPkg.tokens.toLocaleString()} tokens to pool.`);
+try{
 
-      // Reset inputs & close modal
-      setStripeCardNumber("");
-      setStripeExpiry("");
-      setStripeCvc("");
-      setStripeName("");
-      setStripeZip("");
-      setIsPaying(false);
-      setIsAddTokensOpen(false);
-    }, 1500);
-  };
+setIsPaying(true);
+
+const payload={
+
+companyId:String(companyId),
+
+customerName:
+localStorage.getItem("UserName"),
+
+customerEmail:
+localStorage.getItem("Email"),
+
+amount:selectedPkg.price,
+
+currency:"usd",
+
+description:`${selectedPkg.tokens}`,
+
+userid:Number(localStorage.getItem("CompanyId")) || 0,
+
+planid:Number(selectedPkg.planId) || 1,
+
+};
+
+const response=await createPayment(payload).unwrap();
+
+setClientSecret(response.clientSecret);
+
+setShowStripe(true);
+
+}
+catch(error){
+
+toast.error("Payment initialization failed. Please try again.");
+
+}
+finally{
+  setIsPaying(false);
+}
+
+}
+
+
 
   const handleAllocateTokens = () => {
     if (!allocateUserEmail) {
@@ -413,7 +475,7 @@ const SubscriptionPage = () => {
   const handleDeclineRequest = async (req) => {
     setApprovingId(req.id);
     try {
-      const payload = {
+      const payload = {                                           
         requestId: req.id,
         adminUserId: Number(localStorage.getItem("CompanyId")) || 0
       };
@@ -453,11 +515,11 @@ const SubscriptionPage = () => {
     { user: "Charlie Brown", role: "Bench Sales", usage: 450 },
   ];
 
-  const paymentHistoryData = [
-    { date: "Sep 12, 2023", description: "Professional Plan (Annual)", amount: "$2,388.00", status: "PAID", invoice: "#INV-20230912-01" },
-    { date: "Aug 12, 2023", description: "Professional Plan (Annual)", amount: "$2,388.00", status: "PAID", invoice: "#INV-20230812-01" },
-    { date: "Jul 12, 2023", description: "Professional Plan (Annual)", amount: "$2,388.00", status: "PAID", invoice: "#INV-20230712-01" },
-  ];
+  const livePaymentHistory = Array.isArray(paymentHistoryApiData?.data)
+    ? paymentHistoryApiData.data
+    : Array.isArray(paymentHistoryApiData)
+    ? paymentHistoryApiData
+    : [];
 
   const getPlanPrice = (planId) => {
     if (planId === "free_trial") return "$0";
@@ -996,11 +1058,21 @@ const SubscriptionPage = () => {
                           <div className="stat-title">Total Billed (YTD)</div>
                           <div className="stat-icon-box"><CreditCard size={16} /></div>
                         </div>
-                        <div className="stat-number">$7,164</div>
-                        <div className="stat-footer-row">
-                          <span>3 payments made</span>
+                        <div className="stat-number">
+                          {isBillingSummaryLoading
+                            ? "..."
+                            : `$${Number(billingSummary?.totalAmountPerAnnum ?? 0).toLocaleString()}`}
                         </div>
-                        <div className="green-badge">+3</div>
+                        <div className="stat-footer-row">
+                          <span>
+                            {livePaymentHistory.length > 0
+                              ? `${livePaymentHistory.length} payments made`
+                              : "Annual Total"}
+                          </span>
+                        </div>
+                        <div className="green-badge">
+                          {livePaymentHistory.length > 0 ? `+${livePaymentHistory.length}` : "+0"}
+                        </div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
                         <div className="stat-bg-icon stat-bg-blue"><CreditCard size={120} /></div>
                       </div>
@@ -1011,11 +1083,23 @@ const SubscriptionPage = () => {
                           <div className="stat-title">Next Payment Due</div>
                           <div className="stat-icon-box"><Clock size={16} /></div>
                         </div>
-                        <div className="stat-number">$2,388</div>
-                        <div className="stat-footer-row">
-                          <span>Due Aug 12, 2026</span>
+                        <div className="stat-number">
+                          {isBillingSummaryLoading
+                            ? "..."
+                            : `$${Number(billingSummary?.nextPaymentAmount ?? 0).toLocaleString()}`}
                         </div>
-                        <div className="green-badge">Aug</div>
+                        <div className="stat-footer-row">
+                          <span>
+                            {billingSummary?.nextPaymentDate
+                              ? `Due ${new Date(billingSummary.nextPaymentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                              : "Due N/A"}
+                          </span>
+                        </div>
+                        <div className="green-badge">
+                          {billingSummary?.nextPaymentDate
+                            ? new Date(billingSummary.nextPaymentDate).toLocaleDateString('en-US', { month: 'short' })
+                            : "N/A"}
+                        </div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
                         <div className="stat-bg-icon stat-bg-blue"><Clock size={120} /></div>
                       </div>
@@ -1026,9 +1110,15 @@ const SubscriptionPage = () => {
                           <div className="stat-title">Active Plan</div>
                           <div className="stat-icon-box"><Sparkles size={16} /></div>
                         </div>
-                        <div className="stat-number stat-number-pro">Professional</div>
+                        <div className="stat-number stat-number-pro">
+                          {isBillingSummaryLoading ? "..." : (billingSummary?.planName || "Free Trial")}
+                        </div>
                         <div className="stat-footer-row">
-                          <span>Annual · Renews Jul 2026</span>
+                          <span>
+                            {billingSummary?.nextPaymentDate
+                              ? `Annual · Renews ${new Date(billingSummary.nextPaymentDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
+                              : "Active Plan"}
+                          </span>
                         </div>
                         <div className="green-badge">Active</div>
                         <div className="stat-bottom-link">↗ Optimal Flow</div>
@@ -1049,32 +1139,55 @@ const SubscriptionPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {paymentHistoryData.map((ph, idx) => (
-                            <tr key={idx}>
-                              <td className="ph-date-td">{ph.date}</td>
-                              <td>
-                                <div className="ph-desc-container">
-                                  <FileText size={13} className="ph-desc-icon" />
-                                  {ph.description}
-                                </div>
-                              </td>
-                              <td className="ph-amount-td">
-                                {ph.amount}
-                              </td>
-                              <td>
-                                <span className="job-chip mint">{ph.status}</span>
-                              </td>
-                              <td>
-                                <button
-                                  className="invoice-link-btn invoice-flex"
-                                  onClick={() => toast.success(`Invoice ${ph.invoice} downloaded successfully!`)}
-                                >
-                                  <Download size={11} />
-                                  {ph.invoice}
-                                </button>
+                          {isPaymentHistoryLoading ? (
+                            <tr>
+                              <td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
+                                Loading billing history...
                               </td>
                             </tr>
-                          ))}
+                          ) : livePaymentHistory.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
+                                No billing history found.
+                              </td>
+                            </tr>
+                          ) : (
+                            livePaymentHistory.map((ph, idx) => {
+                              const dateStr = ph.createdOn
+                                ? new Date(ph.createdOn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                                : 'N/A';
+                              const tokens = ph.description ? `${Number(ph.description).toLocaleString()} Tokens` : '—';
+                              const amountStr = ph.amount != null ? `$${Number(ph.amount).toFixed(2)}` : '—';
+                              const statusLabel = (ph.paymentStatus || 'N/A').toUpperCase();
+                              const invoiceLabel = `#INV-${ph.id || idx + 1}`;
+                              return (
+                                <tr key={ph.id ?? idx}>
+                                  <td className="ph-date-td">{dateStr}</td>
+                                  <td>
+                                    <div className="ph-desc-container">
+                                      <FileText size={13} className="ph-desc-icon" />
+                                      {tokens}
+                                    </div>
+                                  </td>
+                                  <td className="ph-amount-td">{amountStr}</td>
+                                  <td>
+                                    <span className={`job-chip ${statusLabel === 'SUCCEEDED' ? 'mint' : statusLabel === 'REFUNDED' ? 'amber' : 'red'}`}>
+                                      {statusLabel}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <button
+                                      className="invoice-link-btn invoice-flex"
+                                      onClick={() => toast.success(`Invoice ${invoiceLabel} downloaded successfully!`)}
+                                    >
+                                      <Download size={11} />
+                                      {invoiceLabel}
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -1464,7 +1577,12 @@ const SubscriptionPage = () => {
                     </div>
 
                     <div
-                      onClick={() => setSelectedPaymentMethod("new_card")}
+                      onClick={() => {
+                        setSelectedPaymentMethod("new_card");
+                        // Reset stripe form when switching back to new card
+                        setShowStripe(false);
+                        setClientSecret("");
+                      }}
                       className={`stripe-payment-selector-card ${selectedPaymentMethod === "new_card" ? "selected" : ""}`}
                     >
                       <div className="selector-card-left">
@@ -1490,70 +1608,33 @@ const SubscriptionPage = () => {
                 </div>
 
                 {/* Stripe Credit Card Form */}
-                {selectedPaymentMethod === "new_card" && (
-                  <div className="psm-divider-top">
-                    <label className="stripe-label mb-8">New Card Details</label>
-                    <div className="stripe-input-group">
-                      {/* Card Number */}
-                      <div className="stripe-input-cell">
-                        <span className="stripe-input-label">Card Number</span>
-                        <input
-                          type="text"
-                          placeholder="4242 4242 4242 4242"
-                          className="stripe-input-field"
-                          value={stripeCardNumber}
-                          onChange={(e) => setStripeCardNumber(e.target.value)}
-                        />
-                      </div>
-                      {/* Expiry and CVC row */}
-                      <div className="stripe-input-row">
-                        <div className="stripe-input-cell">
-                          <span className="stripe-input-label">Expiration</span>
-                          <input
-                            type="text"
-                            placeholder="MM / YY"
-                            className="stripe-input-field"
-                            value={stripeExpiry}
-                            onChange={(e) => setStripeExpiry(e.target.value)}
-                          />
-                        </div>
-                        <div className="stripe-input-cell">
-                          <span className="stripe-input-label">CVC</span>
-                          <input
-                            type="text"
-                            placeholder="123"
-                            className="stripe-input-field"
-                            maxLength={4}
-                            value={stripeCvc}
-                            onChange={(e) => setStripeCvc(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="stripe-field-container">
-                      <span className="stripe-label">Cardholder Name</span>
-                      <input
-                        type="text"
-                        placeholder="Jane Smith"
-                        className="stripe-field-input"
-                        value={stripeName}
-                        onChange={(e) => setStripeName(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="stripe-field-container">
-                      <span className="stripe-label">ZIP / Postal Code</span>
-                      <input
-                        type="text"
-                        placeholder="10001"
-                        className="stripe-field-input"
-                        value={stripeZip}
-                        onChange={(e) => setStripeZip(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
+                {showStripe && clientSecret && (
+    <Elements
+        stripe={stripePromise}
+        options={{
+            clientSecret,
+            appearance: {
+                theme: "stripe",
+            },
+        }}
+    >
+        <StripeCheckout
+            formRef={stripeFormRef}
+            selectedPkg={selectedPkg}
+            setIsAddTokensOpen={setIsAddTokensOpen}
+            refetchDashboard={refetchDashboard}
+            setShowStripe={setShowStripe}
+            setClientSecret={setClientSecret}
+            onLoadingChange={(loading) => setIsPaying(loading)}
+            onPaymentSuccess={() => {
+                toast.success(
+                    `${selectedPkg.tokens.toLocaleString()} Tokens Added Successfully`
+                );
+                refetchDashboard();
+            }}
+        />
+    </Elements>
+)}
 
                 <div className="psm-summary-box">
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748b" }}>Total Payment:</span>
@@ -1572,7 +1653,16 @@ const SubscriptionPage = () => {
                 </button>
                 <button
                   className="btn-primary"
-                  onClick={handlePayAddTokens}
+                  onClick={() => {
+                    if (selectedPaymentMethod === "new_card" && showStripe && stripeFormRef.current) {
+                      // Submit the Stripe form directly via ref
+                      stripeFormRef.current.dispatchEvent(
+                        new Event("submit", { cancelable: true, bubbles: true })
+                      );
+                    } else {
+                      handlePayAddTokens();
+                    }
+                  }}
                   disabled={isPaying}
                 >
                   {isPaying ? (

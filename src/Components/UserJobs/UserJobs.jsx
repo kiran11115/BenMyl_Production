@@ -12,7 +12,7 @@ import JobFilters from "../Filters/JobFilters";
 import JobModal from "./JobModal";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
 import "./Jobs.css";
-import { useGetFindJobsMutation } from "../../State-Management/Api/ProjectApiSlice";
+import { useGetFindJobsMutation, useGetFindJobsIndMutation } from "../../State-Management/Api/ProjectApiSlice";
 import NoData from "../UploadTalent/NoData";
 import { useLocation } from "react-router-dom";
 
@@ -131,6 +131,8 @@ const getInitials = (name = "") => {
 const UserJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const companyId = localStorage.getItem("logincompanyid");
+  const countryRegistration = Number(localStorage.getItem("countryRegistration") || 1);
+  const isIND = countryRegistration === 2;
   const location = useLocation();
   const roleFromProfile = location.state?.role;
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -163,7 +165,10 @@ const UserJobs = () => {
 
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
-  const [getTalentJobs, { isLoading }] = useGetFindJobsMutation();
+  const [getFindJobsUS, { isLoading: isLoadingUS }] = useGetFindJobsMutation();
+  const [getFindJobsInd, { isLoading: isLoadingIND }] = useGetFindJobsIndMutation();
+  const getTalentJobs = isIND ? getFindJobsInd : getFindJobsUS;
+  const isLoading = isIND ? isLoadingIND : isLoadingUS;
 
   const [filters, setFilters] = useState(() => {
     const saved = sessionStorage.getItem("userJobsFilters");
@@ -440,6 +445,67 @@ const UserJobs = () => {
   // NORMALIZE API DATA → UI
   // =========================
   const jobs = useMemo(() => {
+    if (isIND) {
+      // India API (getuatfindjobs_ind) field mapping
+      return allJobs.map((job) => {
+        const currency = job.currency === "INR" ? "₹" : "$";
+        const min = job.minSalary;
+        const max = job.maxSalary;
+        const rateText =
+          min && max && max > 0
+            ? `${currency}${min.toLocaleString("en-IN")}-${max.toLocaleString("en-IN")}`
+            : min
+            ? `${currency}${min.toLocaleString("en-IN")}`
+            : "N/A";
+
+        const rawSalaryType = (job.salaryType || "").toLowerCase();
+        const salaryType = rawSalaryType.includes("entire") || rawSalaryType.includes("budget") || rawSalaryType.includes("fixed")
+          ? "- Budget"
+          : rawSalaryType.includes("month")
+          ? "/Month"
+          : rawSalaryType.includes("hour") || rawSalaryType.includes("hourly")
+          ? "/Hr"
+          : rawSalaryType.includes("annual") || rawSalaryType.includes("year")
+          ? "/Year"
+          : "/Hr";
+
+        const locationParts = [job.city, job.state, job.country].filter(Boolean);
+        const location = locationParts.join(", ");
+
+        return {
+          id: job.jobId,
+          title: job.jobTitle,
+          company: job.companyName,
+          location,
+          type: job.employmentType,
+          workModel: job.workMode,
+          department: job.department,
+          jobDuration: job.jobDuration,
+          userId: job.userId,
+          jobDurationText: job.employmentDuration || (job.jobDuration ? `${job.jobDuration} Months` : null),
+          rateText,
+          salaryType,
+          experienceText: job.experienceRequired != null ? `${job.experienceRequired} Yrs` : null,
+          description: job.jobSummary || job.responsibilities || "",
+          additionalRequirements: job.qualifications || job.benefits || "",
+          educationLevel: job.education,
+          yearsOfExperience: job.experienceRequired,
+          skills: job.requiredSkills
+            ? job.requiredSkills.split(",").map((s) => s.trim())
+            : [],
+          workAuthorization: [],
+          postedOnText: formatPostedDate(job.createdDate || job.createdOn),
+          isShortlisted: Boolean(job.isShortlisted),
+          preferredEmployment: [],
+          numberOfOpenings: job.numberOfOpenings,
+          immediateJoiner: job.immediateJoiner,
+          noticePeriod: job.noticePeriod,
+          shiftType: job.shiftType,
+        };
+      });
+    }
+
+    // US API (getuatfindjobs) field mapping
     return allJobs.map((job) => ({
       id: job.jobID,
       title: job.jobTitle,
@@ -491,7 +557,7 @@ const UserJobs = () => {
         job.isContractToHire && "Contract to Hire",
       ].filter(Boolean),
     }));
-  }, [allJobs]);
+  }, [allJobs, isIND]);
 
   // Client-side search filtering (fast visual refinement)
   const filteredJobs = useMemo(() => {

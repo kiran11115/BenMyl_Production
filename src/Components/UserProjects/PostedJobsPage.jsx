@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import PostedJobs from "./PostedJobs";
 import StatsRow from "./StatsRow";
-import { useGetGroupedJobTitlesQuery } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useMemo, useState, useEffect } from "react";
 import "./Projects.css";
 
@@ -13,7 +13,14 @@ export default function PostedJobsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [showStats, setShowStats] = useState(false);
     const userId = localStorage.getItem("CompanyId");
-    const { data: apiJobs = [], isLoading } = useGetGroupedJobTitlesQuery(userId);
+    const countryRegistration = Number(localStorage.getItem("countryRegistration") || 1);
+    const isIND = countryRegistration === 2;
+
+    const { data: usJobs = [], isLoading: isUSLoading } = useGetGroupedJobTitlesQuery(userId, { skip: isIND });
+    const { data: indJobs = [], isLoading: isINDLoading } = useGetJobPostingINDQuery(userId, { skip: !isIND });
+
+    const apiJobs = isIND ? indJobs : usJobs;
+    const isLoading = isIND ? isINDLoading : isUSLoading;
 
     useEffect(() => {
         const linkedinStatus = searchParams.get("linkedin");
@@ -26,10 +33,14 @@ export default function PostedJobsPage() {
 
     const jobStats = useMemo(() => {
         if (!Array.isArray(apiJobs)) return [];
-        const remoteJobs = apiJobs.filter((j) => j.workModels === "Remote").length;
+        // IND uses workMode/employmentType, US uses workModels/employeeType
+        const remoteJobs = apiJobs.filter((j) => (j.workMode ?? j.workModels) === "Remote").length;
         const fullTimeJobs = apiJobs.filter((j) =>
-            j.employeeType?.includes("Full-time")
+            (j.employmentType ?? j.employeeType ?? "")?.includes("Full-time")
         ).length;
+        const activeJobs = isIND
+            ? apiJobs.filter((j) => (j.jobStatus ?? "active").toLowerCase() === "active").length
+            : apiJobs.length;
 
         return [
             {
@@ -61,7 +72,7 @@ export default function PostedJobsPage() {
             },
             {
                 label: "Active Listings",
-                value: apiJobs.length,
+                value: activeJobs,
                 trend: "Live now",
                 isPositive: true,
                 icon: FiZap,
@@ -69,7 +80,7 @@ export default function PostedJobsPage() {
                 bubbleColor: "#a855f7",
             },
         ];
-    }, [apiJobs]);
+    }, [apiJobs, isIND]);
 
     return (
         <div className="projects-page-wrapper">

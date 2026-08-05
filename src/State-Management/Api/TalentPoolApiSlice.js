@@ -27,6 +27,22 @@ getGroupedJobTitles: builder.query({
   providesTags: ["JobFilter"],
 }),
 
+getJobPostingIND: builder.query({
+  query: (userId) => ({
+    url: `/api/uatcompany/GetJobPosting_IND?userId=${userId}`,
+    method: "GET",
+  }),
+  providesTags: ["JobFilter"],
+}),
+
+getJobPostingINDById: builder.query({
+  query: ({ jobId, userId }) => ({
+    url: `/api/uatcompany/GetJobPosting_IND?jobId=${jobId}&userId=${userId}`,
+    method: "GET",
+  }),
+  providesTags: ["JobFilter"],
+}),
+
 getJobById: builder.query({
   query: ({ jobId, userId }) => ({
     url: `/api/uatcompany/getalljobs?jobId=${jobId}&userId=${userId}`,
@@ -80,4 +96,4 @@ getEmployeeProfessionalDetails: builder.query({
   }),
 });
 
-export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation,useGetAllRoleNamesQuery,useAddEmployeeProfessionalDetailsMutation,useGetEmployeeProfessionalDetailsQuery } = TalentPoolApiSlice;
+export const { useTalentPoolMutation,useLazyGetEmployeeTalentProfileQuery,useGetGroupedJobTitlesQuery,useGetJobPostingINDQuery,useGetJobPostingINDByIdQuery,useLazyGetJobPostingINDByIdQuery,useLazyGetJobByIdQuery,useSendInviteNotificationMutation,useGetRecommendJobsListMutation,useGetAllRoleNamesQuery,useAddEmployeeProfessionalDetailsMutation,useGetEmployeeProfessionalDetailsQuery } = TalentPoolApiSlice;

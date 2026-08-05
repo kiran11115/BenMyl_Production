@@ -29,7 +29,7 @@ import TalentFilters from "../Filters/TalentFilters";
 import HorizontalTalentFilters from "../Filters/HorizontalTalentFilters";
 import JobOverviewCard from "./JobOverviewCard";
 import FilterBottomSheet from "../Common/FilterBottomSheet";
-import { useGetGroupedJobTitlesQuery, useLazyGetJobByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
+import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery, useLazyGetJobByIdQuery, useLazyGetJobPostingINDByIdQuery, useSendInviteNotificationMutation, useTalentPoolMutation } from "../../State-Management/Api/TalentPoolApiSlice";
 import { useGetCompanyListQuery } from "../../State-Management/Api/CompanyApiSlice";
 import NoData from "../UploadTalent/NoData";
 import { calculateTotalExperience } from "../../Utils/experienceUtils";
@@ -865,14 +865,22 @@ const TalentPool = () => {
     }
   }, [appliedFilters]);
 
+
   const [showCreateJobModal, setShowCreateJobModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loadingShortlistId, setLoadingShortlistId] = useState(null);
 
   const activeJobId = selectedJobId;
 
-  const { data: jobTitles = [] } = useGetGroupedJobTitlesQuery(userId);
+  const countryRegistration = Number(localStorage.getItem("countryRegistration") || 1);
+  const isIND = countryRegistration === 2;
+
+  const { data: usJobTitles = [] } = useGetGroupedJobTitlesQuery(userId, { skip: isIND });
+  const { data: indJobTitles = [] } = useGetJobPostingINDQuery(userId, { skip: !isIND });
+
+  const jobTitles = isIND ? indJobTitles : usJobTitles;
   const [getJobById, { data: jobDetails }] = useLazyGetJobByIdQuery();
+  const [getJobPostingINDById] = useLazyGetJobPostingINDByIdQuery();
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
@@ -1085,13 +1093,16 @@ const TalentPool = () => {
 
     const colorPalette = ["#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
-    return jobTitles.map((job, index) => ({
-      id: `job-${job.jobID}`,      // 🔥 unique per job
-      jobID: job.jobID,            // backend id
-      title: job.jobTitle,
-      companyName: job.companyName,
-      color: colorPalette[index % colorPalette.length],
-    }));
+    return jobTitles.map((job, index) => {
+      const jobIdVal = job.jobId ?? job.jobID;
+      return {
+        id: `job-${jobIdVal}`,      // 🔥 unique per job
+        jobID: jobIdVal,            // backend id
+        title: job.jobTitle,
+        companyName: job.companyName,
+        color: colorPalette[index % colorPalette.length],
+      };
+    });
   }, [jobTitles]);
 
   const allSkills = useMemo(() => {
@@ -1232,23 +1243,47 @@ const TalentPool = () => {
   const activeJobColor = activeJob?.color || "#4f46e5";
 
   const allJobOverviewData = useMemo(() => {
-    return allSelectedJobDetails.map((details) => ({
-      id: details.jobID,
-      title: details.jobTitle,
-      company: details.companyName,
-      location: details.location,
-      budget:
-        details.salaryRange_Min && details.salaryRange_Max
-          ? `${details.salaryRange_Min} - ${details.salaryRange_Max}`
-          : `${details.salaryRange_Min || ""}`,
-      experience: details.yearsofExperience || details.experienceLevel,
-      type: details.employeeType,
-      salaryType: details.salarType,
-      description: details.jobDescription,
-      requiredSkills: details.requiredSkills
-        ? details.requiredSkills.split(",").map((s) => s.trim())
-        : [],
-    }));
+    return allSelectedJobDetails.map((details) => {
+      // IND: jobId, workMode, minSalary, maxSalary, currency, employmentType, jobSummary, experienceRequired, education
+      // US:  jobID, workModels, salaryRange_Min, salaryRange_Max, salarType, employeeType, jobDescription, yearsofExperience, educationLevel
+      const currSym = details.currency === "INR" ? "₹" : (details.currency === "USD" ? "$" : (details.currency || "$"));
+      const minSal = details.minSalary ?? details.salaryRange_Min;
+      const maxSal = details.maxSalary ?? details.salaryRange_Max;
+      return {
+        id: details.jobId ?? details.jobID,
+        title: details.jobTitle,
+        company: details.companyName,
+        location: details.location || [details.city, details.state, details.country].filter(Boolean).join(", "),
+        budget:
+          minSal && maxSal
+            ? `${currSym}${minSal} - ${currSym}${maxSal}`
+            : minSal ? `${currSym}${minSal}` : "",
+        // Keep raw fields for JobOverviewCard compatibility
+        salaryRange_Min: minSal,
+        salaryRange_Max: maxSal,
+        currency: details.currency,
+        experience: details.experienceRequired ?? details.yearsofExperience ?? details.yearsOfExperience ?? details.experienceLevel,
+        yearsofExperience: details.experienceRequired ?? details.yearsofExperience ?? details.yearsOfExperience ?? details.experienceLevel,
+        type: details.employmentType ?? details.employeeType,
+        salaryType: details.salaryType ?? details.salarType,
+        salarType: details.salaryType ?? details.salarType,
+        description: details.jobSummary ?? details.jobDescription,
+        jobDescription: details.jobSummary ?? details.jobDescription,
+        workModels: details.workMode ?? details.workModels,
+        educationLevel: details.education ?? details.educationLevel ?? details.highestQualification,
+        createdOn: details.createdOn || details.postedDate,
+        requiredSkills: details.requiredSkills
+          ? details.requiredSkills.split(",").map((s) => s.trim())
+          : [],
+        // Pass through work-auth flags (US only, harmless for IND)
+        isOPT: details.isOPT, isCPT: details.isCPT, isH1B: details.isH1B,
+        isEAD: details.isEAD, isGC: details.isGC, isH4: details.isH4,
+        isUSCitizen: details.isUSCitizen,
+        isCorpToCorp: details.isCorpToCorp, isW2Permanent: details.isW2Permanent,
+        isW2Contract: details.isW2Contract, is1099Contract: details.is1099Contract,
+        isContractToHire: details.isContractToHire,
+      };
+    });
   }, [allSelectedJobDetails]);
 
   useEffect(() => {
@@ -1263,15 +1298,22 @@ const TalentPool = () => {
       const detailsPromises = selectedJobIds.map((id) => {
         const job = jobs.find((j) => j.id === id);
         if (!job) return null;
+        if (isIND) {
+          return getJobPostingINDById({ jobId: job.jobID, userId }).unwrap();
+        }
         return getJobById({ jobId: job.jobID, userId }).unwrap();
       });
 
       const results = await Promise.all(detailsPromises);
       if (!isMounted) return;
 
+      // IND API may return an array or single object; US always returns array
       const validDetails = results
         .filter(Boolean)
-        .map((res) => res?.[0])
+        .flatMap((res) => {
+          if (Array.isArray(res)) return res.filter(Boolean);
+          return [res];
+        })
         .filter(Boolean);
       setAllSelectedJobDetails(validDetails);
     };
@@ -1280,7 +1322,7 @@ const TalentPool = () => {
     return () => {
       isMounted = false;
     };
-  }, [appliedFilters?.selectedJobs, jobs, userId]);
+  }, [appliedFilters?.selectedJobs, jobs, userId, isIND]);
 
 
   const handleShortlist = (candidate) => {
