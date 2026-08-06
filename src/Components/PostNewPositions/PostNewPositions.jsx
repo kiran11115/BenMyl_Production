@@ -71,9 +71,9 @@ const indiaValidationSchema = Yup.object().shape({
   yearsExperience: Yup.number().typeError("Enter number").required("Required"),
   highestQualification: Yup.string().required("Highest Qualification is required"),
   numberOfOpenings: Yup.number().typeError("Enter valid number").min(1, "At least 1 opening").required("Required"),
-  aadhaarNumber: Yup.string().nullable().test('aadhaar-format', 'Must be a 12-digit Aadhaar number', val => !val || /^\d{12}$/.test(val.replace(/\s/g, ''))),
-  panNumber: Yup.string().nullable().test('pan-format', 'Invalid PAN format (e.g. ABCDE1234F)', val => !val || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(val.trim())),
-  portfolioURL: Yup.string().nullable().url("Must be a valid URL (http/https)"),
+  aadhaarNumber: Yup.string().nullable(),
+  panNumber: Yup.string().nullable(),
+  portfolioURL: Yup.string().nullable(),
 });
 
 const PostNewPositions = () => {
@@ -1687,9 +1687,10 @@ const PostNewPositions = () => {
                   {err("experienceLevel")}
                 </div>
 
-                <div>
-                  <label className="auth-label">Education Standard<span style={{ color: '#ef4444' }}> *</span></label>
-                  <div className="currency-popover-anchor" ref={eduRef} style={{ width: '100%' }}>
+                {formRegion !== 'IND' && (
+                  <div>
+                    <label className="auth-label">Education Standard<span style={{ color: '#ef4444' }}> *</span></label>
+                    <div className="currency-popover-anchor" ref={eduRef} style={{ width: '100%' }}>
                     <button
                       type="button"
                       className="auth-input placeholder-text"
@@ -1728,9 +1729,8 @@ const PostNewPositions = () => {
                   </div>
                   {err("educationLevel")}
                 </div>
-              </div>
+                )}
 
-              <div className="grid-4 mt-3">
                 <div className="auth-form-group w-100" style={{ marginBottom: 0 }}>
                   <label className="auth-label">Years of Experience<span style={{ color: '#ef4444' }}> *</span></label>
                   <div className="auth-password-wrapper">
@@ -1756,6 +1756,9 @@ const PostNewPositions = () => {
                   </div>
                   {err("yearsExperience")}
                 </div>
+              </div>
+
+              <div className="grid-4 mt-3">
 
                 {formRegion === 'IND' && (
                   <>
@@ -1807,7 +1810,7 @@ const PostNewPositions = () => {
                   </>
                 )}
 
-                <div className="auth-form-group" style={{ marginBottom: 0 }}>
+                <div className="auth-form-group" style={{ marginBottom: 0, gridColumn: 'span 2' }}>
                   <label className="auth-label">Required Skills<span style={{ color: '#ef4444' }}> *</span></label>
                   <input
                     className={`auth-input ${skillsTouched && skills.length === 0 ? 'input-error-border' : ''}`}
@@ -1844,95 +1847,53 @@ const PostNewPositions = () => {
             {formRegion === 'IND' && (
               <div style={{ marginBottom: '40px', background: '#fafafc', padding: '20px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
                 <span className="status-tag status-progress font-mono mb-3 d-inline-block" style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', background: '#e0e7ff', color: '#4338ca', padding: '4px 10px', borderRadius: '6px', fontWeight: 'bold' }}>
-                  3. Identity & Verification Requirements (India Compliance)
+                  3. Verification Requirements
                 </span>
 
-                <div className="grid-4 mt-2">
-                  <div>
-                    <label className="auth-label">Aadhaar Card Number</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '8px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
-                      className="auth-input"
+                      type="checkbox"
                       name="aadhaarNumber"
-                      placeholder="e.g. 1234 5678 9012"
-                      value={formik.values.aadhaarNumber}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      checked={!!formik.values.aadhaarNumber && formik.values.aadhaarNumber !== "false"}
+                      onChange={(e) => formik.setFieldValue("aadhaarNumber", e.target.checked ? "true" : "")}
+                      style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
-                    {err("aadhaarNumber")}
-                  </div>
+                    <span>Aadhaar Card</span>
+                  </label>
 
-                  <div>
-                    <label className="auth-label">PAN Card Number</label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
-                      className="auth-input"
+                      type="checkbox"
                       name="panNumber"
-                      placeholder="e.g. ABCDE1234F"
-                      style={{ textTransform: 'uppercase' }}
-                      value={formik.values.panNumber}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      checked={!!formik.values.panNumber && formik.values.panNumber !== "false"}
+                      onChange={(e) => formik.setFieldValue("panNumber", e.target.checked ? "true" : "")}
+                      style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
-                    {err("panNumber")}
-                  </div>
+                    <span>PAN Card</span>
+                  </label>
 
-                  <div>
-                    <label className="auth-label">Portfolio / Work URL</label>
-                    <div className="auth-input-wrapper">
-                      <input
-                        className="auth-input"
-                        name="portfolioURL"
-                        placeholder="https://myportfolio.com"
-                        value={formik.values.portfolioURL}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      />
-                    </div>
-                    {err("portfolioURL")}
-                  </div>
-
-                  <div>
-                    <label className="auth-label">Certifications</label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
-                      className="auth-input"
+                      type="checkbox"
+                      name="portfolioURL"
+                      checked={!!formik.values.portfolioURL && formik.values.portfolioURL !== "false"}
+                      onChange={(e) => formik.setFieldValue("portfolioURL", e.target.checked ? "true" : "")}
+                      style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
+                    />
+                    <span>Portfolio / Work URL</span>
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
+                    <input
+                      type="checkbox"
                       name="certifications"
-                      placeholder="e.g. AWS Certified, PMP"
-                      value={formik.values.certifications}
-                      onChange={formik.handleChange}
+                      checked={!!formik.values.certifications && formik.values.certifications !== "false"}
+                      onChange={(e) => formik.setFieldValue("certifications", e.target.checked ? "true" : "")}
+                      style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
-                  </div>
-                </div>
-
-                <div className="grid-3 mt-3">
-                  <div>
-                    <label className="auth-label">Aadhaar Document Path / File</label>
-                    <input
-                      className="auth-input"
-                      name="aadhaarPath"
-                      placeholder="Upload path or document URL"
-                      value={formik.values.aadhaarPath}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="auth-label">PAN Document Path / File</label>
-                    <input
-                      className="auth-input"
-                      name="panPath"
-                      placeholder="Upload path or document URL"
-                      value={formik.values.panPath}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="auth-label">Certificate Document Path / File</label>
-                    <input
-                      className="auth-input"
-                      name="certificatePath"
-                      placeholder="Upload path or certificate URL"
-                      value={formik.values.certificatePath}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
+                    <span>Certifications</span>
+                  </label>
                 </div>
 
                 {/* VERIFICATION CHECKBOXES */}
@@ -2015,43 +1976,6 @@ const PostNewPositions = () => {
                 {err("description")}
               </div>
 
-              {formRegion === 'IND' && (
-                <div className="grid-3 mt-4">
-                  <div>
-                    <label className="auth-label">Responsibilities</label>
-                    <textarea
-                      className="auth-input"
-                      rows={3}
-                      placeholder="List key responsibilities..."
-                      name="responsibilities"
-                      value={formik.values.responsibilities}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="auth-label">Qualifications</label>
-                    <textarea
-                      className="auth-input"
-                      rows={3}
-                      placeholder="List qualifications required..."
-                      name="qualifications"
-                      value={formik.values.qualifications}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="auth-label">Benefits & Perks</label>
-                    <textarea
-                      className="auth-input"
-                      rows={3}
-                      placeholder="Health insurance, PF, Bonuses..."
-                      name="benefits"
-                      value={formik.values.benefits}
-                      onChange={formik.handleChange}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* ADDITIONAL REQUIREMENTS */}
