@@ -80,8 +80,17 @@ const PostNewPositions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const editData = location.state?.jobData;
-  const isEdit = location.state?.isEdit;
-  const JobID = location.state?.jobId;
+  const isEdit = Boolean(location.state?.isEdit || editData);
+  const JobID = Number(
+    location.state?.jobId ??
+    location.state?.jobID ??
+    location.state?.JobID ??
+    editData?.jobId ??
+    editData?.jobID ??
+    editData?.JobID ??
+    editData?.id ??
+    0
+  );
 
   // Toggle for Form Region Version ("US" vs "IND") based on countryRegistration from localStorage (1: US form, 2: IND form)
   const getInitialFormRegion = () => {
@@ -201,12 +210,12 @@ const PostNewPositions = () => {
   const countries = Country.getAllCountries();
 
   // Initialize States for India if default region is IND
-  useEffect(() => {
-    if (formRegion === 'IND' && !selectedCountry) {
-      setSelectedCountry('IN');
-      setStates(State.getStatesOfCountry('IN'));
-    }
-  }, [formRegion]);
+ useEffect(() => {
+  if (formRegion === "IND") {
+    setSelectedCountry("IN");
+    setStates(State.getStatesOfCountry("IN"));
+  }
+}, [formRegion]);
 
   const handleCountryChange = (countryCode) => {
     setSelectedCountry(countryCode);
@@ -304,7 +313,7 @@ const PostNewPositions = () => {
       jobTitle: editData?.jobTitle || autoFillRole || '',
       companyName: editData?.companyName || companyname || '',
       location: editData?.location || '',
-      country: editData?.country || (formRegion === 'IND' ? 'India' : ''),
+      country: editData?.country,
       state: editData?.state || '',
       city: editData?.city || '',
       employmentType: editData?.employmentType || editData?.employeeType || '',
@@ -328,16 +337,20 @@ const PostNewPositions = () => {
       immediateJoiner: editData?.immediateJoiner ?? false,
       noticePeriod: editData?.noticePeriod || '30 Days',
       shiftType: editData?.shiftType || 'Day Shift',
-      aadhaarNumber: editData?.aadhaarNumber || '',
-      panNumber: editData?.panNumber || '',
+      aadhaarNumber: (editData?.aadhaarNumber && editData.aadhaarNumber !== "true" && editData.aadhaarNumber !== "false") ? editData.aadhaarNumber : '',
+      panNumber: (editData?.panNumber && editData.panNumber !== "true" && editData.panNumber !== "false") ? editData.panNumber : '',
       aadhaarPath: editData?.aadhaarPath || '',
       panPath: editData?.panPath || '',
+      aadhaarCardRequired: Boolean(editData?.aadhaarCardRequired ?? (editData?.aadhaarNumber === "true" || editData?.aadhaarNumber === true)),
+      panCardRequired: Boolean(editData?.panCardRequired ?? (editData?.panNumber === "true" || editData?.panNumber === true)),
+      portfolioRequired: Boolean(editData?.portfolioRequired ?? (editData?.portfolioURL === "true" || editData?.portfolioURL === true)),
+      certificationsRequired: Boolean(editData?.certificationsRequired ?? (editData?.certifications === "true" || editData?.certifications === true)),
       highestQualification: editData?.highestQualification || editData?.educationLevel || '',
       degreeCourse: editData?.degreeCourse || '',
       graduationYear: editData?.graduationYear || '',
       certificatePath: editData?.certificatePath || '',
-      certifications: editData?.certifications || '',
-      portfolioURL: editData?.portfolioURL || '',
+      certifications: (editData?.certifications && editData.certifications !== "true" && editData.certifications !== "false") ? editData.certifications : '',
+      portfolioURL: (editData?.portfolioURL && editData.portfolioURL !== "true" && editData.portfolioURL !== "false") ? editData.portfolioURL : '',
       backgroundVerification: editData?.backgroundVerification ?? true,
       medicalFitness: editData?.medicalFitness ?? false,
       travelRequired: editData?.travelRequired ?? false,
@@ -397,7 +410,7 @@ const PostNewPositions = () => {
     if (countryRegistration === 2 || (countryRegStorage === null && formRegion === 'IND')) {
       // 🇮🇳 INDIA VERSION (countryRegistration === 2): POST /api/uatcompany/SaveJobPosting (JSON Payload)
       const indPayload = {
-        jobId: Number(isEdit ? JobID : 0),
+        jobId: Number(isEdit ? JobID : 0) || 0,
         companyId: Number(companyId || 0),
         userId: Number(user || 0),
         jobTitle: formik.values.jobTitle || "",
@@ -425,6 +438,10 @@ const PostNewPositions = () => {
         panNumber: formik.values.panNumber || "",
         aadhaarPath: formik.values.aadhaarPath || "",
         panPath: formik.values.panPath || "",
+        aadhaarCardRequired: Boolean(formik.values.aadhaarCardRequired),
+        panCardRequired: Boolean(formik.values.panCardRequired),
+        portfolioRequired: Boolean(formik.values.portfolioRequired),
+        certificationsRequired: Boolean(formik.values.certificationsRequired),
         highestQualification: formik.values.highestQualification || "",
         degreeCourse: formik.values.degreeCourse || "",
         graduationYear: Number(formik.values.graduationYear || 0),
@@ -439,7 +456,8 @@ const PostNewPositions = () => {
         responsibilities: formik.values.responsibilities || "",
         qualifications: formik.values.qualifications || "",
         benefits: formik.values.benefits || "",
-        jobStatus: formik.values.JobStatus || "active"
+        jobStatus: formik.values.JobStatus || "active",
+        createdDate: editData?.createdDate || new Date().toISOString()
       };
 
       try {
@@ -557,6 +575,10 @@ const PostNewPositions = () => {
     fd.append("panNumber", formik.values.panNumber || "");
     fd.append("aadhaarPath", formik.values.aadhaarPath || "");
     fd.append("panPath", formik.values.panPath || "");
+    fd.append("aadhaarCardRequired", formik.values.aadhaarCardRequired);
+    fd.append("panCardRequired", formik.values.panCardRequired);
+    fd.append("portfolioRequired", formik.values.portfolioRequired);
+    fd.append("certificationsRequired", formik.values.certificationsRequired);
     fd.append("highestQualification", formik.values.highestQualification || "");
     fd.append("degreeCourse", formik.values.degreeCourse || "");
     fd.append("graduationYear", formik.values.graduationYear || 0);
@@ -571,6 +593,7 @@ const PostNewPositions = () => {
     fd.append("qualifications", formik.values.qualifications || "");
     fd.append("benefits", formik.values.benefits || "");
     fd.append("JobStatus", formik.values.JobStatus);
+    fd.append("createdDate", editData?.createdDate || new Date().toISOString());
 
     try {
       await saveJobDraft(fd).unwrap();
@@ -678,6 +701,46 @@ const PostNewPositions = () => {
       }
     }
   }, [editData]);
+
+ useEffect(() => {
+  if (!editData) return;
+
+  if (editData.country) {
+    const countryObj = Country.getAllCountries().find(
+      c => c.name === editData.country
+    );
+
+    if (countryObj) {
+      setSelectedCountry(countryObj.isoCode);
+
+      const states = State.getStatesOfCountry(countryObj.isoCode);
+      setStates(states);
+
+      const stateObj = states.find(
+        s => s.name === editData.state
+      );
+
+      if (stateObj) {
+        setSelectedState(stateObj.isoCode);
+
+        const cities = City.getCitiesOfState(
+          countryObj.isoCode,
+          stateObj.isoCode
+        );
+
+        setCities(cities);
+
+        setSelectedCity(editData.city);
+
+        // IMPORTANT
+        formik.setFieldValue(
+          "location",
+          `${editData.city}, ${editData.state}, ${editData.country}`
+        );
+      }
+    }
+  }
+}, [editData]);
 
   const handleGenerateAI = async () => {
     const selectedEmpTypes = formRegion === 'US'
@@ -1651,42 +1714,6 @@ const PostNewPositions = () => {
                   {err("department")}
                 </div>
 
-                <div>
-                  <label className="auth-label">Experience Level</label>
-                  <div className="currency-popover-anchor" ref={expRef} style={{ width: '100%' }}>
-                    <button
-                      type="button"
-                      className="auth-input placeholder-text"
-                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
-                      onClick={() => setShowExpPopover(v => !v)}
-                    >
-                      <span style={{ fontSize: '14px', color: formik.values.experienceLevel ? '#0f172a' : '#94a3b8' }}>
-                        {formik.values.experienceLevel || 'Select level'}
-                      </span>
-                      <ChevronDown size={16} className={`chevron ${showExpPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
-                    </button>
-                    {showExpPopover && (
-                      <div className="currency-popover" style={{ width: '100%' }}>
-                        {["Junior", "Mid-Level", "Senior"].map(e => (
-                          <button
-                            key={e}
-                            type="button"
-                            className={`currency-option ${formik.values.experienceLevel === e ? 'selected' : ''}`}
-                            onClick={() => {
-                              formik.setFieldValue('experienceLevel', e);
-                              setShowExpPopover(false);
-                            }}
-                          >
-                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{e}</span>
-                            {formik.values.experienceLevel === e && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {err("experienceLevel")}
-                </div>
-
                 {formRegion !== 'IND' && (
                   <div>
                     <label className="auth-label">Education Standard<span style={{ color: '#ef4444' }}> *</span></label>
@@ -1854,9 +1881,9 @@ const PostNewPositions = () => {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
                       type="checkbox"
-                      name="aadhaarNumber"
-                      checked={!!formik.values.aadhaarNumber && formik.values.aadhaarNumber !== "false"}
-                      onChange={(e) => formik.setFieldValue("aadhaarNumber", e.target.checked ? "true" : "")}
+                      name="aadhaarCardRequired"
+                      checked={formik.values.aadhaarCardRequired}
+                      onChange={formik.handleChange}
                       style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
                     <span>Aadhaar Card</span>
@@ -1865,9 +1892,9 @@ const PostNewPositions = () => {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
                       type="checkbox"
-                      name="panNumber"
-                      checked={!!formik.values.panNumber && formik.values.panNumber !== "false"}
-                      onChange={(e) => formik.setFieldValue("panNumber", e.target.checked ? "true" : "")}
+                      name="panCardRequired"
+                      checked={formik.values.panCardRequired}
+                      onChange={formik.handleChange}
                       style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
                     <span>PAN Card</span>
@@ -1876,9 +1903,9 @@ const PostNewPositions = () => {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
                       type="checkbox"
-                      name="portfolioURL"
-                      checked={!!formik.values.portfolioURL && formik.values.portfolioURL !== "false"}
-                      onChange={(e) => formik.setFieldValue("portfolioURL", e.target.checked ? "true" : "")}
+                      name="portfolioRequired"
+                      checked={formik.values.portfolioRequired}
+                      onChange={formik.handleChange}
                       style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
                     <span>Portfolio / Work URL</span>
@@ -1887,9 +1914,9 @@ const PostNewPositions = () => {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
                     <input
                       type="checkbox"
-                      name="certifications"
-                      checked={!!formik.values.certifications && formik.values.certifications !== "false"}
-                      onChange={(e) => formik.setFieldValue("certifications", e.target.checked ? "true" : "")}
+                      name="certificationsRequired"
+                      checked={formik.values.certificationsRequired}
+                      onChange={formik.handleChange}
                       style={{ width: '16px', height: '16px', accentColor: '#4338ca' }}
                     />
                     <span>Certifications</span>
