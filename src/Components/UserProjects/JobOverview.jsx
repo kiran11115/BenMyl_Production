@@ -504,49 +504,51 @@ const JobOverview = () => {
 
       <div className="dashboard-layout">
         {/* LEFT MAIN CONTENT */}
-        <div className="dashboard-column-main card-base">
+        <div className="dashboard-column-main job-overview-premium-card" style={{ padding: '20px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           {/* Job Header */}
-          <div className="job-card-top">
-            <div className="company-icon-box large">
-              <FiBriefcase size={20} />
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <div style={{ width: '44px', height: '44px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0f172a' }}>
+                <FiBriefcase size={20} strokeWidth={1.5} />
+              </div>
 
-            <div className="job-header-info">
-              <h3 className="job-title">
-                {job?.jobTitle || "Job Title"}
-              </h3>
-              <p className="company-name">
-                {job?.companyName || "Company Name"}
-              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#0f172a', letterSpacing: '-0.01em', lineHeight: '1.2' }}>
+                  {job?.jobTitle || "Job Title"}
+                </h3>
+                <p style={{ margin: 0, fontSize: '13px', color: '#475569', fontWeight: '500' }}>
+                  {job?.companyName || "Company Name"}
+                </p>
 
-              <div className="d-flex gap-3">
-                <div className="meta-item">
-                  <FiMapPin size={12} />
-                  {job?.location || [job?.city, job?.state, job?.country].filter(Boolean).join(", ") || "Location"}
-                </div>
+                <div style={{ display: 'flex', gap: '14px', fontSize: '12px', color: '#64748b', fontWeight: '400', marginTop: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <FiMapPin size={13} color="#94a3b8" />
+                    {job?.location || [job?.city, job?.state, job?.country].filter(Boolean).join(", ") || "Location"}
+                  </div>
 
-                <div className="meta-item">
-                  <FiDollarSign size={12} />
-                  {(() => {
-                    const minSal = job?.minSalary ?? job?.salaryRange_Min;
-                    const maxSal = job?.maxSalary ?? job?.salaryRange_Max;
-                    const currSym = job?.currency === "INR" ? "₹" : (job?.currency === "USD" ? "$" : (job?.currency || "$"));
-                    if (minSal && maxSal) return `${currSym}${minSal} - ${currSym}${maxSal} ${salaryType}`;
-                    if (minSal) return `${currSym}${minSal} ${salaryType}`;
-                    return "";
-                  })()}
-                </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <FiDollarSign size={13} color="#94a3b8" />
+                    {(() => {
+                      const minSal = job?.minSalary ?? job?.salaryRange_Min;
+                      const maxSal = job?.maxSalary ?? job?.salaryRange_Max;
+                      const currSym = job?.currency === "INR" ? "₹" : (job?.currency === "USD" ? "$" : (job?.currency || "$"));
+                      if (minSal && maxSal) return `${currSym}${minSal} - ${currSym}${maxSal} ${salaryType}`;
+                      if (minSal) return `${currSym}${minSal} ${salaryType}`;
+                      return "Not Disclosed";
+                    })()}
+                  </div>
 
-                <div className="meta-item text-indigo">
-                  <FiClock size={12} />
-                  Posted on {formatPostedDate(job?.createdOn || job?.postedDate || job?.createdDate)}
+                  {(job?.createdOn || job?.postedDate || job?.createdDate) && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <FiClock size={13} color="#94a3b8" />
+                      Posted {formatPostedDate(job?.createdOn || job?.postedDate || job?.createdDate)}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* ── Find Talent / LinkedIn Share — above stats ── */}
             <div className="">
-              {/* <ShareJobCard job={job} /> */}
               {(!bids || !bids.some((bid) => bid.IsShortlisted)) && (
                 <button
                   className="routine-btn-2"
@@ -559,135 +561,127 @@ const JobOverview = () => {
             </div>
           </div>
 
-          <div className="d-flex">
-            {/* ── Multi-color Stat Grid + Work Auth ── */}
-            <div className="jov-auth-row">
-              {/* Stat Pills Row */}
-              <div className="jov-stat-pills">
-                {(job?.workMode || job?.workModels) && (
-                  <div className="jov-stat-pill">
-                    <span className="jov-auth-label">Work Model</span>
-                    <span className="job-chip green">{job.workMode || job.workModels}</span>
-                  </div>
-                )}
-                {(job?.experienceRequired !== undefined || job?.yearsOfExperience || job?.yearsofExperience) && (
-                  <div className="jov-stat-pill">
-                    <span className="jov-auth-label">Experience</span>
-                    <span className="job-chip purple">{job?.experienceRequired ?? job?.yearsOfExperience ?? job?.yearsofExperience} yrs</span>
-                  </div>
-                )}
-                {(job?.education || job?.educationLevel || job?.highestQualification) && (
-                  <div className="jov-stat-pill">
-                    <span className="jov-auth-label">Education</span>
-                    <span className="job-chip mint">{job.education || job.educationLevel || job.highestQualification}</span>
-                  </div>
-                )}
-                {job?.numberOfOpenings && (
-                  <div className="jov-stat-pill">
-                    <span className="jov-auth-label">Openings</span>
-                    <span className="job-chip blue">{job.numberOfOpenings}</span>
-                  </div>
-                )}
-                {job?.noticePeriod && (
-                  <div className="jov-stat-pill">
-                    <span className="jov-auth-label">Notice Period</span>
-                    <span className="job-chip orange">{job.noticePeriod}</span>
-                  </div>
-                )}
-
-
-                {/* Work Auth Chips inline */}
-                {(() => {
-                  const auths = [
-                    { label: "OPT", val: job?.isOPT },
-                    { label: "CPT", val: job?.isCPT },
-                    { label: "H1B", val: job?.isH1B },
-                    { label: "EAD", val: job?.isEAD },
-                    { label: "GC", val: job?.isGC },
-                    { label: "H4", val: job?.isH4 },
-                    { label: "US Citizen", val: job?.isUSCitizen },
-                  ].filter(a => a.val === true);
-
-                  const prefs = [
-                    { label: "Corp-Corp", val: job?.isCorpToCorp },
-                    { label: "W2-Perm", val: job?.isW2Permanent },
-                    { label: "W2-Contract", val: job?.isW2Contract },
-                    { label: "1099", val: job?.is1099Contract },
-                    { label: "C2H", val: job?.isContractToHire },
-                  ].filter(a => a.val === true);
-
-                  if (!auths.length && !prefs.length) return null;
-                  return (
-                    <div className="d-flex gap-4 align-items-center">
-                      {auths.length > 0 && (
-                        <div className="jov-auth-group">
-                          <span className="jov-auth-label">Work Auth</span>
-                          <div className="jov-auth-chips">
-                            {auths.map(a => (
-                              <span key={a.label} className="job-chip orange">{a.label}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {prefs.length > 0 && (
-                        <div className="jov-auth-group">
-                          <span className="jov-auth-label">Employment Pref</span>
-                          <div className="jov-auth-chips">
-                            {prefs.map(p => (
-                              <span key={p.label} className="job-chip pink">{p.label}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                  );
-                })()}
+          {/* Grid of Key Info */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', marginBottom: '16px' }}>
+            {(job?.workMode || job?.workModels) && (
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Work Model</div>
+                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '500' }}>{job.workMode || job.workModels}</div>
               </div>
-            </div>
-
-
-
+            )}
+            {(job?.experienceRequired !== undefined || job?.yearsOfExperience || job?.yearsofExperience) && (
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Experience</div>
+                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '500' }}>{job?.experienceRequired ?? job?.yearsOfExperience ?? job?.yearsofExperience} {String(job?.experienceRequired ?? job?.yearsOfExperience ?? job?.yearsofExperience).toLowerCase().includes('yr') ? '' : 'Yrs'}</div>
+              </div>
+            )}
+            {(job?.education || job?.educationLevel || job?.highestQualification) && (
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Education</div>
+                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '500' }}>{job.education || job.educationLevel || job.highestQualification}</div>
+              </div>
+            )}
+            {job?.numberOfOpenings && (
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Openings</div>
+                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '500' }}>{job.numberOfOpenings}</div>
+              </div>
+            )}
+            {job?.noticePeriod && (
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Notice Period</div>
+                <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: '500' }}>{job.noticePeriod}</div>
+              </div>
+            )}
+            {(() => {
+              const auths = [
+                { label: "OPT", val: job?.isOPT },
+                { label: "CPT", val: job?.isCPT },
+                { label: "H1B", val: job?.isH1B },
+                { label: "EAD", val: job?.isEAD },
+                { label: "GC", val: job?.isGC },
+                { label: "H4", val: job?.isH4 },
+                { label: "US Citizen", val: job?.isUSCitizen },
+              ].filter(a => a.val === true);
+              if(auths.length === 0) return null;
+              return (
+                <div>
+                  <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Work Auth</div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {auths.map(a => (
+                      <span key={a.label} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>{a.label}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+            {(() => {
+              const prefs = [
+                { label: "Corp-Corp", val: job?.isCorpToCorp },
+                { label: "W2-Perm", val: job?.isW2Permanent },
+                { label: "W2-Contract", val: job?.isW2Contract },
+                { label: "1099", val: job?.is1099Contract },
+                { label: "C2H", val: job?.isContractToHire },
+              ].filter(a => a.val === true);
+              if(prefs.length === 0) return null;
+              return (
+                <div>
+                  <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: '600', marginBottom: '4px' }}>Emp Preference</div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {prefs.map(p => (
+                      <span key={p.label} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500' }}>{p.label}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Job Description */}
-          <div className="drawer-section">
-            <h4>
-              <FiFileText size={13} /> Job Description
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a', marginBottom: '10px' }}>
+              Job Description
             </h4>
             {(job?.jobSummary || job?.jobDescription) ? (
               <div
-                className="google-jd-content"
+                className="google-jd-content premium-jd-content"
+                style={{ color: '#334155', lineHeight: '1.6', fontSize: '13px' }}
                 dangerouslySetInnerHTML={{
                   __html: formatMarkdownToHtml(job.jobSummary || job.jobDescription),
                 }}
               />
             ) : (
-              <p style={{ color: "#64748b" }}>
+              <p style={{ color: "#64748b", fontStyle: 'italic', fontSize: '13px' }}>
                 No description available for this job.
               </p>
             )}
           </div>
 
-          {/* Skills — multi-color pills */}
-          <div className="drawer-section mt-3">
-            <h4>
-              <FiLayers size={13} /> Required Skills
+          {/* Skills */}
+          <div>
+            <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a', marginBottom: '10px' }}>
+              Required Skills
             </h4>
-            <div className="skills-cloud">
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               {(
                 job?.requiredSkills?.split(",") || ["REACT", "HTML", "CSS", "JAVASCRIPT"]
-              ).map((skill, idx) => {
-                const c = getSkillColor(idx);
-                return (
-                  <span
-                    key={skill.trim()}
-                    className="job-chip orange"
-                  >
-                    {skill.trim()}
-                  </span>
-                );
-              })}
+              ).map((skill, idx) => (
+                <span key={idx} style={{ 
+                  background: '#f1f5f9', 
+                  color: '#334155', 
+                  padding: '4px 10px', 
+                  borderRadius: '6px', 
+                  fontSize: '11.5px', 
+                  fontWeight: '500', 
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.01)'
+                }}>
+                  {skill.trim()}
+                </span>
+              ))}
+              {(!job?.requiredSkills) && (
+                <span style={{ color: '#64748b', fontStyle: 'italic', fontSize: '12px' }}>Not specified</span>
+              )}
             </div>
           </div>
         </div>

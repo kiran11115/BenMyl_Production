@@ -23,7 +23,7 @@ const AIScreen = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       handleCloseIntro();
-    }, 4000); // 4 seconds auto-fade
+    }, 500); // 0.5 seconds auto-fade
     return () => clearTimeout(timer);
   }, []);
 
@@ -67,7 +67,6 @@ const AIScreen = () => {
             <div className="ai-intro-content">
               <h1 className="ai-intro-title">Build a <span>talent team</span> that can <span>build anything.</span></h1>
               <p className="ai-intro-desc">Our intelligent AI analyzes real-world requirements, delivering real-time insights that instantly level up your hiring processes.</p>
-              <button className="ai-intro-cta" onClick={handleCloseIntro}>Start matching free</button>
             </div>
           </div>
         </div>

@@ -227,9 +227,7 @@ export const CandidateCard = memo(({ candidate, isSelected, onToggle, onPrimaryA
   );
 });
 
-const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
-  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
-  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
+const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect, onPrimaryAction }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -248,10 +246,7 @@ const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleCardPrimaryAction = (c) => {
-    setSelectedResumeCandidate(c);
-    setIsResumeModalOpen(true);
-  };
+
 
   return (
     <>
@@ -262,7 +257,7 @@ const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
             candidate={c}
             isSelected={selectedIds.has(c.id)}
             onToggle={onToggleSelect}
-            onPrimaryAction={handleCardPrimaryAction}
+            onPrimaryAction={onPrimaryAction}
             index={index}
           />
         ))}
@@ -278,14 +273,7 @@ const UserTalentGrid = ({ candidates, selectedIds, onToggleSelect }) => {
         </button>
       )}
 
-      <TalentResumeView
-        isOpen={isResumeModalOpen}
-        onClose={() => setIsResumeModalOpen(false)}
-        candidate={selectedResumeCandidate}
-        onShortlist={(cand) => onToggleSelect(cand.id)}
-        isShortlisted={selectedResumeCandidate ? selectedIds.has(selectedResumeCandidate.id) : false}
-        isUploadTalent={true}
-      />
+
     </>
   );
 };

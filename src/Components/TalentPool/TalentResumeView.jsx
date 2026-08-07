@@ -236,7 +236,10 @@ const TalentResumeView = ({
     const realCompany = (rawCompany && rawCompany.toLowerCase().trim() !== "benmyl") ? rawCompany : "";
 
     const fullName = `${apiData?.firstName || ""} ${apiData?.lastName || ""}`.trim();
-    const nameStr = fullName || candidate?.name || "N/A";
+    const lastNameOnly = apiData?.lastName || (candidate?.name ? candidate.name.split(" ").pop() : "");
+    const nameStr = !isUploadContext 
+      ? (lastNameOnly || "N/A") 
+      : (fullName || candidate?.name || "N/A");
     const roleStr = apiData?.title || candidate?.role || candidate?.title || "N/A";
     const apiLoc = [apiData?.city, apiData?.state].filter(Boolean).join(", ");
     const locStr = apiLoc || candidate?.location || "N/A";
