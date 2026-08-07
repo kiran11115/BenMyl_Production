@@ -13,16 +13,16 @@ export default function MonthlyBarChart() {
   return (
     <Bar
       data={{
-        labels: ["Eng", "Sales", "Mark", "HR", "Fin"],
+        labels: ["Developer", "Designer", "Manager", "Analyst", "Other"],
         datasets: [
           {
-            label: "Budget",
-            data: [40000, 30000, 20000, 15000, 18000],
+            label: "Total Candidates",
+            data: [25, 18, 12, 15, 10],
             backgroundColor: "#c7d2fe",
           },
           {
-            label: "Actual",
-            data: [45000, 28000, 22000, 12000, 17000],
+            label: "Available",
+            data: [15, 10, 8, 5, 4],
             backgroundColor: "#3b82f5",
           },
         ],

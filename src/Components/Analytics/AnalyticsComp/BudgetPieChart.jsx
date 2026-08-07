@@ -7,10 +7,10 @@ export default function BudgetPieChart() {
   return (
     <Pie
       data={{
-        labels: ["Recruitment", "Job Boards", "Agency", "Tools", "Other"],
+        labels: ["Developer", "Designer", "Manager", "Analyst", "Other"],
         datasets: [
           {
-            data: [35, 25, 20, 10, 10],
+            data: [40, 20, 15, 15, 10],
             backgroundColor: [
               "#f59f0a",
               "#11ba82",

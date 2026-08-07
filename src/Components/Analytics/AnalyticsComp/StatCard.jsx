@@ -1,11 +1,11 @@
 import React from "react";
-import { Users, Activity, TrendingUp, DollarSign } from "lucide-react";
+import { Briefcase, Upload, FileText, Calendar } from "lucide-react";
 
 const stats = [
-  { label: "Active Candidates", value: "2,847", change: "+6%", icon: Users },
-  { label: "Pipeline Progress", value: "156", change: "+4%", icon: Activity },
-  { label: "Avg. Days to Hire", value: "18", change: "-3%", icon: TrendingUp },
-  { label: "Budget Spent", value: "$125K", change: "+8%", icon: DollarSign },
+  { label: "Total Posted Jobs", value: "2,847", change: "+6%", icon: Briefcase },
+  { label: "Total Bench Uploads", value: "156", change: "+4%", icon: Upload },
+  { label: "Total Contracts", value: "18", change: "-3%", icon: FileText },
+  { label: "Total Interviews", value: "125", change: "+8%", icon: Calendar },
 ];
 
 export default function StatCard() {

@@ -5,7 +5,6 @@ import StatCard from "./AnalyticsComp/StatCard";
 import HiringLineChart from "./AnalyticsComp/HiringLineChart";
 import BudgetPieChart from "./AnalyticsComp/BudgetPieChart";
 import MonthlyBarChart from "./AnalyticsComp/MonthlyBarChart";
-import DepartmentTable from "./AnalyticsComp/DepartmentTable";
 
 export default function Analytics() {
   const [timeframe, setTimeframe] = useState("Last 30 Days");
@@ -62,7 +61,7 @@ export default function Analytics() {
         <div className="col-lg-8">
           <div className="card-premium h-100">
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="card-title-premium m-0"><FiTrendingUp /> Hiring Pipeline Trend</h3>
+              <h3 className="card-title-premium m-0"><FiTrendingUp /> Total Interviews Done</h3>
               <div className="d-flex gap-2">
                 <span className="badge bg-light text-dark border">Candidates</span>
                 <span className="badge bg-primary">Hires</span>
@@ -75,25 +74,9 @@ export default function Analytics() {
         </div>
         <div className="col-lg-4">
           <div className="card-premium h-100">
-            <h3 className="card-title-premium mb-4"><FiUsers /> Source Distribution</h3>
+            <h3 className="card-title-premium mb-4"><FiUsers /> Jobs Posted by Roles</h3>
             <div className="analytics-chart-box-analytics" style={{ height: "320px" }}>
               <BudgetPieChart />
-            </div>
-            <div className="mt-4">
-              <div className="d-flex justify-content-between mb-2 small">
-                <span>LinkedIn</span>
-                <span className="fw-bold">45%</span>
-              </div>
-              <div className="progress mb-3" style={{ height: "6px" }}>
-                <div className="progress-bar" style={{ width: "45%", backgroundColor: "#f5810c" }}></div>
-              </div>
-              <div className="d-flex justify-content-between mb-2 small">
-                <span>Referrals</span>
-                <span className="fw-bold">30%</span>
-              </div>
-              <div className="progress" style={{ height: "6px" }}>
-                <div className="progress-bar" style={{ width: "30%", backgroundColor: "#fbbf24" }}></div>
-              </div>
             </div>
           </div>
         </div>
@@ -101,7 +84,7 @@ export default function Analytics() {
         <div className="col-12">
           <div className="card-premium">
             <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="card-title-premium m-0"><FiDollarSign /> Monthly Spend by Department</h3>
+              <h3 className="card-title-premium m-0"><FiTrendingUp /> Total Bench Utilization</h3>
               <div className="d-flex gap-2">
                 <button className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"><FiFilter /> Filter</button>
               </div>
@@ -113,14 +96,6 @@ export default function Analytics() {
         </div>
       </div>
 
-      {/* DETAILED TABLE */}
-      <section className="card-premium">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h3 className="card-title-premium m-0">Department Performance Metrics</h3>
-          <div className="text-muted small">Updated 2 hours ago</div>
-        </div>
-        <DepartmentTable />
-      </section>
 
       <footer className="text-center text-muted small p-4 border-top">
         <p className="m-0">AI-Powered Insights • Powered by BenMyl Intelligence</p>
