@@ -91,7 +91,11 @@ const RecommendedJobs = ({ role, skills, employeeId, isShortlisted, candidate })
       type: job.employeeType || job.type || "N/A",
       workModel: job.workModels || job.workModel || "",
       department: job.department || "",
-      jobDuration: job.jobDuration || "",
+      jobDuration: job.jobDuration
+        ? String(job.jobDuration).toLowerCase().match(/month|year|yr|mo/i)
+          ? job.jobDuration
+          : `${job.jobDuration} Months`
+        : "",
       rateText:
         job.salaryRange_Min && job.salaryRange_Max
           ? `$${job.salaryRange_Min}-${job.salaryRange_Max}`

@@ -8,6 +8,7 @@ import UserTalentTable from "./UserTalentTable";
 import PublishTalentModal from "./PublishTalentModal"; // The modal from the previous step
 import { useGetMyBenchMutation } from "../../State-Management/Api/UploadResumeApiSlice";
 import NoData from "./NoData";
+import TalentResumeView from "../TalentPool/TalentResumeView";
 import "../UserJobs/Jobs.css";
 
 // --- SORTING FUNCTION ---
@@ -63,6 +64,9 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
 
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
 
   // Debounced search — API is called only after user stops typing for 300ms
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -237,6 +241,11 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
     setSelectedIds(new Set());
   };
 
+  const handleCardPrimaryAction = (c) => {
+    setSelectedResumeCandidate(c);
+    setIsResumeModalOpen(true);
+  };
+
   return (
     <>
       {/* --- THE MODAL --- */}
@@ -246,6 +255,15 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
         selectedTalents={selectedCandidates}
         onRemove={toggleSelection}
         onPublish={clearSelection}
+      />
+
+      <TalentResumeView
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+        candidate={selectedResumeCandidate}
+        onShortlist={(cand) => toggleSelection(cand.id)}
+        isShortlisted={selectedResumeCandidate ? selectedIds.has(selectedResumeCandidate.id) : false}
+        isUploadTalent={true}
       />
 
       <div className="vs-page">
@@ -426,12 +444,14 @@ const UserTalentProfiles = ({ searchQuery = "", setSearchQuery = () => { } }) =>
                   candidates={sortedCandidates}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
+                  onPrimaryAction={handleCardPrimaryAction}
                 />
               ) : (
                 <UserTalentTable
                   candidates={sortedCandidates}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelection}
+                  onPrimaryAction={handleCardPrimaryAction}
                 />
               )}
             </section>

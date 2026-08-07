@@ -4,9 +4,13 @@ import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import TalentAvailabilityBadge from "./TalentAvailabilityBadge";
 
-const UserMobileTalentCard = ({ candidate, isSelected, onToggle }) => {
+const UserMobileTalentCard = ({ candidate, isSelected, onToggle, onPrimaryAction }) => {
     const navigate = useNavigate();
     const handleProfileClick = () => {
+        if (onPrimaryAction) {
+            onPrimaryAction(candidate);
+            return;
+        }
         const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
         navigate(`${basePath}/talent-profile`, {
             state: {

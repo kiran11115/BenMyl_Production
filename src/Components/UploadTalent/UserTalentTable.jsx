@@ -36,9 +36,13 @@ const SortIcon = ({ active, direction }) => {
 };
 
 /* ---------------- TABLE ROW ---------------- */
-const CandidateRow = memo(({ candidate, isSelected, onToggle, index = 0 }) => {
+const CandidateRow = memo(({ candidate, isSelected, onToggle, onPrimaryAction, index = 0 }) => {
   const navigate = useNavigate();
   const handleProfileClick = () => {
+    if (onPrimaryAction) {
+      onPrimaryAction(candidate);
+      return;
+    }
     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
     navigate(`${basePath}/talent-profile`, {
       state: {
@@ -212,7 +216,7 @@ const CandidateRow = memo(({ candidate, isSelected, onToggle, index = 0 }) => {
 });
 
 /* ---------------- MAIN TABLE ---------------- */
-const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
+const UserTalentTable = ({ candidates, selectedIds, onToggleSelect, onPrimaryAction }) => {
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -272,6 +276,7 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
             candidate={c}
             isSelected={selectedIds.has(c.id)}
             onToggle={onToggleSelect}
+            onPrimaryAction={onPrimaryAction}
             index={index}
           />
         ))}
@@ -366,6 +371,7 @@ const UserTalentTable = ({ candidates, selectedIds, onToggleSelect }) => {
                   candidate={c}
                   isSelected={selectedIds.has(c.id)}
                   onToggle={onToggleSelect}
+                  onPrimaryAction={onPrimaryAction}
                   index={index}
                 />
               ))
