@@ -53,27 +53,32 @@ export default function MonthlyBarChart({ benchUtilization = [], isLoading }) {
     );
   }
 
-  const data = {
-    labels: processedData.labels,
-    datasets: [
-      {
-        label: "Total Candidates",
-        data: processedData.totalCandidates,
-        backgroundColor: "#cbd5e1",
-        hoverBackgroundColor: "#94a3b8",
-        borderRadius: 4,
-        barThickness: 10,
-      },
-      {
-        label: "Available",
-        data: processedData.available,
-        backgroundColor: "#2563eb",
-        hoverBackgroundColor: "#1d4ed8",
-        borderRadius: 4,
-        barThickness: 10,
-      },
-    ],
-  };
+const data = {
+  labels: processedData.labels,
+
+  datasets: [
+    {
+      label: "Total Candidates",
+      data: processedData.totalCandidates,
+      backgroundColor: "#cbd5e1",
+      hoverBackgroundColor: "#94a3b8",
+      borderRadius: 4,
+      barThickness: 10,
+    },
+
+    {
+      label: "Available",
+      data: processedData.available,
+      backgroundColor: "#2563eb",
+      hoverBackgroundColor: "#1d4ed8",
+      borderRadius: 4,
+      barThickness: 10,
+
+      // IMPORTANT
+      minBarLength: 6,
+    },
+  ],
+};
 
   const options = {
     responsive: true,
@@ -93,19 +98,28 @@ export default function MonthlyBarChart({ benchUtilization = [], isLoading }) {
         },
       },
       tooltip: {
-        mode: "index",
-        intersect: false,
-        backgroundColor: "rgba(15, 23, 42, 0.9)",
-        padding: 8,
-        cornerRadius: 6,
-        callbacks: {
-          label: (context) => {
-            const label = context.dataset.label || "";
-            const value = context.parsed.x || 0;
-            return ` ${label}: ${value} ${value === 1 ? 'Candidate' : 'Candidates'}`;
-          },
-        },
-      },
+  mode: "nearest",
+  intersect: true,
+  backgroundColor: "rgba(15, 23, 42, 0.9)",
+  padding: 8,
+  cornerRadius: 6,
+
+  callbacks: {
+    title: (tooltipItems) => {
+      const index = tooltipItems[0]?.dataIndex;
+      return processedData.labels[index] || "";
+    },
+
+    label: (context) => {
+      const label = context.dataset.label || "";
+      const value = context.parsed.x ?? 0;
+
+      return ` ${label}: ${value} ${
+        value === 1 ? "Candidate" : "Candidates"
+      }`;
+    },
+  },
+},
     },
     scales: {
       x: {

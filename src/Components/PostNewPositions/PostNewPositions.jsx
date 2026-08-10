@@ -45,7 +45,6 @@ const usValidationSchema = Yup.object().shape({
   description: Yup.string().min(20, "Minimum 20 characters").required("Required"),
   workModel: Yup.string().required("Required"),
   department: Yup.string().required("Required"),
-  experienceLevel: Yup.string().required("Required"),
   educationLevel: Yup.string().required("Required"),
   yearsExperience: Yup.number().typeError("Enter number").required("Required"),
 });

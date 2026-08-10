@@ -903,47 +903,20 @@ const TalentPool = () => {
 
       if (appliedFilters) {
 
-        // Title
-        if (appliedFilters.selectedJobs?.length) {
-          const selectedTitles = appliedFilters.selectedJobs
-            .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
-            .filter(Boolean);
+       // Title
+if (appliedFilters.selectedJobs?.length) {
+  const selectedTitles = appliedFilters.selectedJobs
+    .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+    .filter(Boolean);
 
-          if (selectedTitles.length > 0) {
-            const expandRoleTokens = (titles) => {
-              const tokenSet = new Set();
-              titles.forEach((rawTitle) => {
-                if (!rawTitle) return;
-                const title = rawTitle.trim();
-                tokenSet.add(title);
-
-                const parts = title.split(/[\/\s&,-]+/).map((p) => p.trim()).filter(Boolean);
-                parts.forEach((part) => {
-                  if (part.length >= 2 && !["and", "for", "the", "with"].includes(part.toLowerCase())) {
-                    tokenSet.add(part);
-                  }
-                });
-
-                const lower = title.toLowerCase();
-                if (lower.includes("ui") || lower.includes("ux")) {
-                  tokenSet.add("UI");
-                  tokenSet.add("UX");
-                  tokenSet.add("UI/UX");
-                  tokenSet.add("UI / UX");
-                }
-              });
-              return Array.from(tokenSet);
-            };
-
-            const expandedTokens = expandRoleTokens(selectedTitles);
-
-            filtersArray.push({
-              filterName: "Title",
-              filterOperator: "Contains",
-              filterValue: expandedTokens,
-            });
-          }
-        }
+  if (selectedTitles.length > 0) {
+    filtersArray.push({
+      filterName: "Title",
+      filterOperator: "Contains",
+      filterValue: selectedTitles,
+    });
+  }
+}
 
         // Skills
         if (appliedFilters.skills?.length) {
