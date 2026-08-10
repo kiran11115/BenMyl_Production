@@ -2027,7 +2027,7 @@ const PostNewPositions = () => {
             {/* FOOTER */}
             <div className="d-flex justify-content-end align-items-center mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
               <div className="d-flex gap-3">
-                <button type="submit" className="btn-publish-vacancy" disabled={isOutOfTokens}>
+                <button type="button" onClick={() => setShowPreview(true)} className="btn-publish-vacancy" disabled={isOutOfTokens}>
                   Publish {formRegion === 'IND' ? 'India' : 'US'} Vacancy
                 </button>
               </div>
