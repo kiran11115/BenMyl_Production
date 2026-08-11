@@ -107,7 +107,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   const initialFilters = {
     selectedJobs: [],
     skills: [],
-    location: "",
+    location: [],
     availability: [],
     minExperience: "",
     maxExperience: "",
@@ -120,6 +120,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   };
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
+  const [locationInputValue, setLocationInputValue] = useState("");
   const [isJobDropdownOpen, setIsJobDropdownOpen] = useState(false);
   const [jobSearchTerm, setJobSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
@@ -585,18 +586,41 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           id="location"
           title="Location"
           isExpanded={activeSection === 'location'}
-          summary={filterInputs.location}
+          summary={filterInputs.location.length > 0 ? filterInputs.location.join(', ') : ''}
         />
         {activeSection === 'location' && (
           <div className="section-content">
+            {filterInputs.location.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.location.map((loc) => (
+                  <span key={loc} className="filter-tag">
+                    {loc}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeArrayItem("location", loc)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
             <input
               type="text"
               className="filter-input"
-              placeholder="Add Location..."
-              value={filterInputs.location || ""}
-              onChange={(e) =>
-                handleInputChange("location", e.target.value, true)
-              }
+              placeholder="Type a location & press Enter..."
+              value={locationInputValue}
+              onChange={(e) => setLocationInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault();
+                  const val = locationInputValue.trim().replace(/,$/, '');
+                  if (val && !filterInputs.location.includes(val)) {
+                    handleInputChange("location", [...filterInputs.location, val]);
+                  }
+                  setLocationInputValue("");
+                } else if (e.key === 'Backspace' && !locationInputValue && filterInputs.location.length > 0) {
+                  removeArrayItem("location", filterInputs.location[filterInputs.location.length - 1]);
+                }
+              }}
             />
           </div>
         )}

@@ -928,11 +928,11 @@ if (appliedFilters.selectedJobs?.length) {
         }
 
         // Location
-        if (appliedFilters.location) {
+        if (appliedFilters.location?.length) {
           filtersArray.push({
             filterName: "Location",
-            filterOperator: "Equals",
-            filterValue: [appliedFilters.location],
+            filterOperator: "Contains",
+            filterValue: appliedFilters.location,
           });
         }
 
@@ -1114,7 +1114,7 @@ if (appliedFilters.selectedJobs?.length) {
     const filters = {
       selectedJobs: [matchedJob.id],
       skills: [],
-      location: "",
+      location: [],
       minExperience: "",
       maxExperience: "",
       minSalary: "",
@@ -1378,7 +1378,7 @@ if (appliedFilters.selectedJobs?.length) {
     const restoredFilters = {
       selectedJobs: jobIdArray,
       skills: skills ? skills.split(",") : [],
-      location: location || "",
+      location: location ? location.split(",") : [],
       minExperience: minExp || "",
       maxExperience: maxExp || "",
       minSalary: minSal || "",
@@ -1409,8 +1409,8 @@ if (appliedFilters.selectedJobs?.length) {
       params.skills = filters.skills.join(",");
     }
 
-    if (filters?.location) {
-      params.location = filters.location;
+    if (filters?.location?.length) {
+      params.location = filters.location.join(",");
     }
 
     if (filters?.minExperience) {
