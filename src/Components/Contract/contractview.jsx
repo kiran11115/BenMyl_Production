@@ -294,6 +294,10 @@ const ContractView = () => {
   const userCompanyId = localStorage.getItem("CompanyId");
   const isCreator = contract && userCompanyId && String(contract.createdBy) === String(userCompanyId);
 
+  const countryRegistration = Number(localStorage.getItem('countryRegistration') || 1);
+  const isIND = countryRegistration === 2;
+  const displaySalary = contract ? (contract.salary && !contract.salary.includes('$') && !contract.salary.includes('₹') ? `${isIND ? '₹' : '$'} ${contract.salary}` : contract.salary || '-') : '-';
+
   if (isApiLoading) {
     return (
       <div className="contract-page d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '60vh' }}>
@@ -533,13 +537,14 @@ const ContractView = () => {
 
       // Draw Schedule A Table
       const tableRows = [
+        ['Vendor Organization', contract.companyName || '-'],
         ['Designated Resource (Consultant)', contract.candidateName],
         ['Project Position / Role', contract.jobTitle],
         ['Employment Terms / Type', `${contract.employmentType} (Company-to-Company)`],
         ['Project Location', contract.workLocation],
         ['Commencement Date', contract.startDate],
         ['Project End Date (Target)', contract.endDate],
-        ['Hourly Billing Rate', contract.salary],
+        ['Billing Rate', displaySalary],
         ['Remittance Cycle', contract.paymentCycle],
         ['Reporting Manager', contract.reportingManager],
         ['Termination Notice Period', contract.noticePeriod],
@@ -783,7 +788,11 @@ const ContractView = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', color: '#1e293b', border: '1px solid #cbd5e1', marginBottom: '10px' }}>
                   <tbody>
                     <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', width: '35%', borderRight: '1px solid #cbd5e1' }}>Designated Resource (Consultant)</td>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', width: '35%', borderRight: '1px solid #cbd5e1' }}>Vendor Organization</td>
+                      <td style={{ padding: '8px 12px' }}>{contract.companyName || '-'}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Designated Resource (Consultant)</td>
                       <td style={{ padding: '8px 12px' }}>{contract.candidateName}</td>
                     </tr>
                     <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
@@ -807,8 +816,8 @@ const ContractView = () => {
                       <td style={{ padding: '8px 12px' }}>{contract.endDate}</td>
                     </tr>
                     <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
-                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Hourly Billing Rate</td>
-                      <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: 'bold' }}>{contract.salary}</td>
+                      <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Billing Rate</td>
+                      <td style={{ padding: '8px 12px', color: '#16a34a', fontWeight: 'bold' }}>{displaySalary}</td>
                     </tr>
                     <tr style={{ borderBottom: '1px solid #cbd5e1' }}>
                       <td style={{ padding: '8px 12px', fontWeight: 'bold', background: '#f8fafc', borderRight: '1px solid #cbd5e1' }}>Remittance Cycle</td>

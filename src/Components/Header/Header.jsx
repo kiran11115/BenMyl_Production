@@ -25,6 +25,7 @@ const getNavIcon = (label) => {
     case "dashboard":
       return LayoutDashboard;
     case "projects":
+    case "requirements":
       return Briefcase;
     case "talentpool":
     case "talent pool":
@@ -72,6 +73,7 @@ function Header() {
   const role = localStorage.getItem("Role");
   const email = localStorage.getItem("Email");
   const userId = localStorage.getItem("CompanyId");
+  const countryReg = localStorage.getItem("countryRegistration");
 
   const { data: apiData, isLoading } =
     useGetRecruiterProfileQuery(Number(userId), {
@@ -91,7 +93,7 @@ function Header() {
     "Recruiter": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
       {
-        label: "Projects",
+        label: "Requirements",
         module: "Projects",
         path: "/user/user-posted-jobs"
       },
@@ -105,7 +107,7 @@ function Header() {
     ],
     "Benchsales": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
-      { label: "Resource  Management", path: "/user/user-upload-talent", module: "Talent Pool" },
+      { label: "Resource Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
       { label: "Interviews", path: "/user/user-upcoming-interview", module: "Interviews" },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
@@ -113,7 +115,7 @@ function Header() {
     "Recruiter2": [
       { label: "Dashboard", path: "/user/user-dashboard", module: "Main Dashboard" },
       {
-        label: "Projects",
+        label: "Requirements",
         module: "Projects",
         path: "/user/user-posted-jobs"
       },
@@ -128,9 +130,26 @@ function Header() {
         // ],
       },
       { label: "Contracts", path: "/user/contract-listing", module: "Contracts" },
-      { label: "Resource  Management", path: "/user/user-upload-talent", module: "Talent Pool" },
+      { label: "Resource Management", path: "/user/user-upload-talent", module: "Talent Pool" },
       { label: "Find Jobs", path: "/user/user-Jobs", module: "Job Management" },
     ]
+  };
+
+  const getTooltip = (label) => {
+    switch (label) {
+      case "Requirements":
+        return "Create, receive, and manage hiring requirements for your projects.";
+      case "Talentpool":
+      case "Talent Pool":
+        return "Search and discover talent from the global marketplace.";
+      case "Find Jobs":
+        return "Find projects and opportunities for your available or upcoming talent.";
+      case "Resource Management":
+      case "Resource  Management":
+        return "Manage your internal team and bench resources.";
+      default:
+        return "";
+    }
   };
 
   const navLinks = navigationData[role] || navigationData["Recruiter"];
@@ -213,6 +232,41 @@ function Header() {
       .join("");
   };
 
+  const getCountryFlag = (country) => {
+    if (!country) return "";
+    const countryMap = {
+      "india": "🇮🇳",
+      "usa": "🇺🇸",
+      "united states": "🇺🇸",
+      "united states of america": "🇺🇸",
+      "uk": "🇬🇧",
+      "united kingdom": "🇬🇧",
+      "canada": "🇨🇦",
+      "australia": "🇦🇺",
+      "germany": "🇩🇪",
+      "france": "🇫🇷",
+      "singapore": "🇸🇬",
+      "uae": "🇦🇪",
+      "united arab emirates": "🇦🇪",
+      "saudi arabia": "🇸🇦",
+      "pakistan": "🇵🇰",
+      "bangladesh": "🇧🇩",
+      "sri lanka": "🇱🇰",
+      "nepal": "🇳🇵",
+      "china": "🇨🇳",
+      "japan": "🇯🇵",
+      "south korea": "🇰🇷",
+      "brazil": "🇧🇷",
+      "mexico": "🇲🇽",
+      "argentina": "🇦🇷",
+      "south africa": "🇿🇦",
+      "nigeria": "🇳🇬",
+      "egypt": "🇪🇬",
+      "kenya": "🇰🇪"
+    };
+    return countryMap[country.toLowerCase()] || "";
+  };
+
   return (
     <>
       <ScrollToTop />
@@ -255,7 +309,7 @@ function Header() {
                         const Icon = getNavIcon(link.label);
                         return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
                       })()}
-                      {link.label}
+                      <span data-tooltip={(link.subItems?.some(s => location.pathname === s.path) || location.pathname === link.path) ? undefined : (getTooltip(link.label) || undefined)}>{link.label}</span>
                       <ChevronDown size={14} className={`dropdown-icon ${openDropdown === link.label ? "rotate" : ""}`} />
                     </button>
                     {openDropdown === link.label && (
@@ -276,7 +330,7 @@ function Header() {
                               const Icon = getNavIcon(sub.label);
                               return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
                             })()}
-                            {sub.label}
+                            <span data-tooltip={location.pathname === sub.path ? undefined : (getTooltip(sub.label) || undefined)}>{sub.label}</span>
                           </NavLink>
                         ))}
                       </div>
@@ -294,7 +348,7 @@ function Header() {
                       const Icon = getNavIcon(link.label);
                       return Icon ? <Icon className="nav-active-icon" size={14} /> : null;
                     })()}
-                    {link.label}
+                    <span data-tooltip={location.pathname === link.path ? undefined : (getTooltip(link.label) || undefined)}>{link.label}</span>
                   </NavLink>
                 )}
               </div>
@@ -387,7 +441,14 @@ function Header() {
 
               <div className="profile-info">
                 <span className="profile-name">{user}</span>
-                <span className="profile-role">{role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role === "Recruiter2" ? "Recruiter" : role}</span>
+                <span className="profile-role">
+                  {role === "Recruiter" ? "Hiring Manager" : role === "Benchsales" ? "Bench Sales" : role === "Recruiter2" ? "Recruiter" : role}
+                  {String(countryReg) === "1" ? (
+                    <img src="https://flagcdn.com/w20/us.png" alt="US" style={{ width: "14px", marginLeft: "4px", verticalAlign: "middle" }} />
+                  ) : String(countryReg) === "2" ? (
+                    <img src="https://flagcdn.com/w20/in.png" alt="IN" style={{ width: "14px", marginLeft: "4px", verticalAlign: "middle" }} />
+                  ) : null}
+                </span>
               </div>
               <ChevronDown size={16} className="profile-chevron" />
             </div>

@@ -600,7 +600,7 @@ function AdminDashboard() {
             <div className="stats-grid">
 
                 {/* CARD 1 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/account-settings', { state: { activeTab: 'team' } })} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-purple">
@@ -616,6 +616,7 @@ function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -624,7 +625,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 2 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-posted-jobs')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-blue">
@@ -640,6 +641,7 @@ function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -648,7 +650,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 3 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-talentpool')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-green">
@@ -664,6 +666,7 @@ function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -672,7 +675,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 4 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-upcoming-interview')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-teal">
@@ -688,6 +691,7 @@ function AdminDashboard() {
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
