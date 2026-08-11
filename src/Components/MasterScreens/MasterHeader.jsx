@@ -22,6 +22,7 @@ const MasterHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = localStorage.getItem("Email") || "master@benmyl.com";
+  const countryReg = localStorage.getItem("countryRegistration");
   const profileRef = useRef(null);
 
   const handleLogout = () => {
@@ -114,7 +115,14 @@ const MasterHeader = () => {
               <div className="master-avatar-small">
                 <User size={14} />
               </div>
-              <span className="master-user-role-badge">Super Admin</span>
+              <span className="master-user-role-badge" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                Super Admin
+                {String(countryReg) === "1" ? (
+                  <img src="https://flagcdn.com/w20/us.png" alt="US" style={{ width: "14px", height: "auto" }} />
+                ) : String(countryReg) === "2" ? (
+                  <img src="https://flagcdn.com/w20/in.png" alt="IN" style={{ width: "14px", height: "auto" }} />
+                ) : null}
+              </span>
               <ChevronDown size={14} className={`dropdown-chevron ${isProfileOpen ? "rotate" : ""}`} />
             </button>
 

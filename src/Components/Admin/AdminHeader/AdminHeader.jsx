@@ -18,6 +18,7 @@ const getNavIcon = (label) => {
     case "dashboard":
       return LayoutDashboard;
     case "projects":
+    case "requirements":
       return Briefcase;
     case "talentpool":
     case "talent pool":
@@ -67,8 +68,8 @@ function AdminHeader() {
 
     const company = localStorage.getItem("CompanyName");
     const role = localStorage.getItem("Role");
-
     const emailid = localStorage.getItem("Email"); // or from auth state
+    const countryReg = localStorage.getItem("countryRegistration");
 
     const {
         data: apiData,
@@ -129,6 +130,58 @@ function AdminHeader() {
             .join("");
     };
 
+    const getCountryFlag = (country) => {
+        if (!country) return "";
+        const countryMap = {
+            "india": "🇮🇳",
+            "usa": "🇺🇸",
+            "united states": "🇺🇸",
+            "united states of america": "🇺🇸",
+            "uk": "🇬🇧",
+            "united kingdom": "🇬🇧",
+            "canada": "🇨🇦",
+            "australia": "🇦🇺",
+            "germany": "🇩🇪",
+            "france": "🇫🇷",
+            "singapore": "🇸🇬",
+            "uae": "🇦🇪",
+            "united arab emirates": "🇦🇪",
+            "saudi arabia": "🇸🇦",
+            "pakistan": "🇵🇰",
+            "bangladesh": "🇧🇩",
+            "sri lanka": "🇱🇰",
+            "nepal": "🇳🇵",
+            "china": "🇨🇳",
+            "japan": "🇯🇵",
+            "south korea": "🇰🇷",
+            "brazil": "🇧🇷",
+            "mexico": "🇲🇽",
+            "argentina": "🇦🇷",
+            "south africa": "🇿🇦",
+            "nigeria": "🇳🇬",
+            "egypt": "🇪🇬",
+            "kenya": "🇰🇪"
+        };
+        return countryMap[country.toLowerCase()] || "";
+    };
+
+    const getTooltip = (label) => {
+        switch (label) {
+            case "Requirements":
+                return "Create, receive, and manage hiring requirements for your projects.";
+            case "Talentpool":
+            case "Talent Pool":
+                return "Search and discover talent from the global marketplace.";
+            case "Find Jobs":
+                return "Find projects and opportunities for your available or upcoming talent.";
+            case "Resource Management":
+            case "Resource  Management":
+                return "Manage your internal team and bench resources.";
+            default:
+                return "";
+        }
+    };
+
     // Close profile dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -175,7 +228,7 @@ function AdminHeader() {
                         {[
                             // { path: "/Admin/portal", label: "Control Center" },
                             { path: "/Admin/overview-dashboard", label: "Dashboard" },
-                            { path: "/Admin/admin-posted-jobs", label: "Projects" },
+                            { path: "/Admin/admin-posted-jobs", label: "Requirements" },
                             { path: "/Admin/admin-talentpool", label: "Talent Pool" },
                             { path: "/Admin/admin-jobs", label: "Find Jobs" },
                             { path: "/Admin/admin-upload-talent", label: "Resource Management" },
@@ -195,6 +248,7 @@ function AdminHeader() {
                                         <button
                                             className={`header-nav-link dropdown-trigger ${openDropdown === link.label ? "active" : ""}`}
                                             onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                                            data-tooltip={(link.subItems?.some(s => location.pathname === s.path) || location.pathname === link.path) ? undefined : (getTooltip(link.label) || undefined)}
                                         >
                                             {(() => {
                                                 const Icon = getNavIcon(link.label);
@@ -209,6 +263,7 @@ function AdminHeader() {
                                                     <NavLink
                                                         key={sub.path}
                                                         to={sub.path}
+                                                        data-tooltip={location.pathname === sub.path ? undefined : (getTooltip(sub.label) || undefined)}
                                                         className={({ isActive }) =>
                                                             `dropdown-item ${isActive ? "active" : ""}`
                                                         }
@@ -231,6 +286,7 @@ function AdminHeader() {
                                     <NavLink
                                         to={link.path}
                                         onClick={() => setIsMenuOpen(false)}
+                                        data-tooltip={location.pathname === link.path ? undefined : (getTooltip(link.label) || undefined)}
                                         className={({ isActive }) =>
                                             `header-nav-link ${isActive ? "active" : ""}`
                                         }
@@ -362,7 +418,14 @@ function AdminHeader() {
                             )}
                             <div className="profile-info">
                                 <span className="profile-name">{company || companyData?.name}</span>
-                                <span className="profile-role">{role}</span>
+                                <span className="profile-role">
+                                    {role}
+                                    {String(countryReg) === "1" ? (
+                                        <img src="https://flagcdn.com/w20/us.png" alt="US" style={{ width: "14px", marginLeft: "4px", verticalAlign: "middle" }} />
+                                    ) : String(countryReg) === "2" ? (
+                                        <img src="https://flagcdn.com/w20/in.png" alt="IN" style={{ width: "14px", marginLeft: "4px", verticalAlign: "middle" }} />
+                                    ) : null}
+                                </span>
                             </div>
                             <ChevronDown size={16} className="profile-chevron" />
                         </div>
