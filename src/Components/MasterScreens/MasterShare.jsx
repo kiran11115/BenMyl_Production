@@ -4,22 +4,51 @@ import { useSendTemplateMailMutation } from "../../State-Management/Api/MasterAd
 import { toast } from "react-toastify";
 
 const MasterShare = () => {
+  const [templateType, setTemplateType] = useState("welcome");
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [tempSubject, setTempSubject] = useState("");
   const [sendTemplateMail, { isLoading }] = useSendTemplateMailMutation();
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
 
-  const templates = [
-    { id: "temp-1", name: "Welcome Template v1", url: "/benmyl_welcome_template.html" },
-    { id: "temp-2", name: "Welcome Template v2", url: "/benmyl_welcome_template_v2.html" },
-    { id: "temp-3", name: "Welcome Template v3", url: "/benmyl_welcome_template_v5.html" },
-    { id: "temp-4", name: "Welcome Template v4", url: "/benmyl_welcome_template_v4.html" },
-    { id: "temp-5", name: "Welcome Template v5", url: "/benmyl_welcome_template_v3.html" },
-    { id: "temp-6", name: "Welcome Template v6", url: "/benmyl_welcome_template_combined.html" },
+  const welcomeTemplates = [
+    { id: "temp-1", name: "Welcome Template v1", subject: "Welcome Template v1", url: "/benmyl_welcome_template.html" },
+    { id: "temp-2", name: "Welcome Template v2", subject: "Welcome Template v2", url: "/benmyl_welcome_template_v2.html" },
+    { id: "temp-3", name: "Welcome Template v3", subject: "Welcome Template v3", url: "/benmyl_welcome_template_v5.html" },
+    { id: "temp-4", name: "Welcome Template v4", subject: "Welcome Template v4", url: "/benmyl_welcome_template_v4.html" },
+    { id: "temp-5", name: "Welcome Template v5", subject: "Welcome Template v5", url: "/benmyl_welcome_template_v3.html" },
+    { id: "temp-6", name: "Welcome Template v6", subject: "Welcome Template v6", url: "/benmyl_welcome_template_combined.html" },
   ];
 
-  const selectedTemplateObj = templates.find((t) => t.id === selectedTemplate);
+  const dayTemplates = [
+    { id: "Day-1", name: "Day 1 Template", subject: "Complete Your Company Profile", url: "/Day1.html" },
+    { id: "Day-2", name: "Day 2 Template", subject: "Invite Your Team", url: "/Day2.html" },
+    { id: "Day-3", name: "Day 3 Template", subject: "Post Your First Requirement", url: "/Day3.html" },
+    { id: "Day-4", name: "Day 4 Template", subject: "Add Your Bench Resources", url: "/Day4.html" },
+    { id: "Day-5", name: "Day 5 Template", subject: "Book a Product Demo", url: "/Day5.html" },
+    { id: "Day-6", name: "Day 6 Template", subject: "Need Help? We're Here", url: "/Day6.html" },
+  ];
+
+  const activeTemplates = templateType === "welcome" ? welcomeTemplates : dayTemplates;
+
+  const selectedTemplateObj = [...welcomeTemplates, ...dayTemplates].find(
+    (t) => t.id === selectedTemplate
+  );
+
+  const handleTypeChange = (type) => {
+    setTemplateType(type);
+    setSelectedTemplate("");
+    setTempSubject("");
+  };
+
+  const handleTemplateChange = (templateId) => {
+    setSelectedTemplate(templateId);
+    const found = activeTemplates.find((t) => t.id === templateId);
+    if (found) {
+      setTempSubject(found.subject || found.name);
+    }
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -40,10 +69,12 @@ const MasterShare = () => {
     }
 
     const payload = {
-      templateId: selectedTemplate, // temp-1,temp-2,temp-3...
+      templateId: selectedTemplate, // temp-1... or Day-1...
       toEmail: email,
       name: name,
       message: message,
+      tempsubject: tempSubject || (selectedTemplateObj ? (selectedTemplateObj.subject || selectedTemplateObj.name) : ""),
+      category: templateType === "welcome" ? 0 : 1,
     };
 
     try {
@@ -53,6 +84,7 @@ const MasterShare = () => {
 
       // Reset Form
       setSelectedTemplate("");
+      setTempSubject("");
       setMessage("");
       setEmail("");
       setName("");
@@ -75,16 +107,52 @@ const MasterShare = () => {
         <div className="master-share-form-card">
           <form onSubmit={handleSend} className="master-share-form">
             <div className="form-group">
+              <label>Template Type</label>
+              <div className="template-type-toggle">
+                <button
+                  type="button"
+                  className={`toggle-btn ${templateType === "welcome" ? "active" : ""}`}
+                  onClick={() => handleTypeChange("welcome")}
+                >
+                  Welcome Templates
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-btn ${templateType === "day" ? "active" : ""}`}
+                  onClick={() => handleTypeChange("day")}
+                >
+                  Day Templates
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group">
               <label htmlFor="templateSelect">Select HTML Template</label>
               <select
                 id="templateSelect"
                 value={selectedTemplate}
-                onChange={(e) => setSelectedTemplate(e.target.value)}
+                onChange={(e) => handleTemplateChange(e.target.value)}
               >
                 <option value="" disabled>Select a template...</option>
-                {templates.map((tpl) => (
+                {activeTemplates.map((tpl) => (
                   <option key={tpl.id} value={tpl.id}>
                     {tpl.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="tempSubject">Temp Subject</label>
+              <select
+                id="tempSubject"
+                value={tempSubject}
+                onChange={(e) => setTempSubject(e.target.value)}
+              >
+                <option value="" disabled>Select a subject...</option>
+                {activeTemplates.map((tpl) => (
+                  <option key={tpl.id} value={tpl.subject || tpl.name}>
+                    {tpl.subject || tpl.name}
                   </option>
                 ))}
               </select>
