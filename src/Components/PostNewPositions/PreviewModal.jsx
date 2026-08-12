@@ -389,7 +389,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   );
   const [postLink, setPostLink] = useState("https://uat.benmyl.com/sign-in");
   // LinkedIn pre-selected by default
-  const [shareToLinkedIn, setShareToLinkedIn] = useState(true);
+  const [shareToLinkedIn, setShareToLinkedIn] = useState(data?.shareToLinkedIn ?? true);
 
   // Template & size selection
   const [selectedTemplate, setSelectedTemplate] = useState("modern");
@@ -464,10 +464,10 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
         const authResponse = await getLinkedInAuthUrl().unwrap();
         if (!authResponse?.result_Message) throw new Error("LinkedIn auth URL not received");
         
-        await onPostJob();
+        await onPostJob(true);
         window.location.href = authResponse.result_Message;
       } else {
-        await onPostJob();
+        await onPostJob(false);
         setStatus("success");
       }
     } catch (error) {

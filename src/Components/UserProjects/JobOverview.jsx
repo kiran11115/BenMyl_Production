@@ -21,7 +21,8 @@ import {
   FiX,
   FiSearch,
   FiCalendar,
-  FiCheck
+  FiCheck,
+  FiLinkedin
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
@@ -187,6 +188,10 @@ const JobOverview = () => {
   const job = Array.isArray(rawJobData)
     ? (rawJobData.find(j => Number(j.jobId || j.jobID) === Number(jobId)) || rawJobData[0])
     : rawJobData;
+
+  const isLinkedin = Boolean(
+    job?.islinkedin ?? job?.isLinkedin ?? job?.Islinkedin ?? job?.IsLinkedin ?? location.state?.jobData?.islinkedin ?? location.state?.jobData?.isLinkedin ?? location.state?.jobData?.Islinkedin ?? location.state?.jobData?.IsLinkedin ?? false
+  );
 
   const formatPostedDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -548,7 +553,28 @@ const JobOverview = () => {
               </div>
             </div>
 
-            <div className="">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {isLinkedin && (
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    background: "#f0f7ff",
+                    border: "1px solid #cce4f7",
+                    color: "#0a66c2",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  <FiLinkedin size={16} color="#0a66c2" />
+                  <span>Shared on LinkedIn</span>
+                </div>
+              )}
+
               {(!bids || !bids.some((bid) => bid.IsShortlisted)) && (
                 <button
                   className="routine-btn-2"

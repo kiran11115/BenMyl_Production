@@ -10,7 +10,10 @@ import {
   X,
   Pencil,
 } from "lucide-react";
-import { useGetUserNotificationsQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
+import {
+  useGetUserNotificationsQuery,
+  useMarkNotificationAsReadMutation,
+} from "../../State-Management/Api/CompanyProfileApiSlice";
 import "../PostNewPositions/PostNewPositions.css";
 
 /* ─────────────────────────────────────────────
@@ -130,7 +133,7 @@ const SectionLabel = ({ text, count }) => (
 );
 
 /* ─────────────────────────────────────────────
-   Notification Card (read-only, no per-card note)
+   Notification Card
 ───────────────────────────────────────────── */
 const fmtFullDate = (isoDate) => {
   if (!isoDate) return "";
@@ -141,13 +144,14 @@ const fmtFullDate = (isoDate) => {
   return `${day}-${month}-${year}`;
 };
 
-const NotifCard = ({ n }) => {
+const NotifCard = ({ n, onClick }) => {
   const { Icon, bg, color, label } = TYPE_CFG[n.type];
 
   return (
     <div
+      onClick={() => onClick && onClick(n)}
       style={{
-        background: S.bg,
+        background: n.isRead ? S.bg : "#f4f7ff",
         border: `1px solid ${S.border}`,
         borderRadius: 10,
         marginBottom: 8,
@@ -157,9 +161,10 @@ const NotifCard = ({ n }) => {
         alignItems: "flex-start",
         fontFamily: "'Inter','Segoe UI',sans-serif",
         transition: "background 0.15s",
+        cursor: "pointer",
       }}
       onMouseEnter={(e) => (e.currentTarget.style.background = S.bgHover)}
-      onMouseLeave={(e) => (e.currentTarget.style.background = S.bg)}
+      onMouseLeave={(e) => (e.currentTarget.style.background = n.isRead ? S.bg : "#f4f7ff")}
     >
       {/* Icon */}
       <div
@@ -189,7 +194,7 @@ const NotifCard = ({ n }) => {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: S.text }}>{n.name}</span>
+            <span style={{ fontSize: 13, fontWeight: n.isRead ? 600 : 700, color: S.text }}>{n.name}</span>
             <span
               style={{
                 fontSize: 10,
@@ -202,6 +207,19 @@ const NotifCard = ({ n }) => {
             >
               {label}
             </span>
+            {!n.isRead && (
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  background: "#0284c7",
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+                title="Unread"
+              />
+            )}
           </div>
           <span style={{ fontSize: 11, color: S.textFaint, whiteSpace: "nowrap" }}>
             {n.time}
@@ -211,7 +229,7 @@ const NotifCard = ({ n }) => {
           style={{
             margin: "5px 0 0",
             fontSize: 12,
-            color: S.textMuted,
+            color: n.isRead ? S.textMuted : S.text,
             lineHeight: 1.6,
           }}
         >
@@ -226,7 +244,7 @@ const NotifCard = ({ n }) => {
 /* ─────────────────────────────────────────────
    Scrollable column
 ───────────────────────────────────────────── */
-const NotifColumn = ({ items, emptyText, grouped = false }) => {
+const NotifColumn = ({ items, emptyText, grouped = false, onCardClick }) => {
   if (items.length === 0) {
     return (
       <div className="np-col-list">
@@ -263,7 +281,7 @@ const NotifColumn = ({ items, emptyText, grouped = false }) => {
   if (!grouped) {
     return (
       <div className="np-col-list">
-        {items.map((n) => <NotifCard key={n.id} n={n} />)}
+        {items.map((n) => <NotifCard key={n.id} n={n} onClick={onCardClick} />)}
       </div>
     );
   }
@@ -296,7 +314,7 @@ const NotifColumn = ({ items, emptyText, grouped = false }) => {
             </span>
           </div>
           {groups[date].map((n) => (
-            <NotifCard key={n.id} n={n} />
+            <NotifCard key={n.id} n={n} onClick={onCardClick} />
           ))}
         </React.Fragment>
       ))}
@@ -312,24 +330,49 @@ const NotificationsPage = () => {
   const { data: raw = [], isLoading } = useGetUserNotificationsQuery(userId, {
     pollingInterval: 10000,
   });
+  const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
+  const [readIds, setReadIds] = useState(new Set());
 
   const [selectedDate, setSelectedDate] = useState("");
   const dateInputRef = useRef(null);
 
   const TODAY = todayISO();
 
+  const checkIsRead = (item) => {
+    const id = item.Id ?? item.id;
+    if (id !== undefined && id !== null && readIds.has(id)) return true;
+    return Boolean(item.IsRead ?? item.isRead ?? false);
+  };
+
+  const handleCardClick = async (n) => {
+    if (!n.isRead && n.id !== undefined && n.id !== null) {
+      setReadIds((prev) => new Set(prev).add(n.id));
+      try {
+        await markNotificationAsRead(n.id).unwrap();
+      } catch (err) {
+        console.error("Failed to mark notification as read:", err);
+      }
+    }
+  };
+
   const allItems = useMemo(
     () =>
-      raw.map((item, i) => ({
-        id: item.Id ?? i,
-        name: item.Username || "System",
-        message: item.Message || "",
-        time: fmtRelative(item.CreatedAt),
-        isoDate: toLocalISO(item.CreatedAt),
-        type: detectType(item.Message),
-      })),
-    [raw]
+      raw.map((item, i) => {
+        const id = item.Id ?? item.id ?? i;
+        return {
+          id,
+          name: item.Username || "System",
+          message: item.Message || "",
+          time: fmtRelative(item.CreatedAt),
+          isoDate: toLocalISO(item.CreatedAt),
+          type: detectType(item.Message),
+          isRead: checkIsRead(item),
+        };
+      }),
+    [raw, readIds]
   );
+
+  const unreadCount = useMemo(() => allItems.filter((n) => !n.isRead).length, [allItems]);
 
   const todayItems = useMemo(() => allItems.filter((n) => n.isoDate === TODAY), [allItems, TODAY]);
   const earlierItems = useMemo(() => allItems.filter((n) => n.isoDate && n.isoDate < TODAY), [allItems, TODAY]);
@@ -558,6 +601,7 @@ const NotificationsPage = () => {
                 <NotifColumn
                   items={selectedItems}
                   emptyText={`No notifications on ${selectedDate === TODAY ? "today" : fmtDateHeading(selectedDate)}.`}
+                  onCardClick={handleCardClick}
                 />
               </div>
             </div>
@@ -569,7 +613,7 @@ const NotificationsPage = () => {
                 <div className="np-col-header">
                   <SectionLabel text="Today" count={todayItems.length} />
                 </div>
-                <NotifColumn items={todayItems} emptyText="No notifications today." />
+                <NotifColumn items={todayItems} emptyText="No notifications today." onCardClick={handleCardClick} />
               </div>
 
               {/* Earlier */}
@@ -577,7 +621,7 @@ const NotificationsPage = () => {
                 <div className="np-col-header">
                   <SectionLabel text="Earlier" count={earlierItems.length} />
                 </div>
-                <NotifColumn items={earlierItems} emptyText="No earlier notifications." grouped />
+                <NotifColumn items={earlierItems} emptyText="No earlier notifications." grouped onCardClick={handleCardClick} />
               </div>
             </div>
           )}

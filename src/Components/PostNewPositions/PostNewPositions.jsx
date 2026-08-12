@@ -389,11 +389,15 @@ const PostNewPositions = () => {
   /* =========================
      POST JOB (API CALL)
   ========================= */
-  const handlePostJob = async () => {
+  const handlePostJob = async (isLinkedInFromModal) => {
     if (!user) {
       toast.error("User session expired. Please login again.");
       return;
     }
+
+    const isLinkedInFlag = typeof isLinkedInFromModal === "boolean"
+      ? isLinkedInFromModal
+      : Boolean(shareToLinkedIn);
 
     const countryObj = Country.getCountryByCode(selectedCountry);
     const stateObj = State.getStateByCodeAndCountry(selectedState, selectedCountry);
@@ -456,7 +460,8 @@ const PostNewPositions = () => {
         qualifications: formik.values.qualifications || "",
         benefits: formik.values.benefits || "",
         jobStatus: formik.values.JobStatus || "active",
-        createdDate: editData?.createdDate || new Date().toISOString()
+        createdDate: editData?.createdDate || new Date().toISOString(),
+        islinkedin: isLinkedInFlag,
       };
 
       try {
@@ -498,6 +503,9 @@ const PostNewPositions = () => {
       fd.append("SalarType", formik.values.salaryType);
       fd.append("JobDuration", formik.values.jobDuration || "");
       fd.append("JobStatus", formik.values.JobStatus || "active");
+
+      // 🔹 LinkedIn Flag
+      fd.append("Islinkedin", isLinkedInFlag);
 
       // 🔹 Work Authorization (US)
       fd.append("IsUSCitizen", workAuthorization.Citizenship);

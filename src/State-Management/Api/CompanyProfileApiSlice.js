@@ -30,12 +30,20 @@ export const CompanyProfileApiSlice = apiSlice.injectEndpoints({
     }),
 
     getUserNotifications: builder.query({
-  query: (userId) => ({
-    url: `/api/Account/user/${userId}`,
-    method: "GET",
-  }),
-}),
+      query: (userId) => ({
+        url: `/api/Account/user/${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["Notifications"],
+    }),
 
+    markNotificationAsRead: builder.mutation({
+      query: (id) => ({
+        url: `/api/Account/mark-read/${id}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Notifications"],
+    }),
   }),
 });
 
@@ -43,5 +51,6 @@ export const {
   useGetCompanyProfileQuery,
   useUpdateCompanyProfileMutation,
   useGetCompanyProfileEditQuery,
-  useGetUserNotificationsQuery
+  useGetUserNotificationsQuery,
+  useMarkNotificationAsReadMutation,
 } = CompanyProfileApiSlice;

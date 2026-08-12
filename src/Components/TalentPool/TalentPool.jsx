@@ -1012,54 +1012,69 @@ if (appliedFilters.selectedJobs?.length) {
     return map;
   }, [companyList]);
 
-  const candidates = useMemo(() => {
-    return allCandidates.map((item) => {
-      const rawCompId = item.companyID || item.companyId || item.company_ID || item.company_id || item.insertByCompanyId || item.insertedByCompanyId;
-      const nameFromCompId = rawCompId ? companyMap.get(String(rawCompId)) : "";
-      const rawCompany = (item.companyName && item.companyName.toLowerCase() !== "benmyl")
-        ? item.companyName
-        : (item.company && item.company.toLowerCase() !== "benmyl")
-          ? item.company
-          : (nameFromCompId && nameFromCompId.toLowerCase() !== "benmyl")
-            ? nameFromCompId
-            : (item.currentCompany && item.currentCompany.toLowerCase() !== "benmyl")
-              ? item.currentCompany
-              : (item.uploadedCompany && item.uploadedCompany.toLowerCase() !== "benmyl")
-                ? item.uploadedCompany
-                : "";
-
-      return {
-        id: item.employeeID,
-        companyID: rawCompId,
-
-        name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
-        inviteUserId: Number(item.insertBy),
-
-        role: item.title || "-",
-
-        experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
-
-        location: item.city || "-",
-
-        skills: item.skills
-          ? item.skills.split(",").map((s) => s.trim())
-          : [],
-
-        avatar: item.profilePicture || "",
-
-        rating: 4.5,
-
-        availability: item.status ? [item.status] : ["Available"],
-
-        verified: true,
-        isshortlisted: item.isshortlisted,
-        uploadedByName: item.uploadedByName,
-        company: rawCompany,
-        education: item.highestQualification || (item.employee_Heighers && item.employee_Heighers[0]?.highestQualification) || item.degree || "",
-        hourlyRate: item.salary || 0,
-      };
+  const shortlistedCandidateIds = useMemo(() => {
+    const ids = new Set();
+    Object.values(shortlistedMap || {}).forEach((list) => {
+      if (Array.isArray(list)) {
+        list.forEach((c) => ids.add(c.id));
+      }
     });
-  }, [allCandidates, companyMap]);
+    return ids;
+  }, [shortlistedMap]);
+
+  const candidates = useMemo(() => {
+    return allCandidates
+      .filter(
+        (item) =>
+          !item.isshortlisted && !shortlistedCandidateIds.has(item.employeeID)
+      )
+      .map((item) => {
+        const rawCompId = item.companyID || item.companyId || item.company_ID || item.company_id || item.insertByCompanyId || item.insertedByCompanyId;
+        const nameFromCompId = rawCompId ? companyMap.get(String(rawCompId)) : "";
+        const rawCompany = (item.companyName && item.companyName.toLowerCase() !== "benmyl")
+          ? item.companyName
+          : (item.company && item.company.toLowerCase() !== "benmyl")
+            ? item.company
+            : (nameFromCompId && nameFromCompId.toLowerCase() !== "benmyl")
+              ? nameFromCompId
+              : (item.currentCompany && item.currentCompany.toLowerCase() !== "benmyl")
+                ? item.currentCompany
+                : (item.uploadedCompany && item.uploadedCompany.toLowerCase() !== "benmyl")
+                  ? item.uploadedCompany
+                  : "";
+
+        return {
+          id: item.employeeID,
+          companyID: rawCompId,
+
+          name: `${item.firstName || ""} ${item.lastName || ""}`.trim(),
+          inviteUserId: Number(item.insertBy),
+
+          role: item.title || "-",
+
+          experience: `${calculateTotalExperience(item.workexperiences) || 0}`,
+
+          location: item.city || "-",
+
+          skills: item.skills
+            ? item.skills.split(",").map((s) => s.trim())
+            : [],
+
+          avatar: item.profilePicture || "",
+
+          rating: 4.5,
+
+          availability: item.status ? [item.status] : ["Available"],
+
+          verified: true,
+          isshortlisted: item.isshortlisted,
+          uploadedByName: item.uploadedByName,
+          company: rawCompany,
+          education: item.highestQualification || (item.employee_Heighers && item.employee_Heighers[0]?.highestQualification) || item.degree || "",
+          hourlyRate: item.salary || 0,
+        };
+      });
+  }, [allCandidates, companyMap, shortlistedCandidateIds]);
 
   const jobs = useMemo(() => {
     if (!Array.isArray(jobTitles)) return [];
