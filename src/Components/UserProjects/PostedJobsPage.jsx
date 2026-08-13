@@ -1,5 +1,5 @@
 import React from "react";
-import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiArrowLeft, FiPlus } from "react-icons/fi";
+import { FiBriefcase, FiGlobe, FiUsers, FiZap, FiLinkedin, FiPlus } from "react-icons/fi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import PostedJobs from "./PostedJobs";
@@ -25,7 +25,11 @@ export default function PostedJobsPage() {
     useEffect(() => {
         const linkedinStatus = searchParams.get("linkedin");
         if (linkedinStatus === "posted") {
-            toast.success("Posted successfully on LinkedIn 🎉");
+            toast.success(
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    Posted successfully on LinkedIn <FiLinkedin size={16} color="#0a66c2" style={{ fill: "#0a66c2", marginTop: "-2px" }} />
+                </span>
+            );
             searchParams.delete("linkedin");
             setSearchParams(searchParams);
         }

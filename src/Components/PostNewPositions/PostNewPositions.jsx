@@ -136,7 +136,11 @@ const PostNewPositions = () => {
   useEffect(() => {
     const linkedinStatus = searchParams.get("linkedin");
     if (linkedinStatus === "posted") {
-      toast.success("Posted successfully on LinkedIn 🎉");
+      toast.success(
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          Posted successfully on LinkedIn <FiLinkedin size={16} color="#0a66c2" style={{ fill: "#0a66c2", marginTop: "-2px" }} />
+        </span>
+      );
       searchParams.delete("linkedin");
       setSearchParams(searchParams);
     }
@@ -209,12 +213,12 @@ const PostNewPositions = () => {
   const countries = Country.getAllCountries();
 
   // Initialize States for India if default region is IND
- useEffect(() => {
-  if (formRegion === "IND") {
-    setSelectedCountry("IN");
-    setStates(State.getStatesOfCountry("IN"));
-  }
-}, [formRegion]);
+  useEffect(() => {
+    if (formRegion === "IND") {
+      setSelectedCountry("IN");
+      setStates(State.getStatesOfCountry("IN"));
+    }
+  }, [formRegion]);
 
   const handleCountryChange = (countryCode) => {
     setSelectedCountry(countryCode);
@@ -709,45 +713,45 @@ const PostNewPositions = () => {
     }
   }, [editData]);
 
- useEffect(() => {
-  if (!editData) return;
+  useEffect(() => {
+    if (!editData) return;
 
-  if (editData.country) {
-    const countryObj = Country.getAllCountries().find(
-      c => c.name === editData.country
-    );
-
-    if (countryObj) {
-      setSelectedCountry(countryObj.isoCode);
-
-      const states = State.getStatesOfCountry(countryObj.isoCode);
-      setStates(states);
-
-      const stateObj = states.find(
-        s => s.name === editData.state
+    if (editData.country) {
+      const countryObj = Country.getAllCountries().find(
+        c => c.name === editData.country
       );
 
-      if (stateObj) {
-        setSelectedState(stateObj.isoCode);
+      if (countryObj) {
+        setSelectedCountry(countryObj.isoCode);
 
-        const cities = City.getCitiesOfState(
-          countryObj.isoCode,
-          stateObj.isoCode
+        const states = State.getStatesOfCountry(countryObj.isoCode);
+        setStates(states);
+
+        const stateObj = states.find(
+          s => s.name === editData.state
         );
 
-        setCities(cities);
+        if (stateObj) {
+          setSelectedState(stateObj.isoCode);
 
-        setSelectedCity(editData.city);
+          const cities = City.getCitiesOfState(
+            countryObj.isoCode,
+            stateObj.isoCode
+          );
 
-        // IMPORTANT
-        formik.setFieldValue(
-          "location",
-          `${editData.city}, ${editData.state}, ${editData.country}`
-        );
+          setCities(cities);
+
+          setSelectedCity(editData.city);
+
+          // IMPORTANT
+          formik.setFieldValue(
+            "location",
+            `${editData.city}, ${editData.state}, ${editData.country}`
+          );
+        }
       }
     }
-  }
-}, [editData]);
+  }, [editData]);
 
   const handleGenerateAI = async () => {
     const selectedEmpTypes = formRegion === 'US'
@@ -1725,44 +1729,44 @@ const PostNewPositions = () => {
                   <div>
                     <label className="auth-label">Education Standard<span style={{ color: '#ef4444' }}> *</span></label>
                     <div className="currency-popover-anchor" ref={eduRef} style={{ width: '100%' }}>
-                    <button
-                      type="button"
-                      className="auth-input placeholder-text"
-                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
-                      onClick={() => setShowEduPopover(v => !v)}
-                    >
-                      <span style={{ fontSize: '14px', color: formik.values.educationLevel ? '#0f172a' : '#94a3b8' }}>
-                        {formik.values.educationLevel === "Bachelors" ? "Bachelor's Degree" : formik.values.educationLevel === "Masters" ? "Master's Degree" : formik.values.educationLevel || 'Select education'}
-                      </span>
-                      <ChevronDown size={16} className={`chevron ${showEduPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
-                    </button>
-                    {showEduPopover && (
-                      <div className="currency-popover" style={{ width: '100%' }}>
-                        {[
-                          { value: "Bachelors", label: "Bachelor's Degree" },
-                          { value: "Masters", label: "Master's Degree" },
-                          { value: "Doctorate", label: "Doctorate / PhD" },
-                          { value: "Diploma", label: "Diploma / Certification" },
-                          { value: "None", label: "None Required" }
-                        ].map(e => (
-                          <button
-                            key={e.value}
-                            type="button"
-                            className={`currency-option ${formik.values.educationLevel === e.value ? 'selected' : ''}`}
-                            onClick={() => {
-                              formik.setFieldValue('educationLevel', e.value);
-                              setShowEduPopover(false);
-                            }}
-                          >
-                            <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{e.label}</span>
-                            {formik.values.educationLevel === e.value && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                      <button
+                        type="button"
+                        className="auth-input placeholder-text"
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: '#fff', width: '100%', height: '42px', padding: '10px 12px' }}
+                        onClick={() => setShowEduPopover(v => !v)}
+                      >
+                        <span style={{ fontSize: '14px', color: formik.values.educationLevel ? '#0f172a' : '#94a3b8' }}>
+                          {formik.values.educationLevel === "Bachelors" ? "Bachelor's Degree" : formik.values.educationLevel === "Masters" ? "Master's Degree" : formik.values.educationLevel || 'Select education'}
+                        </span>
+                        <ChevronDown size={16} className={`chevron ${showEduPopover ? 'rotate' : ''}`} style={{ color: '#94a3b8' }} />
+                      </button>
+                      {showEduPopover && (
+                        <div className="currency-popover" style={{ width: '100%' }}>
+                          {[
+                            { value: "Bachelors", label: "Bachelor's Degree" },
+                            { value: "Masters", label: "Master's Degree" },
+                            { value: "Doctorate", label: "Doctorate / PhD" },
+                            { value: "Diploma", label: "Diploma / Certification" },
+                            { value: "None", label: "None Required" }
+                          ].map(e => (
+                            <button
+                              key={e.value}
+                              type="button"
+                              className={`currency-option ${formik.values.educationLevel === e.value ? 'selected' : ''}`}
+                              onClick={() => {
+                                formik.setFieldValue('educationLevel', e.value);
+                                setShowEduPopover(false);
+                              }}
+                            >
+                              <span className="currency-option-sym" style={{ color: '#1F2937', fontWeight: 500 }}>{e.label}</span>
+                              {formik.values.educationLevel === e.value && <Check size={12} style={{ marginLeft: 'auto', color: '#5B5BD6' }} />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {err("educationLevel")}
                   </div>
-                  {err("educationLevel")}
-                </div>
                 )}
 
                 <div className="auth-form-group w-100" style={{ marginBottom: 0 }}>

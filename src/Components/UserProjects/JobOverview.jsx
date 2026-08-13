@@ -37,6 +37,7 @@ import WorkAndPreference from "./WorkAndPreference";
 import { toast } from "react-toastify";
 import "./JobOverview.css";
 import "../UserJobs/Jobs.css"; // Gain access to standard job-chip classes
+import TalentResumeView from "../TalentPool/TalentResumeView";
 
 const JobOverview = () => {
   const navigate = useNavigate();
@@ -60,6 +61,9 @@ const JobOverview = () => {
   const [candidates, setCandidates] = useState([]);
   const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
   const [inviteStatus, setInviteStatus] = useState({});
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
+  const [loadingShortlistId, setLoadingShortlistId] = useState(null);
 
   useEffect(() => {
     if (jobId && userId) {
@@ -402,24 +406,14 @@ const JobOverview = () => {
   };
 
   const handleViewProfile = (bid) => {
-    const from = location.pathname + location.search;
-    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-
-    navigate(
-      `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
-      {
-        state: {
-          employeeID: bid.EmployeeID,
-          candidate: {
-            id: bid.EmployeeID,
-            name: bid.FullName,
-            status: "Verified",
-          },
-          jobId: jobId,
-          fromJobOverview: true,
-        },
-      }
-    );
+    setSelectedResumeCandidate({
+      id: bid.EmployeeID,
+      name: bid.FullName?.split(" ")[0],
+      company: bid.companyName,
+      status: "Verified",
+      verified: true
+    });
+    setIsResumeModalOpen(true);
   };
 
   const handleFindTalentClick = () => {
@@ -903,7 +897,7 @@ const JobOverview = () => {
                         fontSize: "14px",
                       }}
                     >
-                      {bid.FullName}
+                      {bid.FullName?.split(" ")[0]}
                     </div>
 
                     <div
@@ -1004,6 +998,22 @@ const JobOverview = () => {
           )}
         </div>
       </div>
+      <TalentResumeView
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+        candidate={selectedResumeCandidate}
+        onShortlist={(cand) => {
+          setLoadingShortlistId(cand.id);
+          setTimeout(() => {
+            handleToggleSelectBid(cand.id);
+            setIsResumeModalOpen(false);
+            setLoadingShortlistId(null);
+          }, 500);
+        }}
+        isShortlisted={Boolean(selectedResumeCandidate && selectedBidIds.includes(selectedResumeCandidate.id))}
+        loadingShortlistId={loadingShortlistId}
+        useCandidateNameOnly={true}
+      />
     </div>
     // </div>
   );

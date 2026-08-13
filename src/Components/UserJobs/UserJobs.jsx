@@ -183,7 +183,7 @@ const UserJobs = () => {
       roles: roleFromProfile ? [roleFromProfile] : [],
       skills: [],
       availability: [],
-      location: "",
+      location: [],
       minExperience: "",
       maxExperience: "",
       minSalary: "",
@@ -220,12 +220,12 @@ const UserJobs = () => {
       });
     }
 
-    // Location (single input → array)
-    if (filters.location?.trim()) {
+    // Location (array matching TalentPool functionality)
+    if (filters.location?.length) {
       apiFilters.push({
         filterName: "Location",
-        filterOperator: "Equals",
-        filterValue: [filters.location.trim()],
+        filterOperator: "Contains",
+        filterValue: filters.location,
       });
     }
 
