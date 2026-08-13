@@ -27,7 +27,7 @@ const ShareJobCard = ({ job }) => {
   return (
     <div className="share-job-card-jd" style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
       {/* LinkedIn Status Section */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "22px", width: "100%" }}>
+      {/* <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "22px", width: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div 
             style={{ 
@@ -83,7 +83,7 @@ const ShareJobCard = ({ job }) => {
           </button>
 
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

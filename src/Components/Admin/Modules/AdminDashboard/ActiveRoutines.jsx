@@ -27,6 +27,7 @@ import {
 import "./ActiveRoutines.css";
 
 // -------------------------------------------------------------
+// -------------------------------------------------------------
 // DYNAMIC WORKFLOW PIPELINES PER OPERATIONAL ROLE
 // -------------------------------------------------------------
 const WORKFLOWS = {
@@ -38,7 +39,7 @@ const WORKFLOWS = {
       title: "Invite and Add User",
       desc: "Sets up corporate portal credentials",
       icon: <Users size={18} />,
-      logText: "👤 Admin Console: Initiating new system invite. Provisioning secure access link to department head workspace... Sent."
+      logText: "Adding a new user and sending them an invite link."
     },
     {
       id: 1,
@@ -47,7 +48,7 @@ const WORKFLOWS = {
       title: "Role Configuration",
       desc: "Sets access limits and module gates",
       icon: <Lock size={18} />,
-      logText: "🔐 Access controls applied: Hiring Manager and Recruiter permission sets configured with zero-trust scopes."
+      logText: "Setting up what parts of the app the new user can access."
     },
     {
       id: 2,
@@ -56,7 +57,7 @@ const WORKFLOWS = {
       title: "Token Allotment",
       desc: "Assigns platform orchestration credits",
       icon: <Sparkles size={18} />,
-      logText: "💎 AI credits allocated: 5,000 background neural parsing tokens dispatched successfully to recruiter pools."
+      logText: "Giving the user AI credits so they can use smart features."
     },
     {
       id: 3,
@@ -65,7 +66,7 @@ const WORKFLOWS = {
       title: "Subscription",
       desc: "Calibrates enterprise license indices",
       icon: <ShieldCheck size={18} />,
-      logText: "💳 Enterprise billing verified. Platform features calibrated to premium unlimited tier."
+      logText: "Checking the company's billing plan to unlock premium tools."
     },
     {
       id: 4,
@@ -74,7 +75,7 @@ const WORKFLOWS = {
       title: "Post Job",
       desc: "Define requirements and core job parameters",
       icon: <Briefcase size={18} />,
-      logText: "💼 Job posting pipeline initialized. Setting requirement indices..."
+      logText: "Getting ready to create a new job opening."
     },
     {
       id: 5,
@@ -83,7 +84,7 @@ const WORKFLOWS = {
       title: "Create Job",
       desc: "Generates structured role spec details",
       icon: <Plus size={18} />,
-      logText: "⚙️ Automatically generating optimized description and key qualifications using AI models."
+      logText: "Automatically writing the job description using AI."
     },
     {
       id: 6,
@@ -92,7 +93,7 @@ const WORKFLOWS = {
       title: "Preview and Post",
       desc: "Publishes listings and shares on LinkedIn",
       icon: <Mail size={18} />,
-      logText: "🔗 Channel integration ready. Publishing to internal boards and auto-sharing update on LinkedIn."
+      logText: "Publishing the job to the internal board and LinkedIn."
     },
     {
       id: 7,
@@ -101,7 +102,7 @@ const WORKFLOWS = {
       title: "Find Talent",
       desc: "Slices bench records for matching profiles",
       icon: <Search size={18} />,
-      logText: "🔍 Querying database bench records. AI match yielded 12 candidate matches above 85%."
+      logText: "Searching our database to find candidates that match the job."
     },
     {
       id: 8,
@@ -110,7 +111,7 @@ const WORKFLOWS = {
       title: "Shortlist Talent",
       desc: "Filters top candidates for recruiter review",
       icon: <UserCheck size={18} />,
-      logText: "⭐ Screening profiles. Top 3 matching profiles shortlisted for active loops."
+      logText: "Picking the top candidates for the recruiter to review."
     },
     {
       id: 9,
@@ -119,7 +120,7 @@ const WORKFLOWS = {
       title: "Create Interviews",
       desc: "Blocks schedules via Outlook calendars",
       icon: <Calendar size={18} />,
-      logText: "📅 Outlook sync complete. Interview invites successfully drafted and dispatched."
+      logText: "Scheduling interview times on everyone's calendar."
     },
     {
       id: 10,
@@ -128,7 +129,7 @@ const WORKFLOWS = {
       title: "Negotiate",
       desc: "Calibrates salary/rate parameters",
       icon: <Clock size={18} />,
-      logText: "💰 Rate calibration complete. Candidate profile aligned with project budget cap."
+      logText: "Making sure the candidate's expected pay fits the budget."
     },
     {
       id: 11,
@@ -137,7 +138,7 @@ const WORKFLOWS = {
       title: "Approve Candidate & Create Contract",
       desc: "Generates secure legal staffing contract",
       icon: <Layers size={18} />,
-      logText: "📝 Candidate approved. Generating digital staffing contract and dispatching for signatures."
+      logText: "Creating the official contract and sending it out for signatures."
     },
     {
       id: 12,
@@ -146,7 +147,7 @@ const WORKFLOWS = {
       title: "Project Progress",
       desc: "Launches onboarding metrics tracking",
       icon: <Activity size={18} />,
-      logText: "📈 Contract executed. Logging project start metrics on developer workspace."
+      logText: "The contract is signed, and we are now tracking the project."
     },
     {
       id: 13,
@@ -155,7 +156,7 @@ const WORKFLOWS = {
       title: "Coming Soon",
       desc: "Advanced autonomous payroll sync triggers",
       icon: <Clock size={18} />,
-      logText: "🚀 Next phase: Autonomous compliance auditing and smart billing cycles triggers."
+      logText: "Coming next: Automatic syncing for payroll and billing."
     }
   ],
   hiring_manager: [
@@ -166,7 +167,7 @@ const WORKFLOWS = {
       title: "Post Job",
       desc: "Define requirements and core job parameters",
       icon: <Briefcase size={18} />,
-      logText: "💼 Job posting pipeline initialized. Setting requirement indices..."
+      logText: "Starting a new job posting for your team."
     },
     {
       id: 1,
@@ -175,7 +176,7 @@ const WORKFLOWS = {
       title: "Create Job",
       desc: "Generates structured role spec details",
       icon: <Plus size={18} />,
-      logText: "⚙️ Automatically generating optimized description and key qualifications using AI models."
+      logText: "AI is helping write a great job description and requirements."
     },
     {
       id: 2,
@@ -184,7 +185,7 @@ const WORKFLOWS = {
       title: "Preview and Post",
       desc: "Publishes listings and shares on LinkedIn",
       icon: <Mail size={18} />,
-      logText: "🔗 Channel integration ready. Publishing to internal boards and auto-sharing update on LinkedIn."
+      logText: "Sharing the new job on LinkedIn and job boards."
     },
     {
       id: 3,
@@ -193,7 +194,7 @@ const WORKFLOWS = {
       title: "Find Talent",
       desc: "Slices bench records for matching profiles",
       icon: <Search size={18} />,
-      logText: "🔍 Querying database bench records. AI match yielded 12 candidate matches above 85%."
+      logText: "Looking through available candidates to find the best match."
     },
     {
       id: 4,
@@ -202,7 +203,7 @@ const WORKFLOWS = {
       title: "Shortlist Talent",
       desc: "Filters top candidates for recruiter review",
       icon: <UserCheck size={18} />,
-      logText: "⭐ Screening profiles. Top 3 matching profiles shortlisted for active loops."
+      logText: "Selecting the best matching profiles to interview."
     },
     {
       id: 5,
@@ -211,7 +212,7 @@ const WORKFLOWS = {
       title: "Create Interviews",
       desc: "Blocks schedules via Outlook calendars",
       icon: <Calendar size={18} />,
-      logText: "📅 Outlook sync complete. Interview invites successfully drafted and dispatched."
+      logText: "Sending out calendar invites to schedule the interviews."
     },
     {
       id: 6,
@@ -220,7 +221,7 @@ const WORKFLOWS = {
       title: "Negotiate",
       desc: "Calibrates salary/rate parameters",
       icon: <Clock size={18} />,
-      logText: "💰 Rate calibration complete. Candidate profile aligned with project budget cap."
+      logText: "Discussing and finalizing the pay rate."
     },
     {
       id: 7,
@@ -229,7 +230,7 @@ const WORKFLOWS = {
       title: "Approve Candidate & Create Contract",
       desc: "Generates secure legal staffing contract",
       icon: <Layers size={18} />,
-      logText: "📝 Candidate approved. Generating digital staffing contract and dispatching for signatures."
+      logText: "Approving the hire and sending the legal contract."
     },
     {
       id: 8,
@@ -238,7 +239,7 @@ const WORKFLOWS = {
       title: "Project Progress",
       desc: "Launches onboarding metrics tracking",
       icon: <Activity size={18} />,
-      logText: "📈 Contract executed. Logging project start metrics on developer workspace."
+      logText: "Tracking the start of the project and onboarding."
     },
     {
       id: 9,
@@ -247,7 +248,7 @@ const WORKFLOWS = {
       title: "Coming Soon",
       desc: "Advanced autonomous payroll sync triggers",
       icon: <Clock size={18} />,
-      logText: "🚀 Next phase: Autonomous compliance auditing and smart billing cycles triggers."
+      logText: "Coming next: Automated timesheets and billing."
     }
   ],
   bench_sales: [
@@ -258,7 +259,7 @@ const WORKFLOWS = {
       title: "Upload Talent",
       desc: "Ingresses resume assets into portal",
       icon: <Upload size={18} />,
-      logText: "📥 Resume attachment ingress started. Initializing parsing queues..."
+      logText: "Uploading a developer's resume to the system."
     },
     {
       id: 1,
@@ -267,7 +268,7 @@ const WORKFLOWS = {
       title: "Review Resumes",
       desc: "Screener extracts developer summaries",
       icon: <Cpu size={18} />,
-      logText: "🧠 Processing parsed data cards. Extracting skills, years, and experience matrices."
+      logText: "AI is reading the resume to extract skills and experience."
     },
     {
       id: 2,
@@ -276,7 +277,7 @@ const WORKFLOWS = {
       title: "Share and Publish Talent",
       desc: "Publishes to LinkedIn and active Talent Pool",
       icon: <Sparkles size={18} />,
-      logText: "📢 Profile aligned. Auto-publishing developer profile to active talent pool and LinkedIn stream."
+      logText: "Publishing the developer's profile to the talent pool and LinkedIn."
     },
     {
       id: 3,
@@ -285,7 +286,7 @@ const WORKFLOWS = {
       title: "Find Jobs by Roles",
       desc: "Queries portal requirements by skill keys",
       icon: <Search size={18} />,
-      logText: "🔍 Scanning portal requirements database. Discovered 5 open client match matches."
+      logText: "Searching for open jobs that match the developer's skills."
     },
     {
       id: 4,
@@ -294,7 +295,7 @@ const WORKFLOWS = {
       title: "Make Offer to Job",
       desc: "Submits matched talent profiles to HM",
       icon: <Send size={18} />,
-      logText: "✉️ Matching profile dispatched to hiring manager for review."
+      logText: "Sending the developer's profile to hiring managers."
     },
     {
       id: 5,
@@ -303,7 +304,7 @@ const WORKFLOWS = {
       title: "Join Interview",
       desc: "Calibrates candidate loop stages",
       icon: <Calendar size={18} />,
-      logText: "📅 Interview schedule confirmed. Connecting candidate to virtual calendar."
+      logText: "Scheduling a virtual interview with the client."
     },
     {
       id: 6,
@@ -312,7 +313,7 @@ const WORKFLOWS = {
       title: "Negotiate",
       desc: "Coordinates billing rate variables",
       icon: <Clock size={18} />,
-      logText: "💰 Rate calibration: Final billing rates agreed by both client and bench vendor."
+      logText: "Agreeing on the final billing rate with the client."
     },
     {
       id: 7,
@@ -321,7 +322,7 @@ const WORKFLOWS = {
       title: "Accept Contract",
       desc: "Executes onboarding documents",
       icon: <CheckCircle2 size={18} />,
-      logText: "✍️ Staffing contract accepted. Digitally signing agreement and provisioning vendor tokens."
+      logText: "The contract is signed, and the developer is ready to start."
     },
     {
       id: 8,
@@ -330,7 +331,7 @@ const WORKFLOWS = {
       title: "Project Progress",
       desc: "Sets up benchmark tracking",
       icon: <Activity size={18} />,
-      logText: "📈 Active assignment tracking triggered. Developer onboards successfully."
+      logText: "Tracking the developer's progress on their new assignment."
     },
     {
       id: 9,
@@ -339,7 +340,7 @@ const WORKFLOWS = {
       title: "Coming Soon",
       desc: "Auto-invoice generation parameters",
       icon: <Clock size={18} />,
-      logText: "🚀 Next phase: Automated invoice and timesheet sync triggers."
+      logText: "Coming next: Automatic invoices and timesheets."
     }
   ],
   recruiter: [
@@ -350,7 +351,7 @@ const WORKFLOWS = {
       title: "Upload Talent & Post Job",
       desc: "Dual sourcing and requirement entry",
       icon: <Database size={18} />,
-      logText: "🔄 Recruiter active: Launching combined talent pipeline and job posting structures."
+      logText: "Starting the process to find talent and create a job at the same time."
     },
     {
       id: 1,
@@ -359,7 +360,7 @@ const WORKFLOWS = {
       title: "Review Resumes & Create Job",
       desc: "AI structures descriptions and skills",
       icon: <Cpu size={18} />,
-      logText: "🧠 Automated parser parsing incoming applicant CVs while AI drafts role-specs simultaneously."
+      logText: "AI is reading resumes and drafting the job description."
     },
     {
       id: 2,
@@ -368,7 +369,7 @@ const WORKFLOWS = {
       title: "Publish Talent & LinkedIn Post",
       desc: "Dispatches updates across channels",
       icon: <Sparkles size={18} />,
-      logText: "📢 Syncing social listings. Rolled out marketing profiles to active pools and LinkedIn."
+      logText: "Sharing the job and talent profiles across our networks."
     },
     {
       id: 3,
@@ -377,7 +378,7 @@ const WORKFLOWS = {
       title: "Find Jobs & Match Talent",
       desc: "Runs bidirectional fit indices",
       icon: <Search size={18} />,
-      logText: "🔍 Cross-matching 12 benchmark candidates against 5 newly created requisitions."
+      logText: "Matching our best candidates with the open jobs."
     },
     {
       id: 4,
@@ -386,7 +387,7 @@ const WORKFLOWS = {
       title: "Shortlist Candidates",
       desc: "Filters best fits from automated scores",
       icon: <ShieldCheck size={18} />,
-      logText: "⭐ 90% score calibration satisfied. Discovered three high-fidelity pairings."
+      logText: "Filtering the list to show only the strongest matches."
     },
     {
       id: 5,
@@ -395,7 +396,7 @@ const WORKFLOWS = {
       title: "Create & Coordinate Interviews",
       desc: "Blocks shared times on Outlook",
       icon: <Calendar size={18} />,
-      logText: "📅 Booking panels: Automatically reserving calendars for client and applicant syncs."
+      logText: "Booking interview times for both the client and the candidate."
     },
     {
       id: 6,
@@ -404,7 +405,7 @@ const WORKFLOWS = {
       title: "Negotiate & Rate Sync",
       desc: "Aligns agency margins and rates",
       icon: <Clock size={18} />,
-      logText: "💰 Rate calibration complete. Margins, caps, and billings fully synced in agency databases."
+      logText: "Making sure the pay rates and agency fees are all agreed upon."
     },
     {
       id: 7,
@@ -413,7 +414,7 @@ const WORKFLOWS = {
       title: "Approve Candidate & Contract",
       desc: "Dispatches digitally signing packs",
       icon: <Layers size={18} />,
-      logText: "📝 Generating execution draft for corporate master services contract."
+      logText: "Generating the final contracts for everyone to sign."
     },
     {
       id: 8,
@@ -422,7 +423,7 @@ const WORKFLOWS = {
       title: "Onboard & Track Progress",
       desc: "Triggers task lists and schedules",
       icon: <Activity size={18} />,
-      logText: "📈 Placements confirmed. Active dashboard indicators reporting optimal velocity."
+      logText: "The placement is confirmed, and we are tracking the onboarding."
     },
     {
       id: 9,
@@ -431,7 +432,7 @@ const WORKFLOWS = {
       title: "Coming Soon",
       desc: "Fully autonomous smart payout grids",
       icon: <Clock size={18} />,
-      logText: "🚀 Next phase: Dynamic billing, timesheets, and auto-settlement protocols."
+      logText: "Coming next: Smart tracking for payments and timesheets."
     }
   ]
 };
@@ -474,7 +475,7 @@ function ActiveRoutines() {
   const runStep = (index, stepsList) => {
     if (index >= stepsList.length) {
       setSimulationStatus("completed");
-      setSimulationLogs(prev => [...prev, "🎉 Simulation sequence completed. All active routines synchronized successfully!"]);
+      setSimulationLogs(prev => [...prev, "Simulation sequence completed. All active routines synchronized successfully!"]);
       return;
     }
 
@@ -484,6 +485,15 @@ function ActiveRoutines() {
     timerRef.current = setTimeout(() => {
       runStep(index + 1, stepsList);
     }, 1800);
+  };
+
+  const handleStop = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    setSimulationStatus("idle");
+    setSimulationLogs(prev => [...prev, "Simulation stopped manually."]);
   };
 
   const handleSimulate = () => {
@@ -496,7 +506,7 @@ function ActiveRoutines() {
 
     setActiveStep(-1);
     setSimulationStatus("running");
-    setSimulationLogs(["🚀 Starting Workflow Automation sequence..."]);
+    setSimulationLogs(["Starting Workflow Automation sequence..."]);
 
     runStep(0, activeSteps);
   };
@@ -509,29 +519,28 @@ function ActiveRoutines() {
         <div className="routines-modal-header">
           <div className="routines-header-title-area">
             <div className="routines-header-glow"></div>
-            <h1 className="job-title" style={{ fontSize: '18px' }}>Workflow Automation Orchestrator</h1>
-            <p style={{ fontSize: '12px' }}>Execute background scheduling parameters, coordinate system automated operations pipelines, and configure triggers</p>
+            <h1 className="job-title" style={{ fontSize: '18px' }}>Platform Orchestration & Automation Guide</h1>
+            <p style={{ fontSize: '12px' }}>Select a role below to see a step-by-step simulation of how we handle jobs, talent, and scheduling in the background.</p>
           </div>
           
           <div className="routines-header-actions">
-            <button 
-              className={`simulate-btn ${simulationStatus === "running" ? "running" : ""}`}
-              onClick={handleSimulate}
-              disabled={simulationStatus === "running"}
-            >
-              {simulationStatus === "running" ? (
-                <>
-                  <div className="simulate-spinner"></div>
-                  Simulating Sequence...
-                </>
-              ) : (
-                <>
-                  <Play size={16} fill="currentColor" />
-                  Simulate Automation Sequence
-                </>
-              )}
-            </button>
-            
+            {simulationStatus === "running" ? (
+              <button 
+                className="simulate-btn stop-btn"
+                onClick={handleStop}
+              >
+                <X size={16} fill="currentColor" />
+                Stop Simulation
+              </button>
+            ) : (
+              <button 
+                className="simulate-btn"
+                onClick={handleSimulate}
+              >
+                <Play size={16} fill="currentColor" />
+                Start Simulation
+              </button>
+            )}
             
           </div>
         </div>
@@ -542,26 +551,27 @@ function ActiveRoutines() {
           {/* LEFT COLUMN: ACTIVE ROUTINE BUILDER MAP */}
           <div className="routines-builder-card">
             <div className="routines-card-header">
-              <h2 style={{ fontSize: '12px' }}>Active Routine Builder Map</h2>
-              <p style={{ fontSize: '11px' }}>Simulated node flowchart tracking logic from trigger events</p>
+              <h2 style={{ fontSize: '12px' }}>Step-by-Step Flowchart</h2>
+              <p style={{ fontSize: '11px' }}>Watch how the process moves from start to finish.</p>
             </div>
 
             <div className="flowchart-container">
-              {/* Vertical connector line */}
-              <div className="flowchart-connector-line"></div>
-              
               {activeSteps.map((step, idx) => {
                 const isStepActive = activeStep === step.id;
                 const isStepCompleted = activeStep > step.id || simulationStatus === "completed";
                 const isStepPending = activeStep < step.id && simulationStatus !== "completed";
+                const isLast = idx === activeSteps.length - 1;
 
                 return (
                   <div 
                     key={step.id} 
-                    className={`flowchart-node-card ${isStepActive ? "active" : ""} ${isStepCompleted ? "completed" : ""} ${isStepPending ? "pending" : ""}`}
+                    className={`flowchart-step ${isStepActive ? "active" : ""} ${isStepCompleted ? "completed" : ""} ${isStepPending ? "pending" : ""}`}
                   >
+                    {/* Vertical Line Connector (skip for last item) */}
+                    {!isLast && <div className="step-connector-line"></div>}
+
                     {/* Left Icon Badge */}
-                    <div className="node-icon-wrapper">
+                    <div className="step-icon-wrapper">
                       {isStepCompleted ? (
                         <CheckCircle2 size={18} className="success-check-icon" />
                       ) : (
@@ -569,24 +579,26 @@ function ActiveRoutines() {
                       )}
                     </div>
 
-                    {/* Node Content */}
-                    <div className="node-content-body">
-                      <div className="node-badge-row">
-                        <span className={`node-badge badge-${step.badgeType}`}>
-                          {step.badge}
-                        </span>
-                        <h3 className="node-title">{step.title}</h3>
+                    {/* Node Content Card */}
+                    <div className="flowchart-node-card">
+                      <div className="node-content-body">
+                        <div className="node-badge-row">
+                          <span className={`node-badge badge-${step.badgeType}`}>
+                            {step.badge}
+                          </span>
+                          <h3 className="node-title">{step.title}</h3>
+                        </div>
+                        <p className="node-desc">{step.desc}</p>
                       </div>
-                      <p className="node-desc">{step.desc}</p>
-                    </div>
 
-                    {/* Dynamic Status Indicator */}
-                    {isStepActive && (
-                      <div className="node-status-glow">
-                        <span className="pulse-dot-active"></span>
-                        <span className="status-text-active">Active</span>
-                      </div>
-                    )}
+                      {/* Dynamic Status Indicator */}
+                      {isStepActive && (
+                        <div className="node-status-glow">
+                          <span className="pulse-dot-active"></span>
+                          <span className="status-text-active">Active</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -599,7 +611,7 @@ function ActiveRoutines() {
                   <Clock size={12} />
                   <span>Real-Time Execution Logs</span>
                   {simulationStatus === "completed" && (
-                    <button className="reset-logs-btn" onClick={handleReset}>Reset</button>
+                    <button className="reset-logs-btn" onClick={handleReset}>Clear Logs</button>
                   )}
                 </div>
                 <div className="logs-list-wrapper">
@@ -614,15 +626,15 @@ function ActiveRoutines() {
             )}
 
             <div className="routines-card-footer-mono">
-              Drag actions from core registry to insert active rules
+              The flowchart updates automatically as the simulation runs.
             </div>
           </div>
 
           {/* RIGHT COLUMN: OPERATIONAL PERSONA SELECTION */}
           <div className="routines-templates-card">
             <div className="routines-card-header">
-              <h2 style={{ fontSize: '12px' }}>Select Operational Pipeline</h2>
-              <p style={{ fontSize: '11px' }}>Configure orchestrator roadmap based on workspace active role</p>
+              <h2 style={{ fontSize: '12px' }}>Choose a Role to Explore</h2>
+              <p style={{ fontSize: '11px' }}>Click on any role below to see their exact step-by-step process.</p>
             </div>
 
             <div className="templates-list-container">
@@ -692,23 +704,31 @@ function ActiveRoutines() {
                 <span>Selected Template Aligned</span>
               </div>
               <div className={`alignment-right ${simulationStatus}`}>
-                {simulationStatus === "idle" && "READY TO TRANSMIT"}
-                {simulationStatus === "running" && "TRANSMITTING SEQUENCE"}
-                {simulationStatus === "completed" && "SEQUENCE TRANSMITTED"}
+                {simulationStatus === "idle" && "READY TO SIMULATE"}
+                {simulationStatus === "running" && "SIMULATION IN PROGRESS"}
+                {simulationStatus === "completed" && "SIMULATION FINISHED"}
               </div>
             </div>
 
-            {/* EXPLANATORY FLOW TEXT BLOCK */}
+            {/* EXPLANATORY FLOW TEXT BLOCK (Dynamic) */}
             <div className="workflow-explanation-box">
               <div className="explanation-title-row">
                 <Info size={14} />
-                <h4>Understanding Operational Roles</h4>
+                <h4>Role Details</h4>
               </div>
               <div className="explanation-details">
-                <p><strong>Admin Pipeline:</strong> Governs system permissions, provisioning, invite loops, subscription setups, and overall compliance metrics.</p>
-                <p><strong>Hiring Manager Flow:</strong> Focuses on requirement creation, sourcing matches, vetting candidates, and executing digital MSA/SOW legal contracts.</p>
-                <p><strong>Bench Sales Flow:</strong> Ingresses developer profiles, syndicates listings to pools/social platforms, and automates interview tracking.</p>
-                <p><strong>Recruiter Hybrid:</strong> Coordinates mutual matches, bridging client orders with provider bench assets to accelerate onboarding pipelines.</p>
+                {selectedRole === "admin" && (
+                  <p><strong>Admin:</strong> Adds new users, sets up permissions, and manages billing so everything runs smoothly.</p>
+                )}
+                {selectedRole === "hiring_manager" && (
+                  <p><strong>Hiring Manager:</strong> Creates new jobs, reviews matched candidates, schedules interviews, and approves new hires.</p>
+                )}
+                {selectedRole === "bench_sales" && (
+                  <p><strong>Bench Sales:</strong> Uploads resumes, shares developer profiles, and helps schedule interviews to place talent.</p>
+                )}
+                {selectedRole === "recruiter" && (
+                  <p><strong>Recruiter:</strong> The matchmaker. Finds the best talent for open jobs, handles interviews, and manages the final contracts.</p>
+                )}
               </div>
             </div>
 

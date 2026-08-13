@@ -89,6 +89,16 @@
   transform: translateY(0);
 }
 
+.simulate-btn.stop-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.simulate-btn.stop-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+}
+
 .simulate-btn:disabled {
   opacity: 0.8;
   cursor: not-allowed;
@@ -134,14 +144,16 @@
   align-items: start;
 }
 
-/* Card Foundations */
+/* Card Foundations - Premium Glassmorphism */
 .routines-builder-card,
 .routines-templates-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 24px;
-  border: 1px solid #e8eef3;
+  border: 1px solid rgba(226, 232, 240, 0.8);
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.02);
   display: flex;
   flex-direction: column;
 }
@@ -168,12 +180,9 @@
    LEFT COLUMN FLOWCHART STYLE
    ========================== */
 .flowchart-container {
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 8px 12px 8px 4px;
-  margin-bottom: 24px;
+  padding: 10px 10px 10px 20px;
   max-height: 480px;
   overflow-y: auto;
 }
@@ -192,73 +201,93 @@
   border-radius: 9px;
 }
 
-/* Vertical Timeline Connector Line */
-/* .flowchart-connector-line {
+/* Flowchart Step Structure */
+.flowchart-step {
+  display: flex;
+  position: relative;
+  min-height: 80px; /* ensure enough space for line */
+  padding-bottom: 24px;
+}
+
+.step-connector-line {
   position: absolute;
-  left: 47px;
-  top: 30px;
-  bottom: 30px;
+  left: 21px; /* Center of icon wrapper */
+  top: 44px; /* Below the icon */
+  bottom: 0; /* To the end of padding-bottom */
   width: 2px;
   background: #e2e8f0;
   z-index: 1;
-} */
-
-/* Flowchart Node Card */
-.flowchart-node-card {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 16px 20px;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 0 12px;
+  transition: background 0.3s ease;
 }
 
-.flowchart-node-card.pending {
+.flowchart-step.completed .step-connector-line {
+  background: #10b981;
+}
+
+.flowchart-step.active .step-connector-line {
+  background: linear-gradient(to bottom, #6366f1, #e2e8f0);
+}
+
+.flowchart-step.pending {
   opacity: 0.85;
 }
 
-.flowchart-node-card.active {
-  border-color: #6366f1;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
-  transform: scale(1.02);
-}
-
-.flowchart-node-card.completed {
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
-}
-
 /* Left Icon Wrapper */
-.node-icon-wrapper {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+.step-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
   color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 18px;
+  margin-right: 20px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
   transition: all 0.3s ease;
 }
 
-.flowchart-node-card.active .node-icon-wrapper {
+.flowchart-step.active .step-icon-wrapper {
+  border-color: #6366f1;
   background: #eff6ff;
-  border-color: #bfdbfe;
   color: #3b82f6;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+  transform: scale(1.05);
 }
 
-.flowchart-node-card.completed .node-icon-wrapper {
+.flowchart-step.completed .step-icon-wrapper {
+  border-color: #10b981;
   background: #ecfdf5;
-  border-color: #a7f3d0;
   color: #10b981;
+}
+
+/* Flowchart Node Card */
+.flowchart-node-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: -6px; /* slightly align with icon vertically */
+}
+
+.flowchart-step.active .flowchart-node-card {
+  border-color: #6366f1;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+  transform: translateX(4px);
+}
+
+.flowchart-step.completed .flowchart-node-card {
+  border-color: #a7f3d0;
+  background: #f8fafc;
 }
 
 .success-check-icon {
@@ -325,8 +354,9 @@
   padding: 4px 8px;
   border-radius: 99px;
   background: rgba(99, 102, 241, 0.06);
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   margin-left: 10px;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
 }
 
 .pulse-dot-active {
@@ -356,11 +386,11 @@
 
 /* Real-Time Logs Panel */
 .simulation-logs-panel {
-  background: #0f172a;
+  background: #f8fafc;
   border-radius: 16px;
   padding: 16px 20px;
   margin-bottom: 18px;
-  border: 1px solid #1e293b;
+  border: 1px solid #e2e8f0;
   animation: panelSlideDown 0.3s ease;
 }
 
@@ -374,7 +404,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 10px;
-  border-bottom: 1px dashed #1e293b;
+  border-bottom: 1px dashed #cbd5e1;
   padding-bottom: 8px;
 }
 
@@ -405,7 +435,7 @@
 }
 
 .logs-list-wrapper::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 2px;
 }
 
@@ -424,7 +454,7 @@
 .log-text {
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 11px;
-  color: #e2e8f0;
+  color: #334155;
   margin: 0;
   line-height: 1.4;
 }
@@ -466,7 +496,8 @@
 
 .template-item-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transform: translateY(-2px);
 }
 
 .template-item-card.selected {
@@ -726,16 +757,5 @@
     align-self: flex-start;
   }
 
-  .flowchart-node-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 
-  .node-icon-wrapper {
-    margin-bottom: 12px;
-  }
-
-  .flowchart-connector-line {
-    left: 47px;
-  }
 }
