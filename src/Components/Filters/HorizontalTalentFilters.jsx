@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { FiChevronDown, FiCheck, FiX, FiSearch } from "react-icons/fi";
+import { FiChevronDown, FiCheck, FiX, FiSearch, FiPlus } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./HorizontalTalentFilters.css";
 
@@ -289,26 +289,97 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
                 ))}
               </div>
             )}
-            <input
-              type="text"
-              className="horizontal-input"
-              placeholder="Type & press Enter to add..."
-              value={locationInputValue}
-              onChange={(e) => setLocationInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                  e.preventDefault();
-                  const val = locationInputValue.trim().replace(/,$/, '');
-                  if (val && !filterInputs.location.includes(val)) {
-                    handleInputChange("location", [...filterInputs.location, val]);
+            <div style={{ position: "relative", width: "100%" }}>
+              <input
+                type="text"
+                className="horizontal-input"
+                placeholder="Search or enter location..."
+                value={locationInputValue}
+                onChange={(e) => setLocationInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = locationInputValue.trim().replace(/,$/, '');
+                    if (val && !filterInputs.location.includes(val)) {
+                      handleInputChange("location", [...filterInputs.location, val]);
+                    }
+                    setLocationInputValue("");
+                  } else if (e.key === 'Backspace' && !locationInputValue && filterInputs.location.length > 0) {
+                    const updated = filterInputs.location.slice(0, -1);
+                    handleInputChange("location", updated);
                   }
-                  setLocationInputValue("");
-                } else if (e.key === 'Backspace' && !locationInputValue && filterInputs.location.length > 0) {
-                  const updated = filterInputs.location.slice(0, -1);
-                  handleInputChange("location", updated);
-                }
-              }}
-            />
+                }}
+                style={{ width: "100%", boxSizing: "border-box", marginBottom: "8px" }}
+              />
+
+              <div className="horizontal-dropdown-list" style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                {locationInputValue.trim() && (
+                  <div
+                    className="horizontal-custom-option"
+                    onClick={() => {
+                      const val = locationInputValue.trim().replace(/,$/, '');
+                      if (val && !filterInputs.location.includes(val)) {
+                        handleInputChange("location", [...filterInputs.location, val]);
+                      }
+                      setLocationInputValue("");
+                    }}
+                  >
+                    <div className="horizontal-custom-checkbox">
+                      <FiPlus size={10} color="#64748b" />
+                    </div>
+                    <span style={{ fontWeight: 500 }}>Add "{locationInputValue}"</span>
+                  </div>
+                )}
+
+                {(() => {
+                  const term = locationInputValue.trim().toLowerCase();
+                  if (term.length < 2 && term.length > 0) return null;
+                  
+                  let results = [];
+                  if (term.length >= 2) {
+                    const allCities = require('country-state-city').City.getAllCities();
+                    const Country = require('country-state-city').Country;
+                    for (let i = 0; i < allCities.length; i++) {
+                      if (allCities[i].name.toLowerCase().includes(term)) {
+                        const c = Country.getCountryByCode(allCities[i].countryCode);
+                        results.push({
+                          city: allCities[i].name,
+                          label: `${allCities[i].name}, ${c ? c.name : allCities[i].countryCode}`
+                        });
+                        if (results.length >= 50) break;
+                      }
+                    }
+                  } else {
+                    // Show some defaults when empty
+                    results = [
+                      { city: "San Francisco", label: "San Francisco, United States" },
+                      { city: "New York", label: "New York, United States" },
+                      { city: "Austin", label: "Austin, United States" },
+                      { city: "London", label: "London, United Kingdom" },
+                      { city: "Bengaluru", label: "Bengaluru, India" }
+                    ];
+                  }
+
+                  return results.map((item, idx) => (
+                    <div
+                      key={`${item.city}-${idx}`}
+                      className="horizontal-custom-option"
+                      onClick={() => {
+                        if (!filterInputs.location.includes(item.city)) {
+                          handleInputChange("location", [...filterInputs.location, item.city]);
+                        }
+                        setLocationInputValue("");
+                      }}
+                    >
+                      <div className={`horizontal-custom-checkbox ${filterInputs.location.includes(item.city) ? "checked" : ""}`}>
+                        {filterInputs.location.includes(item.city) && <FiCheck size={10} color="white" />}
+                      </div>
+                      <span>{item.label}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { FiClock, FiMapPin, FiBriefcase, FiUsers, FiCalendar, FiArrowUp } from "react-icons/fi";
+import { FiClock, FiMapPin, FiBriefcase, FiUsers, FiCalendar, FiArrowUp, FiLinkedin, FiCheckCircle } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useGetGroupedJobTitlesQuery, useGetJobPostingINDQuery } from "../../State-Management/Api/TalentPoolApiSlice";
@@ -185,6 +185,16 @@ const JobCardItem = ({ job, navigate }) => {
                     )}
                     {job.location ? job.location.split(',')[0].trim() : "N/A"}
                   </span>
+                  {job.isLinkedin && (
+                    <div
+                      className="job-chip"
+                      style={{ background: '#f1f8ff', color: '#0a66c2', display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 6px', marginLeft: '4px' }}
+                      title="Sourced via LinkedIn"
+                    >
+                      <FiLinkedin size={12} />
+                      <FiCheckCircle size={10} />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -338,6 +348,7 @@ const PostedJobs = () => {
         })(),
         postedOnText: formatPostedDate(job.createdOn || job.postedDate || job.createdDate),
         jobStatus: job.jobStatus ?? job.JobStatus,
+        isLinkedin: Boolean(job.islinkedin ?? job.isLinkedin ?? job.Islinkedin ?? job.IsLinkedin ?? false),
         isIND,
         rawJob: job,
       };

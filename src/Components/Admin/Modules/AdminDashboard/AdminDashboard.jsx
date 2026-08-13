@@ -612,7 +612,7 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{activeRecruiters}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(activeUsersChange, 'stat-text-purple')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
@@ -637,7 +637,7 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{openRequirements}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(openRequirementsChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
@@ -650,7 +650,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 3 */}
-                <div className="stat-card" onClick={() => navigate('/Admin/admin-talentpool')} style={{ cursor: 'pointer' }}>
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-upload-talent')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-green">
@@ -662,7 +662,7 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{candidateSubmissions}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(candidatesChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
@@ -687,7 +687,7 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{totalInterviewsCount}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(interviewsChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
