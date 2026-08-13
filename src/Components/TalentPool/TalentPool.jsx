@@ -109,7 +109,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
         uatUserId: Number(userId),
         uatfirstName: username,
         companyName: companyname,
-        jobid: selectedJob?.jobID,       
+        jobid: selectedJob?.jobID,
         jobName: selectedJob?.title,
       };
 
@@ -119,7 +119,7 @@ const ShortlistDrawer = ({ isOpen, onClose, shortlistedMap, onRemove, jobs, user
       clearShortlistForJob(jobId);
       await refreshTalents();
       onClose();
-      if (onInviteSuccess) onInviteSuccess(selectedJob?.jobID,shortlistedCandidates[0]?.id);
+      if (onInviteSuccess) onInviteSuccess(selectedJob?.jobID, shortlistedCandidates[0]?.id);
     } catch (err) {
       console.error("Invite failed", err);
       setOfferStatus((prev) => ({ ...prev, [jobId]: "idle" }));
@@ -850,11 +850,20 @@ const TalentPool = () => {
   const [allSelectedJobDetails, setAllSelectedJobDetails] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [appliedFilters, setAppliedFilters] = useState(() => {
+    // When coming from "Find Talent" (preselectedJobTitle in location.state),
+    // ignore any stale sessionStorage filters so the job-match effect
+    // sets the correct job filter before the first fetch.
+    const comingFromJobOverview = !!location.state?.jobTitle;
+    if (comingFromJobOverview) {
+      sessionStorage.removeItem("talentPoolFilters");
+      return null;
+    }
+
     const saved = sessionStorage.getItem("talentPoolFilters");
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {}
+      } catch (e) { }
     }
     return null;
   });
@@ -864,6 +873,15 @@ const TalentPool = () => {
       sessionStorage.setItem("talentPoolFilters", JSON.stringify(appliedFilters));
     }
   }, [appliedFilters]);
+
+  useEffect(() => {
+  return () => {
+    sessionStorage.removeItem("talentPoolFilters");
+
+    // Remove Talent Pool filter query parameters
+    setSearchParams({});
+  };
+}, []);
 
 
   const [showCreateJobModal, setShowCreateJobModal] = useState(false);
@@ -903,20 +921,20 @@ const TalentPool = () => {
 
       if (appliedFilters) {
 
-       // Title
-if (appliedFilters.selectedJobs?.length) {
-  const selectedTitles = appliedFilters.selectedJobs
-    .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
-    .filter(Boolean);
+        // Title
+        if (appliedFilters.selectedJobs?.length) {
+          const selectedTitles = appliedFilters.selectedJobs
+            .map((jobId) => jobs.find((j) => j.id === jobId)?.title)
+            .filter(Boolean);
 
-  if (selectedTitles.length > 0) {
-    filtersArray.push({
-      filterName: "Title",
-      filterOperator: "Contains",
-      filterValue: selectedTitles,
-    });
-  }
-}
+          if (selectedTitles.length > 0) {
+            filtersArray.push({
+              filterName: "Title",
+              filterOperator: "Contains",
+              filterValue: selectedTitles,
+            });
+          }
+        }
 
         // Skills
         if (appliedFilters.skills?.length) {
@@ -1115,8 +1133,11 @@ if (appliedFilters.selectedJobs?.length) {
   }, [jobTitles]);
 
 
+  const preselectedAppliedRef = React.useRef(false);
+
   useEffect(() => {
     if (!preselectedJobTitle || jobs.length === 0) return;
+    if (preselectedAppliedRef.current) return; // already applied once
 
     const matchedJob = jobs.find(
       (j) =>
@@ -1125,6 +1146,8 @@ if (appliedFilters.selectedJobs?.length) {
     );
 
     if (!matchedJob) return;
+
+    preselectedAppliedRef.current = true; // mark applied
 
     const filters = {
       selectedJobs: [matchedJob.id],
@@ -1189,7 +1212,7 @@ if (appliedFilters.selectedJobs?.length) {
 
     const handleScroll = () => {
       const currentScroll = window.scrollY || document.documentElement.scrollTop;
-      
+
       if (currentScroll > 180) {
         setShowScrollTop(true);
       } else {
@@ -1318,7 +1341,7 @@ if (appliedFilters.selectedJobs?.length) {
     setTimeout(() => {
       setLoadingShortlistId(null);
       let targetJob = activeJobId ? jobs.find((j) => j.id === activeJobId) : null;
-      
+
       if (!targetJob) {
         targetJob = jobs.find((job) => {
           const jobTitle = job.title?.toLowerCase().trim();
@@ -1599,12 +1622,12 @@ if (appliedFilters.selectedJobs?.length) {
 
             {/* Sticky Filters */}
             <div style={{ position: "sticky", top: "70px", zIndex: 20, margin: '-18px -18px 16px -18px' }}>
-              <HorizontalTalentFilters 
-                onApplyFilters={handleApplyFilter} 
-                skillsList={allSkills} 
-                jobs={jobs} 
-                selectedJobId={selectedJobId} 
-                appliedFilters={appliedFilters} 
+              <HorizontalTalentFilters
+                onApplyFilters={handleApplyFilter}
+                skillsList={allSkills}
+                jobs={jobs}
+                selectedJobId={selectedJobId}
+                appliedFilters={appliedFilters}
               >
                 {/* ACTIONS & VIEW TOGGLE */}
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -1647,133 +1670,133 @@ if (appliedFilters.selectedJobs?.length) {
                       </span>
                     )}
                   </button>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    background: "#f1f5f9",
-                    borderRadius: "12px",
-                    padding: "4px",
-                    gap: "4px",
-                    height: "36px",
-                    boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
-                    border: "1px solid #e2e8f0"
-                  }}
-                >
-                  <button
-                    onClick={() => {
-                      if (viewMode === "grid") return;
-                      setIsToggling(true);
-                      setViewMode("grid");
-                      setTimeout(() => setIsToggling(false), 500);
-                    }}
+                  <div
                     style={{
-                      width: "32px",
-                      height: "28px",
-                      border: "none",
-                      borderRadius: "8px",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      background: viewMode === "grid" ? "#ffffff" : "transparent",
-                      color: viewMode === "grid" ? "#3b82f6" : "#64748b",
-                      boxShadow: viewMode === "grid" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      background: "#f1f5f9",
+                      borderRadius: "12px",
+                      padding: "4px",
+                      gap: "4px",
+                      height: "36px",
+                      boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
+                      border: "1px solid #e2e8f0"
                     }}
                   >
-                    <FiGrid size={14} />
-                  </button>
+                    <button
+                      onClick={() => {
+                        if (viewMode === "grid") return;
+                        setIsToggling(true);
+                        setViewMode("grid");
+                        setTimeout(() => setIsToggling(false), 500);
+                      }}
+                      style={{
+                        width: "32px",
+                        height: "28px",
+                        border: "none",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        background: viewMode === "grid" ? "#ffffff" : "transparent",
+                        color: viewMode === "grid" ? "#3b82f6" : "#64748b",
+                        boxShadow: viewMode === "grid" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      <FiGrid size={14} />
+                    </button>
 
-                  <button
-                    onClick={() => {
-                      if (viewMode === "table") return;
-                      setIsToggling(true);
-                      setViewMode("table");
-                      setTimeout(() => setIsToggling(false), 500);
-                    }}
-                    style={{
-                      width: "32px",
-                      height: "28px",
-                      border: "none",
-                      borderRadius: "8px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      background: viewMode === "table" ? "#ffffff" : "transparent",
-                      color: viewMode === "table" ? "#3b82f6" : "#64748b",
-                      boxShadow: viewMode === "table" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    }}
-                  >
-                    <FiList size={14} />
-                  </button>
-                </div>
+                    <button
+                      onClick={() => {
+                        if (viewMode === "table") return;
+                        setIsToggling(true);
+                        setViewMode("table");
+                        setTimeout(() => setIsToggling(false), 500);
+                      }}
+                      style={{
+                        width: "32px",
+                        height: "28px",
+                        border: "none",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        background: viewMode === "table" ? "#ffffff" : "transparent",
+                        color: viewMode === "table" ? "#3b82f6" : "#64748b",
+                        boxShadow: viewMode === "table" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      <FiList size={14} />
+                    </button>
+                  </div>
                 </div>
               </HorizontalTalentFilters>
             </div>
 
             <div className="hero-section-wrapper mb-4">
-        <div className="hero-card ">
-          <div className="hero-concentric-lines"></div>
-          <div className="hero-ripple-pattern"></div>
-          <div className="hero-circular-highlights"></div>
-              <FiUsers
-                size={240}
-                style={{
-                  position: 'absolute',
-                  right: '30%',
-                  top: '50%',
-                  transform: 'translateY(-50%) rotate(-10deg)',
-                  color: '#ffffff',
-                  opacity: 0.04,
-                  zIndex: 1,
-                  pointerEvents: 'none'
-                }}
-              />
-              <div className="hero-left">
-                <div className="hero-pill">
-                  ✦ Find Talent
-                </div>
-                <div className="hero-title-row">
-                  <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Talent Network Board</h1>
+              <div className="hero-card ">
+                <div className="hero-concentric-lines"></div>
+                <div className="hero-ripple-pattern"></div>
+                <div className="hero-circular-highlights"></div>
+                <FiUsers
+                  size={240}
+                  style={{
+                    position: 'absolute',
+                    right: '30%',
+                    top: '50%',
+                    transform: 'translateY(-50%) rotate(-10deg)',
+                    color: '#ffffff',
+                    opacity: 0.04,
+                    zIndex: 1,
+                    pointerEvents: 'none'
+                  }}
+                />
+                <div className="hero-left">
+                  <div className="hero-pill">
+                    ✦ Find Talent
+                  </div>
+                  <div className="hero-title-row">
+                    <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Talent Network Board</h1>
 
-                  <div className="hero-buttons">
-                    <button
-                      className="filters-applied"
-                      onClick={() => setIsMobileFilterOpen(true)}
-                    >
-                      <FiFilter /> Filters
-                    </button>
+                    <div className="hero-buttons">
+                      <button
+                        className="filters-applied"
+                        onClick={() => setIsMobileFilterOpen(true)}
+                      >
+                        <FiFilter /> Filters
+                      </button>
 
 
 
-                    <div className="vs-results-right">
-                      {/* VIEW TOGGLE MOVED TO FILTERS */}
+                      <div className="vs-results-right">
+                        {/* VIEW TOGGLE MOVED TO FILTERS */}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="hero-content-row">
-                  <p className="job-posting-subtitle">
-                    Search and manage your talent network.
-                  </p>
+                  <div className="hero-content-row">
+                    <p className="job-posting-subtitle">
+                      Search and manage your talent network.
+                    </p>
+                  </div>
+                </div>
+                <div className="hero-illustration">
+                  <div className="hero-particles">
+                    <div className="particle"></div>
+                    <div className="particle"></div>
+                    <div className="particle"></div>
+                    <div className="particle"></div>
+                    <div className="particle"></div>
+                    <div className="particle"></div>
+                  </div>
+                  <img src="/Images/find.png" alt="Dashboard Illustration" className="hero-svg-image" />
                 </div>
               </div>
-                      <div className="hero-illustration">
-            <div className="hero-particles">
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
             </div>
-            <img src="/Images/find.png" alt="Dashboard Illustration" className="hero-svg-image" />
-          </div>
-        </div>
-      </div>
 
 
 
@@ -1977,7 +2000,7 @@ if (appliedFilters.selectedJobs?.length) {
                   color: "#0f172a",
                 }}
               >
-                Job Not Found
+                Job Not Created
               </h3>
 
               <p
@@ -1988,7 +2011,7 @@ if (appliedFilters.selectedJobs?.length) {
                   lineHeight: "1.6",
                 }}
               >
-                <strong>{selectedCandidate?.role}</strong> job role is not available.
+                The <strong>{selectedCandidate?.role}</strong> job role is not in your created jobs.
                 <br />
                 Would you like to create a new job posting?
               </p>
@@ -2071,7 +2094,7 @@ if (appliedFilters.selectedJobs?.length) {
                   onClick={() => {
                     const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
                     const targetPath = window.location.pathname.toLowerCase().startsWith('/admin') ? `${basePath}/admin-upcoming-interview` : `${basePath}/user-upcoming-interview`;
-                    navigate(targetPath, { state: { openDrawer: true, preSelectedJobId: successJobId.jobId,preSelectedCandidateId: successJobId.candidateId } });
+                    navigate(targetPath, { state: { openDrawer: true, preSelectedJobId: successJobId.jobId, preSelectedCandidateId: successJobId.candidateId } });
                   }}
                 >
                   Schedule Interview
