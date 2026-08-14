@@ -107,7 +107,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   const initialFilters = {
     selectedJobs: [],
     skills: [],
-    location: "",
+    location: [],
     availability: [],
     minExperience: "",
     maxExperience: "",
@@ -120,6 +120,7 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
   };
 
   const [filterInputs, setFilterInputs] = useState(initialFilters);
+  const [locationInputValue, setLocationInputValue] = useState("");
   const [isJobDropdownOpen, setIsJobDropdownOpen] = useState(false);
   const [jobSearchTerm, setJobSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
@@ -585,19 +586,176 @@ const TalentFilters = ({ onApplyFilters, jobs, selectedJobId, skillsList = [], a
           id="location"
           title="Location"
           isExpanded={activeSection === 'location'}
-          summary={filterInputs.location}
+          summary={filterInputs.location.length > 0 ? filterInputs.location.join(', ') : ''}
         />
         {activeSection === 'location' && (
           <div className="section-content">
-            <input
-              type="text"
-              className="filter-input"
-              placeholder="Add Location..."
-              value={filterInputs.location || ""}
-              onChange={(e) =>
-                handleInputChange("location", e.target.value, true)
-              }
-            />
+            {filterInputs.location.length > 0 && (
+              <div className="tags-container">
+                {filterInputs.location.map((loc) => (
+                  <span key={loc} className="filter-tag">
+                    {loc}
+                    <FiX
+                      className="tag-close-icon"
+                      onClick={() => removeArrayItem("location", loc)}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="select-wrapper" style={{ position: "relative" }}>
+              <div
+                className="filter-select"
+                onClick={() => {
+                  const wasOpen = document.getElementById("loc-dropdown-menu")?.style.display === "block";
+                  document.querySelectorAll('.location-dropdown').forEach(el => el.style.display = 'none');
+                  const dropdown = document.getElementById("loc-dropdown-menu");
+                  if (dropdown) dropdown.style.display = wasOpen ? "none" : "block";
+                }}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span style={{ color: "#64748b" }}>Add Location...</span>
+                <FiChevronDown />
+              </div>
+              
+              <div 
+                id="loc-dropdown-menu" 
+                className="custom-dropdown-menu location-dropdown" 
+                style={{ display: "none" }}
+              >
+                <div
+                  style={{
+                    padding: "8px 10px",
+                    borderBottom: "1px solid #f1f5f9",
+                    position: "sticky",
+                    top: 0,
+                    background: "#ffffff",
+                    zIndex: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FiSearch size={14} color="#94a3b8" />
+                  <input
+                    type="text"
+                    placeholder="Search or enter location..."
+                    value={locationInputValue}
+                    onChange={(e) => setLocationInputValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        const val = locationInputValue.trim().replace(/,$/, '');
+                        if (val && !filterInputs.location.includes(val)) {
+                          handleInputChange("location", [...filterInputs.location, val]);
+                        }
+                        setLocationInputValue("");
+                        document.getElementById("loc-dropdown-menu").style.display = "none";
+                      }
+                    }}
+                    style={{
+                      width: "100%",
+                      border: "none",
+                      outline: "none",
+                      fontSize: "12px",
+                      color: "#0f172a",
+                      background: "transparent",
+                    }}
+                  />
+                  {locationInputValue && (
+                    <FiX
+                      size={13}
+                      color="#94a3b8"
+                      style={{ cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocationInputValue("");
+                      }}
+                    />
+                  )}
+                </div>
+
+                {locationInputValue.trim() && (
+                  <div
+                    className="custom-option"
+                    onClick={() => {
+                      const val = locationInputValue.trim().replace(/,$/, '');
+                      if (val && !filterInputs.location.includes(val)) {
+                        handleInputChange("location", [...filterInputs.location, val]);
+                      }
+                      setLocationInputValue("");
+                      document.getElementById("loc-dropdown-menu").style.display = "none";
+                    }}
+                  >
+                    <div className="custom-checkbox">
+                      <FiPlus size={10} color="#64748b" />
+                    </div>
+                    <span style={{ fontWeight: 500, color: '#0f172a' }}>Add "{locationInputValue}"</span>
+                  </div>
+                )}
+
+                {(() => {
+                  const term = locationInputValue.trim().toLowerCase();
+                  if (term.length < 2 && term.length > 0) return null;
+                  
+                  let results = [];
+                  if (term.length >= 2) {
+                    const allCities = require('country-state-city').City.getAllCities();
+                    const Country = require('country-state-city').Country;
+                    for (let i = 0; i < allCities.length; i++) {
+                      if (allCities[i].name.toLowerCase().includes(term)) {
+                        const c = Country.getCountryByCode(allCities[i].countryCode);
+                        results.push({
+                          city: allCities[i].name,
+                          label: `${allCities[i].name}, ${c ? c.name : allCities[i].countryCode}`
+                        });
+                        if (results.length >= 50) break;
+                      }
+                    }
+                  } else {
+                    // Show some defaults when empty
+                    results = [
+                      { city: "San Francisco", label: "San Francisco, United States" },
+                      { city: "New York", label: "New York, United States" },
+                      { city: "Austin", label: "Austin, United States" },
+                      { city: "London", label: "London, United Kingdom" },
+                      { city: "Bengaluru", label: "Bengaluru, India" }
+                    ];
+                  }
+
+                  return results.map((item, idx) => (
+                    <div
+                      key={`${item.city}-${idx}`}
+                      className="custom-option"
+                      onClick={() => {
+                        if (!filterInputs.location.includes(item.city)) {
+                          handleInputChange("location", [...filterInputs.location, item.city]);
+                        }
+                        setLocationInputValue("");
+                        document.getElementById("loc-dropdown-menu").style.display = "none";
+                      }}
+                    >
+                      <div
+                        className={`custom-checkbox ${
+                          filterInputs.location.includes(item.city) ? "checked" : ""
+                        }`}
+                      >
+                        {filterInputs.location.includes(item.city) && (
+                          <FiCheck size={10} color="white" />
+                        )}
+                      </div>
+                      <span>{item.label}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -53,7 +53,18 @@ getPostedMonthlyAnalytics: builder.query({
       }),
     }),
 
+    getCardsAnalytics: builder.query({
+      query: (params) => {
+        const companyId = typeof params === "object" ? params?.companyId : params;
+        return {
+          url: "api/uatcompany/cards",
+          method: "GET",
+          params: companyId ? { companyId } : {},
+        };
+      },
+    }),
+
   }),
 });
 
-export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery,useGetMonthlyAnalyticsQuery,useGetPostedMonthlyAnalyticsQuery,useGetRequiterDashboardQuery,useGetHiringDashboardQuery } = DashboardApiSlice;
+export const { useGetRecruiterGraphQuery,useGetDashboardStatsQuery,useGetAutonomousActivityLogQuery,useGetMonthlyAnalyticsQuery,useGetPostedMonthlyAnalyticsQuery,useGetRequiterDashboardQuery,useGetHiringDashboardQuery,useGetCardsAnalyticsQuery } = DashboardApiSlice;

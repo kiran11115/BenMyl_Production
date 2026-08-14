@@ -1,14 +1,21 @@
 import React, { useState } from "react";
-import { FiDownload, FiCalendar, FiTrendingUp, FiUsers, FiClock, FiDollarSign, FiFilter } from "react-icons/fi";
+import { FiDownload, FiCalendar, FiTrendingUp, FiUsers, FiFilter } from "react-icons/fi";
 import "./Analytics.css";
 import StatCard from "./AnalyticsComp/StatCard";
 import HiringLineChart from "./AnalyticsComp/HiringLineChart";
 import BudgetPieChart from "./AnalyticsComp/BudgetPieChart";
 import MonthlyBarChart from "./AnalyticsComp/MonthlyBarChart";
-import DepartmentTable from "./AnalyticsComp/DepartmentTable";
+import { useGetCardsAnalyticsQuery } from "../../State-Management/Api/DashboardApiSlice";
 
 export default function Analytics() {
   const [timeframe, setTimeframe] = useState("Last 30 Days");
+  const companyId = localStorage.getItem("logincompanyid") || localStorage.getItem("companyId");
+  const { data, isLoading, error } = useGetCardsAnalyticsQuery(companyId);
+
+  const cardsData = data?.cards;
+  const interviewTrend = data?.interviewTrend || [];
+  const jobRoleChart = data?.jobRoleChart || [];
+  const benchUtilization = data?.benchUtilization || [];
 
   return (
     <div className="admin-profile-container">
@@ -54,73 +61,51 @@ export default function Analytics() {
 
       {/* TOP STATS SUMMARY */}
       <section className="mb-4">
-        <StatCard />
+        <StatCard cardsData={cardsData} isLoading={isLoading} />
       </section>
 
       {/* CHARTS GRID */}
       <div className="row g-4 mb-4">
         <div className="col-lg-8">
           <div className="card-premium h-100">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="card-title-premium m-0"><FiTrendingUp /> Hiring Pipeline Trend</h3>
-              <div className="d-flex gap-2">
-                <span className="badge bg-light text-dark border">Candidates</span>
-                <span className="badge bg-primary">Hires</span>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h3 className="card-title-premium m-0"><FiTrendingUp /> Monthly Interview & Hiring Trend</h3>
+                <p className="text-muted small m-0 mt-1">Comparison of candidate interviews conducted vs successful hires</p>
               </div>
             </div>
-            <div className="analytics-chart-box-analytics" style={{ height: "320px" }}>
-              <HiringLineChart />
+            <div className="analytics-chart-box-analytics" style={{ height: "300px" }}>
+              <HiringLineChart interviewTrend={interviewTrend} isLoading={isLoading} />
             </div>
           </div>
         </div>
         <div className="col-lg-4">
           <div className="card-premium h-100">
-            <h3 className="card-title-premium mb-4"><FiUsers /> Source Distribution</h3>
-            <div className="analytics-chart-box-analytics" style={{ height: "320px" }}>
-              <BudgetPieChart />
+            <div className="mb-3">
+              <h3 className="card-title-premium m-0"><FiUsers /> Job Postings by Role</h3>
+              <p className="text-muted small m-0 mt-1">Role breakdown of all active job requisitions</p>
             </div>
-            <div className="mt-4">
-              <div className="d-flex justify-content-between mb-2 small">
-                <span>LinkedIn</span>
-                <span className="fw-bold">45%</span>
-              </div>
-              <div className="progress mb-3" style={{ height: "6px" }}>
-                <div className="progress-bar" style={{ width: "45%", backgroundColor: "#f5810c" }}></div>
-              </div>
-              <div className="d-flex justify-content-between mb-2 small">
-                <span>Referrals</span>
-                <span className="fw-bold">30%</span>
-              </div>
-              <div className="progress" style={{ height: "6px" }}>
-                <div className="progress-bar" style={{ width: "30%", backgroundColor: "#fbbf24" }}></div>
-              </div>
+            <div className="analytics-chart-box-analytics" style={{ height: "300px" }}>
+              <BudgetPieChart jobRoleChart={jobRoleChart} isLoading={isLoading} />
             </div>
           </div>
         </div>
 
         <div className="col-12">
           <div className="card-premium">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h3 className="card-title-premium m-0"><FiDollarSign /> Monthly Spend by Department</h3>
-              <div className="d-flex gap-2">
-                <button className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"><FiFilter /> Filter</button>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h3 className="card-title-premium m-0"><FiTrendingUp /> Bench Talent Availability by Role</h3>
+                <p className="text-muted small m-0 mt-1">Total registered bench candidates compared to currently available talent</p>
               </div>
             </div>
-            <div className="analytics-chart-box-analytics" style={{ height: "300px" }}>
-              <MonthlyBarChart />
+            <div className="analytics-chart-box-analytics" style={{ minHeight: "210px" }}>
+              <MonthlyBarChart benchUtilization={benchUtilization} isLoading={isLoading} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* DETAILED TABLE */}
-      <section className="card-premium">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h3 className="card-title-premium m-0">Department Performance Metrics</h3>
-          <div className="text-muted small">Updated 2 hours ago</div>
-        </div>
-        <DepartmentTable />
-      </section>
 
       <footer className="text-center text-muted small p-4 border-top">
         <p className="m-0">AI-Powered Insights • Powered by BenMyl Intelligence</p>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { FiChevronDown, FiCheck, FiX, FiSearch } from "react-icons/fi";
+import { FiChevronDown, FiCheck, FiX, FiSearch, FiPlus } from "react-icons/fi";
 import { GiCheckMark } from "react-icons/gi";
 import "./HorizontalTalentFilters.css";
 
@@ -58,7 +58,7 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
   const initialFilters = {
     selectedJobs: [],
     skills: [],
-    location: "",
+    location: [],
     availability: [],
     minExperience: "",
     maxExperience: "",
@@ -72,6 +72,7 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
 
   const [filterInputs, setFilterInputs] = useState(appliedFilters || initialFilters);
   const [openDropdown, setOpenDropdown] = useState(null); // 'jobs', 'skills', 'location', 'experience', 'salary'
+  const [locationInputValue, setLocationInputValue] = useState("");
   const [jobSearchTerm, setJobSearchTerm] = useState("");
   const debounceTimerRef = useRef(null);
   const jobsDropdownRef = useRef(null);
@@ -183,7 +184,7 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
   const hasActiveFilters = 
     filterInputs.selectedJobs.length > 0 ||
     filterInputs.skills.length > 0 ||
-    filterInputs.location !== "" ||
+    filterInputs.location.length > 0 ||
     filterInputs.minExperience !== "" ||
     filterInputs.maxExperience !== "";
 
@@ -251,21 +252,134 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
       {/* Location Dropdown */}
       <div className="horizontal-filter-wrapper" ref={locDropdownRef}>
         <button 
-          className={`horizontal-filter-btn ${filterInputs.location ? "active" : ""}`}
+          className={`horizontal-filter-btn ${filterInputs.location.length > 0 ? "active" : ""}`}
           onClick={() => toggleDropdown('location')}
         >
-          {filterInputs.location ? `Location: ${filterInputs.location}` : 'Location'}
+          {filterInputs.location.length > 0
+            ? filterInputs.location.length === 1
+              ? `Location: ${filterInputs.location[0]}`
+              : `Location (${filterInputs.location.length})`
+            : 'Location'}
           <FiChevronDown />
         </button>
         {openDropdown === 'location' && (
-          <div className="horizontal-dropdown-menu" style={{ padding: '10px' }}>
-            <input
-              type="text"
-              className="horizontal-input"
-              placeholder="e.g. New York, NY"
-              value={filterInputs.location || ""}
-              onChange={(e) => handleInputChange("location", e.target.value, true)}
-            />
+          <div className="horizontal-dropdown-menu" style={{ padding: '10px', minWidth: '220px' }}>
+            {filterInputs.location.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+                {filterInputs.location.map((loc) => (
+                  <span
+                    key={loc}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '4px',
+                      background: '#f1f5f9', borderRadius: '12px',
+                      padding: '2px 8px', fontSize: '11px', color: '#334155',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {loc}
+                    <FiX
+                      size={10}
+                      style={{ cursor: 'pointer', color: '#64748b' }}
+                      onClick={() => {
+                        const updated = filterInputs.location.filter((l) => l !== loc);
+                        handleInputChange("location", updated);
+                      }}
+                    />
+                  </span>
+                ))}
+              </div>
+            )}
+            <div style={{ position: "relative", width: "100%" }}>
+              <input
+                type="text"
+                className="horizontal-input"
+                placeholder="Search or enter location..."
+                value={locationInputValue}
+                onChange={(e) => setLocationInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = locationInputValue.trim().replace(/,$/, '');
+                    if (val && !filterInputs.location.includes(val)) {
+                      handleInputChange("location", [...filterInputs.location, val]);
+                    }
+                    setLocationInputValue("");
+                  } else if (e.key === 'Backspace' && !locationInputValue && filterInputs.location.length > 0) {
+                    const updated = filterInputs.location.slice(0, -1);
+                    handleInputChange("location", updated);
+                  }
+                }}
+                style={{ width: "100%", boxSizing: "border-box", marginBottom: "8px" }}
+              />
+
+              <div className="horizontal-dropdown-list" style={{ maxHeight: '150px', overflowY: 'auto' }}>
+                {locationInputValue.trim() && (
+                  <div
+                    className="horizontal-custom-option"
+                    onClick={() => {
+                      const val = locationInputValue.trim().replace(/,$/, '');
+                      if (val && !filterInputs.location.includes(val)) {
+                        handleInputChange("location", [...filterInputs.location, val]);
+                      }
+                      setLocationInputValue("");
+                    }}
+                  >
+                    <div className="horizontal-custom-checkbox">
+                      <FiPlus size={10} color="#64748b" />
+                    </div>
+                    <span style={{ fontWeight: 500 }}>Add "{locationInputValue}"</span>
+                  </div>
+                )}
+
+                {(() => {
+                  const term = locationInputValue.trim().toLowerCase();
+                  if (term.length < 2 && term.length > 0) return null;
+                  
+                  let results = [];
+                  if (term.length >= 2) {
+                    const allCities = require('country-state-city').City.getAllCities();
+                    const Country = require('country-state-city').Country;
+                    for (let i = 0; i < allCities.length; i++) {
+                      if (allCities[i].name.toLowerCase().includes(term)) {
+                        const c = Country.getCountryByCode(allCities[i].countryCode);
+                        results.push({
+                          city: allCities[i].name,
+                          label: `${allCities[i].name}, ${c ? c.name : allCities[i].countryCode}`
+                        });
+                        if (results.length >= 50) break;
+                      }
+                    }
+                  } else {
+                    // Show some defaults when empty
+                    results = [
+                      { city: "San Francisco", label: "San Francisco, United States" },
+                      { city: "New York", label: "New York, United States" },
+                      { city: "Austin", label: "Austin, United States" },
+                      { city: "London", label: "London, United Kingdom" },
+                      { city: "Bengaluru", label: "Bengaluru, India" }
+                    ];
+                  }
+
+                  return results.map((item, idx) => (
+                    <div
+                      key={`${item.city}-${idx}`}
+                      className="horizontal-custom-option"
+                      onClick={() => {
+                        if (!filterInputs.location.includes(item.city)) {
+                          handleInputChange("location", [...filterInputs.location, item.city]);
+                        }
+                        setLocationInputValue("");
+                      }}
+                    >
+                      <div className={`horizontal-custom-checkbox ${filterInputs.location.includes(item.city) ? "checked" : ""}`}>
+                        {filterInputs.location.includes(item.city) && <FiCheck size={10} color="white" />}
+                      </div>
+                      <span>{item.label}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -339,14 +453,14 @@ const HorizontalTalentFilters = ({ onApplyFilters, jobs = [], selectedJobId, ski
       </div>
 
       {/* Verified Toggle */}
-      <button
+      {/* <button
         className={`horizontal-filter-btn ${filterInputs.isVerified ? "active" : ""}`}
         onClick={() => handleToggle("isVerified")}
         style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
       >
         <GiCheckMark size={12} color={filterInputs.isVerified ? "#fff" : "#059669"} /> 
         Verified Only
-      </button>
+      </button> */}
 
       {/* Additional Actions / Children and Reset */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px' }}>

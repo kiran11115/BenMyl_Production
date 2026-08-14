@@ -600,7 +600,7 @@ function AdminDashboard() {
             <div className="stats-grid">
 
                 {/* CARD 1 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/account-settings', { state: { activeTab: 'team' } })} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-purple">
@@ -612,10 +612,11 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{activeRecruiters}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(activeUsersChange, 'stat-text-purple')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -624,7 +625,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 2 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-posted-jobs')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-blue">
@@ -636,10 +637,11 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{openRequirements}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(openRequirementsChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -648,7 +650,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 3 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-upload-talent')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-green">
@@ -660,10 +662,11 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{candidateSubmissions}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(candidatesChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">
@@ -672,7 +675,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* CARD 4 */}
-                <div className="stat-card">
+                <div className="stat-card" onClick={() => navigate('/Admin/admin-upcoming-interview')} style={{ cursor: 'pointer' }}>
                     <div className="stat-card-header">
                         <div className="stat-card-icon-title-container">
                             <div className="stat-card-icon-box stat-teal">
@@ -684,10 +687,11 @@ function AdminDashboard() {
                                     <span className="stat-card-number">{totalInterviewsCount}</span>
                                     <div className="stat-card-change">
                                         {renderTrendChange(interviewsChange, 'stat-text-green')}
-                                        <span className="stat-card-vs">vs last month</span>
+                                        <span className="stat-card-vs" style={{ fontSize: '10px', opacity: 0.8 }}>vs last month</span>
                                     </div>
                                 </div>
                             </div>
+                            <ArrowUpRight size={16} style={{ color: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.12)', padding: '4px', borderRadius: '50%' }} />
                         </div>
                     </div>
                     <div className="stat-card-sparkline">

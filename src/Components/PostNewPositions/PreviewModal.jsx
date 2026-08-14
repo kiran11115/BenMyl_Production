@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiX,
   FiCopy,
@@ -14,7 +14,10 @@ import {
   FiMinimize2,
   FiLock,
   FiClock,
-  FiZap
+  FiZap,
+  FiMapPin,
+  FiBriefcase,
+  FiHome
 } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -273,10 +276,10 @@ function ClassicSmall({ jobTitle, companyName, location, employmentType, workMod
       </div>
       {/* Info strip */}
       <div style={{ display:"flex", gap:0, borderBottom:"1px solid #f1f5f9" }}>
-        {[["📍", location], ["💼", employmentType], ["🏠", workModel]].map(([icon, val], i) => (
-          <div key={i} style={{ flex:1, padding:"12px 16px", borderRight: i < 2 ? "1px solid #f1f5f9" : "none" }}>
-            <div style={{ fontSize:9, color:"#94a3b8", fontWeight:600, textTransform:"uppercase", marginBottom:4 }}>{icon}</div>
-            <div style={{ fontSize:11, color:"#334155", fontWeight:600 }}>{val}</div>
+        {[[<FiMapPin size={14} />, location], [<FiBriefcase size={14} />, employmentType], [<FiHome size={14} />, workModel]].map(([icon, val], i) => (
+          <div key={i} style={{ flex:1, padding:"12px 16px", borderRight: i < 2 ? "1px solid #f1f5f9" : "none", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+            <div style={{ color:"#94a3b8", display:"flex", alignItems:"center", justifyContent:"center" }}>{icon}</div>
+            <div style={{ fontSize:11, color:"#334155", fontWeight:600, textAlign:"center" }}>{val}</div>
           </div>
         ))}
       </div>
@@ -328,7 +331,7 @@ function ClassicA4({ jobTitle, companyName, location, employmentType, workModel,
         {/* Description */}
         <div style={{ marginBottom:20 }}>
           <div style={{ fontSize:11, fontWeight:700, color:"#3b82f6", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:10, display:"flex", alignItems:"center", gap:6 }}>
-            <div style={{ width:3, height:14, background:"#3b82f6", borderRadius:2 }} /> Position Overview
+            <div style={{ width:3, height:14, background:"#3b82f6", borderRadius:2 }} /> <span>Position Overview</span>
           </div>
           <style>{`
             .classic-desc p { margin:0 0 8px 0; } .classic-desc ul { margin:4px 0 12px 0; padding-left:18px; }
@@ -341,7 +344,7 @@ function ClassicA4({ jobTitle, companyName, location, employmentType, workModel,
         {/* Skills */}
         <div style={{ marginBottom:20 }}>
           <div style={{ fontSize:11, fontWeight:700, color:"#3b82f6", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:10, display:"flex", alignItems:"center", gap:6 }}>
-            <div style={{ width:3, height:14, background:"#3b82f6", borderRadius:2 }} /> Core Skills
+            <div style={{ width:3, height:14, background:"#3b82f6", borderRadius:2 }} /> <span>Core Skills</span>
           </div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
             {skills.map((s,i) => <span key={i} style={{ background:"#f1f5f9", color:"#334155", border:"1px solid #e2e8f0", borderRadius:6, padding:"5px 12px", fontSize:11, fontWeight:600 }}>{s}</span>)}
@@ -389,7 +392,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   );
   const [postLink, setPostLink] = useState("https://uat.benmyl.com/sign-in");
   // LinkedIn pre-selected by default
-  const [shareToLinkedIn, setShareToLinkedIn] = useState(true);
+  const [shareToLinkedIn, setShareToLinkedIn] = useState(data?.shareToLinkedIn ?? true);
 
   // Template & size selection
   const [selectedTemplate, setSelectedTemplate] = useState("modern");
@@ -406,6 +409,13 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   const { data: companyApiData } = useGetCompanyProfileEditQuery(emailid);
   const companyLogo = companyApiData?.companylogo;
   const companyLogoUrl = companyLogo ? `${companyLogo}?t=${Date.now()}` : null;
+
+  useEffect(() => {
+    document.body.classList.add("pjm-modal-open");
+    return () => {
+      document.body.classList.remove("pjm-modal-open");
+    };
+  }, []);
 
   /* ── FORMATTING (unchanged) ── */
   const formatMarkdownToHtml = (text) => {
@@ -464,10 +474,10 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
         const authResponse = await getLinkedInAuthUrl().unwrap();
         if (!authResponse?.result_Message) throw new Error("LinkedIn auth URL not received");
         
-        await onPostJob();
+        await onPostJob(true);
         window.location.href = authResponse.result_Message;
       } else {
-        await onPostJob();
+        await onPostJob(false);
         setStatus("success");
       }
     } catch (error) {

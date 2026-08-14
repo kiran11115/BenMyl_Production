@@ -36,6 +36,7 @@ const TalentResumeView = ({
   isShortlisted = false,
   loadingShortlistId = null,
   isUploadTalent = false,
+  useCandidateNameOnly = false,
 }) => {
   const navigate = useNavigate();
   const [isClosing, setIsClosing] = useState(false);
@@ -237,9 +238,11 @@ const TalentResumeView = ({
 
     const fullName = `${apiData?.firstName || ""} ${apiData?.lastName || ""}`.trim();
     const lastNameOnly = apiData?.lastName || (candidate?.name ? candidate.name.split(" ").pop() : "");
-    const nameStr = !isUploadContext 
-      ? (lastNameOnly || "N/A") 
-      : (fullName || candidate?.name || "N/A");
+    const nameStr = useCandidateNameOnly && candidate?.name 
+      ? candidate.name 
+      : (!isUploadContext 
+        ? (lastNameOnly || "N/A") 
+        : (fullName || candidate?.name || "N/A"));
     const roleStr = apiData?.title || candidate?.role || candidate?.title || "N/A";
     const apiLoc = [apiData?.city, apiData?.state].filter(Boolean).join(", ");
     const locStr = apiLoc || candidate?.location || "N/A";

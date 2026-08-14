@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import UploadTalentTable from "./UploadTalentTable";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiArrowLeft, FiLinkedin } from "react-icons/fi";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
-import { FiArrowLeft } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import UserTalentProfiles from "./UserTalentProfiles";
 import NoData from "../UploadTalent/NoData"; // adjust path if needed
@@ -142,7 +141,11 @@ const UploadTalent = () => {
         const linkedinStatus = searchParams.get("linkedin");
 
         if (linkedinStatus === "posted") {
-            toast.success("Posted successfully on LinkedIn 🎉");
+            toast.success(
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    Posted successfully on LinkedIn <FiLinkedin size={16} color="#0a66c2" style={{ fill: "#0a66c2", marginTop: "-2px" }} />
+                </span>
+            );
 
             // Remove query param so it doesn’t show again on refresh
             searchParams.delete("linkedin");

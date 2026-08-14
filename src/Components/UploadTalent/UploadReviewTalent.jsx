@@ -3,7 +3,7 @@ import UploadTalentTable from "./UploadTalentTable";
 import { FiSearch } from "react-icons/fi";
 import { talentsData } from "./talentsData";
 import "./UploadTalent.css";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiLinkedin } from "react-icons/fi";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import UploadTalentModal from "./UploadTalentModal";
 import UserTalentProfiles from "./UserTalentProfiles";
@@ -148,8 +148,11 @@ const UploadReviewTalent = () => {
         const linkedinStatus = searchParams.get("linkedin");
 
         if (linkedinStatus === "posted") {
-            toast.success("Posted successfully on LinkedIn 🎉");
-
+            toast.success(
+                <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    Posted successfully on LinkedIn <FiLinkedin size={16} color="#0a66c2" style={{ fill: "#0a66c2", marginTop: "-2px" }} />
+                </span>
+            );
             // Remove query param so it doesn’t show again on refresh
             searchParams.delete("linkedin");
             setSearchParams(searchParams);
@@ -193,65 +196,65 @@ const UploadReviewTalent = () => {
         <div className="projects-page-wrapper">
             <div className="projects-container">
                 <div className="hero-section-wrapper mb-4">
-        <div className="hero-card ">
-          <div className="hero-concentric-lines"></div>
-          <div className="hero-ripple-pattern"></div>
-          <div className="hero-circular-highlights"></div>
-                    <Users 
-                        size={240} 
-                        strokeWidth={0.5}
-                        style={{
-                            position: 'absolute',
-                            right: '30%',
-                            top: '50%',
-                            transform: 'translateY(-50%) rotate(-10deg)',
-                            color: '#ffffff',
-                            opacity: 0.04,
-                            zIndex: 1,
-                            pointerEvents: 'none'
-                        }}
-                    />
-                    <div className="hero-left">
-                        <div className="hero-pill">
-                            ✦ Upload & Review
-                        </div>
-                        <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Upload & Review Talent</h1>
+                    <div className="hero-card ">
+                        <div className="hero-concentric-lines"></div>
+                        <div className="hero-ripple-pattern"></div>
+                        <div className="hero-circular-highlights"></div>
+                        <Users
+                            size={240}
+                            strokeWidth={0.5}
+                            style={{
+                                position: 'absolute',
+                                right: '30%',
+                                top: '50%',
+                                transform: 'translateY(-50%) rotate(-10deg)',
+                                color: '#ffffff',
+                                opacity: 0.04,
+                                zIndex: 1,
+                                pointerEvents: 'none'
+                            }}
+                        />
+                        <div className="hero-left">
+                            <div className="hero-pill">
+                                ✦ Upload & Review
+                            </div>
+                            <h1 className="job-posting-title text-white" style={{ position: 'relative', zIndex: 2 }}>Upload & Review Talent</h1>
 
-                        <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
-                            <p className="job-posting-subtitle">
-                                Upload new talent resumes and review extracted AI profiles.
-                            </p>
+                            <div className="job-posting-header-info" style={{ position: 'relative', zIndex: 2 }}>
+                                <p className="job-posting-subtitle">
+                                    Upload new talent resumes and review extracted AI profiles.
+                                </p>
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center", position: 'relative', zIndex: 2 }}>
+                            <button
+                                onClick={() => setShowStats(!showStats)}
+                                className="routine-btn"
+                                style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
+                            >
+                                {showStats ? "Hide Metrics" : "Show Metrics"}
+                            </button>
+                            <button
+                                onClick={() => setShowUploadSection(!showUploadSection)}
+                                className="routine-btn"
+                                style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
+                            >
+                                {showUploadSection ? "Hide Upload Area" : "Upload Resumes"}
+                            </button>
+                        </div>
+                        <div className="hero-illustration">
+                            <div className="hero-particles">
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                                <div className="particle"></div>
+                            </div>
+                            <img src="/Images/Upload.png" alt="Dashboard Illustration" className="hero-svg-image" />
                         </div>
                     </div>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center", position: 'relative', zIndex: 2 }}>
-                        <button
-                            onClick={() => setShowStats(!showStats)}
-                            className="routine-btn"
-                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
-                        >
-                            {showStats ? "Hide Metrics" : "Show Metrics"}
-                        </button>
-                        <button
-                            onClick={() => setShowUploadSection(!showUploadSection)}
-                            className="routine-btn"
-                            style={{ height: '48px', padding: '0 20px', borderRadius: '12px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '13px', fontWeight: '600' }}
-                        >
-                            {showUploadSection ? "Hide Upload Area" : "Upload Resumes"}
-                        </button>
-                    </div>
-                          <div className="hero-illustration">
-            <div className="hero-particles">
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-            </div>
-            <img src="/Images/Upload.png" alt="Dashboard Illustration" className="hero-svg-image" />
-          </div>
-        </div>
-      </div>
+                </div>
 
                 <div className={`metrics-slider ${showStats ? "show" : ""}`}>
                     <StatsGrid data={kpiCards} />
@@ -364,34 +367,34 @@ const UploadReviewTalent = () => {
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, display: "flex" }}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                                 </button>
                             )}
                         </div>
                     </div>
                     <div className="upload-main mt-3">
-                            {talentsData && talentsData.length > 0 ? (
-                                <UploadTalentTable
-                                    talents={talentsData}
-                                    selectedEmails={selectedEmails}
-                                    onToggleSelect={toggleSelect}
-                                    refreshKey={refreshKey}
-                                    externalLoading={waitingForRefresh}
-                                    searchQuery={searchQuery}
-                                    onDeleted={handleDeleteSuccess}
-                                />
-                            ) : (
-                                <div
-                                    style={{
-                                        minHeight: "320px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <NoData text="No talent profiles to review yet" />
-                                </div>
-                            )}
+                        {talentsData && talentsData.length > 0 ? (
+                            <UploadTalentTable
+                                talents={talentsData}
+                                selectedEmails={selectedEmails}
+                                onToggleSelect={toggleSelect}
+                                refreshKey={refreshKey}
+                                externalLoading={waitingForRefresh}
+                                searchQuery={searchQuery}
+                                onDeleted={handleDeleteSuccess}
+                            />
+                        ) : (
+                            <div
+                                style={{
+                                    minHeight: "320px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <NoData text="No talent profiles to review yet" />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

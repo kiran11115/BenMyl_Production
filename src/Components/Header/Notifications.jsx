@@ -6,7 +6,10 @@ import {
   FolderKanban,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useGetUserNotificationsQuery } from "../../State-Management/Api/CompanyProfileApiSlice";
+import {
+  useGetUserNotificationsQuery,
+  useMarkNotificationAsReadMutation,
+} from "../../State-Management/Api/CompanyProfileApiSlice";
 
 /* ── Soft UI Palette ── */
 const S = {
@@ -65,6 +68,7 @@ const fmtTime = (dateString) => {
 const Notifications = ({ targetPath = "/User/notifications-page" }) => {
   const [open, setOpen]         = useState(false);
   const [hoverId, setHoverId]   = useState(null);
+  const [readIds, setReadIds]   = useState(new Set());
   const containerRef            = useRef(null);
   const navigate                = useNavigate();
 
@@ -72,27 +76,40 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
   const { data: raw = [], isLoading } = useGetUserNotificationsQuery(userId, {
     pollingInterval: 5000,
   });
+  const [markNotificationAsRead] = useMarkNotificationAsReadMutation();
 
-  const isToday = (dateString) => {
-    if (!dateString) return false;
-    const d = new Date(dateString);
-    const today = new Date();
-    return d.getDate() === today.getDate() &&
-           d.getMonth() === today.getMonth() &&
-           d.getFullYear() === today.getFullYear();
+  const checkIsRead = (item) => {
+    const id = item.Id ?? item.id;
+    if (id !== undefined && id !== null && readIds.has(id)) return true;
+    return Boolean(item.IsRead ?? item.isRead ?? false);
   };
 
-  const todayCount = raw.filter(item => isToday(item.CreatedAt)).length;
+  const unreadCount = raw.filter(item => !checkIsRead(item)).length;
 
   const items = raw
-    .map((item, i) => ({
-      id:      item.Id ?? i,
-      name:    item.Username || "System",
-      message: item.Message  || "",
-      time:    fmtTime(item.CreatedAt),
-      type:    detectType(item.Message),
-    }))
+    .map((item, i) => {
+      const id = item.Id ?? item.id ?? i;
+      return {
+        id,
+        name:    item.Username || "System",
+        message: item.Message  || "",
+        time:    fmtTime(item.CreatedAt),
+        type:    detectType(item.Message),
+        isRead:  checkIsRead(item),
+      };
+    })
     .slice(0, 4);
+
+  const handleCardClick = async (n) => {
+    if (!n.isRead && n.id !== undefined && n.id !== null) {
+      setReadIds((prev) => new Set(prev).add(n.id));
+      try {
+        await markNotificationAsRead(n.id).unwrap();
+      } catch (err) {
+        console.error("Failed to mark notification as read:", err);
+      }
+    }
+  };
 
   /* outside-click / Escape */
   useEffect(() => {
@@ -116,6 +133,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
 
     return (
       <div
+        onClick={() => handleCardClick(n)}
         onMouseEnter={() => setHoverId(n.id)}
         onMouseLeave={() => setHoverId(null)}
         style={{
@@ -124,12 +142,13 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
           alignItems:    "flex-start",
           padding:       "12px 14px",
           borderRadius:  10,
-          background:    hov ? S.bgHover : S.bg,
+          background:    hov ? S.bgHover : (n.isRead ? S.bg : "#f4f7ff"),
           border:        `1px solid ${hov ? S.border : S.borderSoft}`,
           marginBottom:  6,
           transition:    "all 0.18s ease",
           cursor:        "pointer",
           fontFamily:    "'Inter','Segoe UI',sans-serif",
+          position:      "relative",
         }}
       >
         {/* Icon pill */}
@@ -150,7 +169,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
 
         {/* Text block */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Row 1: name + badge + time */}
+          {/* Row 1: name + badge + unread dot + time */}
           <div
             style={{
               display:        "flex",
@@ -164,7 +183,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
               <span
                 style={{
                   fontSize:   13,
-                  fontWeight: 600,
+                  fontWeight: n.isRead ? 600 : 700,
                   color:      S.text,
                   lineHeight: 1.3,
                 }}
@@ -186,6 +205,20 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
               >
                 {label}
               </span>
+
+              {!n.isRead && (
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "#0284c7",
+                    display: "inline-block",
+                    flexShrink: 0,
+                  }}
+                  title="Unread"
+                />
+              )}
             </div>
 
             <span style={{ fontSize: 11, color: S.textFaint, whiteSpace: "nowrap" }}>
@@ -198,7 +231,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
             style={{
               margin:          "4px 0 0",
               fontSize:        12,
-              color:           S.textMuted,
+              color:           n.isRead ? S.textMuted : S.text,
               lineHeight:      1.55,
               overflow:        "hidden",
               display:         "-webkit-box",
@@ -232,8 +265,8 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
           type="button"
         >
           <Bell size={20} />
-          {todayCount > 0 && (
-            <span className="notification-badge">{todayCount}</span>
+          {unreadCount > 0 && (
+            <span className="notification-badge">{unreadCount}</span>
           )}
         </button>
 
@@ -287,7 +320,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
                   </span>
                 </div>
 
-                {todayCount > 0 && (
+                {unreadCount > 0 && (
                   <span
                     style={{
                       fontSize:     11,
@@ -298,7 +331,7 @@ const Notifications = ({ targetPath = "/User/notifications-page" }) => {
                       padding:      "2px 8px",
                     }}
                   >
-                    {todayCount} new today
+                    {unreadCount} unread
                   </span>
                 )}
               </div>

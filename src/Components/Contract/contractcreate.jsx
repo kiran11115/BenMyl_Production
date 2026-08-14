@@ -1226,7 +1226,7 @@ const ContractCreate = () => {
                         </div>
                         <div className="d-flex align-items-center gap-2">
                           <span className={`cw-section-badge ${sectionStatus.org ? 'complete' : 'incomplete'}`}>
-                            {sectionStatus.org ? 'Complete' : 'Incomplete'}
+                            {sectionStatus.org ? 'Completed' : 'Incomplete'}
                           </span>
                           <ChevronDown size={18} className="cw-section-chevron" />
                         </div>
@@ -1267,7 +1267,7 @@ const ContractCreate = () => {
                         </div>
                         <div className="d-flex align-items-center gap-2">
                           <span className={`cw-section-badge ${sectionStatus.res ? 'complete' : 'incomplete'}`}>
-                            {sectionStatus.res ? 'Complete' : 'Incomplete'}
+                            {sectionStatus.res ? 'Completed' : 'Incomplete'}
                           </span>
                           <ChevronDown size={18} className="cw-section-chevron" />
                         </div>
@@ -1301,7 +1301,7 @@ const ContractCreate = () => {
                         </div>
                         <div className="d-flex align-items-center gap-2">
                           <span className={`cw-section-badge ${sectionStatus.eng ? 'complete' : 'incomplete'}`}>
-                            {sectionStatus.eng ? 'Complete' : 'Incomplete'}
+                            {sectionStatus.eng ? 'Completed' : 'Incomplete'}
                           </span>
                           <ChevronDown size={18} className="cw-section-chevron" />
                         </div>
@@ -1368,8 +1368,13 @@ const ContractCreate = () => {
                           </div>
 
                           <div className="cw-field">
-                            <label>Salary / Rate <span className="req">*</span></label>
-                            <input className="auth-input" name="salary" {...formik.getFieldProps('salary')} placeholder="e.g. $85/hr" />
+                            <label>Salary / Rate {isIND ? '(₹)' : '($)'} <span className="req">*</span></label>
+                            <div style={{ display: 'flex', alignItems: 'stretch', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden', background: '#fff' }}>
+                              <span style={{ padding: '0 12px', color: '#64748b', fontWeight: 500, backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', borderRight: '1px solid #e2e8f0' }}>
+                                {isIND ? '₹' : '$'}
+                              </span>
+                              <input className="auth-input" style={{ border: 'none', borderRadius: 0, flex: 1, outline: 'none' }} name="salary" {...formik.getFieldProps('salary')} placeholder={isIND ? "50,000/month" : "85/hr"} />
+                            </div>
                             {formik.touched.salary && formik.errors.salary && <div className="auth-error">{formik.errors.salary}</div>}
                           </div>
                         </div>
@@ -1404,7 +1409,7 @@ const ContractCreate = () => {
                         </div>
                         <div className="d-flex align-items-center gap-2">
                           <span className={`cw-section-badge ${sectionStatus.man ? 'complete' : 'incomplete'}`}>
-                            {sectionStatus.man ? 'Complete' : 'Incomplete'}
+                            {sectionStatus.man ? 'Completed' : 'Incomplete'}
                           </span>
                           <ChevronDown size={18} className="cw-section-chevron" />
                         </div>
@@ -1417,7 +1422,7 @@ const ContractCreate = () => {
                             {formik.touched.reportingManager && formik.errors.reportingManager && <div className="auth-error">{formik.errors.reportingManager}</div>}
                           </div>
                           <div className="cw-field mb-3">
-                            <label>Notice Period <span className="req">*</span></label>
+                            <label>Termination Notice Period <span className="req">*</span></label>
                             <input className="auth-input" name="noticePeriod" {...formik.getFieldProps('noticePeriod')} placeholder="e.g. 2 Weeks" />
                             {formik.touched.noticePeriod && formik.errors.noticePeriod && <div className="auth-error">{formik.errors.noticePeriod}</div>}
                           </div>
@@ -1437,7 +1442,7 @@ const ContractCreate = () => {
                         </div>
                         <div className="d-flex align-items-center gap-2">
                           <span className={`cw-section-badge ${sectionStatus.leg ? 'complete' : 'incomplete'}`}>
-                            {sectionStatus.leg ? 'Complete' : 'Incomplete'}
+                            {sectionStatus.leg ? 'Completed' : 'Incomplete'}
                           </span>
                           <ChevronDown size={18} className="cw-section-chevron" />
                         </div>
@@ -1572,7 +1577,9 @@ const ContractCreate = () => {
                       </div>
                       <div className="cw-preview-mini-row">
                         <span className="cw-preview-mini-label">Rate / Fee</span>
-                        <span className="cw-preview-mini-value">{formik.values.salary || '-'}</span>
+                        <span className="cw-preview-mini-value">
+                          {formik.values.salary ? (formik.values.salary.includes('$') || formik.values.salary.includes('₹') ? formik.values.salary : `${isIND ? '₹' : '$'} ${formik.values.salary}`) : '-'}
+                        </span>
                       </div>
                       <div className="cw-preview-mini-row">
                         <span className="cw-preview-mini-label">Location</span>
@@ -1688,7 +1695,9 @@ const ContractCreate = () => {
                         </div>
                         <div>
                           <span className="cw-legal-field-label">Fees / Remittance Rate</span>
-                          <div className="cw-legal-field-value">{formik.values.salary}</div>
+                          <div className="cw-legal-field-value">
+                            {formik.values.salary ? (formik.values.salary.includes('$') || formik.values.salary.includes('₹') ? formik.values.salary : `${isIND ? '₹' : '$'} ${formik.values.salary}`) : '-'}
+                          </div>
                         </div>
                         <div>
                           <span className="cw-legal-field-label">Payment Cycle</span>

@@ -2366,3 +2366,8 @@ input[type=number].auth-input {
   box-shadow: none !important;
 }
 
+/* HIDE FLOATING BUTTONS WHEN MODAL IS OPEN */
+body.pjm-modal-open .support-fab,
+body.pjm-modal-open [class*="floating-chat-widget"] {
+    display: none !important;
+}

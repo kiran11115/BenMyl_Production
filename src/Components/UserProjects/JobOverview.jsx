@@ -21,7 +21,8 @@ import {
   FiX,
   FiSearch,
   FiCalendar,
-  FiCheck
+  FiCheck,
+  FiLinkedin
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import ShareJobCard from "./ShareJobCard";
@@ -36,6 +37,7 @@ import WorkAndPreference from "./WorkAndPreference";
 import { toast } from "react-toastify";
 import "./JobOverview.css";
 import "../UserJobs/Jobs.css"; // Gain access to standard job-chip classes
+import TalentResumeView from "../TalentPool/TalentResumeView";
 
 const JobOverview = () => {
   const navigate = useNavigate();
@@ -59,6 +61,9 @@ const JobOverview = () => {
   const [candidates, setCandidates] = useState([]);
   const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
   const [inviteStatus, setInviteStatus] = useState({});
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
+  const [loadingShortlistId, setLoadingShortlistId] = useState(null);
 
   useEffect(() => {
     if (jobId && userId) {
@@ -187,6 +192,10 @@ const JobOverview = () => {
   const job = Array.isArray(rawJobData)
     ? (rawJobData.find(j => Number(j.jobId || j.jobID) === Number(jobId)) || rawJobData[0])
     : rawJobData;
+
+  const isLinkedin = Boolean(
+    job?.islinkedin ?? job?.isLinkedin ?? job?.Islinkedin ?? job?.IsLinkedin ?? location.state?.jobData?.islinkedin ?? location.state?.jobData?.isLinkedin ?? location.state?.jobData?.Islinkedin ?? location.state?.jobData?.IsLinkedin ?? false
+  );
 
   const formatPostedDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -397,24 +406,14 @@ const JobOverview = () => {
   };
 
   const handleViewProfile = (bid) => {
-    const from = location.pathname + location.search;
-    const basePath = location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/user';
-
-    navigate(
-      `${basePath}/user-talent-profile?from=${encodeURIComponent(from)}`,
-      {
-        state: {
-          employeeID: bid.EmployeeID,
-          candidate: {
-            id: bid.EmployeeID,
-            name: bid.FullName,
-            status: "Verified",
-          },
-          jobId: jobId,
-          fromJobOverview: true,
-        },
-      }
-    );
+    setSelectedResumeCandidate({
+      id: bid.EmployeeID,
+      name: bid.FullName?.split(" ")[0],
+      company: bid.companyName,
+      status: "Verified",
+      verified: true
+    });
+    setIsResumeModalOpen(true);
   };
 
   const handleFindTalentClick = () => {
@@ -548,7 +547,28 @@ const JobOverview = () => {
               </div>
             </div>
 
-            <div className="">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {isLinkedin && (
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    background: "#f0f7ff",
+                    border: "1px solid #cce4f7",
+                    color: "#0a66c2",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  <FiLinkedin size={16} color="#0a66c2" />
+                  <span>Shared on LinkedIn</span>
+                </div>
+              )}
+
               {(!bids || !bids.some((bid) => bid.IsShortlisted)) && (
                 <button
                   className="routine-btn-2"
@@ -877,7 +897,7 @@ const JobOverview = () => {
                         fontSize: "14px",
                       }}
                     >
-                      {bid.FullName}
+                      {bid.FullName?.split(" ")[0]}
                     </div>
 
                     <div
@@ -978,6 +998,22 @@ const JobOverview = () => {
           )}
         </div>
       </div>
+      <TalentResumeView
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+        candidate={selectedResumeCandidate}
+        onShortlist={(cand) => {
+          setLoadingShortlistId(cand.id);
+          setTimeout(() => {
+            handleToggleSelectBid(cand.id);
+            setIsResumeModalOpen(false);
+            setLoadingShortlistId(null);
+          }, 500);
+        }}
+        isShortlisted={Boolean(selectedResumeCandidate && selectedBidIds.includes(selectedResumeCandidate.id))}
+        loadingShortlistId={loadingShortlistId}
+        useCandidateNameOnly={true}
+      />
     </div>
     // </div>
   );

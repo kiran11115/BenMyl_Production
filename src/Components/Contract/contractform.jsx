@@ -243,16 +243,16 @@ const ConfirmModal = ({ title, message, confirmText = "Confirm", cancelText = "C
           </p>
         </div>
         <div className="custom-talent-alert-actions-row">
-          <button 
-            type="button" 
-            className="tbl-btn tbl-btn-status-change" 
+          <button
+            type="button"
+            className="tbl-btn tbl-btn-status-change"
             onClick={onCancel}
           >
             {cancelText}
           </button>
-          <button 
-            type="button" 
-            className="btn-primary" 
+          <button
+            type="button"
+            className="btn-primary"
             onClick={onConfirm}
           >
             {confirmText}
@@ -335,46 +335,46 @@ const MilestoneDetail = ({
         {starsArray.map((starIdx) => {
           const isFull = starIdx <= rating;
           const isHalf = (starIdx - 0.5) === rating;
-          
+
           return (
-            <div 
-              key={starIdx} 
-              style={{ 
-                position: 'relative', 
-                display: 'inline-block', 
-                fontSize: '24px', 
+            <div
+              key={starIdx}
+              style={{
+                position: 'relative',
+                display: 'inline-block',
+                fontSize: '24px',
                 cursor: effectiveReview?.submitted ? 'default' : 'pointer',
                 userSelect: 'none'
               }}
             >
               {/* Background grey star */}
               <span style={{ color: '#e2e8f0' }}>★</span>
-              
+
               {/* Highlighted yellow star */}
               {(isFull || isHalf) && (
-                <span 
-                  style={{ 
-                    position: 'absolute', 
-                    top: 0, 
-                    left: 0, 
-                    width: isFull ? '100%' : '50%', 
-                    overflow: 'hidden', 
-                    color: '#eab308' 
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: isFull ? '100%' : '50%',
+                    overflow: 'hidden',
+                    color: '#eab308'
                   }}
                 >
                   ★
                 </span>
               )}
-              
+
               {/* Left and Right half invisible click areas (if not submitted) */}
               {!effectiveReview?.submitted && (
                 <>
-                  <div 
-                    style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', zIndex: 2 }} 
+                  <div
+                    style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', zIndex: 2 }}
                     onClick={() => setRating(starIdx - 0.5)}
                   />
-                  <div 
-                    style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: '100%', zIndex: 2 }} 
+                  <div
+                    style={{ position: 'absolute', top: 0, left: '50%', width: '50%', height: '100%', zIndex: 2 }}
                     onClick={() => setRating(starIdx)}
                   />
                 </>
@@ -437,7 +437,7 @@ const MilestoneDetail = ({
           <div className="progress-bar-wrap">
             <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
           </div>
-          
+
           <div className="progress-stat-row">
             <span className="progress-percentage-label">Current Progress: <strong className="text-orange">{progress}%</strong></span>
             <span className="progress-target-label">Target: {contract.endDate}</span>
@@ -575,182 +575,182 @@ const MilestoneDetail = ({
 
       {/* Milestone Extension Request Section */}
       {!(effectiveReview?.submitted || isClosed) && (
-      <div className="detail-section extension-section-wrap">
-        <h4 className="section-title">Milestone Extension Request</h4>
-        {(() => {
-          const role = localStorage.getItem('Role') || 'Benchsales';
-          const userId = localStorage.getItem('CompanyId');
-          const isAccepted = extension?.status === 'Accepted' || extension?.status === 'Approved';
-          const isRejected = extension?.status === 'Rejected';
-          const isPending = extension?.status === 'Pending';
+        <div className="detail-section extension-section-wrap">
+          <h4 className="section-title">Milestone Extension Request</h4>
+          {(() => {
+            const role = localStorage.getItem('Role') || 'Benchsales';
+            const userId = localStorage.getItem('CompanyId');
+            const isAccepted = extension?.status === 'Accepted' || extension?.status === 'Approved';
+            const isRejected = extension?.status === 'Rejected';
+            const isPending = extension?.status === 'Pending';
 
-          const renderRequestForm = () => (
-            <div className="mt-3" style={{ borderTop: (isAccepted || isRejected) ? '1px solid #e2e8f0' : 'none', paddingTop: (isAccepted || isRejected) ? '16px' : '0' }}>
-              <p className="section-desc">If milestones cannot be met within the target week, you can raise an extension request.</p>
-              {showDatePicker ? (
-                <div className="elegant-date-picker-wrap" style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
-                  <div className="form-group mb-2">
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
-                      <Calendar size={13} color="#ea580c" /> CHOOSE EXTENSION TARGET DATE
-                    </label>
-                    <input
-                      type="date"
-                      className="date-filter-input"
-                      value={selectedExtDate}
-                      min={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setSelectedExtDate(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group mb-2">
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
-                      <Info size={13} color="#ea580c" /> EXTENSION JUSTIFICATION REASON
-                    </label>
-                    <textarea
-                      className="form-control feedback-textarea"
-                      rows="2"
-                      placeholder="Explain why the extension is required..."
-                      value={selectedExtReason}
-                      onChange={(e) => setSelectedExtReason(e.target.value)}
-                    />
-                  </div>
-                  <div className="date-input-filter-row" style={{ marginTop: '6px' }}>
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      onClick={() => {
-                        if (!selectedExtDate) {
-                          toast.warning("Please choose a valid date.");
-                          return;
-                        }
-                        if (!selectedExtReason.trim()) {
-                          toast.warning("Please provide a reason for the extension request.");
-                          return;
-                        }
-                        setConfirmModal({
-                          title: "Confirm Extension Request",
-                          message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
-                          confirmText: "Submit Request",
-                          cancelText: "Cancel",
-                          onConfirm: () => {
-                            setConfirmModal(null);
-                            onExtensionSubmit(selectedExtDate, selectedExtReason, role);
-                            toast.success("Extension request submitted successfully!");
-                            setShowDatePicker(false);
+            const renderRequestForm = () => (
+              <div className="mt-3" style={{ borderTop: (isAccepted || isRejected) ? '1px solid #e2e8f0' : 'none', paddingTop: (isAccepted || isRejected) ? '16px' : '0' }}>
+                <p className="section-desc">If milestones cannot be met within the target week, you can raise an extension request.</p>
+                {showDatePicker ? (
+                  <div className="elegant-date-picker-wrap" style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
+                    <div className="form-group mb-2">
+                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                        <Calendar size={13} color="#ea580c" /> CHOOSE EXTENSION TARGET DATE
+                      </label>
+                      <input
+                        type="date"
+                        className="date-filter-input"
+                        value={selectedExtDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setSelectedExtDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group mb-2">
+                      <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '11px', color: '#475569' }}>
+                        <Info size={13} color="#ea580c" /> EXTENSION JUSTIFICATION REASON
+                      </label>
+                      <textarea
+                        className="form-control feedback-textarea"
+                        rows="2"
+                        placeholder="Explain why the extension is required..."
+                        value={selectedExtReason}
+                        onChange={(e) => setSelectedExtReason(e.target.value)}
+                      />
+                    </div>
+                    <div className="date-input-filter-row" style={{ marginTop: '6px' }}>
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => {
+                          if (!selectedExtDate) {
+                            toast.warning("Please choose a valid date.");
+                            return;
                           }
-                        });
-                      }}
-                    >
-                      Confirm Request
-                    </button>
-                    <button
-                      type="button"
-                      className="tbl-btn tbl-btn-status-change"
-                      onClick={() => setShowDatePicker(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-primary"
-                  disabled={isClosed}
-                  onClick={() => setShowDatePicker(true)}
-                >
-                  Request Extension
-                </button>
-              )}
-            </div>
-          );
-
-          if (extension?.submitted) {
-            // isRequester: true if the current user raised this request
-            const isRequester = extension.requestedBy != null
-              ? String(extension.requestedBy) === String(userId)
-              : role === 'Benchsales';
-
-            if (isRequester) {
-              return (
-                <>
-                  <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
-                        {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Requested"}
-                      </span>
-                      <span className="ext-date">{formatDate(extension.newDate)}</span>
+                          if (!selectedExtReason.trim()) {
+                            toast.warning("Please provide a reason for the extension request.");
+                            return;
+                          }
+                          setConfirmModal({
+                            title: "Confirm Extension Request",
+                            message: `Are you sure you want to submit this extension request to ${selectedExtDate}?`,
+                            confirmText: "Submit Request",
+                            cancelText: "Cancel",
+                            onConfirm: () => {
+                              setConfirmModal(null);
+                              onExtensionSubmit(selectedExtDate, selectedExtReason, role);
+                              toast.success("Extension request submitted successfully!");
+                              setShowDatePicker(false);
+                            }
+                          });
+                        }}
+                      >
+                        Confirm Request
+                      </button>
+                      <button
+                        type="button"
+                        className="tbl-btn tbl-btn-status-change"
+                        onClick={() => setShowDatePicker(false)}
+                      >
+                        Cancel
+                      </button>
                     </div>
-                    <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
-                    <div className="ext-meta">Status: <strong>{isAccepted ? "Approved" : isRejected ? "Rejected" : "Pending Review by " + (role === 'Benchsales' ? "Client" : "Talent Provider")}</strong></div>
                   </div>
-                  {renderRequestForm()}
-                </>
-              );
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    disabled={isClosed}
+                    onClick={() => setShowDatePicker(true)}
+                  >
+                    Request Extension
+                  </button>
+                )}
+              </div>
+            );
+
+            if (extension?.submitted) {
+              // isRequester: true if the current user raised this request
+              const isRequester = extension.requestedBy != null
+                ? String(extension.requestedBy) === String(userId)
+                : role === 'Benchsales';
+
+              if (isRequester) {
+                return (
+                  <>
+                    <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
+                          {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Requested"}
+                        </span>
+                        <span className="ext-date">{formatDate(extension.newDate)}</span>
+                      </div>
+                      <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                      <div className="ext-meta">Status: <strong>{isAccepted ? "Approved" : isRejected ? "Rejected" : "Pending Review by " + (role === 'Benchsales' ? "Client" : "Talent Provider")}</strong></div>
+                    </div>
+                    {!isAccepted && renderRequestForm()}
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
+                          {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Received"}
+                        </span>
+                        <span className="ext-date">{formatDate(extension.newDate)}</span>
+                      </div>
+                      <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
+                      <div className="ext-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                        <span>Raised by: <strong>{role === 'Benchsales' ? "Client" : "Candidate Handler"}</strong></span>
+                        {isPending && (
+                          <div className="d-flex gap-2">
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              onClick={() => {
+                                setConfirmModal({
+                                  title: "Accept Extension",
+                                  message: `Accept the extension request to ${formatDate(extension.newDate)}?`,
+                                  confirmText: "Accept",
+                                  cancelText: "Cancel",
+                                  onConfirm: () => {
+                                    setConfirmModal(null);
+                                    onExtensionAccept();
+                                  }
+                                });
+                              }}
+                            >
+                              Accept Extension
+                            </button>
+                            <button
+                              type="button"
+                              className="tbl-btn tbl-btn-status-change"
+                              style={{ borderColor: '#ef4444', color: '#ef4444', margin: 0 }}
+                              onClick={() => {
+                                setConfirmModal({
+                                  title: "Reject Extension",
+                                  message: `Reject the extension request to ${formatDate(extension.newDate)}?`,
+                                  confirmText: "Reject",
+                                  cancelText: "Cancel",
+                                  onConfirm: () => {
+                                    setConfirmModal(null);
+                                    onExtensionReject();
+                                  }
+                                });
+                              }}
+                            >
+                              Reject Extension
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {!isAccepted && renderRequestForm()}
+                  </>
+                );
+              }
             } else {
-              return (
-                <>
-                  <div className="extension-submitted-card" style={{ borderLeft: isAccepted ? '4px solid #16a34a' : isRejected ? '4px solid #ef4444' : '4px solid #ea580c' }}>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className={isAccepted ? "badge-check" : isRejected ? "badge-rejected" : "badge-pending"}>
-                        {isAccepted ? "Extension Approved" : isRejected ? "Extension Rejected" : "Extension Received"}
-                      </span>
-                      <span className="ext-date">{formatDate(extension.newDate)}</span>
-                    </div>
-                    <p className="ext-reason"><strong>Reason:</strong> {extension.reason}</p>
-                    <div className="ext-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                      <span>Raised by: <strong>{role === 'Benchsales' ? "Client" : "Candidate Handler"}</strong></span>
-                      {isPending && (
-                        <div className="d-flex gap-2">
-                          <button
-                            type="button"
-                            className="btn-primary"
-                            onClick={() => {
-                              setConfirmModal({
-                                title: "Accept Extension",
-                                message: `Accept the extension request to ${formatDate(extension.newDate)}?`,
-                                confirmText: "Accept",
-                                cancelText: "Cancel",
-                                onConfirm: () => {
-                                  setConfirmModal(null);
-                                  onExtensionAccept();
-                                }
-                              });
-                            }}
-                          >
-                            Accept Extension
-                          </button>
-                          <button
-                            type="button"
-                            className="tbl-btn tbl-btn-status-change"
-                            style={{ borderColor: '#ef4444', color: '#ef4444', margin: 0 }}
-                            onClick={() => {
-                              setConfirmModal({
-                                title: "Reject Extension",
-                                message: `Reject the extension request to ${formatDate(extension.newDate)}?`,
-                                confirmText: "Reject",
-                                cancelText: "Cancel",
-                                onConfirm: () => {
-                                  setConfirmModal(null);
-                                  onExtensionReject();
-                                }
-                              });
-                            }}
-                          >
-                            Reject Extension
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {renderRequestForm()}
-                </>
-              );
+              return renderRequestForm();
             }
-          } else {
-            return renderRequestForm();
-          }
-        })()}
-      </div>
+          })()}
+        </div>
       )}
       {confirmModal && (
         <ConfirmModal
@@ -769,7 +769,7 @@ const MilestoneDetail = ({
 const getWeekRangeData = () => {
   const today = new Date();
   const day = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
-  
+
   // Start date of week (Monday)
   const mondayOffset = day === 0 ? -6 : 1 - day;
   const monday = new Date(today);
@@ -801,7 +801,7 @@ const filterActiveWeekContracts = (contracts, monday, sunday) => {
     if (c.endDate && c.endDate !== '-') {
       const end = new Date(c.endDate);
       if (!isNaN(end.getTime())) {
-         return end >= monday && end <= sunday;
+        return end >= monday && end <= sunday;
       }
     }
     return false;
@@ -840,16 +840,16 @@ const parseDateSafely = (dateStr) => {
 const getNextUpcomingDate = (parsedContracts) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   const futureContracts = parsedContracts.filter(c => {
     if (!c.parsedEndDate) return false;
     const end = new Date(c.parsedEndDate);
     end.setHours(0, 0, 0, 0);
     return end >= today;
   });
-  
+
   if (futureContracts.length === 0) return null;
-  
+
   const sorted = [...futureContracts].sort((a, b) => a.parsedEndDate - b.parsedEndDate);
   return sorted[0].parsedEndDate;
 };
@@ -857,34 +857,34 @@ const getNextUpcomingDate = (parsedContracts) => {
 const calculateDateProgress = (startDateStr, endDateObj) => {
   const startObj = parseDateSafely(startDateStr);
   const endObj = endDateObj instanceof Date ? endDateObj : parseDateSafely(endDateObj);
-  
+
   if (!startObj || !endObj) return 0;
-  
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   startObj.setHours(0, 0, 0, 0);
   endObj.setHours(0, 0, 0, 0);
-  
+
   const totalTime = endObj.getTime() - startObj.getTime();
   const elapsedTime = today.getTime() - startObj.getTime();
-  
+
   if (totalTime <= 0) return 100;
   if (elapsedTime <= 0) return 0;
   if (today.getTime() >= endObj.getTime()) return 100;
-  
+
   return Math.min(100, Math.max(0, Math.floor((elapsedTime / totalTime) * 100)));
 };
 
 const getDaysHoursMinutesLeft = (endDateObj) => {
   const endObj = endDateObj instanceof Date ? endDateObj : parseDateSafely(endDateObj);
   if (!endObj) return { days: 0, hours: 0, minutes: 0 };
-  
+
   const today = new Date();
   const diffTime = endObj.getTime() - today.getTime();
   if (diffTime <= 0) {
     return { days: 0, hours: 0, minutes: 0 };
   }
-  
+
   const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
@@ -895,7 +895,7 @@ const renderStars = (ratingValue) => {
   const stars = [];
   const fullStars = Math.floor(ratingValue);
   const hasHalf = ratingValue % 1 !== 0;
-  
+
   for (let i = 1; i <= 5; i++) {
     if (i <= fullStars) {
       stars.push(<span key={i} style={{ color: '#eab308' }}>★</span>);
@@ -1131,7 +1131,7 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
       </div>
       <div className="milestone-item-title" style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{c.contractTitle}</div>
       <div className="milestone-item-candidate">{c.candidateName} • {c.jobTitle}</div>
-      
+
       <div className="milestone-item-progress-bar-container" style={{ margin: '4px 0 8px' }}>
         <div className="milestone-item-progress-track">
           <div className="milestone-item-progress-fill" style={{ width: `${progress}%` }}></div>
@@ -1153,7 +1153,7 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
                 </div>
                 <p className="ext-reason" style={{ fontSize: '10px', margin: '4px 0 0 0' }}><strong>Reason:</strong> {extension.reason}</p>
               </div>
-              {renderCardRequestForm()}
+              {!isAccepted && renderCardRequestForm()}
             </>
           ) : (
             renderCardRequestForm()
@@ -1213,8 +1213,8 @@ const CalendarView = ({
         parsedEndDate: parseDateSafely(c.endDate)
       };
     })
-    .filter(c => c.parsedEndDate !== null)
-    .filter(c => !!c.benchSalesSignature && !!c.hiringManagerSignature);
+      .filter(c => c.parsedEndDate !== null)
+      .filter(c => !!c.benchSalesSignature && !!c.hiringManagerSignature);
   }, [contracts]);
 
   const isContractEndDate = (day, month, year) => {
@@ -1278,7 +1278,7 @@ const CalendarView = ({
             <Calendar size={14} color="#1e293b" /> Contract End Dates & Milestones
           </h4>
         </div>
-        
+
         {/* Calendar Widget */}
         <div style={{ padding: '0 4px', marginBottom: '16px' }}>
           <ContractCalendarWidget
@@ -1308,14 +1308,14 @@ const CalendarView = ({
           </span>
           {selectedDate && (
             <button
-              style={{ 
-                fontSize: '11px', 
-                padding: '4px 10px', 
-                background: '#fffbeb', 
-                border: '1px solid #fed7aa', 
+              style={{
+                fontSize: '11px',
+                padding: '4px 10px',
+                background: '#fffbeb',
+                border: '1px solid #fed7aa',
                 borderRadius: '6px',
-                color: '#ea580c', 
-                cursor: 'pointer', 
+                color: '#ea580c',
+                cursor: 'pointer',
                 fontWeight: '700',
                 transition: 'all 0.2s',
                 display: 'flex',
@@ -1428,7 +1428,7 @@ const ContractForm = () => {
   const { updateContract } = useContext(ContractContext);
   const [showMetrics, setShowMetrics] = useState(true);
   const [requestExtension, { isLoadingextension }] =
-  useRequestExtensionMutation();
+    useRequestExtensionMutation();
   const [saveRatingAndReview] = useSaveRatingAndReviewMutation();
 
   const sparklineData1 = useMemo(() => createSparklineData('#3b82f6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0)', [10, 20, 15, 25, 20, 30]), []);
@@ -1551,24 +1551,24 @@ const ContractForm = () => {
   };
 
   const submitExtension = async (contractId, newDate, reason) => {
-  try {
-    const payload = {
-      contractID: Number(contractId),
-      requestedEndDate: new Date(newDate).toISOString(),
-      extensionReason: reason,
-      requestedBy: userId,
-    };
+    try {
+      const payload = {
+        contractID: Number(contractId),
+        requestedEndDate: new Date(newDate).toISOString(),
+        extensionReason: reason,
+        requestedBy: userId,
+      };
 
-    const response = await requestExtension(payload).unwrap();
+      const response = await requestExtension(payload).unwrap();
 
-    toast.success(response?.message || "Extension request submitted.");
-  } catch (error) {
-    console.error(error);
-    toast.error(
-      error?.data?.message || "Failed to submit extension request."
-    );
-  }
-};
+      toast.success(response?.message || "Extension request submitted.");
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error?.data?.message || "Failed to submit extension request."
+      );
+    }
+  };
 
   const isBenchsales = role === 'Benchsales';
   const basePath = window.location.pathname.toLowerCase().startsWith('/admin') ? '/Admin' : '/User';
@@ -1581,25 +1581,25 @@ const ContractForm = () => {
   };
 
   const sortedContracts = [...contracts].sort((a, b) => {
-  if (sortConfig.key === "createdDate") {
-    const dateA = new Date(a.createdDate);
-    const dateB = new Date(b.createdDate);
+    if (sortConfig.key === "createdDate") {
+      const dateA = new Date(a.createdDate);
+      const dateB = new Date(b.createdDate);
 
-    return sortConfig.direction === "asc"
-      ? dateA - dateB
-      : dateB - dateA;
-  }
+      return sortConfig.direction === "asc"
+        ? dateA - dateB
+        : dateB - dateA;
+    }
 
-  if (a[sortConfig.key] < b[sortConfig.key]) {
-    return sortConfig.direction === "asc" ? -1 : 1;
-  }
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === "asc" ? -1 : 1;
+    }
 
-  if (a[sortConfig.key] > b[sortConfig.key]) {
-    return sortConfig.direction === "asc" ? 1 : -1;
-  }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === "asc" ? 1 : -1;
+    }
 
-  return 0;
-});
+    return 0;
+  });
 
   const filtered = sortedContracts.filter(c => {
     const matchSearch = !search ||
@@ -1898,39 +1898,39 @@ const ContractForm = () => {
           <div className="hero-concentric-lines"></div>
           <div className="hero-ripple-pattern"></div>
           <div className="hero-circular-highlights"></div>
-                  <div className="hero-left">
-                    <div className="hero-pill">
-                              ✦ Contract Management
-                            </div>
-                  <h1 className="job-posting-title text-white">Manage Contract Lifecycle</h1>
-                  
-                   
-                  <div className="job-posting-header-info">
-                  
-                  <p className="job-posting-subtitle">
-                   Showing contracts based on your interactive filters
-                  </p>
-                  </div>
-                  </div>
-                   
-                  <div className="hero-card-actions-wrapper">
-                    <button
-                      className="routine-btn"
-                      style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(4px)' }}
-                      onClick={() => setShowMetrics(!showMetrics)}
-                    >
-                      {showMetrics ? <EyeOff size={16} /> : <Eye size={16} />}
-                      {showMetrics ? 'Hide Metrics' : 'Show Metrics'}
-                    </button>
-                    <button
-                      className="routine-btn"
-                      onClick={() => navigate(`${basePath}/contract-create`)}
-                    >
-                      <FiPlus size={16} />
-                      New Work Order
-                    </button>
-                  </div>
-                            <div className="hero-illustration">
+          <div className="hero-left">
+            <div className="hero-pill">
+              ✦ Contract Management
+            </div>
+            <h1 className="job-posting-title text-white">Manage Contract Lifecycle</h1>
+
+
+            <div className="job-posting-header-info">
+
+              <p className="job-posting-subtitle">
+                Showing contracts based on your interactive filters
+              </p>
+            </div>
+          </div>
+
+          <div className="hero-card-actions-wrapper">
+            <button
+              className="routine-btn"
+              style={{ background: 'rgba(255, 255, 255, 0.15)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(4px)' }}
+              onClick={() => setShowMetrics(!showMetrics)}
+            >
+              {showMetrics ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showMetrics ? 'Hide Metrics' : 'Show Metrics'}
+            </button>
+            <button
+              className="routine-btn"
+              onClick={() => navigate(`${basePath}/contract-create`)}
+            >
+              <FiPlus size={16} />
+              New Work Order
+            </button>
+          </div>
+          <div className="hero-illustration">
             <div className="hero-particles">
               <div className="particle"></div>
               <div className="particle"></div>

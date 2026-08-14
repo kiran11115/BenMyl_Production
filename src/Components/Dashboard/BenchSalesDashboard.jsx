@@ -507,7 +507,7 @@ const BenchSalesDashboard = () => {
       <div className="stats-grid">
 
         {/* CARD 1 */}
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => handleNavigate('/user-upload-talent')} style={{ cursor: 'pointer' }}>
           <div className="stat-card-header">
             <div className="stat-card-icon-title-container">
               <div className="stat-card-icon-box stat-purple">
@@ -523,6 +523,7 @@ const BenchSalesDashboard = () => {
                 </div>
               </div>
             </div>
+            <ArrowUpRight size={16} style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
           </div>
           <div className="stat-card-sparkline">
             <Line options={sparklineOptions} data={sparklineData1} />
@@ -530,7 +531,7 @@ const BenchSalesDashboard = () => {
         </div>
 
         {/* CARD 2 */}
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => handleNavigate('/user-upload-talent')} style={{ cursor: 'pointer' }}>
           <div className="stat-card-header">
             <div className="stat-card-icon-title-container">
               <div className="stat-card-icon-box stat-blue">
@@ -546,6 +547,7 @@ const BenchSalesDashboard = () => {
                 </div>
               </div>
             </div>
+            <ArrowUpRight size={16} style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.12)', padding: '4px', borderRadius: '50%' }} />
           </div>
           <div className="stat-card-sparkline">
             <Line options={sparklineOptions} data={sparklineData2} />
@@ -553,7 +555,7 @@ const BenchSalesDashboard = () => {
         </div>
 
         {/* CARD 3 */}
-        <div className="stat-card">
+        <div className="stat-card" onClick={() => handleNavigate('/user-Jobs')} style={{ cursor: 'pointer' }}>
           <div className="stat-card-header">
             <div className="stat-card-icon-title-container">
               <div className="stat-card-icon-box stat-orange">
@@ -569,6 +571,7 @@ const BenchSalesDashboard = () => {
                 </div>
               </div>
             </div>
+            <ArrowUpRight size={16} style={{ color: '#f5810c', backgroundColor: 'rgba(245, 129, 12, 0.12)', padding: '4px', borderRadius: '50%' }} />
           </div>
           <div className="stat-card-sparkline">
             <Line options={sparklineOptions} data={sparklineData3} />
@@ -592,6 +595,7 @@ const BenchSalesDashboard = () => {
                 </div>
               </div>
             </div>
+            <ArrowUpRight size={16} style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.12)', padding: '4px', borderRadius: '50%' }} />
           </div>
           <div className="stat-card-sparkline">
             <Line options={sparklineOptions} data={sparklineData4} />

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { subscriptionPlans } from './subscriptionData';
-import { CheckCircle, Zap, CreditCard, Clock, Users, Activity, Plus, Check, Shield, Sparkles, Award, Download, Layers, X, ChevronDown, ChevronUp, Bell, TrendingUp, FileText, DollarSign } from 'lucide-react';
+import { CheckCircle, Zap, CreditCard, Clock, Users, Activity, Plus, Check, Shield, Sparkles, Award, Download, Layers, X, ChevronDown, ChevronUp, Bell, TrendingUp, FileText, DollarSign, Search } from 'lucide-react';
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -100,7 +100,7 @@ const SubscriptionPage = () => {
     skip: !companyId || !isAdmin,
     refetchOnMountOrArgChange: true,
   });
-  const { data: userTokenListData, refetch: refetchUserTokenList } = useGetCompanyUserTokenListQuery(companyId, {
+  const { data: userTokenListData, isLoading: isUserTokenLoading, isFetching: isUserTokenFetching, refetch: refetchUserTokenList } = useGetCompanyUserTokenListQuery(companyId, {
     skip: !companyId || !isAdmin,
     refetchOnMountOrArgChange: true,
   });
@@ -168,6 +168,7 @@ const SubscriptionPage = () => {
   const [confirmModalConfig, setConfirmModalConfig] = useState(null);
   const [requestTokenAmount, setRequestTokenAmount] = useState("");
   const [isRequestingTokens, setIsRequestingTokens] = useState(false);
+  const [usageSearchQuery, setUsageSearchQuery] = useState("");
 
   const tokenPackages = [
     { planId: 1, tokens: 5000, price: 50, color: "#22c55e", bgLight: "rgba(34, 197, 94, 0.08)" },
@@ -272,17 +273,133 @@ const SubscriptionPage = () => {
   }, [teamUsers]);
 
   const tokenUsageLogs = useMemo(() => {
-    return [
-      { name: "Alice Smith", emailID: "alice@company.com", role: "Recruiter", tokensUsed: 850, limit: 1200, lastActive: "Jun 12, 2026 14:30" },
-      { name: "Bob Jones", emailID: "bob@company.com", role: "Hiring Manager", tokensUsed: 620, limit: 800, lastActive: "Jun 12, 2026 11:15" },
-      { name: "Charlie Brown", emailID: "charlie@company.com", role: "Bench Sales", tokensUsed: 400, limit: 450, lastActive: "Jun 11, 2026 17:45" },
-      { name: "Dana White", emailID: "dana@company.com", role: "Recruiter", tokensUsed: 920, limit: 1000, lastActive: "Jun 12, 2026 09:20" },
-      { name: "Edward Elric", emailID: "edward@company.com", role: "Administrator", tokensUsed: 2100, limit: 5000, lastActive: "Jun 10, 2026 15:30" }
-    ];
-  }, []);
+    const tokenList = Array.isArray(userTokenListData) ? userTokenListData : [];
+    const teamList = Array.isArray(teamApiData) ? teamApiData : (teamApiData?.value || []);
+
+    const result = [];
+    const seenEmails = new Set();
+
+    const formatRole = (rawRole) => {
+      if (!rawRole) return "User";
+      const r = String(rawRole).trim();
+      const lower = r.toLowerCase();
+      if (lower === "admin" || lower === "administrator") return "Administrator";
+      if (lower === "recruiter2" || lower === "recruiter 2") return "Recruiter";
+      if (lower === "recruiter" || lower === "hiring manager" || lower === "hiringmanager") return "Hiring Manager";
+      if (lower === "benchsales" || lower === "bench sales") return "Bench Sales";
+      return r;
+    };
+
+    const formatDate = (dateVal) => {
+      if (!dateVal) return "Recently";
+      try {
+        const d = new Date(dateVal);
+        if (isNaN(d.getTime())) return String(dateVal);
+        return d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }) + " " + d.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        });
+      } catch (e) {
+        return String(dateVal);
+      }
+    };
+
+    // 1. Process items from userTokenListData
+    tokenList.forEach(member => {
+      const email = member.emailID || member.email;
+      if (!email || seenEmails.has(email.toLowerCase())) return;
+      seenEmails.add(email.toLowerCase());
+
+      const name = member.userName || member.name || email.split("@")[0];
+      const role = formatRole(member.roleName || member.role);
+      const limit = Number(member.allocatedTokens ?? member.tokens ?? member.limit ?? 0);
+      
+      let used = 0;
+      if (member.usedTokens !== undefined && member.usedTokens !== null) used = Number(member.usedTokens);
+      else if (member.tokensUsed !== undefined && member.tokensUsed !== null) used = Number(member.tokensUsed);
+      else if (member.userUsedTokens !== undefined && member.userUsedTokens !== null) used = Number(member.userUsedTokens);
+      else if (member.consumedTokens !== undefined && member.consumedTokens !== null) used = Number(member.consumedTokens);
+      else if (member.availableTokens !== undefined && limit > 0) used = Math.max(0, limit - Number(member.availableTokens));
+      else used = Number(member.used || 0);
+
+      const lastActive = formatDate(member.lastActive || member.lastActiveDate || member.updatedDate || member.createdDate);
+
+      result.push({
+        name,
+        emailID: email,
+        role,
+        tokensUsed: used,
+        limit,
+        lastActive
+      });
+    });
+
+    // 2. Process items from teamUsers / teamList if not already present
+    const combinedTeam = [...teamUsers, ...teamList];
+    combinedTeam.forEach(member => {
+      const email = member.emailID;
+      if (!email || seenEmails.has(email.toLowerCase())) return;
+      seenEmails.add(email.toLowerCase());
+
+      const name = member.name || member.userName || email.split("@")[0];
+      const role = formatRole(member.role || member.roleName);
+      const limit = Number(member.tokens || member.allocatedTokens || 0);
+
+      let used = 0;
+      if (member.usedTokens !== undefined && member.usedTokens !== null) used = Number(member.usedTokens);
+      else if (member.tokensUsed !== undefined && member.tokensUsed !== null) used = Number(member.tokensUsed);
+
+      const lastActive = formatDate(member.lastActive || member.updatedDate);
+
+      result.push({
+        name,
+        emailID: email,
+        role,
+        tokensUsed: used,
+        limit,
+        lastActive
+      });
+    });
+
+    // 3. Include Admin user if logged in as Admin and not already present
+    const adminEmail = localStorage.getItem("Email") || emailID;
+    if (adminEmail && isAdmin && !seenEmails.has(adminEmail.toLowerCase())) {
+      const adminName = localStorage.getItem("UserName") || "Admin User";
+      const adminAllocated = Number(dashboardData?.companydetails?.userAllocatedTokens ?? 1000);
+      const adminUsed = Number(dashboardData?.companydetails?.userUsedTokens ?? 0);
+
+      result.unshift({
+        name: adminName,
+        emailID: adminEmail,
+        role: "Administrator",
+        tokensUsed: adminUsed,
+        limit: adminAllocated,
+        lastActive: "Active Now"
+      });
+      seenEmails.add(adminEmail.toLowerCase());
+    }
+
+    return result;
+  }, [userTokenListData, teamApiData, teamUsers, dashboardData, emailID, isAdmin]);
+
+  const filteredTokenUsageLogs = useMemo(() => {
+    if (!usageSearchQuery.trim()) return tokenUsageLogs;
+    const q = usageSearchQuery.toLowerCase();
+    return tokenUsageLogs.filter(
+      log =>
+        log.name.toLowerCase().includes(q) ||
+        log.emailID.toLowerCase().includes(q) ||
+        log.role.toLowerCase().includes(q)
+    );
+  }, [tokenUsageLogs, usageSearchQuery]);
 
   const totalTokensUsed = useMemo(() => {
-    return tokenUsageLogs.reduce((sum, log) => sum + log.tokensUsed, 0);
+    return tokenUsageLogs.reduce((sum, log) => sum + (log.tokensUsed || 0), 0);
   }, [tokenUsageLogs]);
 
   const avgTokensUsed = useMemo(() => {
@@ -291,12 +408,13 @@ const SubscriptionPage = () => {
   }, [tokenUsageLogs, totalTokensUsed]);
 
   const topConsumingRole = useMemo(() => {
+    if (tokenUsageLogs.length === 0) return "N/A";
     const roleMap = {};
     tokenUsageLogs.forEach(log => {
-      roleMap[log.role] = (roleMap[log.role] || 0) + log.tokensUsed;
+      roleMap[log.role] = (roleMap[log.role] || 0) + (log.tokensUsed || 0);
     });
     let topRole = "N/A";
-    let maxUsed = 0;
+    let maxUsed = -1;
     Object.keys(roleMap).forEach(role => {
       if (roleMap[role] > maxUsed) {
         maxUsed = roleMap[role];
@@ -1298,12 +1416,23 @@ finally{
 
                 {/* Table Card */}
                 <div className="premium-card premium-card-p20">
-                  <div className="usage-table-header mb-4">
+                  <div className="usage-table-header mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                     <div className="header-left">
                       <h2 className="section-title-premium m-0">
                         <Activity size={15} className="sub-vertical-middle-mr8" />
                         <span className="sub-vertical-middle">Recorded Token Usage</span>
                       </h2>
+                    </div>
+                    <div className="header-right" style={{ position: 'relative', width: '240px' }}>
+                      <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      <input
+                        type="text"
+                        className="form-control-sub"
+                        style={{ paddingLeft: '32px', height: '36px', fontSize: '13px' }}
+                        placeholder="Search user, role..."
+                        value={usageSearchQuery}
+                        onChange={(e) => setUsageSearchQuery(e.target.value)}
+                      />
                     </div>
                   </div>
 
@@ -1319,15 +1448,21 @@ finally{
                         </tr>
                       </thead>
                       <tbody>
-                        {tokenUsageLogs.length === 0 ? (
+                        {(isUserTokenLoading || isTeamLoading) && tokenUsageLogs.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
+                              Loading recorded token usage...
+                            </td>
+                          </tr>
+                        ) : filteredTokenUsageLogs.length === 0 ? (
                           <tr>
                             <td colSpan="5" style={{ padding: '24px' }}>
                               <NoData text="No token usage records available." />
                             </td>
                           </tr>
                         ) : (
-                          tokenUsageLogs.map((log, idx) => {
-                            const percent = Math.min(100, Math.round((log.tokensUsed / log.limit) * 100));
+                          filteredTokenUsageLogs.map((log, idx) => {
+                            const percent = log.limit > 0 ? Math.min(100, Math.round((log.tokensUsed / log.limit) * 100)) : 0;
                             let progressClass = "success";
                             if (percent > 85) progressClass = "danger";
                             else if (percent > 60) progressClass = "warning";

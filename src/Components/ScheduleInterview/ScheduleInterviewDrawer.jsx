@@ -247,7 +247,7 @@ const ScheduleInterviewDrawer = ({ isOpen, onClose, onSuccess, preSelectedJobId,
                     companyid: Number(companyId),
                     pageNumber: 1,
                     pageSize: 100,
-                    filters: [{ filterName: 'Title', filterOperator: 'Equals', filterValue: [selectedJob.title] }],
+                    filters: [{ filterName: 'Title', filterOperator: 'Contains', filterValue: [selectedJob.title] }],
                 };
                 const res = await getFindTalent(payload).unwrap();
                 if (Array.isArray(res)) {

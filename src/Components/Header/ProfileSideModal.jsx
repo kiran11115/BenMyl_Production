@@ -123,8 +123,6 @@ const displayIndustry =
             
             <div className="psm-role-row">
               <span className="psm-role-badge">{profile?.role || "—"}</span>
-              <span className="psm-sub-badge">{profile?.subscriptionType || "Enterprise Plan"}</span>
-              <span className="psm-tokens-badge"><FiDollarSign size={12} /> {profile?.tokens ?? "150"} Tokens</span>
                <span className="psm-vdisplay-badge">v{packageJson.version}</span>
             </div>
             </div>

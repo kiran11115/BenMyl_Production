@@ -191,7 +191,10 @@ export default function InterviewDetails() {
     };
 
     const handleAddPerson = () => {
-        if (!newPersonEmail) return;
+        if (!newPersonEmail) {
+            toast.error("Please enter an email address.");
+            return;
+        }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newPersonEmail)) {
             toast.error("Please enter a valid email address.");
             return;
@@ -300,102 +303,7 @@ export default function InterviewDetails() {
                 {/* ── LEFT: Main Content ── */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-                    {/* Candidate Card */}
-                    <div className="card-base">
-                        <div className="job-card-top">
-                            {/* Avatar */}
-                            {activeInterview.avatar ? (
-                                <img
-                                    src={activeInterview.avatar}
-                                    alt={activeInterview.name}
-                                    style={{ width: 56, height: 56, borderRadius: 14, objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
-                                />
-                            ) : (
-                                <div className="company-icon-box large" style={{ background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: '#fff', fontSize: 20, fontWeight: 700 }}>
-                                    {getInitials(activeInterview.name)}
-                                </div>
-                            )}
 
-                            <div className="job-header-info" style={{ flex: 1 }}>
-                                <h3 className="job-title">{activeInterview.name}</h3>
-                                <p className="company-name">{activeInterview.role}</p>
-                                <div className="d-flex gap-3" style={{ flexWrap: 'wrap' }}>
-                                    {activeInterview.vendorName && (
-                                        <div className="meta-item">
-                                            <FiBriefcase size={12} />
-                                            {activeInterview.vendorName}
-                                        </div>
-                                    )}
-                                    {activeInterview.location && (
-                                        <div className="meta-item">
-                                            <FiMapPin size={12} />
-                                            {activeInterview.location}
-                                        </div>
-                                    )}
-                                    {/* {activeInterview.email && (
-                                        <div className="meta-item text-indigo">
-                                            <FiMail size={12} />
-                                            {activeInterview.email}
-                                        </div>
-                                    )} */}
-                                </div>
-                            </div>
-
-                            {/* Status badge */}
-                            <span style={{
-                                background: statusColor.bg,
-                                color: statusColor.color,
-                                border: `1px solid ${statusColor.border}`,
-                                fontSize: '11px', fontWeight: 700,
-                                padding: '5px 14px', borderRadius: '20px',
-                                letterSpacing: '0.04em', textTransform: 'uppercase',
-                                flexShrink: 0, alignSelf: 'flex-start'
-                            }}>
-                                {activeInterview.status || 'Scheduled'}
-                            </span>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="drawer-stats">
-                            <div className="drawer-stat-item">
-                                <span className="label">Date</span>
-                                <span className="value">{activeInterview.dateLabel || '—'}</span>
-                            </div>
-                            <div className="drawer-stat-item">
-                                <span className="label">Time</span>
-                                <span className="value">{activeInterview.time || '—'}</span>
-                            </div>
-                            <div className="drawer-stat-item">
-                                <span className="label">Job Role</span>
-                                <span className="value">{activeInterview.jobData?.title || activeInterview.role || '—'}</span>
-                            </div>
-                            {activeInterview.vendorName &&
- activeInterview.vendorName.trim().toLowerCase() !==
- CompanyName?.trim().toLowerCase() && (
-  <div className="drawer-stat-item">
-    <span className="label">Vendor</span>
-    <span className="value">{activeInterview.vendorName}</span>
-  </div>
-)}
-                        </div>
-
-                        {/* Skills */}
-                        {activeInterview.skills && activeInterview.skills.length > 0 && (
-                            <div className="drawer-section">
-                                <h4><FiLayers size={13} /> Key Expertise</h4>
-                                <div className="skills-cloud">
-                                    {activeInterview.skills.map((skill, idx) => {
-                                        const colors = ['orange', 'purple', 'mint', 'green', 'pink', 'blue'];
-                                        return (
-                                            <span key={skill} className={`job-chip ${colors[idx % colors.length]}`}>
-                                                {skill}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
 
                     {/* Job Position Overview */}
                     {activeInterview.jobData && (
