@@ -108,10 +108,10 @@ const FormWizard = () => {
         subscriptionPlan: Yup.string().required(),
       }),
       4: Yup.object({
-        cardNumber: Yup.string().required(),
-        cardName: Yup.string().required(),
-        cardExpiry: Yup.string().required(),
-        cardCvv: Yup.string().required(),
+        cardNumber: Yup.string().required("Card number is required"),
+        cardName: Yup.string().required("Name on card is required"),
+        cardExpiry: Yup.string().required("Expiry date is required"),
+        cardCvv: Yup.string().required("CVV is required"),
       }),
     }),
     []

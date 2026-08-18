@@ -110,7 +110,7 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
         setAvailableCities(cityList);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCountryChange = (e) => {
@@ -140,26 +140,26 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
     formik.setFieldValue("city", e.target.value);
   };
 
-   const calculateExperience = (experiences) => {
-  if (!experiences || experiences.length === 0) return 0;
+  const calculateExperience = (experiences) => {
+    if (!experiences || experiences.length === 0) return 0;
 
-  let totalMonths = 0;
+    let totalMonths = 0;
 
-  experiences.forEach((exp) => {
-    if (!exp.startDate) return;
+    experiences.forEach((exp) => {
+      if (!exp.startDate) return;
 
-    const start = new Date(exp.startDate);
-    const end = exp.endDate ? new Date(exp.endDate) : new Date();
+      const start = new Date(exp.startDate);
+      const end = exp.endDate ? new Date(exp.endDate) : new Date();
 
-    const months =
-      (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth());
+      const months =
+        (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth());
 
-    if (months > 0) totalMonths += months;
-  });
+      if (months > 0) totalMonths += months;
+    });
 
-  return Math.floor(totalMonths / 12); // convert to years
-};
+    return Math.floor(totalMonths / 12); // convert to years
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -385,37 +385,37 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
             `}</style>
         <div className="ai-dashboard-wrapper">
           <div className="hero-section-wrapper mb-4">
-        <div className="hero-card ">
-          <div className="hero-concentric-lines"></div>
-          <div className="hero-ripple-pattern"></div>
-          <div className="hero-circular-highlights"></div>
-            <div className="hero-left">
-              <div className="hero-pill">✦ Edit Talent Profile</div>
-              <h1 className="job-posting-title text-white">Talent Data Center</h1>
-              <div className="job-posting-header-info">
-                <p className="job-posting-subtitle">
-                  Update talent details and professional background.
-                </p>
+            <div className="hero-card ">
+              <div className="hero-concentric-lines"></div>
+              <div className="hero-ripple-pattern"></div>
+              <div className="hero-circular-highlights"></div>
+              <div className="hero-left">
+                <div className="hero-pill">✦ Edit Talent Profile</div>
+                <h1 className="job-posting-title text-white">Talent Data Center</h1>
+                <div className="job-posting-header-info">
+                  <p className="job-posting-subtitle">
+                    Update talent details and professional background.
+                  </p>
+                </div>
+              </div>
+              <div className="hero-buttons">
+                <button type="button" className="routine-btn" onClick={onCancel}>
+                  <FiArrowLeft /> Back to Profile
+                </button>
+              </div>
+              <div className="hero-illustration">
+                <div className="hero-particles">
+                  <div className="particle"></div>
+                  <div className="particle"></div>
+                  <div className="particle"></div>
+                  <div className="particle"></div>
+                  <div className="particle"></div>
+                  <div className="particle"></div>
+                </div>
+                <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
               </div>
             </div>
-            <div className="hero-buttons">
-              <button type="button" className="routine-btn" onClick={onCancel}>
-                <FiArrowLeft /> Back to Profile
-              </button>
-            </div>
-                    <div className="hero-illustration">
-            <div className="hero-particles">
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-              <div className="particle"></div>
-            </div>
-            <img src="/Images/Dashboard.png" alt="Dashboard Illustration" className="hero-svg-image" />
           </div>
-        </div>
-      </div>
 
           <div className="dashboard-layout">
             <div className="dashboard-column-main">
@@ -722,6 +722,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -751,6 +754,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -866,6 +872,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -895,6 +904,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -999,6 +1011,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -1026,6 +1041,9 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                                     }
                                     dateFormat="dd-MMM-yyyy"
                                     placeholderText="dd-MMM-yyyy"
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    yearDropdownItemNumber={100}
                                     style={{ paddingLeft: "2.5rem" }}
                                   />
                                   <FiCalendar
@@ -1113,10 +1131,10 @@ const EditTalentProfile = ({ initialData: propsData, onCancel: propsCancel, onSu
                   <div>
                     <p className="preview-section-title">Description abstract:</p>
                     <p className={`preview-description-abstract ${!formik.values.bio ? 'preview-placeholder-text' : ''}`}>
-                      {formik.values.bio 
-                        ? (formik.values.bio.length > 150 
-                           ? formik.values.bio.slice(0, 150) + "..." 
-                           : formik.values.bio)
+                      {formik.values.bio
+                        ? (formik.values.bio.length > 150
+                          ? formik.values.bio.slice(0, 150) + "..."
+                          : formik.values.bio)
                         : "No professional summary provided..."}
                     </p>
                   </div>

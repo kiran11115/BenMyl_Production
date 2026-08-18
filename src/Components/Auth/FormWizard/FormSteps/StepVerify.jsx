@@ -177,7 +177,7 @@ const StepVerify = ({
 
           {/* LICENSE NUMBER */}
           <div className="auth-group">
-            <label className="auth-label">{getLicenseLabel()}</label>
+            <label className="auth-label">{getLicenseLabel()}<span style={{ color: '#ef4444' }}> *</span></label>
             <input
               type="text"
               name="licenseNumber"
@@ -202,7 +202,7 @@ const StepVerify = ({
 
           {/* FILE UPLOAD */}
           <div className="auth-group auth-action-group">
-            <label className="auth-label">Verification Document</label>
+            <label className="auth-label">Verification Document<span style={{ color: '#ef4444' }}> *</span></label>
 
             {/* Document Type Selector */}
             <div className="auth-select-wrapper" style={{ marginBottom: "12px" }}>
@@ -431,7 +431,7 @@ const StepVerify = ({
         <div className="auth-address-grid">
           {/* STREET */}
           <div className="auth-group auth-span-2">
-            <label className="auth-label">Street Address</label>
+            <label className="auth-label">Street Address<span style={{ color: '#ef4444' }}> *</span></label>
             <input
               type="text"
               name="street"
@@ -448,9 +448,49 @@ const StepVerify = ({
             )}
           </div>
 
+           {/* STATE */}
+          <div className="auth-group">
+            <label className="auth-label">State<span style={{ color: '#ef4444' }}> *</span></label>
+            {states.length > 0 ? (
+              <div className="auth-select-wrapper">
+                <select
+                  name="state"
+                  className={`auth-input auth-select ${
+                    touched.state && errors.state ? "is-invalid" : ""
+                  }`}
+                  value={selectedStateValue}
+                  onChange={onStateSelect}
+                  onBlur={handleBlur}
+                >
+                  <option value="">Select State</option>
+                  {states.map((s) => (
+                    <option key={s.isoCode} value={s.isoCode}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <input
+                type="text"
+                name="state"
+                className={`auth-input ${
+                  touched.state && errors.state ? "is-invalid" : ""
+                }`}
+                placeholder="Enter State"
+                value={formData.state}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+              />
+            )}
+            {touched.state && errors.state && (
+              <small className="auth-error">{errors.state}</small>
+            )}
+          </div>
+
           {/* CITY */}
           <div className="auth-group">
-            <label className="auth-label">City</label>
+            <label className="auth-label">City<span style={{ color: '#ef4444' }}> *</span></label>
             {selectedStateValue && cities.length > 0 ? (
               <div className="auth-select-wrapper">
                 <select
@@ -489,50 +529,10 @@ const StepVerify = ({
             )}
           </div>
 
-          {/* STATE */}
-          <div className="auth-group">
-            <label className="auth-label">State</label>
-            {states.length > 0 ? (
-              <div className="auth-select-wrapper">
-                <select
-                  name="state"
-                  className={`auth-input auth-select ${
-                    touched.state && errors.state ? "is-invalid" : ""
-                  }`}
-                  value={selectedStateValue}
-                  onChange={onStateSelect}
-                  onBlur={handleBlur}
-                >
-                  <option value="">Select State</option>
-                  {states.map((s) => (
-                    <option key={s.isoCode} value={s.isoCode}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              <input
-                type="text"
-                name="state"
-                className={`auth-input ${
-                  touched.state && errors.state ? "is-invalid" : ""
-                }`}
-                placeholder="Enter State"
-                value={formData.state}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-              />
-            )}
-            {touched.state && errors.state && (
-              <small className="auth-error">{errors.state}</small>
-            )}
-          </div>
-
           {/* ZIP / POSTAL */}
           <div className="auth-group">
             <label className="auth-label">
-              {formData.country === "USA" ? "Zip Code" : "Postal Code"}
+              {formData.country === "USA" ? "Zip Code" : "Postal Code"}<span style={{ color: '#ef4444' }}> *</span>
             </label>
             <input
               type="text"

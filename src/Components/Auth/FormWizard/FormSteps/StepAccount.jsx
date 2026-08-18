@@ -92,7 +92,7 @@ const StepAccount = ({
               }}
             >
               {current} / {max} digits
-            </span>
+            </span><span style={{ color: '#ef4444' }}> *</span>
           </label>
 
           <div style={{ display: "flex", gap: "10px" }}>

@@ -263,8 +263,8 @@ const UserJobs = () => {
     if (filters.locationType && filters.locationType !== "Any Type") {
       const apiVal = filters.locationType === "On-Site" ? "On-site" : filters.locationType;
       apiFilters.push({
-        filterName: "workModels",
-        filterOperator: "string",
+        filterName: "work mode",
+        filterOperator: "Equals",
         filterValue: [apiVal],
       });
     }
