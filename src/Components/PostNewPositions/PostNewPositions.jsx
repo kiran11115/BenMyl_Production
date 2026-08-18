@@ -1980,8 +1980,22 @@ const PostNewPositions = () => {
                     <span>Relocation Required</span>
                   </label>
                 </div>
+                 {/* NOTE */}
+    <div
+      style={{
+        marginTop: '20px',
+        paddingTop: '14px',
+        borderTop: '1px solid #e2e8f0',
+        fontSize: '12px',
+        lineHeight: '1.6',
+        color: '#64748b'
+      }}
+    >
+      <strong style={{ color: '#1e293b' }}>Note:</strong> The following documents and information may be required during the verification process to verify the candidate's identity, qualifications, professional background, and availability for the role.
+    </div>
               </div>
             )}
+            
 
             {/* DESCRIPTION & DETAILED CONTENT */}
             <div style={{ marginBottom: '40px' }}>
