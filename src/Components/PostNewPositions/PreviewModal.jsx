@@ -390,7 +390,7 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
   const [postDescription, setPostDescription] = useState(
     `${data?.companyName || "Our company"} is actively seeking a skilled ${data?.jobTitle || "professional"}. This is an exciting ${data?.employmentType || "full-time"} opportunity for someone who thrives in a dynamic environment and is ready to make an immediate impact.\n\n#Hiring #NowHiring #CareerOpportunity #JobOpening`
   );
-  const [postLink, setPostLink] = useState("https://uat.benmyl.com/sign-in");
+  const [postLink, setPostLink] = useState("https://app.benmyl.com/sign-in");
   // LinkedIn pre-selected by default
   const [shareToLinkedIn, setShareToLinkedIn] = useState(data?.shareToLinkedIn ?? true);
 
@@ -775,8 +775,8 @@ export default function PreviewModal({ onClose, data, onPostJob, isEdit }) {
             {/* ── Copy Link ── */}
             <div className="pjm-section pjm-section--copy">
               <div className="pjm-copy-row">
-                <input className="pjm-input pjm-input--sm" readOnly value="https://uat.benmyl.com/sign-in" />
-                <button className="pjm-copy-btn" onClick={() => { navigator.clipboard.writeText("https://uat.benmyl.com/sign-in"); toast.success("Link copied!"); }}>
+                <input className="pjm-input pjm-input--sm" readOnly value="https://app.benmyl.com/sign-in" />
+                <button className="pjm-copy-btn" onClick={() => { navigator.clipboard.writeText("https://app.benmyl.com/sign-in"); toast.success("Link copied!"); }}>
                   <FiCopy size={13} /> Copy
                 </button>
               </div>

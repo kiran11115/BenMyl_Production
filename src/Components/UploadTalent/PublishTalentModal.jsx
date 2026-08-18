@@ -272,7 +272,7 @@ export default function PublishTalentModal({
   const [postDescription, setPostDescription] = useState(
     "Latest Talent Hotlist is live! Discover skilled bench talent ready for new opportunities. Connect with top professionals and explore talent available to make an impact."
   );
-  const [postLink, setPostLink] = useState("https://uat.benmyl.com/sign-in");
+  const [postLink, setPostLink] = useState("https://app.benmyl.com/sign-in");
 
   const [saveHotlistImage] = useSaveHotlistImageMutation();
   const [getLinkedInAuthUrl] = useLazyGetLinkedInAuthUrlQuery();
