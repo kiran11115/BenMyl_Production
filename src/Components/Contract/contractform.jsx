@@ -456,31 +456,7 @@ const MilestoneDetail = ({
           </div>
         </div>
 
-        {/* Change Status Action */}
-        {!isClosed && (
-          <div className="status-action-row mt-3">
-            <span className="status-action-label">Need to change status for evaluation?</span>
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => {
-                const targetState = simulateCompleted ? "In Progress" : "Completed";
-                setConfirmModal({
-                  title: "Confirm Status Change",
-                  message: `Are you sure you want to change the status of this milestone to ${targetState}?`,
-                  confirmText: "Change Status",
-                  cancelText: "Cancel",
-                  onConfirm: () => {
-                    setConfirmModal(null);
-                    onToggleSimulation();
-                  }
-                });
-              }}
-            >
-              {simulateCompleted ? "Set to In Progress" : "Change Status to Completed"}
-            </button>
-          </div>
-        )}
+
       </div>
 
       <div className="detail-divider"></div>
@@ -634,7 +610,6 @@ const MilestoneDetail = ({
                             onConfirm: () => {
                               setConfirmModal(null);
                               onExtensionSubmit(selectedExtDate, selectedExtReason, role);
-                              toast.success("Extension request submitted successfully!");
                               setShowDatePicker(false);
                             }
                           });
@@ -1087,7 +1062,6 @@ const CalendarContractCard = ({ c, navigate, basePath, statusOverrideMap, extens
                   onConfirm: () => {
                     setConfirmModal(null);
                     submitExtension(c.id, selectedExtDate, selectedExtReason);
-                    toast.success("Extension request submitted!");
                     setShowDatePicker(false);
                   }
                 });
