@@ -344,6 +344,7 @@ const FormWizard = () => {
 
     fd.append("StreetAddress", v.street);
     fd.append("City", v.city);
+    fd.append("State", v.state || "");
     fd.append("PostalCode", v.zipCode);
 
     if (v.verificationFile) {

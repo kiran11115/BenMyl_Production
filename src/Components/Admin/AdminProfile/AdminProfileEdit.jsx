@@ -27,6 +27,17 @@ const countryIsoMap = {
   Canada: "CA"
 };
 
+const normalizeCountry = (val) => {
+  if (!val) return "";
+  const str = String(val).trim().toUpperCase();
+  if (str === "1" || str === "USA" || str === "UNITED STATES" || str === "US") return "US";
+  if (str === "2" || str === "INDIA" || str === "IN") return "IN";
+  if (str === "3" || str === "UK" || str === "UNITED KINGDOM" || str === "GB") return "GB";
+  if (str === "4" || str === "UAE" || str === "UNITED ARAB EMIRATES" || str === "AE") return "AE";
+  if (str === "CA" || str === "CANADA") return "CA";
+  return val;
+};
+
 const AdminProfileEdit = () => {
   const navigate = useNavigate();
   const [updateCompanyProfile, { isLoading }] = useUpdateCompanyProfileMutation();
@@ -59,7 +70,7 @@ const AdminProfileEdit = () => {
       City: "",
       State: "",
       PostalCode: "",
-      Country: "",
+      Country: normalizeCountry(localStorage.getItem("countryRegistration")),
       Emailid: "",
       Phone: "",
       LinkedInURL: "",
@@ -128,6 +139,10 @@ const AdminProfileEdit = () => {
 
   useEffect(() => {
     if (!companyData) return;
+    const initialCountry = companyData.country
+      ? normalizeCountry(companyData.country)
+      : normalizeCountry(localStorage.getItem("countryRegistration"));
+
     formik.setValues({
       companyname: companyData.companyname || "",
       companyid: companyData.companyid || companyid,
@@ -143,7 +158,7 @@ const AdminProfileEdit = () => {
       City: companyData.city || "",
       State: companyData.state || "",
       PostalCode: companyData.postalCode || "",
-      Country: companyData.country || "",
+      Country: initialCountry,
       Emailid: companyData.emailid || "",
       Phone: companyData.phone || "",
       LinkedInURL: companyData.linkedinURL || "",
@@ -452,11 +467,11 @@ const AdminProfileEdit = () => {
                     className="auth-input"
                   >
                     <option value="">Select country</option>
-                    <option value="IN">India</option>
                     <option value="US">United States</option>
+                    <option value="IN">India</option>
                     <option value="GB">United Kingdom</option>
-                    <option value="CA">Canada</option>
                     <option value="AE">UAE</option>
+                    <option value="CA">Canada</option>
                   </select>
                 </div>
                 <div className="auth-group">
